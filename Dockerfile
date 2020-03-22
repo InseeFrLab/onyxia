@@ -1,4 +1,5 @@
 FROM node:13 as build  
+ADD . .
 RUN npm install  
 RUN npm run build
 
