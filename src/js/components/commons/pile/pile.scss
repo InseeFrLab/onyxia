@@ -1,0 +1,74 @@
+.pile {
+	display: inline-block;
+	.pile-vertical {
+		display: table;
+		margin: 0 auto;
+		border: 1px solid black;
+		border-radius: 3px;
+		background-color: silver;
+
+		.node {
+			display: block;
+			margin: 1px;
+			width: 18px;
+			height: 5px;
+		}
+
+		.node-small {
+			display: block;
+			margin: 1px;
+			width: 9px;
+			height: 2px;
+		}
+
+		.green-small {
+			@extend .node-small;
+			background-color: palegreen;
+		}
+
+		.red-small {
+			@extend .node-small;
+			background-color: red;
+		}
+
+		.orange-small {
+			@extend .node-small;
+			background-color: orange;
+		}
+
+		.empty-small {
+			@extend .node-small;
+			background-color: snow;
+		}
+
+		.green {
+			@extend .node;
+			background-color: palegreen;
+		}
+
+		.empty {
+			@extend .node;
+			background-color: snow;
+		}
+	}
+
+	.pile-horizontal {
+	}
+
+	.pile-label {
+		position: absolute;
+		.label-titre {
+			font-size: 12px;
+			color: black;
+			font-weight: bold;
+		}
+		.label-sous-titre {
+			display: block;
+			bottom: 0;
+			font-size: 10px;
+			color: gray;
+			margin-top: -10px;
+			text-align: center;
+		}
+	}
+}
