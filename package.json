@@ -44,7 +44,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "generate-entrypoint": "node build-entrypoint.js",
+    "generate-entrypoint": "node scripts/generate-entrypoint.js",
     "build": "react-scripts build",
     "analyze-bundle": "source-map-explorer 'build/static/js/*.js' --html bundle-report.html",
     "test": "react-scripts test --env=jsdom",

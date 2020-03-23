@@ -1,4 +1,6 @@
 language: node_js
+services:
+  - docker
 node_js:
   - 12.8.0
 cache: yarn
@@ -7,8 +9,17 @@ addons:
 install:
   - yarn config set registry https://registry.npmjs.org
   - yarn install
-scrip:
+script:
   - yarn build
   - yarn analyze-bundle
+  - docker build -t inseefrlab/onyxia-ui .
 after_script:
   - bash scripts/deploy.sh
+deploy:
+  skip_cleanup: true
+  provider: script
+  script:
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    && docker push inseefrlab/onyxia-ui
+  on:
+    branch: master
