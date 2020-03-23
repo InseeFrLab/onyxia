@@ -6,10 +6,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import RootRef from '@material-ui/core/RootRef';
 import { getMinioClient, getMinioApi } from 'js/minio-client';
-
+import conf from './../../../../configuration'
 import { HidablePane } from 'js/components/commons/atoms';
 
-const MINIO_BASE_URI = process.env.REACT_APP_MINIO_BASE_URI || '';
+const MINIO_BASE_URI = conf.MINIO.BASE_URI || '';
 
 class SelectWarField extends React.Component {
 	state = { paths: [], displayOptions: false };

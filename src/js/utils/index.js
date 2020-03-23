@@ -1,3 +1,4 @@
+import conf from "../configuration";
 export { default as getKeycloak } from "./keycloak-config";
 export * from "./axios-config";
 export * from "./storage-token";
@@ -7,7 +8,8 @@ export * from "./fil-d-ariane-utils";
 export * from "./token-local-storage";
 export { default as typeRequest } from "./mes-services-types-request";
 
-const grafanaBaseUri = process.env.REACT_APP_GRAFANA_BASE_URI;
+const grafanaBaseUri = conf.APP.GRAFANA_URI;
+
 const makeParamFromIdService = id =>
   id
     .split("/")
@@ -34,8 +36,8 @@ const getAvLast = ([first, ...rest]) =>
   rest.length === 0
     ? []
     : rest.length === 1
-    ? [first]
-    : [first, ...getAvLast(rest)];
+      ? [first]
+      : [first, ...getAvLast(rest)];
 
 export const getParamsFromProps = props =>
   props.match && props.match.params ? props.match.params : undefined;
