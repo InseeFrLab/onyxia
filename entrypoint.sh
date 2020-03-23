@@ -20,6 +20,7 @@ echo "window._env_['KUB_KC_CLIENT_ID'] = '$KUB_KC_CLIENT_ID';" >> /usr/share/ngi
 echo "window._env_['KUB_KC_URL'] = '$KUB_KC_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['KUB_APISERVER_URL'] = '$KUB_APISERVER_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_TYPE'] = '$AUTH_TYPE';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['AUTH_OIDC_CLIENT_ID'] = '$AUTH_OIDC_CLIENT_ID';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_OIDC_REALM'] = '$AUTH_OIDC_REALM';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_OIDC_URL'] = '$AUTH_OIDC_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_OIDC_SSL_REQUIRED'] = '$AUTH_OIDC_SSL_REQUIRED';" >> /usr/share/nginx/html/env-config.js
