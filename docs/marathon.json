@@ -1,0 +1,48 @@
+{
+    "id": "/infra/onyxia/onyxia-ui",
+    "role": "infra",
+    "cmd": null,
+    "cpus": 0.1,
+    "mem": 1024,
+    "disk": 0,
+    "gpus": 0,
+    "instances": 1,
+    "acceptedResourceRoles": [
+        "*"
+    ],
+    "container": {
+        "type": "DOCKER",
+        "docker": {
+            "forcePullImage": true,
+            "image": "inseefrlab/onyxia-ui:latest",
+            "parameters": [],
+            "privileged": false
+        },
+        "volumes": [],
+        "portMappings": [
+            {
+                "containerPort": 80,
+                "hostPort": 0,
+                "labels": {},
+                "protocol": "tcp",
+                "servicePort": 10000
+            }
+        ]
+    },
+    "env": {
+        "BASE_API_URL": "https://onyxia-api.lab.sspcloud.fr"
+    },
+    "labels": {
+        "HAPROXY_0_ENABLED": "true",
+        "HAPROXY_0_VHOST": "onyxia.lab.sspcloud.fr",
+        "HAPROXY_GROUP": "external",
+        "HAPROXY_0_REDIRECT_TO_HTTPS": "true"
+    },
+    "networks": [
+        {
+            "mode": "container/bridge"
+        }
+    ],
+    "portDefinitions": [],
+    "maxLaunchDelaySeconds": 300
+}

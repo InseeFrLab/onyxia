@@ -25,6 +25,7 @@ import {
   Description,
   FileViewer
 } from "./parts";
+import conf from './../../../configuration'
 import Titre from "js/components/commons/titre";
 const FilMonService = ({ service, taskId }) => {
   const fil = getFilAriane(service, taskId);
@@ -71,9 +72,9 @@ class MonService extends React.Component {
     this.state.confirmAction = this.handleSaveConfEnv;
     this.state.initialEnv = props.service.env
       ? Object.entries(props.service.env).reduce(
-          (a, [k, v]) => ({ ...a, [k]: v }),
-          {}
-        )
+        (a, [k, v]) => ({ ...a, [k]: v }),
+        {}
+      )
       : {};
 
     const {
@@ -236,24 +237,24 @@ class MonService extends React.Component {
               />
             </>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
           {activeTab === TAB_DEBUG &&
-          service.hasOwnProperty("lastTaskFailure") ? (
-            <>
-              <TaskFailure service={service} formatUrl={formatUrl} />
-              <Sandbox
-                serviceId={extractServiceId(service.id)}
-                service={service}
-                taskId={service.lastTaskFailure.taskId}
-              />
-              <FileViewer
-                serviceId={extractServiceId(service.id)}
-                service={service}
-                taskId={service.lastTaskFailure.taskId}
-              />
-            </>
-          ) : null}
+            service.hasOwnProperty("lastTaskFailure") ? (
+              <>
+                <TaskFailure service={service} formatUrl={formatUrl} />
+                <Sandbox
+                  serviceId={extractServiceId(service.id)}
+                  service={service}
+                  taskId={service.lastTaskFailure.taskId}
+                />
+                <FileViewer
+                  serviceId={extractServiceId(service.id)}
+                  service={service}
+                  taskId={service.lastTaskFailure.taskId}
+                />
+              </>
+            ) : null}
           {activeTab === TAB_CONFIGURATION ? (
             <Description
               service={service}
@@ -288,7 +289,7 @@ class MonService extends React.Component {
                           options={{
                             step: 1,
                             min: 1,
-                            max: process.env.REACT_APP_INSTANCES_MAX || 100
+                            max: conf.APP["max-instances"] || 100
                           }}
                           value={this.state.initialConf.instances}
                           type="number"

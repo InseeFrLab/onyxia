@@ -2,8 +2,9 @@ import axios from "axios";
 import { axiosAuth, getToken } from "js/utils";
 import { store } from "js/redux";
 import { newVaultToken } from "js/redux/actions";
+import conf from "../configuration";
 
-const VAULT_BASE_URI = process.env.REACT_APP_VAULT_BASE_URI;
+const VAULT_BASE_URI = conf.VAULT.vault;
 
 class VaultAPI {
   async getSecretsList(path = "") {
