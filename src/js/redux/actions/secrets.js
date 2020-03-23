@@ -3,8 +3,8 @@ import createVaultApi from "js/vault-client";
 import { axiosAuth } from "js/utils";
 import * as constantes from "./constantes";
 import { startWaiting, stopWaiting } from "./app";
-
-const VAULT_BASE_URI = process.env.REACT_APP_VAULT_BASE_URI;
+import conf from "./../../configuration"
+const VAULT_BASE_URI = conf.VAULT.vault;
 const VAULT = createVaultApi();
 
 export const checkVaultStatus = () => async dispatch =>
@@ -45,7 +45,7 @@ export const updateVaultSecret = ({ location, data }) => async dispatch => {
   dispatch(stopWaiting());
 };
 
-export const createPath = path => async dispatch => {};
+export const createPath = path => async dispatch => { };
 
 export const newVaultToken = token => async dispatch =>
   dispatch({

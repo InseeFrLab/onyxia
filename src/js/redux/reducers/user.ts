@@ -1,14 +1,14 @@
 import * as types from "./../actions/constantes";
-
+import conf from "./../../configuration"
 const initial = {
   USERNAME: "",
   IDEP: undefined,
   USERMAIL: "",
-  USERPASSWORD: process.env.REACT_APP_MOT_DE_PASSE,
+  USERPASSWORD: conf.APP["mot-de-passe"],
   USERKEY: "https://example.com/placeholder.gpg",
   STATUS: "",
-  GIT: process.env.REACT_APP_GIT_PATH,
-  DNS: process.env.REACT_APP_DNS,
+  GIT: conf.APP["git-path"],
+  DNS: conf.APP.dns,
   UUID: "",
   IP: "",
   S3: {
@@ -16,7 +16,7 @@ const initial = {
     AWS_SECRET_ACCESS_KEY: undefined,
     AWS_SESSION_TOKEN: undefined,
     AWS_DEFAULT_REGION: "us-east-1",
-    AWS_S3_ENDPOINT: process.env.REACT_APP_MINIO_END_POINT,
+    AWS_S3_ENDPOINT: conf,
     AWS_EXPIRATION: undefined
   },
   SSH: {
@@ -29,12 +29,12 @@ const initial = {
     KC_ACCESS_TOKEN: undefined
   },
   KUBERNETES: {
-    KUB_KC_CLIENT_ID: process.env.REACT_APP_KUB_KC_CLIENT_ID,
-    KUB_KC_URL: process.env.REACT_APP_KUB_KC_URL,
-    KUB_APISERVER_URL: process.env.REACT_APP_KUB_APISERVER_URL
+    KUB_KC_CLIENT_ID: conf["kub-api-server"],
+    KUB_KC_URL: conf.KUBERNETES["kub-kc-url"],
+    KUB_APISERVER_URL: conf.KUBERNETES["kub-api-server"]
   },
   VAULT: {
-    VAULT_ADDR: process.env.REACT_APP_VAULT_BASE_URI,
+    VAULT_ADDR: conf.VAULT.vault,
     VAULT_TOKEN: undefined
   }
 };
