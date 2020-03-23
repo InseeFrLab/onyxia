@@ -5,22 +5,22 @@ const conf = {
     "base_url": readConfig("BASE_API_URL"),
   },
   APP: {
-    "max-instances": readConfig("INSTANCES_MAX"),
+    "max_instances": readConfig("INSTANCES_MAX"),
     dns: readConfig("DNS"),
-    "git-path": readConfig("GIT_PATH"),
+    "git_path": readConfig("GIT_PATH"),
     password: readConfig("PASSWORD"),
-    "grafana-uri": readConfig("GRAFANA_BASE_URI")
+    "grafana_uri": readConfig("GRAFANA_BASE_URI")
   },
   ENDPOINTS: {
-    "salon-rc": readConfig("SALON_ROCKETCHAT")
+    "salon_rc": readConfig("SALON_ROCKETCHAT")
   },
   KUBERNETES: {
-    "kub-kc-client-id": readConfig("KUB_KC_CLIENT_ID"),
-    "kub-kc-url": readConfig("KUB_KC_URL"),
-    "kub-api-server": readConfig("KUB_APISERVER_URL")
+    "kub_kc_client_id": readConfig("KUB_KC_CLIENT_ID"),
+    "kub_kc_url": readConfig("KUB_KC_URL"),
+    "kub_api_server": readConfig("KUB_APISERVER_URL")
   },
   VAULT: {
-    "vault-base-uri": readConfig("VAULT_BASE_URI")
+    "vault_base_uri": readConfig("VAULT_BASE_URI")
   },
   CHAT: {
     "url": readConfig("CHAT_URL")
@@ -29,27 +29,27 @@ const conf = {
     TYPE: readConfig("AUTH_TYPE"),
     OIDC: {
       "realm": readConfig("AUTH_OIDC_REALM"),
-      "auth-server-url": readConfig("AUTH_OIDC_URL"),
-      "ssl-required": readConfig("AUTH_OIDC_SSL_REQUIRED"),
+      "auth_server_url": readConfig("AUTH_OIDC_URL"),
+      "ssl_required": readConfig("AUTH_OIDC_SSL_REQUIRED"),
       "resource": readConfig("AUTH_OIDC_RESOURCE"),
-      "public-client": readConfig("AUTH_OIDC_PUBLIC_CLIENT") === "true",
-      "confidential-port": readConfig("AUTH_OIDC_CONFIDENTIAL_PORT")
+      "public_client": readConfig("AUTH_OIDC_PUBLIC_CLIENT") === "true",
+      "confidential_port": readConfig("AUTH_OIDC_CONFIDENTIAL_PORT")
     }
   },
   MINIO: {
-    "base-uri": readConfig("MINIO_BASE_URI"),
-    "end-point": readConfig("MINIO_END_POINT"),
+    "base_uri": readConfig("MINIO_BASE_URI"),
+    "end_point": readConfig("MINIO_END_POINT"),
     "port": readConfig("MINIO_PORT"),
-    "minimum-duration": readConfig("MINIO_END_MINIMUM_DURATION_MS")
+    "minimum_duration": readConfig("MINIO_END_MINIMUM_DURATION_MS")
   },
   FOOTER: {
     ONYXIA: {
       "git": readConfig("ONYXIA_GIT"),
       "rocketchat": readConfig("ONYXIA_ROCKETCHAT"),
     },
-    "swagger-api": readConfig("SWAGGER_API"),
-    "ghost-url": readConfig("GHOST_URL"),
-    "grafana-url": readConfig("GRAFANA_URL")
+    "swagger_api": readConfig("SWAGGER_API"),
+    "ghost_url": readConfig("GHOST_URL"),
+    "grafana_url": readConfig("GRAFANA_URL")
   }
 };
 

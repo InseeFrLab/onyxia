@@ -9,7 +9,7 @@ import { getMinioClient, getMinioApi } from 'js/minio-client';
 import conf from './../../../../configuration'
 import { HidablePane } from 'js/components/commons/atoms';
 
-const MINIO_BASE_URI = conf.MINIO["base-uri"] || '';
+const MINIO_BASE_URI = conf.MINIO.base_uri || '';
 
 class SelectWarField extends React.Component {
 	state = { paths: [], displayOptions: false };

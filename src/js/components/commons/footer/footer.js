@@ -17,7 +17,7 @@ class Footer extends React.Component {
         <Divider light />
         <div className="liens-rapides">
           <LienRapide
-            url={conf.FOOTER["grafana-url"]}
+            url={conf.FOOTER.grafana_url}
             icon={<GrafanaIcon />}
           >
             Graphana
@@ -31,7 +31,7 @@ class Footer extends React.Component {
           </LienRapide>
 
           <LienRapide
-            url={conf.FOOTER["ghost-url"]}
+            url={conf.FOOTER.ghost_url}
             icon={<GhosthIcon width={15} height={15} />}
           >
             le blog de l'Innovation
@@ -41,8 +41,7 @@ class Footer extends React.Component {
           <LienSimple href={conf.FOOTER.ONYXIA.git}>
             contribuer
           </LienSimple>
-          <LienSimple href={conf.FOOTER["swagger-api"]}>
-            notre api
+          <LienSimple href={conf.FOOTER.swagger_api
           </LienSimple>
         </Typography>
       </footer>

@@ -5,9 +5,9 @@ import store from "js/redux/store";
 import * as Actions from "js/redux/actions";
 import conf from "../configuration";
 
-const MINIO_BASE_URI = conf.MINIO["base-uri"];
-const MINIO_END_POINT = conf.MINIO["end-point"];
-const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO["minimum-duration"];
+const MINIO_BASE_URI = conf.MINIO.base_uri;
+const MINIO_END_POINT = conf.MINIO.end_point;
+const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.minimum_duration;
 const MINIO_PORT = conf.MINIO.port;
 let MINIO_CLIENT = null;
 

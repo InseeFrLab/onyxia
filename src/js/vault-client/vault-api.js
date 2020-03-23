@@ -58,7 +58,7 @@ const fetchVaultToken = async () => {
  *
  */
 const axiosVault = axios.create({
-  baseURL: conf.VAULT["vault-base-uri"]
+  baseURL: conf.VAULT.vault_base_uri
 });
 axiosVault.interceptors.request.use(
   config =>

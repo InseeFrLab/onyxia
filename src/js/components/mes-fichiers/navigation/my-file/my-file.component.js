@@ -20,7 +20,7 @@ import {
 } from "js/minio-client";
 import "./my-file.scss";
 
-const MINIO_BASE_URI = conf.MINIO["base-uri"];
+const MINIO_BASE_URI = conf.MINIO.base_uri;
 
 const MonFichier = ({
   file,

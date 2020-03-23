@@ -289,7 +289,7 @@ class MonService extends React.Component {
                           options={{
                             step: 1,
                             min: 1,
-                            max: conf.APP["max-instances"] || 100
+                            max: conf.APP.max_instances || 100
                           }}
                           value={this.state.initialConf.instances}
                           type="number"
