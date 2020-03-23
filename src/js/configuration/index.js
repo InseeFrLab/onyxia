@@ -2,7 +2,7 @@ const readConfig = key => window._env_[key] || process.env["REACT_APP_" + key];
 
 const conf = {
   API: {
-    BASE_URL: readConfig("BASE_API_URL"),
+    BASE_URL: readConfig("BASE_API_URL")
   },
   APP: {
     MAX_INSTANCES: readConfig("INSTANCES_MAX"),
@@ -30,7 +30,7 @@ const conf = {
     OIDC: {
       clientId: readConfig("AUTH_OIDC_CLIENT_ID"),
       realm: readConfig("AUTH_OIDC_REALM"),
-      "auth-server-url": readConfig("AUTH_OIDC_URL"),
+      url: readConfig("AUTH_OIDC_URL"),
       "ssl-required": readConfig("AUTH_OIDC_SSL_REQUIRED"),
       resource: readConfig("AUTH_OIDC_RESOURCE"),
       "public-client": readConfig("AUTH_OIDC_PUBLIC_CLIENT") === "true",
@@ -46,13 +46,12 @@ const conf = {
   FOOTER: {
     ONYXIA: {
       GIT: readConfig("ONYXIA_GIT"),
-      ROCKETCHAT: readConfig("ONYXIA_ROCKETCHAT"),
+      ROCKETCHAT: readConfig("ONYXIA_ROCKETCHAT")
     },
     SWAGGER_API: readConfig("SWAGGER_API"),
     GHOST_URL: readConfig("GHOST_URL"),
     GRAFANA_URL: readConfig("GRAFANA_URL")
   }
 };
-
 
 export default conf;
