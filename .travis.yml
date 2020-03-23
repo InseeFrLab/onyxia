@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - 12.8.0
+cache: yarn
+addons:
+  organization: "inseefrlab"
+install:
+  - yarn config set registry https://registry.npmjs.org
+  - yarn install
+scrip:
+  - yarn build
+after_script:
+  - bash scripts/deploy.sh
