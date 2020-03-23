@@ -5,10 +5,10 @@ import store from "js/redux/store";
 import * as Actions from "js/redux/actions";
 import conf from "../configuration";
 
-const MINIO_BASE_URI = conf.MINIO.base_uri;
-const MINIO_END_POINT = conf.MINIO.end_point;
-const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.minimum_duration;
-const MINIO_PORT = conf.MINIO.port;
+const MINIO_BASE_URI = conf.MINIO.BASE_URI;
+const MINIO_END_POINT = conf.MINIO.END_POINT;
+const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.MINIMUN_DURATION;
+const MINIO_PORT = conf.MINIO.PORT;
 let MINIO_CLIENT = null;
 
 const getMinioDataFromStore = () => {

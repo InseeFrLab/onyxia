@@ -4,7 +4,7 @@ import * as constantes from "./constantes";
 import { startWaiting, stopWaiting } from "./app";
 import { requestError } from "./app";
 import conf from "js/configuration";
-const BASE_URI = conf.API.base_url;
+const BASE_URI = conf.API.BASE_URL;
 
 export const chargerServices = () => (dispatch, getState) => {
   dispatch(startWaiting());

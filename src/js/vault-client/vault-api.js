@@ -4,7 +4,7 @@ import { store } from "js/redux";
 import { newVaultToken } from "js/redux/actions";
 import conf from "../configuration";
 
-const VAULT_BASE_URI = conf.VAULT.vault;
+const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 
 class VaultAPI {
   async getSecretsList(path = "") {
@@ -58,7 +58,7 @@ const fetchVaultToken = async () => {
  *
  */
 const axiosVault = axios.create({
-  baseURL: conf.VAULT.vault_base_uri
+  baseURL: conf.VAULT.VAULT_BASE_URI
 });
 axiosVault.interceptors.request.use(
   config =>

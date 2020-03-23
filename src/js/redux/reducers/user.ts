@@ -4,11 +4,11 @@ const initial = {
   USERNAME: "",
   IDEP: undefined,
   USERMAIL: "",
-  USERPASSWORD: conf.APP.password,
+  USERPASSWORD: conf.APP.PASSWORD,
   USERKEY: "https://example.com/placeholder.gpg",
   STATUS: "",
-  GIT: conf.APP.git_path,
-  DNS: conf.APP.dns,
+  GIT: conf.APP.GIT_PATH,
+  DNS: conf.APP.DNS,
   UUID: "",
   IP: "",
   S3: {
@@ -16,7 +16,7 @@ const initial = {
     AWS_SECRET_ACCESS_KEY: undefined,
     AWS_SESSION_TOKEN: undefined,
     AWS_DEFAULT_REGION: "us-east-1",
-    AWS_S3_ENDPOINT: conf.MINIO.end_point,
+    AWS_S3_ENDPOINT: conf.MINIO.END_POINT,
     AWS_EXPIRATION: undefined
   },
   SSH: {
@@ -29,12 +29,12 @@ const initial = {
     KC_ACCESS_TOKEN: undefined
   },
   KUBERNETES: {
-    KUB_KC_CLIENT_ID: conf.KUBERNETES.kub_kc_client_id,
-    KUB_KC_URL: conf.KUBERNETES.kub_kc_url,
-    KUB_APISERVER_URL: conf.KUBERNETES.kub_api_server
+    KUB_KC_CLIENT_ID: conf.KUBERNETES.KUB_KC_CLIENT_ID,
+    KUB_KC_URL: conf.KUBERNETES.KUB_KC_URL,
+    KUB_APISERVER_URL: conf.KUBERNETES.KUB_API_SERVER
   },
   VAULT: {
-    VAULT_ADDR: conf.VAULT.vault,
+    VAULT_ADDR: conf.VAULT.VAULT_BASE_URI,
     VAULT_TOKEN: undefined
   }
 };

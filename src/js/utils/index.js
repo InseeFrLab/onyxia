@@ -8,7 +8,7 @@ export * from "./fil-d-ariane-utils";
 export * from "./token-local-storage";
 export { default as typeRequest } from "./mes-services-types-request";
 
-const grafanaBaseUri = conf.APP.grafana_uri;
+const grafanaBaseUri = conf.APP.GRAFANA_URI;
 
 const makeParamFromIdService = id =>
   id

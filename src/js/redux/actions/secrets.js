@@ -4,7 +4,7 @@ import { axiosAuth } from "js/utils";
 import * as constantes from "./constantes";
 import { startWaiting, stopWaiting } from "./app";
 import conf from "./../../configuration"
-const VAULT_BASE_URI = conf.VAULT.vault;
+const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 const VAULT = createVaultApi();
 
 export const checkVaultStatus = () => async dispatch =>
