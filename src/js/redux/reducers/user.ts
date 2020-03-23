@@ -4,7 +4,7 @@ const initial = {
   USERNAME: "",
   IDEP: undefined,
   USERMAIL: "",
-  USERPASSWORD: conf.APP["mot-de-passe"],
+  USERPASSWORD: conf.APP.password,
   USERKEY: "https://example.com/placeholder.gpg",
   STATUS: "",
   GIT: conf.APP["git-path"],
@@ -16,7 +16,7 @@ const initial = {
     AWS_SECRET_ACCESS_KEY: undefined,
     AWS_SESSION_TOKEN: undefined,
     AWS_DEFAULT_REGION: "us-east-1",
-    AWS_S3_ENDPOINT: conf,
+    AWS_S3_ENDPOINT: conf.MINIO["end-point"],
     AWS_EXPIRATION: undefined
   },
   SSH: {

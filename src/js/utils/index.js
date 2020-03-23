@@ -1,3 +1,4 @@
+import conf from "../configuration";
 export { default as getKeycloak } from "./keycloak-config";
 export * from "./axios-config";
 export * from "./storage-token";
@@ -6,10 +7,8 @@ export * from "./state-tasks";
 export * from "./fil-d-ariane-utils";
 export * from "./token-local-storage";
 export { default as typeRequest } from "./mes-services-types-request";
-import conf from "../configuration";
 
-const grafanaBaseUri = conf.FOOTER.grafana;
-const grafanaBaseUri = conf.APP.grafana - uri;
+const grafanaBaseUri = conf.APP["grafana-uri"];
 
 const makeParamFromIdService = id =>
   id

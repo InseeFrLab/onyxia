@@ -6,9 +6,9 @@ const conf = {
   },
   APP: {
     "max-instances": readConfig("INSTANCES_MAX"),
-    "dns": readConfig("DNS"),
+    dns: readConfig("DNS"),
     "git-path": readConfig("GIT_PATH"),
-    "mot-de-passe": readConfig("MOT_DE_PASSE"),
+    password: readConfig("PASSWORD"),
     "grafana-uri": readConfig("GRAFANA_BASE_URI")
   },
   ENDPOINTS: {
@@ -20,7 +20,7 @@ const conf = {
     "kub-api-server": readConfig("KUB_APISERVER_URL")
   },
   VAULT: {
-    "vault": readConfig("VAULT_BASE_URI")
+    "vault-base-uri": readConfig("VAULT_BASE_URI")
   },
   CHAT: {
     "url": readConfig("CHAT_URL")
@@ -47,9 +47,9 @@ const conf = {
       "git": readConfig("ONYXIA_GIT"),
       "rocketchat": readConfig("ONYXIA_ROCKETCHAT"),
     },
-    "swagger": readConfig("SWAGGER_API"),
-    "ghost": readConfig("GHOST_URL"),
-    "grafana": readConfig("GRAFANA_URL")
+    "swagger-api": readConfig("SWAGGER_API"),
+    "ghost-url": readConfig("GHOST_URL"),
+    "grafana-url": readConfig("GRAFANA_URL")
   }
 };
 

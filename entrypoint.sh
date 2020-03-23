@@ -2,7 +2,7 @@
 echo "window._env_['BASE_API_URL'] = '$BASE_API_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['DNS'] = '$DNS';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['GIT_PATH'] = '$GIT_PATH';" >> /usr/share/nginx/html/env-config.js
-echo "window._env_['MOT_DE_PASSE'] = '$MOT_DE_PASSE';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['PASSWORD'] = '$PASSWORD';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['GRAFANA_BASE_URI'] = '$GRAFANA_BASE_URI';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['MINIO_BASE_URI'] = '$MINIO_BASE_URI';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['MINIO_END_POINT'] = '$MINIO_END_POINT';" >> /usr/share/nginx/html/env-config.js
