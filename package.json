@@ -1,7 +1,6 @@
 {
   "name": "onyxia",
   "version": "0.1.0",
-  "private": true,
   "homepage": "/",
   "devDependencies": {
     "cross-env": "6.0.3",
