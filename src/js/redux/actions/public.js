@@ -15,7 +15,7 @@ export const chargerServices = () => (dispatch, getState) => {
       dispatch(stopWaiting());
       dispatch(servicesCharges(services));
     })
-    .catch(function(error) {
+    .catch(function (error) {
       dispatch(requestError(error));
     });
   return false;

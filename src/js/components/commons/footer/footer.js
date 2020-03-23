@@ -8,6 +8,7 @@ import {
   GhosthIcon
 } from "js/components/commons/icons";
 import "./footer.scss";
+import conf from './../../../configuration'
 
 class Footer extends React.Component {
   render() {
@@ -16,31 +17,31 @@ class Footer extends React.Component {
         <Divider light />
         <div className="liens-rapides">
           <LienRapide
-            url={process.env.REACT_APP_GRAFANA_URL}
+            url={conf.FOOTER.GRAFANA_URL}
             icon={<GrafanaIcon />}
           >
             Graphana
           </LienRapide>
 
           <LienRapide
-            url={process.env.REACT_APP_ONYXIA_ROCKETCHAT}
+            url={conf.FOOTER.ONYXIA.ROCKETCHAT}
             icon={<RocketChatIcon />}
           >
             RocketChat
           </LienRapide>
 
           <LienRapide
-            url={process.env.REACT_APP_GHOST_URL}
+            url={conf.FOOTER.GHOST_URL}
             icon={<GhosthIcon width={15} height={15} />}
           >
             le blog de l'Innovation
           </LienRapide>
         </div>
         <Typography gutterBottom noWrap>
-          <LienSimple href={process.env.REACT_APP_ONYXIA_GIT}>
+          <LienSimple href={conf.FOOTER.ONYXIA.GIT}>
             contribuer
           </LienSimple>
-          <LienSimple href={process.env.REACT_APP_SWAGGER_API}>
+          <LienSimple href={conf.FOOTER.SWAGGER_API}>
             notre api
           </LienSimple>
         </Typography>

@@ -3,12 +3,12 @@ import * as Minio from "minio";
 import { getToken } from "js/utils";
 import store from "js/redux/store";
 import * as Actions from "js/redux/actions";
+import conf from "../configuration";
 
-const MINIO_BASE_URI = process.env.REACT_APP_MINIO_BASE_URI;
-const MINIO_END_POINT = process.env.REACT_APP_MINIO_END_POINT;
-const MINIO_END_MINIMUM_DURATION_MS =
-  process.env.REACT_APP_MINIO_END_MINIMUM_DURATION_MS;
-const MINIO_PORT = process.env.REACT_APP_PORT;
+const MINIO_BASE_URI = conf.MINIO.BASE_URI;
+const MINIO_END_POINT = conf.MINIO.END_POINT;
+const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.MINIMUN_DURATION;
+const MINIO_PORT = conf.MINIO.PORT;
 let MINIO_CLIENT = null;
 
 const getMinioDataFromStore = () => {
@@ -48,31 +48,31 @@ const fetchMinioToken = async () => {
 
 export const getMinioToken = (refreh = false) =>
   getMinioDataFromStore().AWS_EXPIRATION &&
-  Date.parse(getMinioDataFromStore().AWS_EXPIRATION) - Date.now() >=
+    Date.parse(getMinioDataFromStore().AWS_EXPIRATION) - Date.now() >=
     MINIO_END_MINIMUM_DURATION_MS
     ? Promise.resolve(getMinioDataFromStore())
     : fetchMinioToken().then(credentials => {
-        broadcastNewCredentials(credentials);
-        return credentials;
-      });
+      broadcastNewCredentials(credentials);
+      return credentials;
+    });
 
 const getClient = () =>
   MINIO_CLIENT
     ? Promise.resolve(MINIO_CLIENT)
     : new Promise((resolve, reject) => {
-        getMinioToken()
-          .then(credentials => {
-            MINIO_CLIENT = new Minio.Client({
-              endPoint: MINIO_END_POINT,
-              port: MINIO_PORT,
-              useSSL: true,
-              accessKey: credentials.accessKey,
-              secretKey: credentials.secretAccessKey,
-              sessionToken: credentials.sessionToken
-            });
-            resolve(MINIO_CLIENT);
-          })
-          .catch(err => reject(err));
-      });
+      getMinioToken()
+        .then(credentials => {
+          MINIO_CLIENT = new Minio.Client({
+            endPoint: MINIO_END_POINT,
+            port: MINIO_PORT,
+            useSSL: true,
+            accessKey: credentials.accessKey,
+            secretKey: credentials.secretAccessKey,
+            sessionToken: credentials.sessionToken
+          });
+          resolve(MINIO_CLIENT);
+        })
+        .catch(err => reject(err));
+    });
 
 export default getClient;
