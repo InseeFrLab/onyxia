@@ -28,6 +28,7 @@ const conf = {
   AUTHENTICATION: {
     TYPE: readConfig("AUTH_TYPE"),
     OIDC: {
+      clientId: readConfig("AUTH_OIDC_CLIENT_ID"),
       realm: readConfig("AUTH_OIDC_REALM"),
       "auth-server-url": readConfig("AUTH_OIDC_URL"),
       "ssl-required": readConfig("AUTH_OIDC_SSL_REQUIRED"),
