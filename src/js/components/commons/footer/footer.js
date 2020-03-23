@@ -41,7 +41,7 @@ class Footer extends React.Component {
           <LienSimple href={conf.FOOTER.ONYXIA.git}>
             contribuer
           </LienSimple>
-          <LienSimple href={conf.FOOTER.swagger_api
+          <LienSimple href={conf.FOOTER.swagger_api}>
           </LienSimple>
         </Typography>
       </footer>
