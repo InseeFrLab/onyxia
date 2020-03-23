@@ -5,6 +5,9 @@ cache: yarn
 addons:
   organization: "inseefrlab"
 install:
-  - yarn
+  - yarn config set registry https://registry.npmjs.org
+  - yarn install
+scrip:
+  - yarn build
 after_script:
   - bash scripts/deploy.sh
