@@ -9,5 +9,6 @@ install:
   - yarn install
 scrip:
   - yarn build
+  - yarn analyze-bundle
 after_script:
   - bash scripts/deploy.sh

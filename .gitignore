@@ -9,6 +9,9 @@
 # production
 /build
 
+# bundle analysis
+bundle-report.html
+
 # misc
 .DS_Store
 .env.local
