@@ -1,6 +1,7 @@
 {
-  "name": "onyxia",
+  "name": "onyxia-ui",
   "version": "0.1.0",
+  "license": "MIT",
   "homepage": "/",
   "devDependencies": {
     "cross-env": "6.0.3",

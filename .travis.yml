@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - 12.8.0
+cache: yarn
+addons:
+  organization: "inseefrlab"
+install:
+  - yarn
+after_script:
+  - bash scripts/deploy.sh
