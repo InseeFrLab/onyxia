@@ -1,16 +1,16 @@
 import axios from "axios";
-import keycloak from "./keycloak-config";
+import getKeycloak from "./keycloak-config";
 import { setLocalToken } from "js/utils";
 import conf from "../configuration";
 const BASE_URL = conf.API.BASE_URL;
 
 export const refreshToken = (minValidity = 60) =>
   new Promise((resolve, reject) => {
-    keycloak
+    getKeycloak()
       .updateToken(minValidity)
       .success(() => {
-        setLocalToken(keycloak.token);
-        resolve(keycloak.token);
+        setLocalToken(getKeycloak().token);
+        resolve(getKeycloak().token);
       })
       .error(error => {
         reject(error);
@@ -22,8 +22,8 @@ if (conf.AUTHENTICATION.TYPE === "oidc") {
   axiosAuth.interceptors.request.use(
     config =>
       refreshToken()
-        .then(token => Promise.resolve(authorizeConfig(keycloak)(config)))
-        .catch(() => keycloak.login()),
+        .then(token => Promise.resolve(authorizeConfig(getKeycloak())(config)))
+        .catch(() => getKeycloak().login()),
     error => Promise.reject(error)
   );
 }
