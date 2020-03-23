@@ -4,6 +4,7 @@ set -e
 
 DOC_FOLDER="docs"
 SITE_FOLDER="website"
+BUNDLE_REPORT_FILE="bundle-report.html"
 
 MAIN_BRANCH="master"
 UPSTREAM="https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
@@ -39,6 +40,7 @@ function publish() {
   pushd "$SITE_FOLDER"
 
   cp -a "../$DOC_FOLDER/_book/." .
+  cp "../$BUNDLE_REPORT_FILE" .
 
   git init
   git remote add upstream "$UPSTREAM"
