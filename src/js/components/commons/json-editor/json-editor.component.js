@@ -1,39 +1,28 @@
-import React, { Component } from "react";
-import JSONEditor from "jsoneditor";
-import "jsoneditor/dist/jsoneditor.css";
-import "./jsoneditor.scss";
+import React from "react";
+import PropTypes from "prop-types";
+import { JsonEditor } from "jsoneditor-react";
+import "jsoneditor-react/es/editor.min.css";
 
-class Editor extends Component {
-  componentDidMount() {
-    const { json, readOnly } = this.props;
-    this.jsoneditor = new JSONEditor(this.container, {
-      modes: ["code", "tree"],
-      onEditable: () => !readOnly
-    });
-    this.jsoneditor.set(json);
-  }
+const Editor = ({ json, onChange, readOnly }) => (
+  <JsonEditor
+    value={json}
+    onChange={onChange}
+    mode="code"
+    allowedModes={["code", "tree"]}
+    onEditable={() => !readOnly}
+  />
+);
 
-  componentDidUpdate() {
-    const { json } = this.props;
-    this.jsoneditor.set(json);
-  }
+Editor.defaultProps = {
+  json: {},
+  onChange: () => {},
+  readOnly: false
+};
 
-  componentWillUnmount() {
-    if (this.jsoneditor) {
-      this.jsoneditor.destroy();
-    }
-  }
-
-  render() {
-    return (
-      <div
-        className="jsoneditor-react-container"
-        ref={elem => {
-          this.container = elem;
-        }}
-      />
-    );
-  }
-}
+Editor.propTypes = {
+  json: PropTypes.object,
+  onChange: PropTypes.func,
+  readOnly: PropTypes.bool
+};
 
 export default Editor;

@@ -1,4 +1,6 @@
-const readConfig = key => window._env_[key] || process.env["REACT_APP_" + key];
+const readConfig = key =>
+  (window && window._env_ && window._env_[key]) ||
+  process.env[`REACT_APP_${key}`];
 
 const conf = {
   API: {

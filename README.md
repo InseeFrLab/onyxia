@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/InseeFrLab/onyxia-ui.svg?branch=master)](https://travis-ci.org/InseeFrLab/onyxia-ui)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=InseeFrLab_onyxia-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=InseeFrLab_onyxia-ui)
+[![Coverage Status](https://coveralls.io/repos/github/InseeFrLab/onyxia-ui/badge.svg?branch=master)](https://coveralls.io/github/InseeFrLab/onyxia-ui?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This app is used at [Insee](https://insee.fr).  
