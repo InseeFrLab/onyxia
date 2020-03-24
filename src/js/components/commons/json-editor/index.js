@@ -1,2 +1,1 @@
-import { default as JSONEditor } from "./json-editor.component";
-export default JSONEditor;
+export { default } from "./json-editor.component";
