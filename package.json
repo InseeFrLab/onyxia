@@ -4,7 +4,9 @@
   "license": "MIT",
   "homepage": "/",
   "devDependencies": {
-    "node-sass": "^4.13.0",
+    "@testing-library/jest-dom": "^5.1.1",
+    "@testing-library/react": "^10.0.1",
+    "coveralls": "^3.0.11",
     "source-map-explorer": "^2.4.1"
   },
   "dependencies": {
@@ -19,12 +21,14 @@
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
     "filereader-stream": "^2.0.0",
-    "jsoneditor": "^8.1.1",
+    "jsoneditor": "^8.6.3",
+    "jsoneditor-react": "^3.0.0",
     "jwt-decode": "^2.2.0",
     "keycloak-js": "8.0.1",
     "minio": "^7.0.15",
     "moment": "^2.24.0",
     "moment-range": "^4.0.2",
+    "node-sass": "^4.13.1",
     "query-params": "0.0.1",
     "re-resizable": "^6.1.0",
     "react": "^16.11.0",
@@ -48,6 +52,7 @@
     "build": "react-scripts build",
     "analyze-bundle": "source-map-explorer 'build/static/js/*.js' --html bundle-report.html",
     "test": "react-scripts test --env=jsdom",
+    "test-coverage": "react-scripts test --coverage --watchAll=false --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": [

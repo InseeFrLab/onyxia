@@ -9,11 +9,13 @@ addons:
 install:
   - yarn config set registry https://registry.npmjs.org
   - yarn install
-script:
+scrip:
+  - yarn test-coverage
   - yarn build
   - yarn analyze-bundle
   - docker build -t inseefrlab/onyxia-ui .
 after_script:
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   - bash scripts/deploy.sh
 deploy:
   skip_cleanup: true
