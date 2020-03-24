@@ -8,7 +8,9 @@ install:
   - yarn config set registry https://registry.npmjs.org
   - yarn install
 scrip:
+  - yarn test-coverage
   - yarn build
   - yarn analyze-bundle
 after_script:
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   - bash scripts/deploy.sh
