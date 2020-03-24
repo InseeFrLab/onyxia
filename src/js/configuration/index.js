@@ -42,7 +42,7 @@ const conf = {
   MINIO: {
     BASE_URI: readConfig("MINIO_BASE_URI"),
     END_POINT: readConfig("MINIO_END_POINT"),
-    PORT: readConfig("MINIO_PORT"),
+    PORT: parseInt(readConfig("MINIO_PORT")),
     MINIMUN_DURATION: readConfig("MINIO_END_MINIMUM_DURATION_MS")
   },
   FOOTER: {

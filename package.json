@@ -25,7 +25,7 @@
     "jsoneditor-react": "^3.0.0",
     "jwt-decode": "^2.2.0",
     "keycloak-js": "8.0.1",
-    "minio": "^7.0.13",
+    "minio": "^7.0.15",
     "moment": "^2.24.0",
     "moment-range": "^4.0.2",
     "node-sass": "^4.13.1",
@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "generate-entrypoint": "node build-entrypoint.js",
+    "generate-entrypoint": "node scripts/generate-entrypoint.js",
     "build": "react-scripts build",
     "analyze-bundle": "source-map-explorer 'build/static/js/*.js' --html bundle-report.html",
     "test": "react-scripts test --env=jsdom",
