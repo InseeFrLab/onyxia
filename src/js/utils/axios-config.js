@@ -31,10 +31,7 @@ if (conf.AUTHENTICATION.TYPE === 'oidc') {
 }
 
 axiosAuth.interceptors.response.use(
-	(response) => {
-		console.log(response);
-		return response.data;
-	},
+	(response) => response.data,
 	(error) => Promise.reject(error)
 );
 
