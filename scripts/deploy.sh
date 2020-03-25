@@ -25,6 +25,10 @@ function setup() {
   npm install -g gitbook-cli
 }
 
+function buildBundleReports() {
+  npm run analyze
+}
+
 function buildDocumentation() {
   pushd "$DOC_FOLDER"
   gitbook install
@@ -40,7 +44,6 @@ function publish() {
   pushd "$SITE_FOLDER"
 
   cp -a "../$DOC_FOLDER/_book/." .
-  mkdir $BUNDLE_REPORT_FOLDER
   cp "../$BUNDLE_REPORT_FOLDER/." "$BUNDLE_REPORT_FOLDER/."
 
   git init
