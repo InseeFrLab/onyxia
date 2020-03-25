@@ -21,15 +21,14 @@ const keycloakDefaultConf = {
 };
 
 const initialiseKeycloak = () =>
-	new Promise(resolve => {
-		debugger;
+	new Promise((resolve) => {
 		getKeycloak()
 			.init(
 				localToken
 					? { ...keycloakDefaultConf, token: localToken }
 					: keycloakDefaultConf
 			)
-			.success(authenticated => {
+			.success((authenticated) => {
 				// console.log(authenticated, keycloak.isTokenExpired(localToken));
 				if (authenticated) {
 					setLocalToken(getKeycloak().token);
@@ -43,14 +42,12 @@ const initialiseKeycloak = () =>
 				}
 				resolve(authenticated);
 			})
-			.error(err => {
+			.error((err) => {
 				// props.authenticationFail(err);
 			});
 
 		return false;
 	});
-
-console.log(configuration);
 
 if (configuration.AUTHENTICATION.TYPE === 'oidc') {
 	initialiseKeycloak().then(() => {
