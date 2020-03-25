@@ -44,7 +44,10 @@ function publish() {
   pushd "$SITE_FOLDER"
 
   cp -a "../$DOC_FOLDER/_book/." .
-  cp "../$BUNDLE_REPORT_FOLDER/." "$BUNDLE_REPORT_FOLDER/."
+  mkdir $BUNDLE_REPORT_FOLDER
+  cd $BUNDLE_REPORT_FOLDER
+  cp "../../$BUNDLE_REPORT_FOLDER/." .
+  cd ..
 
   git init
   git remote add upstream "$UPSTREAM"
