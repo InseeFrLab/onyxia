@@ -15,9 +15,10 @@ export default {
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					Des onglets permettent de parcourir les services selon leur niveau de
-					maturité. L&rsquo;onglet alpha regroupe des applications peu mûres, beta des 
-					applications intermédiaires et stable, comme le nom l&rsquo;indique, des applications 
-					couramment utilisées, mises à jour, et sans dysfonctionnement spécifique.
+					maturité. L&rsquo;onglet alpha regroupe des applications peu mûres,
+					beta des applications intermédiaires et stable, comme le nom
+					l&rsquo;indique, des applications couramment utilisées, mises à jour,
+					et sans dysfonctionnement spécifique.
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					Poursuivons la visite avec le catalogue du libre-service.

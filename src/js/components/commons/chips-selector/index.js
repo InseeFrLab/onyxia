@@ -6,10 +6,10 @@ import RootRef from '@material-ui/core/RootRef';
 import { HidablePane } from 'js/components/commons/atoms';
 import './chips-selector.scss';
 
-const getChips = search => chips =>
+const getChips = (search) => (chips) =>
 	chips.reduce((a, r) => (isChipCandidate(search)(r) ? [...a, r] : a), []);
 
-const isChipCandidate = search => chip =>
+const isChipCandidate = (search) => (chip) =>
 	search.trim() !== '' && chip.value.startsWith(search);
 
 class Searchbar extends React.Component {
@@ -22,13 +22,13 @@ class Searchbar extends React.Component {
 	numTimer = null;
 	search = React.createRef();
 
-	handleChange = e => {
+	handleChange = (e) => {
 		const search = removeAccents(e.target.value.trim()).toLowerCase();
 		let displayPropositions = false;
 		let chipsCandidates = [];
 		if (search !== '') {
 			chipsCandidates = getChips(search)(this.props.chips).filter(
-				c => this.state.chipsSelected.indexOf(c) === -1
+				(c) => this.state.chipsSelected.indexOf(c) === -1
 			);
 			displayPropositions = chipsCandidates.length > 0;
 		}
@@ -40,10 +40,10 @@ class Searchbar extends React.Component {
 		});
 	};
 
-	addChip = chip => {
+	addChip = (chip) => {
 		this.setState(() => {
 			const chipsCandidates = this.state.chipsCandidates.filter(
-				c => c !== chip
+				(c) => c !== chip
 			);
 			const displayPropositions = chipsCandidates.length > 0;
 
@@ -56,10 +56,10 @@ class Searchbar extends React.Component {
 		this.props.addChip(chip);
 	};
 
-	removeChip = chip => {
+	removeChip = (chip) => {
 		this.setState(() => {
 			return {
-				chipsSelected: this.state.chipsSelected.filter(c => c !== chip),
+				chipsSelected: this.state.chipsSelected.filter((c) => c !== chip),
 				chipsCandidates: isChipCandidate(this.state.search)(chip)
 					? [...this.state.chipsCandidates, chip]
 					: [...this.state.chipsCandidates],
@@ -68,13 +68,13 @@ class Searchbar extends React.Component {
 		this.props.removeChip(chip);
 	};
 
-	handleKeypress = e => {
+	handleKeypress = (e) => {
 		if (e.key === 'Enter' && this.state.chipsCandidates.length > 0) {
 			this.addChip(this.state.chipsCandidates[0]);
 		}
 	};
 
-	handleClickChip = chip => etat =>
+	handleClickChip = (chip) => (etat) =>
 		etat ? this.addChip(chip) : this.removeChip(chip);
 
 	handleMouseLeave = () => {
@@ -163,7 +163,7 @@ const Selections = ({ chips, handleClikChip }) =>
 
 class Propositions extends React.Component {
 	state = { index: null };
-	handleKeypress = e => {
+	handleKeypress = (e) => {
 		e.preventDefault();
 
 		if (e.key === 'ArrowRight') {

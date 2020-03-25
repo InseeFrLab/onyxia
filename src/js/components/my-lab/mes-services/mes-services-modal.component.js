@@ -20,7 +20,7 @@ import {
 } from 'js/components/commons/service-liste';
 
 class MesServiceModal extends React.Component {
-	captureInputUrl = r => (this.inputRef = r);
+	captureInputUrl = (r) => (this.inputRef = r);
 
 	handleClickCopy = () => {
 		if (this.inputRef) {
@@ -236,7 +236,7 @@ class InputUrl extends React.Component {
 		return (
 			<React.Fragment>
 				<Input
-					inputRef={r => {
+					inputRef={(r) => {
 						this.domInput = r;
 					}}
 					label={label}

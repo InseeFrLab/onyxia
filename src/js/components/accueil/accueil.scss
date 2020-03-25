@@ -1,130 +1,130 @@
 .accueil {
-  background-color: snow;
-  margin-left: auto;
-  margin-right: auto;
-  width: 1024px;
-  .bienvenue {
-    position: relative;
-    height: 450px;
-    img {
-      width: 100%;
-      height: 450px;
-    }
-    .message {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-color: #00000000;
-      top: 0;
-      left: 0;
+	background-color: snow;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1024px;
+	.bienvenue {
+		position: relative;
+		height: 450px;
+		img {
+			width: 100%;
+			height: 450px;
+		}
+		.message {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: #00000000;
+			top: 0;
+			left: 0;
 
-      .contenu {
-        background-color: transparent;
-        color: snow;
-        font-family: avenir, helvetica, sans-serif;
-        width: 550px;
-        height: 270px;
-        position: absolute;
-        left: 20px;
-        bottom: 20px;
+			.contenu {
+				background-color: transparent;
+				color: snow;
+				font-family: avenir, helvetica, sans-serif;
+				width: 550px;
+				height: 270px;
+				position: absolute;
+				left: 20px;
+				bottom: 20px;
 
-        h1 {
-          color: Cornsilk;
-          font-size: 48px;
-        }
+				h1 {
+					color: Cornsilk;
+					font-size: 48px;
+				}
 
-        p {
-          font-size: 18px;
-        }
-      }
-    }
-  }
+				p {
+					font-size: 18px;
+				}
+			}
+		}
+	}
 
-  .valeurs {
-    margin-top: 10px;
-    .carte {
-      height: 300px;
-    }
-  }
+	.valeurs {
+		margin-top: 10px;
+		.carte {
+			height: 300px;
+		}
+	}
 
-  .applications {
-    margin-top: 100px;
-    .app {
-      display: flex;
-      flex-direction: row;
-      height: 370px;
-      .commentaires {
-        padding: 16px 15px;
-        height: 100%;
-        position: relative;
+	.applications {
+		margin-top: 100px;
+		.app {
+			display: flex;
+			flex-direction: row;
+			height: 370px;
+			.commentaires {
+				padding: 16px 15px;
+				height: 100%;
+				position: relative;
 
-        width: 60%;
-        background-color: snow;
-        .bouton {
-          position: absolute;
-          right: 20px;
-          bottom: 20px;
-          background-color: snow;
-        }
-        .resume {
-          margin: 18px 10px;
-        }
-        .avantage {
-          font-size: 18px;
-          font-weight: bold;
-          margin: 12px 10px;
-          .chevron {
-            color: black;
-            float: left;
-          }
-        }
-      }
-      .image {
-        height: 100%;
-        width: 50%;
+				width: 60%;
+				background-color: snow;
+				.bouton {
+					position: absolute;
+					right: 20px;
+					bottom: 20px;
+					background-color: snow;
+				}
+				.resume {
+					margin: 18px 10px;
+				}
+				.avantage {
+					font-size: 18px;
+					font-weight: bold;
+					margin: 12px 10px;
+					.chevron {
+						color: black;
+						float: left;
+					}
+				}
+			}
+			.image {
+				height: 100%;
+				width: 50%;
 
-        display: inline-block;
-        background-color: lightseagreen;
-        img {
-          margin-top: 25px;
-          width: 100%;
-          height: 300px;
-        }
-      }
-    }
-  }
+				display: inline-block;
+				background-color: lightseagreen;
+				img {
+					margin-top: 25px;
+					width: 100%;
+					height: 300px;
+				}
+			}
+		}
+	}
 
-  .precautions {
-    width: 100%;
-    height: 230px;
-    position: relative;
-    margin-top: 100px;
+	.precautions {
+		width: 100%;
+		height: 230px;
+		position: relative;
+		margin-top: 100px;
 
-    .image {
-      width: 100%;
-      height: 230px;
-      background-image: url("/images/dont-fall.jpeg");
-      background-repeat: no-repeat;
-      // background-attachment: fixed;
-      // background-size: 100%;
-    }
+		.image {
+			width: 100%;
+			height: 230px;
+			background-image: url('/images/dont-fall.jpeg');
+			background-repeat: no-repeat;
+			// background-attachment: fixed;
+			// background-size: 100%;
+		}
 
-    .calque {
-      height: 230px;
-      width: 100%;
-      position: absolute;
-      background-color: #00000070;
+		.calque {
+			height: 230px;
+			width: 100%;
+			position: absolute;
+			background-color: #00000070;
 
-      .titre {
-        color: snow;
-        margin-bottom: 20px;
-      }
-      .contenu {
-        width: 100%;
-        background-color: transparent;
-        color: snow;
-      }
-      padding: 20px 60px;
-    }
-  }
+			.titre {
+				color: snow;
+				margin-bottom: 20px;
+			}
+			.contenu {
+				width: 100%;
+				background-color: transparent;
+				color: snow;
+			}
+			padding: 20px 60px;
+		}
+	}
 }

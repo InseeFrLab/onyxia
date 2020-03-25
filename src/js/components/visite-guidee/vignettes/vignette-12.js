@@ -14,7 +14,7 @@ export default {
 				`bouton-details-${this.service.id}`
 			);
 			bouton.style.zIndex = 1302;
-			bouton.onclick = e => this.props.next();
+			bouton.onclick = (e) => this.props.next();
 			this.setState({ dom: bouton });
 		}
 		render() {
@@ -30,8 +30,8 @@ export default {
 						l&rsquo;application.
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Des boutons d&rsquo;action vous permettent de contrôler 
-						l&rsquo;état de votre service et de le supprimer.
+						Des boutons d&rsquo;action vous permettent de contrôler l&rsquo;état
+						de votre service et de le supprimer.
 					</Typography>
 				</React.Fragment>
 			);

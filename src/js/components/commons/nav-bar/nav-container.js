@@ -28,7 +28,4 @@ const dispatchToProps = {
 	startVisite,
 };
 
-export default connect(
-	mapStateToProps,
-	dispatchToProps
-)(NavBar);
+export default connect(mapStateToProps, dispatchToProps)(NavBar);

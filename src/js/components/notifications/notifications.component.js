@@ -13,7 +13,7 @@ class Notifications extends React.Component {
 		PUSHER.push = this.push;
 	}
 
-	push = message => {
+	push = (message) => {
 		const { current, map } = this.state;
 		if (current) {
 			const id = ID_MESSAGE++;

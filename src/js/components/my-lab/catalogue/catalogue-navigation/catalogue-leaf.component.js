@@ -1,69 +1,69 @@
-import React, { useEffect, useState } from "react";
-import Service from "./service.component";
-import Deploiement from "./deploiement.component";
-import { axiosAuth } from "js/utils";
-import api from "js/redux/api";
+import React, { useEffect, useState } from 'react';
+import Service from './service.component';
+import Deploiement from './deploiement.component';
+import { axiosAuth } from 'js/utils';
+import api from 'js/redux/api';
 
 const Leaf = ({ location, startWaiting, stopWaiting, ...props }) => {
-  const [idCatalogue, idService] = getId(location);
-  const [service, setService] = useState(undefined);
+	const [idCatalogue, idService] = getId(location);
+	const [service, setService] = useState(undefined);
 
-  const [init, setInit] = useState(false);
-  useEffect(() => {
-    let unmount = false;
+	const [init, setInit] = useState(false);
+	useEffect(() => {
+		let unmount = false;
 
-    const loadService = async () => {
-      startWaiting();
-      const service = await axiosAuth(
-        `${api.catalogue}/${idCatalogue}/${idService}`
-      );
-      stopWaiting();
-      if (!unmount) {
-        setService(service);
-        setInit(true);
-      }
-    };
-    if (!unmount && !init) {
-      loadService();
-    }
-    return () => (unmount = true);
-  }, [init, idCatalogue, idService, startWaiting, stopWaiting]);
+		const loadService = async () => {
+			startWaiting();
+			const service = await axiosAuth(
+				`${api.catalogue}/${idCatalogue}/${idService}`
+			);
+			stopWaiting();
+			if (!unmount) {
+				setService(service);
+				setInit(true);
+			}
+		};
+		if (!unmount && !init) {
+			loadService();
+		}
+		return () => (unmount = true);
+	}, [init, idCatalogue, idService, startWaiting, stopWaiting]);
 
-  return service ? (
-    isDeploiement(location) ? (
-      <Deploiement
-        {...props}
-        location={location}
-        service={service}
-        idCatalogue={idCatalogue}
-        idService={idService}
-      />
-    ) : (
-      <Service
-        {...props}
-        location={location}
-        service={service}
-        idCatalogue={idCatalogue}
-        idService={idService}
-      />
-    )
-  ) : null;
+	return service ? (
+		isDeploiement(location) ? (
+			<Deploiement
+				{...props}
+				location={location}
+				service={service}
+				idCatalogue={idCatalogue}
+				idService={idService}
+			/>
+		) : (
+			<Service
+				{...props}
+				location={location}
+				service={service}
+				idCatalogue={idCatalogue}
+				idService={idService}
+			/>
+		)
+	) : null;
 };
 
 export default Leaf;
 
 /* */
-const isDeploiement = (pathname = "/") => {
-  return (
-    pathname
-      .split("/")
-      .reduce((a, x) => (x.trim().length > 0 ? x : a), undefined) ===
-    "deploiement"
-  );
+const isDeploiement = (pathname = '/') => {
+	return (
+		pathname
+			.split('/')
+			.reduce((a, x) => (x.trim().length > 0 ? x : a), undefined) ===
+		'deploiement'
+	);
 };
 
-const getId = location =>
-  location
-    .replace("/my-lab/catalogue", "")
-    .split("/")
-    .filter(t => t.trim().length > 0);
+const getId = (location) =>
+	location
+		.replace('/my-lab/catalogue', '')
+		.split('/')
+		.filter((t) => t.trim().length > 0);

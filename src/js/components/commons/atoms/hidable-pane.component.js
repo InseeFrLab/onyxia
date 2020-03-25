@@ -22,7 +22,7 @@ class HidablePane extends React.Component {
 		window.removeEventListener('scroll', this.checkPosition);
 	}
 
-	hide = who => {
+	hide = (who) => {
 		if (this.requestShow !== 'panel' || who === 'panel') {
 			this.clearTimer();
 			this.timer = window.setTimeout(() => {
@@ -32,7 +32,7 @@ class HidablePane extends React.Component {
 		}
 	};
 
-	display = who => {
+	display = (who) => {
 		this.requestShow = who;
 		this.clearTimer();
 		this.setState({ display: true, hide: false });
@@ -75,11 +75,11 @@ class HidablePane extends React.Component {
 		const { anchor } = this.props;
 		this.checkPosition();
 		if (!this.state.anchor && anchor && anchor.addEventListener) {
-			anchor.addEventListener('mouseenter', e => {
+			anchor.addEventListener('mouseenter', (e) => {
 				e.stopImmediatePropagation();
 				this.display('anchor');
 			});
-			anchor.addEventListener('mouseleave', e => {
+			anchor.addEventListener('mouseleave', (e) => {
 				e.stopImmediatePropagation();
 				this.hide('anchor');
 			});
@@ -96,11 +96,11 @@ class HidablePane extends React.Component {
 					hide: this.state.hide,
 					[className]: className,
 				})}
-				onMouseEnter={e => {
+				onMouseEnter={(e) => {
 					e.stopPropagation();
 					if (this.state.display) this.display('panel');
 				}}
-				onMouseLeave={e => {
+				onMouseLeave={(e) => {
 					e.stopPropagation();
 					this.hide('panel');
 				}}

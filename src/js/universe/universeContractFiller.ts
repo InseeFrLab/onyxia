@@ -1,46 +1,46 @@
-import { getContext, searchInContext } from "js/context/context";
+import { getContext, searchInContext } from 'js/context/context';
 
 export const getDefaultSingleOption = (
-  property: any,
-  context: Map<String, String> = getContext()
+	property: any,
+	context: Map<String, String> = getContext()
 ) => {
-  if (property["api-defined"]) {
-    return property["api-default"].replace(
-      /\[\$(.*)\]/g,
-      (_, key) => searchInContext(key, context) || property["api-default"]
-    );
-  }
+	if (property['api-defined']) {
+		return property['api-default'].replace(
+			/\[\$(.*)\]/g,
+			(_, key) => searchInContext(key, context) || property['api-default']
+		);
+	}
 
-  return property["default"];
+	return property['default'];
 };
 
 const getDefaultOptions = (
-  properties: any,
-  context: Map<String, String> = getContext()
+	properties: any,
+	context: Map<String, String> = getContext()
 ) => {
-  return Object.entries(properties).reduce((acc, [category, v]) => {
-    const laData = Object.entries(v).reduce(
-      (categoryData, [propName, propData]) => {
-        const { type } = propData;
-        const jsControl = propData["js-control"];
+	return Object.entries(properties).reduce((acc, [category, v]) => {
+		const laData = Object.entries(v).reduce(
+			(categoryData, [propName, propData]) => {
+				const { type } = propData;
+				const jsControl = propData['js-control'];
 
-        if (jsControl === "shadow" || !type) {
-          return categoryData;
-        }
+				if (jsControl === 'shadow' || !type) {
+					return categoryData;
+				}
 
-        categoryData[propName] = getDefaultSingleOption(propData, context);
+				categoryData[propName] = getDefaultSingleOption(propData, context);
 
-        return categoryData;
-      },
-      {}
-    );
+				return categoryData;
+			},
+			{}
+		);
 
-    if (Object.keys(laData).length > 0) {
-      acc[category] = laData;
-    }
+		if (Object.keys(laData).length > 0) {
+			acc[category] = laData;
+		}
 
-    return acc;
-  }, {});
+		return acc;
+	}, {});
 };
 
 export default getDefaultOptions;

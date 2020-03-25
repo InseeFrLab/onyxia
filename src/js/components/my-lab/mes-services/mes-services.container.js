@@ -9,7 +9,7 @@ import {
 	stopAllWaitingCards,
 } from 'js/redux/actions';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	const {
 		mesServices: services,
 		mesServicesWaiting,
@@ -30,7 +30,4 @@ const mapDispatchToProps = {
 	stopAllWaitingCards,
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(MesServices);
+export default connect(mapStateToProps, mapDispatchToProps)(MesServices);

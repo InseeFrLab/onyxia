@@ -3,7 +3,7 @@ import ListeCartes from 'js/components/commons/service-liste/liste-cartes';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Header from './header-content.component';
 
-export default props => (
+export default (props) => (
 	<React.Fragment>
 		<Header />
 		<FilDAriane fil={fil.mesServices} />

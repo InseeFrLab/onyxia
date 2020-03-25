@@ -1,6 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { GrafanaIcon, RocketChatIcon, GithubIcon } from 'js/components/commons/icons';
+import {
+	GrafanaIcon,
+	RocketChatIcon,
+	GithubIcon,
+} from 'js/components/commons/icons';
 import { Typography, Paper, Fab, Icon } from '@material-ui/core';
 // import { getServiceAvatar } from "js/components/commons/service-liste";
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
@@ -25,15 +29,25 @@ class DetailsService extends React.Component {
 			ONYXIA_TITLE,
 			ONYXIA_SUBTITLE,
 			ONYXIA_LOGO,
-			ONYXIA_CONTRIBUTE
+			ONYXIA_CONTRIBUTE,
 		} = service.labels;
 		return (
 			<React.Fragment>
 				<div className="en-tete">
-					<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
+					<Typography
+						variant="h2"
+						align="center"
+						color="textPrimary"
+						gutterBottom
+					>
 						<span>{ONYXIA_TITLE}</span>
 					</Typography>
-					<Typography variant="h3" align="center" color="textPrimary" gutterBottom>
+					<Typography
+						variant="h3"
+						align="center"
+						color="textPrimary"
+						gutterBottom
+					>
 						<span>{ONYXIA_SUBTITLE}</span>
 					</Typography>
 				</div>
@@ -114,16 +128,16 @@ class DetailsService extends React.Component {
 	}
 }
 DetailsService.propTypes = {
-	serviceSelectionne: PropTypes.shape({ id: PropTypes.string.isRequired })
+	serviceSelectionne: PropTypes.shape({ id: PropTypes.string.isRequired }),
 };
 
 const getOnyxiaStatus = (status) =>
 	status === 'alpha'
 		? 'Votre service est en version alpha. Il vous pétera à la tronche à la première occasion !'
 		: status === 'beta'
-			? "Votre service est en version beta. Cela peut paraître plus sûr, mais ce n'est qu'une illusion !"
-			: status === 'stable'
-				? "Votre service est en version stable. Il ne vous pétera à la tronche que si Fred essaie d'y toucher le week-end ;)"
-				: null;
+		? "Votre service est en version beta. Cela peut paraître plus sûr, mais ce n'est qu'une illusion !"
+		: status === 'stable'
+		? "Votre service est en version stable. Il ne vous pétera à la tronche que si Fred essaie d'y toucher le week-end ;)"
+		: null;
 
 export default DetailsService;
