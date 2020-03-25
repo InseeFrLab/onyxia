@@ -25,6 +25,7 @@ class MesFichiers extends React.Component {
 	init = async () => {
 		this.state.client = await getMinioClient();
 		this.setState({ api: getMinioApi(this.state.client) });
+		this.getBucketsAvatar(this.props.buckets);
 	};
 
 	static getDerivedStateFromProps = (props, state) => {
@@ -50,19 +51,18 @@ class MesFichiers extends React.Component {
 					})
 					.catch((err) => {
 						console.error('ERR', err, err.code);
-						if (err.code === "NoSuchKey") result[id] = "NoSuchKey Error provided";
+						if (err.code === 'NoSuchKey')
+							result[id] = 'NoSuchKey Error provided';
 						if (idx === buckets.length)
 							this.setState({ bucketsAvatars: result });
 					});
 			});
-		// this.setState({ bucketsAvatars: result });
 		return result;
 	}
 
 	render() {
 		const { buckets } = this.props;
-		if (Object.keys(this.state.bucketsAvatars).length === 0 && this.state.api)
-			this.getBucketsAvatar(buckets);
+			
 		return (
 			<React.Fragment>
 				<div className="en-tete">
