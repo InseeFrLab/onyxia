@@ -48,7 +48,7 @@ export default (state = initial, { type, payload }) => {
 		case types.REMOVE_WAITING_PATH: {
 			return {
 				...state,
-				waitingPaths: state.waitingPaths.filter(p => p !== payload.path),
+				waitingPaths: state.waitingPaths.filter((p) => p !== payload.path),
 			};
 		}
 		default:

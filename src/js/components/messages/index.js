@@ -33,12 +33,12 @@ export const ServiceSupprime = ({ id, groupe = false }) => (
 
 /* ***** */
 
-const getId = id => couleur =>
+const getId = (id) => (couleur) =>
 	id ? <div className={`nom ${couleur}`}>{last(id.split('/'))}</div> : null;
 
 const last = ([a, ...rest]) => (rest.length === 0 ? a : last(rest));
 
-const getNom = nom => couleur =>
+const getNom = (nom) => (couleur) =>
 	nom ? <div className={`nom ${couleur}`}>{nom}</div> : null;
 
 const Message = ({ nom, children, id, couleur = 'vert', icone }) => (

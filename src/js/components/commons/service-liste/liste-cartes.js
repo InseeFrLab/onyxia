@@ -23,14 +23,14 @@ class ListeCartes extends React.Component {
 
 	handlePauseAll = () => {
 		this.setState({ confirmPauseAll: false });
-		this.props.services.forEach(s => {
+		this.props.services.forEach((s) => {
 			if (s.instances) {
 				this.props.changerEtatService(s.id, false, s.mem, s.cpus);
 			}
 		});
 	};
 
-	handleDemarrerService = s =>
+	handleDemarrerService = (s) =>
 		this.props.changerEtatService(s.id, true, s.mem, s.cpus);
 
 	handleRefresh = () => this.props.refresh();
@@ -82,33 +82,33 @@ class ListeCartes extends React.Component {
 							<AucunService />
 						</React.Fragment>
 					) : (
-							<React.Fragment>
-								<Toolbar
-									groupe={groupe}
-									handlePauseAll={this.toggleConfirmPauseAll}
-									handleRefresh={this.handleRefresh}
-									handleSupprimerGroupe={this.handleSupprimerGroupe}
-								/>
-								<Grid container spacing={8} classes={{ container: 'cartes' }}>
-									{services.map((service, i) => (
-										<CarteMonService
-											key={i}
-											wait={mesServicesWaiting.indexOf(service.id) !== -1}
-											service={service}
-											handleClickLaunch={this.handleDemarrerService}
-											suivreStatutService={suivreStatutService}
-										/>
-									))}
-									{groupes.map((groupe, i) => (
-										<CarteMonGroupe
-											key={i}
-											groupe={groupe}
-											suivreStatutService={suivreStatutService}
-										/>
-									))}
-								</Grid>
-							</React.Fragment>
-						)}
+						<React.Fragment>
+							<Toolbar
+								groupe={groupe}
+								handlePauseAll={this.toggleConfirmPauseAll}
+								handleRefresh={this.handleRefresh}
+								handleSupprimerGroupe={this.handleSupprimerGroupe}
+							/>
+							<Grid container spacing={8} classes={{ container: 'cartes' }}>
+								{services.map((service, i) => (
+									<CarteMonService
+										key={i}
+										wait={mesServicesWaiting.indexOf(service.id) !== -1}
+										service={service}
+										handleClickLaunch={this.handleDemarrerService}
+										suivreStatutService={suivreStatutService}
+									/>
+								))}
+								{groupes.map((groupe, i) => (
+									<CarteMonGroupe
+										key={i}
+										groupe={groupe}
+										suivreStatutService={suivreStatutService}
+									/>
+								))}
+							</Grid>
+						</React.Fragment>
+					)}
 				</div>
 			</React.Fragment>
 		);
@@ -123,15 +123,15 @@ const Toolbar = ({
 	handleRefresh,
 	handleSupprimerGroupe,
 }) => (
-		<Paper className="onyxia-toolbar" elevation={1}>
-			<Actions
-				groupId={groupe ? groupe.id : null}
-				handlePauseAll={handlePauseAll}
-				handleRefresh={handleRefresh}
-				handleSupprimerGroupe={handleSupprimerGroupe}
-			/>
-		</Paper>
-	);
+	<Paper className="onyxia-toolbar" elevation={1}>
+		<Actions
+			groupId={groupe ? groupe.id : null}
+			handlePauseAll={handlePauseAll}
+			handleRefresh={handleRefresh}
+			handleSupprimerGroupe={handleSupprimerGroupe}
+		/>
+	</Paper>
+);
 
 const Actions = ({
 	handlePauseAll,
@@ -139,46 +139,42 @@ const Actions = ({
 	handleSupprimerGroupe,
 	groupId,
 }) => (
-		<React.Fragment>
-			<Fab
-				color="secondary"
-				aria-label="pause"
-				classes={{ root: 'bouton' }}
-				onClick={handlePauseAll}
-			>
-				<Icon>pause</Icon>
+	<React.Fragment>
+		<Fab
+			color="secondary"
+			aria-label="pause"
+			classes={{ root: 'bouton' }}
+			onClick={handlePauseAll}
+		>
+			<Icon>pause</Icon>
+		</Fab>
+		<Fab
+			color="secondary"
+			aria-label="refresh"
+			classes={{ root: 'bouton' }}
+			onClick={handleRefresh}
+		>
+			<Icon>refresh</Icon>
+		</Fab>
+		<Link to="/my-lab/catalogue">
+			<Fab color="secondary" aria-label="refresh" classes={{ root: 'bouton' }}>
+				<Icon>add</Icon>
 			</Fab>
-			<Fab
-				color="secondary"
-				aria-label="refresh"
-				classes={{ root: 'bouton' }}
-				onClick={handleRefresh}
-			>
-				<Icon>refresh</Icon>
-			</Fab>
-			<Link to="/my-lab/catalogue">
+		</Link>
+		{groupId ? (
+			<Link to={`/my-lab/mes-services${extractGroupId(groupId)}`}>
 				<Fab
 					color="secondary"
-					aria-label="refresh"
+					aria-label="supprimer"
 					classes={{ root: 'bouton' }}
+					onClick={handleSupprimerGroupe}
 				>
-					<Icon>add</Icon>
+					<Icon>delete</Icon>
 				</Fab>
 			</Link>
-			{groupId ? (
-				<Link to={`/my-lab/mes-services${extractGroupId(groupId)}`}>
-					<Fab
-						color="secondary"
-						aria-label="supprimer"
-						classes={{ root: 'bouton' }}
-						onClick={handleSupprimerGroupe}
-					>
-						<Icon>delete</Icon>
-					</Fab>
-				</Link>
-			) : null}
-		</React.Fragment>
-	);
+		) : null}
+	</React.Fragment>
+);
 
 ListeCartes.propTypes = {
 	mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,

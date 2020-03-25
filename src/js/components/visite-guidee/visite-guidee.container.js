@@ -3,7 +3,7 @@ import vignettes from './vignettes';
 import { setSelectedService, creerNouveauService } from 'js/redux/actions';
 import Visite from './visite-guidee.component';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	const { visite } = state.app;
 	const { catalogue, mesServices } = state.myLab;
 
@@ -12,13 +12,13 @@ const mapStateToProps = state => {
 		etapes: vignettes,
 		firstService: catalogue.length > 0 ? catalogue[0] : null,
 		serviceCree: mesServices.find(
-			s => s.labels.ONYXIA_TITLE === 'drawio-exemple'
+			(s) => s.labels.ONYXIA_TITLE === 'drawio-exemple'
 		),
 	};
 };
 
-const mapToDispatchToProps = d => ({
-	setFirstService: firstService => {
+const mapToDispatchToProps = (d) => ({
+	setFirstService: (firstService) => {
 		d(setSelectedService(firstService));
 	},
 	creerPremier: () => {
@@ -34,7 +34,4 @@ const mapToDispatchToProps = d => ({
 	},
 });
 
-export default connect(
-	mapStateToProps,
-	mapToDispatchToProps
-)(Visite);
+export default connect(mapStateToProps, mapToDispatchToProps)(Visite);

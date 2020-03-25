@@ -1,282 +1,282 @@
 {
-  "description": "",
-  "framework": false,
-  "selected": false,
-  "disable": false,
-  "currentVersion": "0.1",
-  "name": "webssh",
-  "category": "group",
-  "scm": "https://example.com",
-  "maintainer": "Insee",
-  "website": "https://example.com",
-  "preInstallNotes": "",
-  "postInstallNotes": "",
-  "status": "beta",
-  "tags": [],
-  "properties": {
-    "s3": {
-      "description": "Configure les identités temporaires sur s3 via des variables d'environnements",
-      "type": "object",
-      "enable": {
-        "type": "boolean",
-        "description": "Activation des variables d'environnements s3",
-        "title": "Activation",
-        "default": true
-      },
-      "AWS_S3_ENDPOINT": {
-        "type": "string",
-        "description": "endpoint S3",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_S3_ENDPOINT]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "AWS_DEFAULT_REGION": {
-        "type": "string",
-        "description": "region s3",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_DEFAULT_REGION]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "AWS_ACCESS_KEY_ID": {
-        "type": "string",
-        "description": "ACCESS_KEY_ID",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_ACCESS_KEY_ID]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "AWS_SECRET_ACCESS_KEY": {
-        "type": "string",
-        "description": "AWS_SECRET_ACCESS_KEY",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_SECRET_ACCESS_KEY]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "AWS_SESSION_TOKEN": {
-        "type": "string",
-        "description": "",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_SESSION_TOKEN]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "AWS_EXPIRATION": {
-        "type": "string",
-        "description": "date d'expiration de l'identité temporaire",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$AWS_EXPIRATION]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      }
-    },
-    "script_demarrage": {
-      "description": "Configure le lancement d'un script au demarrage du container.",
-      "type": "object",
-      "URI": {
-        "type": "string",
-        "description": "URL du script à exécuter au lancement du container, le nom du script doit posséder l'extension '.sh'.",
-        "default": ""
-      }
-    },
-    "diffusion": {
-      "description": "Configure l'accès au poste de travail.",
-      "type": "object",
-      "ajout_port_additionnel": {
-        "type": "boolean",
-        "description": "Permet de configurer un autre port accessible ",
-        "default": false
-      },
-      "port_additionnel": {
-        "type": "number",
-        "description": "Port dans l'environnement container, le service doit être lançé sur ce port là",
-        "default": 5000
-      }
-    },
-    "git": {
-      "description": "Pour fonctionner, le service nécessite une initialisation de clefs SSH via l'onglet Mon Compte puis de copier la clef publique dans vos paramètres Gitlab.",
-      "type": "object",
-      "enable": {
-        "type": "boolean",
-        "description": "Active la persistance du travail sur git",
-        "title": "Active la configuration Gitlab",
-        "default": false
-      },
-      "git_user_name": {
-        "type": "string",
-        "description": "git config --global user.name",
-        "title": "Username",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$USERNAME]",
-        "js-control": "ro",
-        "api-control": "strict"
-      },
-      "git_user_mail": {
-        "type": "string",
-        "description": "git config --global user.email",
-        "title": "Mail",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$USERMAIL]",
-        "js-control": "ro",
-        "api-control": "strict"
-      },
-      "ssh_cle_privee": {
-        "type": "string",
-        "description": "URI clé privée ssh chiffrée avec gpg",
-        "title": "Clé ssh",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$USERKEY]",
-        "js-control": "shadow",
-        "api-control": "strict"
-      },
-      "gpg_mdp": {
-        "type": "string",
-        "description": "Mot de passe pour la clé ssh",
-        "title": "Mot de passe",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$USERPASSWORD]",
-        "js-control": "shadow",
-        "api-control": "strict"
-      }
-    },
-    "webssh2": {
-      "type": "object",
-      "enable": {
-        "type": "boolean",
-        "description": "Webssh2 est un client web pour un serveur ssh",
-        "title": "Activation de Webssh2",
-        "default": true
-      },
-      "cpus": {
-        "type": "number",
-        "description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
-        "title": "CPU",
-        "minimum": "0.1",
-        "default": 0.1
-      },
-      "mem": {
-        "type": "number",
-        "description": "Le processus est tué s'il dépasse cette limite",
-        "title": "Mémoire (Mo)",
-        "default": "2048"
-      },
-      "dns": {
-        "type": "string",
-        "description": "Nom de domaine permettant l'accès au service",
-        "title": "Nom de domaine",
-        "default": "change.me",
-        "api-defined": true,
-        "api-default": "[$IDEP]-webssh2-[$UUID].[$STATUS].[$DNS]",
-        "js-control": "shadow",
-        "api-control": "strict"
-      }
-    },
-    "service": {
-      "type": "object",
-      "name": {
-        "type": "string",
-        "description": "Positionne l'identifiant du service marathon",
-        "title": "Nom du service",
-        "default": "/test/webssh",
-        "api-defined": true,
-        "api-default": "/users/[$IDEP]/webssh-[$UUID]",
-        "js-control": "shadow",
-        "api-control": "strict"
-      }
-    },
-    "ssh_ubuntu": {
-      "type": "object",
-      "cpus": {
-        "type": "number",
-        "description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
-        "title": "CPU",
-        "minimum": "0.1",
-        "default": 0.1
-      },
-      "mem": {
-        "type": "number",
-        "description": "Le processus est tué s'il dépasse cette limite",
-        "title": "Mémoire (Mo)",
-        "minimum": "2048",
-        "default": 2048
-      },
-      "endpoint": {
-        "type": "string",
-        "description": "Label pour private endpoint",
-        "default": "http://changeme.org:9200/",
-        "api-defined": true,
-        "api-default": "ssh-ubuntu-webssh-[$UUID]-[$IDEP]-users.marathon.containerip.dcos.thisdcos.directory",
-        "js-control": "shadow",
-        "api-control": "strict"
-      },
-      "image_docker": {
-        "type": "string",
-        "description": "Personnalise l'image docker utilisé : attention il s'agit d'un usage avançé de ce service et le contrat échouera en cas de non compatibilité de votre image avec ce package",
-        "title": "Image docker",
-        "default": "nginx"
-      },
-      "password": {
-        "type": "string",
-        "description": "root password",
-        "default": "changeme",
-        "api-defined": true,
-        "api-default": "[$USERPASSWORD]",
-        "js-control": "rw",
-        "api-control": "nocontrol"
-      }
-    },
-    "onyxia": {
-      "description": "Configure l'ensemble des metas-donnees pour Onyxia",
-      "type": "object",
-      "friendly_name": {
-        "type": "string",
-        "description": "Nom d'affichage du service sur Onyxia",
-        "title": "Un titre plus sympathique?",
-        "default": "webssh"
-      }
-    },
-    "vault": {
-      "description": "Configure l'accès à vault",
-      "type": "object",
-      "VAULT_TOKEN": {
-        "type": "string",
-        "description": "vault token",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$VAULT_TOKEN]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      },
-      "VAULT_ADDR": {
-        "type": "string",
-        "description": "vault address",
-        "default": "",
-        "api-defined": true,
-        "api-default": "[$VAULT_ADDR]",
-        "js-control": "ro",
-        "api-control": "nocontrol"
-      }
-    }
-  },
-  "resource": {
-    "resource": {
-      "images": {
-        "icon-small": "https://hugo.maugey.fr/img/snippets/ssh.png",
-        "icon-medium": "https://hugo.maugey.fr/img/snippets/ssh.png",
-        "icon-large": "https://hugo.maugey.fr/img/snippets/ssh.png"
-      }
-    }
-  }
+	"description": "",
+	"framework": false,
+	"selected": false,
+	"disable": false,
+	"currentVersion": "0.1",
+	"name": "webssh",
+	"category": "group",
+	"scm": "https://example.com",
+	"maintainer": "Insee",
+	"website": "https://example.com",
+	"preInstallNotes": "",
+	"postInstallNotes": "",
+	"status": "beta",
+	"tags": [],
+	"properties": {
+		"s3": {
+			"description": "Configure les identités temporaires sur s3 via des variables d'environnements",
+			"type": "object",
+			"enable": {
+				"type": "boolean",
+				"description": "Activation des variables d'environnements s3",
+				"title": "Activation",
+				"default": true
+			},
+			"AWS_S3_ENDPOINT": {
+				"type": "string",
+				"description": "endpoint S3",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_S3_ENDPOINT]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"AWS_DEFAULT_REGION": {
+				"type": "string",
+				"description": "region s3",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_DEFAULT_REGION]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"AWS_ACCESS_KEY_ID": {
+				"type": "string",
+				"description": "ACCESS_KEY_ID",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_ACCESS_KEY_ID]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"AWS_SECRET_ACCESS_KEY": {
+				"type": "string",
+				"description": "AWS_SECRET_ACCESS_KEY",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_SECRET_ACCESS_KEY]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"AWS_SESSION_TOKEN": {
+				"type": "string",
+				"description": "",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_SESSION_TOKEN]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"AWS_EXPIRATION": {
+				"type": "string",
+				"description": "date d'expiration de l'identité temporaire",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$AWS_EXPIRATION]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			}
+		},
+		"script_demarrage": {
+			"description": "Configure le lancement d'un script au demarrage du container.",
+			"type": "object",
+			"URI": {
+				"type": "string",
+				"description": "URL du script à exécuter au lancement du container, le nom du script doit posséder l'extension '.sh'.",
+				"default": ""
+			}
+		},
+		"diffusion": {
+			"description": "Configure l'accès au poste de travail.",
+			"type": "object",
+			"ajout_port_additionnel": {
+				"type": "boolean",
+				"description": "Permet de configurer un autre port accessible ",
+				"default": false
+			},
+			"port_additionnel": {
+				"type": "number",
+				"description": "Port dans l'environnement container, le service doit être lançé sur ce port là",
+				"default": 5000
+			}
+		},
+		"git": {
+			"description": "Pour fonctionner, le service nécessite une initialisation de clefs SSH via l'onglet Mon Compte puis de copier la clef publique dans vos paramètres Gitlab.",
+			"type": "object",
+			"enable": {
+				"type": "boolean",
+				"description": "Active la persistance du travail sur git",
+				"title": "Active la configuration Gitlab",
+				"default": false
+			},
+			"git_user_name": {
+				"type": "string",
+				"description": "git config --global user.name",
+				"title": "Username",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$USERNAME]",
+				"js-control": "ro",
+				"api-control": "strict"
+			},
+			"git_user_mail": {
+				"type": "string",
+				"description": "git config --global user.email",
+				"title": "Mail",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$USERMAIL]",
+				"js-control": "ro",
+				"api-control": "strict"
+			},
+			"ssh_cle_privee": {
+				"type": "string",
+				"description": "URI clé privée ssh chiffrée avec gpg",
+				"title": "Clé ssh",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$USERKEY]",
+				"js-control": "shadow",
+				"api-control": "strict"
+			},
+			"gpg_mdp": {
+				"type": "string",
+				"description": "Mot de passe pour la clé ssh",
+				"title": "Mot de passe",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$USERPASSWORD]",
+				"js-control": "shadow",
+				"api-control": "strict"
+			}
+		},
+		"webssh2": {
+			"type": "object",
+			"enable": {
+				"type": "boolean",
+				"description": "Webssh2 est un client web pour un serveur ssh",
+				"title": "Activation de Webssh2",
+				"default": true
+			},
+			"cpus": {
+				"type": "number",
+				"description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
+				"title": "CPU",
+				"minimum": "0.1",
+				"default": 0.1
+			},
+			"mem": {
+				"type": "number",
+				"description": "Le processus est tué s'il dépasse cette limite",
+				"title": "Mémoire (Mo)",
+				"default": "2048"
+			},
+			"dns": {
+				"type": "string",
+				"description": "Nom de domaine permettant l'accès au service",
+				"title": "Nom de domaine",
+				"default": "change.me",
+				"api-defined": true,
+				"api-default": "[$IDEP]-webssh2-[$UUID].[$STATUS].[$DNS]",
+				"js-control": "shadow",
+				"api-control": "strict"
+			}
+		},
+		"service": {
+			"type": "object",
+			"name": {
+				"type": "string",
+				"description": "Positionne l'identifiant du service marathon",
+				"title": "Nom du service",
+				"default": "/test/webssh",
+				"api-defined": true,
+				"api-default": "/users/[$IDEP]/webssh-[$UUID]",
+				"js-control": "shadow",
+				"api-control": "strict"
+			}
+		},
+		"ssh_ubuntu": {
+			"type": "object",
+			"cpus": {
+				"type": "number",
+				"description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
+				"title": "CPU",
+				"minimum": "0.1",
+				"default": 0.1
+			},
+			"mem": {
+				"type": "number",
+				"description": "Le processus est tué s'il dépasse cette limite",
+				"title": "Mémoire (Mo)",
+				"minimum": "2048",
+				"default": 2048
+			},
+			"endpoint": {
+				"type": "string",
+				"description": "Label pour private endpoint",
+				"default": "http://changeme.org:9200/",
+				"api-defined": true,
+				"api-default": "ssh-ubuntu-webssh-[$UUID]-[$IDEP]-users.marathon.containerip.dcos.thisdcos.directory",
+				"js-control": "shadow",
+				"api-control": "strict"
+			},
+			"image_docker": {
+				"type": "string",
+				"description": "Personnalise l'image docker utilisé : attention il s'agit d'un usage avançé de ce service et le contrat échouera en cas de non compatibilité de votre image avec ce package",
+				"title": "Image docker",
+				"default": "nginx"
+			},
+			"password": {
+				"type": "string",
+				"description": "root password",
+				"default": "changeme",
+				"api-defined": true,
+				"api-default": "[$USERPASSWORD]",
+				"js-control": "rw",
+				"api-control": "nocontrol"
+			}
+		},
+		"onyxia": {
+			"description": "Configure l'ensemble des metas-donnees pour Onyxia",
+			"type": "object",
+			"friendly_name": {
+				"type": "string",
+				"description": "Nom d'affichage du service sur Onyxia",
+				"title": "Un titre plus sympathique?",
+				"default": "webssh"
+			}
+		},
+		"vault": {
+			"description": "Configure l'accès à vault",
+			"type": "object",
+			"VAULT_TOKEN": {
+				"type": "string",
+				"description": "vault token",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$VAULT_TOKEN]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			},
+			"VAULT_ADDR": {
+				"type": "string",
+				"description": "vault address",
+				"default": "",
+				"api-defined": true,
+				"api-default": "[$VAULT_ADDR]",
+				"js-control": "ro",
+				"api-control": "nocontrol"
+			}
+		}
+	},
+	"resource": {
+		"resource": {
+			"images": {
+				"icon-small": "https://hugo.maugey.fr/img/snippets/ssh.png",
+				"icon-medium": "https://hugo.maugey.fr/img/snippets/ssh.png",
+				"icon-large": "https://hugo.maugey.fr/img/snippets/ssh.png"
+			}
+		}
+	}
 }

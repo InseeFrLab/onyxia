@@ -1,42 +1,42 @@
-@import "./../../../app.scss";
+@import './../../../app.scss';
 
 .catalogue {
-  background-color: yellow;
+	background-color: yellow;
 
-  .carte {
-    @include carte();
-    .container {
-      height: 350px;
+	.carte {
+		@include carte();
+		.container {
+			height: 350px;
 
-      .en-tete {
-        .logo {
-          display: block;
-        }
-      }
+			.en-tete {
+				.logo {
+					display: block;
+				}
+			}
 
-      @include paragraphe();
-      .paragraphe {
-        .corps {
-          @include multilineEllipsis(18px, 1.2, 4);
-        }
-      }
+			@include paragraphe();
+			.paragraphe {
+				.corps {
+					@include multilineEllipsis(18px, 1.2, 4);
+				}
+			}
 
-      .boutons {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        .bouton {
-          margin-left: 5px;
-        }
-      }
-    }
-  }
+			.boutons {
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				.bouton {
+					margin-left: 5px;
+				}
+			}
+		}
+	}
 }
 
 .service {
-  .ajouter {
-    width: 100%;
-    display: flex;
-    flex-direction: row-reverse;
-  }
+	.ajouter {
+		width: 100%;
+		display: flex;
+		flex-direction: row-reverse;
+	}
 }

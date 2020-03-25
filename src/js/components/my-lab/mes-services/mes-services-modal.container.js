@@ -6,10 +6,7 @@ const dispatchStateToProps = (state, props) => {
 	return { ...props };
 };
 
-export default connect(
-	dispatchStateToProps,
-	{
-		changerEtatService,
-		requestDeleteMonService,
-	}
-)(ServiceModal);
+export default connect(dispatchStateToProps, {
+	changerEtatService,
+	requestDeleteMonService,
+})(ServiceModal);

@@ -10,14 +10,13 @@ import { getDecodedToken } from 'js/utils';
 import { PUSHER } from 'js/components/notifications';
 import * as constantes from './constantes';
 
-export const getUserStatObject = ({
-	bucketName,
-	fileName,
-}) => async dispatch => {
+export const getUserStatObject = ({ bucketName, fileName }) => async (
+	dispatch
+) => {
 	// const what = await statObject({ bucketName, fileName });
 };
 
-export const loadUserBuckets = idep => async dispatch => {
+export const loadUserBuckets = (idep) => async (dispatch) => {
 	const token = await getDecodedToken();
 	const { gitlab_group } = token;
 	const buckets = Array.isArray(gitlab_group)
@@ -32,11 +31,9 @@ export const loadUserBuckets = idep => async dispatch => {
 	return buckets;
 };
 
-export const loadBucketContent = (
-	bucketName,
-	prefix,
-	rec
-) => async dispatch => {
+export const loadBucketContent = (bucketName, prefix, rec) => async (
+	dispatch
+) => {
 	dispatch(emptyCurrentBucket());
 	try {
 		const policy = await getBucketPolicy(bucketName);
@@ -46,7 +43,7 @@ export const loadBucketContent = (
 		});
 	} catch (e) {}
 	const stream = await getBucketContent(bucketName, prefix, rec);
-	stream.on('data', object => {
+	stream.on('data', (object) => {
 		if (object.prefix) {
 			dispatch(addDirectoryToCurrentBucket(object));
 		} else if (object.name) {
@@ -58,7 +55,7 @@ export const loadBucketContent = (
 	);
 };
 
-export const getUserBucketPolicy = bucketName => async dispatch => {
+export const getUserBucketPolicy = (bucketName) => async (dispatch) => {
 	try {
 		const policy = await getBucketPolicy(bucketName);
 
@@ -69,11 +66,9 @@ export const getUserBucketPolicy = bucketName => async dispatch => {
 	} catch (e) {}
 };
 
-export const setUserBucketPolicy = ({
-	bucketName,
-	policy,
-	path,
-}) => async dispatch => {
+export const setUserBucketPolicy = ({ bucketName, policy, path }) => async (
+	dispatch
+) => {
 	dispatch({ type: constantes.ADD_WAITING_PATH, payload: { path } });
 	await setBucketPolicy({ bucketName, policy });
 	const newPolicy = await getBucketPolicy(bucketName);
@@ -84,52 +79,48 @@ export const setUserBucketPolicy = ({
 	dispatch({ type: constantes.REMOVE_WAITING_PATH, payload: { path } });
 };
 
-export const deleteUserBucketPolicy = bucketName => dispatch => {};
+export const deleteUserBucketPolicy = (bucketName) => (dispatch) => {};
 
-export const setCurrentBucket = bucket => ({
+export const setCurrentBucket = (bucket) => ({
 	type: constantes.SET_CURRENT_BUCKET,
 	payload: { bucket },
 });
 const emptyCurrentBucket = () => ({ type: constantes.EMPTY_CURRENT_BUCKET });
 
-const addObjectToCurrentBucket = object => ({
+const addObjectToCurrentBucket = (object) => ({
 	type: constantes.ADD_OBJECT_TO_CURRENT_BUCKET,
 	payload: { object },
 });
-const addDirectoryToCurrentBucket = directory => ({
+const addDirectoryToCurrentBucket = (directory) => ({
 	type: constantes.ADD_DIRECTORY_TO_CURRENT_BUCKET,
 	payload: { directory },
 });
 
-export const uploadFileToBucket = ({
-	file,
-	bucketName,
-	notify,
-	path,
-}) => dispatch =>
+export const uploadFileToBucket = ({ file, bucketName, notify, path }) => (
+	dispatch
+) =>
 	uploadFile({ bucketName, file, notify, path })
-		.then(result => {
+		.then((result) => {
 			if (result) {
 				PUSHER.push(`${file.name} a été uploadé.`);
 			}
 			return result;
 		})
-		.catch(err => {
+		.catch((err) => {
 			PUSHER.push(`l'upload du fichier ${file.name} a échoué.`);
 		});
 
-export const removeObjectFromBucket = ({
-	bucketName,
-	objectName,
-}) => dispatch =>
+export const removeObjectFromBucket = ({ bucketName, objectName }) => (
+	dispatch
+) =>
 	removeObject({ bucketName, objectName })
-		.then(result => {
+		.then((result) => {
 			if (result) {
 				PUSHER.push(`${objectName} a été supprimé.`);
 			}
 			return result;
 		})
-		.catch(err => {
+		.catch((err) => {
 			PUSHER.push(`la suppression du fichier ${objectName} a échoué.`);
 		});
 
@@ -138,11 +129,11 @@ export const dowloadObjectFromBucket = ({
 	objectName,
 	size,
 	notify,
-}) => dispatch => {
+}) => (dispatch) => {
 	presignedGetObject({
 		bucketName,
 		objectName,
-	}).then(url => {
+	}).then((url) => {
 		window.open(url);
 	});
 };
@@ -151,8 +142,8 @@ export const dowloadObjectFromBucket = ({
  *
  */
 
-const transformGitLabGroup = gitLabGroup =>
-	gitLabGroup.map(group => transform(group.split(':')));
+const transformGitLabGroup = (gitLabGroup) =>
+	gitLabGroup.map((group) => transform(group.split(':')));
 
 const transform = ([id, ...rest]) => ({
 	id: `groupe-${id}`,

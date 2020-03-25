@@ -1,22 +1,19 @@
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 import {
-  setServiceSelectionne,
-  loadServiceCollaboratif
-} from "js/redux/actions";
-import DetailesService from "./details-service";
+	setServiceSelectionne,
+	loadServiceCollaboratif,
+} from 'js/redux/actions';
+import DetailesService from './details-service';
 
-const mapStateToProps = state => {
-  const { serviceSelectionne } = state.public;
-  return {
-    serviceSelectionne
-  };
+const mapStateToProps = (state) => {
+	const { serviceSelectionne } = state.public;
+	return {
+		serviceSelectionne,
+	};
 };
 const mapDispatchToProps = {
-  setServiceSelectionne,
-  loadServiceCollaboratif
+	setServiceSelectionne,
+	loadServiceCollaboratif,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DetailesService);
+export default connect(mapStateToProps, mapDispatchToProps)(DetailesService);

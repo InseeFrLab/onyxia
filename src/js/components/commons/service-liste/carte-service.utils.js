@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar } from '@material-ui/core';
 
-export const getServiceAvatar = service => (
+export const getServiceAvatar = (service) => (
 	<span className={`etat-service ${getColorClassStateService(service)}`}>
 		<span className="bordure-carte">
 			<Avatar src={service.labels.ONYXIA_LOGO} className="service-avatar" />
@@ -9,14 +9,14 @@ export const getServiceAvatar = service => (
 	</span>
 );
 
-export const getTitle = service =>
+export const getTitle = (service) =>
 	service.labels
 		? service.labels.ONYXIA_TITLE
 		: service.apps.length === 0
 		? 'Supprime moi'
 		: service.apps[0].labels.ONYXIA_TITLE;
 
-export const getSubtitle = service =>
+export const getSubtitle = (service) =>
 	service.labels
 		? service.labels.ONYXIA_SUBTITLE
 		: service.apps.length === 0

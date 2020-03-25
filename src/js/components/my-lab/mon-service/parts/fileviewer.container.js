@@ -1,6 +1,6 @@
-import { connect } from "react-redux";
-import fileViewer from "./fileviewer.component";
+import { connect } from 'react-redux';
+import fileViewer from './fileviewer.component';
 
-const mapStateToProps = state => ({ fileContent: state.myLab.fileContent });
+const mapStateToProps = (state) => ({ fileContent: state.myLab.fileContent });
 
 export default connect(mapStateToProps)(fileViewer);

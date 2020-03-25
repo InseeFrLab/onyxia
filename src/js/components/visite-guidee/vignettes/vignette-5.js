@@ -8,10 +8,10 @@ export default {
 		state = { redirect: false };
 		componentDidMount() {
 			const bouton = document.getElementById('bouton-service-drawio');
-			if (bouton){
+			if (bouton) {
 				bouton.style.zIndex = 9999;
 				bouton.style.border = '1px solid red';
-				bouton.onclick = e => {
+				bouton.onclick = (e) => {
 					e.stopImmediatePropagation();
 					this.props.setFirstService(this.props.firstService);
 					this.setState({ redirect: true });

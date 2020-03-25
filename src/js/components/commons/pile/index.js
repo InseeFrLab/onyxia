@@ -24,7 +24,7 @@ export default ({
 	);
 };
 
-const getLabel = Label => title =>
+const getLabel = (Label) => (title) =>
 	typeof Label === 'function' ? (
 		<Label />
 	) : (

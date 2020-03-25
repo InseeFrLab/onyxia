@@ -20,7 +20,7 @@ export default ({
 			label={nom}
 			value={value || ''}
 			className="champ-texte"
-			onChange={e => handleChange(path)(e.target.value)}
+			onChange={(e) => handleChange(path)(e.target.value)}
 			margin="normal"
 		/>
 		<FormHelperText id={`name-helper-${path}`}>{description}</FormHelperText>

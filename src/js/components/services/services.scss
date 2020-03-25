@@ -1,34 +1,34 @@
-@import "./../app.scss";
+@import './../app.scss';
 
 $font-size-titre: 16px;
 $font-size-corps: 14px;
 
 .accueil {
-  @include carteService();
-  .cartes {
-    margin-top: 8px;
-  }
+	@include carteService();
+	.cartes {
+		margin-top: 8px;
+	}
 }
 
 .accueil-modal {
-  @include applicationModal();
+	@include applicationModal();
 
-  .container {
-    width: 800px;
-    .contenu {
-      .paragraphe {
-        .corps {
-          .pile {
-            margin: 5px 8px;
-          }
-        }
-      }
-    }
-  }
+	.container {
+		width: 800px;
+		.contenu {
+			.paragraphe {
+				.corps {
+					.pile {
+						margin: 5px 8px;
+					}
+				}
+			}
+		}
+	}
 }
 
 .wrapper {
-  position: absolute;
+	position: absolute;
 }
 
 .details-service {

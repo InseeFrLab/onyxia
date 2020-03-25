@@ -4,7 +4,7 @@ import React, { createContext } from 'react';
  * quand une route privé demande authentification (ouverture de la modale d'auth),
  * elle doit pourvoir afficher la dernière route publique empruntée.
  */
-export const createRouterContext = InitialComponent => initialPathname =>
+export const createRouterContext = (InitialComponent) => (initialPathname) =>
 	createContext({
 		component: InitialComponent,
 		pathname: initialPathname,
@@ -14,7 +14,7 @@ export const createRouterContext = InitialComponent => initialPathname =>
  * et enregistrer le dernier composant routé.
  *
  */
-export const createRouteComponent = RouterContext => Route => props => {
+export const createRouteComponent = (RouterContext) => (Route) => (props) => {
 	return (
 		<RouterContext.Provider
 			value={{
