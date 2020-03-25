@@ -5,14 +5,13 @@ node_js:
   - 12.8.0
 cache: yarn
 addons:
-  organization: "inseefrlab"
+  organization: 'inseefrlab'
 install:
   - yarn config set registry https://registry.npmjs.org
   - yarn install
 scrip:
   - yarn test-coverage
   - yarn build
-  - yarn analyze
   - docker build -t inseefrlab/onyxia-ui .
 after_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
