@@ -98,6 +98,11 @@ class MonCompte extends React.Component {
 								label="Session Token"
 								value={credentials.AWS_SESSION_TOKEN || ''}
 							/>
+							<CopyableField
+								copy
+								label="S3 endpoint"
+								value={credentials.AWS_S3_ENDPOINT || ''}
+							/>
 						</Paper>
 					) : null}
 
