@@ -1,41 +1,41 @@
 {
-  "s3": {
-    "AWS_EXPIRATION": "2019-12-07T17:10:12Z",
-    "AWS_SESSION_TOKEN": "QX5D1PTW59UTRAXXXXXX",
-    "AWS_SECRET_ACCESS_KEY": "Te5TData",
-    "AWS_ACCESS_KEY_ID": "QX5D1PTW59UTRAXXXXXX",
-    "AWS_DEFAULT_REGION": "us-east-1",
-    "AWS_S3_ENDPOINT": "s3.example.com",
-    "enable": true
-  },
-  "script_demarrage": {
-    "URI": ""
-  },
-  "diffusion": {
-    "port_additionnel": 5000,
-    "ajout_port_additionnel": false
-  },
-  "git": {
-    "git_user_mail": "toto@toto.fr",
-    "git_user_name": "El gato",
-    "enable": false
-  },
-  "webssh2": {
-    "mem": "2048",
-    "cpus": 0.1,
-    "enable": true
-  },
-  "ssh_ubuntu": {
-    "password": "changeme",
-    "image_docker": "nginx",
-    "mem": 2048,
-    "cpus": 0.1
-  },
-  "onyxia": {
-    "friendly_name": "webssh"
-  },
-  "vault": {
-    "VAULT_ADDR": "[$VAULT_ADDR]",
-    "VAULT_TOKEN": "[$VAULT_TOKEN]"
-  }
+	"s3": {
+		"AWS_EXPIRATION": "2019-12-07T17:10:12Z",
+		"AWS_SESSION_TOKEN": "QX5D1PTW59UTRAXXXXXX",
+		"AWS_SECRET_ACCESS_KEY": "Te5TData",
+		"AWS_ACCESS_KEY_ID": "QX5D1PTW59UTRAXXXXXX",
+		"AWS_DEFAULT_REGION": "us-east-1",
+		"AWS_S3_ENDPOINT": "s3.example.com",
+		"enable": true
+	},
+	"script_demarrage": {
+		"URI": ""
+	},
+	"diffusion": {
+		"port_additionnel": 5000,
+		"ajout_port_additionnel": false
+	},
+	"git": {
+		"git_user_mail": "toto@toto.fr",
+		"git_user_name": "El gato",
+		"enable": false
+	},
+	"webssh2": {
+		"mem": "2048",
+		"cpus": 0.1,
+		"enable": true
+	},
+	"ssh_ubuntu": {
+		"password": "changeme",
+		"image_docker": "nginx",
+		"mem": 2048,
+		"cpus": 0.1
+	},
+	"onyxia": {
+		"friendly_name": "webssh"
+	},
+	"vault": {
+		"VAULT_ADDR": "[$VAULT_ADDR]",
+		"VAULT_TOKEN": "[$VAULT_TOKEN]"
+	}
 }

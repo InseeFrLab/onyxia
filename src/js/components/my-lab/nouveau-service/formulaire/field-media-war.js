@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import RootRef from '@material-ui/core/RootRef';
 import { getMinioClient, getMinioApi } from 'js/minio-client';
-import conf from './../../../../configuration'
+import conf from './../../../../configuration';
 import { HidablePane } from 'js/components/commons/atoms';
 
 const MINIO_BASE_URI = conf.MINIO.BASE_URI || '';
@@ -18,15 +18,15 @@ class SelectWarField extends React.Component {
 	constructor(props) {
 		super(props);
 		getWarPath(props.user)
-			.then(paths => {
+			.then((paths) => {
 				this.setState({ paths: paths });
 			})
-			.catch(e => {
+			.catch((e) => {
 				this.setState({ paths: [] });
 			});
 	}
 
-	handleSelectUrl = url => {
+	handleSelectUrl = (url) => {
 		this.props.handleChange(this.props.path)(url);
 	};
 
@@ -52,7 +52,7 @@ class SelectWarField extends React.Component {
 							label={nom}
 							value={value || ''}
 							className="champ-texte"
-							onChange={e => handleChange(path)(e.target.value)}
+							onChange={(e) => handleChange(path)(e.target.value)}
 							margin="normal"
 							onMouseEnter={this.displayOptions}
 							onMouseLeave={this.hideOptions}
@@ -82,7 +82,7 @@ class SelectWarField extends React.Component {
 	}
 }
 
-const getWarPath = async user => {
+const getWarPath = async (user) => {
 	const client = await getMinioClient();
 	const api = getMinioApi(client);
 	const userObjects = await getUserObjects(api)(user.idep);
@@ -96,17 +96,17 @@ const getWarPath = async user => {
 	);
 };
 
-const getUserObjects = api => async idep => {
+const getUserObjects = (api) => async (idep) => {
 	const isExist = await api.isBucketExist(idep);
 
 	if (isExist) {
 		const stream = await api.listObjects(idep);
 		const paths = [];
 		return new Promise((resolve, reject) => {
-			stream.on('data', object => {
+			stream.on('data', (object) => {
 				paths.push(object);
 			});
-			stream.on('end', object => {
+			stream.on('end', (object) => {
 				resolve(paths);
 			});
 			stream.on('error', ({ resource }) => reject('oupsss'));

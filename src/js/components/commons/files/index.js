@@ -1,2 +1,2 @@
-import { default as Ligne } from "./ligne";
+import { default as Ligne } from './ligne';
 export default Ligne;

@@ -1,46 +1,48 @@
-import axios from "axios";
-import getKeycloak from "./keycloak-config";
-import { setLocalToken } from "js/utils";
-import conf from "../configuration";
+import axios from 'axios';
+import getKeycloak from './keycloak-config';
+import { setLocalToken } from 'js/utils';
+import conf from '../configuration';
 const BASE_URL = conf.API.BASE_URL;
 
 export const refreshToken = (minValidity = 60) =>
-  new Promise((resolve, reject) => {
-    getKeycloak()
-      .updateToken(minValidity)
-      .success(() => {
-        setLocalToken(getKeycloak().token);
-        resolve(getKeycloak().token);
-      })
-      .error(error => {
-        reject(error);
-      });
-  });
+	new Promise((resolve, reject) => {
+		getKeycloak()
+			.updateToken(minValidity)
+			.success(() => {
+				setLocalToken(getKeycloak().token);
+				resolve(getKeycloak().token);
+			})
+			.error((error) => {
+				reject(error);
+			});
+	});
 
 export const axiosAuth = axios.create({ baseURL: BASE_URL });
-if (conf.AUTHENTICATION.TYPE === "oidc") {
-  axiosAuth.interceptors.request.use(
-    config =>
-      refreshToken()
-        .then(token => Promise.resolve(authorizeConfig(getKeycloak())(config)))
-        .catch(() => getKeycloak().login()),
-    error => Promise.reject(error)
-  );
+if (conf.AUTHENTICATION.TYPE === 'oidc') {
+	axiosAuth.interceptors.request.use(
+		(config) =>
+			refreshToken()
+				.then((token) =>
+					Promise.resolve(authorizeConfig(getKeycloak())(config))
+				)
+				.catch(() => getKeycloak().login()),
+		(error) => Promise.reject(error)
+	);
 }
 
 axiosAuth.interceptors.response.use(
-  response => {
-    console.log(response);
-    return response.data;
-  },
-  error => Promise.reject(error)
+	(response) => {
+		console.log(response);
+		return response.data;
+	},
+	(error) => Promise.reject(error)
 );
 
 export const axiosPublic = axios.create({ baseURL: BASE_URL });
 
-const authorizeConfig = kc => config => ({
-  ...config,
-  headers: { Authorization: `Bearer ${kc.token}` },
-  "Content-Type": "application/json;charset=utf-8",
-  Accept: "application/json;charset=utf-8"
+const authorizeConfig = (kc) => (config) => ({
+	...config,
+	headers: { Authorization: `Bearer ${kc.token}` },
+	'Content-Type': 'application/json;charset=utf-8',
+	Accept: 'application/json;charset=utf-8',
 });

@@ -44,7 +44,7 @@ class Chronometer extends React.Component {
 
 	render() {
 		const { days, hours, minutes, seconds } = this.state;
-		const deuxChiffres = how => (how >= 10 ? `${how}` : `0${how}`);
+		const deuxChiffres = (how) => (how >= 10 ? `${how}` : `0${how}`);
 		return (
 			<div className="chronometre">
 				<span className="jours">{`${days}`}</span>

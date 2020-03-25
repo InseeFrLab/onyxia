@@ -70,7 +70,7 @@ export const Arrow = ({ dom }) =>
 		? ReactDom.createPortal(
 				<span
 					className="arrow-left"
-					onClick={e => {
+					onClick={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						return false;

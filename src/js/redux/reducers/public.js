@@ -26,13 +26,13 @@ export default (state = initial, action) => {
 	}
 };
 
-const getAlphaServices = services =>
+const getAlphaServices = (services) =>
 	services.filter(
-		s => !s.labels.ONYXIA_STATUS || s.labels.ONYXIA_STATUS === 'alpha'
+		(s) => !s.labels.ONYXIA_STATUS || s.labels.ONYXIA_STATUS === 'alpha'
 	);
 
-const getBetaServices = services =>
-	services.filter(s => s.labels.ONYXIA_STATUS === 'beta');
+const getBetaServices = (services) =>
+	services.filter((s) => s.labels.ONYXIA_STATUS === 'beta');
 
-const getStableServices = services =>
-	services.filter(s => s.labels.ONYXIA_STATUS === 'stable');
+const getStableServices = (services) =>
+	services.filter((s) => s.labels.ONYXIA_STATUS === 'stable');

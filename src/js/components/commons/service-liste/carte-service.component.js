@@ -5,7 +5,7 @@ import { PauseIcon } from 'js/components/commons/icons';
 import { CardContent, CardActions } from '@material-ui/core';
 import { WorkInProgress } from 'js/components/commons/icons';
 import Preloader from 'js/components/commons/preloader';
-import WarningIcon from '@material-ui/icons/Warning'
+import WarningIcon from '@material-ui/icons/Warning';
 
 class CarteService extends React.Component {
 	state = { raised: false };
@@ -40,12 +40,10 @@ class CarteService extends React.Component {
 						<div className="expired">
 							<div className="texte" align="center">
 								<Grid container direction="row" alignItems="center">
-  									<Grid item>
-										<WarningIcon fontSize="default"/>
-  									</Grid>
-  									<Grid item>
-    									Token Expiré
-  									</Grid>
+									<Grid item>
+										<WarningIcon fontSize="default" />
+									</Grid>
+									<Grid item>Token Expiré</Grid>
 								</Grid>
 							</div>
 						</div>

@@ -13,8 +13,8 @@ export default {
 					Les services partagés
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Sur chaque carte se trouve un bouton pour ouvrir la page du
-					service, un autre pour accéder à ses détails.
+					Sur chaque carte se trouve un bouton pour ouvrir la page du service,
+					un autre pour accéder à ses détails.
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					<span>

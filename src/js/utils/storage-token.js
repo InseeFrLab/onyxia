@@ -8,7 +8,7 @@ export const getToken = () =>
 		? Promise.resolve(window.localStorage.getItem(TOKEN_STARAGE_ID))
 		: Promise.resolve(LOCAL);
 
-export const setToken = token => {
+export const setToken = (token) => {
 	window.localStorage
 		? window.localStorage.setItem(TOKEN_STARAGE_ID, token)
 		: (LOCAL = token);

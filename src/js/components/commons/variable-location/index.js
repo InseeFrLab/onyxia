@@ -1,52 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 export default (
-  {
-    leaf: Leaf = () => null,
-    node: Node = () => null,
-    root: Root = () => null,
-    isLeaf = async () => Promise.resolve(false),
-    isRoot = async () => Promise.resolve(false)
-  } = {
-    leaf: () => null,
-    node: () => null,
-    root: () => null,
-    isLeaf: async () => Promise.resolve(false),
-    isRoot: async () => Promise.resolve(false)
-  }
-) => props => {
-  const [location, setLocation] = useState(props.location.pathname);
-  const [isRoot_, setIsRoot] = useState(false);
-  const [isLeaf_, setIsLeaf] = useState(false);
-  const [init, setInit] = useState(false);
-  const current = window.location.pathname;
+	{
+		leaf: Leaf = () => null,
+		node: Node = () => null,
+		root: Root = () => null,
+		isLeaf = async () => Promise.resolve(false),
+		isRoot = async () => Promise.resolve(false),
+	} = {
+		leaf: () => null,
+		node: () => null,
+		root: () => null,
+		isLeaf: async () => Promise.resolve(false),
+		isRoot: async () => Promise.resolve(false),
+	}
+) => (props) => {
+	const [location, setLocation] = useState(props.location.pathname);
+	const [isRoot_, setIsRoot] = useState(false);
+	const [isLeaf_, setIsLeaf] = useState(false);
+	const [init, setInit] = useState(false);
+	const current = window.location.pathname;
 
-  useEffect(() => {
-    let unmount = false;
-    const verify = async current => {
-      const isLeaf__ = await isLeaf(window.location);
-      const isRoot__ = await isRoot(window.location);
-      if (!unmount) {
-        setLocation(window.location.pathname);
-        setIsLeaf(isLeaf__);
-        setIsRoot(isRoot__);
-        setInit(true);
-      }
-    };
-    if (!init || location !== current) {
-      verify();
-    }
-    return () => (unmount = true);
-  }, [init, current, location]);
-  return init ? (
-    isRoot_ ? (
-      <Root {...props} location={location} />
-    ) : isLeaf_ ? (
-      <Leaf {...props} location={location} />
-    ) : (
-      <Node {...props} location={location} />
-    )
-  ) : null;
+	useEffect(() => {
+		let unmount = false;
+		const verify = async (current) => {
+			const isLeaf__ = await isLeaf(window.location);
+			const isRoot__ = await isRoot(window.location);
+			if (!unmount) {
+				setLocation(window.location.pathname);
+				setIsLeaf(isLeaf__);
+				setIsRoot(isRoot__);
+				setInit(true);
+			}
+		};
+		if (!init || location !== current) {
+			verify();
+		}
+		return () => (unmount = true);
+	}, [init, current, location]);
+	return init ? (
+		isRoot_ ? (
+			<Root {...props} location={location} />
+		) : isLeaf_ ? (
+			<Leaf {...props} location={location} />
+		) : (
+			<Node {...props} location={location} />
+		)
+	) : null;
 };
 /*class VariableLocation extends React.Component {
     first = false;

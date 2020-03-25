@@ -11,7 +11,7 @@ export default ({ services }) => {
 	);
 };
 
-const getGroupeName = services =>
+const getGroupeName = (services) =>
 	services && services.length > 0
 		? services[0].labels.ONYXIA_TITLE
 		: "Groupe d'applications";

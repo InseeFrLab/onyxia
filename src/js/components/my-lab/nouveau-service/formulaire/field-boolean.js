@@ -25,7 +25,7 @@ export default ({
 				control={
 					<Checkbox
 						checked={value}
-						onChange={e => handleChange(path)(e.target.checked)}
+						onChange={(e) => handleChange(path)(e.target.checked)}
 						color="secondary"
 					/>
 				}

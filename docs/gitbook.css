@@ -1,30 +1,31 @@
 .book-summary ul.summary li span {
-  cursor: not-allowed;
-  opacity: 0.3;
+	cursor: not-allowed;
+	opacity: 0.3;
 }
 
 .book-summary ul.summary li a:hover {
-  color: #008cff;
-  text-decoration: none;
+	color: #008cff;
+	text-decoration: none;
 }
 
-code[class*="language-"],
-pre[class*="language-"] {
-  text-shadow: none;
+code[class*='language-'],
+pre[class*='language-'] {
+	text-shadow: none;
 }
 
 .color-theme-2 .token.keyword {
-  color: #3ac;
+	color: #3ac;
 }
 
 .token.operator {
-  background: none;
+	background: none;
 }
 
 figure {
-  text-align: center;
+	text-align: center;
 }
 
-.markdown-section code:after, .markdown-section code:before {
-  content: "";
+.markdown-section code:after,
+.markdown-section code:before {
+	content: '';
 }

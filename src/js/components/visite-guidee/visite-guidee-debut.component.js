@@ -54,11 +54,8 @@ const ETAPES = [
 	},
 ];
 
-const Visite = props => (
+const Visite = (props) => (
 	<VisiteGuide visite={true} etapes={ETAPES} {...props} />
 );
 
-export default connect(
-	undefined,
-	{ startVisite }
-)(Visite);
+export default connect(undefined, { startVisite })(Visite);

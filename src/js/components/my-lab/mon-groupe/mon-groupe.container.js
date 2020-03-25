@@ -9,7 +9,7 @@ import {
 	supprimerGroupe,
 } from 'js/redux/actions';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	const {
 		mesServicesTypeRequest: typeRequest,
 		mesServices: services,
@@ -31,23 +31,20 @@ const mapDispatchToProps = (dispatch, props) => ({
 	refresh: () => {
 		dispatch(chargerMonGroupe(Object.values(props.match.params)[0]));
 	},
-	suivreStatutService: id => {
+	suivreStatutService: (id) => {
 		dispatch(suivreStatutService(id));
 	},
 	changerEtatService: (serviceId, etat, mems, cpus) => {
 		dispatch(changerEtatService(serviceId, etat, mems, cpus));
 	},
-	cardStartWaiting: id => {
+	cardStartWaiting: (id) => {
 		dispatch(cardStartWaiting(id));
 	},
-	supprimerGroupe: id => {
+	supprimerGroupe: (id) => {
 		dispatch(supprimerGroupe(id));
 	},
 });
 
 export default withRouter(
-	connect(
-		mapStateToProps,
-		mapDispatchToProps
-	)(MonGroupe)
+	connect(mapStateToProps, mapDispatchToProps)(MonGroupe)
 );

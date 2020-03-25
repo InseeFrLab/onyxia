@@ -32,6 +32,6 @@ class Favicon extends React.Component {
 	}
 }
 
-export default connect(state => ({ faviconUrl: state.app.faviconUrl }))(
+export default connect((state) => ({ faviconUrl: state.app.faviconUrl }))(
 	Favicon
 );

@@ -16,7 +16,7 @@ export default {
 				`bouton-details-${this.service.id}`
 			);
 			bouton.style.zIndex = 1302;
-			bouton.onclick = e => this.props.next();
+			bouton.onclick = (e) => this.props.next();
 			this.setState({ dom: bouton });
 		}
 		render() {
@@ -27,8 +27,8 @@ export default {
 						Mon labo
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Vous pouvez maintenant accéder à la page de paramétrage de 
-						votre application en cliquant sur le bouton détail de la carte.
+						Vous pouvez maintenant accéder à la page de paramétrage de votre
+						application en cliquant sur le bouton détail de la carte.
 					</Typography>
 				</React.Fragment>
 			);

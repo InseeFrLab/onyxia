@@ -13,7 +13,7 @@ export default {
 				const bouton = document.getElementById('bouton-creer-nouveau-service');
 				if (bouton) {
 					bouton.style.zIndex = 1302;
-					bouton.onclick = e => {
+					bouton.onclick = (e) => {
 						e.stopImmediatePropagation();
 						creerPremier();
 						next();
@@ -41,9 +41,9 @@ export default {
 					</Typography>
 					<Typography variant="body1" gutterBottom>
 						Sur cette page, vous pouvez configurer votre service en parcourant
-						les différents onglets d&rsquo;options. Le strict nécessaire 
-						est rempli par défaut. Une fois terminé, vous
-						pouvez valider la demande en cliquant sur le bouton créer.
+						les différents onglets d&rsquo;options. Le strict nécessaire est
+						rempli par défaut. Une fois terminé, vous pouvez valider la demande
+						en cliquant sur le bouton créer.
 					</Typography>
 				</React.Fragment>
 			);

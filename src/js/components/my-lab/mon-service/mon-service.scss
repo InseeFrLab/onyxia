@@ -1,41 +1,41 @@
 .en-tete {
-  .logo {
-    display: inline-block;
-  }
+	.logo {
+		display: inline-block;
+	}
 }
 
 .taskFailure {
-  color: red;
+	color: red;
 }
 
 .mon-service {
-  .paragraphe {
-    padding: 5px 35px;
-    margin-bottom: 12px;
-  }
+	.paragraphe {
+		padding: 5px 35px;
+		margin-bottom: 12px;
+	}
 }
 
 // Improve style of the elements
 .mon-service > .paragraphe {
-  margin: 2em 0 !important;
-  padding: 2em !important;
+	margin: 2em 0 !important;
+	padding: 2em !important;
 }
 
 .log {
-  overflow: auto;
+	overflow: auto;
 }
 
 .rrui__tooltip {
-  /* Display the tooltip above the content. */
-  margin-top: -0.5em;
-  background-color: black;
-  color: white;
+	/* Display the tooltip above the content. */
+	margin-top: -0.5em;
+	background-color: black;
+	color: white;
 }
 
 .rrui__tooltip--after - show {
-  opacity: 0.85;
+	opacity: 0.85;
 }
 
 .rrui__tooltip--before - hide {
-  opacity: 0;
+	opacity: 0;
 }

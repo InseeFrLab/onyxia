@@ -20,7 +20,7 @@ export default ({
 		<Select
 			value={value || ''}
 			disabled={disabled}
-			onChange={e => handleChange(path)(e.target.value)}
+			onChange={(e) => handleChange(path)(e.target.value)}
 			inputProps={{
 				name: nom,
 				id: `field-${path}`,
