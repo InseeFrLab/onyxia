@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Avatar, Card, CardContent } from '@material-ui/core/';
 import { CardHeader, Grid, Icon } from '@material-ui/core/';
 import Button from '@material-ui/core/Button';
+import D from 'js/i18n';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
 
@@ -129,7 +130,7 @@ const Commentaires = ({
 const InternalLink = ({ url }) => (
 	<Link to={url}>
 		<Button variant="outlined" color="secondary" className="bouton">
-			Découvrez
+			{D.btnDiscover}
 		</Button>
 	</Link>
 );
@@ -141,7 +142,7 @@ const ExternalLink = ({ url }) => (
 		className="bouton"
 		onClick={() => window.open(url)}
 	>
-		Découvrez
+		{D.btnDiscover}
 	</Button>
 );
 
@@ -178,7 +179,7 @@ const Welcome = ({ image, titre, contenu, boutonQuestion }) => (
 						variant="outlined"
 						style={{ color: 'snow', borderColor: 'snow' }}
 					>
-						Démarrez la Visite !
+						{D.startVisit}
 					</Button>
 				</Link>
 			</div>
