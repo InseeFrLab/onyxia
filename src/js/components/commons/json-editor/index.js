@@ -1,1 +1,1 @@
-export { default } from './json-editor.component';
+export { default } from './json-editor-async';

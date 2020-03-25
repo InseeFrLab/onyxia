@@ -12,8 +12,9 @@ import { getDefaultSingleOption } from 'js/universe/universeContractFiller';
 import './nouveau-service.scss';
 import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import JSONEditor from 'js/components/commons/json-editor';
 import { getVaultToken } from 'js/vault-client';
+import JSONEditor from 'js/components/commons/json-editor';
+
 class NouveauService extends React.Component {
 	state = {
 		redirect: false,
