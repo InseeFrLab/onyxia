@@ -58,7 +58,7 @@ function publish() {
 }
 
 function main() {
-  setup && buildDocumentation && publish
+  setup && buildBundleReports && buildDocumentation && publish
 }
 
 main
