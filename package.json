@@ -6,8 +6,11 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.1.1",
     "@testing-library/react": "^10.0.1",
+    "clean-webpack-plugin": "^3.0.0",
     "coveralls": "^3.0.11",
-    "source-map-explorer": "^2.4.1"
+    "progress-bar-webpack-plugin": "^2.1.0",
+    "source-map-explorer": "^2.4.1",
+    "webpack-bundle-analyzer": "^3.6.1"
   },
   "dependencies": {
     "@material-ui/core": "^4.8.1",
@@ -50,7 +53,9 @@
     "start": "react-scripts start",
     "generate-entrypoint": "node scripts/generate-entrypoint.js",
     "build": "react-scripts build",
-    "analyze-bundle": "source-map-explorer 'build/static/js/*.js' --html bundle-report.html",
+    "analyze-bundle": "node scripts/analyze-bundle.js",
+    "source-map-explorer": "source-map-explorer 'build/static/js/*.js' --html bundle-report/source-map-explorer.html",
+    "analyze": "npm run analyze-bundle && npm run source-map-explorer",
     "test": "react-scripts test --env=jsdom",
     "test-coverage": "react-scripts test --coverage --watchAll=false --env=jsdom",
     "eject": "react-scripts eject"

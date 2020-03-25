@@ -12,7 +12,7 @@ install:
 scrip:
   - yarn test-coverage
   - yarn build
-  - yarn analyze-bundle
+  - yarn analyze
   - docker build -t inseefrlab/onyxia-ui .
 after_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

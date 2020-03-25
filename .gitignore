@@ -10,7 +10,7 @@
 /build
 
 # bundle analysis
-bundle-report.html
+/bundle-report
 
 # misc
 .DS_Store
