@@ -189,11 +189,10 @@ class NouveauService extends React.Component {
 	}
 }
 
-const getOnglets = (onglets) => {
-	return Object.entries(onglets)
+const getOnglets = (onglets) =>
+	Object.entries(onglets)
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
 		.filter((o) => o.fields.length > 0);
-};
 
 const mapOngletToFields = (nom) => (onglet) => ({
 	nom: nom,
