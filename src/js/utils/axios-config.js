@@ -35,7 +35,7 @@ axiosAuth.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-export const axiosPublic = axios.create({ baseURL: BASE_URL });
+const axiosPublicFolder = axios.create({ baseURL: BASE_URL });
 
 const authorizeConfig = (kc) => (config) => ({
 	...config,

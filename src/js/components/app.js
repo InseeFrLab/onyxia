@@ -76,7 +76,7 @@ const AppFeelGood = ({
 		<ReactResizeDetector
 			handleWidth
 			handleHeight
-			onResize={width => applicationResize(width)}
+			onResize={(width) => applicationResize(width)}
 		/>
 		{waiting ? <Preloader /> : null}
 		<CssBaseline />
