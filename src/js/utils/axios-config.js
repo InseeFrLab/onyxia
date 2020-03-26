@@ -4,12 +4,14 @@ import { setLocalToken } from 'js/utils';
 import conf from '../configuration';
 const BASE_URL = conf.API.BASE_URL;
 
-export const refreshToken = (minValidity = 60) =>
+const refreshToken = (minValidity = 60) =>
 	new Promise((resolve, reject) => {
 		getKeycloak()
 			.updateToken(minValidity)
-			.success(() => {
-				setLocalToken(getKeycloak().token);
+			.success((refreshed) => {
+				if (refreshed) {
+					setLocalToken(getKeycloak().token);
+				}
 				resolve(getKeycloak().token);
 			})
 			.error((error) => {
@@ -17,7 +19,15 @@ export const refreshToken = (minValidity = 60) =>
 			});
 	});
 
-export const axiosAuth = axios.create({ baseURL: BASE_URL });
+const authorizeConfig = (kc) => (config) => ({
+	...config,
+	headers: { Authorization: `Bearer ${kc.token}` },
+	'Content-Type': 'application/json;charset=utf-8',
+	Accept: 'application/json;charset=utf-8',
+});
+
+const axiosAuth = axios.create({ baseURL: BASE_URL });
+
 if (conf.AUTHENTICATION.TYPE === 'oidc') {
 	axiosAuth.interceptors.request.use(
 		(config) =>
@@ -35,11 +45,13 @@ axiosAuth.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-export const axiosPublic = axios.create({ baseURL: BASE_URL });
+const axiosPublicFolder = axios.create({ baseURL: BASE_URL });
 
-const authorizeConfig = (kc) => (config) => ({
-	...config,
-	headers: { Authorization: `Bearer ${kc.token}` },
-	'Content-Type': 'application/json;charset=utf-8',
-	Accept: 'application/json;charset=utf-8',
-});
+const axiosPublic = axios.create({ baseURL: BASE_URL });
+
+axiosPublic.interceptors.response.use(
+	(response) => response.data,
+	(error) => Promise.reject(error)
+);
+
+export { axiosAuth, axiosPublic, axiosPublicFolder, refreshToken };

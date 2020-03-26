@@ -1,5 +1,5 @@
 import createAiguilleur from 'js/components/commons/variable-location';
-import Root from './catalogue-root.component';
+import Root from './catalogue-root';
 import Leaf from './catalogue-leaf.component';
 import Node from './catalogue-node.component';
 

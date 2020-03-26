@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Service from './service.component';
 import Deploiement from './deploiement.component';
-import { axiosAuth } from 'js/utils';
+import { axiosPublic } from 'js/utils';
 import api from 'js/redux/api';
 
 const Leaf = ({ location, startWaiting, stopWaiting, ...props }) => {
@@ -14,7 +14,7 @@ const Leaf = ({ location, startWaiting, stopWaiting, ...props }) => {
 
 		const loadService = async () => {
 			startWaiting();
-			const service = await axiosAuth(
+			const service = await axiosPublic(
 				`${api.catalogue}/${idCatalogue}/${idService}`
 			);
 			stopWaiting();
