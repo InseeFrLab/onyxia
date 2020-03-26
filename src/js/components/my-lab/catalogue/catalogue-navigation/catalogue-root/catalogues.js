@@ -1,10 +1,10 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
-import { axiosAuth, wrapPromise } from 'js/utils';
+import { axiosPublic, wrapPromise } from 'js/utils';
 import api from 'js/redux/api';
 
-const resource = wrapPromise(axiosAuth(api.catalogue));
+const resource = wrapPromise(axiosPublic(api.catalogue));
 
 const Catalogues = () => {
 	const { universes } = resource.read();
