@@ -7,12 +7,9 @@ import conf from 'js/configuration';
 const BASE_URI = conf.API.BASE_URL;
 
 export const chargerServices = () => (dispatch, getState) => {
-	dispatch(startWaiting());
-
 	getDataStore()
 		.get(api.services)
 		.then((services) => {
-			dispatch(stopWaiting());
 			dispatch(servicesCharges(services));
 		})
 		.catch(function (error) {

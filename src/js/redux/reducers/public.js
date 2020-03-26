@@ -1,7 +1,7 @@
 import * as types from './../actions/constantes';
 
 const initial = {
-	alpaServices: [],
+	alphaServices: [],
 	betaServices: [],
 	stableServices: [],
 	serviceSelectionne: null,
@@ -16,7 +16,7 @@ export default (state = initial, action) => {
 			const { data: services } = action.payload.services;
 			return {
 				...state,
-				alpaServices: getAlphaServices(services),
+				alphaServices: getAlphaServices(services),
 				betaServices: getBetaServices(services),
 				stableServices: getStableServices(services),
 			};
