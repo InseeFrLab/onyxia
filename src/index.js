@@ -15,7 +15,7 @@ JavascriptTimeAgo.locale(fr);
 const localToken = gelLocalToken();
 const keycloakDefaultConf = {
 	onLoad: 'check-sso',
-	silentCheckSsoRedirectUri: window.location.origin + '/silent-sso.html',
+	silentCheckSsoRedirectUri: `${window.location.origin}/silent-sso.html`,
 	responseMode: 'query',
 	checkLoginIframe: false,
 };
@@ -29,7 +29,6 @@ const initialiseKeycloak = () =>
 					: keycloakDefaultConf
 			)
 			.success((authenticated) => {
-				// console.log(authenticated, keycloak.isTokenExpired(localToken));
 				if (authenticated) {
 					setLocalToken(getKeycloak().token);
 					store.dispatch(
@@ -44,6 +43,7 @@ const initialiseKeycloak = () =>
 			})
 			.error((err) => {
 				// props.authenticationFail(err);
+				console.log(err);
 			});
 
 		return false;
