@@ -9,6 +9,7 @@ import {
 	Divider,
 } from '@material-ui/core';
 import { getKeycloak } from 'js/utils';
+import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
 
@@ -37,10 +38,8 @@ class LogMe extends React.Component {
 				}}
 			>
 				<DialogTitle id="login-titre" classes={{ root: 'en-tete' }}>
-					<div className="titre">Login</div>
-					<div className="sous-titre">
-						Une authentification est requise pour accéder à la ressource.
-					</div>
+					<div className="titre">{D.loginTitle}</div>
+					<div className="sous-titre">{D.loginSubtitle}</div>
 				</DialogTitle>
 				<DialogContent classes={{ root: 'contenu' }}>
 					<DialogContentText>
@@ -55,14 +54,14 @@ class LogMe extends React.Component {
 								src="/images/keycloak.png"
 								alt="keycloak-logo"
 							/>
-							Authentifiez-vous avec votre compte Insee
+							{D.authNeeded}
 						</Button>
 					</DialogContentText>
 				</DialogContent>
 				<Divider />
 				<DialogActions>
 					<Button onClick={handleClose} color="primary" autoFocus>
-						Fermer
+						{D.btnClose}
 					</Button>
 				</DialogActions>
 			</Dialog>
