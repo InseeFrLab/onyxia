@@ -3,7 +3,7 @@ import { Tabs, Tab } from '@material-ui/core';
 import { AppBar } from '@material-ui/core';
 import Content from './content';
 
-const tabs = ['alphaServices', 'betaServices', 'stableServices'];
+const tabs = ['alpha', 'beta', 'stable'];
 
 const OngletsAccueil = () => {
 	const [onglet, setOnglet] = useState(tabs.length - 1);
