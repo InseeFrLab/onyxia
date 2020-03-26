@@ -3,7 +3,7 @@ import Loader from '../loader';
 const JSONEditor = lazy(() => import('./json-editor.component'));
 
 const AsyncEditor = (props) => (
-	<Suspense fallback={<Loader />}>
+	<Suspense fallback={<Loader em={10} />}>
 		<JSONEditor {...props} />
 	</Suspense>
 );

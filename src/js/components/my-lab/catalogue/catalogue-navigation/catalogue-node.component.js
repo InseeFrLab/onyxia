@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { axiosAuth } from 'js/utils';
+import { axiosPublic } from 'js/utils';
 import api from 'js/redux/api';
 import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';
@@ -21,7 +21,7 @@ const Node = ({ location }) => {
 	useEffect(() => {
 		let unmount = false;
 		const chargerCatalogue = async () => {
-			const response = await axiosAuth(`${api.catalogue}/${idCatalogue}`);
+			const response = await axiosPublic(`${api.catalogue}/${idCatalogue}`);
 			if (!unmount && !isUndefined(response)) {
 				setCatalogue(response);
 				setChips(

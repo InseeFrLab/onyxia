@@ -1,6 +1,7 @@
 import conf from '../configuration';
 export { default as getKeycloak } from './keycloak-config';
 export * from './axios-config';
+export * from './promise-wrapper';
 export * from './storage-token';
 export * from './service-utils';
 export * from './state-tasks';

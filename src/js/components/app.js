@@ -76,7 +76,7 @@ const AppFeelGood = ({
 		<ReactResizeDetector
 			handleWidth
 			handleHeight
-			onResize={width => applicationResize(width)}
+			onResize={(width) => applicationResize(width)}
 		/>
 		{waiting ? <Preloader /> : null}
 		<CssBaseline />
@@ -90,12 +90,8 @@ const AppFeelGood = ({
 							<Route path="/accueil" component={Accueil} />
 							<Route exact path="/services" component={Services} />
 							<Route path="/services/*" component={ServiceDetails} />
-							<PrivateRoute
-								exact
-								path="/my-lab/catalogue"
-								component={Catalogue}
-							/>
-							<PrivateRoute
+							<Route exact path="/my-lab/catalogue" component={Catalogue} />
+							<Route
 								path="/my-lab/catalogue/:catalogue"
 								component={Catalogue}
 							/>
