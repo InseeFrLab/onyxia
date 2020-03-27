@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { InputLabel, Select, MenuItem } from '@material-ui/core';
 
 const ExportCredentialsField = ({ credentials }) => {
-	const [exportTypeId, changeExportType] = useState('python');
-
-	const handleChange = (e) => changeExportType(e.target.value);
-
 	const exportTypes = [
 		{
 			id: 'python',
@@ -25,7 +21,10 @@ const ExportCredentialsField = ({ credentials }) => {
 		},
 	];
 
+	const [exportTypeId, changeExportType] = useState(exportTypes[0].id);
 	const exportType = exportTypes.find((type) => type.id === exportTypeId);
+
+	const handleChange = (e) => changeExportType(e.target.value);
 
 	return (
 		<>
