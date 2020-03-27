@@ -2,27 +2,9 @@ import React, { useState } from 'react';
 import * as clipboard from 'clipboard-polyfill';
 import { InputLabel, Select, MenuItem, IconButton } from '@material-ui/core';
 import FileCopy from '@material-ui/icons/FileCopy';
+import exportTypes from './export-credentials-templates';
 
 const ExportCredentialsField = ({ credentials }) => {
-	const exportTypes = [
-		{
-			id: 'python',
-			label: 'Python',
-			text: (c) =>
-				`le texte python :
-access key id: ${c.AWS_ACCESS_KEY_ID}
-s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
-		},
-		{
-			id: 'r',
-			label: 'R',
-			text: (c) =>
-				`le texte R :
-access key id: ${c.AWS_ACCESS_KEY_ID}
-s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
-		},
-	];
-
 	const [exportTypeId, changeExportType] = useState(exportTypes[0].id);
 	const exportType = exportTypes.find((type) => type.id === exportTypeId);
 
