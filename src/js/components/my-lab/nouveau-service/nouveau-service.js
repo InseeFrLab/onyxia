@@ -37,11 +37,11 @@ class NouveauService extends React.Component {
 	componentDidMount() {
 		getVaultToken();
 		getMinioToken()
-			.then(minioCredentials => {
+			.then((minioCredentials) => {
 				this.setState({ minioCredentials });
 				this.clickIfAutomode();
 			})
-			.catch(e => {
+			.catch((e) => {
 				this.setState({ minioCredentials: {} });
 				this.clickIfAutomode();
 			});
@@ -59,11 +59,11 @@ class NouveauService extends React.Component {
 			state.ongletFields.length === 0 &&
 			state.minioCredentials
 		) {
-			const onglets = props.service ? props.service.properties : {};
+			const onglets = props.service ? props.service.config.properties : {};
 			const user = props.user ? props.user : {};
 			const ongletFields = getOnglets(onglets);
 			const fieldsValues = ongletFields
-				.map(onglet => onglet.fields)
+				.map((onglet) => onglet.fields)
 				.reduce(
 					(acc, curr) => ({
 						...acc,
@@ -78,7 +78,7 @@ class NouveauService extends React.Component {
 		return state;
 	}
 
-	handlechangeField = path => value => {
+	handlechangeField = (path) => (value) => {
 		this.setState({
 			fieldsValues: { ...this.state.fieldsValues, [path]: value },
 		});
@@ -96,7 +96,7 @@ class NouveauService extends React.Component {
 				getValuesObject(this.state.fieldsValues),
 				preview
 			)
-			.then(response => {
+			.then((response) => {
 				if (preview) {
 					this.setState({ contract: response });
 				} else {
@@ -189,12 +189,12 @@ class NouveauService extends React.Component {
 	}
 }
 
-const getOnglets = onglets =>
+const getOnglets = (onglets) =>
 	Object.entries(onglets)
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
-		.filter(o => o.fields.length > 0);
+		.filter((o) => o.fields.length > 0);
 
-const mapOngletToFields = nom => onglet => ({
+const mapOngletToFields = (nom) => (onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
@@ -203,10 +203,11 @@ const mapOngletToFields = nom => onglet => ({
 	),
 });
 
-const getFields = nom => onglet => {
+const getFields = (nom) => (onglet) => {
 	const fields = [];
-	Object.entries(onglet).forEach(([key, entry]) => {
+	Object.entries(onglet.properties).forEach(([key, entry]) => {
 		const { type, properties, enum: options, title } = entry;
+
 		switch (type) {
 			case 'boolean':
 			case 'number':
@@ -232,7 +233,9 @@ const getFields = nom => onglet => {
 	return fields;
 };
 
-const arrayToObject = minioCredentials => queryParams => user => fields => {
+const arrayToObject = (minioCredentials) => (queryParams) => (user) => (
+	fields
+) => {
 	const obj = {};
 	const fromParams = getFromQueryParams(queryParams);
 	fields.forEach(
@@ -247,7 +250,7 @@ const getCleanParams = () =>
 		? window.location.search.substring(1, window.location.search.length)
 		: window.location.search;
 
-const getFromQueryParams = queryParams => path => ({
+const getFromQueryParams = (queryParams) => (path) => ({
 	'js-control': jsControl,
 	type,
 }) => {
@@ -261,14 +264,14 @@ const getFromQueryParams = queryParams => path => ({
 		: undefined;
 };
 
-const mapServiceToOnglets = ongletFields =>
+const mapServiceToOnglets = (ongletFields) =>
 	ongletFields.map(({ nom }, i) => <Tab key={i} label={nom} />);
 
 /*
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-const getValuesObject = fieldsValues =>
+const getValuesObject = (fieldsValues) =>
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
 			path: key.split('.'),
