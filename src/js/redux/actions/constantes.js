@@ -15,7 +15,6 @@ export const SET_FAVICON = 'onyxia/app/setFavicon';
 export const ACCUEIL_LOAD = 'onyxia/app/accueilLoad';
 
 // public reducer
-export const SERVICES_CHARGES = 'onyxia/public/servicesCharges';
 export const SERVICE_SELECTIONNE = 'onyxia/public/serviceSelectionne';
 
 // my-Lab
