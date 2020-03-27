@@ -49,7 +49,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 			? service.id
 			: service.apps[0].labels.ONYXIA_TITLE;
 		return (
-			< key={i}>
+			<div key={i}>
 				<ListItem
 					button
 					classes={{ root: 'liste-item' }}
@@ -79,9 +79,8 @@ export const Liste = ({ liste, openService, openDetails }) => {
 						<MoreHoriz />
 					</div>
 				</ListItem>
-
 				<Divider inset />
-			</>
+			</div>
 		);
 	});
 	return <List>{items}</List>;
