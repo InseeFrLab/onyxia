@@ -5,15 +5,16 @@ import { Avatar, Card, CardContent } from '@material-ui/core/';
 import { CardHeader, Grid, Icon } from '@material-ui/core/';
 import Button from '@material-ui/core/Button';
 import D from 'js/i18n';
+import { wrapPromise, axiosPublic } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
 
-const Accueil = ({ accueil, chargerAccueil }) => {
-	if (!accueil) {
-		chargerAccueil();
-		return null;
-	}
-	const { bienvenue, cartes, precautions, applications } = accueil;
+const resource = wrapPromise(
+	axiosPublic(`${window.location.origin}/accueil.json`)
+);
+
+const Accueil = () => {
+	const { bienvenue, cartes, precautions, applications } = resource.read();
 	return (
 		<>
 			{/* <Chrismas /> */}
