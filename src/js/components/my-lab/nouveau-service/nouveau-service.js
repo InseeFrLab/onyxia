@@ -198,14 +198,14 @@ const mapOngletToFields = (nom) => (onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
-	fields: getFields(nom)(onglet).filter(
+	fields: getFields(nom)(onglet.properties).filter(
 		({ field }) => field['js-control'] !== 'shadow'
 	),
 });
 
 const getFields = (nom) => (onglet) => {
 	const fields = [];
-	Object.entries(onglet.properties).forEach(([key, entry]) => {
+	Object.entries(onglet).forEach(([key, entry]) => {
 		const { type, properties, enum: options, title } = entry;
 
 		switch (type) {
