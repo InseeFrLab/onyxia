@@ -8,6 +8,7 @@ import { getMinioToken } from 'js/minio-client';
 import CopyableField from 'js/components/commons/copyable-field';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { getKeycloak } from 'js/utils';
+import ExportCredentialsField from './export-credentials-component';
 import './mon-compte.scss';
 
 class MonCompte extends React.Component {
@@ -105,9 +106,11 @@ class MonCompte extends React.Component {
 							/>
 							<CopyableField
 								copy
-								label="extraire les données au format xxx"
+								label="Export des credentials"
 								value={credentials.AWS_S3_ENDPOINT || ''}
+								onChange={this.handleChangeExportCredentialsFormat}
 							/>
+							<ExportCredentialsField value="python" />
 						</Paper>
 					) : null}
 
