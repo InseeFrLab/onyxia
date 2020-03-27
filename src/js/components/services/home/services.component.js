@@ -7,18 +7,18 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 
 const Services = ({ serviceSelectionne }) =>
 	serviceSelectionne ? (
-		<React.Fragment>
+		<>
 			<EnTete />
 			<FilDAriane fil={fil.servicesCollaboratifs} />
 			<OngletsAccueil />
 			<DetailsService />
-		</React.Fragment>
+		</>
 	) : (
-		<React.Fragment>
+		<>
 			<EnTete />
 			<FilDAriane fil={fil.servicesCollaboratifs} />
 			<OngletsAccueil />
-		</React.Fragment>
+		</>
 	);
 
 Services.propTypes = {

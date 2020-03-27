@@ -15,7 +15,7 @@ export const fil = {
 			component: <span>catalogue</span>,
 		},
 	],
-	catalogue: idCatalogue => [
+	catalogue: (idCatalogue) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
 			pathname: '/my-lab/catalogue',
@@ -63,7 +63,7 @@ export const fil = {
 		{ pathname: '/mes-fichiers', component: <span>mes fichiers</span> },
 	],
 
-	myFiles: bucketName => paths => [
+	myFiles: (bucketName) => (paths) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{ pathname: '/mes-fichiers', component: <span>mes fichiers</span> },
 		{
@@ -76,11 +76,11 @@ export const fil = {
 		})),
 	],
 	/* */
-	mesSecrets: location => [
+	mesSecrets: (location) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		...location
 			.split('/')
-			.filter(c => c.length > 0)
+			.filter((c) => c.length > 0)
 			.reduce(
 				(a, c) => [
 					...a,
@@ -162,12 +162,12 @@ const makeRest = ([curr, ...rest], index = 1) => {
 		);
 	}
 	return (
-		<React.Fragment>
+		<>
 			<li>
 				<Link to={curr.pathname}>{curr.component}</Link>
 			</li>
 			{makeRest(rest, index + 1)}
-		</React.Fragment>
+		</>
 	);
 };
 

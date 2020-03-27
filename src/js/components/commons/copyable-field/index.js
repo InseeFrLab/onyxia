@@ -75,7 +75,7 @@ class CopyableField extends React.Component {
 			options = {},
 		} = this.props;
 		return (
-			<React.Fragment>
+			<>
 				<FormControl className="copy-field" style={{ width: '100%' }}>
 					{label ? <InputLabel>{label}</InputLabel> : null}
 					<Input
@@ -118,7 +118,7 @@ class CopyableField extends React.Component {
 						}
 					/>
 				</FormControl>
-			</React.Fragment>
+			</>
 		);
 	}
 }

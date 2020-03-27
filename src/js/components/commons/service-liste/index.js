@@ -49,7 +49,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 			? service.id
 			: service.apps[0].labels.ONYXIA_TITLE;
 		return (
-			<React.Fragment key={i}>
+			< key={i}>
 				<ListItem
 					button
 					classes={{ root: 'liste-item' }}
@@ -81,7 +81,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 				</ListItem>
 
 				<Divider inset />
-			</React.Fragment>
+			</>
 		);
 	});
 	return <List>{items}</List>;

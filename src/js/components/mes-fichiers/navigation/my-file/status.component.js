@@ -4,7 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CopyableField from 'js/components/commons/copyable-field';
 
 const Public = ({ isPublicFile, isInPublicDirectory }) => (
-	<React.Fragment>
+	<>
 		<Typography variant="body1" gutterBottom>
 			Votre Fichier est public :
 		</Typography>
@@ -18,7 +18,7 @@ const Public = ({ isPublicFile, isInPublicDirectory }) => (
 				Un de ses répertoires parents est marqué comme public.
 			</Typography>
 		) : null}
-	</React.Fragment>
+	</>
 );
 
 const Private = () => (
@@ -29,7 +29,7 @@ const Private = () => (
 );
 
 const Lien = ({ isPublic, url, expiration }) => (
-	<React.Fragment>
+	<>
 		<Typography variant="body1" gutterBottom>
 			Votre lien de téléchargement :
 		</Typography>
@@ -46,12 +46,12 @@ const Lien = ({ isPublic, url, expiration }) => (
 		) : (
 			<CircularProgress />
 		)}
-	</React.Fragment>
+	</>
 );
 
 const Toggle = ({ isInPublicDirectory, isPublicFile, toggleStatus }) => {
 	return isInPublicDirectory ? null : (
-		<React.Fragment>
+		<>
 			<Typography variant="body1" gutterBottom style={{ position: 'relative' }}>
 				Vous pouvez changer le statut de votre fichier :
 				<Button
@@ -65,7 +65,7 @@ const Toggle = ({ isInPublicDirectory, isPublicFile, toggleStatus }) => {
 					{isPublicFile ? 'private' : 'public'}
 				</Button>
 			</Typography>
-		</React.Fragment>
+		</>
 	);
 };
 

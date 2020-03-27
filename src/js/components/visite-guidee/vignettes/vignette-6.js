@@ -34,7 +34,7 @@ export default {
 
 		render() {
 			return (
-				<React.Fragment>
+				<>
 					<Arrow dom={this.state.dom} />
 					<Typography variant="h6" gutterBottom>
 						Nouveau service personnel
@@ -45,12 +45,12 @@ export default {
 						rempli par défaut. Une fois terminé, vous pouvez valider la demande
 						en cliquant sur le bouton créer.
 					</Typography>
-				</React.Fragment>
+				</>
 			);
 		}
 	},
 	actions: ({ creerPremier, next, prec }) => (
-		<React.Fragment>
+		<>
 			<Button
 				variant="contained"
 				mini
@@ -62,6 +62,6 @@ export default {
 			>
 				créer votre service
 			</Button>
-		</React.Fragment>
+		</>
 	),
 };

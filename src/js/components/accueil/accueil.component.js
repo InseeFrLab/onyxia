@@ -20,7 +20,7 @@ class Accueil extends React.Component {
 		if (!accueil) return null;
 		const { bienvenue, cartes, precautions, applications } = accueil;
 		return (
-			<React.Fragment>
+			<>
 				{/* <Chrismas /> */}
 				<div className="accueil">
 					<Welcome
@@ -74,7 +74,7 @@ class Accueil extends React.Component {
 						)}
 					</div>
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

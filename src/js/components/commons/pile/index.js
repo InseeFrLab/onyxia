@@ -37,7 +37,7 @@ const getLabel = (Label) => (title) =>
 const getNext = ({ index, sizeMax, size, small }) => {
 	const level = index / sizeMax;
 	return index < sizeMax ? (
-		<React.Fragment>
+		<>
 			{getNext({ index: index + 1, size, sizeMax, small })}
 
 			<span
@@ -55,6 +55,6 @@ const getNext = ({ index, sizeMax, size, small }) => {
 						: 'empty'
 				}
 			/>
-		</React.Fragment>
+		</>
 	) : null;
 };

@@ -234,7 +234,7 @@ class InputUrl extends React.Component {
 	render() {
 		const { url, launch, copy, label } = this.props;
 		return (
-			<React.Fragment>
+			<>
 				<Input
 					inputRef={(r) => {
 						this.domInput = r;
@@ -262,7 +262,7 @@ class InputUrl extends React.Component {
 					}
 				/>
 				{label ? <InputLabel>{label}</InputLabel> : null}
-			</React.Fragment>
+			</>
 		);
 	}
 }

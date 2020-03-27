@@ -5,7 +5,7 @@ import { WarnIcon } from 'js/components/commons/icons';
 
 export default {
 	description: () => (
-		<React.Fragment>
+		<>
 			<Typography variant="h6" gutterBottom>
 				Catalogue du libre service
 			</Typography>
@@ -22,7 +22,7 @@ export default {
 				qui arrive lors d&rsquo;opérations de maintenance et aussi chaque
 				week-end.
 			</Typography>
-		</React.Fragment>
+		</>
 	),
 	actions: ({ next }) => <Next next={next} />,
 };

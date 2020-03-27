@@ -40,7 +40,7 @@ class SelectWarField extends React.Component {
 			disabled = false,
 		} = this.props;
 		return (
-			<React.Fragment>
+			<>
 				<FormControl
 					className="champ-media-war"
 					aria-describedby={`name-helper-${path}`}
@@ -77,7 +77,7 @@ class SelectWarField extends React.Component {
 						{description}
 					</FormHelperText>
 				</FormControl>
-			</React.Fragment>
+			</>
 		);
 	}
 }

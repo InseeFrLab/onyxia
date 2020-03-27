@@ -40,7 +40,7 @@ class CarteMonService extends React.Component {
 }
 
 const getActions = (service) => (launch) => () => (
-	<React.Fragment>
+	<>
 		{getLaunchIcon(service)(launch)}
 		<Link to={`/my-lab/mes-services/${extractServiceId(service.id)}`}>
 			<IconButton
@@ -51,7 +51,7 @@ const getActions = (service) => (launch) => () => (
 				<Icon>build</Icon>
 			</IconButton>
 		</Link>
-	</React.Fragment>
+	</>
 );
 
 const getLaunchIcon = (service) => (handleClickLaunch) =>
@@ -80,13 +80,13 @@ const getContenu = (service) => () => {
 	const cpu = Math.ceil(computeCpu(service.cpus)(max));
 	const ram = Math.ceil(compterRam(service.mem)(max));
 	return (
-		<React.Fragment>
+		<>
 			<div className="paragraphe">
 				{service.instances && service.tasksRunning ? (
-					<React.Fragment>
+					<>
 						<div className="titre">Temps d&rsquo;activité</div>
 						<Chronometer start={service.tasks[0].startedAt} />
-					</React.Fragment>
+					</>
 				) : null}
 			</div>
 			{service.instances ? (
@@ -110,7 +110,7 @@ const getContenu = (service) => () => {
 					</span>
 				</div>
 			) : null}
-		</React.Fragment>
+		</>
 	);
 };
 

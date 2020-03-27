@@ -19,7 +19,7 @@ export default {
 		}
 		render() {
 			return (
-				<React.Fragment>
+				<>
 					<Typography variant="h6" gutterBottom>
 						Mon service
 					</Typography>
@@ -33,16 +33,16 @@ export default {
 						Des boutons d&rsquo;action vous permettent de contrôler l&rsquo;état
 						de votre service et de le supprimer.
 					</Typography>
-				</React.Fragment>
+				</>
 			);
 		}
 	},
 	actions: ({ prec, next, serviceCree }) => {
 		return (
-			<React.Fragment>
+			<>
 				<Prec prec={prec} />
 				<Next next={next} />
-			</React.Fragment>
+			</>
 		);
 	},
 };

@@ -106,7 +106,7 @@ class Searchbar extends React.Component {
 
 	render() {
 		return (
-			<React.Fragment>
+			<>
 				<div className="chips-selector">
 					<Selections
 						chips={this.state.chipsSelected}
@@ -147,7 +147,7 @@ class Searchbar extends React.Component {
 						/>
 					</span>*/}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

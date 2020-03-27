@@ -50,7 +50,7 @@ export default OngletContent;
 const createActionsCarte = (service) => (openService) => (
 	openDetails
 ) => () => (
-	<React.Fragment>
+	<>
 		<IconButton
 			color="secondary"
 			aria-label="ouvir"
@@ -68,7 +68,7 @@ const createActionsCarte = (service) => (openService) => (
 				<Icon>more_horiz</Icon>
 			</IconButton>
 		</Link>
-	</React.Fragment>
+	</>
 );
 
 const createContenuCarte = (service) => () => (

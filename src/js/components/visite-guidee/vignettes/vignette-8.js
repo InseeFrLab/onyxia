@@ -5,7 +5,7 @@ import { Both } from './../vignette-commons';
 export default {
 	description: () => {
 		return (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Mon labo
 				</Typography>
@@ -19,7 +19,7 @@ export default {
 					Si votre service n&rsquo;est pas encore disponible, des roues crantées
 					vous en bloqueront l&rsquo;accès temporairement.
 				</Typography>
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next, prec }) => <Both next={next} prec={prec} />,

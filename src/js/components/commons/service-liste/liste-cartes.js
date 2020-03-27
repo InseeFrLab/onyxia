@@ -50,7 +50,7 @@ class ListeCartes extends React.Component {
 			groupe,
 		} = this.props;
 		return (
-			<React.Fragment>
+			<>
 				<Confirm
 					titre="Arrêter toute vos applications"
 					display={this.state.confirmPauseAll}
@@ -70,7 +70,7 @@ class ListeCartes extends React.Component {
 				</Confirm>
 				<div className="contenu mes-services">
 					{services.length === 0 && groupes.length === 0 ? (
-						<React.Fragment>
+						<>
 							{groupe ? (
 								<Toolbar
 									groupe={groupe}
@@ -80,9 +80,9 @@ class ListeCartes extends React.Component {
 								/>
 							) : null}
 							<AucunService />
-						</React.Fragment>
+						</>
 					) : (
-						<React.Fragment>
+						<>
 							<Toolbar
 								groupe={groupe}
 								handlePauseAll={this.toggleConfirmPauseAll}
@@ -107,10 +107,10 @@ class ListeCartes extends React.Component {
 									/>
 								))}
 							</Grid>
-						</React.Fragment>
+						</>
 					)}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }
@@ -139,7 +139,7 @@ const Actions = ({
 	handleSupprimerGroupe,
 	groupId,
 }) => (
-	<React.Fragment>
+	<>
 		<Fab
 			color="secondary"
 			aria-label="pause"
@@ -173,7 +173,7 @@ const Actions = ({
 				</Fab>
 			</Link>
 		) : null}
-	</React.Fragment>
+	</>
 );
 
 ListeCartes.propTypes = {
