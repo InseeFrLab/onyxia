@@ -104,13 +104,7 @@ class MonCompte extends React.Component {
 								label="S3 endpoint"
 								value={credentials.AWS_S3_ENDPOINT || ''}
 							/>
-							<CopyableField
-								copy
-								label="Export des credentials"
-								value={credentials.AWS_S3_ENDPOINT || ''}
-								onChange={this.handleChangeExportCredentialsFormat}
-							/>
-							<ExportCredentialsField value="python" />
+							<ExportCredentialsField credentials={credentials} />
 						</Paper>
 					) : null}
 
