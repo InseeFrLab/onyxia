@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { InputLabel, Select, MenuItem } from '@material-ui/core';
+import * as clipboard from 'clipboard-polyfill';
+import { InputLabel, Select, MenuItem, IconButton } from '@material-ui/core';
+import FileCopy from '@material-ui/icons/FileCopy';
 
 const ExportCredentialsField = ({ credentials }) => {
 	const exportTypes = [
@@ -7,17 +9,17 @@ const ExportCredentialsField = ({ credentials }) => {
 			id: 'python',
 			label: 'Python',
 			text: (c) =>
-				`le texte python : \n
-					access key id: ${c.AWS_ACCESS_KEY_ID}\n
-					s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
+				`le texte python :
+access key id: ${c.AWS_ACCESS_KEY_ID}
+s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
 		},
 		{
 			id: 'r',
 			label: 'R',
 			text: (c) =>
-				`le texte R : \n
-					access key id: ${c.AWS_ACCESS_KEY_ID} \n
-					s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
+				`le texte R :
+access key id: ${c.AWS_ACCESS_KEY_ID}
+s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
 		},
 	];
 
@@ -25,6 +27,11 @@ const ExportCredentialsField = ({ credentials }) => {
 	const exportType = exportTypes.find((type) => type.id === exportTypeId);
 
 	const handleChange = (e) => changeExportType(e.target.value);
+
+	const copy = () => {
+		clipboard.writeText(exportType.text(credentials));
+		return false;
+	};
 
 	return (
 		<>
@@ -34,7 +41,9 @@ const ExportCredentialsField = ({ credentials }) => {
 					<MenuItem value={e.id}>{e.label}</MenuItem>
 				))}
 			</Select>
-			<div>{exportType.text(credentials)}</div>
+			<IconButton aria-label="copier dans le presse papier" onClick={copy}>
+				<FileCopy />
+			</IconButton>
 		</>
 	);
 };
