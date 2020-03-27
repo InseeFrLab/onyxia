@@ -24,7 +24,7 @@ export default {
 			return this.state.redirect ? (
 				<Redirect to="/my-lab/catalogue/Draw.io" />
 			) : (
-				<React.Fragment>
+				<>
 					<Arrow dom={bouton} />
 					<Typography variant="h6" gutterBottom>
 						Catalogue du libre service
@@ -37,12 +37,12 @@ export default {
 					<Typography variant="body1" gutterBottom>
 						Créons ensemble votre premier service !
 					</Typography>
-				</React.Fragment>
+				</>
 			);
 		};
 	},
 	actions: ({ firstService, next, setFirstService, prec }) => (
-		<React.Fragment>
+		<>
 			<Prec prec={prec} />
 			<LinkTo
 				to="/my-lab/catalogue/Draw.io"
@@ -52,6 +52,6 @@ export default {
 					next();
 				}}
 			/>
-		</React.Fragment>
+		</>
 	),
 };

@@ -21,7 +21,7 @@ export default {
 		}
 		render() {
 			return (
-				<React.Fragment>
+				<>
 					<Arrow dom={this.state.dom} />
 					<Typography variant="h6" gutterBottom>
 						Mon labo
@@ -30,18 +30,18 @@ export default {
 						Vous pouvez maintenant accéder à la page de paramétrage de votre
 						application en cliquant sur le bouton détail de la carte.
 					</Typography>
-				</React.Fragment>
+				</>
 			);
 		}
 	},
 	actions: ({ prec, next, serviceCree }) => (
-		<React.Fragment>
+		<>
 			<Prec prec={prec} />
 			<LinkTo
 				to={`/my-lab/mes-services/${extractServiceId(serviceCree.id)}`}
 				onClick={next}
 				component={() => <Icon>more_horiz</Icon>}
 			/>
-		</React.Fragment>
+		</>
 	),
 };

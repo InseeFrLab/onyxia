@@ -7,7 +7,7 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import SecretsForm from './mes-secrets-form.component';
 
 export default ({ location, vaultSecret, updateVaultSecret }) => (
-	<React.Fragment>
+	<>
 		<div className="en-tete">
 			<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
 				Mon secret
@@ -31,5 +31,5 @@ export default ({ location, vaultSecret, updateVaultSecret }) => (
 				)}
 			</Paper>
 		</div>
-	</React.Fragment>
+	</>
 );

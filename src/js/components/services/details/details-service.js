@@ -32,7 +32,7 @@ class DetailsService extends React.Component {
 			ONYXIA_CONTRIBUTE,
 		} = service.labels;
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete">
 					<Typography
 						variant="h2"
@@ -123,7 +123,7 @@ class DetailsService extends React.Component {
 						</Paper>
 					) : null}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

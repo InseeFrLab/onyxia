@@ -11,9 +11,9 @@ const FilMonGroupe = ({ groupId }) => {
 };
 
 export default (props) => (
-	<React.Fragment>
+	<>
 		<Header services={props.services} />
 		<FilMonGroupe groupId={getParamsFromProps(props).groupId} />
 		<ListeCartes {...props} />
-	</React.Fragment>
+	</>
 );

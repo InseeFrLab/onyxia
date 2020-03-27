@@ -15,7 +15,6 @@ const initial = {
 	screenType: null,
 	visite: false,
 	faviconUrl: '/onyxia.png',
-	accueil: null,
 };
 
 export default (state = initial, action) => {
@@ -65,11 +64,6 @@ export default (state = initial, action) => {
 		case types.SET_FAVICON: {
 			return { ...state, faviconUrl: action.payload.url };
 		}
-
-		case types.ACCUEIL_LOAD: {
-			return { ...state, accueil: action.payload.accueil };
-		}
-
 		default:
 			return state;
 	}

@@ -8,7 +8,7 @@ export default {
 		const elmts = document.getElementsByClassName('onyxia-toolbar');
 		const toolbar = elmts.length > 0 ? elmts[0] : null;
 		return (
-			<React.Fragment>
+			<>
 				<Arrow dom={toolbar} />
 				<Typography variant="h6" gutterBottom>
 					Mon labo
@@ -26,7 +26,7 @@ export default {
 						<Icon fontSize="small">refresh</Icon>
 					</Fab>
 				</Typography>
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next, prec }) => <Both next={next} prec={prec} />,

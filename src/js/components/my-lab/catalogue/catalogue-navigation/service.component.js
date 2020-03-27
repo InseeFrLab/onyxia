@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 const Service = ({ location, service, idCatalogue, idService }) => {
 	return service ? (
-		<React.Fragment>
+		<>
 			<div className="en-tete">
 				<Typography
 					variant="h2"
@@ -26,7 +26,7 @@ const Service = ({ location, service, idCatalogue, idService }) => {
 				{getPreinstallNotes(service)}
 				{getAjouter(idCatalogue)(idService)}
 			</div>
-		</React.Fragment>
+		</>
 	) : null;
 };
 

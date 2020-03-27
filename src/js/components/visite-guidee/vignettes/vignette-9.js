@@ -6,7 +6,7 @@ import { Icon, IconButton } from '@material-ui/core';
 export default {
 	description: () => {
 		return (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Mon labo
 				</Typography>
@@ -23,7 +23,7 @@ export default {
 					</IconButton>
 					ouvre l&rsquo;interface de votre application.
 				</Typography>
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next, prec }) => <Both next={next} prec={prec} />,

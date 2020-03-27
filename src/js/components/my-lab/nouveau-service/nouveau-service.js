@@ -116,7 +116,7 @@ class NouveauService extends React.Component {
 		const onglet = this.state.ongletFields[this.state.onglet] || {};
 		const user = this.props.user ? this.props.user : {};
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete en-tete-service">
 					<Typography
 						variant="h2"
@@ -184,7 +184,7 @@ class NouveauService extends React.Component {
 						{contract ? <JSONEditor json={contract} readOnly={true} /> : <></>}
 					</div>
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }
