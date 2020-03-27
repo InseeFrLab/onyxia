@@ -103,13 +103,11 @@ class MonCompte extends React.Component {
 								label="S3 endpoint"
 								value={credentials.AWS_S3_ENDPOINT || ''}
 							/>
-							<CopyableField 
+							<CopyableField
 								copy
 								label="extraire les données au format xxx"
 								value={credentials.AWS_S3_ENDPOINT || ''}
-							>
-								test
-							</CopyableField>
+							/>
 						</Paper>
 					) : null}
 
