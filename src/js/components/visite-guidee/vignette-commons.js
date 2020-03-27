@@ -48,10 +48,10 @@ export const Prec = ({ prec, disabled = false, type = 'arrow_left' }) => (
 );
 
 export const Both = ({ next, prec }) => (
-	<React.Fragment>
+	<>
 		<Prec prec={prec} />
 		<Next next={next} />
-	</React.Fragment>
+	</>
 );
 
 export const Bye = () => (

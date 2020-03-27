@@ -8,7 +8,7 @@ import { Next, LinkTo, Arrow } from './vignette-commons';
 const ETAPES = [
 	{
 		description: () => (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Bienvenue sur la visite guidée d&rsquo;Onyxia !
 				</Typography>
@@ -20,7 +20,7 @@ const ETAPES = [
 				<Typography variant="body1" gutterBottom>
 					Bonne visite !
 				</Typography>
-			</React.Fragment>
+			</>
 		),
 		actions: ({ next }) => <Next next={next} />,
 	},
@@ -28,7 +28,7 @@ const ETAPES = [
 		description: () => {
 			const bouton = document.getElementById('bouton-mon-compte');
 			return (
-				<React.Fragment>
+				<>
 					<Arrow dom={bouton} />
 					<Typography variant="h6" gutterBottom>
 						Authentification
@@ -45,7 +45,7 @@ const ETAPES = [
 					<Typography variant="body1" gutterBottom>
 						Commençons par la visite des services partagés.
 					</Typography>
-				</React.Fragment>
+				</>
 			);
 		},
 		actions: ({ startVisite }) => (

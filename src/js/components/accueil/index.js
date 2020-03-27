@@ -1,1 +1,1 @@
-export { default } from './accueil.container';
+export { default } from './accueil-async';

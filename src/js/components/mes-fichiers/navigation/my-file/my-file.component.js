@@ -113,7 +113,7 @@ const MonFichier = ({
 		minioDownloadUrl,
 	]);
 	return (
-		<React.Fragment>
+		<>
 			<div className="en-tete">
 				<Typography
 					variant="h2"
@@ -141,7 +141,7 @@ const MonFichier = ({
 				/>
 				<MyPolicy handleDelete={removeFromPolicy} policy={policy} path={path} />
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
 

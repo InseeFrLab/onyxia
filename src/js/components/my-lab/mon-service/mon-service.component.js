@@ -177,7 +177,7 @@ class MonService extends React.Component {
 		const TAB_TASKS = 1;
 		const TAB_DEBUG = 2;
 		return (
-			<React.Fragment>
+			<>
 				<Header service={service} />
 				<FilMonService service={service} taskId={taskId} />
 				<div className="contenu mon-service">
@@ -399,7 +399,7 @@ class MonService extends React.Component {
 					toggle={this.toggleConfirm}
 					action={this.state.confirmAction}
 				/>
-			</React.Fragment>
+			</>
 		);
 	}
 }

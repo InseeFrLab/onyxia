@@ -26,9 +26,9 @@ class Progress extends React.Component {
 
 const next = (lim, percent = 0) =>
 	percent < Math.min(lim, 100) ? (
-		<React.Fragment>
+		<>
 			<span className="part" /> {next(lim, percent + 1)}
-		</React.Fragment>
+		</>
 	) : null;
 
 Progress.propTypes = {

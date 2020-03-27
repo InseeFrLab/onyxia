@@ -6,7 +6,7 @@ import { BecherIcon } from 'js/components/commons/icons';
 export default {
 	description: class Diapo extends React.Component {
 		render = () => (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Nouveau service personnel
 				</Typography>
@@ -15,7 +15,7 @@ export default {
 					l&rsquo;avancement de l&rsquo;opération sur votre laboratoire
 					personnel.
 				</Typography>
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next }) => (

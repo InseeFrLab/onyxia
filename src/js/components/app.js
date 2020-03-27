@@ -82,7 +82,7 @@ const AppFeelGood = ({
 		<CssBaseline />
 		<Favicon />
 		<Router>
-			<React.Fragment>
+			<>
 				<div className="application">
 					<NavBar />
 					<main role="main">
@@ -161,7 +161,7 @@ const AppFeelGood = ({
 				</div>
 				<VisiteGuidee />
 				<CloudShell />
-			</React.Fragment>
+			</>
 		</Router>
 	</MuiThemeProvider>
 );

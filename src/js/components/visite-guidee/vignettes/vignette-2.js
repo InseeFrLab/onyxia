@@ -8,7 +8,7 @@ export default {
 	description: () => {
 		document.getElementById('onglets-accueil-services').style.zIndex = 1000;
 		return (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Les services partagés
 				</Typography>
@@ -33,7 +33,7 @@ export default {
 					indisponible.
 				</Typography>
 				<WorkInProgress />
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next, prec }) => <Both next={next} prec={prec} />,

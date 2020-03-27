@@ -5,79 +5,74 @@ import { Avatar, Card, CardContent } from '@material-ui/core/';
 import { CardHeader, Grid, Icon } from '@material-ui/core/';
 import Button from '@material-ui/core/Button';
 import D from 'js/i18n';
+import { wrapPromise, axiosPublic } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
 
-class Accueil extends React.Component {
-	constructor(props) {
-		super(props);
-		if (!props.accueil) {
-			props.chargerAccueil();
-		}
-	}
-	render() {
-		const { accueil } = this.props;
-		if (!accueil) return null;
-		const { bienvenue, cartes, precautions, applications } = accueil;
-		return (
-			<React.Fragment>
-				{/* <Chrismas /> */}
-				<div className="accueil">
-					<Welcome
-						image={bienvenue.image}
-						titre={bienvenue.titre}
-						contenu={bienvenue.contenu}
-						boutonQuestion={bienvenue.boutonQuestion}
-					/>
-					<Grid className="valeurs" container spacing={2} alignItems="flex-end">
-						{cartes.map(({ titre, contenu, icone }, i) => (
-							<Carte title={titre} icon={icone} key={i}>
-								<Typography variant="body1">{contenu}</Typography>
-							</Carte>
-						))}
-					</Grid>
-					<Precautions titre={precautions.titre}>
-						{precautions.contenu}
-					</Precautions>
-					<div className="applications">
-						{applications.map(
-							(
-								{
-									nom,
-									image,
-									resume,
-									external,
-									internal,
-									avantages,
-									couleur1,
-									couleur2,
-								},
-								i
-							) => (
-								<App paire={i % 2 === 0} key={i}>
-									<Commentaires
-										title={nom}
-										external={external}
-										internal={internal}
-										color={couleur1}
-									>
-										<Typography variant="body1" className="resume">
-											{resume}
-										</Typography>
-										{avantages.map((av, j) => (
-											<Benefit key={j}>{av}</Benefit>
-										))}
-									</Commentaires>
-									<Image color={couleur2} name="r-studio" url={image} />
-								</App>
-							)
-						)}
-					</div>
+const resource = wrapPromise(
+	axiosPublic(`${window.location.origin}/accueil.json`)
+);
+
+const Accueil = () => {
+	const { bienvenue, cartes, precautions, applications } = resource.read();
+	return (
+		<>
+			{/* <Chrismas /> */}
+			<div className="accueil">
+				<Welcome
+					image={bienvenue.image}
+					titre={bienvenue.titre}
+					contenu={bienvenue.contenu}
+					boutonQuestion={bienvenue.boutonQuestion}
+				/>
+				<Grid className="valeurs" container spacing={2} alignItems="flex-end">
+					{cartes.map(({ titre, contenu, icone }, i) => (
+						<Carte title={titre} icon={icone} key={i}>
+							<Typography variant="body1">{contenu}</Typography>
+						</Carte>
+					))}
+				</Grid>
+				<Precautions titre={precautions.titre}>
+					{precautions.contenu}
+				</Precautions>
+				<div className="applications">
+					{applications.map(
+						(
+							{
+								nom,
+								image,
+								resume,
+								external,
+								internal,
+								avantages,
+								couleur1,
+								couleur2,
+							},
+							i
+						) => (
+							<App paire={i % 2 === 0} key={i}>
+								<Commentaires
+									title={nom}
+									external={external}
+									internal={internal}
+									color={couleur1}
+								>
+									<Typography variant="body1" className="resume">
+										{resume}
+									</Typography>
+									{avantages.map((av, j) => (
+										<Benefit key={j}>{av}</Benefit>
+									))}
+								</Commentaires>
+								<Image color={couleur2} name="r-studio" url={image} />
+							</App>
+						)
+					)}
 				</div>
-			</React.Fragment>
-		);
-	}
-}
+			</div>
+		</>
+	);
+};
 
 const Carte = ({ icon = 'star', title, children }) => (
 	<Grid item lg={4} md={6} xs={12} classes={{ item: 'carte' }}>
