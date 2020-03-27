@@ -11,19 +11,36 @@ class ExportCredentialsField extends React.Component {
 	handleChange = (e) => this.setState({ value: e.target.value });
 
 	render() {
-		const pythonText = `ceci est l'export en Python : ${this.credentials.AWS_ACCESS_KEY_ID}`;
-		const RText = `ceci est l'export en R : ${this.credentials.AWS_S3_ENDPOINT}`;
+		const exportTypes = [
+			{
+				id: 'python',
+				label: 'Python',
+				text: (c) =>
+					`le texte python : \n
+					access key id: ${c.AWS_ACCESS_KEY_ID}\n
+					s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
+			},
+			{
+				id: 'r',
+				label: 'R',
+				text: (c) =>
+					`le texte R : \n
+					access key id: ${c.AWS_ACCESS_KEY_ID} \n
+					s3 endpoint: ${c.AWS_S3_ENDPOINT}`,
+			},
+		];
 
-		const exportText = this.state.value === 'python' ? pythonText : RText;
+		const exportType = exportTypes.find((type) => type.id === this.state.value);
 
 		return (
 			<>
 				<InputLabel>Copier au format :</InputLabel>
 				<Select value={this.state.value} onChange={this.handleChange}>
-					<MenuItem value="python">Python</MenuItem>
-					<MenuItem value="r">R</MenuItem>
+					{exportTypes.map((e) => (
+						<MenuItem value={e.id}>{e.label}</MenuItem>
+					))}
 				</Select>
-				<div>{exportText}</div>
+				<div>{exportType.text(this.credentials)}</div>
 			</>
 		);
 	}
