@@ -1,1 +1,1 @@
-export { default } from './catalogue-leaf.component';
+export { default } from './async-catalogue';
