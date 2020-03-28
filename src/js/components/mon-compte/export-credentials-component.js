@@ -39,7 +39,7 @@ const ExportCredentialsField = ({ credentials }) => {
 				<Grid container xs={4} justify="flex-end">
 					<Grid item>
 						<ExportFileButton
-							fileName={`credentials.${exportType.extension}`}
+							fileName={exportType.fileName}
 							content={exportType.text(credentials)}
 						/>
 					</Grid>
