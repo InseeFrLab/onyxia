@@ -1,6 +1,6 @@
 const dictionary = {
 	export: {
-		fr: 'Exporter le script : ',
+		fr: 'Générer un script : ',
 		en: 'Export sript: ',
 	},
 };
