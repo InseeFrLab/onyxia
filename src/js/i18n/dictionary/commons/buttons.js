@@ -9,7 +9,7 @@ const dictionary = {
 	},
 	btnDiscover: { fr: 'Découvrez', en: 'Discover' },
 	btnSaveAsLabel: { fr: 'Sauvegarder sous', en: 'Save as' },
-	btnCopyLabel: { fr: 'Copier dans le presse papier', en: 'Copy in dashboard' },
+	btnCopyLabel: { fr: 'Copier dans le presse papier', en: 'Copy to clipboard' },
 };
 
 export default dictionary;
