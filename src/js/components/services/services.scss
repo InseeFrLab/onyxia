@@ -6,7 +6,7 @@ $font-size-corps: 14px;
 .accueil {
 	@include carteService();
 	.cartes {
-		margin-top: 8px;
+		margin-top: 0.1em;
 	}
 }
 
