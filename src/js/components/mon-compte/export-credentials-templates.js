@@ -1,7 +1,7 @@
 const exportTypes = [
 	{
 		id: 'r',
-		label: 'R',
+		label: 'R (aws.S3)',
 		extension: 'R',
 		text: (c) =>
 			`install.packages("aws.s3", repos = "https://cloud.R-project.org")

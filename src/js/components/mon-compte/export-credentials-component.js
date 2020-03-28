@@ -24,7 +24,7 @@ const ExportCredentialsField = ({ credentials }) => {
 					</Grid>
 					<Grid item>
 						<Select
-							style={{ minWidth: 120 }}
+							style={{ minWidth: 240 }}
 							value={exportTypeId}
 							onChange={handleChange}
 						>
