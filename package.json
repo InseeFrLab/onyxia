@@ -24,6 +24,7 @@
 		"axios": "^0.19.2",
 		"classnames": "^2.2.6",
 		"clipboard-polyfill": "^2.8.6",
+		"file-saver": "^2.0.2",
 		"filereader-stream": "^2.0.0",
 		"jsoneditor": "^8.6.3",
 		"jsoneditor-react": "^3.0.0",
