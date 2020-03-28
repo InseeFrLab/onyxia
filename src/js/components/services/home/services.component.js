@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
-import OngletsAccueil from '../onglets';
+import Content from './content';
 import DetailsService from '../details';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 
@@ -10,14 +10,14 @@ const Services = ({ serviceSelectionne }) =>
 		<>
 			<EnTete />
 			<FilDAriane fil={fil.servicesCollaboratifs} />
-			<OngletsAccueil />
+			<Content />
 			<DetailsService />
 		</>
 	) : (
 		<>
 			<EnTete />
 			<FilDAriane fil={fil.servicesCollaboratifs} />
-			<OngletsAccueil />
+			<Content />
 		</>
 	);
 
