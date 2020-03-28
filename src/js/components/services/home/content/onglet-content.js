@@ -13,35 +13,34 @@ import api from 'js/redux/api';
 
 const resource = wrapPromise(axiosPublic(api.services));
 
-const OngletContent = (props) => {
+const OngletContent = ({ setServiceSelectionne }) => {
 	const services = resource.read();
-	const { tab, setServiceSelectionne } = props;
 
 	const handleOpenService = (service) =>
 		window.open(service.labels.ONYXIA_URL.split(',')[0]);
 
 	const handleMoreDetailsService = (service) => setServiceSelectionne(service);
 
-	const gridItems = services
-		.filter((s) => !s.labels.ONYXIA_STATUS || s.labels.ONYXIA_STATUS === tab)
-		.map((service, i) => (
-			<CarteService
-				down={getColorClassStateService(service) === 'down'}
-				key={i}
-				title={getTitle(service)}
-				subtitle={getSubtitle(service)}
-				avatar={getServiceAvatar(service)}
-				actions={createActionsCarte(service)(handleOpenService)(
-					handleMoreDetailsService
-				)}
-				contenu={createContenuCarte(service)}
-			/>
-		));
+	const gridItems = services.map((service, i) => (
+		<CarteService
+			down={getColorClassStateService(service) === 'down'}
+			key={i}
+			title={getTitle(service)}
+			subtitle={getSubtitle(service)}
+			avatar={getServiceAvatar(service)}
+			actions={createActionsCarte(service)(handleOpenService)(
+				handleMoreDetailsService
+			)}
+			contenu={createContenuCarte(service)}
+		/>
+	));
 
 	return (
-		<Grid container spacing={8} classes={{ container: 'cartes' }}>
-			{gridItems}
-		</Grid>
+		<div className="contenu accueil">
+			<Grid container spacing={8} classes={{ container: 'cartes' }}>
+				{gridItems}
+			</Grid>
+		</div>
 	);
 };
 
@@ -50,7 +49,7 @@ export default OngletContent;
 const createActionsCarte = (service) => (openService) => (
 	openDetails
 ) => () => (
-	<React.Fragment>
+	<>
 		<IconButton
 			color="secondary"
 			aria-label="ouvir"
@@ -68,7 +67,7 @@ const createActionsCarte = (service) => (openService) => (
 				<Icon>more_horiz</Icon>
 			</IconButton>
 		</Link>
-	</React.Fragment>
+	</>
 );
 
 const createContenuCarte = (service) => () => (

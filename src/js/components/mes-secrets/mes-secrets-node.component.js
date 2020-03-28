@@ -12,7 +12,7 @@ class SecretsNode extends React.Component {
 		const { location, vaultSecretsList } = this.props;
 
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete">
 					<Typography
 						variant="h2"
@@ -46,7 +46,7 @@ class SecretsNode extends React.Component {
 						</div>
 					</div>
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

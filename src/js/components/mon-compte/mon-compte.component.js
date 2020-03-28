@@ -33,7 +33,7 @@ class MonCompte extends React.Component {
 		const credentials = user.S3;
 		if (!user) return null;
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete">
 					<Typography
 						variant="h2"
@@ -129,7 +129,7 @@ class MonCompte extends React.Component {
 						/>
 					</Paper>
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }
@@ -137,13 +137,13 @@ class MonCompte extends React.Component {
 const isEmptySsh = (sshPublicKey) => !sshPublicKey || sshPublicKey === '';
 
 const NoShhKey = () => (
-	<React.Fragment>
+	<>
 		<p>Attention&#33; Vous ne possédez pas de clefs SSH. </p>
 		<p>
 			Par conséquent, vous ne pouvez pas utiliser les fonctionnalités GIT avec
 			les conteneurs sur Onyxia.
 		</p>
-	</React.Fragment>
+	</>
 );
 
 const SshKeyUser = ({ ssh }) => (

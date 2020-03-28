@@ -27,7 +27,7 @@ class QuickAccess extends React.Component {
 						</Icon>
 					</IconButton>
 					{this.state.folded ? null : (
-						<React.Fragment>
+						<>
 							<Option
 								icone={PokerHandIcon}
 								label="Services"
@@ -52,7 +52,7 @@ class QuickAccess extends React.Component {
 								path="/mes-fichiers"
 								focused={pathname === '/mes-fichiers'}
 							/>
-						</React.Fragment>
+						</>
 					)}
 				</Paper>
 			</div>

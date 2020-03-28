@@ -58,7 +58,7 @@ const Node = ({ location }) => {
 
 	const setServiceSelected = () => null;
 	return init ? (
-		<React.Fragment>
+		<>
 			<div className="en-tete">
 				<Typography
 					variant="h2"
@@ -115,7 +115,7 @@ const Node = ({ location }) => {
 					</Paper>
 				</div>
 			) : null}
-		</React.Fragment>
+		</>
 	) : null;
 };
 

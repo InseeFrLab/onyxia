@@ -74,19 +74,19 @@ class MesSecrets extends React.Component {
 		const { sealedStatus } = this.props;
 		if (sealedStatus === VAULT_STATUS.unknow) return <div>waiting...</div>;
 		return sealedStatus === VAULT_STATUS.sealed ? (
-			<React.Fragment>
+			<>
 				<SealedChest {...this.props} />
-			</React.Fragment>
+			</>
 		) : (
-			<React.Fragment>
+			<>
 				<Aiguilleur {...this.props} />
-			</React.Fragment>
+			</>
 		);
 	}
 }
 
 const SealedChest = ({ location }) => (
-	<React.Fragment>
+	<>
 		<div className="en-tete">
 			<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
 				Mes secrets
@@ -101,7 +101,7 @@ const SealedChest = ({ location }) => (
 				</Typography>
 			</Paper>
 		</div>
-	</React.Fragment>
+	</>
 );
 
 export default MesSecrets;

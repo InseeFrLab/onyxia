@@ -302,7 +302,7 @@ class MyFiles extends React.Component {
 				[]
 			);
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete">
 					<Typography
 						variant="h2"
@@ -427,7 +427,7 @@ class MyFiles extends React.Component {
 						(this.state.sizeCurrent / (this.state.sizeTotal + 0.01)) * 100
 					}
 				/>
-			</React.Fragment>
+			</>
 		);
 	}
 }

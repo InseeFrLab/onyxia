@@ -12,7 +12,6 @@ export const USER_UPDATE = 'onyxia/app/userUpdate';
 export const START_VISITE = 'onyxia/app/startVisite';
 export const STOP_VISITE = 'onyxia/app/stopVisite';
 export const SET_FAVICON = 'onyxia/app/setFavicon';
-export const ACCUEIL_LOAD = 'onyxia/app/accueilLoad';
 
 // public reducer
 export const SERVICE_SELECTIONNE = 'onyxia/public/serviceSelectionne';

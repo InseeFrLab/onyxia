@@ -17,7 +17,7 @@ class Service extends React.Component {
 		const { service } = this.props;
 		if (!service) return null;
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete en-tete-service">
 					<Typography
 						variant="h2"
@@ -25,11 +25,7 @@ class Service extends React.Component {
 						color="textPrimary"
 						gutterBottom
 					>
-						{service ? (
-							<React.Fragment>{service.name}</React.Fragment>
-						) : (
-							'en cours de chargement...'
-						)}
+						{service ? <>{service.name}</> : 'en cours de chargement...'}
 					</Typography>
 				</div>
 				{service ? (
@@ -41,7 +37,7 @@ class Service extends React.Component {
 					{getPreinstallNotes(service)}
 					{getAjouter(service)}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

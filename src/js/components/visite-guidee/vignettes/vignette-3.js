@@ -9,7 +9,7 @@ export default {
 		document.getElementById('onglets-accueil-services').style.outline =
 			'1px solid red';
 		return (
-			<React.Fragment>
+			<>
 				<Typography variant="h6" gutterBottom>
 					Les services partagés
 				</Typography>
@@ -23,17 +23,17 @@ export default {
 				<Typography variant="body1" gutterBottom>
 					Poursuivons la visite avec le catalogue du libre-service.
 				</Typography>
-			</React.Fragment>
+			</>
 		);
 	},
 	actions: ({ next, prec }) => (
-		<React.Fragment>
+		<>
 			<Prec prec={prec} />
 			<LinkTo
 				to="/my-lab/catalogue"
 				onClick={next}
 				component={() => <CatalogueIcon width={20} height={20} color="#fff" />}
 			/>
-		</React.Fragment>
+		</>
 	),
 };

@@ -62,9 +62,9 @@ class MesFichiers extends React.Component {
 
 	render() {
 		const { buckets } = this.props;
-			
+
 		return (
-			<React.Fragment>
+			<>
 				<div className="en-tete">
 					<Typography
 						variant="h2"
@@ -101,7 +101,7 @@ class MesFichiers extends React.Component {
 						</div>
 					</Paper>
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

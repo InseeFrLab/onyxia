@@ -1,4 +1,4 @@
-import { axiosAuth, axiosPublicFolder } from 'js/utils';
+import { axiosAuth } from 'js/utils';
 import api from './../api';
 import { getKeycloak, clearLocalToken } from 'js/utils';
 import { PUSHER } from 'js/components/notifications';
@@ -100,18 +100,6 @@ export const setFavicon = (url) => ({
 	type: constantes.SET_FAVICON,
 	payload: { url },
 });
-
-export const chargerAccueil = () => async (dispatch) => {
-	const { data } = await axiosPublicFolder.get(
-		`${window.location.origin}/accueil.json`
-	);
-	dispatch({
-		type: constantes.ACCUEIL_LOAD,
-		payload: {
-			accueil: data,
-		},
-	});
-};
 
 export const startVisite = () => ({ type: constantes.START_VISITE });
 export const stopVisite = () => ({ type: constantes.STOP_VISITE });

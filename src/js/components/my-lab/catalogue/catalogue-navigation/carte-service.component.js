@@ -39,7 +39,7 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 				</CardContent>
 				<CardActions className="boutons">
 					{down ? null : (
-						<React.Fragment>
+						<>
 							<Link to={`/my-lab/catalogue/${idCatalogue}/${service.name}`}>
 								<Fab
 									id={`bouton-service-${service.name}`}
@@ -63,7 +63,7 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 									<Icon>add</Icon>
 								</Fab>
 							</Link>
-						</React.Fragment>
+						</>
 					)}
 				</CardActions>
 			</Card>
