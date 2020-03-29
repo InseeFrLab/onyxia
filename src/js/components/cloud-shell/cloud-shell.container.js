@@ -3,7 +3,7 @@ import CloudShell from './cloud-shell.component';
 import {
 	cloudShellChangeVisibility,
 	refreshCloudShellStatus,
-	supprimerGroupe,
+	requestDeleteMonService,
 } from 'js/redux/actions';
 
 const mapStateToProps = (state) => {
@@ -17,7 +17,9 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(cloudShellChangeVisibility(visibility)),
 	getShellStatus: () => dispatch(refreshCloudShellStatus()),
 	deleteCloudShell: (idep) =>
-		supprimerGroupe(`/users/${idep}/cloudshell`)(dispatch),
+		requestDeleteMonService({
+			id: `/users/${idep}/cloudshell`,
+		})(dispatch),
 	// deleteCloudShell: (idep) => dispatch(supprimerGroupe(`/users/${idep}/cloudshell`))
 });
 
