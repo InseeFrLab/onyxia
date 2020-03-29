@@ -5,34 +5,39 @@ import BooleanField from './field-boolean';
 import NumberField from './field-number';
 import SelectField from './field-select';
 import SelectWarField from './field-media-war';
+import { getFieldSafeAttr } from 'js/utils/form-field';
 
 export default ({ fields, user, handleChange, name, values, options }) => {
 	const champs = fields.map(({ field, path }, i) => {
-		if (field['js-control'] && field['js-control'] === 'shadow') return null;
-		const disabled =
-			(field['js-control'] && field['js-control'] === 'ro') || false;
+		const { nom, media, visible, readonly, description } = getFieldSafeAttr(
+			field
+		);
+
+		if (!visible) return null;
+
 		switch (field.type) {
 			case 'string':
-				return field.media && field.media.type && field.media.type === 'war' ? (
+				return media === 'war' ? (
 					<Grid item lg={4} md={6} sm={12} key={i}>
 						<SelectWarField
-							disabled={disabled}
-							handleChange={handleChange}
+							nom={nom}
 							user={user}
+							disabled={readonly}
+							handleChange={handleChange}
 							path={path}
 							value={values[path]}
-							{...field}
+							description={description}
 						/>
 					</Grid>
 				) : (
 					<Grid item lg={4} md={6} sm={12} key={i}>
 						<StringField
-							disabled={disabled}
+							nom={nom}
+							disabled={readonly}
 							handleChange={handleChange}
-							user={user}
 							path={path}
 							value={values[path]}
-							{...field}
+							description={description}
 						/>
 					</Grid>
 				);
@@ -40,12 +45,12 @@ export default ({ fields, user, handleChange, name, values, options }) => {
 				return (
 					<Grid item lg={4} md={6} sm={12} key={i}>
 						<NumberField
-							disabled={disabled}
+							nom={nom}
+							disabled={readonly}
 							handleChange={handleChange}
-							user={user}
 							path={path}
 							value={values[path]}
-							{...field}
+							description={description}
 						/>
 					</Grid>
 				);
@@ -53,12 +58,12 @@ export default ({ fields, user, handleChange, name, values, options }) => {
 				return (
 					<Grid item lg={4} md={6} sm={12} key={i}>
 						<BooleanField
-							disabled={disabled}
+							nom={nom}
+							disabled={readonly}
 							handleChange={handleChange}
-							user={user}
 							path={path}
 							value={values[path]}
-							{...field}
+							description={description}
 						/>
 					</Grid>
 				);
@@ -66,13 +71,13 @@ export default ({ fields, user, handleChange, name, values, options }) => {
 				return (
 					<Grid item lg={4} md={6} sm={12} key={i}>
 						<SelectField
-							disabled={disabled}
+							nom={nom}
+							disabled={readonly}
 							handleChange={handleChange}
-							user={user}
 							path={path}
-							options={options}
 							value={values[path]}
-							{...field}
+							description={description}
+							options={options}
 						/>
 					</Grid>
 				);

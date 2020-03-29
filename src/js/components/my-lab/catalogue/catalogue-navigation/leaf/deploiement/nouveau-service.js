@@ -15,7 +15,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import { getVaultToken } from 'js/vault-client';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
-import { axiosPublic } from 'js/utils';
+import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
 
 class NouveauService extends React.Component {
@@ -133,7 +133,6 @@ class NouveauService extends React.Component {
 
 		if (redirect) return <Redirect to="/my-lab/mes-services" />;
 		const onglet = ongletFields[ongletState] || {};
-
 		return (
 			<>
 				<div className="en-tete en-tete-service">
@@ -276,7 +275,10 @@ const arrayToObject = (minioCredentials) => (queryParams) => (user) => (
 	const fromParams = getFromQueryParams(queryParams);
 	fields.forEach(
 		({ path, field }) =>
-			(obj[path] = fromParams(path)(field) || getDefaultSingleOption(field))
+			(obj[path] =
+				fromUser({ ...user, minio: { ...minioCredentials } })(field) ||
+				fromParams(path)(field) ||
+				getDefaultSingleOption(field))
 	);
 	return obj;
 };
@@ -301,7 +303,7 @@ const getFromQueryParams = (queryParams) => (path) => ({
 };
 
 const mapServiceToOnglets = (ongletFields) =>
-	ongletFields.map(({ nom }, i) => <Tab key={i} label={nom} />);
+	filterOnglets(ongletFields).map(({ nom }, i) => <Tab key={i} label={nom} />);
 
 /*
  * Fonctions permettant de remettre en forme les valeurs
