@@ -1,7 +1,6 @@
 export default {
 	catalogue: '/public/catalog',
 	services: '/public/our-lab/apps',
-	availablePackages: '/my-lab/package',
 	mesServices: '/my-lab/group',
 	userInfo: '/user/info',
 	nouveauService: '/my-lab/app',
