@@ -6,7 +6,7 @@ import { WorkInProgress } from 'js/components/commons/icons';
 
 export default {
 	description: () => {
-		document.getElementById('onglets-accueil-services').style.zIndex = 1000;
+		//document.getElementById('onglets-accueil-services').style.zIndex = 1000;
 		return (
 			<>
 				<Typography variant="h6" gutterBottom>
