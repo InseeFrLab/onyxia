@@ -94,6 +94,7 @@ class NouveauService extends React.Component {
 	handlechangeField = (path) => (value) => {
 		this.setState({
 			fieldsValues: { ...this.state.fieldsValues, [path]: value },
+			contract: undefined,
 		});
 	};
 
@@ -110,8 +111,11 @@ class NouveauService extends React.Component {
 				preview
 			)
 			.then((response) => {
-				if (preview) {
+				const { contract } = this.state;
+				if (preview && !contract) {
 					this.setState({ contract: response });
+				} else if (preview && contract) {
+					this.setState({ contract: undefined });
 				} else {
 					this.setState({ redirect: true });
 				}
