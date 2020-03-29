@@ -1,9 +1,6 @@
 import { getContext, searchInContext } from 'js/context/context';
 
-export const getDefaultSingleOption = (
-	property: any,
-	context: Map<String, String> = getContext()
-) => {
+export const getDefaultSingleOption = (property, context = getContext()) => {
 	if (property['api-defined']) {
 		return property['api-default'].replace(
 			/\[\$(.*)\]/g,
@@ -14,16 +11,16 @@ export const getDefaultSingleOption = (
 	return property['default'];
 };
 
-const getDefaultOptions = (
-	properties: any,
-	context: Map<String, String> = getContext()
-) => {
+const getDefaultOptions = (properties, context = getContext()) => {
+	debugger;
 	return Object.entries(properties).reduce((acc, [category, v]) => {
-		const laData = Object.entries(v).reduce(
+		debugger;
+		const laData = Object.entries(v.properties).reduce(
 			(categoryData, [propName, propData]) => {
 				const { type } = propData;
 				const jsControl = propData['js-control'];
 
+				debugger;
 				if (jsControl === 'shadow' || !type) {
 					return categoryData;
 				}
