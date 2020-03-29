@@ -5,48 +5,43 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { axiosPublic } from 'js/utils';
 import api from 'js/redux/api';
 import ChipsSelector from 'js/components/commons/chips-selector';
-import Carte from '../carte-service.component';
-import { isUndefined } from 'util';
+import Carte from './carte-service.component';
+import Loader from 'js/components/commons/loader';
+
+// TODO: Use wrapPromise & read to fetch
 
 const Node = ({ location }) => {
 	const [idCatalogue] = useState(() =>
 		location.split('/').reduce((a, x) => (x.length > 0 ? x : a))
 	);
-	const [init, setInit] = useState(false);
-	const [catalogue, setCatalogue] = useState({});
 	const [chipsSelected, setChipSelected] = useState([]);
 	const [chips, setChips] = useState([]);
+	const [catalogue, setCatalogue] = useState({});
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		let unmount = false;
-		const chargerCatalogue = async () => {
-			const response = await axiosPublic(`${api.catalogue}/${idCatalogue}`);
-			if (!unmount && !isUndefined(response)) {
-				setCatalogue(response);
-				setChips(
-					response.universe.packages.reduce(
-						(a, { name, tags = [] }) =>
-							mergeTab(
-								a,
-								[{ value: name, style: 'app-name', title: 'application' }],
-								tags.map((t) => ({
-									value: t,
-									style: 'tag-token',
-									title: 'tag',
-								})),
-								[]
-							),
-						[]
-					)
-				);
-				setInit(true);
-			}
-		};
-		if (!unmount && !init) {
-			chargerCatalogue();
-		}
-		return () => (unmount = true);
-	}, [init, idCatalogue]);
+		axiosPublic(`${api.catalogue}/${idCatalogue}`).then((res) => {
+			setCatalogue(res);
+			setChips(
+				res.universe.packages.reduce(
+					(a, { name, tags = [] }) =>
+						mergeTab(
+							a,
+							[{ value: name, style: 'app-name', title: 'application' }],
+							tags.map((t) => ({
+								value: t,
+								style: 'tag-token',
+								title: 'tag',
+							})),
+							[]
+						),
+					[]
+				)
+			);
+			setLoading(false);
+		});
+	}, [idCatalogue]);
+
 	const addChip = (chip) => {
 		setChipSelected([...chipsSelected, chip]);
 	};
@@ -56,66 +51,76 @@ const Node = ({ location }) => {
 	};
 
 	const setServiceSelected = () => null;
-	return init ? (
+
+	return (
 		<>
 			<div className="en-tete">
-				<Typography
-					variant="h2"
-					align="center"
-					color="textPrimary"
-					gutterBottom
-				>
-					{catalogue.name}
-				</Typography>
+				{loading ? (
+					<Loader />
+				) : (
+					<Typography
+						variant="h2"
+						align="center"
+						color="textPrimary"
+						gutterBottom
+					>
+						{catalogue.name}
+					</Typography>
+				)}
 			</div>
 			<FilDAriane fil={fil.catalogue(idCatalogue)} />
-
-			{catalogue ? (
-				<div className="contenu catalogue">
-					<Paper className="paper" elevation={1}>
-						<Typography
-							variant="h3"
-							align="center"
-							color="textPrimary"
-							gutterBottom
-						>
-							Description
-						</Typography>
-						<Typography variant="body1" color="textPrimary" gutterBottom>
-							{catalogue.description}
-						</Typography>
-						<Typography variant="body1" color="textPrimary" gutterBottom>
-							Le package est mis à disposition par&nbsp;
-							<strong>{catalogue.maintainer}</strong>
-						</Typography>
-					</Paper>
-					<Paper className="paper" elevation={1}>
-						<Typography
-							variant="h3"
-							align="center"
-							color="textPrimary"
-							gutterBottom
-						>
-							Vos Services
-						</Typography>
-						<Typography variant="subtitle1">Rechercher un service </Typography>
-						<ChipsSelector
-							chips={chips}
-							addChip={addChip}
-							removeChip={removeChip}
-						/>
-						<Grid container spacing={2} alignItems="flex-end">
-							{catalogue && catalogue.universe && catalogue.universe.packages
-								? mapCatalogueToCards(catalogue)(chipsSelected)(
-										setServiceSelected
-								  )
-								: null}
-						</Grid>
-					</Paper>
-				</div>
-			) : null}
+			<div className="contenu catalogue">
+				{loading ? (
+					<Loader em={18} />
+				) : (
+					<>
+						<Paper className="paper" elevation={1}>
+							<Typography
+								variant="h3"
+								align="center"
+								color="textPrimary"
+								gutterBottom
+							>
+								Description
+							</Typography>
+							<Typography variant="body1" color="textPrimary" gutterBottom>
+								{catalogue.description}
+							</Typography>
+							<Typography variant="body1" color="textPrimary" gutterBottom>
+								Le package est mis à disposition par&nbsp;
+								<strong>{catalogue.maintainer}</strong>
+							</Typography>
+						</Paper>
+						<Paper className="paper" elevation={1}>
+							<Typography
+								variant="h3"
+								align="center"
+								color="textPrimary"
+								gutterBottom
+							>
+								Vos Services
+							</Typography>
+							<Typography variant="subtitle1">
+								Rechercher un service{' '}
+							</Typography>
+							<ChipsSelector
+								chips={chips}
+								addChip={addChip}
+								removeChip={removeChip}
+							/>
+							<Grid container spacing={2} alignItems="flex-end">
+								{catalogue && catalogue.universe && catalogue.universe.packages
+									? mapCatalogueToCards(catalogue)(chipsSelected)(
+											setServiceSelected
+									  )
+									: null}
+							</Grid>
+						</Paper>
+					</>
+				)}
+			</div>
 		</>
-	) : null;
+	);
 };
 
 export default Node;
