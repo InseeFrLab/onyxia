@@ -5,9 +5,9 @@ import { CatalogueIcon } from 'js/components/commons/icons';
 
 export default {
 	description: () => {
-		document.getElementById('onglets-accueil-services').style.zIndex = 99999;
-		document.getElementById('onglets-accueil-services').style.outline =
-			'1px solid red';
+		//document.getElementById('onglets-accueil-services').style.zIndex = 99999;
+		//document.getElementById('onglets-accueil-services').style.outline =
+		//	'1px solid red';
 		return (
 			<>
 				<Typography variant="h6" gutterBottom>
