@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
 		etapes: vignettes,
 		firstService: catalogue.length > 0 ? catalogue[0] : null,
 		serviceCree: mesServices.find(
-			(s) => s.labels.ONYXIA_TITLE === 'vscode-example'
+			(s) => s.labels.ONYXIA_TITLE === 'rstudio-example'
 		),
 	};
 };
@@ -25,12 +25,12 @@ const mapToDispatchToProps = (d) => ({
 		d(
 			creerNouveauService(
 				{
-					name: 'vscode',
+					name: 'rstudio',
 					catalogId: 'inseefrlab-datascience',
 					currentVersion: 10,
 				},
 				{
-					onyxia: { friendly_name: 'vscode-example' },
+					onyxia: { friendly_name: 'rstudio-example' },
 					service: { cpus: 0.2, mem: 1024 },
 				}
 			)
