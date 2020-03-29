@@ -23,6 +23,7 @@ it('should replace single option with context data', () => {
 	).toEqual(context.USERNAME);
 });
 it('produces contract', () => {
-	const data = getDefaultOptions(serviceToDeploy.properties, context);
+	const data = getDefaultOptions(serviceToDeploy.config.properties, context);
+	console.log(data);
 	expect(data).toEqual(expected);
 });
