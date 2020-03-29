@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
 		etapes: vignettes,
 		firstService: catalogue.length > 0 ? catalogue[0] : null,
 		serviceCree: mesServices.find(
-			(s) => s.labels.ONYXIA_TITLE === 'drawio-exemple'
+			(s) => s.labels.ONYXIA_TITLE === 'rstudio-example'
 		),
 	};
 };
@@ -24,9 +24,13 @@ const mapToDispatchToProps = (d) => ({
 	creerPremier: () => {
 		d(
 			creerNouveauService(
-				{ name: 'Draw.io', currentVersion: 10 },
 				{
-					onyxia: { friendly_name: 'drawio-exemple' },
+					name: 'rstudio',
+					catalogId: 'inseefrlab-datascience',
+					currentVersion: 10,
+				},
+				{
+					onyxia: { friendly_name: 'rstudio-example' },
 					service: { cpus: 0.2, mem: 1024 },
 				}
 			)
