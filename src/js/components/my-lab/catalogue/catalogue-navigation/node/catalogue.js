@@ -8,8 +8,6 @@ import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';
 import Loader from 'js/components/commons/loader';
 
-// TODO: Use wrapPromise & read to fetch
-
 const Node = ({ location }) => {
 	const [idCatalogue] = useState(() =>
 		location.split('/').reduce((a, x) => (x.length > 0 ? x : a))

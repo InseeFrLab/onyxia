@@ -1,51 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Service from '../service.component';
-import Deploiement from '../deploiement.component';
-import { axiosPublic } from 'js/utils';
-import api from 'js/redux/api';
+import React from 'react';
+import Service from './service';
+import Deploiement from './deploiement';
 
-const Leaf = ({ location, ...props }) => {
+const Leaf = ({ location }) => {
 	const [idCatalogue, idService] = getId(location);
-	const [service, setService] = useState(undefined);
-
-	const [init, setInit] = useState(false);
-	useEffect(() => {
-		let unmount = false;
-
-		const loadService = async () => {
-			const service = await axiosPublic(
-				`${api.catalogue}/${idCatalogue}/${idService}`
-			);
-			if (!unmount) {
-				setService(service);
-				setInit(true);
-			}
-		};
-		if (!unmount && !init) {
-			loadService();
-		}
-		return () => (unmount = true);
-	}, [init, idCatalogue, idService]);
-
-	return service ? (
-		isDeploiement(location) ? (
-			<Deploiement
-				{...props}
-				location={location}
-				service={service}
-				idCatalogue={idCatalogue}
-				idService={idService}
-			/>
-		) : (
-			<Service
-				{...props}
-				location={location}
-				service={service}
-				idCatalogue={idCatalogue}
-				idService={idService}
-			/>
-		)
-	) : null;
+	return isDeploiement(location) ? (
+		<Deploiement idCatalogue={idCatalogue} idService={idService} />
+	) : (
+		<Service idCatalogue={idCatalogue} idService={idService} />
+	);
 };
 
 export default Leaf;

@@ -1,1 +1,1 @@
-export { default } from './async-catalogue';
+export { default } from './catalogue';
