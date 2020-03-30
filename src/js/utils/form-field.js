@@ -32,7 +32,6 @@ export const fromUser = (user) => (field) => {
 	if (!field['x-form'] || !field['x-form'].value) return '';
 	const { value } = field['x-form'];
 	const formattedUser = formatUser(user);
-	console.log(formattedUser);
 	return Mustache.render(value, formattedUser);
 };
 
