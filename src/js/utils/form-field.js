@@ -3,7 +3,7 @@ import Mustache from 'mustache';
 export const getFieldSafeAttr = (field) => {
 	const media = (field.media && field.media.type && field.media.type) || '';
 	return !field['x-form']
-		? { ...field, visible: true, media }
+		? { ...field, hidden: false, media }
 		: { ...field, ...field['x-form'], media };
 };
 
@@ -38,6 +38,6 @@ export const fromUser = (user) => (field) => {
 export const filterOnglets = (onglets) =>
 	onglets.filter(
 		({ fields }) =>
-			fields.filter(({ field }) => !field['x-form'] || field['x-form'].visible)
+			fields.filter(({ field }) => !field['x-form'] || !field['x-form'].hidden)
 				.length > 0
 	);
