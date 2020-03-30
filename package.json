@@ -33,6 +33,7 @@
 		"minio": "^7.0.15",
 		"moment": "^2.24.0",
 		"moment-range": "^4.0.2",
+		"mustache": "^4.0.1",
 		"node-sass": "^4.13.1",
 		"query-params": "0.0.1",
 		"re-resizable": "^6.2.0",

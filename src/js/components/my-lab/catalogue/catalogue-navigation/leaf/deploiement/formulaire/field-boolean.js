@@ -6,13 +6,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 export default ({
 	handleChange,
-	user,
 	path,
 	value,
 	nom,
 	disabled = false,
 	description,
-	...rest
 }) => {
 	return (
 		<FormControl
@@ -25,7 +23,7 @@ export default ({
 				control={
 					<Checkbox
 						checked={value}
-						onChange={(e) => handleChange(path)(e.target.checked)}
+						onChange={(e) => handleChange(path)(!value)}
 						color="secondary"
 					/>
 				}
