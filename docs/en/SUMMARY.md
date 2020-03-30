@@ -3,6 +3,8 @@
 ## Developer guide
 
 - [Getting started](getting-started.md)
+- [Universe]
+  - [Bindings](universe/bindings.md)
 - [Bundle](bundle/index.md)
   - [Analysis](bundle/analysis.md)
     - [source-map-explorer](https://inseefrlab.github.io/onyxia-ui/bundle-report/source-map-explorer.html)
