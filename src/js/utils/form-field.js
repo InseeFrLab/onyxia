@@ -3,7 +3,7 @@ import Mustache from 'mustache';
 export const getFieldSafeAttr = (field) => {
 	const media = (field.media && field.media.type && field.media.type) || '';
 	return !field['x-form']
-		? { ...field, hidden: true, media }
+		? { ...field, hidden: false, media }
 		: { ...field, ...field['x-form'], media };
 };
 
