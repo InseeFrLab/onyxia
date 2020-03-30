@@ -27,7 +27,7 @@ const formatUser = (user) => ({
 	ssh: { ...user.ssh },
 	keycloak: { ...user.KEYCLOAK },
 	kubernetes: { ...user.KUBERNETES },
-	valut: { ...user.VAULT },
+	vault: { ...user.VAULT },
 	minio: { ...user.minio },
 });
 
