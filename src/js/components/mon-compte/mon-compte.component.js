@@ -6,6 +6,7 @@ import { Icon, Fab } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { getMinioToken } from 'js/minio-client';
 import CopyableField from 'js/components/commons/copyable-field';
+import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { getKeycloak } from 'js/utils';
 import ExportCredentialsField from './export-credentials-component';
@@ -66,13 +67,19 @@ class MonCompte extends React.Component {
 					</Paper>
 
 					<Paper className="paragraphe" elevation={1}>
-						<Typography variant="h3" align="left">
-							Utilisateur
-						</Typography>
-						<CopyableField copy label="idep" value={user.IDEP} />
-						<CopyableField copy label="nom complet" value={user.USERNAME} />
-						<CopyableField copy label="email" value={user.USERMAIL} />
-						<CopyableField copy label="ip" value={user.IP} />
+						{user.IDEP ? (
+							<>
+								<Typography variant="h3" align="left">
+									Utilisateur
+								</Typography>
+								<CopyableField copy label="idep" value={user.IDEP} />
+								<CopyableField copy label="nom complet" value={user.USERNAME} />
+								<CopyableField copy label="email" value={user.USERMAIL} />
+								<CopyableField copy label="ip" value={user.IP} />
+							</>
+						) : (
+							<Loader />
+						)}
 					</Paper>
 
 					{credentials ? (
@@ -106,7 +113,9 @@ class MonCompte extends React.Component {
 							/>
 							<ExportCredentialsField credentials={credentials} />
 						</Paper>
-					) : null}
+					) : (
+						<Loader />
+					)}
 
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" align="left">
@@ -152,11 +161,15 @@ const SshKeyUser = ({ ssh }) => (
 
 MonCompte.propTypes = {
 	user: PropTypes.shape({
-		idep: PropTypes.string.isRequired,
-		nomComplet: PropTypes.string.isRequired,
-		email: PropTypes.string.isRequired,
-		ip: PropTypes.string.isRequired,
+		idep: PropTypes.string,
+		nomComplet: PropTypes.string,
+		email: PropTypes.string,
+		ip: PropTypes.string,
 	}),
+};
+
+MonCompte.defaultProps = {
+	user: { idep: '', nomComplet: '', email: '', ip: '' },
 };
 
 export default MonCompte;
