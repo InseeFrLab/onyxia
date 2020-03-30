@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import app from './app';
-import publicReducer from './public';
 import myLab from './my-lab';
 import mesFichiers from './mes-fichiers';
 import secrets from './secrets';
@@ -9,7 +8,6 @@ import user from './user';
 
 export default combineReducers({
 	app,
-	public: publicReducer,
 	myLab,
 	mesFichiers,
 	secrets,
