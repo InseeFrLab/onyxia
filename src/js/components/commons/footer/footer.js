@@ -18,7 +18,7 @@ class Footer extends React.Component {
 				<div className="liens-rapides">
 					{conf.FOOTER.GRAFANA_URL && (
 						<LienRapide url={conf.FOOTER.GRAFANA_URL} icon={<GrafanaIcon />}>
-							Graphana
+							Grafana
 						</LienRapide>
 					)}
 
