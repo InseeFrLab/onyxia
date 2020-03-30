@@ -3,7 +3,7 @@
 ## Developer guide
 
 - [Getting started](getting-started.md)
-- [Universe]
+- Universe
   - [Bindings](universe/bindings.md)
 - [Bundle](bundle/index.md)
   - [Analysis](bundle/analysis.md)
