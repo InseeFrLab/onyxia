@@ -8,13 +8,13 @@ const refreshToken = (minValidity = 60) =>
 	new Promise((resolve, reject) => {
 		getKeycloak()
 			.updateToken(minValidity)
-			.success((refreshed) => {
+			.then((refreshed) => {
 				if (refreshed) {
 					setLocalToken(getKeycloak().token);
 				}
 				resolve(getKeycloak().token);
 			})
-			.error((error) => {
+			.catch((error) => {
 				reject(error);
 			});
 	});

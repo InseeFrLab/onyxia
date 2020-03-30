@@ -18,7 +18,7 @@ const ExportCredentialsField = ({ credentials }) => {
 				justify="space-between"
 				alignItems="baseline"
 			>
-				<Grid container xs={8} justify="flex-start">
+				<Grid item container xs={8} justify="flex-start">
 					<Grid item xs={4}>
 						<Typography variant="body1">{D.export}</Typography>
 					</Grid>
@@ -28,15 +28,15 @@ const ExportCredentialsField = ({ credentials }) => {
 							value={exportTypeId}
 							onChange={handleChange}
 						>
-							{exportTypes.map((e) => (
-								<MenuItem variant="body1" value={e.id}>
-									{e.label}
+							{exportTypes.map(({ id, label }) => (
+								<MenuItem key={id} variant="body1" value={id}>
+									{label}
 								</MenuItem>
 							))}
 						</Select>
 					</Grid>
 				</Grid>
-				<Grid container xs={4} justify="flex-end">
+				<Grid item container xs={4} justify="flex-end">
 					<Grid item>
 						<ExportFileButton
 							fileName={exportType.fileName}
