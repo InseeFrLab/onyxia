@@ -6,14 +6,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 export default ({
 	handleChange,
-	user,
 	nom,
 	path,
 	value,
 	description,
 	disabled = false,
 	options,
-	...rest
 }) => (
 	<FormControl className="champ-texte" aria-describedby={`name-helper-${path}`}>
 		<InputLabel htmlFor={`field-${path}`}>{nom}</InputLabel>

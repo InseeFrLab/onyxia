@@ -5,13 +5,11 @@ import FormControl from '@material-ui/core/FormControl';
 
 export default ({
 	handleChange,
-	user,
 	nom,
 	path,
 	value,
 	description,
 	disabled = false,
-	...rest
 }) => (
 	<FormControl className="champ-texte" aria-describedby={`name-helper-${path}`}>
 		<TextField

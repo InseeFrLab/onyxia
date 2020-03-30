@@ -5,13 +5,11 @@ import FormControl from '@material-ui/core/FormControl';
 
 export default ({
 	handleChange,
-	user,
 	path,
 	nom,
 	value,
 	disabled = false,
 	description,
-	...rest
 }) => {
 	return (
 		<FormControl
