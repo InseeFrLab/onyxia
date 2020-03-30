@@ -15,7 +15,6 @@ const formatUser = (user) => ({
 		password: user.USERPASSWORD,
 		key: user.USERKEY,
 		ip: user.IP,
-		uuid: user.UUID,
 	},
 	git: {
 		name: user.USERNAME,
@@ -23,18 +22,17 @@ const formatUser = (user) => ({
 	},
 	status: user.STATUS,
 	dns: user.DNS,
-	s3: { ...user.s3 },
-	ssh: { ...user.ssh },
 	keycloak: { ...user.KEYCLOAK },
 	kubernetes: { ...user.KUBERNETES },
 	vault: { ...user.VAULT },
-	minio: { ...user.minio },
+	s3: { ...user.minio },
 });
 
 export const fromUser = (user) => (field) => {
 	if (!field['x-form'] || !field['x-form'].value) return '';
 	const { value } = field['x-form'];
 	const formattedUser = formatUser(user);
+	console.log(formattedUser);
 	return Mustache.render(value, formattedUser);
 };
 
