@@ -9,11 +9,11 @@ import { getFieldSafeAttr } from 'js/utils/form-field';
 
 export default ({ fields, user, handleChange, name, values, options }) => {
 	const champs = fields.map(({ field, path }, i) => {
-		const { nom, media, visible, readonly, description } = getFieldSafeAttr(
+		const { nom, media, hidden, readonly, description } = getFieldSafeAttr(
 			field
 		);
 
-		if (!visible) return null;
+		if (hidden) return null;
 
 		switch (field.type) {
 			case 'string':
