@@ -15,15 +15,20 @@ $colorHome: #ff8c00;
 }
 
 .fil-d-ariane {
-	@media screen and (max-width: 960px) {
-		display: none;
-	}
-
 	list-style: none;
 	overflow: hidden;
 	font-size: 24px;
 	font-weight: bold;
 	height: 50px;
+
+	@media screen and (max-width: 960px) {
+		font-size: 16px;
+	}
+
+	@media screen and (max-width: 640px) {
+		display: none;
+	}
+
 	.home {
 		.home-icone {
 			margin-left: -35px;

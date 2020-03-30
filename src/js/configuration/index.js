@@ -1,10 +1,11 @@
-const readConfig = key =>
+const readConfig = (key) =>
 	(window && window._env_ && window._env_[key]) ||
 	process.env[`REACT_APP_${key}`];
 
 const conf = {
 	API: {
 		BASE_URL: readConfig('BASE_API_URL'),
+		SERVICES_URL: readConfig('SERVICES_URL'),
 	},
 	APP: {
 		MAX_INSTANCES: readConfig('INSTANCES_MAX'),

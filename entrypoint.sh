@@ -1,5 +1,6 @@
 #!/bin/sh
 echo "window._env_['BASE_API_URL'] = '$BASE_API_URL';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['SERVICES_URL'] = '$SERVICES_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['DNS'] = '$DNS';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['GIT_PATH'] = '$GIT_PATH';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['PASSWORD'] = '$PASSWORD';" >> /usr/share/nginx/html/env-config.js

@@ -1,1 +1,1 @@
-export { default } from './details-service.container';
+export { default } from './details-service-async';

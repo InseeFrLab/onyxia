@@ -40,16 +40,16 @@ export const fil = {
 			component: <span>Services partagés</span>,
 		},
 	],
-
-	services: ({ id, labels: { ONYXIA_TITLE } }) => [
+	// TODO: replace title by id (in attrs & pathname)
+	services: ({ title }) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
 			pathname: '/services',
 			component: <span>services</span>,
 		},
 		{
-			pathname: `/services${id}`,
-			component: <span>{ONYXIA_TITLE || id}</span>,
+			pathname: `/services/${title}`,
+			component: <span>{title}</span>,
 		},
 	],
 
