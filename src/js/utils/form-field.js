@@ -38,6 +38,6 @@ export const fromUser = (user) => (field) => {
 export const filterOnglets = (onglets) =>
 	onglets.filter(
 		({ fields }) =>
-			fields.filter(({ field }) => !field['x-form'] || field['x-form'].hidden)
+			fields.filter(({ field }) => !field['x-form'] || !field['x-form'].hidden)
 				.length > 0
 	);
