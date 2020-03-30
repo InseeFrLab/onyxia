@@ -3,7 +3,7 @@
 ## Guide du développeur
 
 - [Démarrage](getting-started.md)
-- [Universe]
+- Universe
   - [Bindings](universe/bindings.md)
 - [Livrable](bundle/index.md)
   - [Analyse](bundle/analysis.md)
