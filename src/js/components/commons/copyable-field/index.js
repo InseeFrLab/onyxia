@@ -1,6 +1,10 @@
 import React from 'react';
-import { InputAdornment, Input, InputLabel } from '@material-ui/core';
-
+import {
+	InputAdornment,
+	Input,
+	InputLabel,
+	Typography,
+} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import * as clipboard from 'clipboard-polyfill';
 import { IconButton, Icon } from '@material-ui/core';
@@ -68,6 +72,7 @@ class CopyableField extends React.Component {
 	render() {
 		const {
 			label,
+			description,
 			open = false,
 			copy = false,
 			del = false,
@@ -76,6 +81,11 @@ class CopyableField extends React.Component {
 		} = this.props;
 		return (
 			<>
+				{description && (
+					<Typography variant="body1" align="left">
+						{description}
+					</Typography>
+				)}
 				<FormControl className="copy-field" style={{ width: '100%' }}>
 					{label ? <InputLabel>{label}</InputLabel> : null}
 					<Input

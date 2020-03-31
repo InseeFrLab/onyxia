@@ -22,7 +22,7 @@ export default {
 		render = () => {
 			const bouton = document.getElementById('bouton-service-drawio');
 			return this.state.redirect ? (
-				<Redirect to="/my-lab/catalogue/Draw.io" />
+				<Redirect to="/my-lab/catalogue/inseefrlab-datascience" />
 			) : (
 				<>
 					<Arrow dom={bouton} />
@@ -45,7 +45,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to="/my-lab/catalogue/Draw.io"
+				to="/my-lab/catalogue/inseefrlab-datascience"
 				type="add"
 				onClick={() => {
 					setFirstService(firstService);

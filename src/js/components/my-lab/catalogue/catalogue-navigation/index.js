@@ -1,7 +1,8 @@
 import createAiguilleur from 'js/components/commons/variable-location';
-import Root from './catalogue-root';
-import Leaf from './catalogue-leaf.component';
-import Node from './catalogue-node.component';
+import Root from './root';
+import Leaf from './leaf';
+import Node from './node';
+import './catalogue.scss';
 
 const isLeaf = async ({ pathname, search }) => {
 	const nb = pathname

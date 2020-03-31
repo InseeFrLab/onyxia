@@ -28,7 +28,7 @@ const initialiseKeycloak = () =>
 					? { ...keycloakDefaultConf, token: localToken }
 					: keycloakDefaultConf
 			)
-			.success((authenticated) => {
+			.then((authenticated) => {
 				if (authenticated) {
 					setLocalToken(getKeycloak().token);
 					store.dispatch(
@@ -41,8 +41,7 @@ const initialiseKeycloak = () =>
 				}
 				resolve(authenticated);
 			})
-			.error((err) => {
-				// props.authenticationFail(err);
+			.catch((err) => {
 				console.log(err);
 			});
 

@@ -21,17 +21,19 @@ export const refreshCloudShellStatus = () => (dispatch) => {
 			if (data.status === 'DOWN') {
 				Promise.all([getVaultToken(), getMinioToken()])
 					.then((_) => {
+						debugger;
 						creerNouveauService(
 							data.packageToDeploy,
-							getDefaultOptions(data.packageToDeploy.properties)
+							getDefaultOptions(data.packageToDeploy.config.properties)
 						)(dispatch);
 					})
-					.catch((_) =>
+					.catch((_) => {
+						debugger;
 						creerNouveauService(
 							data.packageToDeploy,
-							getDefaultOptions(data.packageToDeploy.properties)
-						)(dispatch)
-					);
+							getDefaultOptions(data.packageToDeploy.config.properties)
+						)(dispatch);
+					});
 			}
 		})
 		.catch((err) => console.log(err));

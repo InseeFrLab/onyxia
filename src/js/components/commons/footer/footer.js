@@ -16,23 +16,29 @@ class Footer extends React.Component {
 			<footer className="footer">
 				<Divider light />
 				<div className="liens-rapides">
-					<LienRapide url={conf.FOOTER.GRAFANA_URL} icon={<GrafanaIcon />}>
-						Graphana
-					</LienRapide>
+					{conf.FOOTER.GRAFANA_URL && (
+						<LienRapide url={conf.FOOTER.GRAFANA_URL} icon={<GrafanaIcon />}>
+							Grafana
+						</LienRapide>
+					)}
 
-					<LienRapide
-						url={conf.FOOTER.ONYXIA.ROCKETCHAT}
-						icon={<RocketChatIcon />}
-					>
-						RocketChat
-					</LienRapide>
+					{conf.FOOTER.ONYXIA.ROCKETCHAT && (
+						<LienRapide
+							url={conf.FOOTER.ONYXIA.ROCKETCHAT}
+							icon={<RocketChatIcon />}
+						>
+							RocketChat
+						</LienRapide>
+					)}
 
-					<LienRapide
-						url={conf.FOOTER.GHOST_URL}
-						icon={<GhosthIcon width={15} height={15} />}
-					>
-						le blog de l'Innovation
-					</LienRapide>
+					{conf.FOOTER.GHOST_URL && (
+						<LienRapide
+							url={conf.FOOTER.GHOST_URL}
+							icon={<GhosthIcon width={15} height={15} />}
+						>
+							le blog de l'Innovation
+						</LienRapide>
+					)}
 				</div>
 				<Typography gutterBottom noWrap>
 					<LienSimple href={conf.FOOTER.ONYXIA.GIT}>contribuer</LienSimple>

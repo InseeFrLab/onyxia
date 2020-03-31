@@ -1,282 +1,97 @@
 {
-	"description": "",
+	"packagingVersion": "3.0",
+	"name": "shelly",
+	"version": "1.0.0",
+	"minDcosReleaseVersion": "1.8",
+	"scm": "https://github.com/InseeFrLab/Shelly",
+	"maintainer": "https://github.com/InseeFrLab",
+	"website": "https://github.com/InseeFrLab",
 	"framework": false,
+	"description": "Shelly is the cloud shell availabe inside the datalab. It can manage all the API and services",
+	"tags": ["shell", "onyxia"],
+	"preInstallNotes": "This service is currently in preview.",
+	"postInstallNotes": "Shelly has been installed.",
+	"postUninstallNotes": "Shelly has been uninstalled.",
+	"licenses": [
+		{ "name": "GPLv2", "url": "https://wordpress.org/about/license/" }
+	],
 	"selected": false,
-	"disable": false,
-	"currentVersion": "0.1",
-	"name": "webssh",
-	"category": "group",
-	"scm": "https://example.com",
-	"maintainer": "Insee",
-	"website": "https://example.com",
-	"preInstallNotes": "",
-	"postInstallNotes": "",
-	"status": "beta",
-	"tags": [],
-	"properties": {
-		"s3": {
-			"description": "Configure les identités temporaires sur s3 via des variables d'environnements",
-			"type": "object",
-			"enable": {
-				"type": "boolean",
-				"description": "Activation des variables d'environnements s3",
-				"title": "Activation",
-				"default": true
-			},
-			"AWS_S3_ENDPOINT": {
-				"type": "string",
-				"description": "endpoint S3",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_S3_ENDPOINT]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"AWS_DEFAULT_REGION": {
-				"type": "string",
-				"description": "region s3",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_DEFAULT_REGION]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"AWS_ACCESS_KEY_ID": {
-				"type": "string",
-				"description": "ACCESS_KEY_ID",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_ACCESS_KEY_ID]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"AWS_SECRET_ACCESS_KEY": {
-				"type": "string",
-				"description": "AWS_SECRET_ACCESS_KEY",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_SECRET_ACCESS_KEY]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"AWS_SESSION_TOKEN": {
-				"type": "string",
-				"description": "",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_SESSION_TOKEN]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"AWS_EXPIRATION": {
-				"type": "string",
-				"description": "date d'expiration de l'identité temporaire",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$AWS_EXPIRATION]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			}
+	"lastUpdated": 1491426142,
+	"releaseVersion": 1,
+	"resource": {
+		"images": {
+			"icon-small": "https://portail.lab.sspcloud.fr/onyxia.svg",
+			"icon-medium": "https://portail.lab.sspcloud.fr/onyxia.svg",
+			"icon-large": "https://portail.lab.sspcloud.fr/onyxia.svg"
 		},
-		"script_demarrage": {
-			"description": "Configure le lancement d'un script au demarrage du container.",
-			"type": "object",
-			"URI": {
-				"type": "string",
-				"description": "URL du script à exécuter au lancement du container, le nom du script doit posséder l'extension '.sh'.",
-				"default": ""
-			}
-		},
-		"diffusion": {
-			"description": "Configure l'accès au poste de travail.",
-			"type": "object",
-			"ajout_port_additionnel": {
-				"type": "boolean",
-				"description": "Permet de configurer un autre port accessible ",
-				"default": false
-			},
-			"port_additionnel": {
-				"type": "number",
-				"description": "Port dans l'environnement container, le service doit être lançé sur ce port là",
-				"default": 5000
-			}
-		},
-		"git": {
-			"description": "Pour fonctionner, le service nécessite une initialisation de clefs SSH via l'onglet Mon Compte puis de copier la clef publique dans vos paramètres Gitlab.",
-			"type": "object",
-			"enable": {
-				"type": "boolean",
-				"description": "Active la persistance du travail sur git",
-				"title": "Active la configuration Gitlab",
-				"default": false
-			},
-			"git_user_name": {
-				"type": "string",
-				"description": "git config --global user.name",
-				"title": "Username",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$USERNAME]",
-				"js-control": "ro",
-				"api-control": "strict"
-			},
-			"git_user_mail": {
-				"type": "string",
-				"description": "git config --global user.email",
-				"title": "Mail",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$USERMAIL]",
-				"js-control": "ro",
-				"api-control": "strict"
-			},
-			"ssh_cle_privee": {
-				"type": "string",
-				"description": "URI clé privée ssh chiffrée avec gpg",
-				"title": "Clé ssh",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$USERKEY]",
-				"js-control": "shadow",
-				"api-control": "strict"
-			},
-			"gpg_mdp": {
-				"type": "string",
-				"description": "Mot de passe pour la clé ssh",
-				"title": "Mot de passe",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$USERPASSWORD]",
-				"js-control": "shadow",
-				"api-control": "strict"
-			}
-		},
-		"webssh2": {
-			"type": "object",
-			"enable": {
-				"type": "boolean",
-				"description": "Webssh2 est un client web pour un serveur ssh",
-				"title": "Activation de Webssh2",
-				"default": true
-			},
-			"cpus": {
-				"type": "number",
-				"description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
-				"title": "CPU",
-				"minimum": "0.1",
-				"default": 0.1
-			},
-			"mem": {
-				"type": "number",
-				"description": "Le processus est tué s'il dépasse cette limite",
-				"title": "Mémoire (Mo)",
-				"default": "2048"
-			},
-			"dns": {
-				"type": "string",
-				"description": "Nom de domaine permettant l'accès au service",
-				"title": "Nom de domaine",
-				"default": "change.me",
-				"api-defined": true,
-				"api-default": "[$IDEP]-webssh2-[$UUID].[$STATUS].[$DNS]",
-				"js-control": "shadow",
-				"api-control": "strict"
-			}
-		},
-		"service": {
-			"type": "object",
-			"name": {
-				"type": "string",
-				"description": "Positionne l'identifiant du service marathon",
-				"title": "Nom du service",
-				"default": "/test/webssh",
-				"api-defined": true,
-				"api-default": "/users/[$IDEP]/webssh-[$UUID]",
-				"js-control": "shadow",
-				"api-control": "strict"
-			}
-		},
-		"ssh_ubuntu": {
-			"type": "object",
-			"cpus": {
-				"type": "number",
-				"description": "Réserve un minimum de cpu. Le service peut consommer plus si il reste des ressources sur le système hôte",
-				"title": "CPU",
-				"minimum": "0.1",
-				"default": 0.1
-			},
-			"mem": {
-				"type": "number",
-				"description": "Le processus est tué s'il dépasse cette limite",
-				"title": "Mémoire (Mo)",
-				"minimum": "2048",
-				"default": 2048
-			},
-			"endpoint": {
-				"type": "string",
-				"description": "Label pour private endpoint",
-				"default": "http://changeme.org:9200/",
-				"api-defined": true,
-				"api-default": "ssh-ubuntu-webssh-[$UUID]-[$IDEP]-users.marathon.containerip.dcos.thisdcos.directory",
-				"js-control": "shadow",
-				"api-control": "strict"
-			},
-			"image_docker": {
-				"type": "string",
-				"description": "Personnalise l'image docker utilisé : attention il s'agit d'un usage avançé de ce service et le contrat échouera en cas de non compatibilité de votre image avec ce package",
-				"title": "Image docker",
-				"default": "nginx"
-			},
-			"password": {
-				"type": "string",
-				"description": "root password",
-				"default": "changeme",
-				"api-defined": true,
-				"api-default": "[$USERPASSWORD]",
-				"js-control": "rw",
-				"api-control": "nocontrol"
-			}
-		},
-		"onyxia": {
-			"description": "Configure l'ensemble des metas-donnees pour Onyxia",
-			"type": "object",
-			"friendly_name": {
-				"type": "string",
-				"description": "Nom d'affichage du service sur Onyxia",
-				"title": "Un titre plus sympathique?",
-				"default": "webssh"
-			}
-		},
-		"vault": {
-			"description": "Configure l'accès à vault",
-			"type": "object",
-			"VAULT_TOKEN": {
-				"type": "string",
-				"description": "vault token",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$VAULT_TOKEN]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
-			},
-			"VAULT_ADDR": {
-				"type": "string",
-				"description": "vault address",
-				"default": "",
-				"api-defined": true,
-				"api-default": "[$VAULT_ADDR]",
-				"js-control": "ro",
-				"api-control": "nocontrol"
+		"assets": {
+			"container": {
+				"docker": { "shelly": "inseefrlab/shelly" }
 			}
 		}
 	},
-	"resource": {
-		"resource": {
-			"images": {
-				"icon-small": "https://hugo.maugey.fr/img/snippets/ssh.png",
-				"icon-medium": "https://hugo.maugey.fr/img/snippets/ssh.png",
-				"icon-large": "https://hugo.maugey.fr/img/snippets/ssh.png"
+	"marathon": {
+		"v2AppMustacheTemplate": "ewogICJpZCI6ICJ7e3NlcnZpY2UubmFtZX19IiwKICAiY3B1cyI6IHt7c2VydmljZS5jcHVzfX0sCiAgIm1lbSI6IHt7c2VydmljZS5tZW19fSwKICAiaW5zdGFuY2VzIjogMSwKICAiY29udGFpbmVyIjogewogICAgICAgInR5cGUiOiAiRE9DS0VSIiwKICAgICAgICJkb2NrZXIiOiB7CiAgICAgICAgICAgImltYWdlIjogInt7cmVzb3VyY2UuYXNzZXRzLmNvbnRhaW5lci5kb2NrZXIuc2hlbGx5fX0iLAogICAgICAgICAgICJuZXR3b3JrIjogIkJSSURHRSIsCiAgICAgICAgICAgInBvcnRNYXBwaW5ncyI6IFsKICAgICAgICAgICAgICB7ICJjb250YWluZXJQb3J0IjogMjIyMiwgImhvc3RQb3J0IjogMCB9CiAgICAgICAgICBdCiAgICAgICB9CiAgIH0sCiAgICJoZWFsdGhDaGVja3MiOiBbCiAgICB7CiAgICAgICJwb3J0SW5kZXgiOiAwLAogICAgICAicHJvdG9jb2wiOiAiTUVTT1NfVENQIiwKICAgICAgImdyYWNlUGVyaW9kU2Vjb25kcyI6IDMwLAogICAgICAiaW50ZXJ2YWxTZWNvbmRzIjogNjAsCiAgICAgICJ0aW1lb3V0U2Vjb25kcyI6IDIwLAogICAgICAibWF4Q29uc2VjdXRpdmVGYWlsdXJlcyI6IDMKICAgIH0KICBdLAogICJsYWJlbHMiOiB7CiAgICB7eyNuZXR3b3JraW5nLnZpcnR1YWwtaG9zdH19CiAgICAiSEFQUk9YWV9HUk9VUCI6ImV4dGVybmFsIiwKICAgICJIQVBST1hZXzBfVkhPU1QiOiJ7e25ldHdvcmtpbmcudmlydHVhbC1ob3N0fX0iLAogICAgIkhBUFJPWFlfMF9FTkFCTEVEIjogInRydWUiLAogICAgIkhBUFJPWFlfMF9SRURJUkVDVF9UT19IVFRQUyI6ICJ7e25ldHdvcmtpbmcuaHR0cHMtcmVkaXJlY3R9fSIsCiAgICB7ey9uZXR3b3JraW5nLnZpcnR1YWwtaG9zdH19CiAgICAiTUFSQVRIT05fU0lOR0xFX0lOU1RBTkNFX0FQUCI6ICJ0cnVlIgogIH0sCiAgInVwZ3JhZGVTdHJhdGVneSI6ewogICAgIm1pbmltdW1IZWFsdGhDYXBhY2l0eSI6IDAsCiAgICAibWF4aW11bU92ZXJDYXBhY2l0eSI6IDAKICB9Cn0K"
+	},
+	"config": {
+		"type": "object",
+		"properties": {
+			"service": {
+				"description": "Configuration properties for the shelly service.",
+				"type": "object",
+				"properties": {
+					"name": {
+						"description": "The name of the service to display in the DC/OS dashboard.",
+						"type": "string",
+						"default": "shelly"
+					},
+					"cpus": {
+						"description": "CPU shares to allocate to this WordPress instance.",
+						"type": "number",
+						"default": 0.1,
+						"minimum": 0.1
+					},
+					"mem": {
+						"description": "Memory (in MB) to allocate to this WordPress instance.",
+						"type": "number",
+						"default": 1024.0,
+						"minimum": 256.0
+					}
+				},
+				"required": ["name", "cpus", "mem"]
+			},
+			"networking": {
+				"description": "Networking-related configuration properties for Shelly.",
+				"type": "object",
+				"properties": {
+					"virtual-host": {
+						"description": "The virtual host address to configure for integration with Marathon-lb.",
+						"type": "string",
+						"default": "changeme"
+					},
+					"https-redirect": {
+						"description": "Whether Marathon-lb should redirect HTTP traffic to HTTPS. This requires 'virtual-host' to be set. By default, this is false.",
+						"type": "boolean",
+						"default": false
+					}
+				}
+			},
+			"storage": {
+				"description": "Storage-related configuration properties for WordPress on DC/OS.",
+				"type": "object",
+				"properties": {
+					"host-volume": {
+						"description": "The location of a volume on the host to be used for persisting WordPress files. The final location will be derived from this value plus the name set in `name` (e.g. `/mnt/host_volume/wordpress`). Note that this path must be the same on all DC/OS agents unless you are using a pinned-hostname (below).",
+						"type": "string",
+						"default": "/tmp"
+					},
+					"pinned-hostname": {
+						"description": "An optional DC/OS agent hostname to run this WordPress instance on (e.g. 10.0.0.1).",
+						"type": "string"
+					}
+				}
 			}
-		}
+		},
+		"required": ["service", "networking"]
 	}
 }

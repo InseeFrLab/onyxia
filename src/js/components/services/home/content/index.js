@@ -1,1 +1,1 @@
-export { default } from './onglet-content.container';
+export { default } from './onglet-content-async';

@@ -8,18 +8,15 @@ import {
 	getTitle,
 	getSubtitle,
 } from 'js/components/commons/service-liste';
-import { axiosPublic, wrapPromise } from 'js/utils';
-import api from 'js/redux/api';
+import { axiosURL, wrapPromise } from 'js/utils';
+import conf from 'js/configuration';
 
-const resource = wrapPromise(axiosPublic(api.services));
+const resource = wrapPromise(axiosURL(conf.API.SERVICES_URL));
 
-const OngletContent = ({ setServiceSelectionne }) => {
-	const services = resource.read();
+const OngletContent = () => {
+	const { services } = resource.read();
 
-	const handleOpenService = (service) =>
-		window.open(service.labels.ONYXIA_URL.split(',')[0]);
-
-	const handleMoreDetailsService = (service) => setServiceSelectionne(service);
+	const handleOpenService = (service) => window.open(service.link);
 
 	const gridItems = services.map((service, i) => (
 		<CarteService
@@ -28,9 +25,7 @@ const OngletContent = ({ setServiceSelectionne }) => {
 			title={getTitle(service)}
 			subtitle={getSubtitle(service)}
 			avatar={getServiceAvatar(service)}
-			actions={createActionsCarte(service)(handleOpenService)(
-				handleMoreDetailsService
-			)}
+			actions={createActionsCarte(service)(handleOpenService)}
 			contenu={createContenuCarte(service)}
 		/>
 	));
@@ -46,9 +41,7 @@ const OngletContent = ({ setServiceSelectionne }) => {
 
 export default OngletContent;
 
-const createActionsCarte = (service) => (openService) => (
-	openDetails
-) => () => (
+const createActionsCarte = (service) => (openService) => () => (
 	<>
 		<IconButton
 			color="secondary"
@@ -57,12 +50,12 @@ const createActionsCarte = (service) => (openService) => (
 		>
 			<Icon>launch</Icon>
 		</IconButton>
-		<Link to={`/services${service.id}`}>
+		<Link to={`/services/${service.id}`}>
 			<IconButton
 				className="more-details"
 				color="secondary"
 				aria-label="plus de détails"
-				onClick={() => openDetails(service)}
+				onClick={() => {}}
 			>
 				<Icon>more_horiz</Icon>
 			</IconButton>
@@ -73,6 +66,6 @@ const createActionsCarte = (service) => (openService) => (
 const createContenuCarte = (service) => () => (
 	<div className="paragraphe">
 		<div className="titre">Description</div>
-		<div className="corps">{service.labels.ONYXIA_DESCRIPTION}</div>
+		<div className="corps">{service.description}</div>
 	</div>
 );

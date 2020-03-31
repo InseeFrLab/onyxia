@@ -8,13 +8,13 @@ const refreshToken = (minValidity = 60) =>
 	new Promise((resolve, reject) => {
 		getKeycloak()
 			.updateToken(minValidity)
-			.success((refreshed) => {
+			.then((refreshed) => {
 				if (refreshed) {
 					setLocalToken(getKeycloak().token);
 				}
 				resolve(getKeycloak().token);
 			})
-			.error((error) => {
+			.catch((error) => {
 				reject(error);
 			});
 	});
@@ -54,4 +54,11 @@ axiosPublic.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-export { axiosAuth, axiosPublic, axiosPublicFolder, refreshToken };
+const axiosURL = axios.create();
+
+axiosURL.interceptors.response.use(
+	(response) => response.data,
+	(error) => Promise.reject(error)
+);
+
+export { axiosAuth, axiosPublic, axiosURL, axiosPublicFolder, refreshToken };

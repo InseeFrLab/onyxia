@@ -14,14 +14,6 @@ import { getMinioToken } from 'js/minio-client';
 import * as messages from 'js/components/messages';
 import { PUSHER } from 'js/components/notifications';
 
-export const chargerService = (name) => (dispatch) => {
-	axiosAuth(`${api.availablePackages}/${name}`)
-		.then((service) => {
-			dispatch(setServiceSelected(service));
-		})
-		.catch((err) => console.log(err));
-};
-
 export const setServiceSelected = (service) => ({
 	type: constantes.SERVICE_CHARGE,
 	payload: { service },
@@ -58,28 +50,6 @@ export const chargerMesServices = () => (dispatch) => {
 		});
 	return false;
 };
-/*
- * Catalogue
- */
-export const chargerCatalogue = () => (dispatch) => {
-	dispatch(startWaiting());
-	axiosAuth
-		.get(api.availablePackages)
-		.then((catalogue) => {
-			dispatch(stopWaiting());
-			dispatch(catalogueLoaded(catalogue.packages));
-		})
-		.catch(function (error) {
-			dispatch(stopWaiting());
-			console.log(error);
-		});
-	return false;
-};
-
-const catalogueLoaded = (catalogue) => ({
-	type: constantes.CATALOGUE_LOADED,
-	payload: { catalogue },
-});
 
 const mesServicesLoaded = ({ apps: services, groups: groupes }) => ({
 	type: constantes.MES_SERVICES_LOADED,
