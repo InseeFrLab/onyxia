@@ -333,21 +333,23 @@ class MonService extends React.Component {
 											/>
 										</TableCell>
 									</TableRow>
-									<TableRow>
-										<TableCell>friendly name</TableCell>
-										<TableCell>
-											<CopyableField
-												copy
-												value={this.state.initialConf.friendlyName}
-												reset={this.state.resetFields}
-												onChange={
-													wait
-														? undefined
-														: this.handleChangeConf('friendlyName')
-												}
-											/>
-										</TableCell>
-									</TableRow>
+									{this.state.initialConf.friendlyName && (
+										<TableRow>
+											<TableCell>friendly name</TableCell>
+											<TableCell>
+												<CopyableField
+													copy
+													value={this.state.initialConf.friendlyName}
+													reset={this.state.resetFields}
+													onChange={
+														wait
+															? undefined
+															: this.handleChangeConf('friendlyName')
+													}
+												/>
+											</TableCell>
+										</TableRow>
+									)}
 								</TableBody>
 							</Table>
 						</Paper>

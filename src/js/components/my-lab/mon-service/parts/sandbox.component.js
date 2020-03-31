@@ -50,7 +50,6 @@ const Sandbox = ({
 							const relativePath = file.relativePath;
 							const fileName = file.path.split('/').slice(-1)[0];
 							const isDirectory = mode.charAt(0) === 'd';
-							console.log(encodeURIComponent(relativePath));
 							return (
 								<div className="file-block" key={fileName}>
 									<Ligne

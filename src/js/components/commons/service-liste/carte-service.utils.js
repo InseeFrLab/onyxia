@@ -9,7 +9,10 @@ export const getServiceAvatar = (service) => (
 	</span>
 );
 
-export const getTitle = (service) => service.title || '';
+export const getTitle = (service) =>
+	(service && service.title) ||
+	(service && service.labels && service.labels.ONYXIA_NAME) ||
+	'';
 
 export const getSubtitle = (service) => service.subtitle || '';
 
