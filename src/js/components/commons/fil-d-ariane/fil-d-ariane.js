@@ -40,15 +40,14 @@ export const fil = {
 			component: <span>Services partagés</span>,
 		},
 	],
-	// TODO: replace title by id (in attrs & pathname)
-	services: ({ title }) => [
+	services: ({ id, title }) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
 			pathname: '/services',
 			component: <span>services</span>,
 		},
 		{
-			pathname: `/services/${title}`,
+			pathname: `/services/${id}`,
 			component: <span>{title}</span>,
 		},
 	],
