@@ -10,7 +10,7 @@ export const serviceType = PropTypes.shape({
 	tasksHealthy: PropTypes.number.isRequired,
 	tasksUnhealthy: PropTypes.number.isRequired,
 	labels: PropTypes.shape({
-		ONYXIA_TITLE: PropTypes.string.isRequired,
+		ONYXIA_NAME: PropTypes.string.isRequired,
 		ONYXIA_SUBTITLE: PropTypes.string.isRequired,
 		ONYXIA_LOGO: PropTypes.string,
 		ONYXIA_URL: PropTypes.string,
