@@ -7,11 +7,16 @@ import SelectField from './field-select';
 import SelectWarField from './field-media-war';
 import { getFieldSafeAttr } from 'js/utils/form-field';
 
-export default ({ fields, user, handleChange, name, values, options }) => {
+export default ({ fields, user, handleChange, name, values }) => {
 	const champs = fields.map(({ field, path }, i) => {
-		const { nom, media, hidden, readonly, description } = getFieldSafeAttr(
-			field
-		);
+		const {
+			nom,
+			media,
+			hidden,
+			readonly,
+			description,
+			options,
+		} = getFieldSafeAttr(field);
 
 		if (hidden) return null;
 
@@ -87,7 +92,7 @@ export default ({ fields, user, handleChange, name, values, options }) => {
 	});
 	return (
 		<form autoComplete="off" className={name === 'monkey' ? 'monkey' : 'nope'}>
-			<Grid container spacing={8} classes={{ container: 'formulaire' }}>
+			<Grid container classes={{ container: 'formulaire' }}>
 				{champs}
 			</Grid>
 		</form>
