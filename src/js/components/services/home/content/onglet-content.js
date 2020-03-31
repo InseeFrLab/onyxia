@@ -50,8 +50,7 @@ const createActionsCarte = (service) => (openService) => () => (
 		>
 			<Icon>launch</Icon>
 		</IconButton>
-		{/* TODO: replace title by id */}
-		<Link to={`/services/${service.title}`}>
+		<Link to={`/services/${service.id}`}>
 			<IconButton
 				className="more-details"
 				color="secondary"
