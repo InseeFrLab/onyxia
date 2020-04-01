@@ -254,7 +254,6 @@ const typeResolved = (type) => (services) => (groupes) => (groupe = null) => ({
 });
 
 const checkAppOrGroup = async (params) => {
-	console.log(params);
 	const { serviceId } = params;
 	const lookAtApp = await fetchApp(serviceId);
 	if (lookAtApp.app) {
