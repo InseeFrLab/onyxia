@@ -24,6 +24,5 @@ it('should replace single option with context data', () => {
 });
 it('produces contract', () => {
 	const data = getDefaultOptions(serviceToDeploy.config.properties, context);
-	console.log(data);
 	expect(data).toEqual(expected);
 });
