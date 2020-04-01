@@ -1,7 +1,7 @@
 const dictionary = {
 	export: {
-		fr: 'Générer un script : ',
-		en: 'Export sript: ',
+		fr: 'Accéder à minio en dehors du datalab : ',
+		en: 'Access minio from outside the datalab: ',
 	},
 };
 

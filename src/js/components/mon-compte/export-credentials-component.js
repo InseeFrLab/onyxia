@@ -18,8 +18,8 @@ const ExportCredentialsField = ({ credentials }) => {
 				justify="space-between"
 				alignItems="baseline"
 			>
-				<Grid item container xs={8} justify="flex-start">
-					<Grid item xs={4}>
+				<Grid item container xs={10} justify="flex-start">
+					<Grid item xs={7}>
 						<Typography variant="body1">{D.export}</Typography>
 					</Grid>
 					<Grid item>
@@ -36,7 +36,7 @@ const ExportCredentialsField = ({ credentials }) => {
 						</Select>
 					</Grid>
 				</Grid>
-				<Grid item container xs={4} justify="flex-end">
+				<Grid item container xs={2} justify="flex-end">
 					<Grid item>
 						<ExportFileButton
 							fileName={exportType.fileName}
