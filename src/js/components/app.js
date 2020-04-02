@@ -25,6 +25,7 @@ import Footer from './commons/footer';
 import Preloader from './commons/preloader';
 import VisiteGuidee, { VisiteGuideeDebut } from 'js/components/visite-guidee';
 import Favicon from 'js/components/commons/favicon';
+import MesSecretsHome from 'js/components/mes-secrets/home';
 import MesSecrets from 'js/components/mes-secrets';
 import Notifications from 'js/components/notifications';
 import 'typeface-roboto';
@@ -141,7 +142,11 @@ const AppFeelGood = ({
 								path="/mes-fichiers/:bucketName/*"
 								component={NavigationFiles}
 							/>
-
+							<PrivateRoute
+								exact
+								path="/mes-secrets"
+								component={MesSecretsHome}
+							/>
 							<PrivateRoute
 								path="/mes-secrets/:idep/*"
 								component={MesSecrets}

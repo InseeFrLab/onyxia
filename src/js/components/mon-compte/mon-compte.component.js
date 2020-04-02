@@ -13,7 +13,10 @@ import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
-import { hasOptedInForBetaTest, changeBetaTestStatus } from '../../configuration/betatest';
+import {
+	hasOptedInForBetaTest,
+	changeBetaTestStatus,
+} from '../../configuration/betatest';
 
 class MonCompte extends React.Component {
 	state = { credentials: null, betatest: hasOptedInForBetaTest() };
@@ -131,7 +134,9 @@ class MonCompte extends React.Component {
 						<CopyableField
 							copy
 							label="Mot de passe pour vos services"
-							value="xxx"
+							value={
+								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
+							}
 						/>
 					</Paper>
 
