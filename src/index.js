@@ -9,6 +9,7 @@ import { gelLocalToken, setLocalToken } from 'js/utils';
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from 'js/configuration';
+import { initVaultPwd } from 'js/vault-client';
 
 JavascriptTimeAgo.locale(fr);
 
@@ -38,6 +39,8 @@ const initialiseKeycloak = () =>
 							idToken: getKeycloak().idToken,
 						})
 					);
+					const idep = getKeycloak().tokenParsed['preferred_username'];
+					initVaultPwd(idep);
 				}
 				resolve(authenticated);
 			})

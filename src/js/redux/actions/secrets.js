@@ -54,3 +54,11 @@ export const newVaultToken = (token) => async (dispatch) =>
 			token,
 		},
 	});
+
+export const newVaultData = (data) => async (dispatch) =>
+	dispatch({
+		type: constantes.NEW_VAULT_DATA,
+		payload: {
+			data,
+		},
+	});
