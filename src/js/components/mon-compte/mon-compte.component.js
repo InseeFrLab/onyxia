@@ -10,10 +10,13 @@ import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { getKeycloak } from 'js/utils';
 import ExportCredentialsField from './export-credentials-component';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
+import { hasOptedInForBetaTest, changeBetaTestStatus } from '../../configuration/betatest';
 
 class MonCompte extends React.Component {
-	state = { credentials: null };
+	state = { credentials: null, betatest: hasOptedInForBetaTest() };
 	constructor(props) {
 		super(props);
 		if (!props.user) {
@@ -28,6 +31,12 @@ class MonCompte extends React.Component {
 	handleLogout = () => this.props.logout();
 
 	refreshKey = () => this.props.updateUser();
+
+	handleChange = (event) => {
+		changeBetaTestStatus(event.target.checked).then(() =>
+			this.setState({ betatest: hasOptedInForBetaTest() })
+		);
+	};
 
 	render() {
 		const { user } = this.props;
@@ -56,14 +65,6 @@ class MonCompte extends React.Component {
 						>
 							<Icon>power_settings_new_icon</Icon>
 						</Fab>
-						<Fab
-							title="renouveler la clef ssh"
-							className="bouton"
-							color="primary"
-							onClick={this.refreshKey}
-						>
-							<Icon>vpn_key</Icon>
-						</Fab>
 					</Paper>
 
 					<Paper className="paragraphe" elevation={1}>
@@ -72,24 +73,30 @@ class MonCompte extends React.Component {
 								<Typography variant="h3" align="left">
 									Utilisateur
 								</Typography>
-								<CopyableField copy label="idep" value={user.IDEP} />
-								<CopyableField copy label="nom complet" value={user.USERNAME} />
-								<CopyableField copy label="email" value={user.USERMAIL} />
-								<CopyableField copy label="ip" value={user.IP} />
+								<CopyableField copy label="Idep" value={user.IDEP} />
+								<CopyableField copy label="Nom complet" value={user.USERNAME} />
+								<CopyableField copy label="Email" value={user.USERMAIL} />
+								<CopyableField copy label="IP" value={user.IP} />
 							</>
 						) : (
 							<Loader />
 						)}
+						<CopyableField
+							copy
+							label="Jeton OIDC"
+							value={getKeycloak().token}
+						/>
 					</Paper>
 
 					{credentials ? (
 						<Paper className="paragraphe" elevation={1}>
 							<Typography variant="h3" align="left">
-								Identifiants Minio
+								Identifiants Minio (S3)
 							</Typography>
 							<Typography variant="body1" align="left">
-								Vos identifiants seront valable jusqu&rsquo;au&nbsp;
-								{formatageDate(credentials.AWS_EXPIRATION)}
+								Ces identifiants vous permettent d'accéder à vos fichiers. Ils
+								sont valables jusqu&rsquo;au&nbsp;
+								{formatageDate(credentials.AWS_EXPIRATION)}.
 							</Typography>
 							<CopyableField
 								copy
@@ -119,22 +126,26 @@ class MonCompte extends React.Component {
 
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" align="left">
-							Clef ssh
-						</Typography>
-						{isEmptySsh(user.SSH.SSH_PUBLIC_KEY) ? (
-							<NoShhKey />
-						) : (
-							<SshKeyUser ssh={user.SSH.SSH_PUBLIC_KEY} />
-						)}
-					</Paper>
-					<Paper className="paragraphe" elevation={1}>
-						<Typography variant="h3" align="left">
-							Jeton
+							Profil onyxia
 						</Typography>
 						<CopyableField
 							copy
-							label="votre jeton oidc"
-							value={getKeycloak().token}
+							label="Mot de passe pour vos services"
+							value="xxx"
+						/>
+					</Paper>
+
+					<Paper className="paragraphe" elevation={1}>
+						<FormControlLabel
+							control={
+								<Switch
+									onChange={this.handleChange}
+									name="checkedB"
+									color="primary"
+									checked={this.state.betatest}
+								/>
+							}
+							label="Activer le mode avancé (béta-testeur)"
 						/>
 					</Paper>
 				</div>
@@ -142,22 +153,6 @@ class MonCompte extends React.Component {
 		);
 	}
 }
-
-const isEmptySsh = (sshPublicKey) => !sshPublicKey || sshPublicKey === '';
-
-const NoShhKey = () => (
-	<>
-		<p>Attention&#33; Vous ne possédez pas de clefs SSH. </p>
-		<p>
-			Par conséquent, vous ne pouvez pas utiliser les fonctionnalités GIT avec
-			les conteneurs sur Onyxia.
-		</p>
-	</>
-);
-
-const SshKeyUser = ({ ssh }) => (
-	<CopyableField copy label="votre clef publique" value={ssh} />
-);
 
 MonCompte.propTypes = {
 	user: PropTypes.shape({

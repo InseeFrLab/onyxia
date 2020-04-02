@@ -16,6 +16,8 @@ import {
 	PokerHandIcon,
 } from 'js/components/commons/icons';
 
+import { hasOptedInForBetaTest } from '../../../configuration/betatest';
+
 const ItemLogin = ({ login }) => (
 	<ListItem button onClick={login}>
 		<ListItemIcon>
@@ -99,12 +101,16 @@ export default ({
 					</ListItemIcon>
 					<ListItemText primary="Mes fichiers" />
 				</ListItem>
-				<ListItem disabled button component={Link} to="/mes-secrets">
-					<ListItemIcon>
-						<Icon>vpn_key</Icon>
-					</ListItemIcon>
-					<ListItemText primary="Mes secrets" />
-				</ListItem>
+				{hasOptedInForBetaTest() ? (
+					<ListItem button component={Link} to="/mes-secrets">
+						<ListItemIcon>
+							<Icon>vpn_key</Icon>
+						</ListItemIcon>
+						<ListItemText primary="Mes secrets" />
+					</ListItem>
+				) : (
+					<></>
+				)}
 			</List>
 		</div>
 	</Drawer>
