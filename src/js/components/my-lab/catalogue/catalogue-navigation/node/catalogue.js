@@ -19,8 +19,7 @@ const Node = ({ location }) => {
 
 	useEffect(() => {
 		axiosPublic(`${api.catalogue}/${idCatalogue}`).then((res) => {
-			debugger;
-			setCatalogue(res.catalog);
+			setCatalogue(res);
 			setChips(
 				res.catalog.packages.reduce(
 					(a, { name, tags = [] }) =>
@@ -108,7 +107,7 @@ const Node = ({ location }) => {
 								removeChip={removeChip}
 							/>
 							<Grid container spacing={2} alignItems="flex-end">
-								{catalogue && catalogue.universe && catalogue.universe.packages
+								{catalogue && catalogue.catalog.packages
 									? mapCatalogueToCards(catalogue)(chipsSelected)(
 											setServiceSelected
 									  )
@@ -179,7 +178,7 @@ const mapCatalogueToCards = (catalogue) => (chips) => (setServiceSelected) =>
 const mapFilteringCatalogueToCards = (catalogue) => (filtering) => (
 	setServiceSelected
 ) => {
-	return catalogue.universe.packages
+	return catalogue.catalog.packages
 		.filter((pkg) => !pkg.disable)
 		.map((service, i) =>
 			filtering(service) ? (
