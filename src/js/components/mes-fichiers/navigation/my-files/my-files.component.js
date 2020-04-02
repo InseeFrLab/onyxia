@@ -51,7 +51,6 @@ class MyFiles extends React.Component {
 			policy: { Version: '2012-10-17', Statement: [] },
 		});
 		const policiesString = await getBucketPolicy(this.props.bucketName);
-		console.log('clean', JSON.parse(policiesString));
 	};
 
 	static getDerivedStateFromProps({ files, path, ...props }, state) {
