@@ -26,6 +26,7 @@
 		"clipboard-polyfill": "^2.8.6",
 		"file-saver": "^2.0.2",
 		"filereader-stream": "^2.0.0",
+		"generate-password": "^1.5.1",
 		"jsoneditor": "^8.6.3",
 		"jsoneditor-react": "^3.0.0",
 		"jwt-decode": "^2.2.0",
