@@ -41,17 +41,7 @@ class MyFiles extends React.Component {
 		super(props);
 		this.state.precPath = props.path;
 		this.checkFolderStatus();
-
-		// this.clean();
 	}
-
-	clean = async () => {
-		await setBucketPolicy({
-			bucketName: this.props.bucketName,
-			policy: { Version: '2012-10-17', Statement: [] },
-		});
-		const policiesString = await getBucketPolicy(this.props.bucketName);
-	};
 
 	static getDerivedStateFromProps({ files, path, ...props }, state) {
 		const checkedFiles = files.reduce(
