@@ -12,7 +12,7 @@ const formatUser = (user) => ({
 		idep: user.IDEP,
 		name: user.USERNAME,
 		email: user.USERMAIL,
-		password: user.USERPASSWORD,
+		password: (user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password) || '',
 		key: user.USERKEY,
 		ip: user.IP,
 	},

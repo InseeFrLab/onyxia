@@ -2,7 +2,7 @@ import axios from 'axios';
 import generator from 'generate-password';
 import { axiosAuth, getToken } from 'js/utils';
 import { store } from 'js/redux';
-import { newVaultToken } from 'js/redux/actions';
+import { newVaultToken, newVaultData } from 'js/redux/actions';
 import conf from '../configuration';
 
 const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
@@ -56,17 +56,18 @@ const fetchVaultToken = async () => {
 };
 
 export const initVaultPwd = (idep) => {
-	axiosVault(`${VAULT_BASE_URI}/v1/onyxia-kv/${idep}/.onyxia/profile`).catch(
-		() => {
+	axiosVault(`${VAULT_BASE_URI}/v1/onyxia-kv/${idep}/.onyxia/profile`)
+		.then(({ data: { data } }) => store.dispatch(newVaultData(data)))
+		.catch(() => {
 			var password = generator.generate({
 				length: 20,
 				numbers: true,
 			});
-			axiosVault.post(`/v1/onyxia-kv/${idep}/.onyxia/profile`, {
-				password,
-			});
-		}
-	);
+			const data = { password };
+			axiosVault
+				.post(`/v1/onyxia-kv/${idep}/.onyxia/profile`, data)
+				.then(() => store.dispatch(newVaultData(data)));
+		});
 };
 
 /**
