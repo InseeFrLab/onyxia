@@ -19,9 +19,10 @@ const Node = ({ location }) => {
 
 	useEffect(() => {
 		axiosPublic(`${api.catalogue}/${idCatalogue}`).then((res) => {
-			setCatalogue(res);
+			debugger;
+			setCatalogue(res.catalog);
 			setChips(
-				res.universe.packages.reduce(
+				res.catalog.packages.reduce(
 					(a, { name, tags = [] }) =>
 						mergeTab(
 							a,

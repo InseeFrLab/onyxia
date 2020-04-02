@@ -7,11 +7,11 @@ import api from 'js/redux/api';
 const resource = wrapPromise(axiosPublic(api.catalogue));
 
 const Catalogues = () => {
-	const { universes } = resource.read();
+	const { catalogs } = resource.read();
 	return (
 		<div className="contenu catalogue">
 			<Grid container spacing={2}>
-				{universes
+				{catalogs
 					.filter((catalogue) => catalogue.status === 'PROD')
 					.map((catalogue) => (
 						<Catalogue catalogue={catalogue} key={catalogue.id} />
