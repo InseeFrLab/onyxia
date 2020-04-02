@@ -9,10 +9,7 @@ import { gelLocalToken, setLocalToken } from 'js/utils';
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from 'js/configuration';
-import conf from 'js/configuration';
 import { initVaultPwd } from 'js/vault-client';
-
-const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 
 JavascriptTimeAgo.locale(fr);
 

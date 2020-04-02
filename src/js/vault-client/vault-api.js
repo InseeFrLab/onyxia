@@ -73,7 +73,7 @@ export const initVaultPwd = (idep) => {
  *
  */
 const axiosVault = axios.create({
-	baseURL: conf.VAULT.VAULT_BASE_URI,
+	baseURL: VAULT_BASE_URI,
 });
 axiosVault.interceptors.request.use(
 	(config) =>
