@@ -5,7 +5,7 @@ import createAiguilleur from 'js/components/commons/variable-location';
 import { VAULT_STATUS } from 'js/redux';
 import Leaf from './mes-secrets-leaf.component';
 import Node from './mes-secrets-node.component';
-
+import Loader from 'js/components/commons/loader';
 import './mes-secrets.scss';
 
 const isLeaf = async ({ pathname, search }) => {
@@ -72,7 +72,7 @@ class MesSecrets extends React.Component {
 
 	render() {
 		const { sealedStatus } = this.props;
-		if (sealedStatus === VAULT_STATUS.unknow) return <div>waiting...</div>;
+		if (sealedStatus === VAULT_STATUS.unknow) return <Loader em={18} />;
 		return sealedStatus === VAULT_STATUS.sealed ? (
 			<>
 				<SealedChest {...this.props} />
