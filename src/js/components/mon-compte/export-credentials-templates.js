@@ -23,7 +23,7 @@ bucketlist()`,
 		text: (c) =>
 			`
 import s3fs
-fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': '${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
+fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
 	},
 	{
 		id: 'env',
@@ -44,7 +44,7 @@ export AWS_S3_ENDPOINT = ${c.AWS_S3_ENDPOINT}
 		text: (c) =>
 			`
 [default]
-access_key = ${c.AWS_SECRET_ACCESS_KEY}
+access_key = ${c.AWS_ACCESS_KEY_ID}
 access_token = ${c.AWS_SESSION_TOKEN}
 add_encoding_exts =
 add_headers =
@@ -116,6 +116,25 @@ verbosity = WARNING
 website_endpoint = http://%(bucket)s.s3-website-%(location)s.amazonaws.com/
 website_error =
 website_index = index.html
+`,
+	},
+  	{
+		id: 'rclone',
+		label: 'rclone (.conf)',
+		fileName: '.conf',
+		text: (c) =>
+			`
+[minio]
+type = s3
+provider = Minio
+env_auth = false
+upload_concurrency = 5
+acl = private
+bucket_acl = private
+endpoint = ${c.AWS_S3_ENDPOINT}
+access_key_id = ${c.AWS_ACCESS_KEY_ID}
+secret_access_key = ${c.AWS_SECRET_ACCESS_KEY}
+session_token = ${c.AWS_SESSION_TOKEN}
 `,
 	},
 ];
