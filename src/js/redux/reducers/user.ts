@@ -84,6 +84,14 @@ export default (state = initial, action) => {
 					VAULT_TOKEN: action.payload.token,
 				},
 			};
+		case types.NEW_VAULT_DATA:
+			return {
+				...state,
+				VAULT: {
+					...state.VAULT,
+					DATA: action.payload.data,
+				},
+			};
 		default:
 			return state;
 	}
