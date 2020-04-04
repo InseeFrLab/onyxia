@@ -5,7 +5,10 @@ const readConfig = (key) =>
 const conf = {
 	API: {
 		BASE_URL: readConfig('BASE_API_URL'),
+	},
+	CONTENT: {
 		SERVICES_URL: readConfig('SERVICES_URL'),
+		HOMEPAGE_URL: readConfig('HOMEPAGE_URL'),
 	},
 	APP: {
 		MAX_INSTANCES: readConfig('INSTANCES_MAX'),

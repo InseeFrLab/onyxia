@@ -228,21 +228,23 @@ NouveauService.defaultProps = {
 
 export default NouveauService;
 
-const getOnglets = (onglets) =>
-	Object.entries(onglets)
+const getOnglets = (onglets) => {
+	return Object.entries(onglets)
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
-		.filter((o) => o.fields.length > 0);
+		.filter((o) => o.fields && o.fields.length > 0);
+};
 
 const mapOngletToFields = (nom) => (onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
-	fields: getFields(nom)(onglet.properties).filter(
-		({ field }) => field['js-control'] !== 'shadow'
-	),
+	fields: getFields(nom)(onglet.properties),
 });
 
 const getFields = (nom) => (onglet) => {
+	if (!onglet) {
+		return;
+	}
 	const fields = [];
 	Object.entries(onglet).forEach(([key, entry]) => {
 		const { type, properties, enum: options, title } = entry;
