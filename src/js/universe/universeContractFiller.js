@@ -12,15 +12,11 @@ export const getDefaultSingleOption = (property, context = getContext()) => {
 };
 
 const getDefaultOptions = (properties, context = getContext()) => {
-	debugger;
 	return Object.entries(properties).reduce((acc, [category, v]) => {
-		debugger;
 		const laData = Object.entries(v.properties).reduce(
 			(categoryData, [propName, propData]) => {
 				const { type } = propData;
 				const jsControl = propData['js-control'];
-
-				debugger;
 				if (jsControl === 'shadow' || !type) {
 					return categoryData;
 				}

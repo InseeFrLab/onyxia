@@ -21,14 +21,12 @@ export const refreshCloudShellStatus = () => (dispatch) => {
 			if (data.status === 'DOWN') {
 				Promise.all([getVaultToken(), getMinioToken()])
 					.then((_) => {
-						debugger;
 						creerNouveauService(
 							data.packageToDeploy,
 							getDefaultOptions(data.packageToDeploy.config.properties)
 						)(dispatch);
 					})
 					.catch((_) => {
-						debugger;
 						creerNouveauService(
 							data.packageToDeploy,
 							getDefaultOptions(data.packageToDeploy.config.properties)
