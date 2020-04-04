@@ -10,7 +10,7 @@ import CopyableField from 'js/components/commons/copyable-field';
 import { axiosURL, wrapPromise } from 'js/utils';
 import conf from 'js/configuration';
 
-const resource = wrapPromise(axiosURL(conf.API.SERVICES_URL));
+const resource = wrapPromise(axiosURL(conf.CONTENT.SERVICES_URL));
 
 const DetailsService = () => {
 	const { services } = resource.read();

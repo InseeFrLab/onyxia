@@ -8,9 +8,14 @@ import D from 'js/i18n';
 import { wrapPromise, axiosPublic } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
+import conf from './../../configuration';
 
 const resource = wrapPromise(
-	axiosPublic(`${window.location.origin}/accueil.json`)
+	axiosPublic(
+		conf.CONTENT.HOMEPAGE_URL
+			? conf.CONTENT.HOMEPAGE_URL
+			: `${window.location.origin}/accueil.json`
+	)
 );
 
 const Accueil = () => {
