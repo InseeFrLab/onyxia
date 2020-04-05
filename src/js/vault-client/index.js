@@ -1,3 +1,7 @@
-import VaultAPI, { getVaultToken, initVaultPwd } from './vault-api';
+import VaultAPI, {
+	getVaultToken,
+	initVaultPwd,
+	resetVaultPwd,
+} from './vault-api';
 export default () => new VaultAPI();
-export { getVaultToken, initVaultPwd };
+export { getVaultToken, initVaultPwd, resetVaultPwd };
