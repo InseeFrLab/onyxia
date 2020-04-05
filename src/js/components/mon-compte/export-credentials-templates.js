@@ -121,7 +121,7 @@ website_index = index.html
   	{
 		id: 'rclone',
 		label: 'rclone (.conf)',
-		fileName: '.conf',
+		fileName: 'rclone.conf',
 		text: (c) =>
 			`
 [minio]
