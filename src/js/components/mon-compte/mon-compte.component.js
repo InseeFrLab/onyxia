@@ -10,6 +10,7 @@ import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { getKeycloak } from 'js/utils';
 import ExportCredentialsField from './export-credentials-component';
+import S3Field from './s3';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
@@ -17,6 +18,7 @@ import {
 	hasOptedInForBetaTest,
 	changeBetaTestStatus,
 } from '../../configuration/betatest';
+import { resetVaultPwd } from 'js/vault-client';
 
 class MonCompte extends React.Component {
 	state = { credentials: null, betatest: hasOptedInForBetaTest() };
@@ -131,12 +133,11 @@ class MonCompte extends React.Component {
 						<Typography variant="h3" align="left">
 							Profil onyxia
 						</Typography>
-						<CopyableField
-							copy
-							label="Mot de passe pour vos services"
+						<S3Field
 							value={
 								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
 							}
+							handleReset={() => resetVaultPwd(user.IDEP)}
 						/>
 					</Paper>
 

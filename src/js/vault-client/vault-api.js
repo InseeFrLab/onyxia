@@ -59,15 +59,19 @@ export const initVaultPwd = (idep) => {
 	axiosVault(`${VAULT_BASE_URI}/v1/onyxia-kv/${idep}/.onyxia/profile`)
 		.then(({ data: { data } }) => store.dispatch(newVaultData(data)))
 		.catch(() => {
-			var password = generator.generate({
-				length: 20,
-				numbers: true,
-			});
-			const data = { password };
-			axiosVault
-				.post(`/v1/onyxia-kv/${idep}/.onyxia/profile`, data)
-				.then(() => store.dispatch(newVaultData(data)));
+			resetVaultPwd(idep);
 		});
+};
+
+export const resetVaultPwd = (idep) => {
+	const password = generator.generate({
+		length: 20,
+		numbers: true,
+	});
+	const data = { password };
+	axiosVault
+		.post(`/v1/onyxia-kv/${idep}/.onyxia/profile`, data)
+		.then(() => store.dispatch(newVaultData(data)));
 };
 
 /**

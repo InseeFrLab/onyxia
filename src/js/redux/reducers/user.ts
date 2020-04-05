@@ -36,6 +36,7 @@ const initial = {
 	VAULT: {
 		VAULT_ADDR: conf.VAULT.VAULT_BASE_URI,
 		VAULT_TOKEN: undefined,
+		DATA: {},
 	},
 };
 
@@ -89,7 +90,7 @@ export default (state = initial, action) => {
 				...state,
 				VAULT: {
 					...state.VAULT,
-					DATA: action.payload.data,
+					DATA: { ...state.VAULT.DATA, ...action.payload.data },
 				},
 			};
 		default:
