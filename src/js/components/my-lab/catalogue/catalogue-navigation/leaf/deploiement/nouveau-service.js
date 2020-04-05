@@ -31,6 +31,9 @@ class NouveauService extends React.Component {
 	};
 	constructor(props) {
 		super(props);
+		if (!props.user) {
+			props.getUserInfo();
+		}
 		this.state.queryParams = queryString.decode(getCleanParams());
 	}
 
@@ -59,28 +62,21 @@ class NouveauService extends React.Component {
 	}
 
 	static getDerivedStateFromProps(props, state) {
-		if (
-			state.service !== null &&
-			state.ongletFields.length === 0 &&
-			state.minioCredentials
-		) {
-			const onglets = state.service ? state.service.config.properties : {};
-			const user = props.user ? props.user : {};
-			const ongletFields = getOnglets(onglets);
-			const fieldsValues = ongletFields
-				.map((onglet) => onglet.fields)
-				.reduce(
-					(acc, curr) => ({
-						...acc,
-						...arrayToObject(state.minioCredentials)(state.queryParams)(user)(
-							curr
-						),
-					}),
-					{}
-				);
-			return { ...state, fieldsValues, ongletFields };
-		}
-		return state;
+		const onglets = state.service ? state.service.config.properties : {};
+		const user = props.user ? props.user : {};
+		const ongletFields = getOnglets(onglets);
+		const fieldsValues = ongletFields
+			.map((onglet) => onglet.fields)
+			.reduce(
+				(acc, curr) => ({
+					...acc,
+					...arrayToObject(state.minioCredentials)(state.queryParams)(user)(
+						curr
+					),
+				}),
+				{}
+			);
+		return { ...state, fieldsValues, ongletFields };
 	}
 
 	handleChangeService = (service) => {
