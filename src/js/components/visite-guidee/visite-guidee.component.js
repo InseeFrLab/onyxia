@@ -1,10 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
+import { Redirect } from 'react-router-dom';
+import {
+	Dialog,
+	DialogActions,
+	DialogTitle,
+	DialogContent,
+	IconButton,
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import './visite-guidee.scss';
 
 class VisiteGuidee extends React.Component {
-	state = { step: 0 };
+	state = { step: 0, redirect: false };
 	nextStep = () => {
 		this.setState({
 			step: Math.min(this.props.etapes.length - 1, this.state.step + 1),
@@ -17,7 +25,13 @@ class VisiteGuidee extends React.Component {
 		});
 	};
 
+	closeDialogue = () => {
+		this.setState({ redirect: true });
+	};
+
 	render() {
+		const { redirect } = this.state;
+		if (redirect) return <Redirect to="/accueil" />;
 		const { visite, etapes } = this.props;
 		if (!visite || etapes.length === 0) return null;
 		const { description: Description, actions: Actions } = etapes[
@@ -28,8 +42,14 @@ class VisiteGuidee extends React.Component {
 				classes={{ root: 'visite-guidee', paperFullWidth: 'contenu' }}
 				fullWidth
 				open={visite}
+				onEscapeKeyDown={this.closeDialogue}
 				BackdropComponent={() => <span className="custom-backdrop" />}
 			>
+				<DialogTitle align="right">
+					<IconButton onClick={this.closeDialogue}>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
 				<DialogContent>
 					<Description
 						next={this.nextStep}
