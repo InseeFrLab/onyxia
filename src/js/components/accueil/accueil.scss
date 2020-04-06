@@ -22,11 +22,8 @@
 				background-color: transparent;
 				color: snow;
 				font-family: avenir, helvetica, sans-serif;
-				width: 550px;
-				height: 270px;
+				width: 70%;
 				position: absolute;
-				left: 20px;
-				bottom: 20px;
 
 				h1 {
 					color: Cornsilk;
@@ -48,22 +45,20 @@
 	}
 
 	.applications {
-		margin-top: 100px;
+		margin-top: 5em;
 		.app {
 			display: flex;
 			flex-direction: row;
-			height: 370px;
+			align-items: center;
+			height: auto;
 			.commentaires {
 				padding: 16px 15px;
 				height: 100%;
 				position: relative;
-
 				width: 60%;
-				background-color: snow;
+				// background-color: snow;
 				.bouton {
-					position: absolute;
-					right: 20px;
-					bottom: 20px;
+					text-align: center;
 					background-color: snow;
 				}
 				.resume {
@@ -84,9 +79,10 @@
 				width: 50%;
 
 				display: inline-block;
-				background-color: lightseagreen;
+				// background-color: lightseagreen;
 				img {
-					margin-top: 25px;
+					margin-top: 2em;
+					margin-bottom: 2em;
 					width: 100%;
 					height: 300px;
 				}
@@ -98,7 +94,7 @@
 		width: 100%;
 		height: 230px;
 		position: relative;
-		margin-top: 100px;
+		margin-top: 5em;
 
 		.image {
 			width: 100%;
