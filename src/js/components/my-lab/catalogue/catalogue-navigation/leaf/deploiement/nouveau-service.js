@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, Tab } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { AppBar, Chip, Button } from '@material-ui/core/';
@@ -18,205 +18,192 @@ import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
 
-class NouveauService extends React.Component {
-	state = {
-		redirect: false,
-		onglet: 0,
-		fieldsValues: {},
-		ongletFields: [],
-		minioCredentials: undefined,
-		state: {},
-		contract: undefined,
-		loading: true,
-	};
-	constructor(props) {
-		super(props);
-		if (!props.user) {
-			props.getUserInfo();
-		}
-		this.state.queryParams = queryString.decode(getCleanParams());
-	}
+const NouveauService = ({
+	idCatalogue,
+	idService,
+	user,
+	creerNouveauService,
+	getUserInfo,
+}) => {
+	const [redirect, setRedirect] = useState(false);
+	const [service, setService] = useState({});
+	const [onglet, setOnglet] = useState(0);
+	const [fieldsValues, setFieldsValues] = useState({});
+	const [ongletFields, setOngletFields] = useState([]);
+	const [minioCredentials, setMinioCredentials] = useState(undefined);
+	const [contract, setContract] = useState(undefined);
+	const [loading, setLoading] = useState(true);
 
-	componentDidMount() {
-		const { idCatalogue, idService } = this.props;
+	const queryParams = queryString.decode(getCleanParams());
+
+	if (!user) getUserInfo();
+
+	const creerService = useCallback((...args) => creerNouveauService(args), [
+		creerNouveauService,
+	]);
+
+	const handleClickCreer = useCallback(
+		(preview = false) => {
+			if (service)
+				creerService(
+					{
+						service,
+						catalogId: idCatalogue,
+					},
+					getValuesObject(fieldsValues),
+					preview
+				).then((response) => {
+					if (preview && !contract) {
+						setContract(response);
+					} else if (preview && contract) {
+						setContract(undefined);
+					} else {
+						setRedirect(true);
+					}
+				});
+		},
+		[creerService, service, idCatalogue, fieldsValues, contract]
+	);
+
+	useEffect(() => {
 		axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then((res) => {
-			this.handleChangeService(res);
-			this.handleChangeLoading();
+			setService(res);
+			setLoading(false);
 		});
+	}, [idCatalogue, idService]);
+
+	useEffect(() => {
 		getVaultToken();
+		const clickIfAutomode = () => {
+			if (queryParams.auto) {
+				handleClickCreer(false);
+			}
+		};
 		getMinioToken()
-			.then((minioCredentials) => {
-				this.setState({ minioCredentials });
-				this.clickIfAutomode();
+			.then((credentials) => {
+				setMinioCredentials(credentials);
+				clickIfAutomode();
 			})
 			.catch((e) => {
-				this.setState({ minioCredentials: {} });
-				this.clickIfAutomode();
+				setMinioCredentials({});
+				clickIfAutomode();
 			});
-	}
+	}, [queryParams.auto, handleClickCreer]);
 
-	clickIfAutomode() {
-		if (this.state.queryParams.auto) {
-			this.handleClickCreer(false);
+	useEffect(() => {
+		if (
+			hasPwd(user) &&
+			service &&
+			minioCredentials &&
+			ongletFields.length === 0
+		) {
+			const onglets =
+				(service && service.config && service.config.properties) || {};
+			const oF = getOnglets(onglets);
+			const fV = oF
+				.map((onglet) => onglet.fields)
+				.reduce(
+					(acc, curr) => ({
+						...acc,
+						...arrayToObject(minioCredentials)(queryParams)(user)(curr),
+					}),
+					{}
+				);
+			setFieldsValues(fV);
+			setOngletFields(oF);
 		}
-	}
+	}, [user, service, minioCredentials, ongletFields, queryParams]);
 
-	static getDerivedStateFromProps(props, state) {
-		const onglets = state.service ? state.service.config.properties : {};
-		const user = props.user ? props.user : {};
-		const ongletFields = getOnglets(onglets);
-		const fieldsValues = ongletFields
-			.map((onglet) => onglet.fields)
-			.reduce(
-				(acc, curr) => ({
-					...acc,
-					...arrayToObject(state.minioCredentials)(state.queryParams)(user)(
-						curr
-					),
-				}),
-				{}
-			);
-		return { ...state, fieldsValues, ongletFields };
-	}
-
-	handleChangeService = (service) => {
-		this.setState({ service });
+	const handlechangeField = (path) => (value) => {
+		setFieldsValues({ ...fieldsValues, [path]: value });
+		setContract(undefined);
 	};
 
-	handleChangeLoading = () => {
-		this.setState({ loading: !this.state.loading });
-	};
-
-	handlechangeField = (path) => (value) => {
-		this.setState({
-			fieldsValues: { ...this.state.fieldsValues, [path]: value },
-			contract: undefined,
-		});
-	};
-
-	handleChangeOnglet = (e, onglet) => this.setState({ onglet });
-
-	handleClickCreer = (preview = false) => {
-		this.props
-			.creerNouveauService(
-				{
-					...this.state.service,
-					catalogId: this.props.idCatalogue,
-				},
-				getValuesObject(this.state.fieldsValues),
-				preview
-			)
-			.then((response) => {
-				const { contract } = this.state;
-				if (preview && !contract) {
-					this.setState({ contract: response });
-				} else if (preview && contract) {
-					this.setState({ contract: undefined });
-				} else {
-					this.setState({ redirect: true });
-				}
-			});
-
-		return false;
-	};
-
-	render() {
-		const { idCatalogue, idService, user } = this.props;
-		const {
-			service,
-			contract,
-			redirect,
-			onglet: ongletState,
-			ongletFields,
-			loading,
-		} = this.state;
-
-		if (redirect) return <Redirect to="/my-lab/mes-services" />;
-		const onglet = ongletFields[ongletState] || {};
-		return (
-			<>
-				<div className="en-tete en-tete-service">
-					<Typography
-						variant="h2"
-						align="center"
-						color="textPrimary"
-						gutterBottom
-					>
-						Créez votre propre service
-					</Typography>
-					{loading || ongletFields.length === 0 ? (
-						<Loader />
-					) : (
-						<div className="service">
-							<div className="titre">
-								<Chip avatar={getAvatar(service)} label={service.name} />
-							</div>
+	if (redirect) return <Redirect to="/my-lab/mes-services" />;
+	const ongletContent = ongletFields[onglet] || {};
+	return (
+		<>
+			<div className="en-tete en-tete-service">
+				<Typography
+					variant="h2"
+					align="center"
+					color="textPrimary"
+					gutterBottom
+				>
+					Créez votre propre service
+				</Typography>
+				{loading || ongletFields.length === 0 ? (
+					<Loader />
+				) : (
+					<div className="service">
+						<div className="titre">
+							<Chip avatar={getAvatar(service)} label={service.name} />
 						</div>
-					)}
-				</div>
-				<FilDAriane fil={fil.nouveauService(idCatalogue, idService)} />
-				<div className="contenu nouveau-service">
-					{loading || ongletFields.length === 0 ? (
-						<Loader em={18} />
-					) : (
-						<>
-							<AppBar position="static">
-								<Tabs
-									value={this.state.onglet}
-									onChange={this.handleChangeOnglet}
-									variant="scrollable"
-									scrollButtons="on"
-								>
-									{mapServiceToOnglets(this.state.ongletFields)}
-								</Tabs>
-							</AppBar>
-							<div className="description">
-								<Typography
-									variant="button"
-									align="center"
-									color="textPrimary"
-									gutterBottom
-								>
-									{onglet.description}
-								</Typography>
-							</div>
-							<Formulaire
-								user={user}
-								name={onglet.nom}
-								handleChange={this.handlechangeField}
-								fields={onglet.fields}
-								values={this.state.fieldsValues}
-							/>
-							<div className="actions">
-								<Button
-									id="bouton-creer-nouveau-service"
-									variant="contained"
-									color="primary"
-									onClick={() => this.handleClickCreer(false)}
-								>
-									Créer votre service
-								</Button>
-								<IconButton
-									id="bouton-preview-nouveau-service"
-									variant="contained"
-									color="primary"
-									onClick={() => this.handleClickCreer(true)}
-								>
-									<VisibilityIcon>Preview</VisibilityIcon>
-								</IconButton>
-								{contract ? (
-									<JSONEditor json={contract} readOnly={true} />
-								) : (
-									<></>
-								)}
-							</div>
-						</>
-					)}
-				</div>
-			</>
-		);
-	}
-}
+					</div>
+				)}
+			</div>
+			<FilDAriane fil={fil.nouveauService(idCatalogue, idService)} />
+			<div className="contenu nouveau-service">
+				{loading || ongletFields.length === 0 ? (
+					<Loader em={18} />
+				) : (
+					<>
+						<AppBar position="static">
+							<Tabs
+								value={onglet}
+								onChange={(e, o) => setOnglet(o)}
+								variant="scrollable"
+								scrollButtons="on"
+							>
+								{mapServiceToOnglets(ongletFields)}
+							</Tabs>
+						</AppBar>
+						<div className="description">
+							<Typography
+								variant="button"
+								align="center"
+								color="textPrimary"
+								gutterBottom
+							>
+								{ongletContent.description}
+							</Typography>
+						</div>
+						<Formulaire
+							user={user}
+							name={ongletContent.nom}
+							handleChange={handlechangeField}
+							fields={ongletContent.fields}
+							values={fieldsValues}
+						/>
+						<div className="actions">
+							<Button
+								id="bouton-creer-nouveau-service"
+								variant="contained"
+								color="primary"
+								onClick={() => handleClickCreer(false)}
+							>
+								Créer votre service
+							</Button>
+							<IconButton
+								id="bouton-preview-nouveau-service"
+								variant="contained"
+								color="primary"
+								onClick={() => handleClickCreer(true)}
+							>
+								<VisibilityIcon>Preview</VisibilityIcon>
+							</IconButton>
+							{contract ? (
+								<JSONEditor json={contract} readOnly={true} />
+							) : (
+								<></>
+							)}
+						</div>
+					</>
+				)}
+			</div>
+		</>
+	);
+};
 
 NouveauService.defaultProps = {
 	user: {},
@@ -224,11 +211,10 @@ NouveauService.defaultProps = {
 
 export default NouveauService;
 
-const getOnglets = (onglets) => {
-	return Object.entries(onglets)
+const getOnglets = (onglets) =>
+	Object.entries(onglets)
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
 		.filter((o) => o.fields && o.fields.length > 0);
-};
 
 const mapOngletToFields = (nom) => (onglet) => ({
 	nom: nom,
@@ -328,3 +314,6 @@ const getPathValue = ({ path: [first, ...rest], value }) => (other = {}) => {
 		[first]: getPathValue({ path: rest, value })(other[first]),
 	};
 };
+
+const hasPwd = (user) =>
+	user && user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password;
