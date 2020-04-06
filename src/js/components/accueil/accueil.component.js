@@ -42,25 +42,16 @@ const Accueil = () => {
 				</Precautions>
 				<div className="applications">
 					{applications.map(
-						(
-							{
-								nom,
-								image,
-								resume,
-								external,
-								internal,
-								avantages,
-								couleur1,
-								couleur2,
-							},
-							i
-						) => (
-							<App paire={i % 2 === 0} key={i}>
+						({ nom, image, resume, external, internal, avantages }, i) => (
+							<App
+								paire={i % 2 === 0}
+								key={i}
+								color={i % 2 === 0 ? 'gainsboro' : 'snow'}
+							>
 								<Commentaires
 									title={nom}
 									external={external}
 									internal={internal}
-									color={couleur1}
 								>
 									<Typography variant="body1" className="resume">
 										{resume}
@@ -69,7 +60,7 @@ const Accueil = () => {
 										<Benefit key={j}>{av}</Benefit>
 									))}
 								</Commentaires>
-								<Image color={couleur2} name="r-studio" url={image} />
+								<Image name="r-studio" url={image} />
 							</App>
 						)
 					)}
@@ -95,35 +86,26 @@ const Carte = ({ icon = 'star', title, children }) => (
 	</Grid>
 );
 
-const App = ({ children, paire }) =>
-	paire ? (
-		<div className="app">
-			{children[0]}
-			{children[1]}
-		</div>
-	) : (
-		<div className="app">
-			{children[1]}
-			{children[0]}
-		</div>
-	);
-const Image = ({ url, name = 'application', color = 'lightseagreen' }) => (
-	<div className="image" style={{ backgroundColor: color }}>
+const App = ({ children, paire, color = 'snow' }) => (
+	<div className="app" style={{ backgroundColor: color }}>
+		{children[paire ? 0 : 1]}
+		{children[paire ? 1 : 0]}
+	</div>
+);
+
+const Image = ({ url, name = 'application' }) => (
+	<div className="image" style={{ backgroundColor: '#5c6bc0' }}>
 		<img alt={name} src={url} />
 	</div>
 );
-const Commentaires = ({
-	title,
-	internal,
-	external,
-	children,
-	color = 'snow',
-}) => (
-	<div className="commentaires" style={{ backgroundColor: color }}>
+const Commentaires = ({ title, internal, external, children }) => (
+	<div className="commentaires">
 		<Typography variant="h3">{title}</Typography>
 		{children}
-		{internal ? <InternalLink url={internal} /> : null}
-		{external ? <ExternalLink url={external} /> : null}
+		<div className="centered">
+			{internal ? <InternalLink url={internal} /> : null}
+			{external ? <ExternalLink url={external} /> : null}
+		</div>
 	</div>
 );
 
