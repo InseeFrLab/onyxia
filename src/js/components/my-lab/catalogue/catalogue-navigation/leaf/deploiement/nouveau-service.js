@@ -38,31 +38,26 @@ const NouveauService = ({
 
 	if (!user) getUserInfo();
 
-	const creerService = useCallback((...args) => creerNouveauService(args), [
-		creerNouveauService,
-	]);
-
 	const handleClickCreer = useCallback(
 		(preview = false) => {
-			if (service)
-				creerService(
-					{
-						service,
-						catalogId: idCatalogue,
-					},
-					getValuesObject(fieldsValues),
-					preview
-				).then((response) => {
-					if (preview && !contract) {
-						setContract(response);
-					} else if (preview && contract) {
-						setContract(undefined);
-					} else {
-						setRedirect(true);
-					}
-				});
+			creerNouveauService(
+				{
+					...service,
+					catalogId: idCatalogue,
+				},
+				getValuesObject(fieldsValues),
+				preview
+			).then((response) => {
+				if (preview && !contract) {
+					setContract(response);
+				} else if (preview && contract) {
+					setContract(undefined);
+				} else {
+					setRedirect(true);
+				}
+			});
 		},
-		[creerService, service, idCatalogue, fieldsValues, contract]
+		[creerNouveauService, service, idCatalogue, fieldsValues, contract]
 	);
 
 	useEffect(() => {
