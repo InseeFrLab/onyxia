@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Typography, Fab, Icon } from '@material-ui/core';
-import { Avatar } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
 import { axiosPublic } from 'js/utils';
+import { getAvatar } from 'js/utils/service-utils';
 import api from 'js/redux/api';
 
 const Service = ({ idCatalogue, idService }) => {
@@ -42,7 +42,7 @@ const Service = ({ idCatalogue, idService }) => {
 					<Loader em={18} />
 				) : (
 					<>
-						{getLogo(service)}
+						{getAvatar(service)}
 						{getDescription(service)}
 						{getPreinstallNotes(service)}
 						{getAjouter(idCatalogue)(idService)}
@@ -96,18 +96,3 @@ const getAjouter = (idCatalogue) => (idService) =>
 			</Link>
 		</div>
 	) : null;
-
-const getLogo = (service) =>
-	service &&
-	service.resource &&
-	service.resource.resource &&
-	service.resource.resource.images['icon-large'] ? (
-		<div className="logo-service">
-			<img
-				src={service.resource.resource.images['icon-large']}
-				alt="logo service"
-			/>
-		</div>
-	) : (
-		<Avatar>{service.name.substring(0, 1)}</Avatar>
-	);
