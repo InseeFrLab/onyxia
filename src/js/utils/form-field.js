@@ -25,7 +25,7 @@ const formatUser = (user) => ({
 	keycloak: { ...user.KEYCLOAK },
 	kubernetes: { ...user.KUBERNETES },
 	vault: { ...user.VAULT },
-	s3: { ...user.minio },
+	s3: { ...user.S3 },
 });
 
 export const fromUser = (user) => (field) => {
