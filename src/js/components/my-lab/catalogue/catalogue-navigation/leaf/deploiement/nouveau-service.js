@@ -68,22 +68,24 @@ const NouveauService = ({
 	}, [idCatalogue, idService]);
 
 	useEffect(() => {
-		getVaultToken();
-		const clickIfAutomode = () => {
-			if (queryParams.auto) {
-				handleClickCreer(false);
-			}
-		};
-		getMinioToken()
-			.then((credentials) => {
-				setMinioCredentials(credentials);
-				clickIfAutomode();
-			})
-			.catch((e) => {
-				setMinioCredentials({});
-				clickIfAutomode();
-			});
-	}, [queryParams.auto, handleClickCreer]);
+		if (!minioCredentials) {
+			getVaultToken();
+			const clickIfAutomode = () => {
+				if (queryParams.auto) {
+					handleClickCreer(false);
+				}
+			};
+			getMinioToken()
+				.then((credentials) => {
+					setMinioCredentials(credentials);
+					clickIfAutomode();
+				})
+				.catch((e) => {
+					setMinioCredentials({});
+					clickIfAutomode();
+				});
+		}
+	}, [queryParams.auto, handleClickCreer, minioCredentials]);
 
 	useEffect(() => {
 		if (
