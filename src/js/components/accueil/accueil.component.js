@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom';
-import { Avatar, Card, CardContent } from '@material-ui/core/';
+import { Avatar, Card, CardContent, Paper } from '@material-ui/core/';
 import { CardHeader, Grid, Icon } from '@material-ui/core/';
 import Button from '@material-ui/core/Button';
 import D from 'js/i18n';
@@ -20,15 +20,17 @@ const resource = wrapPromise(
 
 const Accueil = () => {
 	const { bienvenue, cartes, precautions, applications } = resource.read();
+	const imgTitleColor =
+		(bienvenue.image && bienvenue.image.titleColor) || 'snow';
 	return (
 		<>
 			{/* <Chrismas /> */}
 			<div className="accueil">
 				<Welcome
-					image={bienvenue.image}
+					image={bienvenue.image.url}
+					imgTitleColor={imgTitleColor}
 					titre={bienvenue.titre}
 					contenu={bienvenue.contenu}
-					boutonQuestion={bienvenue.boutonQuestion}
 				/>
 				<Grid className="valeurs" container spacing={2} alignItems="flex-end">
 					{cartes.map(({ titre, contenu, icone }, i) => (
@@ -149,23 +151,20 @@ const Precautions = ({ titre, children }) => (
 	</div>
 );
 
-const Welcome = ({ image, titre, contenu, boutonQuestion }) => (
+const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 	<div className="bienvenue">
 		<img alt="innovation" src={image} />
 		<div className="message">
-			<div className="contenu">
+			<div className="title" style={{ color: imgTitleColor }}>
 				<h1>{titre}</h1>
-				<p>{contenu}</p>
-				<Link to="/visite-guidee">
-					<Button
-						variant="outlined"
-						style={{ color: 'snow', borderColor: 'snow' }}
-					>
-						{D.startVisit}
-					</Button>
-				</Link>
 			</div>
 		</div>
+		<Paper className="content">
+			<p>{contenu}</p>
+			<Link to="/visite-guidee">
+				<Button variant="outlined">{D.startVisit}</Button>
+			</Link>
+		</Paper>
 	</div>
 );
 

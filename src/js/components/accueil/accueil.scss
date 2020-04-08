@@ -18,27 +18,33 @@
 			top: 0;
 			left: 0;
 
-			.contenu {
+			.title {
+				margin: 0;
 				background-color: transparent;
-				color: snow;
 				font-family: avenir, helvetica, sans-serif;
-				width: 70%;
 				position: absolute;
-
 				h1 {
-					color: Cornsilk;
-					font-size: 48px;
+					padding-left: 0.4em;
+					margin: 0;
+					font-size: 3.5em;
+					font-weight: bold;
 				}
-
-				p {
-					font-size: 18px;
-				}
+			}
+		}
+		.content {
+			margin-top: 1em;
+			font-size: 1.2em;
+			padding: 0.4em;
+			button {
+				margin-left: 70%;
+				border: 0.1em solid black;
+				font-size: 1.1em;
 			}
 		}
 	}
 
 	.valeurs {
-		margin-top: 10px;
+		margin-top: 200px;
 		.carte {
 			height: 300px;
 		}
