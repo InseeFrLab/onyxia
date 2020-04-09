@@ -20,6 +20,8 @@ import {
 import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
+import S3Field from './s3';
+import { resetVaultPwd } from 'js/vault-client';
 
 class MonCompte extends React.Component {
 	state = { credentials: null, betatest: hasOptedInForBetaTest() };
@@ -166,6 +168,12 @@ class MonCompte extends React.Component {
 						<Typography variant="h3" align="left">
 							Profil onyxia
 						</Typography>
+		      <S3Field	
+							value={	
+								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''	
+							}	
+							handleReset={() => resetVaultPwd(user.IDEP)}	
+						/>
 					</Paper>
 
 					<Paper className="paragraphe" elevation={1}>
