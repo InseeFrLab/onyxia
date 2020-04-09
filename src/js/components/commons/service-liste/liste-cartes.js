@@ -12,7 +12,7 @@ import { WarnIcon } from 'js/components/commons/icons';
 import './liste-cartes.scss';
 
 class ListeCartes extends React.Component {
-	state = { confirmPauseAll: false };
+	state = { confirmPauseAll: false, confirmDeleteAll: false };
 	constructor(props) {
 		super(props);
 		this.props.initialiser();
@@ -23,6 +23,18 @@ class ListeCartes extends React.Component {
 
 	handlePauseAll = () => {
 		this.setState({ confirmPauseAll: false });
+		this.props.services.forEach((s) => {
+			if (s.instances) {
+				this.props.changerEtatService(s.id, false, s.mem, s.cpus);
+			}
+		});
+	};
+
+	toggleConfirmDeleteAll = () =>
+		this.setState({ confirmDeleteAll: !this.state.confirmDeleteAll });
+
+	handleDeleteAll = () => {
+		this.setState({ confirmDeleteAll: false });
 		this.props.services.forEach((s) => {
 			if (s.instances) {
 				this.props.changerEtatService(s.id, false, s.mem, s.cpus);
@@ -85,6 +97,7 @@ class ListeCartes extends React.Component {
 						<>
 							<Toolbar
 								groupe={groupe}
+								handleDeleteAll={this.toggleConfirmDeleteAll}
 								handlePauseAll={this.toggleConfirmPauseAll}
 								handleRefresh={this.handleRefresh}
 								handleSupprimerGroupe={this.handleSupprimerGroupe}
@@ -119,6 +132,7 @@ const AucunService = () => <div>Vous n&#x2019;avez aucun service</div>;
 
 const Toolbar = ({
 	groupe,
+	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
 	handleSupprimerGroupe,
@@ -126,6 +140,7 @@ const Toolbar = ({
 	<Paper className="onyxia-toolbar" elevation={1}>
 		<Actions
 			groupId={groupe ? groupe.id : null}
+			handleDeleteAll={handleDeleteAll}
 			handlePauseAll={handlePauseAll}
 			handleRefresh={handleRefresh}
 			handleSupprimerGroupe={handleSupprimerGroupe}
@@ -134,12 +149,21 @@ const Toolbar = ({
 );
 
 const Actions = ({
+	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
 	handleSupprimerGroupe,
 	groupId,
 }) => (
 	<>
+		<Fab
+			color="secondary"
+			aria-label="deleteAll"
+			classes={{ root: 'bouton' }}
+			onClick={handleDeleteAll}
+		>
+			<Icon>deleteAll</Icon>
+		</Fab>
 		<Fab
 			color="secondary"
 			aria-label="pause"
