@@ -1,13 +1,14 @@
 import { connect } from 'react-redux';
 import NouveauService from './nouveau-service';
-import { creerNouveauService, getUserInfo } from 'js/redux/actions';
+import { creerNouveauService } from 'js/redux/actions';
 
 const mapStateToProps = (state, props) => {
-	const { screenWidth } = state.app;
+	const { screenWidth, authenticated } = state.app;
 	const { user } = state;
 	const { serviceCree, serviceCreationEchec } = state.myLab;
 	return {
 		...props,
+		authenticated,
 		user,
 		serviceCree,
 		serviceCreationEchec,
@@ -17,5 +18,4 @@ const mapStateToProps = (state, props) => {
 
 export default connect(mapStateToProps, {
 	creerNouveauService,
-	getUserInfo,
 })(NouveauService);
