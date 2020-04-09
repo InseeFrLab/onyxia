@@ -4,7 +4,7 @@ import { Avatar } from '@material-ui/core';
 export const getServiceAvatar = (service) => (
 	<span className={`etat-service ${getColorClassStateService(service)}`}>
 		<span className="bordure-carte">
-			<Avatar src={service.logo} className="service-avatar" />
+			<Avatar src={service.labels.ONYXIA_LOGO} className="service-avatar" />
 		</span>
 	</span>
 );
