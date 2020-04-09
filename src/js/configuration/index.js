@@ -21,9 +21,8 @@ const conf = {
 		SALON_RC: readConfig('SALON_ROCKETCHAT'),
 	},
 	KUBERNETES: {
-		KUB_KC_CLIENT_ID: readConfig('KUB_KC_CLIENT_ID'),
-		KUB_KC_URL: readConfig('KUB_KC_URL'),
-		KUB_API_SERVER: readConfig('KUB_APISERVER_URL'),
+		KUB_SERVER_NAME: readConfig('KUB_SERVER_NAME'),
+		KUB_SERVER_URL: readConfig('KUB_SERVER_URL'),
 	},
 	VAULT: {
 		VAULT_BASE_URI: readConfig('VAULT_BASE_URI'),
