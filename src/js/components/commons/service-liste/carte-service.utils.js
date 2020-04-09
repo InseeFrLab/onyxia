@@ -1,13 +1,16 @@
 import React from 'react';
 import { Avatar } from '@material-ui/core';
 
-export const getServiceAvatar = (service) => (
-	<span className={`etat-service ${getColorClassStateService(service)}`}>
-		<span className="bordure-carte">
-			<Avatar src={service.labels.ONYXIA_LOGO} className="service-avatar" />
+export const getServiceAvatar = (service) => {
+	const img = service.logo || service.labels.ONYXIA_LOGO;
+	return (
+		<span className={`etat-service ${getColorClassStateService(service)}`}>
+			<span className="bordure-carte">
+				<Avatar src={img} className="service-avatar" />
+			</span>
 		</span>
-	</span>
-);
+	);
+};
 
 export const getTitle = (service) =>
 	(service && service.title) ||
