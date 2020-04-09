@@ -12,6 +12,7 @@ import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import ReactResizeDetector from 'react-resize-detector';
 import Alert from 'js/components/commons/alert';
+import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
 import MesServicesGeneriques from 'js/components/my-lab/mes-services/mes-services-generiques.container';
@@ -87,7 +88,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 					{invalidIdep(idep) && (
 						<Alert
 							severity="error"
-							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${process.env.REACT_APP_CONTACT}`}
+							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${config.APP.CONTACT}`}
 						/>
 					)}
 					<main role="main">
