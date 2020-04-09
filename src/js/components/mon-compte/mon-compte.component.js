@@ -139,7 +139,8 @@ class MonCompte extends React.Component {
 								Kubernetes
 							</Typography>
 							<Typography variant="body1" align="left">
-								Ces identifiants vous permettent d'accéder kubernetes.
+								Ces identifiants vous permettent d'accéder au cluster
+								kubernetes.
 							</Typography>
 							<CopyableField
 								copy

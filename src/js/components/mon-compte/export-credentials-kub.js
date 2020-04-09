@@ -1,7 +1,7 @@
 const exportTypes = [
 	{
-		id: 'commandeline',
-		label: 'command',
+		id: 'commandline',
+		label: 'init-kub.sh',
 		fileName: 'init-kub.sh',
 		text: (c) =>
 			`#!/bin/sh
