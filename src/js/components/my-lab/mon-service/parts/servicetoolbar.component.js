@@ -1,8 +1,7 @@
 import React from 'react';
 import { Paper, Icon, Fab } from '@material-ui/core/';
-import { getGrafanaServiceUrl, extractGroupId } from 'js/utils';
+import { getGrafanaServiceUrl } from 'js/utils';
 import { GrafanaIcon, MinioIcon } from 'js/components/commons/icons';
-import { Link } from 'react-router-dom';
 
 const ServiceToolbar = ({
 	service,
@@ -12,17 +11,15 @@ const ServiceToolbar = ({
 	refreshToken,
 }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
-		<Link to={`/my-lab/mes-services${extractGroupId(service.id)}`}>
-			<Fab
-				disabled={wait}
-				aria-label="supprimer"
-				className="bouton"
-				color="secondary"
-				onClick={handleDelete}
-			>
-				<Icon>delete</Icon>
-			</Fab>
-		</Link>
+		<Fab
+			disabled={wait}
+			aria-label="supprimer"
+			className="bouton"
+			color="secondary"
+			onClick={handleDelete}
+		>
+			<Icon>delete</Icon>
+		</Fab>
 		<Fab
 			disabled={wait}
 			color={service.instances ? 'secondary' : 'primary'}
