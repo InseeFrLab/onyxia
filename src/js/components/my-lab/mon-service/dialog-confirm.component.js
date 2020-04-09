@@ -9,7 +9,7 @@ import {
 import 'js/components/onyxia-modal.scss';
 import { WarnIcon } from 'js/components/commons/icons';
 
-export default ({ open, toggle, action }) => (
+export default ({ open, toggle, action, title, body }) => (
 	<Dialog
 		fullScreen={false}
 		open={open}
@@ -21,24 +21,21 @@ export default ({ open, toggle, action }) => (
 		}}
 	>
 		<DialogTitle id="login-titre" classes={{ root: 'en-tete' }}>
-			<div className="titre">Sauvegarder les propriétés du service</div>
+			<div className="titre">{title}</div>
 			<div className="sous-titre">Attention !</div>
 		</DialogTitle>
 		<DialogContent classes={{ root: 'contenu' }}>
 			<div className="paragraphe">
 				<div className="corps">
 					<Typography variant="body1" gutterBottom>
-						<strong>
-							Voulez-vous vous vraiment valider vos changements et redémarrer le
-							service ?
-						</strong>
+						<strong>{body}</strong>
 					</Typography>
 					<Typography variant="body2" gutterBottom>
 						<span style={{ float: 'left' }}>
 							<WarnIcon />
 						</span>
-						Attention, le redémarrage de votre service implique la perte de
-						toutes les données associées !
+						Attention, cette action implique la perte de toutes les données
+						associées au service !
 					</Typography>
 				</div>
 			</div>
@@ -46,7 +43,7 @@ export default ({ open, toggle, action }) => (
 
 		<DialogActions>
 			<Button
-				title="sauvegarder"
+				title="valider"
 				color="primary"
 				variant="contained"
 				className="bouton-login"

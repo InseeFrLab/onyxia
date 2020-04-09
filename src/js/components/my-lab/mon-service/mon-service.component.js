@@ -1,23 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Icon, IconButton, Fab } from '@material-ui/core/';
+import { Link } from 'react-router-dom';
+import {
+	Typography,
+	Icon,
+	IconButton,
+	Fab,
+	TableCell,
+	TableBody,
+	Table,
+	TableHead,
+	TableRow,
+} from '@material-ui/core/';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Confirm from './dialog-confirm.component';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { extractCreateFil, formatUrl, extractServiceId } from 'js/utils';
-import Paper from '@material-ui/core/Paper';
-import { Link } from 'react-router-dom';
-import { createMyLabParentUrl, truncateWithEllipses } from 'js/utils';
+import {
+	extractCreateFil,
+	formatUrl,
+	extractServiceId,
+	extractGroupId,
+	createMyLabParentUrl,
+	truncateWithEllipses,
+} from 'js/utils';
 import { serviceType } from 'js/components/commons/prop-types';
-import { Table, TableHead, TableRow } from '@material-ui/core';
-import { TableCell, TableBody } from '@material-ui/core';
 import { getServiceAvatar } from 'js/components/commons/service-liste';
 import CopyableField from 'js/components/commons/copyable-field';
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { PUSHER } from 'js/components/notifications';
-import './mon-service.scss';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Titre from 'js/components/commons/titre';
 import {
 	Sandbox,
 	ServiceToolbar,
@@ -25,8 +39,9 @@ import {
 	Description,
 	FileViewer,
 } from './parts';
-import conf from './../../../configuration';
-import Titre from 'js/components/commons/titre';
+import conf from 'js/configuration';
+import './mon-service.scss';
+
 const FilMonService = ({ service, taskId }) => {
 	const fil = getFilAriane(service, taskId);
 	return <FilDAriane fil={fil} />;
@@ -101,7 +116,10 @@ class MonService extends React.Component {
 	isEditConf = () =>
 		compareObject(this.state.initialConf)(this.state.currentConf);
 
-	handleDelete = () => this.props.requestDeleteMonService(this.props.service);
+	handleDelete = () => {
+		this.setState({ confirm: true });
+		this.toggleConfirm('delete');
+	};
 
 	handleChangeConf = (name) => (value) =>
 		this.setState({
@@ -150,20 +168,44 @@ class MonService extends React.Component {
 		this.setState({ confirmAction: this.handleSaveConfEnv, confirm: true });
 	};
 
-	toggleConfirm = () => this.setState({ confirm: !this.state.confirm });
+	toggleConfirm = (type, service) => {
+		if (type === 'delete') {
+			this.setState({
+				title: 'Suppression du service',
+				body: 'Voulez-vous vraiment supprimer votre service ?',
+				confirmAction: () => {
+					this.props.requestDeleteMonService(this.props.service);
+					this.props.history.push(
+						`/my-lab/mes-services${extractGroupId(this.props.service.id)}`
+					);
+				},
+			});
+		}
+		if (type === 'change-state') {
+			this.setState({
+				title: "Changer l'état du service",
+				body: "Voulez-vous vraiment valider le changement d'état du service ?",
+				confirmAction: () => {
+					this.props.setFavicon(ONYXIA_FAVICON.wait);
+					this.setState({ confirm: false });
+					this.props
+						.changerEtatService(
+							service.id,
+							service.instances === 0,
+							service.mem,
+							service.cpus
+						)
+						.then(() => {
+							this.props.setFavicon(ONYXIA_FAVICON.ok);
+						});
+				},
+			});
+		}
+	};
 
 	changerEtatService = (service) => {
-		this.props.setFavicon(ONYXIA_FAVICON.wait);
-		this.props
-			.changerEtatService(
-				service.id,
-				service.instances === 0,
-				service.mem,
-				service.cpus
-			)
-			.then(() => {
-				this.props.setFavicon(ONYXIA_FAVICON.ok);
-			});
+		this.setState({ confirm: true });
+		this.toggleConfirm('change-state', service);
 	};
 
 	render() {
@@ -398,8 +440,12 @@ class MonService extends React.Component {
 				</div>
 				<Confirm
 					open={this.state.confirm}
-					toggle={this.toggleConfirm}
+					toggle={() => {
+						this.setState({ confirm: false });
+					}}
 					action={this.state.confirmAction}
+					title={this.state.title}
+					body={this.state.body}
 				/>
 			</>
 		);
