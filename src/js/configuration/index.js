@@ -16,6 +16,7 @@ const conf = {
 		GIT_PATH: readConfig('GIT_PATH'),
 		PASSWORD: readConfig('PASSWORD'),
 		GRAFANA_URI: readConfig('GRAFANA_BASE_URI'),
+		CONTACT: readConfig('CONTACT'),
 	},
 	ENDPOINTS: {
 		SALON_RC: readConfig('SALON_ROCKETCHAT'),
