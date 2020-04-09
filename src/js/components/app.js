@@ -11,10 +11,11 @@ import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import ReactResizeDetector from 'react-resize-detector';
+import Alert from 'js/components/commons/alert';
+import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
 import MesServicesGeneriques from 'js/components/my-lab/mes-services/mes-services-generiques.container';
 import Services, { ServiceDetails } from 'js/components/services';
-
 import Catalogue from './my-lab/catalogue';
 import MesFichiers from 'js/components/mes-fichiers';
 import { NavigationFiles } from 'js/components/mes-fichiers';
@@ -42,6 +43,7 @@ const App = ({
 	applicationResize,
 	messageInformation,
 	consumeMessageInformation,
+	idep,
 }) =>
 	requestError ? (
 		<App404 />
@@ -51,6 +53,7 @@ const App = ({
 			applicationResize={applicationResize}
 			messageInformation={messageInformation}
 			consumeMessageInformation={consumeMessageInformation}
+			idep={idep}
 		/>
 	);
 
@@ -67,12 +70,7 @@ const App404 = () => (
 	</MuiThemeProvider>
 );
 
-const AppFeelGood = ({
-	waiting,
-	applicationResize,
-	messageInformation,
-	consumeMessageInformation,
-}) => (
+const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 	<MuiThemeProvider theme={theme}>
 		<ReactResizeDetector
 			handleWidth
@@ -86,6 +84,12 @@ const AppFeelGood = ({
 			<>
 				<div className="application">
 					<NavBar />
+					{invalidIdep(idep) && (
+						<Alert
+							severity="error"
+							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${process.env.REACT_APP_CONTACT}`}
+						/>
+					)}
 					<main role="main">
 						<Switch>
 							<Route path="/accueil" component={Accueil} />

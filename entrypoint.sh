@@ -29,4 +29,5 @@ echo "window._env_['AUTH_OIDC_SSL_REQUIRED'] = '$AUTH_OIDC_SSL_REQUIRED';" >> /u
 echo "window._env_['AUTH_OIDC_RESOURCE'] = '$AUTH_OIDC_RESOURCE';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_OIDC_PUBLIC_CLIENT'] = '$AUTH_OIDC_PUBLIC_CLIENT';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['AUTH_OIDC_CONFIDENTIAL_PORT'] = '$AUTH_OIDC_CONFIDENTIAL_PORT';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['CONTACT'] = '$CONTACT';" >> /usr/share/nginx/html/env-config.js
 exec "$@"
