@@ -80,6 +80,24 @@ class ListeCartes extends React.Component {
 						</Typography>
 					</div>
 				</Confirm>
+
+				<Confirm
+					titre="Delete all yours applications"
+					display={this.state.confirmDeleteAll}
+					cancel={this.toggleConfirmDeleteAll}
+					confirm={this.handleDeleteAll}
+				>
+					<div className="confirm-delete-all">
+						<span className="warning">
+							<WarnIcon width={80} height={80} />
+						</span>
+						<Typography variant="body1" gutterBottom>
+							You are going to delete all yours services this implies all yours
+							associated data are going to be deleted !
+						</Typography>
+					</div>
+				</Confirm>
+
 				<div className="contenu mes-services">
 					{services.length === 0 && groupes.length === 0 ? (
 						<>
