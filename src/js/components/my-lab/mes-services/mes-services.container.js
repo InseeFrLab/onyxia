@@ -5,6 +5,7 @@ import {
 	chargerMesServices,
 	suivreStatutService,
 	changerEtatService,
+	requestDeleteMonService,
 	cardStartWaiting,
 	stopAllWaitingCards,
 } from 'js/redux/actions';
@@ -26,6 +27,7 @@ const mapDispatchToProps = {
 	refresh: chargerMesServices,
 	suivreStatutService,
 	changerEtatService,
+	requestDeleteMonService,
 	cardStartWaiting,
 	stopAllWaitingCards,
 };

@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Grid, Icon, Typography, Fab } from '@material-ui/core/';
 import Paper from '@material-ui/core/Paper';
-import { CarteMonService } from 'js/components/commons/service-liste';
-import { CarteMonGroupe } from 'js/components/commons/service-liste';
+import {
+	CarteMonService,
+	CarteMonGroupe,
+} from 'js/components/commons/service-liste';
 import { typeRequest as TYPE_REQUEST, extractGroupId } from 'js/utils';
 import * as TYPE from 'js/components/commons/prop-types';
 import Confirm from 'js/components/commons/confirm';
@@ -37,7 +39,7 @@ class ListeCartes extends React.Component {
 		this.setState({ confirmDeleteAll: false });
 		this.props.services.forEach((s) => {
 			if (s.instances) {
-				this.props.changerEtatService(s.id, false, s.mem, s.cpus);
+				this.props.requestDeleteMonService(s);
 			}
 		});
 	};
