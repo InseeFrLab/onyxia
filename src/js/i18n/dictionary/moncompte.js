@@ -1,7 +1,11 @@
 const dictionary = {
-	export: {
+	exportMinio: {
 		fr: 'Accéder à minio en dehors du datalab : ',
 		en: 'Access minio from outside the datalab: ',
+	},
+	exportKub: {
+		fr: 'Accéder à kubernetes en dehors du datalab : ',
+		en: 'Access kubernetes from outside the datalab: ',
 	},
 	pwdTitle: {
 		fr: 'Mot de passe pour vos services',
