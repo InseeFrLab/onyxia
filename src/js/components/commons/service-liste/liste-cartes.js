@@ -12,6 +12,7 @@ import * as TYPE from 'js/components/commons/prop-types';
 import Confirm from 'js/components/commons/confirm';
 import { WarnIcon } from 'js/components/commons/icons';
 import './liste-cartes.scss';
+import D from 'js/i18n';
 
 class ListeCartes extends React.Component {
 	state = { confirmPauseAll: false, confirmDeleteAll: false };
@@ -84,7 +85,7 @@ class ListeCartes extends React.Component {
 				</Confirm>
 
 				<Confirm
-					titre="Delete all yours applications"
+					titre="Delete all your services"
 					display={this.state.confirmDeleteAll}
 					cancel={this.toggleConfirmDeleteAll}
 					confirm={this.handleDeleteAll}
@@ -94,8 +95,7 @@ class ListeCartes extends React.Component {
 							<WarnIcon width={80} height={80} />
 						</span>
 						<Typography variant="body1" gutterBottom>
-							You are going to delete all yours services this implies all yours
-							associated data are going to be deleted !
+							{D.deleteAllServices}
 						</Typography>
 					</div>
 				</Confirm>
