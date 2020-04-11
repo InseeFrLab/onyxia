@@ -4,6 +4,12 @@
 	"license": "MIT",
 	"homepage": "/",
 	"devDependencies": {
+		"@storybook/addon-actions": "^5.3.18",
+		"@storybook/addon-knobs": "^5.3.18",
+		"@storybook/addon-links": "^5.3.18",
+		"@storybook/addons": "^5.3.18",
+		"@storybook/preset-create-react-app": "^2.1.1",
+		"@storybook/react": "^5.3.18",
 		"@testing-library/jest-dom": "^5.1.1",
 		"@testing-library/react": "^10.0.1",
 		"clean-webpack-plugin": "^3.0.0",
@@ -11,6 +17,7 @@
 		"prettier": "^2.0.2",
 		"progress-bar-webpack-plugin": "^2.1.0",
 		"source-map-explorer": "^2.4.1",
+		"storybook-addon-material-ui": "^0.9.0-alpha.21",
 		"webpack-bundle-analyzer": "^3.6.1"
 	},
 	"dependencies": {
@@ -63,7 +70,9 @@
 		"analyze": "npm run analyze-bundle && npm run source-map-explorer",
 		"test": "react-scripts test --env=jsdom",
 		"test-coverage": "react-scripts test --coverage --watchAll=false --env=jsdom",
-		"eject": "react-scripts eject"
+		"eject": "react-scripts eject",
+		"storybook": "start-storybook -p 9009 -s public",
+		"build-storybook": "build-storybook -s public"
 	},
 	"browserslist": [
 		">0.2%",
