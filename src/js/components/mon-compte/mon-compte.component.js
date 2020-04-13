@@ -10,7 +10,6 @@ import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { getKeycloak } from 'js/utils';
 import ExportCredentialsField from './export-credentials-component';
-import S3Field from './s3';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
@@ -18,6 +17,10 @@ import {
 	hasOptedInForBetaTest,
 	changeBetaTestStatus,
 } from '../../configuration/betatest';
+import exportMinio from './export-credentials-minio';
+import exportKub from './export-credentials-kub';
+import D from 'js/i18n';
+import S3Field from './s3';
 import { resetVaultPwd } from 'js/vault-client';
 
 class MonCompte extends React.Component {
@@ -123,21 +126,53 @@ class MonCompte extends React.Component {
 								label="S3 endpoint"
 								value={credentials.AWS_S3_ENDPOINT || ''}
 							/>
-							<ExportCredentialsField credentials={credentials} />
+							<ExportCredentialsField
+								credentials={credentials}
+								exportTypes={exportMinio}
+								text={D.exportMinio}
+							/>
 						</Paper>
 					) : (
 						<Loader />
 					)}
-
+					{this.state.betatest ? (
+						<Paper className="paragraphe" elevation={1}>
+							<Typography variant="h3" align="left">
+								Kubernetes
+							</Typography>
+							<Typography variant="body1" align="left">
+								Ces identifiants vous permettent d'accéder au cluster
+								kubernetes.
+							</Typography>
+							<CopyableField
+								copy
+								label="Cluster Name"
+								value={user.KUBERNETES.KUB_SERVER_NAME}
+							/>
+							<CopyableField
+								copy
+								label="Api-server url"
+								value={user.KUBERNETES.KUB_SERVER_URL}
+							/>
+							<CopyableField copy label="Token" value={getKeycloak().token} />
+							<ExportCredentialsField
+								credentials={user}
+								exportTypes={exportKub}
+								text={D.exportKub}
+							/>
+						</Paper>
+					) : (
+						<></>
+					)}
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" align="left">
 							Profil onyxia
 						</Typography>
-						<S3Field
-							value={
-								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
-							}
-							handleReset={() => resetVaultPwd(user.IDEP)}
+		      <S3Field	
+							value={	
+								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''	
+							}	
+							handleReset={() => resetVaultPwd(user.IDEP)}	
 						/>
 					</Paper>
 

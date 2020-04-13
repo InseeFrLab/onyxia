@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { Typography, Grid, Select, MenuItem } from '@material-ui/core';
-import exportTypes from './export-credentials-templates';
-import D from 'js/i18n';
 import { ExportFileButton, CopyButton } from 'js/components/commons/buttons';
 
-const ExportCredentialsField = ({ credentials }) => {
+const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
 	const [exportTypeId, changeExportType] = useState(exportTypes[0].id);
 	const exportType = exportTypes.find((type) => type.id === exportTypeId);
 
 	const handleChange = (e) => changeExportType(e.target.value);
-
 	return (
 		<React.Fragment>
 			<Grid
@@ -20,7 +17,7 @@ const ExportCredentialsField = ({ credentials }) => {
 			>
 				<Grid item container xs={10} justify="flex-start">
 					<Grid item xs={7}>
-						<Typography variant="body1">{D.export}</Typography>
+						<Typography variant="body1">{text}</Typography>
 					</Grid>
 					<Grid item>
 						<Select

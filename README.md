@@ -14,6 +14,10 @@ The opensourcing (and documentation) is still a work in progress, please be pati
 
 The documentation can be found in the [docs](https://github.com/InseeFrLab/onyxia-ui/tree/master/docs) folder and [browsed online](https://inseefrlab.github.io/onyxia-ui).
 
+# UI
+
+UI components are displayed on [Storybook](https://inseefrlab.github.io/onyxia-ui/storybook)
+
 ## Quick start
 
 ### Using docker

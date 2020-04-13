@@ -12,18 +12,18 @@ import { getDefaultSingleOption } from 'js/universe/universeContractFiller';
 import './nouveau-service.scss';
 import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import { getVaultToken } from 'js/vault-client';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
+import { getVaultToken } from 'js/vault-client';
 
 const NouveauService = ({
 	idCatalogue,
 	idService,
 	user,
 	creerNouveauService,
-	getUserInfo,
+	authenticated,
 }) => {
 	const [redirect, setRedirect] = useState(false);
 	const [service, setService] = useState({});
@@ -35,8 +35,6 @@ const NouveauService = ({
 	const [loading, setLoading] = useState(true);
 
 	const queryParams = queryString.decode(getCleanParams());
-
-	if (!user) getUserInfo();
 
 	const handleClickCreer = useCallback(
 		(preview = false) => {
@@ -61,31 +59,36 @@ const NouveauService = ({
 	);
 
 	useEffect(() => {
-		axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then((res) => {
-			setService(res);
-			setLoading(false);
-		});
-	}, [idCatalogue, idService]);
+		if (authenticated)
+			axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then(
+				(res) => {
+					setService(res);
+					setLoading(false);
+				}
+			);
+	}, [idCatalogue, idService, authenticated]);
 
 	useEffect(() => {
-		if (!minioCredentials) {
-			getVaultToken();
-			const clickIfAutomode = () => {
-				if (queryParams.auto) {
-					handleClickCreer(false);
-				}
-			};
+		if (authenticated && !minioCredentials) {
 			getMinioToken()
 				.then((credentials) => {
 					setMinioCredentials(credentials);
-					clickIfAutomode();
 				})
 				.catch((e) => {
 					setMinioCredentials({});
-					clickIfAutomode();
 				});
 		}
-	}, [queryParams.auto, handleClickCreer, minioCredentials]);
+	}, [minioCredentials, authenticated]);
+
+	useEffect(() => {
+		if (!authenticated) getVaultToken();
+	}, [authenticated, user]);
+
+	useEffect(() => {
+		if (queryParams.auto) {
+			handleClickCreer(false);
+		}
+	}, [queryParams.auto, handleClickCreer]);
 
 	useEffect(() => {
 		if (

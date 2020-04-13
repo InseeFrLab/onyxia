@@ -5,6 +5,7 @@ set -e
 DOC_FOLDER="docs"
 SITE_FOLDER="website"
 BUNDLE_REPORT_FOLDER="bundle-report"
+STORYBOOK_FOLDER="storybook-static"
 
 MAIN_BRANCH="master"
 UPSTREAM="https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
@@ -25,6 +26,10 @@ function setup() {
   npm install -g gitbook-cli
 }
 
+function buildStoryBook(){
+  npm run build-storybook
+}
+
 function buildBundleReports() {
   npm run analyze
 }
@@ -43,6 +48,7 @@ function publish() {
   mkdir $SITE_FOLDER
   pushd "$SITE_FOLDER"
 
+  mv "../$STORYBOOK_FOLDER" "./storybook"
   cp -a "../$DOC_FOLDER/_book/." .
   mv "../$BUNDLE_REPORT_FOLDER" .
 
@@ -58,7 +64,7 @@ function publish() {
 }
 
 function main() {
-  setup && buildBundleReports && buildDocumentation && publish
+  setup && buildStoryBook && buildBundleReports && buildDocumentation && publish
 }
 
 main

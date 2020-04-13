@@ -20,9 +20,8 @@ Avaiable values for universe contracts:
 		"KC_ACCESS_TOKEN": ""
 	},
 	"kubernetes": {
-		"KUB_KC_CLIENT_ID": "",
-		"KUB_KC_URL": "",
-		"KUB_APISERVER_URL": ""
+		"KUB_SERVER_NAME": "",
+		"KUB_SERVER_URL": ""
 	},
 	"vault": { "VAULT_ADDR": "", "VAULT_TOKEN": undefined },
 	"s3": {

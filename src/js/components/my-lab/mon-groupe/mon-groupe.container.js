@@ -5,6 +5,7 @@ import {
 	chargerMonGroupe,
 	suivreStatutService,
 	changerEtatService,
+	requestDeleteMonService,
 	cardStartWaiting,
 	supprimerGroupe,
 } from 'js/redux/actions';
@@ -36,6 +37,9 @@ const mapDispatchToProps = (dispatch, props) => ({
 	},
 	changerEtatService: (serviceId, etat, mems, cpus) => {
 		dispatch(changerEtatService(serviceId, etat, mems, cpus));
+	},
+	requestDeleteMonService: (id) => {
+		dispatch(requestDeleteMonService(id));
 	},
 	cardStartWaiting: (id) => {
 		dispatch(cardStartWaiting(id));
