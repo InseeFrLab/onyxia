@@ -6,12 +6,13 @@ import { newVaultToken, newVaultData } from 'js/redux/actions';
 import conf from '../configuration';
 
 const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
+const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
 
 class VaultAPI {
 	async getSecretsList(path = '') {
 		const { data } = await axiosVault({
 			method: 'list',
-			url: `/v1/onyxia-kv${path}`,
+			url: `/v1/${VAULT_KV_ENGINE}/metadata${path}`,
 		});
 		return data.data ? data.data.keys : [];
 	}
@@ -19,17 +20,17 @@ class VaultAPI {
 	async getSecret(path = '') {
 		const { data } = await axiosVault({
 			method: 'get',
-			url: `/v1/onyxia-kv${path}`,
+			url: `/v1/${VAULT_KV_ENGINE}/data${path}`,
 		});
-		return data.data ? data.data : [];
+		return data.data.data ? data.data.data : [];
 	}
 
 	async createPath(path, payload) {
-		return axiosVault.put(`/v1/onyxia-kv${path}`, payload || { foo: 'bar' });
+		return axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload || {data: {foo: 'bar' }});
 	}
 
 	async uploadSecret(path, payload) {
-		const { data } = await axiosVault.put(`/v1/onyxia-kv${path}`, payload);
+		const { data } = await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload);
 		return data.data ? data.data : [];
 	}
 }
@@ -56,8 +57,8 @@ const fetchVaultToken = async () => {
 };
 
 export const initVaultPwd = (idep) => {
-	axiosVault(`${VAULT_BASE_URI}/v1/onyxia-kv/${idep}/.onyxia/profile`)
-		.then(({ data: { data } }) => store.dispatch(newVaultData(data)))
+	axiosVault(`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`)
+		.then(({ data: { data : {data}} }) => store.dispatch(newVaultData(data)))
 		.catch(() => {
 			resetVaultPwd(idep);
 		});
@@ -68,10 +69,10 @@ export const resetVaultPwd = (idep) => {
 		length: 20,
 		numbers: true,
 	});
-	const data = { password };
+	const data = { data: {password} };
 	axiosVault
-		.post(`/v1/onyxia-kv/${idep}/.onyxia/profile`, data)
-		.then(() => store.dispatch(newVaultData(data)));
+		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, data)
+		.then(() => store.dispatch(newVaultData(data.data)));
 };
 
 /**
