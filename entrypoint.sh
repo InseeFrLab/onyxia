@@ -12,6 +12,7 @@ echo "window._env_['MINIO_PORT'] = '$MINIO_PORT';" >> /usr/share/nginx/html/env-
 echo "window._env_['MINIO_END_MINIMUM_DURATION_MS'] = '$MINIO_END_MINIMUM_DURATION_MS';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['SALON_ROCKETCHAT'] = '$SALON_ROCKETCHAT';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['VAULT_BASE_URI'] = '$VAULT_BASE_URI';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['VAULT_KV_ENGINE'] = '$VAULT_KV_ENGINE';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['INSTANCES_MAX'] = '$INSTANCES_MAX';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['ONYXIA_GIT'] = '$ONYXIA_GIT';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['ONYXIA_ROCKETCHAT'] = '$ONYXIA_ROCKETCHAT';" >> /usr/share/nginx/html/env-config.js
