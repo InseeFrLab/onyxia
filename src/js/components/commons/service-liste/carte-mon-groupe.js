@@ -5,7 +5,8 @@ import { Avatar } from '@material-ui/core';
 import Pile from 'js/components/commons/pile';
 import { groupeType } from 'js/components/commons/prop-types';
 import { CarteService } from 'js/components/commons/service-liste';
-import { extractServiceId } from 'js/utils';
+import { extractServiceId } from 'js/utils/service-utils';
+import './liste-cartes.scss';
 
 /*
  * carte des apps des pages mon labo.

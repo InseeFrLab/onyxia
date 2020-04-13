@@ -11,7 +11,6 @@ import { typeRequest as TYPE_REQUEST, extractGroupId } from 'js/utils';
 import * as TYPE from 'js/components/commons/prop-types';
 import Confirm from 'js/components/commons/confirm';
 import { WarnIcon } from 'js/components/commons/icons';
-import './liste-cartes.scss';
 import D from 'js/i18n';
 
 class ListeCartes extends React.Component {
