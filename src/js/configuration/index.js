@@ -27,6 +27,7 @@ const conf = {
 	},
 	VAULT: {
 		VAULT_BASE_URI: readConfig('VAULT_BASE_URI'),
+    VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
 	},
 	CHAT: {
 		URL: readConfig('CHAT_URL'),
