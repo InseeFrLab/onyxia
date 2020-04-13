@@ -12,6 +12,9 @@
 				.logo {
 					display: block;
 				}
+				.titre {
+					height: auto;
+				}
 			}
 
 			@include paragraphe();
