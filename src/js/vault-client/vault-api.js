@@ -12,7 +12,7 @@ class VaultAPI {
 	async getSecretsList(path = '') {
 		const { data } = await axiosVault({
 			method: 'list',
-			url: `/v1/VAULT_KV_ENGINE/metadata${path}`,
+			url: `/v1/${VAULT_KV_ENGINE}/metadata${path}`,
 		});
 		return data.data ? data.data.keys : [];
 	}
@@ -20,17 +20,17 @@ class VaultAPI {
 	async getSecret(path = '') {
 		const { data } = await axiosVault({
 			method: 'get',
-			url: `/v1/VAULT_KV_ENGINE/data${path}`,
+			url: `/v1/${VAULT_KV_ENGINE}/data${path}`,
 		});
 		return data.data.data ? data.data.data : [];
 	}
 
 	async createPath(path, payload) {
-		return axiosVault.put(`/v1/VAULT_KV_ENGINE/data${path}`, payload || {data: {foo: 'bar' }});
+		return axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload || {data: {foo: 'bar' }});
 	}
 
 	async uploadSecret(path, payload) {
-		const { data } = await axiosVault.put(`/v1/VAULT_KV_ENGINE/data${path}`, payload);
+		const { data } = await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload);
 		return data.data ? data.data : [];
 	}
 }
@@ -57,7 +57,7 @@ const fetchVaultToken = async () => {
 };
 
 export const initVaultPwd = (idep) => {
-	axiosVault(`${VAULT_BASE_URI}/v1/VAULT_KV_ENGINE/data/${idep}/.onyxia/profile`)
+	axiosVault(`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`)
 		.then(({ data: { data : {data}} }) => store.dispatch(newVaultData(data)))
 		.catch(() => {
 			resetVaultPwd(idep);
@@ -71,7 +71,7 @@ export const resetVaultPwd = (idep) => {
 	});
 	const data = { data: {password} };
 	axiosVault
-		.post(`/v1/VAULT_KV_ENGINE/data/${idep}/.onyxia/profile`, data)
+		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, data)
 		.then(() => store.dispatch(newVaultData(data.data)));
 };
 
