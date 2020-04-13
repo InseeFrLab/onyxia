@@ -1,4 +1,5 @@
-@import './../../app.scss';
+@import 'js/components/app.scss';
+
 $font-size-titre: 16px;
 $font-size-corps: 14px;
 
@@ -6,7 +7,7 @@ $colorTheme: grey;
 
 .mes-service-modal {
 	.bouton-fermer {
-		backgroud-color: red;
+		background-color: red;
 	}
 
 	.metrique {
@@ -63,7 +64,6 @@ $colorTheme: grey;
 			color: $colorTheme;
 			text-align: center;
 			font-size: 12px;
-			float: left;
 
 			&:after {
 				content: 'jours';
