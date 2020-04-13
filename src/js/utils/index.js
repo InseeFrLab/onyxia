@@ -20,26 +20,3 @@ const makeParamFromIdService = (id) =>
 
 export const getGrafanaServiceUrl = (service) =>
 	`${grafanaBaseUri}${makeParamFromIdService(service.id)}`;
-
-export const extractServiceId = (serviceId) =>
-	serviceId
-		.split('/')
-		.filter((a) => a && a.length > 0)
-		.filter((a, i) => i > 1)
-		.reduce((a, m) => (a ? `${a}/${m}` : m), null)
-		.replace('/', '%2F');
-export const extractGroupId = (serviceId) =>
-	getAvLast(extractServiceId(serviceId).split('/')).reduce(
-		(a, r) => `${a}/${r}`,
-		''
-	);
-
-const getAvLast = ([first, ...rest]) =>
-	rest.length === 0
-		? []
-		: rest.length === 1
-		? [first]
-		: [first, ...getAvLast(rest)];
-
-export const getParamsFromProps = (props) =>
-	props.match && props.match.params ? props.match.params : undefined;

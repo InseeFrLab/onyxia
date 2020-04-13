@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 import { CarteService } from 'js/components/commons/service-liste';
 import Pile from 'js/components/commons/pile';
 import Chronometer from 'js/components/commons/chronometer';
-import { extractServiceId } from 'js/utils';
+import { extractServiceId } from 'js/utils/service-utils';
 import { serviceType } from 'js/components/commons/prop-types';
 import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import './liste-cartes.scss';
 
 /*
  * carte des apps des pages mon labo.
@@ -17,7 +18,8 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 class CarteMonService extends React.Component {
 	componentDidMount() {
-		this.props.suivreStatutService(this.props.service);
+		if (this.props.suivreStatutService)
+			this.props.suivreStatutService(this.props.service);
 	}
 
 	render() {
