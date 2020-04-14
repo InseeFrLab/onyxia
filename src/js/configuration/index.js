@@ -27,7 +27,8 @@ const conf = {
 	},
 	VAULT: {
 		VAULT_BASE_URI: readConfig('VAULT_BASE_URI'),
-    VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
+		VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
+		NB_DAYS_BEFORE_PWD_RENEWAL: readConfig('NB_DAYS_BEFORE_PWD_RENEWAL'),
 	},
 	CHAT: {
 		URL: readConfig('CHAT_URL'),

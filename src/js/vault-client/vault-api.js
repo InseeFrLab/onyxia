@@ -7,7 +7,7 @@ import conf from '../configuration';
 
 const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
-const NB_DAYS_BEFORE_PWD_RENEWAL = 7;
+const NB_DAYS_BEFORE_PWD_RENEWAL = conf.VAULT.NB_DAYS_BEFORE_PWD_RENEWAL;
 
 class VaultAPI {
 	async getSecretsList(path = '') {
@@ -67,8 +67,8 @@ export const initVaultPwd = (idep) => {
 		});
 };
 
-const pwdMustBeRenewed = (created_time) => {
-	return Date.now() - Date.parse(created_time) > 8400*NB_DAYS_BEFORE_PWD_RENEWAL
+const pwdMustBeRenewed = (createdTime) => {
+	return Date.now() - Date.parse(createdTime) > 86400000*NB_DAYS_BEFORE_PWD_RENEWAL
 }
 
 export const resetVaultPwd = (idep) => {
