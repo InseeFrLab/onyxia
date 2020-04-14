@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Icon, IconButton, Badge } from '@material-ui/core/';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
@@ -11,35 +11,47 @@ import { serviceType } from 'js/components/commons/prop-types';
 import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import './liste-cartes.scss';
+import { Service } from 'js/model';
 
-/*
- * carte des apps des pages mon labo.
- */
-
-class CarteMonService extends React.Component {
-	componentDidMount() {
-		if (this.props.suivreStatutService)
-			this.props.suivreStatutService(this.props.service);
-	}
-
-	render() {
-		const { service, handleClickLaunch, wait = false } = this.props;
-		const expiration = dateExpiration(service);
-		return (
-			<CarteService
-				id={service.id}
-				expiration={expiration && isExpired(expiration)}
-				wait={wait}
-				pause={service.instances === 0}
-				title={getTitle(service)}
-				subtitle={getSubtitle(service)}
-				avatar={getServiceAvatar(service)}
-				actions={getActions(service)(handleClickLaunch)}
-				contenu={getContenu(service)}
-			/>
-		);
-	}
+interface Props {
+	service: Service;
+	suivreStatutService: (service: Service) => void;
+	handleClickLaunch: (func: () => void) => void;
+	wait?: boolean;
 }
+
+const CarteMonService = ({
+	service,
+	suivreStatutService,
+	handleClickLaunch,
+	wait,
+}: Props) => {
+	useEffect(() => {
+		if (suivreStatutService) {
+			suivreStatutService(service);
+		}
+	});
+	const expiration = dateExpiration({ env: {} }); // TODO : restore this
+	return (
+		<CarteService
+			id={service.id}
+			expiration={expiration && isExpired(expiration)}
+			wait={wait}
+			pause={service.instances === 0}
+			title={getTitle(service)}
+			subtitle={getSubtitle(service)}
+			avatar={getServiceAvatar(service)}
+			actions={getActions(service)(handleClickLaunch)}
+			contenu={getContenu(service)}
+		/>
+	);
+};
+
+CarteMonService.propTypes = {
+	service: serviceType,
+	handleClickLaunch: PropTypes.func.isRequired,
+	wait: PropTypes.bool.isRequired,
+};
 
 const getActions = (service) => (launch) => () => (
 	<>
@@ -56,7 +68,7 @@ const getActions = (service) => (launch) => () => (
 	</>
 );
 
-const getLaunchIcon = (service) => (handleClickLaunch) =>
+const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 	service.tasksRunning ? (
 		service.labels.ONYXIA_URL ? (
 			<IconButton
@@ -128,14 +140,10 @@ const getLabel = (label) => (how) => () => (
 	</span>
 );
 
-const getServiceUrl = ({ labels: { ONYXIA_URL } }) =>
-	ONYXIA_URL ? ONYXIA_URL.split(',')[0] : undefined;
-
-CarteMonService.propTypes = {
-	service: serviceType,
-	handleClickLaunch: PropTypes.func.isRequired,
-	wait: PropTypes.bool.isRequired,
-};
+const getServiceUrl = (service: Service) =>
+	service.labels.ONYXIA_URL
+		? service.labels.ONYXIA_URL.split(',')[0]
+		: undefined;
 
 export default CarteMonService;
 

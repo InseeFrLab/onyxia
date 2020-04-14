@@ -7,36 +7,30 @@ import { groupeType } from 'js/components/commons/prop-types';
 import { CarteService } from 'js/components/commons/service-liste';
 import { extractServiceId } from 'js/utils/service-utils';
 import './liste-cartes.scss';
+import { Group, Service } from 'js/model';
+import { useState } from 'react';
 
-/*
- * carte des apps des pages mon labo.
- */
-
-class CarteMonGroupe extends React.Component {
-	state = { raised: false, redirect: false, wait: false };
-	componentDidMount() {
-		this.props.groupe.apps.forEach((service) =>
-			this.props.suivreStatutService(service)
-		);
-	}
-
-	render() {
-		const { groupe } = this.props;
-		const running = isOneRunning(groupe);
-		return (
-			<CarteService
-				id={groupe.id}
-				wait={this.state.wait}
-				pause={!running}
-				title={getTitle(groupe)}
-				subtitle="Groupe d'applications"
-				avatar={getAvatar(groupe)}
-				actions={getActions(groupe)}
-				contenu={getContenu(groupe)(running)}
-			/>
-		);
-	}
+interface Props {
+	group: Group;
+	suivreStatutService: (service: Service) => void;
 }
+
+const CarteMonGroupe = ({ group }: Props) => {
+	const running = isOneRunning(group);
+	const [wait] = useState(false);
+	return (
+		<CarteService
+			id={group.id}
+			wait={wait}
+			pause={!running}
+			title={getTitle(group)}
+			subtitle="Groupe d'applications"
+			avatar={getAvatar(group)}
+			actions={getActions(group)}
+			contenu={getContenu(group)(running)}
+		/>
+	);
+};
 
 const getTitle = (groupe) =>
 	groupe.apps.length > 0 ? groupe.apps[0].labels.ONYXIA_TITLE : 'Groupe vide';
@@ -73,19 +67,19 @@ const getContenu = (groupe) => (running) => () => {
 	);
 };
 
-const isOneRunning = (groupe) =>
-	groupe.apps.reduce(
+const isOneRunning = (group: Group) =>
+	group.apps.reduce(
 		(a, { instances, tasksRunning }) => a || instances > 0,
 		false
-	) || groupe.groups.reduce((a, g) => a || isOneRunning(g), false);
+	);
 
-const compterCpu = (services) => (max) =>
+const compterCpu = (services: Service[]) => (max: number) =>
 	Math.min(
 		max,
 		services.reduce((a, c) => a + (c.cpus * 10) / services.length, 0)
 	);
 
-const compterRam = (services) => (max) =>
+const compterRam = (services: Service[]) => (max: number) =>
 	Math.min(
 		max,
 		services.reduce((a, c) => a + c.mem / 2048 / services.length, 0)

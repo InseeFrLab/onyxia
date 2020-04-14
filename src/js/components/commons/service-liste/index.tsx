@@ -79,7 +79,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 						<MoreHoriz />
 					</div>
 				</ListItem>
-				<Divider inset />
+				<Divider variant="inset" />
 			</div>
 		);
 	});

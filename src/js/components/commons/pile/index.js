@@ -6,7 +6,7 @@ export default ({
 	sizeMax,
 	horizontal = false,
 	vertical = true,
-	label = 'media',
+	label,
 	title = size,
 	small = false,
 }) => {
