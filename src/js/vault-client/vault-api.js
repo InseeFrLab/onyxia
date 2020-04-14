@@ -7,6 +7,7 @@ import conf from '../configuration';
 
 const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
+const NB_DAYS_BEFORE_PWD_RENEWAL = 7;
 
 class VaultAPI {
 	async getSecretsList(path = '') {
@@ -58,11 +59,17 @@ const fetchVaultToken = async () => {
 
 export const initVaultPwd = (idep) => {
 	axiosVault(`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`)
-		.then(({ data: { data : {data}} }) => store.dispatch(newVaultData(data)))
+		.then(({ data : {data} }) => 
+			pwdMustBeRenewed(data.metadata.created_time) ? resetVaultPwd(idep) : store.dispatch(newVaultData(data.data))
+			)
 		.catch(() => {
 			resetVaultPwd(idep);
 		});
 };
+
+const pwdMustBeRenewed = (created_time) => {
+	return Date.now() - Date.parse(created_time) > 8400*NB_DAYS_BEFORE_PWD_RENEWAL
+}
 
 export const resetVaultPwd = (idep) => {
 	const password = generator.generate({
