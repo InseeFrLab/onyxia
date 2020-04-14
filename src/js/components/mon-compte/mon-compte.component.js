@@ -59,7 +59,7 @@ class MonCompte extends React.Component {
 						color="textPrimary"
 						gutterBottom
 					>
-						Bonjour {user.nomComplet}
+						Bonjour {user.USERNAME}
 					</Typography>
 				</div>
 				<FilDAriane fil={fil.monCompte} />
@@ -73,6 +73,18 @@ class MonCompte extends React.Component {
 						>
 							<Icon>power_settings_new_icon</Icon>
 						</Fab>
+					</Paper>
+
+					<Paper className="paragraphe" elevation={1}>
+						<Typography variant="h3" align="left">
+							Profil onyxia
+						</Typography>
+						<S3Field
+							value={
+								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
+							}
+							handleReset={() => resetVaultPwd(user.IDEP)}
+						/>
 					</Paper>
 
 					<Paper className="paragraphe" elevation={1}>
@@ -164,17 +176,6 @@ class MonCompte extends React.Component {
 					) : (
 						<></>
 					)}
-					<Paper className="paragraphe" elevation={1}>
-						<Typography variant="h3" align="left">
-							Profil onyxia
-						</Typography>
-		      <S3Field	
-							value={	
-								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''	
-							}	
-							handleReset={() => resetVaultPwd(user.IDEP)}	
-						/>
-					</Paper>
 
 					<Paper className="paragraphe" elevation={1}>
 						<FormControlLabel
