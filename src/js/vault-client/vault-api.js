@@ -68,7 +68,7 @@ export const initVaultPwd = (idep) => {
 };
 
 const pwdMustBeRenewed = (createdTime) => {
-	return Date.now() - Date.parse(createdTime) > 86400000*NB_DAYS_BEFORE_PWD_RENEWAL
+	return Date.now() - Date.parse(createdTime) > 24*60*60*1000*NB_DAYS_BEFORE_PWD_RENEWAL
 }
 
 export const resetVaultPwd = (idep) => {
