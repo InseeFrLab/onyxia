@@ -92,6 +92,16 @@ export default ({
 					</ListItemIcon>
 					<ListItemText primary="Mon Labo" />
 				</ListItem>
+				{hasOptedInForBetaTest() ? (
+					<ListItem button component={Link} to="/my-lab/services">
+						<ListItemIcon>
+							<BecherIcon height={20} width={20} />
+						</ListItemIcon>
+						<ListItemText primary="Mon Labo V2" />
+					</ListItem>
+				) : (
+					<></>
+				)}
 				<ListItem>
 					<ListItemText primary="Données" />
 				</ListItem>

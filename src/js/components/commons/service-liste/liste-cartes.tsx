@@ -13,7 +13,84 @@ import Confirm from 'js/components/commons/confirm';
 import { WarnIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
 
-class ListeCartes extends React.Component {
+/**
+ * export const serviceType = PropTypes.shape({
+	id: PropTypes.string.isRequired,
+	cpus: PropTypes.number.isRequired,
+	instances: PropTypes.number.isRequired,
+	mem: PropTypes.number.isRequired,
+	tasksStaged: PropTypes.number.isRequired,
+	tasksRunning: PropTypes.number.isRequired,
+	tasksHealthy: PropTypes.number.isRequired,
+	tasksUnhealthy: PropTypes.number.isRequired,
+	labels: PropTypes.shape({
+		ONYXIA_NAME: PropTypes.string.isRequired,
+		ONYXIA_SUBTITLE: PropTypes.string.isRequired,
+		ONYXIA_LOGO: PropTypes.string,
+		ONYXIA_URL: PropTypes.string,
+		ONYXIA_PRIVATE_ENDPOINT: PropTypes.string,
+	}),
+});
+ */
+/**
+ * ListeCartes.propTypes = {
+	mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
+	typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
+	suivreStatutService: PropTypes.func.isRequired,
+	initialiser: PropTypes.func.isRequired,
+	supprimerGroupe: PropTypes.func,
+	refresh: PropTypes.func.isRequired,
+	groupes: TYPE.groupesType,
+	services: TYPE.servicesType,
+};
+ */
+interface MyProps {
+	initialiser: () => void;
+	services?: Service[];
+	changerEtatService?: (
+		id: string,
+		state: boolean,
+		cpus: number,
+		mem: number
+	) => void;
+	requestDeleteMonService?: (service) => void;
+	refresh?: () => void;
+	supprimerGroupe?: (id: string) => void;
+	groupe?: Groupe;
+	mesServicesWaiting?: string[];
+	suivreStatutService?: () => void;
+	groupes?: Groupe[];
+}
+
+interface MyState {
+	confirmPauseAll: boolean;
+	confirmDeleteAll: boolean;
+}
+
+interface Groupe {
+	id: string;
+	apps: Service[];
+}
+
+interface Service {
+	id: string;
+	cpus: number;
+	mem: number;
+	instances: number;
+}
+
+class ListeCartes extends React.Component<MyProps, MyState> {
+	static propTypes = {
+		mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
+		typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
+		suivreStatutService: PropTypes.func.isRequired,
+		initialiser: PropTypes.func.isRequired,
+		supprimerGroupe: PropTypes.func,
+		refresh: PropTypes.func.isRequired,
+		groupes: TYPE.groupesType,
+		services: TYPE.servicesType,
+	};
+
 	state = { confirmPauseAll: false, confirmDeleteAll: false };
 	constructor(props) {
 		super(props);
@@ -155,6 +232,12 @@ const Toolbar = ({
 	handlePauseAll,
 	handleRefresh,
 	handleSupprimerGroupe,
+}: {
+	groupe: Groupe;
+	handleDeleteAll?: () => void;
+	handlePauseAll: () => void;
+	handleRefresh: () => void;
+	handleSupprimerGroupe: () => void;
 }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
 		<Actions
@@ -218,16 +301,5 @@ const Actions = ({
 		) : null}
 	</>
 );
-
-ListeCartes.propTypes = {
-	mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
-	typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
-	suivreStatutService: PropTypes.func.isRequired,
-	initialiser: PropTypes.func.isRequired,
-	supprimerGroupe: PropTypes.func,
-	refresh: PropTypes.func.isRequired,
-	groupes: TYPE.groupesType,
-	services: TYPE.servicesType,
-};
 
 export default ListeCartes;
