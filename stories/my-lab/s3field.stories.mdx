@@ -1,19 +1,13 @@
 import { Props } from '@storybook/addon-docs/blocks';
-import * as stories from './my-lab.stories.js';
+import * as stories from './s3field.stories.js';
 import S3Field from 'js/components/mon-compte/s3.js';
 
 <Meta title={stories.default.title} component={stories.default.component} />
 
-# My lab
+# S3Field (change this name)
 
-This component is used to represent your custom service
-
-<Props of={CarteMonService} />
+<Props of={S3Field} />
 
 When your service is started, your card is like:
 
-<Story name="WithProps" decorators={stories.default.decorators}>{stories.WithProps()}</Story>
-
-When your service is starting, the card is on waiting mode:
-
-<Story name="Waiting" decorators={stories.default.decorators}>{stories.Waiting()}</Story>
+<Story name="BasicS3Field" decorators={stories.default.decorators}>{stories.BasicS3Field()}</Story>
