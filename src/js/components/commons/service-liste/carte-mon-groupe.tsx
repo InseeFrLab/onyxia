@@ -8,7 +8,6 @@ import { CarteService } from 'js/components/commons/service-liste';
 import { extractServiceId } from 'js/utils/service-utils';
 import './liste-cartes.scss';
 import { Group, Service } from 'js/model';
-import { useState } from 'react';
 
 interface Props {
 	group: Group;
@@ -17,11 +16,10 @@ interface Props {
 
 const CarteMonGroupe = ({ group }: Props) => {
 	const running = isOneRunning(group);
-	const [wait] = useState(false);
 	return (
 		<CarteService
 			id={group.id}
-			wait={wait}
+			wait={false}
 			pause={!running}
 			title={getTitle(group)}
 			subtitle="Groupe d'applications"

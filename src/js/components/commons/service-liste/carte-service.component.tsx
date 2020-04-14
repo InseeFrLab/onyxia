@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardHeader, Grid } from '@material-ui/core';
 import { PauseIcon } from 'js/components/commons/icons';
@@ -19,7 +19,7 @@ const CarteService = ({
 	avatar = null,
 	expiration = false,
 }) => {
-	const [raised, setRaised] = React.useState(false);
+	const [raised, setRaised] = useState(false);
 	return (
 		<Grid item lg={3} md={4} xs={12} classes={{ item: 'carte' }}>
 			<Card
