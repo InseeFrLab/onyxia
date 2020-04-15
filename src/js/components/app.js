@@ -16,7 +16,6 @@ import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
 import MesServicesGeneriques from 'js/components/my-lab/mes-services/mes-services-generiques.container';
-import ServicesV2 from 'js/components/my-lab/services';
 import Services, { ServiceDetails } from 'js/components/services';
 import Catalogue from './my-lab/catalogue';
 import MesFichiers from 'js/components/mes-fichiers';
@@ -101,11 +100,6 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 							<Route
 								path="/my-lab/catalogue/:catalogue"
 								component={Catalogue}
-							/>
-							<PrivateRoute
-								exact
-								path="/my-lab/services"
-								component={ServicesV2}
 							/>
 
 							<PrivateRoute

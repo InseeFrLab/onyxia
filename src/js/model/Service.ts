@@ -17,4 +17,9 @@ export interface Service {
 	logo?: string;
 	title: string;
 	subtitle?: string;
+	tasks?: [
+		{
+			createdAt: string;
+		}
+	];
 }
