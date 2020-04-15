@@ -11,13 +11,11 @@ export default {
 };
 
 export const WithProps = () => (
-	<MemoryRouter>
-		<CarteMonService
-			service={object('service', fakeService)}
-			wait={boolean('Wait', false)}
-			handleClickLaunch={() => console.log('launch')}
-		/>
-	</MemoryRouter>
+	<CarteMonService
+		service={object('service', fakeService)}
+		wait={boolean('Wait', false)}
+		handleClickLaunch={() => console.log('launch')}
+	/>
 );
 
 WithProps.story = {
@@ -25,13 +23,11 @@ WithProps.story = {
 };
 
 export const Waiting = () => (
-	<MemoryRouter>
-		<CarteMonService
-			service={fakeService}
-			wait={true}
-			handleClickLaunch={() => console.log('launch')}
-		/>
-	</MemoryRouter>
+	<CarteMonService
+		service={fakeService}
+		wait={true}
+		handleClickLaunch={() => console.log('launch')}
+	/>
 );
 
 Waiting.story = {

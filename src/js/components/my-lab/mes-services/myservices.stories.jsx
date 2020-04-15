@@ -10,20 +10,14 @@ export default {
 	includeStories: [],
 };
 
-export const NoServices = () => (
-	<MemoryRouter>
-		<ListeCartes services={[]} groupes={[]} />
-	</MemoryRouter>
-);
+export const NoServices = () => <ListeCartes services={[]} groupes={[]} />;
 
 NoServices.story = {
 	title: 'No services',
 };
 
 export const SingleService = () => (
-	<MemoryRouter>
-		<ListeCartes services={fakeServices} groupes={[]} />
-	</MemoryRouter>
+	<ListeCartes services={fakeServices} groupes={[]} />
 );
 
 SingleService.story = {

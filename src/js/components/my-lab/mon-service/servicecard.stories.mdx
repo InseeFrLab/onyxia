@@ -1,5 +1,5 @@
-import { Props } from '@storybook/addon-docs/blocks';
-import * as stories from './servicecard.stories.js';
+import { Props, Story } from '@storybook/addon-docs/blocks';
+import * as stories from './servicecard.stories.jsx';
 import CarteMonService from 'js/components/commons/service-liste/carte-mon-service';
 
 <Meta title={stories.default.title} component={stories.default.component} />
@@ -12,8 +12,12 @@ This component is used to represent your custom service
 
 When your service is started, your card is like:
 
-<Story name="WithProps" decorators={stories.default.decorators}>{stories.WithProps()}</Story>
+<Story name="WithProps" decorators={stories.default.decorators}>
+	{stories.WithProps()}
+</Story>
 
 When your service is starting, the card is on waiting mode:
 
-<Story name="Waiting" decorators={stories.default.decorators}>{stories.Waiting()}</Story>
+<Story name="Waiting" decorators={stories.default.decorators}>
+	{stories.Waiting()}
+</Story>
