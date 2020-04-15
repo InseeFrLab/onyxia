@@ -1,8 +1,6 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { object, boolean } from '@storybook/addon-knobs';
 import ListeCartes from 'js/components/commons/service-liste/liste-cartes';
-import fakeServices from './services.json';
+import fakeServices from 'js/model/sampledata/basic-oneservice.json';
 
 export default {
 	title: 'My services',

@@ -96,7 +96,7 @@ const getContenu = (service) => () => {
 	return (
 		<>
 			<div className="paragraphe">
-				{service.instances && service.tasksRunning ? (
+				{service.instances && service.tasksRunning && service.tasks ? (
 					<>
 						<div className="titre">Temps d&rsquo;activité</div>
 						<Chronometer start={service.tasks[0].startedAt} />

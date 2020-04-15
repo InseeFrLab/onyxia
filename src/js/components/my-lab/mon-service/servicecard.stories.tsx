@@ -1,8 +1,7 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { object, boolean } from '@storybook/addon-knobs';
 import CarteMonService from 'js/components/commons/service-liste/carte-mon-service';
-import fakeService from './service.json';
+import fakeService from 'js/model/sampledata/basic-service.json';
 
 export default {
 	title: 'Service card',
@@ -12,6 +11,7 @@ export default {
 
 export const WithProps = () => (
 	<CarteMonService
+		suivreStatutService={() => console.log('fake')}
 		service={object('service', fakeService)}
 		wait={boolean('Wait', false)}
 		handleClickLaunch={() => console.log('launch')}
@@ -24,6 +24,7 @@ WithProps.story = {
 
 export const Waiting = () => (
 	<CarteMonService
+		suivreStatutService={() => console.log('fake')}
 		service={fakeService}
 		wait={true}
 		handleClickLaunch={() => console.log('launch')}
