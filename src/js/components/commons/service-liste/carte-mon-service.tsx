@@ -10,8 +10,8 @@ import { extractServiceId } from 'js/utils/service-utils';
 import { serviceType } from 'js/components/commons/prop-types';
 import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import './liste-cartes.scss';
 import { Service } from 'js/model';
+import './liste-cartes.scss';
 
 interface Props {
 	service: Service;
