@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,9 +17,9 @@ export default function FormDialog({
 	okText = 'Ok',
 	nopText = 'Annuler',
 }) {
-	const [open, setOpen] = React.useState(false);
-	const [key, setKey] = React.useState('');
-	const [value, setValue] = React.useState('');
+	const [open, setOpen] = useState(false);
+	const [key, setKey] = useState('');
+	const [value, setValue] = useState('');
 
 	function handleClickOpen() {
 		setOpen(true);

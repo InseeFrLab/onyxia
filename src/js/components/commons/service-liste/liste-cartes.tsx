@@ -12,12 +12,49 @@ import * as TYPE from 'js/components/commons/prop-types';
 import Confirm from 'js/components/commons/confirm';
 import { WarnIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
+import { Service, Group } from 'js/model';
 
-class ListeCartes extends React.Component {
+interface MyProps {
+	initialiser?: () => void;
+	services?: Service[];
+	changerEtatService?: (
+		id: string,
+		state: boolean,
+		cpus: number,
+		mem: number
+	) => void;
+	requestDeleteMonService?: (service) => void;
+	refresh?: () => void;
+	supprimerGroupe?: (id: string) => void;
+	groupe?: Group;
+	mesServicesWaiting?: string[];
+	suivreStatutService?: () => void;
+	groupes?: Group[];
+}
+
+interface MyState {
+	confirmPauseAll: boolean;
+	confirmDeleteAll: boolean;
+}
+
+class ListeCartes extends React.Component<MyProps, MyState> {
+	static propTypes = {
+		mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
+		typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
+		suivreStatutService: PropTypes.func.isRequired,
+		initialiser: PropTypes.func.isRequired,
+		supprimerGroupe: PropTypes.func,
+		refresh: PropTypes.func.isRequired,
+		groupes: TYPE.groupesType,
+		services: TYPE.servicesType,
+	};
+
 	state = { confirmPauseAll: false, confirmDeleteAll: false };
 	constructor(props) {
 		super(props);
-		this.props.initialiser();
+		if (this.props.initialiser) {
+			this.props.initialiser();
+		}
 	}
 
 	toggleConfirmPauseAll = () =>
@@ -125,7 +162,10 @@ class ListeCartes extends React.Component {
 								{services.map((service, i) => (
 									<CarteMonService
 										key={i}
-										wait={mesServicesWaiting.indexOf(service.id) !== -1}
+										wait={
+											mesServicesWaiting &&
+											mesServicesWaiting.indexOf(service.id) !== -1
+										}
 										service={service}
 										handleClickLaunch={this.handleDemarrerService}
 										suivreStatutService={suivreStatutService}
@@ -134,7 +174,7 @@ class ListeCartes extends React.Component {
 								{groupes.map((groupe, i) => (
 									<CarteMonGroupe
 										key={i}
-										groupe={groupe}
+										group={groupe}
 										suivreStatutService={suivreStatutService}
 									/>
 								))}
@@ -155,6 +195,12 @@ const Toolbar = ({
 	handlePauseAll,
 	handleRefresh,
 	handleSupprimerGroupe,
+}: {
+	groupe: Group;
+	handleDeleteAll?: () => void;
+	handlePauseAll: () => void;
+	handleRefresh: () => void;
+	handleSupprimerGroupe: () => void;
 }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
 		<Actions
@@ -218,16 +264,5 @@ const Actions = ({
 		) : null}
 	</>
 );
-
-ListeCartes.propTypes = {
-	mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
-	typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
-	suivreStatutService: PropTypes.func.isRequired,
-	initialiser: PropTypes.func.isRequired,
-	supprimerGroupe: PropTypes.func,
-	refresh: PropTypes.func.isRequired,
-	groupes: TYPE.groupesType,
-	services: TYPE.servicesType,
-};
 
 export default ListeCartes;
