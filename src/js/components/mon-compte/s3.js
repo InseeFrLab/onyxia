@@ -13,14 +13,13 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
-const S3Field = ({ value, handleReset }) => {
-	const [password, setPassword] = useState(value);
+const S3Field = ({ versionsList, handleReset }) => {
+	const [password, setPassword] = useState(versionsList.V1);
 	const handleVersionChange = (event) => {
-		setPassword(event.target.value);
+		setPassword(versionsList[event.target.value]);
 	};
-	const versionsList = [1, 2, 3];
 
-	if (!value) return null;
+	if (!versionsList) return null;
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
 			<InputLabel>{D.pwdTitle}</InputLabel>
@@ -43,7 +42,7 @@ const S3Field = ({ value, handleReset }) => {
 						</IconButton>
 						<IconButton
 							aria-label="copier dans le presse papier"
-							onClick={() => clipboard.writeText(value)}
+							onClick={() => clipboard.writeText(password)}
 						>
 							<FileCopy />
 						</IconButton>
@@ -55,10 +54,12 @@ const S3Field = ({ value, handleReset }) => {
 };
 
 const SelectVersion = ({ versionsList, handleVersionChange }) => {
-	const [version, setVersion] = useState(versionsList[0]);
+	const [version, setVersion] = useState(
+		versionsList[Object.keys(versionsList)[0]]
+	);
 	const handleChange = (event) => {
-		setVersion(event.target.value);
 		handleVersionChange(event);
+		setVersion(event.target.value);
 	};
 
 	return (
@@ -68,8 +69,8 @@ const SelectVersion = ({ versionsList, handleVersionChange }) => {
 			value={version}
 			onChange={handleChange}
 		>
-			{versionsList.map((i) => (
-				<MenuItem value={i}>V{i}</MenuItem>
+			{Object.keys(versionsList).map((k) => (
+				<MenuItem value={k}>{k}</MenuItem>
 			))}
 		</Select>
 	);

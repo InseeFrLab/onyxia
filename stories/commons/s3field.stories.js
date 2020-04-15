@@ -8,20 +8,16 @@ export default {
 	includeStories: [],
 };
 
-export const BasicS3Field = () => <S3Field value={text('value', 'toto')} />;
-
-export const RenewableS3Field = () => <S3Field value={text('value', 'toto')} />;
-
-export const ListS3Field = () => <S3Field value={text('value', 'toto')} />;
+export const BasicS3Field = () => (
+	<S3Field
+		versionsList={object('versionsList', {
+			V1: 'toto',
+			V2: 'tata',
+			V3: 'titi',
+		})}
+	/>
+);
 
 BasicS3Field.story = {
 	title: 'BasicS3Field',
-};
-
-RenewableS3Field.story = {
-	title: 'RenewableS3Field',
-};
-
-ListS3Field.story = {
-	title: 'ListS3Field',
 };
