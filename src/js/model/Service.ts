@@ -18,6 +18,6 @@ export interface Service {
 	title: string;
 	subtitle?: string;
 	tasks?: {
-		createdAt: string;
+		startedAt: string;
 	}[];
 }
