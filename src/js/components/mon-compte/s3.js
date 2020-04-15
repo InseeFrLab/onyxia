@@ -14,6 +14,12 @@ import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
 const S3Field = ({ value, handleReset }) => {
+	const [password, setPassword] = useState(value);
+	const handleVersionChange = (event) => {
+		setPassword(event.target.value);
+	};
+	const versionsList = [1, 2, 3];
+
 	if (!value) return null;
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
@@ -22,10 +28,13 @@ const S3Field = ({ value, handleReset }) => {
 				disabled
 				label={D.pwdTitle}
 				fullWidth
-				value={value}
+				value={password}
 				endAdornment={
 					<InputAdornment position="end">
-						<SuperListeDeroulante infos={[1, 2, 3]}></SuperListeDeroulante>
+						<SelectVersion
+							versionsList={versionsList}
+							handleVersionChange={handleVersionChange}
+						/>
 						<IconButton
 							aria-label="rafraîchir le mot de passe"
 							onClick={handleReset}
@@ -45,12 +54,13 @@ const S3Field = ({ value, handleReset }) => {
 	);
 };
 
-const SuperListeDeroulante = ({ infos }) => {
-	const [version, setVersion] = useState(0);
-
+const SelectVersion = ({ versionsList, handleVersionChange }) => {
+	const [version, setVersion] = useState(versionsList[0]);
 	const handleChange = (event) => {
-		setVersion(event.target.version);
+		setVersion(event.target.value);
+		handleVersionChange(event);
 	};
+
 	return (
 		<Select
 			labelId="demo-simple-select-label"
@@ -58,8 +68,8 @@ const SuperListeDeroulante = ({ infos }) => {
 			value={version}
 			onChange={handleChange}
 		>
-			{infos.map((i) => (
-				<MenuItem value={i}>${i}</MenuItem>
+			{versionsList.map((i) => (
+				<MenuItem value={i}>V{i}</MenuItem>
 			))}
 		</Select>
 	);
