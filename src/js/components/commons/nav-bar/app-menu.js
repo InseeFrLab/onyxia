@@ -54,8 +54,7 @@ export default ({
 				<Clear />
 			</IconButton>
 			<List onClick={handleClose}>
-				{authenticated ? <></> : <ItemLogin login={login} />}
-
+				{authenticated ? null : <ItemLogin login={login} />}
 				<ListItem button component={Link} to="/accueil">
 					<ListItemIcon>
 						<Home />
@@ -108,9 +107,7 @@ export default ({
 						</ListItemIcon>
 						<ListItemText primary="Mes secrets" />
 					</ListItem>
-				) : (
-					<></>
-				)}
+				) : null}
 			</List>
 		</div>
 	</Drawer>

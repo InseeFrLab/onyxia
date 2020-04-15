@@ -101,6 +101,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 								path="/my-lab/catalogue/:catalogue"
 								component={Catalogue}
 							/>
+
 							<PrivateRoute
 								exact
 								path="/my-lab/mes-services"

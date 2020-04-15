@@ -1,8 +1,0 @@
-{
-	"id": "fakegroup/toto/fakeServiceId",
-	"title": "titi",
-	"instances": 1,
-	"cpus": 0.1,
-	"mem": 2048,
-	"labels": {}
-}
