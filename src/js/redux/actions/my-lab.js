@@ -7,7 +7,7 @@ import {
 	cardStoptWaiting,
 	cardStartWaiting,
 } from './app';
-import { launchServiceTask, needWaitingTask } from 'js/utils';
+import { launchServiceTask, needWaitingTask } from 'js/utils/state-tasks';
 import api from 'js/redux/api';
 import { typeRequest } from 'js/utils';
 import { getMinioToken } from 'js/minio-client';

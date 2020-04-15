@@ -15,7 +15,7 @@ import D from 'js/i18n';
 import { Service, Group } from 'js/model';
 
 interface MyProps {
-	initialiser: () => void;
+	initialiser?: () => void;
 	services?: Service[];
 	changerEtatService?: (
 		id: string,
@@ -52,7 +52,9 @@ class ListeCartes extends React.Component<MyProps, MyState> {
 	state = { confirmPauseAll: false, confirmDeleteAll: false };
 	constructor(props) {
 		super(props);
-		this.props.initialiser();
+		if (this.props.initialiser) {
+			this.props.initialiser();
+		}
 	}
 
 	toggleConfirmPauseAll = () =>
@@ -160,7 +162,10 @@ class ListeCartes extends React.Component<MyProps, MyState> {
 								{services.map((service, i) => (
 									<CarteMonService
 										key={i}
-										wait={mesServicesWaiting.indexOf(service.id) !== -1}
+										wait={
+											mesServicesWaiting &&
+											mesServicesWaiting.indexOf(service.id) !== -1
+										}
 										service={service}
 										handleClickLaunch={this.handleDemarrerService}
 										suivreStatutService={suivreStatutService}

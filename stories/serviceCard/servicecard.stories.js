@@ -5,7 +5,7 @@ import CarteMonService from 'js/components/commons/service-liste/carte-mon-servi
 import fakeService from './service.json';
 
 export default {
-	title: 'MyLab',
+	title: 'Service card',
 	component: CarteMonService,
 	includeStories: [],
 };
