@@ -6,8 +6,8 @@ import Pile from 'js/components/commons/pile';
 import { groupeType } from 'js/components/commons/prop-types';
 import { CarteService } from 'js/components/commons/service-liste';
 import { extractServiceId } from 'js/utils/service-utils';
-import './liste-cartes.scss';
 import { Group, Service } from 'js/model';
+import './liste-cartes.scss';
 
 interface Props {
 	group: Group;
