@@ -5,11 +5,11 @@ export const serviceType = PropTypes.shape({
 	cpus: PropTypes.number.isRequired,
 	instances: PropTypes.number.isRequired,
 	mem: PropTypes.number.isRequired,
+	urls: PropTypes.array.isRequired,
 	labels: PropTypes.shape({
 		ONYXIA_NAME: PropTypes.string.isRequired,
 		ONYXIA_SUBTITLE: PropTypes.string.isRequired,
 		ONYXIA_LOGO: PropTypes.string,
-		ONYXIA_URL: PropTypes.string,
 		ONYXIA_PRIVATE_ENDPOINT: PropTypes.string,
 	}),
 });

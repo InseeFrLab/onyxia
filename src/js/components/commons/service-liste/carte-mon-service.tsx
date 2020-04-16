@@ -70,7 +70,7 @@ const getActions = (service) => (launch) => () => (
 
 const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 	service.status === ServiceStatus.Running ? (
-		service.labels.ONYXIA_URL ? (
+		service.urls ? (
 			<IconButton
 				color="secondary"
 				aria-label="ouvrir"
@@ -141,9 +141,7 @@ const getLabel = (label) => (how) => () => (
 );
 
 const getServiceUrl = (service: Service) =>
-	service.labels.ONYXIA_URL
-		? service.labels.ONYXIA_URL.split(',')[0]
-		: undefined;
+	service.urls ? service.urls[0].split(',')[0] : undefined;
 
 export default CarteMonService;
 
