@@ -5,10 +5,8 @@ export interface Service {
 	instances: number;
 	urls: Array<string>;
 	labels: {
-		ONYXIA_NAME: string;
-		ONYXIA_SUBTITLE: string;
-		ONYXIA_LOGO?: string;
 		ONYXIA_PRIVATE_ENDPOINT?: string;
+		ONYXIA_SUBTITLE?: string;
 	};
 	logo?: string;
 	name: string;

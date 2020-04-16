@@ -5,10 +5,9 @@
 	"cpus": 0.1,
 	"mem": 2048,
 	"urls": ["toto", "tata"],
+	"logo": "https://code.visualstudio.com/favicon.ico",
 	"labels": {
-		"ONYXIA_NAME": "El titi",
-		"ONYXIA_SUBTITLE": "del gato",
-		"ONYXIA_LOGO": "https://code.visualstudio.com/favicon.ico"
+		"ONYXIA_SUBTITLE": "del gato"
 	},
 	"startedAt": 1587035631,
 	"status": "RUNNING"
