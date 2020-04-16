@@ -14,7 +14,7 @@ export const getServiceAvatar = (service: Service) => {
 };
 
 export const getTitle = (service: Service) =>
-	(service && service.title) ||
+	(service && service.name) ||
 	(service && service.labels && service.labels.ONYXIA_NAME) ||
 	'';
 

@@ -11,7 +11,7 @@ export interface Service {
 		ONYXIA_PRIVATE_ENDPOINT?: string;
 	};
 	logo?: string;
-	title: string;
+	name: string;
 	subtitle?: string;
 	startedAt?: number;
 	status: string;
