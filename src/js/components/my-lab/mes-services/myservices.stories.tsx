@@ -1,6 +1,6 @@
 import React from 'react';
 import ListeCartes from 'js/components/commons/service-liste/liste-cartes';
-import fakeServices from 'js/model/sampledata/basic-oneservice.json';
+import basicService from 'js/model/sampledata/basic-service.json';
 
 export default {
 	title: 'My services',
@@ -15,7 +15,7 @@ NoServices.story = {
 };
 
 export const SingleService = () => (
-	<ListeCartes services={fakeServices} groupes={[]} />
+	<ListeCartes services={[basicService]} groupes={[]} />
 );
 
 SingleService.story = {
