@@ -37,7 +37,7 @@ export const chargerMonGroupe = (groupId) => (dispatch) => {
 export const chargerMesServices = () => (dispatch) => {
 	dispatch(startWaiting());
 	axiosAuth
-		.get(api.mesServices)
+		.get(api.servicesV2)
 		.then(function (services) {
 			dispatch(stopWaiting());
 			if (services.apps) {

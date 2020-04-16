@@ -10,7 +10,7 @@ import { extractServiceId } from 'js/utils/service-utils';
 import { serviceType } from 'js/components/commons/prop-types';
 import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import { Service } from 'js/model';
+import { Service, ServiceStatus } from 'js/model';
 import './liste-cartes.scss';
 
 interface Props {
@@ -69,7 +69,7 @@ const getActions = (service) => (launch) => () => (
 );
 
 const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
-	service.tasksRunning ? (
+	service.status === ServiceStatus.Running ? (
 		service.labels.ONYXIA_URL ? (
 			<IconButton
 				color="secondary"
@@ -96,10 +96,10 @@ const getContenu = (service) => () => {
 	return (
 		<>
 			<div className="paragraphe">
-				{service.instances && service.tasksRunning && service.tasks ? (
+				{service.status === 'RUNNING' && service.startedAt ? (
 					<>
 						<div className="titre">Temps d&rsquo;activité</div>
-						<Chronometer start={service.tasks[0].startedAt} />
+						<Chronometer start={service.startedAt} />
 					</>
 				) : null}
 			</div>

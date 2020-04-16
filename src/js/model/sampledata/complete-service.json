@@ -10,13 +10,6 @@
 		"ONYXIA_LOGO": "https://code.visualstudio.com/favicon.ico",
 		"ONYXIA_URL": "https://google.fr"
 	},
-	"tasks": [
-		{
-			"startedAt": "2020-04-14T13:10:53.218Z"
-		}
-	],
-	"tasksStaged": 0,
-	"tasksRunning": 1,
-	"tasksHealthy": 1,
-	"tasksUnhealthy": 0
+	"startedAt": "2020-04-14T13:10:53.218Z",
+	"status": "RUNNING"
 }
