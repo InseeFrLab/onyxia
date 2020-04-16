@@ -21,14 +21,18 @@ import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
 import S3Field from './s3';
-import { resetVaultPwd } from 'js/vault-client';
+import { resetVaultPwd, getVersionsList } from 'js/vault-client';
 
 class MonCompte extends React.Component {
-	state = { credentials: null, betatest: hasOptedInForBetaTest() };
+	state = {
+		credentials: null,
+		betatest: hasOptedInForBetaTest(),
+		versionsList: null,
+	};
 	constructor(props) {
 		super(props);
 		if (!props.user) {
-			props.getUserInfo();
+			props.getUserInfo()
 		}
 	}
 
@@ -83,6 +87,7 @@ class MonCompte extends React.Component {
 							value={
 								user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
 							}
+							versionsList={this.state.versionsList}
 							handleReset={() => resetVaultPwd(user.IDEP)}
 						/>
 					</Paper>

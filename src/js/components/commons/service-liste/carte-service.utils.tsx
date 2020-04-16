@@ -1,7 +1,8 @@
 import React from 'react';
 import { Avatar } from '@material-ui/core';
+import { Service } from 'js/model';
 
-export const getServiceAvatar = (service) => {
+export const getServiceAvatar = (service: Service) => {
 	const img = service.logo || service.labels.ONYXIA_LOGO;
 	return (
 		<span className={`etat-service ${getColorClassStateService(service)}`}>
@@ -12,14 +13,14 @@ export const getServiceAvatar = (service) => {
 	);
 };
 
-export const getTitle = (service) =>
+export const getTitle = (service: Service) =>
 	(service && service.title) ||
 	(service && service.labels && service.labels.ONYXIA_NAME) ||
 	'';
 
-export const getSubtitle = (service) =>
+export const getSubtitle = (service: Service) =>
 	service.subtitle ||
 	(service && service.labels && service.labels.ONYXIA_SUBTITLE) ||
 	'';
 
-export const getColorClassStateService = (service) => 'running';
+export const getColorClassStateService = (service: Service) => 'running';

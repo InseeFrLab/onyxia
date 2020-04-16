@@ -62,3 +62,11 @@ export const newVaultData = (data) => async (dispatch) =>
 			data,
 		},
 	});
+
+export const newPasswordVersions = (data) => async (dispatch) =>
+	dispatch({
+		type: constantes.NEW_PASSWORD_VERSIONS,
+		payload: {
+			data,
+		},
+	});

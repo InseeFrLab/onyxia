@@ -54,6 +54,7 @@ export const GET_VAULT_SECRET = 'onyxia/mesSecrets/getVaultSecret';
 export const UPDATE_VAULT_SECRET = 'onyxia/mesSecrets/updateVaultSecret';
 export const NEW_VAULT_TOKEN = 'onyxia/mesSecrets/newVaultToken';
 export const NEW_VAULT_DATA = 'onyxia/mesSecrets/newVaultData';
+export const NEW_PASSWORD_VERSIONS = 'onyxia/mesSecrets/newPasswordVersions';
 
 // Cloudshell
 export const CLOUDSHELL_VISIBILITY_CHANGE =

@@ -13,8 +13,8 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
-const S3Field = ({ versionsList, handleReset }) => {
-	const [password, setPassword] = useState(versionsList.V1);
+const S3Field = ({ value, versionsList, handleReset }) => {
+	const [password, setPassword] = useState(value);
 	const handleVersionChange = (event) => {
 		setPassword(versionsList[event.target.value]);
 	};
