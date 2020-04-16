@@ -13,7 +13,7 @@ export interface Service {
 	logo?: string;
 	title: string;
 	subtitle?: string;
-	startedAt?: string;
+	startedAt?: number;
 	status: string;
 }
 
