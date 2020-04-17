@@ -5,6 +5,10 @@ const dictionary = {
 		en: `You are about to delete all your services.
             You will lose all data associated to them.`,
 	},
+	noService: {
+		fr: `Vous n'avez aucun service. Cliquer sur le bouton plus pour en créer.`,
+		en: `You do not have service. Click the plus button to create.`,
+	},
 };
 
 export default dictionary;
