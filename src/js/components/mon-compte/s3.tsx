@@ -13,19 +13,23 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
-const S3Field = ({ value, versionsList, handleReset }) => {
+interface Props {
+	value: string;
+	handleReset: () => void;
+	versionsList: string[];
+}
+
+const S3Field = ({ value, handleReset, versionsList }: Props) => {
 	const [password, setPassword] = useState(value);
+
 	const handleVersionChange = (event) => {
 		setPassword(versionsList[event.target.value]);
 	};
-
-	if (!versionsList) return null;
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
 			<InputLabel>{D.pwdTitle}</InputLabel>
 			<Input
 				disabled
-				label={D.pwdTitle}
 				fullWidth
 				value={password}
 				endAdornment={

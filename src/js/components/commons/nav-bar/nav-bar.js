@@ -4,7 +4,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { Fab } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { IconButton, Icon } from '@material-ui/core/';
 import MenuIcon from '@material-ui/icons/Menu';
 import AppMenu from './app-menu';
@@ -20,7 +20,7 @@ class Navbar extends React.Component {
 			props.getUserInfo();
 		}
 	}
-	handleClickMenu = e => {
+	handleClickMenu = (e) => {
 		this.setState({ open: true });
 	};
 
@@ -135,7 +135,7 @@ const LogoMonCompte = ({ screenType }) =>
 	);
 
 const isNoel = () => {
-	const m = moment();
+	const m = dayjs();
 	const day = m.date();
 	const month = m.month();
 	if ((month === 11 && day > 15) || (month === 0 && day < 7)) {

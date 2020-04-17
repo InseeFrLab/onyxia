@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Icon, IconButton, Badge } from '@material-ui/core/';
 import PropTypes from 'prop-types';
-import Moment from 'moment';
+import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { CarteService } from 'js/components/commons/service-liste';
 import Pile from 'js/components/commons/pile';
@@ -149,9 +149,9 @@ export default CarteMonService;
 
 const dateExpiration = ({ env }) =>
 	env && env.AWS_EXPIRATION
-		? Moment(env.AWS_EXPIRATION, 'YYYY-MM-DDTHH:mm:ssZ')
+		? dayjs(env.AWS_EXPIRATION).format('YYYY-MM-DDTHH:mm:ssZ')
 		: undefined;
 
 const isExpired = (date) =>
 	(date && !date.isValid()) ||
-	(date && date.isValid() && date.valueOf() - Moment.utc().valueOf() <= 0);
+	(date && date.isValid() && date.valueOf() - dayjs().valueOf() <= 0);

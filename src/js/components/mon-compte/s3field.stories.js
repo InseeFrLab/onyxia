@@ -1,6 +1,6 @@
 import React from 'react';
 import { object, boolean, text } from '@storybook/addon-knobs';
-import S3Field from 'js/components/mon-compte/s3.js';
+import S3Field from 'js/components/mon-compte/s3.tsx';
 
 export default {
 	title: 'S3Field',
