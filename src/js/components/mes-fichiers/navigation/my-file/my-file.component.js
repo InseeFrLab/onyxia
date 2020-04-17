@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'moment';
+import dayjs from 'dayjs';
 import { Typography } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Status from './status.component';
@@ -213,7 +213,7 @@ const getExpirationString = (presignedUrl) => {
 	const start = params['X-Amz-Date'];
 	const duration = parseInt(params['X-Amz-Expires']);
 
-	return Moment(start)
+	return dayjs(start)
 		.locale('fr')
 		.add(duration, 's')
 		.format('DD/MM/YYYY à h:mm:ss a');

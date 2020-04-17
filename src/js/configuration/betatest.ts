@@ -7,9 +7,11 @@ export const hasOptedInForBetaTest = () => {
 	return false;
 };
 
-export const changeBetaTestStatus = (optedIn) => {
+export const changeBetaTestStatus = (optedIn: boolean): Promise<void> => {
 	if (window.localStorage) {
-		return Promise.resolve(window.localStorage.setItem(BETA_TEST_KEY, optedIn));
+		return Promise.resolve(
+			window.localStorage.setItem(BETA_TEST_KEY, `${optedIn}`)
+		);
 	}
-	return Promise.resolve(false);
+	return Promise.resolve();
 };
