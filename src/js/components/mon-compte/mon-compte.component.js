@@ -23,31 +23,30 @@ import D from 'js/i18n';
 import S3Field from './s3';
 import { resetVaultPwd } from 'js/vault-client';
 
-const MonCompte = ({user, getUserInfo, logout}) => {
+const MonCompte = ({ user, getUserInfo, logout }) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 
 	useEffect(() => {
-		if (!user){
+		if (!user) {
 			getUserInfo();
 		}
-	})
+	});
 
 	useEffect(() => {
 		getMinioToken();
-	})
+	});
 
-	
 	const handleChange = (event) => {
 		changeBetaTestStatus(event.target.checked).then(() =>
 			setBetatest(hasOptedInForBetaTest())
 		);
 	};
 
-	if (!user) return null; 
+	if (!user) return null;
 
 	const credentials = user.S3;
 
-	return(
+	return (
 		<>
 			<div className="en-tete">
 				<Typography
@@ -56,7 +55,7 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 					color="textPrimary"
 					gutterBottom
 				>
-					Bonjour {user.USERNAME}
+					{D.hello} {user.USERNAME}
 				</Typography>
 			</div>
 			<FilDAriane fil={fil.monCompte} />
@@ -74,7 +73,7 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 
 				<Paper className="paragraphe" elevation={1}>
 					<Typography variant="h3" align="left">
-						Profil onyxia
+						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
 						value={
@@ -88,7 +87,7 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 					{user.IDEP ? (
 						<>
 							<Typography variant="h3" align="left">
-								Utilisateur
+								{D.user}
 							</Typography>
 							<CopyableField copy label="Idep" value={user.IDEP} />
 							<CopyableField copy label="Nom complet" value={user.USERNAME} />
@@ -98,41 +97,36 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 					) : (
 						<Loader />
 					)}
-					<CopyableField
-						copy
-						label="Jeton OIDC"
-						value={getKeycloak().token}
-					/>
+					<CopyableField copy label={D.oidcToken} value={getKeycloak().token} />
 				</Paper>
 
 				{credentials ? (
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" align="left">
-							Identifiants Minio (S3)
+							{D.minioLoginInfo}
 						</Typography>
 						<Typography variant="body1" align="left">
-							Ces identifiants vous permettent d'accéder à vos fichiers. Ils
-							sont valables jusqu&rsquo;au&nbsp;
+							{D.minioLoginExplanation}
 							{formatageDate(credentials.AWS_EXPIRATION)}.
 						</Typography>
 						<CopyableField
 							copy
-							label="Access Key"
+							label={D.minioAccessKey}
 							value={credentials.AWS_ACCESS_KEY_ID || ''}
 						/>
 						<CopyableField
 							copy
-							label="Secret Access Key"
+							label={D.minioSecretAccessKey}
 							value={credentials.AWS_SECRET_ACCESS_KEY || ''}
 						/>
 						<CopyableField
 							copy
-							label="Session Token"
+							label={D.minioSessionToken}
 							value={credentials.AWS_SESSION_TOKEN || ''}
 						/>
 						<CopyableField
 							copy
-							label="S3 endpoint"
+							label={D.minioEndpoint}
 							value={credentials.AWS_S3_ENDPOINT || ''}
 						/>
 						<ExportCredentialsField
@@ -150,8 +144,7 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 							Kubernetes
 						</Typography>
 						<Typography variant="body1" align="left">
-							Ces identifiants vous permettent d'accéder au cluster
-							kubernetes.
+							{D.k8sLoginExplanation}
 						</Typography>
 						<CopyableField
 							copy
@@ -184,13 +177,13 @@ const MonCompte = ({user, getUserInfo, logout}) => {
 								checked={betatest}
 							/>
 						}
-						label="Activer le mode avancé (béta-testeur)"
+						label={D.activateBetatest}
 					/>
 				</Paper>
 			</div>
 		</>
 	);
-}
+};
 
 MonCompte.propTypes = {
 	user: PropTypes.shape({
