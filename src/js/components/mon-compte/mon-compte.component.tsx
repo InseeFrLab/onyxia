@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'moment';
+import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
@@ -22,8 +22,19 @@ import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
 import S3Field from './s3';
 import { resetVaultPwd } from 'js/vault-client';
+import { User } from 'js/model/User';
 
-const MonCompte = ({ user, getUserInfo, logout }) => {
+interface Props {
+	user: User;
+	getUserInfo: () => void;
+	logout: () => void;
+}
+interface State {
+	value: string;
+	handleReset?: () => void;
+}
+
+const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 
 	useEffect(() => {
@@ -200,5 +211,4 @@ MonCompte.defaultProps = {
 
 export default MonCompte;
 
-const formatageDate = (date) =>
-	new Moment(date).format('DD/MM/YYYY à HH:mm:ss');
+const formatageDate = (date) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');

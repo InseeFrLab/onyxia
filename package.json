@@ -33,6 +33,7 @@
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
+    "dayjs": "^1.8.24",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
     "generate-password": "^1.5.1",
