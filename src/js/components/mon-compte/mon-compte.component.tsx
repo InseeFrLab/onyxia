@@ -25,7 +25,7 @@ import { resetVaultPwd } from 'js/vault-client';
 import { User } from 'js/model/User';
 
 interface Props {
-	user: User;
+	user?: User;
 	getUserInfo: () => void;
 	logout: () => void;
 }
@@ -44,7 +44,9 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	});
 
 	useEffect(() => {
-		getMinioToken();
+		if (user && (!user.S3 || !user.S3.AWS_EXPIRATION)) {
+			getMinioToken();
+		}
 	});
 
 	const handleChange = (event) => {
