@@ -11,14 +11,19 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
-const S3Field = ({ value, handleReset }) => {
+interface Props {
+	value: string;
+	handleReset?: () => void;
+}
+
+
+const S3Field = ({ value, handleReset }:Props) => {
 	if (!value) return null;
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
 			<InputLabel>{D.pwdTitle}</InputLabel>
 			<Input
 				disabled
-				label={D.pwdTitle}
 				fullWidth
 				value={value}
 				endAdornment={
