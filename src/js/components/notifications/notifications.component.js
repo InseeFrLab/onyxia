@@ -46,7 +46,7 @@ class Notifications extends React.Component {
 	render() {
 		const { current, display } = this.state;
 		return (
-			<SnackInformation
+			<SnackIntraining
 				message={current ? current.message : null}
 				display={display}
 				onExited={this.post}
@@ -56,7 +56,7 @@ class Notifications extends React.Component {
 	}
 }
 
-const SnackInformation = ({ message, display, onClose, onExited }) => (
+const SnackIntraining = ({ message, display, onClose, onExited }) => (
 	<Snackbar
 		anchorOrigin={{
 			vertical: 'bottom',

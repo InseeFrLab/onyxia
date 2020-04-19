@@ -15,8 +15,10 @@ import {
 	CatalogueIcon,
 	PokerHandIcon,
 } from 'js/components/commons/icons';
+import conf from 'js/configuration';
+import D from 'js/i18n';
 
-import { hasOptedInForBetaTest } from '../../../configuration/betatest';
+import { hasOptedInForBetaTest } from 'js/configuration/betatest';
 
 const ItemLogin = ({ login }) => (
 	<ListItem button onClick={login}>
@@ -70,6 +72,19 @@ export default ({
 				<ListItem>
 					<ListItemText primary="La plateforme" />
 				</ListItem>
+				{hasOptedInForBetaTest() && (
+					<ListItem
+						button
+						component={Link}
+						to="/trainings"
+						disabled={!conf.CONTENT.TRAININGS_URL}
+					>
+						<ListItemIcon>
+							<Icon>menu_book</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.trainingTitle} />
+					</ListItem>
+				)}
 				<ListItem button component={Link} to="/services">
 					<ListItemIcon>
 						<PokerHandIcon width={30} height={30} />

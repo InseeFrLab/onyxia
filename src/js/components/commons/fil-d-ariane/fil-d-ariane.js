@@ -26,6 +26,24 @@ export const fil = {
 			component: <span>{idCatalogue}</span>,
 		},
 	],
+	trainings: [
+		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		{
+			pathname: '/trainings',
+			component: <span>formations</span>,
+		},
+	],
+	training: (id, title) => [
+		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		{
+			pathname: '/trainings',
+			component: <span>formations</span>,
+		},
+		{
+			pathname: `/trainings/${id}`,
+			component: <span>{title}</span>,
+		},
+	],
 	monCompte: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
