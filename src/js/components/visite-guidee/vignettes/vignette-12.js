@@ -25,7 +25,7 @@ export default {
 					</Typography>
 					<Typography variant="body1" gutterBottom>
 						Sur la page de votre service, vous trouverez l&rsquo;ensemble des
-						informations propre à celui-ci. Vous pouvez ici modifier un certain
+						intrainings propre à celui-ci. Vous pouvez ici modifier un certain
 						nombre d&rsquo;éléments comme les ressources mises en oeuvre par
 						l&rsquo;application.
 					</Typography>
