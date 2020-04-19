@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { axiosAuth } from 'js/utils';
 import { updateMonService, cardStoptWaiting } from 'js/redux/actions';
 import api from 'js/redux/api';
@@ -24,7 +24,7 @@ export const needWaitingTask = (service) => {
 
 const task = (memory) => (serviceId) => (dispatch) => {
 	return new Promise((resolve, reject) => {
-		const startAt = moment().valueOf();
+		const startAt = dayjs().valueOf();
 		const reload = (num) => {
 			if (isRunningTask(serviceId)(memory)) {
 				clearTask(serviceId)(memory);
@@ -42,7 +42,7 @@ const task = (memory) => (serviceId) => (dispatch) => {
 							if (!isServiceWaiting(service)) {
 								dispatch(cardStoptWaiting(serviceId));
 								dispatch(updateMonService(service));
-								resolve(moment().valueOf() - startAt);
+								resolve(dayjs().valueOf() - startAt);
 							} else {
 								reload(num + 1);
 							}

@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const MINUTE_IN_MILLI = 60 * 1000;
 const HOUR_IN_MILLI = MINUTE_IN_MILLI * 60;
@@ -23,7 +23,7 @@ class Chronometer extends React.Component {
 	}
 
 	refresh = () => {
-		let duration = moment() - moment(this.props.start);
+		let duration = dayjs() - dayjs(this.props.start);
 		const days = Math.trunc(duration / DAY_IN_MILLI);
 		duration %= DAY_IN_MILLI;
 		const hours = Math.trunc(duration / HOUR_IN_MILLI);
