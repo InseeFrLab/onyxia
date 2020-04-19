@@ -5,6 +5,7 @@ import { AppBar, Chip, Button } from '@material-ui/core/';
 import queryString from 'query-params';
 import { Redirect } from 'react-router-dom';
 import Formulaire from './formulaire';
+import CustomService from './custom-service';
 import { getAvatar } from 'js/utils';
 import { getMinioToken } from 'js/minio-client';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
@@ -29,6 +30,7 @@ const NouveauService = ({
 	const [service, setService] = useState({});
 	const [onglet, setOnglet] = useState(0);
 	const [fieldsValues, setFieldsValues] = useState({});
+	const [initialValues, setInitialValues] = useState({});
 	const [ongletFields, setOngletFields] = useState([]);
 	const [minioCredentials, setMinioCredentials] = useState(undefined);
 	const [contract, setContract] = useState(undefined);
@@ -100,15 +102,22 @@ const NouveauService = ({
 			const onglets =
 				(service && service.config && service.config.properties) || {};
 			const oF = getOnglets(onglets);
-			const fV = oF
-				.map((onglet) => onglet.fields)
-				.reduce(
-					(acc, curr) => ({
-						...acc,
-						...arrayToObject(minioCredentials)(queryParams)(user)(curr),
-					}),
-					{}
-				);
+			const fields = oF.map((onglet) => onglet.fields);
+			const fV = fields.reduce(
+				(acc, curr) => ({
+					...acc,
+					...arrayToObject(minioCredentials)(queryParams)(user)(curr),
+				}),
+				{}
+			);
+			const iFV = fields.reduce(
+				(acc, curr) => ({
+					...acc,
+					...arrayToObject(minioCredentials)({})(user)(curr),
+				}),
+				{}
+			);
+			setInitialValues(iFV);
 			setFieldsValues(fV);
 			setOngletFields(oF);
 		}
@@ -118,7 +127,6 @@ const NouveauService = ({
 		setFieldsValues({ ...fieldsValues, [path]: value });
 		setContract(undefined);
 	};
-
 	if (redirect) return <Redirect to="/my-lab/mes-services" />;
 	const ongletContent = ongletFields[onglet] || {};
 	return (
@@ -174,6 +182,11 @@ const NouveauService = ({
 							handleChange={handlechangeField}
 							fields={ongletContent.fields}
 							values={fieldsValues}
+						/>
+						<CustomService
+							initialValues={initialValues}
+							fieldsValues={fieldsValues}
+							setInit={() => setFieldsValues(initialValues)}
 						/>
 						<div className="actions">
 							<Button
@@ -264,8 +277,8 @@ const arrayToObject = (minioCredentials) => (queryParams) => (user) => (
 	fields.forEach(
 		({ path, field }) =>
 			(obj[path] =
-				fromUser({ ...user, minio: { ...minioCredentials } })(field) ||
 				fromParams(path)(field) ||
+				fromUser({ ...user, minio: { ...minioCredentials } })(field) ||
 				getDefaultSingleOption(field))
 	);
 	return obj;
