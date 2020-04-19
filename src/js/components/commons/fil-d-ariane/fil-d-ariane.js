@@ -26,21 +26,21 @@ export const fil = {
 			component: <span>{idCatalogue}</span>,
 		},
 	],
-	formations: [
+	trainings: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
-			pathname: '/formations',
+			pathname: '/trainings',
 			component: <span>formations</span>,
 		},
 	],
-	formation: (id, title) => [
+	training: (id, title) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
-			pathname: '/formations',
+			pathname: '/trainings',
 			component: <span>formations</span>,
 		},
 		{
-			pathname: `/formations/${id}`,
+			pathname: `/trainings/${id}`,
 			component: <span>{title}</span>,
 		},
 	],

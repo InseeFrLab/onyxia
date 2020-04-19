@@ -138,7 +138,7 @@ export const requestDeleteMonService = (service) => (dispatch) => {
 			dispatch(cardStoptWaiting(id));
 			dispatch(deleteMonService(service));
 			PUSHER.push(<messages.ServiceSupprime id={id} />);
-			// dispatch(produceMessageInformation(<messages.ServiceSupprime id={id} />));
+			// dispatch(produceMessageIntraining(<messages.ServiceSupprime id={id} />));
 		});
 };
 
@@ -205,7 +205,7 @@ export const supprimerGroupe = (idGroup) => (dispatch) => {
 					type: constantes.CLOUDSHELL_STOPPED,
 				});
 			// dispatch(
-			// 	produceMessageInformation(
+			// 	produceMessageIntraining(
 			// 		<messages.ServiceSupprime id={idGroup} groupe />
 			// 	)
 			// );

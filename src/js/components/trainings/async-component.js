@@ -1,11 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import Loader from 'js/components/commons/loader';
-const Formations = lazy(() => import('./component'));
+const Trainings = lazy(() => import('./component'));
 
-const AsyncFormations = () => (
+const AsyncTrainings = () => (
 	<Suspense fallback={<Loader em={18} />}>
-		<Formations />
+		<Trainings />
 	</Suspense>
 );
 
-export default AsyncFormations;
+export default AsyncTrainings;

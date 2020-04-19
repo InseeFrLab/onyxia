@@ -1,4 +1,4 @@
-export interface Formation {
+export interface Training {
 	courseCode: string;
 	name: string;
 	abstract?: string;
@@ -15,5 +15,5 @@ export interface Formation {
 	version?: string;
 	image?: string;
 	deployment?: string;
-	hasPart?: Formation[];
+	hasPart?: Training[];
 }

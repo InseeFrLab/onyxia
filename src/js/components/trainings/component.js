@@ -2,24 +2,24 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { Typography, Grid } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import FormationCard from 'js/components/commons/formation-card';
+import TrainingCard from 'js/components/commons/training-card';
 import { axiosURL, wrapPromise } from 'js/utils';
 import conf from 'js/configuration';
 
-const resource = wrapPromise(axiosURL(conf.CONTENT.FORMATIONS_URL));
+const resource = wrapPromise(axiosURL(conf.CONTENT.TRAININGS_URL));
 
 const Content = (props) => {
 	const res = resource.read();
 	const id = props.match.params['id'];
-	const formations = id
+	const trainings = id
 		? (res.find((r) => r.courseCode === id) &&
 				res.find((r) => r.courseCode === id).hasPart) ||
 		  []
 		: res;
 	const parent = res.find((r) => r.courseCode === id);
 	const filAccessor = id
-		? fil.formation(parent.courseCode, parent.name)
-		: fil.formations;
+		? fil.training(parent.courseCode, parent.name)
+		: fil.trainings;
 	return (
 		<>
 			<div className="en-tete">
@@ -35,8 +35,8 @@ const Content = (props) => {
 			<FilDAriane fil={filAccessor} />
 			<div className="contenu accueil">
 				<Grid container spacing={8} classes={{ container: 'cartes' }}>
-					{formations.map((f) => (
-						<FormationCard key={f.courseCode} formation={f} />
+					{trainings.map((f) => (
+						<TrainingCard key={f.courseCode} training={f} />
 					))}
 				</Grid>
 			</div>

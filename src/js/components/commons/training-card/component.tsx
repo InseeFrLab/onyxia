@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Formation } from 'js/model';
+import { Training } from 'js/model';
 import {
 	Card,
 	CardContent,
@@ -11,13 +11,13 @@ import {
 	Fab,
 	Icon,
 } from '@material-ui/core';
-import './formation-card.scss';
+import './training-card.scss';
 
 interface Props {
-	formation: Formation;
+	training: Training;
 }
 
-const FormationCard = ({ formation }: Props) => {
+const TrainingCard = ({ training }: Props) => {
 	const {
 		image,
 		name,
@@ -35,7 +35,7 @@ const FormationCard = ({ formation }: Props) => {
 		version,
 		hasPart,
 		deployment,
-	} = formation;
+	} = training;
 	const description =
 		abstract.length > 100 ? `${abstract.slice(0, 100)}...` : abstract;
 	const copyright = `${copyrightHolder}${
@@ -48,7 +48,7 @@ const FormationCard = ({ formation }: Props) => {
 			md={6}
 			xs={12}
 			classes={{ item: 'carte' }}
-			className="formation-card"
+			className="training-card"
 		>
 			<Card classes={{ root: 'container' }}>
 				<CardHeader
@@ -116,9 +116,9 @@ const FormationCard = ({ formation }: Props) => {
 				</CardContent>
 				<CardActions className="boutons">
 					{hasPart && hasPart.length > 0 && (
-						<Link to={`/formations/${courseCode}`}>
+						<Link to={`/trainings/${courseCode}`}>
 							<Fab
-								id={`bouton-formation-${name}`}
+								id={`bouton-training-${name}`}
 								color="primary"
 								aria-label="Nouveau"
 							>
@@ -129,7 +129,7 @@ const FormationCard = ({ formation }: Props) => {
 					{deployment && (
 						<a href={deployment}>
 							<Fab
-								id={`bouton-formation-${name}`}
+								id={`bouton-training-${name}`}
 								color="primary"
 								aria-label="Nouveau"
 							>
@@ -143,4 +143,4 @@ const FormationCard = ({ formation }: Props) => {
 	);
 };
 
-export default FormationCard;
+export default TrainingCard;
