@@ -18,6 +18,7 @@ import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
 import { getVaultToken } from 'js/vault-client';
+import { hasOptedInForBetaTest } from 'js/configuration/betatest';
 
 const NouveauService = ({
 	idCatalogue,
@@ -183,11 +184,7 @@ const NouveauService = ({
 							fields={ongletContent.fields}
 							values={fieldsValues}
 						/>
-						<CustomService
-							initialValues={initialValues}
-							fieldsValues={fieldsValues}
-							setInit={() => setFieldsValues(initialValues)}
-						/>
+
 						<div className="actions">
 							<Button
 								id="bouton-creer-nouveau-service"
@@ -197,19 +194,30 @@ const NouveauService = ({
 							>
 								Créer votre service
 							</Button>
-							<IconButton
-								id="bouton-preview-nouveau-service"
-								variant="contained"
-								color="primary"
-								onClick={() => handleClickCreer(true)}
-							>
-								<VisibilityIcon>Preview</VisibilityIcon>
-							</IconButton>
+							{hasOptedInForBetaTest() ? (
+								<IconButton
+									id="bouton-preview-nouveau-service"
+									variant="contained"
+									color="primary"
+									onClick={() => handleClickCreer(true)}
+								>
+									<VisibilityIcon>Preview</VisibilityIcon>
+								</IconButton>
+							) : (
+								<></>
+							)}
 							{contract ? (
 								<JSONEditor json={contract} readOnly={true} />
 							) : (
 								<></>
 							)}
+						</div>
+						<div>
+							<CustomService
+								initialValues={initialValues}
+								fieldsValues={fieldsValues}
+								setInit={() => setFieldsValues(initialValues)}
+							/>
 						</div>
 					</>
 				)}
