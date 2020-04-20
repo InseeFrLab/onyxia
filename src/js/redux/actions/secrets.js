@@ -42,6 +42,7 @@ export const getVaultSecret = (path) => async (dispatch) => {
 export const updateVaultSecret = ({ location, data }) => async (dispatch) => {
 	dispatch(startWaiting());
 	await VAULT.uploadSecret(location, data);
+	dispatch(newVaultData(data));
 	dispatch(stopWaiting());
 };
 
