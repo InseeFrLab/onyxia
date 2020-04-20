@@ -8,6 +8,7 @@ import SelectWarField from './field-media-war';
 import { getFieldSafeAttr } from 'js/utils/form-field';
 
 export default ({ fields, user, handleChange, name, values }) => {
+	console.log(values);
 	const champs = fields.map(({ field, path }, i) => {
 		const {
 			nom,
