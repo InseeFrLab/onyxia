@@ -26,11 +26,17 @@ class VaultAPI {
 	}
 
 	async createPath(path, payload) {
-		return axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload || {data: {foo: 'bar' }});
+		return axiosVault.put(
+			`/v1/${VAULT_KV_ENGINE}/data${path}`,
+			payload || { data: { foo: 'bar' } }
+		);
 	}
 
 	async uploadSecret(path, payload) {
-		const { data } = await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, payload);
+		const { data } = await axiosVault.put(
+			`/v1/${VAULT_KV_ENGINE}/data${path}`,
+			payload
+		);
 		return data.data ? data.data : [];
 	}
 }
@@ -56,12 +62,31 @@ const fetchVaultToken = async () => {
 	return token;
 };
 
-export const initVaultPwd = (idep) => {
-	axiosVault(`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`)
-		.then(({ data: { data : {data}} }) => store.dispatch(newVaultData(data)))
+export const initVaultProfile = (idep) => {
+	axiosVault(
+		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`
+	)
+		.then(({ data: { data: { data } } }) => store.dispatch(newVaultData(data)))
 		.catch(() => {
 			resetVaultPwd(idep);
 		});
+
+	axiosVault(`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/git`)
+		.then(({ data: { data: { data } } }) => store.dispatch(newVaultData(data)))
+		.catch(() => {
+			const { USERMAIL, USERNAME } = store.getState().user;
+			initVaultGit(idep, USERMAIL, USERNAME);
+		});
+};
+
+export const initVaultGit = async (idep, USERMAIL, USERNAME) => {
+	const {
+		data,
+	} = await axiosVault.put(
+		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/git`,
+		{ data: { email: USERMAIL, username: USERNAME } }
+	);
+	return data.data ? data.data : [];
 };
 
 export const resetVaultPwd = (idep) => {
@@ -69,7 +94,7 @@ export const resetVaultPwd = (idep) => {
 		length: 20,
 		numbers: true,
 	});
-	const data = { data: {password} };
+	const data = { data: { password } };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, data)
 		.then(() => store.dispatch(newVaultData(data.data)));
