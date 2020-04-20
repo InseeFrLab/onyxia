@@ -16,25 +16,23 @@ import './mon-compte.scss';
 import {
 	hasOptedInForBetaTest,
 	changeBetaTestStatus,
-} from '../../configuration/betatest';
+} from 'js/configuration/betatest';
 import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
 import S3Field from './s3';
+import GitField from './git';
 import { resetVaultPwd } from 'js/vault-client';
 import { User } from 'js/model/User';
 
 interface Props {
 	user?: User;
 	getUserInfo: () => void;
+	updateVaultSecret: (o: object) => void;
 	logout: () => void;
 }
-interface State {
-	value: string;
-	handleReset?: () => void;
-}
 
-const MonCompte = ({ user, getUserInfo, logout }: Props) => {
+const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 
 	useEffect(() => {
@@ -93,6 +91,11 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
 						}
 						handleReset={() => resetVaultPwd(user.IDEP)}
+					/>
+					<GitField
+						idep={user.IDEP}
+						values={user.VAULT && user.VAULT.DATA}
+						update={updateVaultSecret}
 					/>
 				</Paper>
 
