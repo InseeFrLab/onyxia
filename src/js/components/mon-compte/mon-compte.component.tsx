@@ -21,7 +21,11 @@ import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
 import S3Field from './s3';
-import { resetVaultPwd, getVersionsList } from 'js/vault-client';
+import {
+	resetVaultPwd,
+	getVersionsList,
+	getPasswordByVersion,
+} from 'js/vault-client';
 import { User } from 'js/model/User';
 
 interface Props {
@@ -54,6 +58,7 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	if (!user) return null;
 
 	const credentials = user.S3;
+	const versionsList = getVersionsList(user.IDEP);
 
 	return (
 		<>
@@ -85,10 +90,12 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
+						getPasswordByVersion={getPasswordByVersion}
 						value={
 							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
 						}
-						versionsList={['truc', 'toto']}
+						idep={user.IDEP}
+						versionsList={versionsList}
 						handleReset={() => resetVaultPwd(user.IDEP)}
 					/>
 				</Paper>

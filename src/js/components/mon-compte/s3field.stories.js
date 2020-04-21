@@ -9,13 +9,7 @@ export default {
 };
 
 export const BasicS3Field = () => (
-	<S3Field
-		versionsList={object('versionsList', {
-			V1: 'toto',
-			V2: 'tata',
-			V3: 'titi',
-		})}
-	/>
+	<S3Field versionsList={object('versionsList', [1, 2, 3])} />
 );
 
 BasicS3Field.story = {

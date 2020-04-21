@@ -15,15 +15,25 @@ import D from 'js/i18n';
 
 interface Props {
 	value: string;
+	idep: string;
 	handleReset: () => void;
-	versionsList: string[];
+	versionsList: Promise<Int16Array[]>;
+	getPasswordByVersion: (string, Int16Array) => Promise<string>;
 }
 
-const S3Field = ({ value, handleReset, versionsList }: Props) => {
+const S3Field = ({
+	value,
+	handleReset,
+	versionsList,
+	getPasswordByVersion,
+	idep,
+}: Props) => {
 	const [password, setPassword] = useState(value);
 
 	const handleVersionChange = (event) => {
-		setPassword(versionsList[event.target.value]);
+		getPasswordByVersion(idep, event.target.value).then((pwd) =>
+			setPassword(pwd)
+		);
 	};
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
@@ -57,27 +67,27 @@ const S3Field = ({ value, handleReset, versionsList }: Props) => {
 	);
 };
 
-const SelectVersion = ({ versionsList, handleVersionChange }) => {
-	const [version, setVersion] = useState(
-		versionsList[Object.keys(versionsList)[0]]
-	);
+interface PropsSelect {
+	versionsList: Promise<Int16Array[]>;
+	handleVersionChange: (any) => void;
+}
+
+const SelectVersion = ({ versionsList, handleVersionChange }: PropsSelect) => {
+	const [version, setVersion] = useState(versionsList[0]);
 	const handleChange = (event) => {
 		handleVersionChange(event);
 		setVersion(event.target.value);
 	};
 
-	return (
-		<Select
-			labelId="demo-simple-select-label"
-			id="demo-simple-select"
-			value={version}
-			onChange={handleChange}
-		>
-			{Object.keys(versionsList).map((k) => (
-				<MenuItem value={k}>{k}</MenuItem>
-			))}
-		</Select>
-	);
+	return versionsList.then((vl) => {
+		return (
+			<Select value={version} onChange={handleChange}>
+				{vl.map((k) => (
+					<MenuItem value={k.toString()}>{k.toString()}</MenuItem>
+				))}
+			</Select>
+		);
+	});
 };
 
 export default S3Field;
