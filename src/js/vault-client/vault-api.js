@@ -35,9 +35,9 @@ class VaultAPI {
 	async uploadSecret(path, data) {
 		const old = await this.getSecret(path);
 		console.log(old);
-		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
-			...old,
-			data,
+		await axiosVault.put(
+       `/v1/${VAULT_KV_ENGINE}/data${path}`, 
+      {data: { ...old, ...data },
 		});
 		store.dispatch(newVaultData(data));
 	}
