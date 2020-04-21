@@ -81,7 +81,6 @@ export const initVaultPwd = (idep) => {
 		});
 };
 
-
 const pwdMustBeRenewed = (createdTime) => {
 	return (
 		NB_DAYS_BEFORE_PWD_RENEWAL > 0 &&
@@ -99,10 +98,11 @@ export const getVersionsList = async (idep) =>
 		: fetchPasswordVersions(idep);
 
 const fetchPasswordVersions = async (idep) => {
-	console.log('coucou');
 	const {
-		data: { versions },
-	} = await axiosAuth.get(
+		data: {
+			data: { versions },
+		},
+	} = await axiosVault.get(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/metadata/${idep}/.onyxia/profile`
 	);
 	store.dispatch(newPasswordVersions(Object.keys(versions)));
@@ -128,7 +128,7 @@ export const getPasswordByVersion = async (idep, version) => {
 	} = await axiosAuth.get(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile?version=${version}`
 	);
-	const payload = {data: {email: password}}
+	const payload = { data: { email: password } };
 	return Promise.resolve(password);
 };
 

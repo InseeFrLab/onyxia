@@ -15,39 +15,34 @@ import D from 'js/i18n';
 
 interface Props {
 	value: string;
-	idep: string;
 	handleReset: () => void;
-	versionsList: Promise<Int16Array[]>;
-	getPasswordByVersion: (string, Int16Array) => Promise<string>;
+	versionsList?: string[];
+	onVersionChange?: () => void;
 }
 
 const S3Field = ({
 	value,
 	handleReset,
 	versionsList,
-	getPasswordByVersion,
-	idep,
+	onVersionChange,
 }: Props) => {
-	const [password, setPassword] = useState(value);
-
-	const handleVersionChange = (event) => {
-		getPasswordByVersion(idep, event.target.value).then((pwd) =>
-			setPassword(pwd)
-		);
-	};
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
 			<InputLabel>{D.pwdTitle}</InputLabel>
 			<Input
 				disabled
 				fullWidth
-				value={password}
+				value={value}
 				endAdornment={
 					<InputAdornment position="end">
-						<SelectVersion
-							versionsList={versionsList}
-							handleVersionChange={handleVersionChange}
-						/>
+						{versionsList ? (
+							<SelectVersion
+								versionsList={versionsList}
+								handleVersionChange={onVersionChange}
+							/>
+						) : (
+							<></>
+						)}
 						<IconButton
 							aria-label="rafraîchir le mot de passe"
 							onClick={handleReset}
@@ -56,7 +51,7 @@ const S3Field = ({
 						</IconButton>
 						<IconButton
 							aria-label="copier dans le presse papier"
-							onClick={() => clipboard.writeText(password)}
+							onClick={() => clipboard.writeText(value)}
 						>
 							<FileCopy />
 						</IconButton>
@@ -68,26 +63,24 @@ const S3Field = ({
 };
 
 interface PropsSelect {
-	versionsList: Promise<Int16Array[]>;
-	handleVersionChange: (any) => void;
+	versionsList: string[];
+	handleVersionChange?: (any) => void;
 }
 
 const SelectVersion = ({ versionsList, handleVersionChange }: PropsSelect) => {
-	const [version, setVersion] = useState(versionsList[0]);
+	const [versionIndex, setVersionIndex] = useState(0);
 	const handleChange = (event) => {
-		handleVersionChange(event);
-		setVersion(event.target.value);
+		handleVersionChange && handleVersionChange(event);
+		setVersionIndex(event.target.value);
 	};
 
-	return versionsList.then((vl) => {
-		return (
-			<Select value={version} onChange={handleChange}>
-				{vl.map((k) => (
-					<MenuItem value={k.toString()}>{k.toString()}</MenuItem>
-				))}
-			</Select>
-		);
-	});
+	return (
+		<Select value={versionIndex} onChange={handleChange}>
+			{versionsList.map((label, index) => (
+				<MenuItem value={index}>{label}</MenuItem>
+			))}
+		</Select>
+	);
 };
 
 export default S3Field;

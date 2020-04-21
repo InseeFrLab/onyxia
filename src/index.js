@@ -21,7 +21,7 @@ const keycloakDefaultConf = {
 	checkLoginIframe: false,
 };
 
-const initiajliseKeycloak = () =>
+const initialiseKeycloak = () =>
 	new Promise((resolve) => {
 		getKeycloak()
 			.init(
