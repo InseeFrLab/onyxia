@@ -22,7 +22,6 @@ const CustomService = ({
 	if (!initialValues) return null;
 	const deploymentRoute = `${window.location.origin}${pathname}`;
 	const params = buildParamsFromObj(objDiff(fieldsValues)(initialValues));
-	console.log(objDiff(fieldsValues)(initialValues));
 	return !params ? null : (
 		<div className="custom-service">
 			<CopyableField
