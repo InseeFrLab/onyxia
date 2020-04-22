@@ -56,6 +56,19 @@ class CopyableField extends React.Component {
 		});
 	};
 
+	handleValidate = () => {
+		this.setState((s, p) => {
+			if (s.edit && p.onChange) {
+				p.onChange(p.value);
+				p.onValidate(p.value);
+			}
+			return {
+				value: p.value,
+				edit: !this.state.edit,
+			};
+		});
+	};
+
 	handleChange = (e) => {
 		const value =
 			this.props.type === 'number' ? Number(e.target.value) : e.target.value;
@@ -78,6 +91,7 @@ class CopyableField extends React.Component {
 			del = false,
 			type = 'string',
 			options = {},
+			onValidate,
 		} = this.props;
 		return (
 			<>
@@ -101,9 +115,19 @@ class CopyableField extends React.Component {
 						onChange={this.handleChange}
 						endAdornment={
 							<InputAdornment position="end">
-								{this.state.isEditable ? (
+								{this.state.isEditable && this.state.edit && !onValidate ? (
 									<IconButton aria-label="éditer" onClick={this.handleEdit}>
-										<Icon>{this.state.edit ? 'clear' : 'edit'}</Icon>
+										<Icon>clear</Icon>
+									</IconButton>
+								) : null}
+								{this.state.isEditable && !this.state.edit ? (
+									<IconButton aria-label="éditer" onClick={this.handleEdit}>
+										<Icon>edit</Icon>
+									</IconButton>
+								) : null}
+								{this.state.edit && onValidate ? (
+									<IconButton aria-label="éditer" onClick={this.handleValidate}>
+										<Icon>done</Icon>
 									</IconButton>
 								) : null}
 								{copy ? (
