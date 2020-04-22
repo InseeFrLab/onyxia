@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CopyableField from 'js/components/commons/copyable-field';
+import D from 'js/i18n';
 
 interface Props {
 	values: object;
@@ -8,8 +9,8 @@ interface Props {
 }
 
 const labels = {
-	git_user_name: "Nom d'utilisateur git",
-	git_user_mail: 'Adresse mail git',
+	git_user_name: D.gitUserName,
+	git_user_mail: D.gitUserEmail,
 };
 
 const GitField = ({ values, idep, update }: Props) => {
