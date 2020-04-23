@@ -2,18 +2,14 @@ import PropTypes from 'prop-types';
 
 export const serviceType = PropTypes.shape({
 	id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	logo: PropTypes.string,
 	cpus: PropTypes.number.isRequired,
 	instances: PropTypes.number.isRequired,
 	mem: PropTypes.number.isRequired,
-	tasksStaged: PropTypes.number.isRequired,
-	tasksRunning: PropTypes.number.isRequired,
-	tasksHealthy: PropTypes.number.isRequired,
-	tasksUnhealthy: PropTypes.number.isRequired,
+	urls: PropTypes.array.isRequired,
 	labels: PropTypes.shape({
-		ONYXIA_NAME: PropTypes.string.isRequired,
-		ONYXIA_SUBTITLE: PropTypes.string.isRequired,
-		ONYXIA_LOGO: PropTypes.string,
-		ONYXIA_URL: PropTypes.string,
+		ONYXIA_SUBTITLE: PropTypes.string,
 		ONYXIA_PRIVATE_ENDPOINT: PropTypes.string,
 	}),
 });

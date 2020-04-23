@@ -31,7 +31,7 @@ export default (state = initial, action) => {
 			return {
 				...state,
 				mesServices: action.payload.services,
-				mesGroupes: action.payload.groupes,
+				mesGroupes: action.payload.groupes || [],
 			};
 		}
 		case types.UPDATE_MON_SERVICE: {

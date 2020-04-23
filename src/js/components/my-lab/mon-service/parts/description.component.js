@@ -11,7 +11,7 @@ const Description = ({ service, wait, getUrlFields }) => (
 		<Typography variant="body1" color="textPrimary" gutterBottom>
 			{service.labels.ONYXIA_DESCRIPTION}
 		</Typography>
-		{service.labels.ONYXIA_URL ? getUrlFields(service.labels.ONYXIA_URL) : null}
+		{service.urls ? getUrlFields(service.urls) : null}
 		{service.labels.ONYXIA_PRIVATE_ENDPOINT ? (
 			<CopyableField
 				copy

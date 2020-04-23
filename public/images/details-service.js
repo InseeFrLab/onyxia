@@ -19,8 +19,8 @@ class DetailsService extends React.Component {
 		this.props.setServiceSelectionne(null);
 	};
 
-	handleClickService = service => {
-		window.open(service.labels.ONYXIA_URL.split(',')[0]);
+	handleClickService = (service) => {
+		window.open(service.urls.split(',')[0]);
 	};
 
 	render() {

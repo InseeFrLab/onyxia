@@ -30,7 +30,7 @@ class MesServiceModal extends React.Component {
 		return false;
 	};
 
-	handleLaunch = () => window.open(this.props.service.labels.ONYXIA_URL);
+	handleLaunch = () => window.open(this.props.service.urls);
 
 	render() {
 		const {
@@ -69,9 +69,9 @@ class MesServiceModal extends React.Component {
 					<span className="paragraphe">
 						<span className="titre">Accéder à votre service</span>
 						<span className="corps">
-							{service.labels.ONYXIA_URL ? (
+							{service.urls ? (
 								<InputUrl
-									url={service.labels.ONYXIA_URL}
+									url={service.urls}
 									label="accédez à votre votre service"
 									copy
 									launch

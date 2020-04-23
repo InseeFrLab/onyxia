@@ -69,9 +69,7 @@ const clearTask = (serviceId) => (memory) => {
 	}
 };
 export const isServiceWaiting = (service) =>
-	service &&
-	((service.instances > 0 && service.tasksRunning === 0) ||
-		(service.instances === 0 && service.tasksRunning !== 0));
+	service && service.status === 'DEPLOYING';
 
 export const isGroupWaiting = (group) =>
 	group &&
