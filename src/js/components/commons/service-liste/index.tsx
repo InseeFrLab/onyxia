@@ -88,7 +88,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 };
 
 //
-export const getColorClassStateService = ({ status }) => {
+const getColorClassStateService = ({ status }) => {
 	if (status === ServiceStatus.Running) {
 		return 'running';
 	} else if (status === ServiceStatus.Deploying) {
