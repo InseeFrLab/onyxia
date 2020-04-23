@@ -9,7 +9,7 @@ import { gelLocalToken, setLocalToken } from 'js/utils';
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from 'js/configuration';
-import { initVaultPwd } from 'js/vault-client';
+import { initVaultData } from 'js/vault-client';
 
 JavascriptTimeAgo.locale(fr);
 
@@ -31,16 +31,19 @@ const initialiseKeycloak = () =>
 			)
 			.then((authenticated) => {
 				if (authenticated) {
-					setLocalToken(getKeycloak().token);
+					const kc = getKeycloak();
+					setLocalToken(kc.token);
 					store.dispatch(
 						setAuthenticated({
-							accessToken: getKeycloak().token,
-							refreshToken: getKeycloak().refreshToken,
-							idToken: getKeycloak().idToken,
+							accessToken: kc.token,
+							refreshToken: kc.refreshToken,
+							idToken: kc.idToken,
 						})
 					);
-					const idep = getKeycloak().tokenParsed['preferred_username'];
-					initVaultPwd(idep);
+					const idep = kc.tokenParsed['preferred_username'];
+					const name = kc.tokenParsed['name'];
+					const mail = kc.tokenParsed['email'];
+					initVaultData(idep, name, mail);
 				}
 				resolve(authenticated);
 			})

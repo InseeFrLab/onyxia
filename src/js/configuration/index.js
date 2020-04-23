@@ -9,6 +9,7 @@ const conf = {
 	CONTENT: {
 		SERVICES_URL: readConfig('SERVICES_URL'),
 		HOMEPAGE_URL: readConfig('HOMEPAGE_URL'),
+		TRAININGS_URL: readConfig('TRAININGS_URL'),
 	},
 	APP: {
 		MAX_INSTANCES: readConfig('INSTANCES_MAX'),
@@ -27,7 +28,7 @@ const conf = {
 	},
 	VAULT: {
 		VAULT_BASE_URI: readConfig('VAULT_BASE_URI'),
-    VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
+		VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
 	},
 	CHAT: {
 		URL: readConfig('CHAT_URL'),

@@ -17,8 +17,10 @@ const formatUser = (user) => ({
 		ip: user.IP,
 	},
 	git: {
-		name: user.USERNAME,
-		email: user.USERMAIL,
+		name:
+			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_name) || '',
+		email:
+			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_mail) || '',
 	},
 	status: user.STATUS,
 	dns: user.DNS,

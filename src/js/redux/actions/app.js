@@ -65,7 +65,7 @@ export const applicationResize = (width) => ({
 	payload: { width },
 });
 
-// export const consumeMessageInformation = () => ({
+// export const consumeMessageIntraining = () => ({
 // 	type: constantes.CONSUME_MESSAGE_INFORMATION,
 // });
 
@@ -77,7 +77,7 @@ export const updateUser = () => (dispatch) => {
 			dispatch(stopWaiting());
 			dispatch(updateUserDone(user));
 			PUSHER.push('mise à jour réussie.');
-			// dispatch(produceMessageInformation('mise à jour réussie.'));
+			// dispatch(produceMessageIntraining('mise à jour réussie.'));
 		})
 		.catch((err) => {
 			// TODO

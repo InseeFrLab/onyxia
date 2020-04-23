@@ -5,7 +5,7 @@ import App from './app';
 const mapStateToProps = (state) => ({
 	requestError: state.app.requestError,
 	waiting: state.app.waiting,
-	messageInformation: state.app.messageInformation,
+	messageIntraining: state.app.messageIntraining,
 	idep: state.user.IDEP,
 });
 
