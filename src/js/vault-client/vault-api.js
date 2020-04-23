@@ -123,12 +123,13 @@ export const resetVaultPwd = (idep) => {
 export const getPasswordByVersion = async (idep, version) => {
 	const {
 		data: {
-			data: { password },
+			data: {
+				data: { password },
+			},
 		},
-	} = await axiosAuth.get(
+	} = await axiosVault.get(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile?version=${version}`
 	);
-	const payload = { data: { email: password } };
 	return Promise.resolve(password);
 };
 

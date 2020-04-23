@@ -24,6 +24,7 @@ import S3Field from './s3';
 import {
 	resetVaultPwd,
 	getVersionsList,
+	getPasswordByVersion,
 } from 'js/vault-client';
 import { User } from 'js/model/User';
 
@@ -36,6 +37,7 @@ interface Props {
 const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 	const [versionsList, setVersionsList] = useState();
+	const [onyxiaPassword, setOnyxiaPassword] = useState('');
 
 	useEffect(() => {
 		if (!user) {
@@ -55,10 +57,21 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 		}
 	});
 
+	useEffect(() => {
+		if (user.VAULT && user.VAULT.DATA && onyxiaPassword == '') {
+			setOnyxiaPassword(user.VAULT.DATA.password);
+		}
+	});
+
 	const handleChange = (event) => {
 		changeBetaTestStatus(event.target.checked).then(() =>
 			setBetatest(hasOptedInForBetaTest())
 		);
+	};
+
+	const onVersionChange = (value) => {
+		getPasswordByVersion(user.IDEP, value).then(setOnyxiaPassword);
+		console.log(onyxiaPassword);
 	};
 
 	if (!user) return null;
@@ -95,11 +108,9 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
-						value={
-							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
-						}
+						value={onyxiaPassword}
 						versionsList={versionsList}
-						//onVersionChange={onVersionChange}
+						onVersionChange={onVersionChange}
 						handleReset={() => resetVaultPwd(user.IDEP)}
 					/>
 				</Paper>

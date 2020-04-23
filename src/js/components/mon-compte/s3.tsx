@@ -17,7 +17,7 @@ interface Props {
 	value: string;
 	handleReset: () => void;
 	versionsList?: string[];
-	onVersionChange?: () => void;
+	onVersionChange?: (string) => void;
 }
 
 const S3Field = ({
@@ -38,7 +38,7 @@ const S3Field = ({
 						{versionsList ? (
 							<SelectVersion
 								versionsList={versionsList}
-								handleVersionChange={onVersionChange}
+								onVersionChange={onVersionChange}
 							/>
 						) : (
 							<></>
@@ -64,13 +64,16 @@ const S3Field = ({
 
 interface PropsSelect {
 	versionsList: string[];
-	handleVersionChange?: (any) => void;
+	onVersionChange?: (any) => void;
 }
 
-const SelectVersion = ({ versionsList, handleVersionChange }: PropsSelect) => {
+const SelectVersion = ({
+	versionsList,
+	onVersionChange: onVersionChange,
+}: PropsSelect) => {
 	const [versionIndex, setVersionIndex] = useState(0);
 	const handleChange = (event) => {
-		handleVersionChange && handleVersionChange(event);
+		onVersionChange && onVersionChange(versionsList[event.target.value]);
 		setVersionIndex(event.target.value);
 	};
 
