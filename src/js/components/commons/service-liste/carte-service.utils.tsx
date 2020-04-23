@@ -20,4 +20,4 @@ export const getSubtitle = (service: Service) =>
 	(service && service.labels && service.labels.ONYXIA_SUBTITLE) ||
 	'';
 
-export const getColorClassStateService = (service: Service) => 'running';
+const getColorClassStateService = (service: Service) => 'running';
