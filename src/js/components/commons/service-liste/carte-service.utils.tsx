@@ -3,7 +3,7 @@ import { Avatar } from '@material-ui/core';
 import { Service } from 'js/model';
 
 export const getServiceAvatar = (service: Service) => {
-	const img = service.logo || service.labels.ONYXIA_LOGO;
+	const img = service.logo;
 	return (
 		<span className={`etat-service ${getColorClassStateService(service)}`}>
 			<span className="bordure-carte">
@@ -13,10 +13,7 @@ export const getServiceAvatar = (service: Service) => {
 	);
 };
 
-export const getTitle = (service: Service) =>
-	(service && service.title) ||
-	(service && service.labels && service.labels.ONYXIA_NAME) ||
-	'';
+export const getTitle = (service: Service) => (service && service.name) || '';
 
 export const getSubtitle = (service: Service) =>
 	service.subtitle ||

@@ -66,10 +66,7 @@ const getContenu = (groupe) => (running) => () => {
 };
 
 const isOneRunning = (group: Group) =>
-	group.apps.reduce(
-		(a, { instances, tasksRunning }) => a || instances > 0,
-		false
-	);
+	group.apps.reduce((a, { instances }) => a || instances > 0, false);
 
 const compterCpu = (services: Service[]) => (max: number) =>
 	Math.min(

@@ -1,17 +1,14 @@
 {
 	"id": "fakegroup/toto/fakeServiceId",
-	"title": "titi",
+	"name": "titi",
 	"instances": 1,
 	"cpus": 0.1,
 	"mem": 2048,
+	"urls": ["toto", "tata"],
+	"logo": "https://code.visualstudio.com/favicon.ico",
 	"labels": {
-		"ONYXIA_NAME": "El titi",
-		"ONYXIA_SUBTITLE": "del gato",
-		"ONYXIA_LOGO": "https://code.visualstudio.com/favicon.ico",
-		"ONYXIA_URL": "https://google.fr"
+		"ONYXIA_SUBTITLE": "del gato"
 	},
-	"tasksStaged": 0,
-	"tasksRunning": 1,
-	"tasksHealthy": 1,
-	"tasksUnhealthy": 0
+	"startedAt": 1587035631,
+	"status": "RUNNING"
 }

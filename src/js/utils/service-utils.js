@@ -12,13 +12,19 @@ export const formatUrl = (url) => {
 	return url;
 };
 
-export const extractServiceId = (serviceId) =>
-	serviceId
-		.split('/')
-		.filter((a) => a && a.length > 0)
-		.filter((a, i) => i > 1)
-		.reduce((a, m) => (a ? `${a}/${m}` : m), null)
-		.replace('/', '%2F');
+export const extractServiceId = (serviceId) => {
+	try {
+		return serviceId
+			.split('/')
+			.filter((a) => a && a.length > 0)
+			.filter((a, i) => i > 1)
+			.reduce((a, m) => (a ? `${a}/${m}` : m), null)
+			.replace('/', '%2F');
+	} catch (error) {
+		return 'missing-id';
+	}
+};
+
 export const extractGroupId = (serviceId) =>
 	getAvLast(extractServiceId(serviceId).split('/')).reduce(
 		(a, r) => `${a}/${r}`,
