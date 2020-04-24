@@ -108,7 +108,6 @@ class MonService extends React.Component {
 		};
 		this.state.currentEnv = { ...this.state.initialEnv };
 		this.state.currentConf = { ...this.state.initialConf };
-		props.suivreStatutService(props.service);
 	}
 
 	isEditEnv = () => compareObject(this.state.initialEnv)(this.state.currentEnv);

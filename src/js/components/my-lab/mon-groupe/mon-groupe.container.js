@@ -3,7 +3,6 @@ import MonGroupe from './mon-groupe.component';
 import { withRouter } from 'react-router-dom';
 import {
 	chargerMonGroupe,
-	suivreStatutService,
 	changerEtatService,
 	requestDeleteMonService,
 	cardStartWaiting,
@@ -31,9 +30,6 @@ const mapDispatchToProps = (dispatch, props) => ({
 	initialiser: () => {},
 	refresh: () => {
 		dispatch(chargerMonGroupe(Object.values(props.match.params)[0]));
-	},
-	suivreStatutService: (id) => {
-		dispatch(suivreStatutService(id));
 	},
 	changerEtatService: (serviceId, etat, mems, cpus) => {
 		dispatch(changerEtatService(serviceId, etat, mems, cpus));

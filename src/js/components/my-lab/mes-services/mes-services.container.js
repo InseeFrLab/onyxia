@@ -3,7 +3,6 @@ import MesServices from './mes-services.component';
 
 import {
 	chargerMesServices,
-	suivreStatutService,
 	changerEtatService,
 	requestDeleteMonService,
 	cardStartWaiting,
@@ -25,7 +24,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
 	initialiser: chargerMesServices,
 	refresh: chargerMesServices,
-	suivreStatutService,
 	changerEtatService,
 	requestDeleteMonService,
 	cardStartWaiting,

@@ -11,7 +11,6 @@ import './liste-cartes.scss';
 
 interface Props {
 	group: Group;
-	suivreStatutService: (service: Service) => void;
 }
 
 const CarteMonGroupe = ({ group }: Props) => {

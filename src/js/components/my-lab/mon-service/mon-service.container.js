@@ -3,7 +3,6 @@ import MonService from './mon-service.component';
 import { withRouter } from 'react-router-dom';
 import {
 	changerEtatService,
-	suivreStatutService,
 	requestDeleteMonService,
 	updateServiceProprietesConfEnv,
 	setFavicon,
@@ -24,7 +23,6 @@ const isService = (mesServices) => mesServices && mesServices.length > 0;
 
 export default withRouter(
 	connect(mapStateToProps, {
-		suivreStatutService,
 		changerEtatService,
 		requestDeleteMonService,
 		updateServiceProprietesConfEnv,

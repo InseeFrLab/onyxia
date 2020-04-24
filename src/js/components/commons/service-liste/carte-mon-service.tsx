@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Icon, IconButton, Badge } from '@material-ui/core/';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { CarteService } from 'js/components/commons/service-liste';
 import Pile from 'js/components/commons/pile';
 import Chronometer from 'js/components/commons/chronometer';
 import { extractServiceId } from 'js/utils/service-utils';
-import { serviceType } from 'js/components/commons/prop-types';
 import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { Service, ServiceStatus } from 'js/model';
@@ -15,28 +13,16 @@ import './liste-cartes.scss';
 
 interface Props {
 	service: Service;
-	suivreStatutService: (service: Service) => void;
-	handleClickLaunch: (func: () => void) => void;
-	wait?: boolean;
+	handleClickLaunch?: (func: () => void) => void;
 }
 
-const CarteMonService = ({
-	service,
-	suivreStatutService,
-	handleClickLaunch,
-	wait,
-}: Props) => {
-	useEffect(() => {
-		if (suivreStatutService) {
-			suivreStatutService(service);
-		}
-	});
+const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 	const expiration = dateExpiration({ env: {} }); // TODO : restore this
 	return (
 		<CarteService
 			id={service.id}
 			expiration={expiration && isExpired(expiration)}
-			wait={wait}
+			wait={service.status === 'DEPLOYING'}
 			pause={service.instances === 0}
 			title={getTitle(service)}
 			subtitle={getSubtitle(service)}
@@ -45,12 +31,6 @@ const CarteMonService = ({
 			contenu={getContenu(service)}
 		/>
 	);
-};
-
-CarteMonService.propTypes = {
-	service: serviceType,
-	handleClickLaunch: PropTypes.func.isRequired,
-	wait: PropTypes.bool.isRequired,
 };
 
 const getActions = (service) => (launch) => () => (
@@ -83,7 +63,11 @@ const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 		<IconButton
 			color="secondary"
 			aria-label="démarrer"
-			onClick={() => handleClickLaunch(service)}
+			onClick={() => {
+				if (handleClickLaunch) {
+					handleClickLaunch(service);
+				}
+			}}
 		>
 			<PlayArrowIcon fontSize="large" />
 		</IconButton>

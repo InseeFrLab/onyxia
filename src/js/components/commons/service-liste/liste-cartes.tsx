@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Grid, Icon, Typography, Fab } from '@material-ui/core/';
 import Paper from '@material-ui/core/Paper';
@@ -7,8 +6,7 @@ import {
 	CarteMonService,
 	CarteMonGroupe,
 } from 'js/components/commons/service-liste';
-import { typeRequest as TYPE_REQUEST, extractGroupId } from 'js/utils';
-import * as TYPE from 'js/components/commons/prop-types';
+import { extractGroupId } from 'js/utils';
 import Alert from 'js/components/commons/alert';
 import Confirm from 'js/components/commons/confirm';
 import { WarnIcon } from 'js/components/commons/icons';
@@ -29,7 +27,6 @@ interface MyProps {
 	supprimerGroupe?: (id: string) => void;
 	groupe?: Group;
 	mesServicesWaiting?: string[];
-	suivreStatutService?: () => void;
 	groupes: Group[];
 }
 
@@ -39,16 +36,6 @@ interface MyState {
 }
 
 class ListeCartes extends React.Component<MyProps, MyState> {
-	static propTypes = {
-		mesServicesWaiting: PropTypes.arrayOf(PropTypes.string).isRequired,
-		typeRequest: PropTypes.oneOf([null, ...Object.values(TYPE_REQUEST)]),
-		suivreStatutService: PropTypes.func.isRequired,
-		initialiser: PropTypes.func.isRequired,
-		supprimerGroupe: PropTypes.func,
-		refresh: PropTypes.func.isRequired,
-		groupes: TYPE.groupesType,
-		services: TYPE.servicesType,
-	};
 
 	state = { confirmPauseAll: false, confirmDeleteAll: false };
 	constructor(props) {
@@ -96,8 +83,6 @@ class ListeCartes extends React.Component<MyProps, MyState> {
 	render() {
 		const {
 			services,
-			mesServicesWaiting,
-			suivreStatutService,
 			groupes,
 			groupe,
 		} = this.props;
@@ -152,20 +137,14 @@ class ListeCartes extends React.Component<MyProps, MyState> {
 							{services.map((service, i) => (
 								<CarteMonService
 									key={i}
-									wait={
-										mesServicesWaiting &&
-										mesServicesWaiting.indexOf(service.id) !== -1
-									}
 									service={service}
 									handleClickLaunch={this.handleDemarrerService}
-									suivreStatutService={suivreStatutService}
 								/>
 							))}
 							{groupes.map((groupe, i) => (
 								<CarteMonGroupe
 									key={i}
 									group={groupe}
-									suivreStatutService={suivreStatutService}
 								/>
 							))}
 						</Grid>

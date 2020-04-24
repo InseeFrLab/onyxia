@@ -12,9 +12,7 @@ export default {
 
 export const BasicService = () => (
 	<CarteMonService
-		suivreStatutService={() => console.log('fake')}
 		service={object('service', fakeService)}
-		wait={boolean('wait', false)}
 		handleClickLaunch={() => console.log('launch')}
 	/>
 );
@@ -25,9 +23,7 @@ BasicService.story = {
 
 export const CompleteService = () => (
 	<CarteMonService
-		suivreStatutService={() => console.log('fake')}
 		service={object('service', completeService)}
-		wait={boolean('wait', false)}
 		handleClickLaunch={() => console.log('launch')}
 	/>
 );
@@ -38,9 +34,7 @@ CompleteService.story = {
 
 export const Waiting = () => (
 	<CarteMonService
-		suivreStatutService={() => console.log('fake')}
 		service={fakeService}
-		wait={true}
 		handleClickLaunch={() => console.log('launch')}
 	/>
 );

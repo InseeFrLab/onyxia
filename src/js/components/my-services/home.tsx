@@ -1,14 +1,17 @@
 import React from 'react';
-import ListeCartes from 'js/components/commons/service-liste/liste-cartes';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import Header from 'js/components/my-services/parts/header-content.component';
+import Header from 'js/components/my-services/header';
+import Services from './services';
+import 'js/components/app.scss';
 
-const MyServicesHome = () => (
-	<>
-		<Header />
-		<FilDAriane fil={fil.mesServices} />
-		<ListeCartes services={[]} groupes={[]} />
-	</>
-);
+const MyServicesHome = () => {
+	return (
+		<>
+			<Header />
+			<FilDAriane fil={fil.mesServices} />
+			<Services />
+		</>
+	);
+};
 
 export default MyServicesHome;
