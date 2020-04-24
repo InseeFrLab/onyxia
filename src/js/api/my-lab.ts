@@ -1,15 +1,20 @@
 import { axiosAuthTyped } from 'js/utils';
 import apiPaths from 'js/configuration/api-paths';
-import { Service } from 'js/model';
+import { Service, Group } from 'js/model';
+
+interface ServicesListing {
+	apps: Service[];
+	groups: Group[];
+}
 
 export const getServices = async (groupId?: String) => {
 	return await axiosAuthTyped
-		.get<{ apps: [] }>(apiPaths.myServices, {
+		.get<ServicesListing>(apiPaths.myServices, {
 			params: {
 				groupId: groupId,
 			},
 		})
-		.then((resp) => resp.data.apps);
+		.then((resp) => resp.data);
 };
 
 export const deleteService = (service: Service) => {

@@ -39,7 +39,7 @@ const getAvatar = (groupe) => (
 );
 
 const getActions = (groupe) => () => (
-	<Link to={`/my-lab/mes-services/${extractServiceId(groupe.id)}`}>
+	<Link to={`/my-services${groupe.id}`}>
 		<IconButton color="secondary" aria-label="plus de détails">
 			<Icon>subdirectory_arrow_right</Icon>
 		</IconButton>
