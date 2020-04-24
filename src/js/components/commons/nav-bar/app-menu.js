@@ -104,6 +104,12 @@ export default ({
 					</ListItemIcon>
 					<ListItemText primary="Mon Labo" />
 				</ListItem>
+				<ListItem button component={Link} to="/mes-services">
+					<ListItemIcon>
+						<BecherIcon height={20} width={20} />
+					</ListItemIcon>
+					<ListItemText primary="Mes services v2" />
+				</ListItem>
 				<ListItem>
 					<ListItemText primary="Données" />
 				</ListItem>
