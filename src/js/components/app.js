@@ -116,6 +116,12 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 
 							<PrivateRoute
 								exact
+								path="/my-services/:groupId+"
+								component={MyServices}
+							/>
+
+							<PrivateRoute
+								exact
 								path="/my-lab/mes-services/:serviceId"
 								component={MesServicesGeneriques}
 							/>

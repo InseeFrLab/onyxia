@@ -5,13 +5,13 @@ import Toolbar from './toolbar';
 import { Service } from 'js/model';
 import { getServices, deleteService } from 'js/api/my-lab';
 
-const Services = () => {
+const Services = ({ groupId }) => {
 	const [services, setServices] = useState<Service[]>([]);
 	const [loading, setLoading] = useState(true);
 
-	const loadData = () => {
+	const loadData = (groupId?: String) => {
 		setLoading(true);
-		getServices().then((servicesResp) => {
+		getServices(groupId).then((servicesResp) => {
 			setServices(servicesResp);
 			setLoading(false);
 		});
@@ -26,16 +26,15 @@ const Services = () => {
 	};
 
 	useEffect(() => {
-		loadData();
-	}, []);
+		loadData(groupId);
+	}, [groupId]);
 
 	return (
 		<>
 			<Toolbar
 				hasService={services && services.length > 0}
-				handleRefresh={loadData}
+				handleRefresh={() => loadData(groupId)}
 				handleDeleteAll={deleteServices}
-				handlePauseAll={() => console.log('Stub pause all')}
 			/>
 			{loading ? <Loader em={18} /> : <Cards services={services} />}
 		</>

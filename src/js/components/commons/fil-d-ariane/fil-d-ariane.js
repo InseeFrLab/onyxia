@@ -74,6 +74,10 @@ export const fil = {
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{ pathname: '/my-lab/mes-services', component: <span>mon labo</span> },
 	],
+	myServices: [
+		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		{ pathname: '/my-services', component: <span>My lab</span> },
+	],
 	/* */
 	mesFichiers: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },

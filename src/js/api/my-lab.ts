@@ -2,9 +2,13 @@ import { axiosAuthTyped } from 'js/utils';
 import apiPaths from 'js/configuration/api-paths';
 import { Service } from 'js/model';
 
-export const getServices = async () => {
+export const getServices = async (groupId?: String) => {
 	return await axiosAuthTyped
-		.get<{ apps: [] }>(apiPaths.myServices)
+		.get<{ apps: [] }>(apiPaths.myServices, {
+			params: {
+				groupId: groupId,
+			},
+		})
 		.then((resp) => resp.data.apps);
 };
 
