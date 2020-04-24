@@ -112,11 +112,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 								component={MesServicesGeneriques}
 							/>
 
-							<PrivateRoute
-								exact
-								path="/mes-services"
-								component={MesServices}
-							/>
+							<PrivateRoute exact path="/mes-services" component={MyServices} />
 
 							<PrivateRoute
 								exact
