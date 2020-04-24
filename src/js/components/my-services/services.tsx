@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { axiosAuthTyped } from 'js/utils';
-import apiPaths from 'js/configuration/api-paths';
 import Loader from '../commons/loader';
 import Cards from './cards';
 import Toolbar from './toolbar';
+import { Service } from 'js/model';
+import { getServices, deleteService } from 'js/api/my-lab';
 
 const Services = () => {
-	const [services, setServices] = useState([]);
+	const [services, setServices] = useState<Service[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	const loadData = () => {
 		setLoading(true);
-		axiosAuthTyped.get<{ apps: [] }>(apiPaths.myServices).then((resp) => {
-			setServices(resp.data.apps);
+		getServices().then((servicesResp) => {
+			setServices(servicesResp);
 			setLoading(false);
+		});
+	};
+
+	const deleteServices = () => {
+		setLoading(true);
+		Promise.all(services.map((service) => deleteService(service))).then(() => {
+			setLoading(false);
+			loadData();
 		});
 	};
 
@@ -26,7 +34,7 @@ const Services = () => {
 			<Toolbar
 				hasService={services && services.length > 0}
 				handleRefresh={loadData}
-				handleDeleteAll={() => console.log('Stub delete')}
+				handleDeleteAll={deleteServices}
 				handlePauseAll={() => console.log('Stub pause all')}
 			/>
 			{loading ? <Loader em={18} /> : <Cards services={services} />}

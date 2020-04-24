@@ -13,6 +13,12 @@ export interface Service {
 	subtitle?: string;
 	startedAt?: number;
 	status: string;
+	type: string;
+}
+
+export enum ServiceType {
+	Marathon = 'MARATHON',
+	Kubernetes = 'KUBERNETES',
 }
 
 export enum ServiceStatus {
