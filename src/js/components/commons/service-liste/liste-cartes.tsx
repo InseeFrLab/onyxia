@@ -17,7 +17,7 @@ import { Service, Group } from 'js/model';
 
 interface MyProps {
 	initialiser?: () => void;
-	services?: Service[];
+	services: Service[];
 	changerEtatService?: (
 		id: string,
 		state: boolean,
@@ -30,7 +30,7 @@ interface MyProps {
 	groupe?: Group;
 	mesServicesWaiting?: string[];
 	suivreStatutService?: () => void;
-	groupes?: Group[];
+	groupes: Group[];
 }
 
 interface MyState {
