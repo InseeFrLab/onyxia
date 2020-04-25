@@ -32,7 +32,7 @@ const Services = ({ groupId }) => {
 	}, [groupId]);
 
 	return (
-		<>
+		<div className="contenu accueil">
 			<Toolbar
 				hasService={services && services.length > 0}
 				handleRefresh={() => loadData(groupId)}
@@ -43,7 +43,7 @@ const Services = ({ groupId }) => {
 			) : (
 				<Cards services={services} groups={groups} />
 			)}
-		</>
+		</div>
 	);
 };
 
