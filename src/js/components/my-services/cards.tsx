@@ -13,12 +13,12 @@ interface Props {
 
 const Cards = ({ services, groups }: Props) => (
 	<Grid container spacing={8} classes={{ container: 'cartes' }}>
-		{services.map((service, i) => (
-			<CarteMonService key={i} service={service} />
-		))}
-		{groups.map((group, i) => (
-			<CarteMonGroupe key={i} group={group} />
-		))}
+		{services &&
+			services.map((service, i) => (
+				<CarteMonService key={i} service={service} />
+			))}
+		{groups &&
+			groups.map((group, i) => <CarteMonGroupe key={i} group={group} />)}
 	</Grid>
 );
 
