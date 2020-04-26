@@ -33,8 +33,9 @@ class VaultAPI {
 	}
 
 	async uploadSecret(path, data) {
+		const old = await this.getSecret(path);
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
-			data,
+			data: { ...old, ...data },
 		});
 		store.dispatch(newVaultData(data));
 	}
@@ -77,12 +78,23 @@ export const initVaultData = (idep, name, mail) => {
 					data: { data },
 				},
 			}) => {
-				const { password, git_user_name, git_user_mail } = data;
-				if (!password || !git_user_name || !git_user_mail)
+				const {
+					password,
+					git_user_name,
+					git_user_mail,
+					git_cache_duration,
+				} = data;
+				if (
+					!password ||
+					!git_user_name ||
+					!git_user_mail ||
+					!git_cache_duration
+				)
 					resetVaultData(idep, {
 						password: password || buildDefaultPwd(),
 						git_user_name: git_user_name || name,
 						git_user_mail: git_user_mail || mail,
+						git_cache_duration: git_cache_duration || '0',
 					});
 				else store.dispatch(newVaultData(data));
 			}
