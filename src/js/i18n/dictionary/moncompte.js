@@ -31,6 +31,11 @@ const dictionary = {
 		fr: 'Adresse mail pour Git',
 		en: 'Email for git',
 	},
+	gitCacheDuration: {
+		fr:
+			'Durée de préservation de votre mot de passe dans le cache git (en secondes - 0 valant désactivation du cache)',
+		en: 'Git credentials cache duration (in seconds - 0 for no cache)',
+	},
 	minioLoginInfo: {
 		fr: 'Identifiants Minio (S3)',
 		en: 'Minio (S3) Login Details',

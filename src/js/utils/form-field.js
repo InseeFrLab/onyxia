@@ -21,6 +21,11 @@ const formatUser = (user) => ({
 			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_name) || '',
 		email:
 			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_mail) || '',
+		credentials_cache_duration:
+			(user.VAULT &&
+				user.VAULT.DATA &&
+				user.VAULT.DATA.git_credentials_cache_duration) ||
+			'0',
 	},
 	status: user.STATUS,
 	dns: user.DNS,
