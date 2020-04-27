@@ -24,8 +24,8 @@ const formatUser = (user) => ({
 		credentials_cache_duration:
 			(user.VAULT &&
 				user.VAULT.DATA &&
-				Number(user.VAULT.DATA.git_credentials_cache_duration)) ||
-			0,
+				user.VAULT.DATA.git_credentials_cache_duration) ||
+			'0',
 	},
 	status: user.STATUS,
 	dns: user.DNS,
