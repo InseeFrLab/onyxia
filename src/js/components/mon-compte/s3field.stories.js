@@ -12,6 +12,7 @@ export const BasicS3Field = () => (
 	<S3Field
 		versionsList={object('versionsList', ['1', '2', '3'])}
 		value={text('value', 'toto')}
+		currentPwd={text('pwd', 'coucou ')}
 	/>
 );
 

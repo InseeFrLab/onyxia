@@ -38,6 +38,8 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 	const [versionsList, setVersionsList] = useState();
 	const [onyxiaPassword, setOnyxiaPassword] = useState('');
+	const [currentVersion, setCurrentVersion] = useState(0);
+	const [validityTime, setValidityTime] = useState('');
 
 	useEffect(() => {
 		if (!user) {
@@ -53,12 +55,20 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 
 	useEffect(() => {
 		if (user && user.IDEP && !versionsList) {
-			getVersionsList(user.IDEP).then(setVersionsList);
+			getVersionsList(user.IDEP).then((vl) => {
+				setVersionsList(vl);
+				setCurrentVersion(vl[vl.length - 1]);
+			});
 		}
 	});
 
 	useEffect(() => {
-		if (user.VAULT && user.VAULT.DATA && onyxiaPassword == '') {
+		if (
+			user.VAULT &&
+			user.VAULT.DATA &&
+			user.VAULT.DATA.password &&
+			onyxiaPassword == ''
+		) {
 			setOnyxiaPassword(user.VAULT.DATA.password);
 		}
 	});
@@ -70,8 +80,12 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	};
 
 	const onVersionChange = (value) => {
-		getPasswordByVersion(user.IDEP, value).then(setOnyxiaPassword);
-		console.log(onyxiaPassword);
+		getPasswordByVersion(user.IDEP, value).then((pwdInfos) => {
+			const [pwd, validity] = pwdInfos;
+			setOnyxiaPassword(pwd);
+			setValidityTime(validity);
+		});
+		setCurrentVersion(value);
 	};
 
 	if (!user) return null;
@@ -109,7 +123,8 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					</Typography>
 					<S3Field
 						value={onyxiaPassword}
-						versionsList={versionsList}
+						currentVersion={currentVersion}
+						validityTime={validityTime}
 						onVersionChange={onVersionChange}
 						handleReset={() => resetVaultPwd(user.IDEP)}
 					/>

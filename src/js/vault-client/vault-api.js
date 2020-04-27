@@ -125,12 +125,13 @@ export const getPasswordByVersion = async (idep, version) => {
 		data: {
 			data: {
 				data: { password },
+				metadata: { created_time },
 			},
 		},
 	} = await axiosVault.get(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile?version=${version}`
 	);
-	return Promise.resolve(password);
+	return Promise.resolve([password, created_time]);
 };
 
 /**
