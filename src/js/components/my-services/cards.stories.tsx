@@ -1,21 +1,21 @@
 import React from 'react';
-import ListeCartes from 'js/components/commons/service-liste/liste-cartes';
+import Cards from 'js/components/my-services/cards';
 import basicService from 'js/model/sampledata/basic-service.json';
 
 export default {
 	title: 'My services',
-	component: ListeCartes,
+	component: Cards,
 	includeStories: [],
 };
 
-export const NoServices = () => <ListeCartes services={[]} groupes={[]} />;
+export const NoServices = () => <Cards services={[]} groups={[]} />;
 
 NoServices.story = {
 	title: 'No services',
 };
 
 export const SingleService = () => (
-	<ListeCartes services={[basicService]} groupes={[]} />
+	<Cards services={[basicService]} groups={[]} />
 );
 
 SingleService.story = {

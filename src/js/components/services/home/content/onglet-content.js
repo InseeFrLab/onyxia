@@ -6,7 +6,7 @@ import {
 	getServiceAvatar,
 	getTitle,
 	getSubtitle,
-} from 'js/components/commons/service-liste';
+} from 'js/components/commons/service-card';
 import { axiosURL, wrapPromise } from 'js/utils';
 import conf from 'js/configuration';
 

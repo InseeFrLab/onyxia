@@ -2,14 +2,13 @@ import React from 'react';
 import { Icon, IconButton, Badge } from '@material-ui/core/';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-import { CarteService } from 'js/components/commons/service-liste';
+import { CardService } from 'js/components/commons/service-card';
 import Pile from 'js/components/commons/pile';
 import Chronometer from 'js/components/commons/chronometer';
-import { extractServiceId } from 'js/utils/service-utils';
-import { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
+import { getServiceAvatar, getTitle, getSubtitle } from './card-utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { Service, ServiceStatus } from 'js/model';
-import './liste-cartes.scss';
+import './card.scss';
 
 interface Props {
 	service: Service;
@@ -19,7 +18,7 @@ interface Props {
 const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 	const expiration = dateExpiration({ env: {} }); // TODO : restore this
 	return (
-		<CarteService
+		<CardService
 			id={service.id}
 			expiration={expiration && isExpired(expiration)}
 			wait={service.status === 'DEPLOYING'}
@@ -36,7 +35,7 @@ const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 const getActions = (service) => (launch) => () => (
 	<>
 		{getLaunchIcon(service)(launch)}
-		<Link to={`/my-lab/mes-services/${extractServiceId(service.id)}`}>
+		<Link to={`/my-lab/my-service/${service.id}`}>
 			<IconButton
 				id={`bouton-details-${service.id}`}
 				color="secondary"

@@ -4,9 +4,9 @@ import { Icon, IconButton, Badge } from '@material-ui/core/';
 import { Avatar } from '@material-ui/core';
 import Pile from 'js/components/commons/pile';
 import { groupeType } from 'js/components/commons/prop-types';
-import { CarteService } from 'js/components/commons/service-liste';
+import { CardService } from 'js/components/commons/service-card';
 import { Group, Service } from 'js/model';
-import './liste-cartes.scss';
+import './card.scss';
 
 interface Props {
 	group: Group;
@@ -15,7 +15,7 @@ interface Props {
 const CarteMonGroupe = ({ group }: Props) => {
 	const running = isOneRunning(group);
 	return (
-		<CarteService
+		<CardService
 			id={group.id}
 			wait={false}
 			pause={!running}

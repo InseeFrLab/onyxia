@@ -99,7 +99,7 @@ const getColorClassStateService = ({ status }) => {
 	return 'down';
 };
 
-export { default as CarteService } from './carte-service.component';
-export { getServiceAvatar, getTitle, getSubtitle } from './carte-service.utils';
-export { default as CarteMonService } from './carte-mon-service';
-export { default as CarteMonGroupe } from './carte-mon-groupe';
+export { default as CardService } from './card-service.component';
+export { getServiceAvatar, getTitle, getSubtitle } from './card-utils';
+export { default as CardMyService } from './card-my-service';
+export { default as CardMyGroup } from './card-my-group';
