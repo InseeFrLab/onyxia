@@ -36,3 +36,19 @@ export const deleteService = (service: Service) => {
 		},
 	});
 };
+
+export const getLogs = async (
+	serviceId: string,
+	taskId: string,
+	type?: string
+) => {
+	return await axiosAuthTyped
+		.get<string>(apiPaths.getLogs, {
+			params: {
+				serviceId: serviceId,
+				taskId: taskId,
+				type: type,
+			},
+		})
+		.then((resp) => resp.data);
+};
