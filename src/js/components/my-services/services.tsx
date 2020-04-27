@@ -5,7 +5,11 @@ import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteService } from 'js/api/my-lab';
 
-const Services = ({ groupId }) => {
+interface Props {
+	groupId: string;
+}
+
+const Services = ({ groupId }: Props) => {
 	const [services, setServices] = useState<Service[]>([]);
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [loading, setLoading] = useState(true);

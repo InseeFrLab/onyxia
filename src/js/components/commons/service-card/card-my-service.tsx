@@ -35,7 +35,11 @@ const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 const getActions = (service) => (launch) => () => (
 	<>
 		{getLaunchIcon(service)(launch)}
-		<Link to={`/my-lab/my-service/${service.id}`}>
+		<Link
+			to={`/my-service/${
+				service.id.startsWith('/') ? service.id.substring(1) : service.id
+			}`}
+		>
 			<IconButton
 				id={`bouton-details-${service.id}`}
 				color="secondary"

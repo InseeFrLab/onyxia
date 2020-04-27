@@ -15,6 +15,7 @@ import Alert from 'js/components/commons/alert';
 import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
+import MyService from 'js/components/my-service';
 import MyServices from 'js/components/my-services';
 import Services, { ServiceDetails } from 'js/components/services';
 import Trainings from 'js/components/trainings';
@@ -111,6 +112,12 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 								exact
 								path="/my-services/:groupId+"
 								component={MyServices}
+							/>
+
+							<PrivateRoute
+								exact
+								path="/my-service/:serviceId+"
+								component={MyService}
 							/>
 
 							<PrivateRoute path="/mon-compte" component={MonCompte} />

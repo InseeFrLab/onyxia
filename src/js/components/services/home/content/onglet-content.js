@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, IconButton, Icon } from '@material-ui/core';
 import {
-	CarteService,
+	CardService,
 	getServiceAvatar,
 	getTitle,
 	getSubtitle,
@@ -18,7 +18,7 @@ const OngletContent = () => {
 	const handleOpenService = (service) => window.open(service.link);
 
 	const gridItems = services.map((service, i) => (
-		<CarteService
+		<CardService
 			key={i}
 			title={getTitle(service)}
 			subtitle={getSubtitle(service)}
