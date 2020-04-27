@@ -1,3 +1,5 @@
+import { Task } from './Task';
+
 export interface Service {
 	id: string;
 	cpus: number;
@@ -15,6 +17,7 @@ export interface Service {
 	status: string;
 	type: string;
 	env?: {};
+	tasks?: Task[];
 }
 
 export enum ServiceType {
