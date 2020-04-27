@@ -82,19 +82,20 @@ export const initVaultData = (idep, name, mail) => {
 					password,
 					git_user_name,
 					git_user_mail,
-					git_cache_duration,
+					git_credentials_cache_duration,
 				} = data;
 				if (
 					!password ||
 					!git_user_name ||
 					!git_user_mail ||
-					!git_cache_duration
+					!git_credentials_cache_duration
 				)
 					resetVaultData(idep, {
 						password: password || buildDefaultPwd(),
 						git_user_name: git_user_name || name,
 						git_user_mail: git_user_mail || mail,
-						git_cache_duration: git_cache_duration || '0',
+						git_credentials_cache_duration:
+							git_credentials_cache_duration || '0',
 					});
 				else store.dispatch(newVaultData(data));
 			}
