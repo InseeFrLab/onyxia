@@ -33,8 +33,8 @@ const dictionary = {
 	},
 	gitCacheDuration: {
 		fr:
-			'Durée de préservation de votre mot de passe dans le cache git (en secondes)',
-		en: 'Git credentials cache duration (in seconds)',
+			'Durée de préservation de votre mot de passe dans le cache git (en secondes - 0 valant désactivation du cache)',
+		en: 'Git credentials cache duration (in seconds - 0 for no cache)',
 	},
 	minioLoginInfo: {
 		fr: 'Identifiants Minio (S3)',
