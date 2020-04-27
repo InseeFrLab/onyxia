@@ -8,7 +8,7 @@ interface Props {
 export default ({ serviceId }: Props) => (
 	<div className="en-tete">
 		<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-			Votre Service {serviceId}
+			Votre service
 		</Typography>
 	</div>
 );
