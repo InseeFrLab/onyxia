@@ -5,15 +5,15 @@ import Service from './service';
 import 'js/components/app.scss';
 import { withRouter, useParams } from 'react-router-dom';
 
-const MyServicesHome = () => {
+const MyServiceHome = () => {
 	const { serviceId } = useParams();
 	return (
 		<>
 			<Header serviceId={serviceId} />
 			<FilDAriane fil={fil.myService} />
-			<Service serviceId={serviceId} />
+			<Service serviceId={`/${serviceId}`} />
 		</>
 	);
 };
 
-export default withRouter(MyServicesHome);
+export default withRouter(MyServiceHome);

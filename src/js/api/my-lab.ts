@@ -17,6 +17,17 @@ export const getServices = async (groupId?: String) => {
 		.then((resp) => resp.data);
 };
 
+export const getService = async (id: string, type?: string) => {
+	return await axiosAuthTyped
+		.get<Service>(apiPaths.getService, {
+			params: {
+				serviceId: id,
+				type: type,
+			},
+		})
+		.then((resp) => resp.data);
+};
+
 export const deleteService = (service: Service) => {
 	return axiosAuthTyped.delete(`${apiPaths.deleteService}`, {
 		params: {
