@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Grid, IconButton, Icon } from '@material-ui/core';
 import {
 	CarteService,
-	getColorClassStateService,
 	getServiceAvatar,
 	getTitle,
 	getSubtitle,
@@ -20,7 +19,6 @@ const OngletContent = () => {
 
 	const gridItems = services.map((service, i) => (
 		<CarteService
-			down={getColorClassStateService(service) === 'down'}
 			key={i}
 			title={getTitle(service)}
 			subtitle={getSubtitle(service)}

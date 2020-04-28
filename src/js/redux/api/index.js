@@ -12,4 +12,5 @@ export default {
 	},
 	task: '/my-lab/task',
 	cloudShell: '/cloudshell',
+	servicesV2: '/my-lab/services'
 };

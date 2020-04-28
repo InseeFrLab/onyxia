@@ -16,7 +16,7 @@ import './mon-compte.scss';
 import {
 	hasOptedInForBetaTest,
 	changeBetaTestStatus,
-} from '../../configuration/betatest';
+} from 'js/configuration/betatest';
 import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
@@ -26,15 +26,17 @@ import {
 	getVersionsList,
 	getPasswordByVersion,
 } from 'js/vault-client';
+import GitField from './git';
 import { User } from 'js/model/User';
 
 interface Props {
 	user?: User;
 	getUserInfo: () => void;
+	updateVaultSecret: (o: object) => void;
 	logout: () => void;
 }
 
-const MonCompte = ({ user, getUserInfo, logout }: Props) => {
+const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
 	const [versionsList, setVersionsList] = useState();
 	const [onyxiaPassword, setOnyxiaPassword] = useState('');
@@ -127,6 +129,11 @@ const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 						validityTime={validityTime}
 						onVersionChange={onVersionChange}
 						handleReset={() => resetVaultPwd(user.IDEP)}
+					/>
+					<GitField
+						idep={user.IDEP}
+						values={user.VAULT && user.VAULT.DATA}
+						update={updateVaultSecret}
 					/>
 				</Paper>
 

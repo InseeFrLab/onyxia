@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 import { MoreHoriz } from '@material-ui/icons';
+import { ServiceStatus } from 'js/model';
 
 export const ServicesListe = ({
 	services,
@@ -87,18 +88,13 @@ export const Liste = ({ liste, openService, openDetails }) => {
 };
 
 //
-export const getColorClassStateService = ({
-	tasksStaged,
-	tasksRunning,
-	tasksHealthy,
-	tasksUnhealthy,
-}) => {
-	if (tasksStaged !== 0) {
-		return 'warn';
-	} else if (tasksRunning > 0 && tasksHealthy > 0) {
+const getColorClassStateService = ({ status }) => {
+	if (status === ServiceStatus.Running) {
 		return 'running';
-	} else if (tasksRunning > 0 && tasksHealthy === 0) {
+	} else if (status === ServiceStatus.Deploying) {
 		return 'pause';
+	} else if (status === ServiceStatus.Stopped) {
+		return 'warn';
 	}
 	return 'down';
 };

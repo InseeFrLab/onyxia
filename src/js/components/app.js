@@ -17,6 +17,7 @@ import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
 import MesServicesGeneriques from 'js/components/my-lab/mes-services/mes-services-generiques.container';
 import Services, { ServiceDetails } from 'js/components/services';
+import Trainings from 'js/components/trainings';
 import Catalogue from './my-lab/catalogue';
 import MesFichiers from 'js/components/mes-fichiers';
 import { NavigationFiles } from 'js/components/mes-fichiers';
@@ -42,8 +43,8 @@ const App = ({
 	requestError,
 	waiting,
 	applicationResize,
-	messageInformation,
-	consumeMessageInformation,
+	messageIntraining,
+	consumeMessageIntraining,
 	idep,
 }) =>
 	requestError ? (
@@ -52,8 +53,8 @@ const App = ({
 		<AppFeelGood
 			waiting={waiting}
 			applicationResize={applicationResize}
-			messageInformation={messageInformation}
-			consumeMessageInformation={consumeMessageInformation}
+			messageIntraining={messageIntraining}
+			consumeMessageIntraining={consumeMessageIntraining}
 			idep={idep}
 		/>
 	);
@@ -96,6 +97,8 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 							<Route path="/accueil" component={Accueil} />
 							<Route exact path="/services" component={Services} />
 							<Route path="/services/*" component={ServiceDetails} />
+							<Route exact path="/trainings" component={Trainings} />
+							<PrivateRoute path="/trainings/:id" component={Trainings} />
 							<Route exact path="/my-lab/catalogue" component={Catalogue} />
 							<Route
 								path="/my-lab/catalogue/:catalogue"

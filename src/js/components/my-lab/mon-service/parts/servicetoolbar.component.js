@@ -51,13 +51,13 @@ const ServiceToolbar = ({
 			<GrafanaIcon />
 		</Fab>
 
-		{service.labels.ONYXIA_URL ? (
+		{service.urls ? (
 			<Fab
 				disabled={wait}
 				aria-label="ouvrir"
 				color="primary"
 				className="bouton"
-				onClick={() => window.open(service.labels.ONYXIA_URL)}
+				onClick={() => window.open(service.urls[0])}
 			>
 				<Icon>open_in_new</Icon>
 			</Fab>

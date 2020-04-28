@@ -3,21 +3,20 @@ export interface Service {
 	cpus: number;
 	mem: number;
 	instances: number;
-	tasksStaged: number;
-	tasksRunning: number;
-	tasksHealthy: number;
-	tasksUnhealthy: number;
+	urls: Array<string>;
 	labels: {
-		ONYXIA_NAME: string;
-		ONYXIA_SUBTITLE: string;
-		ONYXIA_LOGO?: string;
-		ONYXIA_URL?: string;
 		ONYXIA_PRIVATE_ENDPOINT?: string;
+		ONYXIA_SUBTITLE?: string;
 	};
 	logo?: string;
-	title: string;
+	name: string;
 	subtitle?: string;
-	tasks?: {
-		startedAt: string;
-	}[];
+	startedAt?: number;
+	status: string;
+}
+
+export enum ServiceStatus {
+	Deploying = 'DEPLOYING',
+	Running = 'RUNNING',
+	Stopped = 'STOPPED',
 }

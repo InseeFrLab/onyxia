@@ -23,6 +23,14 @@ const dictionary = {
 		fr: 'Profil Onyxia',
 		en: 'Onyxia Profile',
 	},
+	gitUserName: {
+		fr: "Nom d'utilisateur pour Git",
+		en: 'User name for Git',
+	},
+	gitUserEmail: {
+		fr: 'Adresse mail pour Git',
+		en: 'Email for git',
+	},
 	minioLoginInfo: {
 		fr: 'Identifiants Minio (S3)',
 		en: 'Minio (S3) Login Details',

@@ -1,6 +1,6 @@
 import VaultAPI, {
 	getVaultToken,
-	initVaultPwd,
+	initVaultData,
 	resetVaultPwd,
 	getVersionsList,
 	getPasswordByVersion,
@@ -8,7 +8,7 @@ import VaultAPI, {
 export default () => new VaultAPI();
 export {
 	getVaultToken,
-	initVaultPwd,
+	initVaultData,
 	resetVaultPwd,
 	getVersionsList,
 	getPasswordByVersion,

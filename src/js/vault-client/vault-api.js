@@ -37,12 +37,11 @@ class VaultAPI {
 		);
 	}
 
-	async uploadSecret(path, payload) {
-		const { data } = await axiosVault.put(
-			`/v1/${VAULT_KV_ENGINE}/data${path}`,
-			payload
-		);
-		return data.data ? data.data : [];
+	async uploadSecret(path, data) {
+		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
+			data,
+		});
+		store.dispatch(newVaultData(data));
 	}
 }
 
@@ -67,17 +66,36 @@ const fetchVaultToken = async () => {
 	return token;
 };
 
-export const initVaultPwd = (idep) => {
+const buildDefaultPwd = () =>
+	generator.generate({
+		length: 20,
+		numbers: true,
+	});
+
+export const initVaultData = (idep, name, mail) => {
 	axiosVault(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`
 	)
-		.then(({ data: { data } }) =>
-			pwdMustBeRenewed(data.metadata.created_time)
-				? resetVaultPwd(idep)
-				: store.dispatch(newVaultData(data.data))
-		)
+		.then(({ data: { data } }) => {
+			const { password, git_user_name, git_user_mail } = data.data;
+			const created_time = data.metadata.created_time;
+			if (
+				!password ||
+				!git_user_name ||
+				!git_user_mail ||
+				pwdMustBeRenewed(created_time)
+			)
+				resetVaultData(idep, {
+					password:
+						(pwdMustBeRenewed(created_time) ? buildDefaultPwd() : password) ||
+						buildDefaultPwd(),
+					git_user_name: git_user_name || name,
+					git_user_mail: git_user_mail || mail,
+				});
+			else store.dispatch(newVaultData(data));
+		})
 		.catch(() => {
-			resetVaultPwd(idep);
+			resetVaultData(idep, undefined, name, mail);
 		});
 };
 
@@ -109,15 +127,11 @@ const fetchPasswordVersions = async (idep) => {
 	return Object.keys(versions);
 };
 
-export const resetVaultPwd = (idep) => {
-	const password = generator.generate({
-		length: 20,
-		numbers: true,
-	});
-	const data = { data: { password } };
+export const resetVaultData = (idep, data) => {
+	const payload = { data };
 	axiosVault
-		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, data)
-		.then(() => store.dispatch(newVaultData(data.data)));
+		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
+		.then(() => store.dispatch(newVaultData(payload.data)));
 };
 
 export const getPasswordByVersion = async (idep, version) => {
@@ -133,6 +147,9 @@ export const getPasswordByVersion = async (idep, version) => {
 	);
 	return Promise.resolve([password, created_time]);
 };
+
+export const resetVaultPwd = (idep) =>
+	resetVaultData(idep, { password: buildDefaultPwd() });
 
 /**
  *

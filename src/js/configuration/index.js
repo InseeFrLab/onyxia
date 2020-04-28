@@ -9,6 +9,7 @@ const conf = {
 	CONTENT: {
 		SERVICES_URL: readConfig('SERVICES_URL'),
 		HOMEPAGE_URL: readConfig('HOMEPAGE_URL'),
+		TRAININGS_URL: readConfig('TRAININGS_URL'),
 	},
 	APP: {
 		MAX_INSTANCES: readConfig('INSTANCES_MAX'),
