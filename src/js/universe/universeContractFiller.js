@@ -10,30 +10,3 @@ export const getDefaultSingleOption = (property, context = getContext()) => {
 
 	return property['default'];
 };
-
-const getDefaultOptions = (properties, context = getContext()) => {
-	return Object.entries(properties).reduce((acc, [category, v]) => {
-		const laData = Object.entries(v.properties).reduce(
-			(categoryData, [propName, propData]) => {
-				const { type } = propData;
-				const jsControl = propData['js-control'];
-				if (jsControl === 'shadow' || !type) {
-					return categoryData;
-				}
-
-				categoryData[propName] = getDefaultSingleOption(propData, context);
-
-				return categoryData;
-			},
-			{}
-		);
-
-		if (Object.keys(laData).length > 0) {
-			acc[category] = laData;
-		}
-
-		return acc;
-	}, {});
-};
-
-export default getDefaultOptions;
