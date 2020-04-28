@@ -9,8 +9,8 @@ import {
 	TableCell,
 	TableBody,
 } from '@material-ui/core';
-import Titre from '../commons/titre';
-import CopyableField from '../commons/copyable-field';
+import Titre from 'js/components/commons/titre';
+import CopyableField from 'js/components/commons/copyable-field';
 
 interface Props {
 	service: Service;

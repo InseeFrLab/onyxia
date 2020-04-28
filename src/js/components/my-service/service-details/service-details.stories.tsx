@@ -1,5 +1,5 @@
 import React from 'react';
-import ServiceDetails from './service-details';
+import ServiceDetails from './details';
 import basicService from 'js/model/sampledata/basic-service.json';
 
 export default {

@@ -11,5 +11,9 @@
 	},
 	"startedAt": 1587035631,
 	"status": "RUNNING",
-	"type": "MARATHON"
+	"type": "MARATHON",
+	"env": {},
+	"tasks": [
+		{ "id": "task1", "status": { "status": "status", "reason": "reason" } }
+	]
 }

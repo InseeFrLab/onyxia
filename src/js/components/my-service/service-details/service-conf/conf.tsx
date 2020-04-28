@@ -1,6 +1,6 @@
 import React from 'react';
 import { Service } from 'js/model';
-import ServiceEnv from './service-env';
+import ServiceEnv from '../service-env';
 
 interface Props {
 	service: Service;
