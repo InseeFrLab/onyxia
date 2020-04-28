@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Service } from 'js/model';
-import Loader from 'js/components/commons/loader';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import ServiceConf from './service-conf';
 import ServiceTasks from './service-tasks';
+import D from 'js/i18n';
 
 interface Props {
 	service?: Service;
@@ -41,7 +41,7 @@ const ServiceDetails = ({ service }: Props) => {
 			)}
 		</>
 	) : (
-		<Loader />
+		<div>{D.serviceNotFound}</div>
 	);
 };
 export default ServiceDetails;

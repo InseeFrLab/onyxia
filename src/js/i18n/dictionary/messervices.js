@@ -9,6 +9,7 @@ const dictionary = {
 		fr: `Vous n'avez aucun service. Cliquer sur le bouton plus pour en créer.`,
 		en: `You do not have service. Click the plus button to create.`,
 	},
+	serviceNotFound: { fr: 'Service introuvable', en: 'Service not found' },
 };
 
 export default dictionary;
