@@ -23,26 +23,27 @@ const ServiceTasks = ({ serviceId, serviceType, tasks }: Props) => {
 	return (
 		<>
 			<Grid container spacing={2} classes={{ container: 'cartes' }}>
-				{tasks.map((task) => (
-					<Card key={task.id}>
-						<CardHeader title={task.id} />
-						<CardContent>
-							{task.status
-								? `${task.status.status} (${task.status.reason})`
-								: ''}
-						</CardContent>
-						<CardActions>
-							<IconButton
-								aria-label="logs"
-								onClick={() =>
-									getLogs(serviceId, task.id, serviceType).then(setLogs)
-								}
-							>
-								<DescriptionIcon />
-							</IconButton>
-						</CardActions>
-					</Card>
-				))}
+				{tasks.map(({ id, status }) => {
+					const content = status
+						? `${status.status} ${status.reason ? `(${status.reason})` : ''}`
+						: '';
+					return (
+						<Card key={id}>
+							<CardHeader title={id} />
+							<CardContent>{content}</CardContent>
+							<CardActions>
+								<IconButton
+									aria-label="logs"
+									onClick={() =>
+										getLogs(serviceId, id, serviceType).then(setLogs)
+									}
+								>
+									<DescriptionIcon />
+								</IconButton>
+							</CardActions>
+						</Card>
+					);
+				})}
 			</Grid>
 			{logs ? (
 				<Paper elevation={3}>
