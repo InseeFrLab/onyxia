@@ -1,0 +1,11 @@
+import { Props, Story } from '@storybook/addon-docs/blocks';
+import * as stories from './service-env.stories.tsx';
+import ServiceEnv from './env';
+
+<Meta title={stories.default.title} component={stories.default.component} />
+
+# Service env
+
+<Story name="BasicServiceEnv" decorators={stories.default.decorators}>
+	{stories.BasicServiceEnv()}
+</Story>

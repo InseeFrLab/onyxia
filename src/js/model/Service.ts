@@ -1,3 +1,5 @@
+import { Task } from './Task';
+
 export interface Service {
 	id: string;
 	cpus: number;
@@ -13,6 +15,14 @@ export interface Service {
 	subtitle?: string;
 	startedAt?: number;
 	status: string;
+	type: string;
+	env?: object;
+	tasks?: Task[];
+}
+
+export enum ServiceType {
+	Marathon = 'MARATHON',
+	Kubernetes = 'KUBERNETES',
 }
 
 export enum ServiceStatus {

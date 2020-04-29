@@ -1,0 +1,23 @@
+import { Props, Story } from '@storybook/addon-docs/blocks';
+import * as stories from './service-details.stories.tsx';
+import ServiceDetails from './details';
+
+<Meta title={stories.default.title} component={stories.default.component} />
+
+# My services
+
+This component displays details on a user's service
+
+<Props of={ServiceDetails} />
+
+If services info are missing :
+
+<Story name="NoService" decorators={stories.default.decorators}>
+	{stories.NoService()}
+</Story>
+
+For a simple service :
+
+<Story name="BasicServiceDetails" decorators={stories.default.decorators}>
+	{stories.BasicServiceDetails()}
+</Story>
