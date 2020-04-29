@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Paper, Fab, Icon, Tooltip } from '@material-ui/core/';
 import { Link } from 'react-router-dom';
+import Dialog from 'js/components/commons/dialog';
+import D from 'js/i18n';
 
 interface Props {
 	hasService: Boolean;
@@ -14,16 +16,37 @@ const Toolbar = ({
 	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
-}: Props) => (
-	<Paper className="onyxia-toolbar" elevation={1}>
-		<Actions
-			hasService={hasService}
-			handleDeleteAll={handleDeleteAll}
-			handlePauseAll={handlePauseAll}
-			handleRefresh={handleRefresh}
-		/>
-	</Paper>
-);
+}: Props) => {
+	const [dialog, setDialog] = useState(false);
+	const wantDelete = () => {
+		setDialog(true);
+	};
+	const onValid = () => {
+		handleDeleteAll();
+	};
+	const onCancel = () => {
+		setDialog(false);
+	};
+	return (
+		<Paper className="onyxia-toolbar" elevation={1}>
+			<Actions
+				hasService={hasService}
+				handleDeleteAll={wantDelete}
+				handlePauseAll={handlePauseAll}
+				handleRefresh={handleRefresh}
+			/>
+			<Dialog
+				open={dialog}
+				title={D.myServicesDialogTitle}
+				subtitle={D.myServicesDialogSubtitle}
+				body={D.myServicesDialogBody}
+				warn={D.myServicesDialogWarn}
+				onValid={onValid}
+				onCancel={onCancel}
+			/>
+		</Paper>
+	);
+};
 
 const Actions = ({
 	hasService,
@@ -32,7 +55,7 @@ const Actions = ({
 	handleRefresh,
 }) => (
 	<>
-		{handleRefresh ? (
+		{handleRefresh && (
 			<Tooltip title="Refresh">
 				<Fab
 					color="secondary"
@@ -43,10 +66,7 @@ const Actions = ({
 					<Icon>refresh</Icon>
 				</Fab>
 			</Tooltip>
-		) : (
-			<></>
 		)}
-
 		<Link to="/my-lab/catalogue">
 			<Tooltip title="New service">
 				<Fab
@@ -58,10 +78,9 @@ const Actions = ({
 				</Fab>
 			</Tooltip>
 		</Link>
-
 		{hasService && (
 			<>
-				{handlePauseAll ? (
+				{handlePauseAll && (
 					<Tooltip title="Stop all">
 						<Fab
 							color="secondary"
@@ -72,11 +91,8 @@ const Actions = ({
 							<Icon>pause</Icon>
 						</Fab>
 					</Tooltip>
-				) : (
-					<></>
 				)}
-
-				{handleDeleteAll ? (
+				{handleDeleteAll && (
 					<Tooltip title="Delete all">
 						<Fab
 							color="secondary"
@@ -87,8 +103,6 @@ const Actions = ({
 							<Icon>deleteAll</Icon>
 						</Fab>
 					</Tooltip>
-				) : (
-					<></>
 				)}
 			</>
 		)}
