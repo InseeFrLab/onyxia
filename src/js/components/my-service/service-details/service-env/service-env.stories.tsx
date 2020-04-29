@@ -8,7 +8,9 @@ export default {
 	includeStories: [],
 };
 
-export const BasicServiceEnv = () => <ServiceEnv service={basicService} />;
+const { env } = basicService;
+
+export const BasicServiceEnv = () => <ServiceEnv env={env} />;
 
 BasicServiceEnv.story = {
 	title: 'Basic service env',

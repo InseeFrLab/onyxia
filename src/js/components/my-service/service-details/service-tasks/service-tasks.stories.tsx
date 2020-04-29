@@ -8,7 +8,11 @@ export default {
 	includeStories: [],
 };
 
-export const BasicServiceTasks = () => <ServiceTasks service={basicService} />;
+const { id, type, tasks } = basicService;
+
+export const BasicServiceTasks = () => (
+	<ServiceTasks serviceId={id} serviceType={type} tasks={tasks} />
+);
 
 BasicServiceTasks.story = {
 	title: 'Basic service tasks',

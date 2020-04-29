@@ -16,7 +16,7 @@ export interface Service {
 	startedAt?: number;
 	status: string;
 	type: string;
-	env?: {};
+	env?: object;
 	tasks?: Task[];
 }
 

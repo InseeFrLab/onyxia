@@ -1,5 +1,4 @@
 import React from 'react';
-import { Service } from 'js/model';
 import {
 	Paper,
 	Typography,
@@ -13,10 +12,10 @@ import Titre from 'js/components/commons/titre';
 import CopyableField from 'js/components/commons/copyable-field';
 
 interface Props {
-	service: Service;
+	env: object;
 }
 
-const ServiceEnv = ({ service }: Props) => {
+const ServiceEnv = ({ env }: Props) => {
 	return (
 		<Paper className="paragraphe" elevation={1}>
 			<Typography variant="h3" gutterBottom>
@@ -31,7 +30,7 @@ const ServiceEnv = ({ service }: Props) => {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{Object.entries(service.env).map(([key, value], i) => (
+					{Object.entries(env).map(([key, value], i) => (
 						<TableRow key={i}>
 							<TableCell>{key}</TableCell>
 							<TableCell>

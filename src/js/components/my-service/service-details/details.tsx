@@ -29,15 +29,15 @@ const ServiceDetails = ({ service }: Props) => {
 					<Tab label="Debug" />
 				</Tabs>
 			</AppBar>
-			{activeTab === TAB_CONFIGURATION ? (
+			{activeTab === TAB_CONFIGURATION && (
 				<ServiceConf service={service}></ServiceConf>
-			) : (
-				<></>
 			)}
-			{activeTab === TAB_TASKS ? (
-				<ServiceTasks service={service}></ServiceTasks>
-			) : (
-				<></>
+			{activeTab === TAB_TASKS && (
+				<ServiceTasks
+					serviceId={service.id}
+					serviceType={service.type}
+					tasks={service.tasks}
+				/>
 			)}
 		</>
 	) : (
