@@ -10,7 +10,7 @@ const MyServiceHome = () => {
 	return (
 		<>
 			<Header serviceId={serviceId} />
-			<FilDAriane fil={fil.myService} />
+			<FilDAriane fil={fil.myService(serviceId)} />
 			<Service serviceId={`/${serviceId}`} />
 		</>
 	);

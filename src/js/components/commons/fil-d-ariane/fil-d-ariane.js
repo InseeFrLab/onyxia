@@ -73,9 +73,13 @@ export const fil = {
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{ pathname: '/my-services', component: <span>My lab</span> },
 	],
-	myService: [
+	myService: (id) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/my-service', component: <span>My service</span> },
+		{ pathname: '/my-services', component: <span>My lab</span> },
+		{
+			pathname: `/my-service/${id}`,
+			component: <span>{id}</span>,
+		},
 	],
 	/* */
 	mesFichiers: [
