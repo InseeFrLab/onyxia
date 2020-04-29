@@ -8,15 +8,8 @@ export default {
 	includeStories: [],
 };
 
-// TODO
-export const NoService = () => <ServiceTasks service={basicService} />;
-
-NoService.story = {
-	title: 'Basic service',
-};
-
 export const BasicServiceTasks = () => <ServiceTasks service={basicService} />;
 
 BasicServiceTasks.story = {
-	title: 'Basic service',
+	title: 'Basic service tasks',
 };
