@@ -67,7 +67,7 @@ export default ({
 					<ListItemIcon>
 						<Icon>forward</Icon>
 					</ListItemIcon>
-					<ListItemText primary="Visite guidée" />
+					<ListItemText primary={D.guidedTourTitle} />
 				</ListItem>
 				<ListItem>
 					<ListItemText primary="La plateforme" />
@@ -111,14 +111,14 @@ export default ({
 					<ListItemIcon>
 						<Icon>folder</Icon>
 					</ListItemIcon>
-					<ListItemText primary="Mes fichiers" />
+					<ListItemText primary={D.myFilesTitle} />
 				</ListItem>
 				{hasOptedInForBetaTest() ? (
 					<ListItem button component={Link} to="/mes-secrets">
 						<ListItemIcon>
 							<Icon>vpn_key</Icon>
 						</ListItemIcon>
-						<ListItemText primary="Mes secrets" />
+						<ListItemText primary={D.mySecretsTitle} />
 					</ListItem>
 				) : null}
 			</List>
