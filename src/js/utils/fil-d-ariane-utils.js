@@ -23,12 +23,12 @@ export const createFil = (serviceId) =>
 			[]
 		)
 		.map((r) => ({
-			pathname: `/my-lab/mes-services/${r.path}`,
+			pathname: `/my-services/${r.path}`,
 			component: <span>{r.name}</span>,
 		}));
 
 export const createMyLabParentUrl = (serviceId) =>
-	concatUrl('/my-lab/mes-services')(extractServiceId(serviceId).split('/'));
+	concatUrl('/my-service')(extractServiceId(serviceId).split('/'));
 
 const concatUrl = (step) => ([first, ...rest]) =>
 	rest.length > 0

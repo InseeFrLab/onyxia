@@ -128,7 +128,7 @@ const NouveauService = ({
 		setFieldsValues({ ...fieldsValues, [path]: value });
 		setContract(undefined);
 	};
-	if (redirect) return <Redirect to="/my-lab/mes-services" />;
+	if (redirect) return <Redirect to="/my-services" />;
 	const ongletContent = ongletFields[onglet] || {};
 	return (
 		<>

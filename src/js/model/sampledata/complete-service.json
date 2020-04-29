@@ -10,5 +10,6 @@
 		"ONYXIA_SUBTITLE": "del gato"
 	},
 	"startedAt": 1587035631,
-	"status": "RUNNING"
+	"status": "RUNNING",
+	"type": "MARATHON"
 }
