@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { getLogs } from 'js/api/my-lab';
+import './tasks.scss';
 
 interface Props {
 	serviceId: string;
@@ -28,26 +29,39 @@ const ServiceTasks = ({ serviceId, serviceType, tasks }: Props) => {
 						? `${status.status} ${status.reason ? `(${status.reason})` : ''}`
 						: '';
 					return (
-						<Card key={id}>
-							<CardHeader title={id} />
-							<CardContent>{content}</CardContent>
-							<CardActions>
-								<IconButton
-									aria-label="logs"
-									onClick={() =>
-										getLogs(serviceId, id, serviceType).then(setLogs)
-									}
-								>
-									<DescriptionIcon />
-								</IconButton>
-							</CardActions>
-						</Card>
+						<Grid
+							key={id}
+							item
+							lg={4}
+							md={6}
+							xs={12}
+							classes={{ item: 'carte' }}
+						>
+							<Card>
+								<CardHeader title={id} />
+								<CardContent>{content}</CardContent>
+								<CardActions>
+									<IconButton
+										aria-label="logs"
+										onClick={() =>
+											getLogs(serviceId, id, serviceType).then(setLogs)
+										}
+									>
+										<DescriptionIcon />
+									</IconButton>
+								</CardActions>
+							</Card>
+						</Grid>
 					);
 				})}
 			</Grid>
 			{logs ? (
-				<Paper elevation={3}>
-					<pre>{logs}</pre>
+				<Paper elevation={3} className="tasks-log">
+					{logs.split('\n').map((l: string, i: string) => (
+						<div key={`log-${i}`} className="log-content">
+							{l}
+						</div>
+					))}
 				</Paper>
 			) : (
 				<></>
