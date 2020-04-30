@@ -43,6 +43,8 @@ const dictionary = {
 		fr: 'details',
 		en: 'details',
 	},
+	btnValid: { fr: 'Valider', en: 'Valid' },
+	btnCancel: { fr: 'Annuler', en: 'Cancel' },
 };
 
 export default dictionary;

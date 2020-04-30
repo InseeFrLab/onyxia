@@ -2,7 +2,6 @@ import * as constantes from './constantes';
 import { axiosAuth } from 'js/utils';
 import api from 'js/redux/api';
 import { creerNouveauService } from './my-lab';
-import getDefaultOptions from 'js/universe/universeContractFiller';
 import { getMinioToken } from 'js/minio-client';
 import { getVaultToken } from 'js/vault-client';
 
@@ -22,14 +21,20 @@ export const refreshCloudShellStatus = () => (dispatch) => {
 				Promise.all([getVaultToken(), getMinioToken()])
 					.then((_) => {
 						creerNouveauService(
-							data.packageToDeploy,
-							getDefaultOptions(data.packageToDeploy.config.properties)
+							{
+								...data.packageToDeploy,
+								catalogId: data.catalogId,
+							},
+							{}
 						)(dispatch);
 					})
 					.catch((_) => {
 						creerNouveauService(
-							data.packageToDeploy,
-							getDefaultOptions(data.packageToDeploy.config.properties)
+							{
+								...data.packageToDeploy,
+								catalogId: data.catalogId,
+							},
+							{}
 						)(dispatch);
 					});
 			}

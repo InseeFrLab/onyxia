@@ -35,8 +35,8 @@ const QuickAccess = ({ location: { pathname } }) => {
 						<Option
 							icone={BecherIcon}
 							label="mon-labo"
-							path="/my-lab/mes-services"
-							focused={pathname === '/my-lab/mes-services'}
+							path="/my-services"
+							focused={pathname === '/my-services'}
 						/>
 						<Option
 							icone={CatalogueIcon}

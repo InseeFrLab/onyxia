@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, IconButton, Icon } from '@material-ui/core';
 import {
-	CarteService,
+	CardService,
 	getServiceAvatar,
 	getTitle,
 	getSubtitle,
-} from 'js/components/commons/service-liste';
+} from 'js/components/commons/service-card';
 import { axiosURL, wrapPromise } from 'js/utils';
 import conf from 'js/configuration';
 
@@ -18,7 +18,7 @@ const OngletContent = () => {
 	const handleOpenService = (service) => window.open(service.link);
 
 	const gridItems = services.map((service, i) => (
-		<CarteService
+		<CardService
 			key={i}
 			title={getTitle(service)}
 			subtitle={getSubtitle(service)}

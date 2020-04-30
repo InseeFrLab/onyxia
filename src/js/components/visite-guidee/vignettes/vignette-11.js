@@ -5,6 +5,7 @@ import { Prec, LinkTo, Arrow } from './../vignette-commons';
 import { extractServiceId } from 'js/utils';
 import D from 'js/i18n';
 
+
 export default {
 	description: class Vignette extends React.Component {
 		state = { dom: null };
@@ -38,7 +39,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to={`/my-lab/mes-services/${extractServiceId(serviceCree.id)}`}
+				to={`/my-service/${serviceCree.id}`}
 				onClick={next}
 				title={D.btnDetails}
 				component={() => <Icon>more_horiz</Icon>}
