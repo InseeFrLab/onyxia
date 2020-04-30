@@ -1,15 +1,48 @@
 const dictionary = {
 	btnLogin: {
-		fr: 'Login',
-		en: 'Login',
+		fr: 'login',
+		en: 'login',
 	},
 	btnClose: {
-		fr: 'Fermer',
-		en: 'Close',
+		fr: 'fermer',
+		en: 'close',
 	},
-	btnDiscover: { fr: 'Découvrez', en: 'Discover' },
-	btnSaveAsLabel: { fr: 'Sauvegarder sous', en: 'Save as' },
-	btnCopyLabel: { fr: 'Copier dans le presse papier', en: 'Copy to clipboard' },
+	btnDiscover: {
+		fr: 'Découvrez',
+		en: 'Discover',
+	},
+	btnSaveAsLabel: {
+		fr: 'Sauvegarder sous',
+		en: 'Save as',
+	},
+	btnCopyLabel: {
+		fr: 'Copier dans le presse papier',
+		en: 'Copy to clipboard',
+	},
+	btnNext: {
+		fr: 'suivant',
+		en: 'next',
+	},
+	btnPrevious: {
+		fr: 'précédent',
+		en: 'previous',
+	},
+	btnSelfServiceCatalog: {
+		fr: 'catalogue du libre service',
+		en: 'self service catalog',
+	},
+	btnSelfServiceCreation: {
+		fr: 'création du service',
+		en: 'self service creation',
+	},
+	btnMyLab: {
+		fr: 'mon labo',
+		en: 'my lab',
+	},
+	btnDetails: {
+		fr: 'details',
+		en: 'details',
+	},
 };
 
 export default dictionary;
