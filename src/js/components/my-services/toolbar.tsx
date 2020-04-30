@@ -22,6 +22,7 @@ const Toolbar = ({
 		setDialog(true);
 	};
 	const onValid = () => {
+		setDialog(false);
 		handleDeleteAll();
 	};
 	const onCancel = () => {

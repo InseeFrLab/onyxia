@@ -14,6 +14,7 @@ const Toolbar = ({ handleDelete, handleRefresh }: Props) => {
 		setDialog(true);
 	};
 	const onValid = () => {
+		setDialog(false);
 		handleDelete();
 	};
 	const onCancel = () => {
