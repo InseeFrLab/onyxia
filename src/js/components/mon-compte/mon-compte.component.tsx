@@ -127,7 +127,11 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 						value={onyxiaPassword}
 						currentVersion={currentVersion}
 						onVersionChange={onVersionChange}
-						handleReset={() => resetVaultPwd(user.IDEP)}
+						handleReset={() => {
+							resetVaultPwd(user.IDEP);
+							setMaxVersion(maxVersion + 1);
+							onVersionChange(maxVersion + 1);
+						}}
 						minVersion={minVersion}
 						maxVersion={maxVersion}
 					/>
