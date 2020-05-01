@@ -78,7 +78,12 @@ export const initVaultData = (idep, name, mail) => {
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`
 	)
 		.then(({ data: { data } }) => {
-			const { password, git_user_name, git_user_mail, git_credentials_cache_duration } = data.data;
+			const {
+				password,
+				git_user_name,
+				git_user_mail,
+				git_credentials_cache_duration,
+			} = data.data;
 			const created_time = data.metadata.created_time;
 			if (
 				!password ||
@@ -93,7 +98,7 @@ export const initVaultData = (idep, name, mail) => {
 						buildDefaultPwd(),
 					git_user_name: git_user_name || name,
 					git_user_mail: git_user_mail || mail,
-					git_credentials_cache_duration : git_credentials_cache_duration || '0',
+					git_credentials_cache_duration: git_credentials_cache_duration || '0',
 				});
 			else store.dispatch(newVaultData(data));
 		})
@@ -142,13 +147,12 @@ export const getPasswordByVersion = async (idep, version) => {
 		data: {
 			data: {
 				data: { password },
-				metadata: { created_time },
 			},
 		},
 	} = await axiosVault.get(
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile?version=${version}`
 	);
-	return Promise.resolve([password, created_time]);
+	return Promise.resolve(password);
 };
 
 export const resetVaultPwd = (idep) =>

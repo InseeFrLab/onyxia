@@ -12,25 +12,24 @@ import ArrowBackIos from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIos from '@material-ui/icons/ArrowForwardIos';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
-import dayjs from 'dayjs';
 
 interface Props {
 	value: string;
 	handleReset: () => void;
 	versionsList?: string[];
 	onVersionChange?: (string) => void;
-	validityTime: string;
 	currentVersion: number;
+	minVersion: number;
+	maxVersion: number;
 }
-
-const formatageDate = (date) => dayjs(date).format('DD/MM/YYYY');
 
 const S3Field = ({
 	value,
 	handleReset,
 	onVersionChange,
-	validityTime,
 	currentVersion,
+	maxVersion,
+	minVersion,
 }: Props) => {
 	return (
 		<FormControl className="copy-field" style={{ width: '100%' }}>
@@ -41,18 +40,20 @@ const S3Field = ({
 				value={value}
 				startAdornment={
 					<InputAdornment position="start">
-						{formatageDate(validityTime) + ' :'}
+						Version {currentVersion} : 
 					</InputAdornment>
 				}
 				endAdornment={
 					<InputAdornment position="end">
 						<IconButton
+							disabled={minVersion == currentVersion}
 							aria-label="previous password"
 							onClick={() => onVersionChange((currentVersion - 1).toString())}
 						>
 							<ArrowBackIos />
 						</IconButton>
 						<IconButton
+							disabled={maxVersion == currentVersion}
 							aria-label="next password"
 							onClick={() =>
 								onVersionChange((Number(currentVersion) + 1).toString())
@@ -78,10 +79,5 @@ const S3Field = ({
 		</FormControl>
 	);
 };
-
-interface PropsSelect {
-	versionsList: string[];
-	onVersionChange?: (any) => void;
-}
 
 export default S3Field;

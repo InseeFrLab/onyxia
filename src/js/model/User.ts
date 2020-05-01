@@ -7,7 +7,7 @@ export interface User {
 		AWS_S3_ENDPOINT: string;
 	};
 	USERNAME: string;
-	VAULT: { DATA: { password: string } };
+	VAULT: { DATA: { data: { password: string } } };
 	IDEP: string;
 	USERMAIL: string;
 	IP: string;

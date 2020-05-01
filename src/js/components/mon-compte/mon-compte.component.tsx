@@ -41,7 +41,8 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [versionsList, setVersionsList] = useState();
 	const [onyxiaPassword, setOnyxiaPassword] = useState('');
 	const [currentVersion, setCurrentVersion] = useState(0);
-	const [validityTime, setValidityTime] = useState('');
+	const [minVersion, setMinVersion] = useState(0);
+	const [maxVersion, setMaxVersion] = useState(0);
 
 	useEffect(() => {
 		if (!user) {
@@ -59,7 +60,9 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 		if (user && user.IDEP && !versionsList) {
 			getVersionsList(user.IDEP).then((vl) => {
 				setVersionsList(vl);
-				setCurrentVersion(vl[vl.length - 1]);
+				setMinVersion(Math.min(...vl));
+				setMaxVersion(Math.max(...vl));
+				setCurrentVersion(currentVersion || Math.max(...vl));
 			});
 		}
 	});
@@ -68,12 +71,13 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 		if (
 			user.VAULT &&
 			user.VAULT.DATA &&
-			user.VAULT.DATA.password &&
-			onyxiaPassword == ''
+			user.VAULT.DATA.data &&
+			user.VAULT.DATA.data.password &&
+			onyxiaPassword === ''
 		) {
-			setOnyxiaPassword(user.VAULT.DATA.password);
+			setOnyxiaPassword(user.VAULT.DATA.data.password);
 		}
-	});
+	}, [user.VAULT, onyxiaPassword]);
 
 	const handleChange = (event) => {
 		changeBetaTestStatus(event.target.checked).then(() =>
@@ -82,11 +86,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	};
 
 	const onVersionChange = (value) => {
-		getPasswordByVersion(user.IDEP, value).then((pwdInfos) => {
-			const [pwd, validity] = pwdInfos;
-			setOnyxiaPassword(pwd);
-			setValidityTime(validity);
-		});
+		getPasswordByVersion(user.IDEP, value).then(setOnyxiaPassword);
 		setCurrentVersion(value);
 	};
 
@@ -126,9 +126,10 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 					<S3Field
 						value={onyxiaPassword}
 						currentVersion={currentVersion}
-						validityTime={validityTime}
 						onVersionChange={onVersionChange}
 						handleReset={() => resetVaultPwd(user.IDEP)}
+						minVersion={minVersion}
+						maxVersion={maxVersion}
 					/>
 					<GitField
 						idep={user.IDEP}
