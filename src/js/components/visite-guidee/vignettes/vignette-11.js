@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Icon } from '@material-ui/core';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
-import { extractServiceId } from 'js/utils';
 
 export default {
 	description: class Vignette extends React.Component {
@@ -38,7 +37,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to={`/my-lab/mes-services/${extractServiceId(serviceCree.id)}`}
+				to={`/my-service/${serviceCree.id}`}
 				onClick={next}
 				component={() => <Icon>more_horiz</Icon>}
 			/>

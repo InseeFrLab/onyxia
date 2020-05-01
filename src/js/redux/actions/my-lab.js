@@ -7,7 +7,7 @@ import {
 	cardStoptWaiting,
 	cardStartWaiting,
 } from './app';
-import { launchServiceTask, needWaitingTask } from 'js/utils/state-tasks';
+import { launchServiceTask } from 'js/utils/state-tasks';
 import api from 'js/redux/api';
 import { typeRequest } from 'js/utils';
 import { getMinioToken } from 'js/minio-client';
@@ -118,15 +118,6 @@ export const changerEtatService = (serviceId, etat, mems, cpus) => async (
 	);
 	dispatch(cardStoptWaiting(serviceId));
 	return false;
-};
-
-export const suivreStatutService = (service) => (dispatch) => {
-	if (needWaitingTask(service)) {
-		dispatch(cardStartWaiting(service.id));
-		launchServiceTask(service.id)(dispatch).then((ellapsed) => {
-			PUSHER.push(<messages.ServiceDemarreMessage ellapsed={ellapsed} />);
-		});
-	}
 };
 
 export const requestDeleteMonService = (service) => (dispatch) => {

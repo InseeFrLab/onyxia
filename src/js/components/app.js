@@ -15,7 +15,8 @@ import Alert from 'js/components/commons/alert';
 import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
-import MesServicesGeneriques from 'js/components/my-lab/mes-services/mes-services-generiques.container';
+import MyService from 'js/components/my-service';
+import MyServices from 'js/components/my-services';
 import Services, { ServiceDetails } from 'js/components/services';
 import Trainings from 'js/components/trainings';
 import Catalogue from './my-lab/catalogue';
@@ -105,34 +106,18 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 								component={Catalogue}
 							/>
 
+							<PrivateRoute exact path="/my-services" component={MyServices} />
+
 							<PrivateRoute
 								exact
-								path="/my-lab/mes-services"
-								component={MesServicesGeneriques}
+								path="/my-services/:groupId+"
+								component={MyServices}
 							/>
 
 							<PrivateRoute
 								exact
-								path="/my-lab/mes-services/:serviceId"
-								component={MesServicesGeneriques}
-							/>
-
-							<PrivateRoute
-								exact
-								path="/my-lab/mes-services/:serviceId/task/:taskId"
-								component={MesServicesGeneriques}
-							/>
-
-							<PrivateRoute
-								exact
-								path="/my-lab/mes-services/:serviceId/task/:taskId/file/:filePath"
-								component={MesServicesGeneriques}
-							/>
-
-							<PrivateRoute
-								exact
-								path="/my-lab/mes-services/:serviceId/task/:taskId/file/:filePath/:action"
-								component={MesServicesGeneriques}
+								path="/my-service/:serviceId+"
+								component={MyService}
 							/>
 
 							<PrivateRoute path="/mon-compte" component={MonCompte} />

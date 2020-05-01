@@ -18,7 +18,7 @@ const mapDispatchToProps = (dispatch) => ({
 	getShellStatus: () => dispatch(refreshCloudShellStatus()),
 	deleteCloudShell: (idep) =>
 		requestDeleteMonService({
-			id: `/users/${idep}/cloudshell`,
+			id: `cloudshell`,
 		})(dispatch),
 	// deleteCloudShell: (idep) => dispatch(supprimerGroupe(`/users/${idep}/cloudshell`))
 });

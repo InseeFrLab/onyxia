@@ -11,6 +11,7 @@ interface Props {
 const labels = {
 	git_user_name: D.gitUserName,
 	git_user_mail: D.gitUserEmail,
+	git_credentials_cache_duration: D.gitCacheDuration,
 };
 
 const GitField = ({ values, idep, update }: Props) => {

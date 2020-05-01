@@ -38,8 +38,9 @@ class VaultAPI {
 	}
 
 	async uploadSecret(path, data) {
+		const old = await this.getSecret(path);
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
-			data,
+			data: { ...old, ...data },
 		});
 		store.dispatch(newVaultData(data));
 	}
@@ -77,12 +78,13 @@ export const initVaultData = (idep, name, mail) => {
 		`${VAULT_BASE_URI}/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`
 	)
 		.then(({ data: { data } }) => {
-			const { password, git_user_name, git_user_mail } = data.data;
+			const { password, git_user_name, git_user_mail, git_credentials_cache_duration } = data.data;
 			const created_time = data.metadata.created_time;
 			if (
 				!password ||
 				!git_user_name ||
 				!git_user_mail ||
+				!git_credentials_cache_duration ||
 				pwdMustBeRenewed(created_time)
 			)
 				resetVaultData(idep, {
@@ -91,6 +93,7 @@ export const initVaultData = (idep, name, mail) => {
 						buildDefaultPwd(),
 					git_user_name: git_user_name || name,
 					git_user_mail: git_user_mail || mail,
+					git_credentials_cache_duration : git_credentials_cache_duration || '0',
 				});
 			else store.dispatch(newVaultData(data));
 		})

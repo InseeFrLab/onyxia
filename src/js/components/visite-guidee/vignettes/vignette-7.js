@@ -20,7 +20,7 @@ export default {
 	},
 	actions: ({ next }) => (
 		<LinkTo
-			to="/my-lab/mes-services"
+			to="/my-services"
 			onClick={next}
 			component={() => <BecherIcon height={20} width={20} color="#fff" />}
 		/>
