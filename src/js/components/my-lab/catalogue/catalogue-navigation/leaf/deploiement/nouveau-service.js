@@ -129,7 +129,7 @@ const NouveauService = ({
 		setContract(undefined);
 	};
 	if (redirect) return <Redirect to="/my-services" />;
-	const ongletContent = ongletFields[onglet] || {};
+	const ongletContent = filterOnglets(ongletFields)[onglet] || {};
 	return (
 		<>
 			<div className="en-tete en-tete-service">
