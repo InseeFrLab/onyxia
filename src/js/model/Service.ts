@@ -1,4 +1,5 @@
 import { Task } from './Task';
+import { Event } from './Event';
 
 export interface Service {
 	id: string;
@@ -19,6 +20,7 @@ export interface Service {
 	type: string;
 	env?: object;
 	tasks?: Task[];
+	events?: Event[];
 }
 
 export enum ServiceType {
