@@ -13,11 +13,44 @@ import CopyableField from 'js/components/commons/copyable-field';
 
 interface Props {
 	env: object;
+	urls?: string[];
+	internalUrls?: string[];
 }
 
-const ServiceEnv = ({ env }: Props) => {
+const ListUrls = ({
+	urls,
+	external,
+}: {
+	urls: string[];
+	external: boolean;
+}) => (
+	<>
+		{urls.map((url) => (
+			<CopyableField
+				copy
+				value={url}
+				open={external && (() => window.open(url))}
+			/>
+		))}
+	</>
+);
+
+const ServiceEnv = ({ env, urls = [], internalUrls = [] }: Props) => {
+	const nbUrls = urls.length + internalUrls.length;
 	return (
 		<Paper className="paragraphe" elevation={1}>
+			{nbUrls > 0 && (
+				<>
+					<Typography variant="h3" gutterBottom>
+						<Titre titre="	Accéder à votre service" wait={false} />
+					</Typography>
+
+					<ListUrls urls={urls} external={true} />
+
+					<ListUrls urls={internalUrls} external={false} />
+				</>
+			)}
+
 			<Typography variant="h3" gutterBottom>
 				<Titre titre="	Configuration du service" wait={false} />
 			</Typography>

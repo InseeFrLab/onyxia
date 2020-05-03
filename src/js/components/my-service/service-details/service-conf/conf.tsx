@@ -7,7 +7,13 @@ interface Props {
 }
 
 const ServiceConf = ({ service }: Props) => {
-	return <ServiceEnv env={service.env} />;
+	return (
+		<ServiceEnv
+			env={service.env}
+			urls={service.urls}
+			internalUrls={service.internalUrls}
+		/>
+	);
 };
 
 export default ServiceConf;
