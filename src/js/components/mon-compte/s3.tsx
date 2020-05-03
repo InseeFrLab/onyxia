@@ -46,14 +46,14 @@ const S3Field = ({
 				endAdornment={
 					<InputAdornment position="end">
 						<IconButton
-							disabled={minVersion == currentVersion}
+							disabled={Number(minVersion) === Number(currentVersion)}
 							aria-label="previous password"
 							onClick={() => onVersionChange((currentVersion - 1).toString())}
 						>
 							<ArrowBackIos />
 						</IconButton>
 						<IconButton
-							disabled={maxVersion == currentVersion}
+							disabled={Number(maxVersion) === Number(currentVersion)}
 							aria-label="next password"
 							onClick={() =>
 								onVersionChange((Number(currentVersion) + 1).toString())
