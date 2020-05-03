@@ -4,4 +4,7 @@ export { default as deployment } from './deployment';
 export { default as moncompte } from './moncompte';
 export { default as messervices } from './messervices';
 export { default as trainings } from './trainings';
+export { default as guidedtour } from './visiteguidee';
+export { default as messecrets } from './messecrets';
+export { default as mesfichiers } from './mesfichiers';
 export * from './commons';

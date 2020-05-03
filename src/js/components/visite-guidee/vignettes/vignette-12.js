@@ -1,6 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Prec, Next } from './../vignette-commons';
+import D from 'js/i18n';
 
 export default {
 	description: class Vignette extends React.Component {
@@ -21,17 +22,13 @@ export default {
 			return (
 				<>
 					<Typography variant="h6" gutterBottom>
-						Mon service
+						{D.guidedTourMySelfServiceTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Sur la page de votre service, vous trouverez l&rsquo;ensemble des
-						intrainings propre à celui-ci. Vous pouvez ici modifier un certain
-						nombre d&rsquo;éléments comme les ressources mises en oeuvre par
-						l&rsquo;application.
+						{D.guidedTourVignette12Text1}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Des boutons d&rsquo;action vous permettent de contrôler l&rsquo;état
-						de votre service et de le supprimer.
+						{D.guidedTourVignette12Text2}
 					</Typography>
 				</>
 			);

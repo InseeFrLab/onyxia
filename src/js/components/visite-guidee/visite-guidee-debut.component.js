@@ -4,21 +4,20 @@ import { connect } from 'react-redux';
 import { startVisite } from 'js/redux/actions';
 import VisiteGuide from './visite-guidee.component';
 import { Next, LinkTo, Arrow } from './vignette-commons';
+import D from 'js/i18n';
 
 const ETAPES = [
 	{
 		description: () => (
 			<>
-				<Typography variant="h6" gutterBottom>
-					Bienvenue sur la visite guidée d&rsquo;Onyxia !
+				<Typography variant="h6" gutterBottom> 
+					{D.guidedTourWelcomeTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Nous sommes heureux de vous présenter le portail de la plateforme
-					innovation de l&rsquo;Insee. Parcourons ensemble ses principales
-					fonctionnalités.
+					{D.guidedTourWelcomeText1}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Bonne visite !
+					{D.guidedTourWelcomeText2}
 				</Typography>
 			</>
 		),
@@ -31,19 +30,16 @@ const ETAPES = [
 				<>
 					<Arrow dom={bouton} />
 					<Typography variant="h6" gutterBottom>
-						Authentification
+					{D.guidedTourAuthenticationTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						La plupart des services nécessitent de savoir qui vous êtes.
+					{D.guidedTourAuthenticationText1}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Vous disposez d&rsquo;un bouton de connexion sur la droite de la
-						barre de navigation qui permet de vous authentifier avec votre
-						compte Insee. Dès que vous solliciterez un service protégé, la boîte
-						de dialogue d&rsquo;authenfication s&rsquo;ouvrira automatiquement.
+					{D.guidedTourAuthenticationText2}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Commençons par la visite des services partagés.
+					{D.guidedTourAuthenticationText3}
 					</Typography>
 				</>
 			);
