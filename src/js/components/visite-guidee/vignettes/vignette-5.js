@@ -2,6 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Redirect } from 'react-router-dom';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
+import D from 'js/i18n';
 
 export default {
 	description: class Diapo extends React.Component {
@@ -27,15 +28,13 @@ export default {
 				<>
 					<Arrow dom={bouton} />
 					<Typography variant="h6" gutterBottom>
-						Catalogue du libre service
+						{D.guidedTourSelfServiceCatalogTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Une carte fournit la description de chacun des services à votre
-						disposition. Un bouton bleu permet d&rsquo;accéder à la page de
-						création.
+						{D.guidedTourVignette5Text1}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Créons ensemble votre premier service !
+						{D.guidedTourVignette5Text2}
 					</Typography>
 				</>
 			);
@@ -47,6 +46,7 @@ export default {
 			<LinkTo
 				to="/my-lab/catalogue/inseefrlab-datascience"
 				type="add"
+				title={D.btnSelfServiceCreation}
 				onClick={() => {
 					setFirstService(firstService);
 					next();

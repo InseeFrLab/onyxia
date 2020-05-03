@@ -2,6 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Prec, LinkTo } from './../vignette-commons';
 import { CatalogueIcon } from 'js/components/commons/icons';
+import D from 'js/i18n';
 
 export default {
 	description: () => {
@@ -11,17 +12,13 @@ export default {
 		return (
 			<>
 				<Typography variant="h6" gutterBottom>
-					Les services partagés
+					{D.guidedTourSharedServicesTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Des onglets permettent de parcourir les services selon leur niveau de
-					maturité. L&rsquo;onglet alpha regroupe des applications peu mûres,
-					beta des applications intermédiaires et stable, comme le nom
-					l&rsquo;indique, des applications couramment utilisées, mises à jour,
-					et sans dysfonctionnement spécifique.
+					{D.guidedTourVignette3Text1}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Poursuivons la visite avec le catalogue du libre-service.
+					{D.guidedTourVignette3Text2}
 				</Typography>
 			</>
 		);
@@ -32,6 +29,7 @@ export default {
 			<LinkTo
 				to="/my-lab/catalogue"
 				onClick={next}
+				title={D.btnSelfServiceCatalog}
 				component={() => <CatalogueIcon width={20} height={20} color="#fff" />}
 			/>
 		</>

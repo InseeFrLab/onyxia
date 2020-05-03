@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Both } from './../vignette-commons';
 import { Icon, IconButton } from '@material-ui/core';
 import { WorkInProgress } from 'js/components/commons/icons';
+import D from 'js/i18n';
 
 export default {
 	description: () => {
@@ -10,11 +11,10 @@ export default {
 		return (
 			<>
 				<Typography variant="h6" gutterBottom>
-					Les services partagés
+					{D.guidedTourSharedServicesTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Sur chaque carte se trouve un bouton pour ouvrir la page du service,
-					un autre pour accéder à ses détails.
+					{D.guidedTourVignette2Text1}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					<span>
@@ -29,8 +29,8 @@ export default {
 					</span>
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Un cône de chantier vous barre l&rsquo;accès lorsque le service est
-					indisponible.
+				{D.guidedTourVignette2Text2}
+
 				</Typography>
 				<WorkInProgress />
 			</>
