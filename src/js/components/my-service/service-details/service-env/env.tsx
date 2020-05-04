@@ -58,7 +58,7 @@ const ServiceEnv = ({ env, urls = [], internalUrls = [] }: Props) => {
 			<Table>
 				<TableHead>
 					<TableRow>
-						<TableCell>Propriétés</TableCell>
+						<TableCell>Propriété</TableCell>
 						<TableCell>Valeur</TableCell>
 					</TableRow>
 				</TableHead>
