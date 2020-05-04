@@ -1,11 +1,13 @@
 import { Task } from './Task';
+import { Event } from './Event';
 
 export interface Service {
 	id: string;
 	cpus: number;
 	mem: number;
 	instances: number;
-	urls: Array<string>;
+	urls?: Array<string>;
+	internalUrls?: Array<string>;
 	labels: {
 		ONYXIA_PRIVATE_ENDPOINT?: string;
 		ONYXIA_SUBTITLE?: string;
@@ -18,6 +20,7 @@ export interface Service {
 	type: string;
 	env?: object;
 	tasks?: Task[];
+	events?: Event[];
 }
 
 export enum ServiceType {

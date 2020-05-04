@@ -3,7 +3,7 @@ import Loader from '../commons/loader';
 import Cards from './cards';
 import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
-import { getServices, deleteService } from 'js/api/my-lab';
+import { getServices, deleteServices } from 'js/api/my-lab';
 
 interface Props {
 	groupId: string;
@@ -23,9 +23,9 @@ const Services = ({ groupId }: Props) => {
 		});
 	};
 
-	const deleteServices = () => {
+	const deleteAllServices = () => {
 		setLoading(true);
-		Promise.all(services.map((service) => deleteService(service))).then(() => {
+		deleteServices(groupId, true).then(() => {
 			setLoading(false);
 			loadData();
 		});
@@ -46,7 +46,7 @@ const Services = ({ groupId }: Props) => {
 					(filteredGroups && filteredGroups.length > 0)
 				}
 				handleRefresh={() => loadData(groupId)}
-				handleDeleteAll={deleteServices}
+				handleDeleteAll={deleteAllServices}
 			/>
 			{loading ? (
 				<Loader em={18} />

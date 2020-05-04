@@ -43,9 +43,7 @@ const ServiceTasks = ({ serviceId, serviceType, tasks }: Props) => {
 								<CardActions>
 									<IconButton
 										aria-label="logs"
-										onClick={() =>
-											getLogs(serviceId, id, serviceType).then(setLogs)
-										}
+										onClick={() => getLogs(serviceId, id).then(setLogs)}
 									>
 										<DescriptionIcon />
 									</IconButton>

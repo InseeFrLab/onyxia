@@ -51,10 +51,10 @@ const Actions = ({ handleDelete, handleRefresh }) => (
 			</Tooltip>
 		)}
 		{handleDelete && (
-			<Tooltip title="Delete all">
+			<Tooltip title="Delete">
 				<Fab
 					color="secondary"
-					aria-label="deleteAll"
+					aria-label="delete"
 					classes={{ root: 'bouton' }}
 					onClick={handleDelete}
 				>
