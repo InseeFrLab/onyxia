@@ -40,7 +40,7 @@
     "jsoneditor": "^8.6.6",
     "jsoneditor-react": "^3.0.0",
     "jwt-decode": "^2.2.0",
-    "keycloak-js": "^9.0.3",
+    "keycloak-js": "^10.0.0",
     "minio": "^7.0.15",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
