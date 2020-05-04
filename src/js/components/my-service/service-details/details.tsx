@@ -4,6 +4,7 @@ import { AppBar, Tabs, Tab } from '@material-ui/core';
 import ServiceConf from './service-conf';
 import ServiceTasks from './service-tasks';
 import D from 'js/i18n';
+import Debug from './service-debug';
 
 interface Props {
 	service?: Service;
@@ -11,7 +12,7 @@ interface Props {
 
 const TAB_CONFIGURATION = 0;
 const TAB_TASKS = 1;
-//const TAB_DEBUG = 2;
+const TAB_DEBUG = 2;
 
 const ServiceDetails = ({ service }: Props) => {
 	const [activeTab, setActiveTab] = useState(TAB_CONFIGURATION);
@@ -39,6 +40,7 @@ const ServiceDetails = ({ service }: Props) => {
 					tasks={service.tasks}
 				/>
 			)}
+			{activeTab === TAB_DEBUG && <Debug events={service.events} />}
 		</>
 	) : (
 		<div>{D.serviceNotFound}</div>

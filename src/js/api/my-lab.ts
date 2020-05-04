@@ -17,37 +17,34 @@ export const getServices = async (groupId?: String) => {
 		.then((resp) => resp.data);
 };
 
-export const getService = async (id: string, type?: string) => {
+export const getService = async (id: string) => {
 	return await axiosAuthTyped
 		.get<Service>(apiPaths.getService, {
 			params: {
 				serviceId: id,
-				type: type,
 			},
 		})
 		.then((resp) => resp.data);
 };
 
-export const deleteService = (service: Service) => {
+export const deleteServices = (path?: string, bulk?: boolean) => {
+	if (path && !path.startsWith('/')) {
+		path = '/' + path;
+	}
 	return axiosAuthTyped.delete(`${apiPaths.deleteService}`, {
 		params: {
-			serviceId: service.id,
-			type: service.type,
+			path: path,
+			bulk: bulk,
 		},
 	});
 };
 
-export const getLogs = async (
-	serviceId: string,
-	taskId: string,
-	type?: string
-) => {
+export const getLogs = async (serviceId: string, taskId: string) => {
 	return await axiosAuthTyped
 		.get<string>(apiPaths.getLogs, {
 			params: {
 				serviceId: serviceId,
 				taskId: taskId,
-				type: type,
 			},
 		})
 		.then((resp) => resp.data);
