@@ -8,8 +8,18 @@ import conf from '../configuration';
 const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
 const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
 
+interface VaultProfile {
+	password?: string;
+	git_user_name?: string;
+	git_user_mail?: string;
+	git_credentials_cache_duration?: string;
+}
+
 class VaultAPI {
 	async getSecretsList(path = '') {
+		// This ts ignore is due to the fact we use an interceptor
+		// to return the data instead of an object containing the data
+		// @ts-ignore
 		const { data } = await axiosVault({
 			method: 'list',
 			url: `/v1/${VAULT_KV_ENGINE}/metadata${path}`,
@@ -110,7 +120,7 @@ export const initVaultData = (idep, name, mail) => {
 		});
 };
 
-export const resetVaultData = (idep, data) => {
+export const resetVaultData = (idep, data: VaultProfile) => {
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
