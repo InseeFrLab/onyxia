@@ -101,11 +101,17 @@ export const initVaultData = (idep, name, mail) => {
 			}
 		)
 		.catch(() => {
-			resetVaultData(idep, undefined, name, mail);
+			resetVaultData(idep, {
+				password: buildDefaultPwd(),
+				git_user_name: name,
+				git_user_mail: mail,
+				git_credentials_cache_duration: '0',
+			});
 		});
 };
 
 export const resetVaultData = (idep, data) => {
+	debugger;
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
