@@ -111,7 +111,6 @@ export const initVaultData = (idep, name, mail) => {
 };
 
 export const resetVaultData = (idep, data) => {
-	debugger;
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
