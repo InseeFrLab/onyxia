@@ -93,6 +93,9 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${config.APP.CONTACT}`}
 						/>
 					)}
+					{config.APP.HEADBAND && (
+						<Alert severity="warning" message={config.APP.HEADBAND} />
+					)}
 					<main role="main">
 						<Switch>
 							<Route path="/accueil" component={Accueil} />

@@ -18,6 +18,7 @@ const conf = {
 		PASSWORD: readConfig('PASSWORD'),
 		GRAFANA_URI: readConfig('GRAFANA_BASE_URI'),
 		CONTACT: readConfig('CONTACT'),
+		HEADBAND: readConfig('HEADBAND'),
 	},
 	ENDPOINTS: {
 		SALON_RC: readConfig('SALON_ROCKETCHAT'),
