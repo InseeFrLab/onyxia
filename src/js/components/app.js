@@ -93,8 +93,8 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${config.APP.CONTACT}`}
 						/>
 					)}
-					{config.APP.HEADBAND && (
-						<Alert severity="warning" message={config.APP.HEADBAND} />
+					{config.APP.WARNING_MESSAGE && (
+						<Alert severity="warning" message={config.APP.WARNING_MESSAGE} />
 					)}
 					<main role="main">
 						<Switch>
