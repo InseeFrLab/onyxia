@@ -28,7 +28,7 @@ export const getService = async (id: string) => {
 };
 
 export const deleteServices = (path?: string, bulk?: boolean) => {
-	if (path && !path.startsWith('/')) {
+	if (path && bulk && !path.startsWith('/')) {
 		path = '/' + path;
 	}
 	return axiosAuthTyped.delete(`${apiPaths.deleteService}`, {
