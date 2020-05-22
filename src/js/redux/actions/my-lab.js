@@ -13,6 +13,7 @@ import { typeRequest } from 'js/utils';
 import { getMinioToken } from 'js/minio-client';
 import * as messages from 'js/components/messages';
 import { PUSHER } from 'js/components/notifications';
+import { deleteServices } from 'js/api/my-lab';
 
 export const setServiceSelected = (service) => ({
 	type: constantes.SERVICE_CHARGE,
@@ -123,14 +124,12 @@ export const changerEtatService = (serviceId, etat, mems, cpus) => async (
 export const requestDeleteMonService = (service) => (dispatch) => {
 	const { id } = service;
 	dispatch(cardStartWaiting(id));
-	return axiosAuth
-		.delete(`${api.changerEtatService}?serviceId=${id}`)
-		.then((r) => {
-			dispatch(cardStoptWaiting(id));
-			dispatch(deleteMonService(service));
-			PUSHER.push(<messages.ServiceSupprime id={id} />);
-			// dispatch(produceMessageIntraining(<messages.ServiceSupprime id={id} />));
-		});
+	return deleteServices(id).then((r) => {
+		dispatch(cardStoptWaiting(id));
+		dispatch(deleteMonService(service));
+		PUSHER.push(<messages.ServiceSupprime id={id} />);
+		// dispatch(produceMessageIntraining(<messages.ServiceSupprime id={id} />));
+	});
 };
 
 export const updateMonService = (service) => ({
