@@ -34,6 +34,7 @@ interface Props {
 
 const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
+	const [s3loading, setS3Loading] = useState(false);
 
 	useEffect(() => {
 		if (!user) {
@@ -42,10 +43,11 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	});
 
 	useEffect(() => {
-		if (user && (!user.S3 || !user.S3.AWS_EXPIRATION)) {
-			getMinioToken();
+		if (user && !s3loading && (!user.S3 || !user.S3.AWS_EXPIRATION)) {
+			setS3Loading(true);
+			getMinioToken().then(() => setS3Loading(false));
 		}
-	});
+	}, [user, s3loading]);
 
 	const handleChange = (event) => {
 		changeBetaTestStatus(event.target.checked).then(() =>
