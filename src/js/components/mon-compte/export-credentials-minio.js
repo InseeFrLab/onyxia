@@ -17,6 +17,33 @@ library("aws.s3")
 bucketlist()`,
 	},
 	{
+		id: 'r_bis',
+		label: 'R (paws)',
+		fileName: 'credentials.R',
+		text: (c) =>
+			`
+install.packages("paws", repos = "https://cloud.R-project.org")
+
+Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
+           "AWS_SECRET_ACCESS_KEY" = "${c.AWS_SECRET_ACCESS_KEY}",
+           "AWS_DEFAULT_REGION" = "${c.AWS_DEFAULT_REGION}",
+           "AWS_SESSION_TOKEN" = "${c.AWS_SESSION_TOKEN}",
+           "AWS_S3_ENDPOINT"= "${c.AWS_S3_ENDPOINT}")
+
+library("paws")
+minio <- paws::s3(config = list(
+	credentials = list(
+	  creds = list(
+		access_key_id = Sys.getenv("AWS_ACCESS_KEY_ID"),
+		secret_access_key = Sys.getenv("AWS_SECRET_ACCESS_KEY"),
+		session_token = Sys.getenv("AWS_SESSION_TOKEN")
+	  )),
+	endpoint = paste0("https://", Sys.getenv("AWS_S3_ENDPOINT")),
+	region = Sys.getenv("AWS_DEFAULT_REGION")))
+  
+  minio$list_buckets()`,
+	},
+	{
 		id: 'python',
 		label: 'Python (s3fs)',
 		fileName: 'credentials.py',
