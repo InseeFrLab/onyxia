@@ -30,11 +30,11 @@ fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDP
 		label: 'Environment variables',
 		fileName: '.bashrc',
 		text: (c) => `
-export AWS_ACCESS_KEY_ID = ${c.AWS_ACCESS_KEY_ID}
-export AWS_SECRET_ACCESS_KEY = ${c.AWS_SECRET_ACCESS_KEY}
-export AWS_DEFAULT_REGION = ${c.AWS_DEFAULT_REGION}
-export AWS_SESSION_TOKEN = ${c.AWS_SESSION_TOKEN}
-export AWS_S3_ENDPOINT = ${c.AWS_S3_ENDPOINT}
+export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
+export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
+export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
+export AWS_SESSION_TOKEN= ${c.AWS_SESSION_TOKEN}
+export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		`,
 	},
 	{
