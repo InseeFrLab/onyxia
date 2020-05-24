@@ -40,20 +40,6 @@ if (conf.AUTHENTICATION.TYPE === 'oidc') {
 	);
 }
 
-const axiosAuthTyped = axios.create({ baseURL: BASE_URL });
-
-if (conf.AUTHENTICATION.TYPE === 'oidc') {
-	axiosAuthTyped.interceptors.request.use(
-		(config) =>
-			refreshToken()
-				.then((token) =>
-					Promise.resolve(authorizeConfig(getKeycloak())(config))
-				)
-				.catch(() => getKeycloak().login()),
-		(error) => Promise.reject(error)
-	);
-}
-
 axiosAuth.interceptors.response.use(
 	(response) => response.data,
 	(error) => Promise.reject(error)
@@ -75,11 +61,4 @@ axiosURL.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-export {
-	axiosAuth,
-	axiosPublic,
-	axiosURL,
-	axiosAuthTyped,
-	axiosPublicFolder,
-	refreshToken,
-};
+export { axiosAuth, axiosPublic, axiosURL, axiosPublicFolder, refreshToken };
