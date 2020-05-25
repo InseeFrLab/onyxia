@@ -12,13 +12,14 @@ import conf from '../../../configuration';
 
 import GitInfo from 'react-git-info/macro';
 import { getConfiguration, Configuration } from 'js/api/configuration';
+import dayjs from 'dayjs';
 
 const Footer = () => {
 	const [configuration, setConfiguration] = useState<Configuration>();
 
 	useEffect(() => {
 		getConfiguration().then((resp) => setConfiguration(resp));
-	});
+	}, []);
 
 	const gitInfo = GitInfo();
 	return (
@@ -62,9 +63,16 @@ const Footer = () => {
 						{gitInfo.commit.date})
 						<br />
 						Serveur :
-						{configuration ? configuration.build.version : ' introuvable'}
+						{configuration
+							? `${configuration.build.version} (
+							  ${dayjs(configuration.build.timestamp * 1000).format()} 
+							  )`
+							: ' introuvable'}
 						<br />
-						Region : {configuration?.regions?.length > 0 ? configuration.regions[0].regionId : " introuvable"}
+						Region :{' '}
+						{configuration?.regions?.length > 0
+							? configuration.regions[0].regionId
+							: ' introuvable'}
 					</>
 				</Tooltip>
 			</Typography>

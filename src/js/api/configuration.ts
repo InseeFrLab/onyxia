@@ -9,6 +9,7 @@ export interface Configuration {
 
 export interface Build {
 	version: string;
+	timestamp: number;
 }
 
 export const getConfiguration = async () => {
