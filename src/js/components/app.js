@@ -32,6 +32,7 @@ import Favicon from 'js/components/commons/favicon';
 import MesSecretsHome from 'js/components/mes-secrets/home';
 import MesSecrets from 'js/components/mes-secrets';
 import Notifications from 'js/components/notifications';
+import About from 'js/components/about';
 import 'typeface-roboto';
 import './app.scss';
 
@@ -99,6 +100,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 					<main role="main">
 						<Switch>
 							<Route path="/accueil" component={Accueil} />
+							<Route path="/about" component={About} />
 							<Route exact path="/services" component={Services} />
 							<Route path="/services/*" component={ServiceDetails} />
 							<Route exact path="/trainings" component={Trainings} />

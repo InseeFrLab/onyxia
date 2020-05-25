@@ -8,6 +8,13 @@ export const fil = {
 	accueil: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 	],
+	about: [
+		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		{
+			pathname: '/about',
+			component: <span>A propos</span>,
+		},
+	],
 	catalogues: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
