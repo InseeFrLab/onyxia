@@ -41,7 +41,7 @@ minio <- paws::s3(config = list(
 	endpoint = paste0("https://", Sys.getenv("AWS_S3_ENDPOINT")),
 	region = Sys.getenv("AWS_DEFAULT_REGION")))
   
-  minio$list_buckets()`,
+minio$list_buckets()`,
 	},
 	{
 		id: 'python',
