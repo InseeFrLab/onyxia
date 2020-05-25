@@ -21,6 +21,9 @@ export interface Service {
 	env?: object;
 	tasks?: Task[];
 	events?: Event[];
+	monitoring?: {
+		url: string;
+	};
 }
 
 export enum ServiceType {
