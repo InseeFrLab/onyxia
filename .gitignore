@@ -27,3 +27,5 @@ yarn-debug.log*
 yarn-error.log*
 *.zip
 .vscode/
+
+android
