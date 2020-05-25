@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { Button, Icon, Tooltip } from '@material-ui/core';
+import { Button, Icon } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import {
 	RocketChatIcon,
@@ -10,18 +10,7 @@ import {
 import './footer.scss';
 import conf from '../../../configuration';
 
-import GitInfo from 'react-git-info/macro';
-import { getConfiguration, Configuration } from 'js/api/configuration';
-import dayjs from 'dayjs';
-
 const Footer = () => {
-	const [configuration, setConfiguration] = useState<Configuration>();
-
-	useEffect(() => {
-		getConfiguration().then((resp) => setConfiguration(resp));
-	}, []);
-
-	const gitInfo = GitInfo();
 	return (
 		<footer className="footer">
 			<Divider light />
@@ -53,28 +42,6 @@ const Footer = () => {
 			<Typography gutterBottom noWrap>
 				<LienSimple href={conf.FOOTER.ONYXIA.GIT}>contribuer</LienSimple>
 				<LienSimple href={conf.FOOTER.SWAGGER_API}>notre api</LienSimple>
-			</Typography>
-
-			<Typography gutterBottom noWrap>
-				<Tooltip title={gitInfo.commit.message}>
-					<>
-						Interface :
-						{gitInfo.tags.length > 0 ? gitInfo.tags[0] : gitInfo.branch}(
-						{gitInfo.commit.date})
-						<br />
-						Serveur :
-						{configuration
-							? `${configuration.build.version} (
-							  ${dayjs(configuration.build.timestamp * 1000).format()} 
-							  )`
-							: ' introuvable'}
-						<br />
-						Region :{' '}
-						{configuration?.regions?.length > 0
-							? configuration.regions[0].regionId
-							: ' introuvable'}
-					</>
-				</Tooltip>
 			</Typography>
 		</footer>
 	);
