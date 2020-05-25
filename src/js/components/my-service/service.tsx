@@ -44,6 +44,7 @@ const MyService = ({ serviceId }: Props) => {
 			<Toolbar
 				handleRefresh={() => refreshData()}
 				handleDelete={() => handleDelete()}
+				monitoringUrl={service?.monitoring?.url}
 			/>
 			{loading ? <Loader em={18} /> : <ServiceDetails service={service} />}
 		</div>
