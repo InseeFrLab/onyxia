@@ -13,14 +13,13 @@ import { withStyles } from '@material-ui/core';
 const CloudShell = ({
 	user,
 	authenticated,
-	active,
 	status,
 	url,
-	changeVisibility,
 	getShellStatus,
 	deleteCloudShell,
 }) => {
 	const [height, setHeight] = useState(200);
+	const [visibility, setVisibility] = useState(false);
 	const intervalId = React.useRef(0);
 	var deleting = false;
 
@@ -37,7 +36,7 @@ const CloudShell = ({
 		return updateShellStatus;
 	};
 
-	if (!active || status === 'DOWN') {
+	if (!visibility || status === 'DOWN') {
 		const button =
 			status && status === 'DOWN' ? (
 				<LoopSharpIcon className="loading" />
@@ -52,7 +51,7 @@ const CloudShell = ({
 						if ((!status || status === 'DOWN') && deleting === false) {
 							intervalId.current = setInterval(updateShellStatus(user), 5000);
 						}
-						changeVisibility(true);
+						setVisibility(true);
 					}}
 					className="maximize-shell"
 				>
@@ -123,7 +122,7 @@ const CloudShell = ({
 							String(document.getElementById('cloudshell-iframe').src),
 							'_blank'
 						);
-						changeVisibility(false);
+						setVisibility(false);
 					}}
 					className="opennewtab-shell"
 				>
@@ -134,7 +133,7 @@ const CloudShell = ({
 					aria-label="delete"
 					onClick={() => {
 						deleting = true;
-						changeVisibility(false);
+						setVisibility(false);
 						deleteCloudShell(user.IDEP);
 					}}
 					className="close-shell"
@@ -144,7 +143,7 @@ const CloudShell = ({
 
 				<CloudShellIconButton
 					aria-label="close"
-					onClick={() => changeVisibility(false)}
+					onClick={() => setVisibility(false)}
 					className="close-shell"
 				>
 					<CloseIcon />

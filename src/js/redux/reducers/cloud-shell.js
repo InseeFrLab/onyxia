@@ -15,8 +15,6 @@ export default (state = initial, action) => {
 				packageToDeploy: action.payload.packageToDeploy,
 				url: action.payload.url,
 			};
-		case types.CLOUDSHELL_VISIBILITY_CHANGE:
-			return { ...state, active: action.payload.visibility };
 		case types.CLOUDSHELL_STOPPED:
 			return { active: false };
 		default:

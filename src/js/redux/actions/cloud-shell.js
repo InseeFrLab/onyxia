@@ -9,10 +9,7 @@ import {
 	getValuesObject,
 } from '../../components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
 
-export const cloudShellChangeVisibility = (visibility) => ({
-	type: constantes.CLOUDSHELL_VISIBILITY_CHANGE,
-	payload: { visibility },
-});
+
 
 export const refreshCloudShellStatus = (user) => (dispatch) => {
 	axiosAuth(`${api.cloudShell}`)
