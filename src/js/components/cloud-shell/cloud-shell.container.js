@@ -6,16 +6,17 @@ import {
 	requestDeleteMonService,
 } from 'js/redux/actions';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
 	const { active, status, url } = state.cloudShell;
-	const idep = state.user.IDEP;
-	return { active, status, url, idep };
+	const { authenticated } = state.app;
+	const { user } = state;
+	return { ...props, active, status, url, authenticated, user };
 };
 
 const mapDispatchToProps = (dispatch) => ({
 	changeVisibility: (visibility) =>
 		dispatch(cloudShellChangeVisibility(visibility)),
-	getShellStatus: () => dispatch(refreshCloudShellStatus()),
+	getShellStatus: (user) => dispatch(refreshCloudShellStatus(user)),
 	deleteCloudShell: (idep) =>
 		requestDeleteMonService({
 			id: `cloudshell`,

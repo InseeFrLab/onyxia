@@ -4,28 +4,36 @@ import api from 'js/redux/api';
 import { creerNouveauService } from './my-lab';
 import { getMinioToken } from 'js/minio-client';
 import { getVaultToken } from 'js/vault-client';
+import {
+	getOptions,
+	getValuesObject,
+} from '../../components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
 
 export const cloudShellChangeVisibility = (visibility) => ({
 	type: constantes.CLOUDSHELL_VISIBILITY_CHANGE,
 	payload: { visibility },
 });
 
-export const refreshCloudShellStatus = () => (dispatch) => {
+export const refreshCloudShellStatus = (user) => (dispatch) => {
 	axiosAuth(`${api.cloudShell}`)
 		.then((data) => {
 			dispatch({
 				type: constantes.CLOUDSHELL_STATUS_CHANGE,
 				payload: data,
 			});
-			if (data.status === 'DOWN') {
+			if (String(data.status) === 'DOWN') {
+				const service = data.packageToDeploy;
 				Promise.all([getVaultToken(), getMinioToken()])
-					.then((_) => {
+					.then((values) => {
+						const minioCredentials = values[1];
 						creerNouveauService(
 							{
-								...data.packageToDeploy,
+								...service,
 								catalogId: data.catalogId,
 							},
-							{}
+							getValuesObject(
+								getOptions(user, service, minioCredentials, {}).fV
+							)
 						)(dispatch);
 					})
 					.catch((_) => {

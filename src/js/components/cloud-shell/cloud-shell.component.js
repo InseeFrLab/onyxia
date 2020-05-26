@@ -11,10 +11,11 @@ import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
 
 const CloudShell = ({
+	user,
+	authenticated,
 	active,
 	status,
 	url,
-	idep,
 	changeVisibility,
 	getShellStatus,
 	deleteCloudShell,
@@ -31,8 +32,8 @@ const CloudShell = ({
 		intervalId.current = null;
 	}
 
-	const updateShellStatus = () => {
-		getShellStatus();
+	const updateShellStatus = (user) => {
+		getShellStatus(user);
 		return updateShellStatus;
 	};
 
@@ -49,7 +50,7 @@ const CloudShell = ({
 					aria-label="maximize"
 					onClick={() => {
 						if ((!status || status === 'DOWN') && deleting === false) {
-							intervalId.current = setInterval(updateShellStatus(), 5000);
+							intervalId.current = setInterval(updateShellStatus(user), 5000);
 						}
 						changeVisibility(true);
 					}}
@@ -92,6 +93,7 @@ const CloudShell = ({
 
 	return (
 		<div style={{ position: 'fixed', bottom: 0, zIndex: 999, width: '100%' }}>
+			{console.log(user)}
 			<div
 				style={{
 					width: 'fit-content',
@@ -133,7 +135,7 @@ const CloudShell = ({
 					onClick={() => {
 						deleting = true;
 						changeVisibility(false);
-						deleteCloudShell(idep);
+						deleteCloudShell(user.IDEP);
 					}}
 					className="close-shell"
 				>
