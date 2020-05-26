@@ -1,0 +1,14 @@
+{
+	"id": "marathon",
+	"name": "eu-west-1",
+	"type": "MARATHON",
+	"serverUrl": "https://example.com",
+	"publishDomain": "apps.example.com",
+	"namespacePrefix": "users",
+	"marathonDnsSuffix": "marathon.containerip.dcos.thisdcos.directory",
+	"serviceMonitoringURLPattern": "https://graphana.example.com/$appIdSlug",
+	"cloudshell": {
+		"catalogId": "internal",
+		"packageName": "shelly"
+	}
+}

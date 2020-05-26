@@ -1,0 +1,17 @@
+{
+	"id": "eu-west-2",
+	"name": "eu-west-2",
+	"type": "KUB",
+	"publishDomain": "apps.example.com",
+	"namespacePrefix": "users",
+	"serviceMonitoringURLPattern": "https://graphana.example.com/$appIdSlug",
+	"cloudshell": {
+		"catalogId": "inseefrlab-helm-charts-datascience",
+		"packageName": "cloudshell"
+	},
+	"location": {
+		"lat": 43.6,
+		"long": 1.43333,
+		"name": "Toulouse (France)"
+	}
+}

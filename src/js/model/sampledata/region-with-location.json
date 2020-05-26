@@ -1,0 +1,18 @@
+{
+	"id": "eu-west-1",
+	"name": "eu-west-1",
+	"type": "MARATHON",
+	"publishDomain": "apps.example.com",
+	"namespacePrefix": "users",
+	"marathonDnsSuffix": "marathon.containerip.dcos.thisdcos.directory",
+	"serviceMonitoringURLPattern": "https://graphana.example.com/$appIdSlug",
+	"cloudshell": {
+		"catalogId": "internal",
+		"packageName": "shelly"
+	},
+	"location": {
+		"lat": 48.8164,
+		"long": 2.3174,
+		"name": "Montrouge (France)"
+	}
+}
