@@ -3,7 +3,6 @@ import app from './app';
 import myLab from './my-lab';
 import mesFichiers from './mes-fichiers';
 import secrets from './secrets';
-import cloudShell from './cloud-shell';
 import user from './user';
 
 export default combineReducers({
@@ -11,7 +10,6 @@ export default combineReducers({
 	myLab,
 	mesFichiers,
 	secrets,
-	cloudShell,
 	user,
 });
 export * from './app';

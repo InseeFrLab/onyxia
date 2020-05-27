@@ -1,1 +1,1 @@
-export { default } from './cloud-shell.container';
+export { default } from './cloud-shell';
