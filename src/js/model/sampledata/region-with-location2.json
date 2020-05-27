@@ -1,17 +1,29 @@
 {
 	"id": "eu-west-2",
 	"name": "eu-west-2",
-	"type": "KUB",
-	"publishDomain": "apps.example.com",
-	"namespacePrefix": "users",
-	"serviceMonitoringURLPattern": "https://graphana.example.com/$appIdSlug",
-	"cloudshell": {
-		"catalogId": "inseefrlab-helm-charts-datascience",
-		"packageName": "cloudshell"
+	"services": {
+		"type": "MARATHON",
+		"namespacePrefix": "users",
+		"marathonDnsSuffix": "marathon.containerip.dcos.thisdcos.directory",
+		"expose": {
+			"domain": "apps.example.com"
+		},
+		"monitoring": {
+			"URLPattern": "https://graphana.example.com/$appIdSlug"
+		},
+		"cloudshell": {
+			"catalogId": "internal",
+			"packageName": "shelly"
+		}
+	},
+	"data": {
+		"S3": {
+			"URL": "minio.example.com"
+		}
 	},
 	"location": {
-		"lat": 43.6,
-		"long": 1.43333,
-		"name": "Toulouse (France)"
+		"lat": 48.8164,
+		"long": 2.3174,
+		"name": "Montrouge (France)"
 	}
 }

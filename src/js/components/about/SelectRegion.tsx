@@ -1,9 +1,9 @@
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import React, { useState, useEffect } from 'react';
+import { Map, TileLayer, Marker } from 'react-leaflet';
+import React, { useState } from 'react';
 import './about.scss';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
-import { Button, Select, MenuItem } from '@material-ui/core';
+import { Select, MenuItem } from '@material-ui/core';
 import { Region } from 'js/model/Region';
 
 // Hack, see https://stackoverflow.com/a/56411961
@@ -34,7 +34,6 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 		zoom: 4,
 	});
 
-	useEffect(() => console.log(selectedRegion), [selectedRegion]);
 	if (!regions || regions.length === 0) {
 		return <></>;
 	}
@@ -52,8 +51,10 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 						<Marker
 							position={[region.location.lat, region.location.long]}
 							opacity={isSelected(region, selectedRegion) ? 1.0 : 0.5}
+							key={region.id}
+							onClick={() => onRegionSelected && onRegionSelected(region)}
 						>
-							<Popup>
+							{/*<Popup>
 								{region.name}
 								{!isSelected(region, selectedRegion) && (
 									<Button
@@ -62,14 +63,14 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 										Choisir
 									</Button>
 								)}
-							</Popup>
+							</Popup>*/}
 						</Marker>
 					))}
 				</Map>
 			)}
 
 			<Select
-				value={selectedRegion}
+				value={selectedRegion || ''}
 				onChange={(event) =>
 					onRegionSelected &&
 					onRegionSelected(
