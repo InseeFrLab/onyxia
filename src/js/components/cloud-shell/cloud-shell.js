@@ -54,8 +54,10 @@ const CloudShell = () => {
 						false
 					)
 				).then((response) => {
-					setUrl(response[0].labels.ONYXIA_URL);
-					setCloudShellStatus('UP');
+					axiosAuth(`${api.cloudShell}`).then((data) => {
+						setUrl(data.url);
+						setCloudShellStatus(data.status);
+					});
 				});
 			} else {
 				if (data.status === 'UP') {
@@ -83,6 +85,10 @@ const CloudShell = () => {
 				});
 		}
 	}, [minioCredentials]);
+
+	useEffect(() => {
+		getVaultToken();
+	}, [user]);
 
 	if (!visibility || cloudShellStatus === 'DOWN') {
 		const button =
