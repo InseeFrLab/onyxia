@@ -3,8 +3,20 @@ import React, { useState } from 'react';
 import './about.scss';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
-import { Select, MenuItem } from '@material-ui/core';
+import {
+	TableContainer,
+	Paper,
+	Table,
+	TableHead,
+	TableRow,
+	TableCell,
+	TableBody,
+} from '@material-ui/core';
 import { Region } from 'js/model/Region';
+import {
+	SentimentSatisfiedAlt,
+	SentimentVeryDissatisfied,
+} from '@material-ui/icons';
 
 // Hack, see https://stackoverflow.com/a/56411961
 // Without it, marker image is broken
@@ -53,37 +65,45 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 							opacity={isSelected(region, selectedRegion) ? 1.0 : 0.5}
 							key={region.id}
 							onClick={() => onRegionSelected && onRegionSelected(region)}
-						>
-							{/*<Popup>
-								{region.name}
-								{!isSelected(region, selectedRegion) && (
-									<Button
-										onClick={() => onRegionSelected && onRegionSelected(region)}
-									>
-										Choisir
-									</Button>
-								)}
-							</Popup>*/}
-						</Marker>
+						></Marker>
 					))}
 				</Map>
 			)}
 
-			<Select
-				value={selectedRegion || ''}
-				onChange={(event) =>
-					onRegionSelected &&
-					onRegionSelected(
-						regions.filter((region) => region.id === event.target.value)[0]
-					)
-				}
-			>
-				{regions.map((region) => (
-					<MenuItem value={region.id} key={region.id}>
-						{`${region.name} ${region.location?.name || ''}`}
-					</MenuItem>
-				))}
-			</Select>
+			<TableContainer component={Paper}>
+				<Table aria-label="simple table">
+					<TableHead>
+						<TableRow>
+							<TableCell>Region</TableCell>
+							<TableCell>Localisation</TableCell>
+							<TableCell>Type</TableCell>
+							<TableCell>Stockage</TableCell>
+							<TableCell>Monitoring</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{regions?.map((region) => (
+							<TableRow
+								key={region.id}
+								selected={region.id === selectedRegion}
+								onClick={() => onRegionSelected(region)}
+							>
+								<TableCell component="th" scope="row">
+									{region.name}
+								</TableCell>
+								<TableCell>{region?.location?.name || ''}</TableCell>
+								<TableCell>{region.id}</TableCell>
+								<TableCell>
+									<SentimentSatisfiedAlt />
+								</TableCell>
+								<TableCell>
+									<SentimentVeryDissatisfied />
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</>
 	);
 };
