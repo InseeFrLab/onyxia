@@ -35,16 +35,6 @@ const CloudShell = () => {
 	const [visibility, setVisibility] = useState(false);
 	const [minioCredentials, setMinioCredentials] = useState<any>();
 	const dispatch = useDispatch();
-	const intervalId = React.useRef(0);
-	var deleting = false;
-
-	// if (status === 'DOWN' && deleting === true) {
-	// 	clearInterval(intervalId.current);
-	// 	deleting = false;
-	// } else if (status === 'UP' && deleting === false) {
-	// 	clearInterval(intervalId.current);
-	// 	intervalId.current = null;
-	// }
 
 	const launchCloudShell = (user) => {
 		axiosAuth.get<cloudShellData>(`${api.cloudShell}`).then((response) => {
@@ -86,6 +76,63 @@ const CloudShell = () => {
 		setUrl(undefined);
 	};
 
+	const CloudShellIconButton = withStyles({
+		root: {
+			color: 'white',
+		},
+	})(IconButton);
+
+	const Button = () => {
+		return (
+			cloudShellStatus && cloudShellStatus === 'DOWN' ? (
+				<LoopSharpIcon className="loading" />
+			) : (
+					<KeyboardIcon />
+				))
+	}
+
+	const CloudShellStartButton = () => {
+		return (
+			<div style={{ position: 'fixed', bottom: 0, zIndex: 999 }}>
+				<IconButton
+					aria-label="maximize"
+					onClick={() => {
+						if (
+							(!cloudShellStatus || cloudShellStatus === 'DOWN')) {
+							launchCloudShell(user);
+						}
+						setVisibility(true);
+					}}
+					className="maximize-shell"
+				>
+					<Button />
+				</IconButton>
+			</div>
+		);
+	};
+
+
+	const CloudShellWindows = () => {
+		return (<Resizable
+			size={{
+				height: height,
+				width: '100%',
+			}}
+			onResizeStop={(e, direction, ref, d) => {
+				setHeight(height + d.height);
+			}}
+		>
+			<iframe
+				title="Cloud shell"
+				height={height}
+				width="100%"
+				src={url}
+				id="cloudshell-iframe"
+			></iframe>
+		</Resizable>
+		);
+	}
+
 	useEffect(() => {
 		if (!minioCredentials) {
 			getMinioToken()
@@ -102,124 +149,78 @@ const CloudShell = () => {
 		getVaultToken();
 	}, [user]);
 
+
+
+
+
 	if (!visibility || cloudShellStatus === 'DOWN') {
-		const button =
-			cloudShellStatus && cloudShellStatus === 'DOWN' ? (
-				<LoopSharpIcon className="loading" />
-			) : (
-				<KeyboardIcon />
-			);
-		return (
-			<div style={{ position: 'fixed', bottom: 0, zIndex: 999 }}>
-				<IconButton
-					aria-label="maximize"
-					onClick={() => {
-						if (
-							(!cloudShellStatus || cloudShellStatus === 'DOWN') &&
-							deleting === false
-						) {
-							launchCloudShell(user);
-						}
-						setVisibility(true);
-					}}
-					className="maximize-shell"
-				>
-					{button}
-				</IconButton>
-			</div>
-		);
+		return <CloudShellStartButton />;
 	}
 
-	var content = null;
-	if (cloudShellStatus) {
-		content = (
-			<Resizable
-				size={{
-					height: height,
-					width: '100%',
-				}}
-				onResizeStop={(e, direction, ref, d) => {
-					setHeight(height + d.height);
-				}}
-			>
-				<iframe
-					title="Cloud shell"
-					height={height}
-					width="100%"
-					src={url}
-					id="cloudshell-iframe"
-				></iframe>
-			</Resizable>
-		);
-	}
-
-	const CloudShellIconButton = withStyles({
-		root: {
-			color: 'white',
-		},
-	})(IconButton);
 
 	return (
-		<div style={{ position: 'fixed', bottom: 0, zIndex: 999, width: '100%' }}>
-			<div
-				style={{
-					width: 'fit-content',
-					borderTopRightRadius: '10px',
-					backgroundColor: 'rgba(0, 0, 0, 0.35)',
-				}}
-			>
-				<CloudShellIconButton
-					aria-label="autorenew"
-					onClick={() =>
-						document
-							.getElementById('cloudshell-iframe')
-							.parentNode.replaceChild(
-								document.getElementById('cloudshell-iframe').cloneNode(),
-								document.getElementById('cloudshell-iframe')
-							)
-					}
-					className="renew-shell"
-				>
-					<Autorenew />
-				</CloudShellIconButton>
-
-				<CloudShellIconButton
-					aria-label="openinnewicon"
-					onClick={() => {
-						const cloudshell: any = document.getElementById(
-							'cloudshell-iframe'
-						);
-						window.open(String(cloudshell.src), '_blank');
-						setVisibility(false);
+		<div>
+			<div style={{ position: 'fixed', bottom: 0, zIndex: 999, width: '100%' }}>
+				<div
+					style={{
+						width: 'fit-content',
+						borderTopRightRadius: '10px',
+						backgroundColor: 'rgba(0, 0, 0, 0.35)',
 					}}
-					className="opennewtab-shell"
 				>
-					<OpenInNewIcon />
-				</CloudShellIconButton>
+					<CloudShellIconButton
+						aria-label="autorenew"
+						onClick={() =>
+							document
+								.getElementById('cloudshell-iframe')
+								.parentNode.replaceChild(
+									document.getElementById('cloudshell-iframe').cloneNode(),
+									document.getElementById('cloudshell-iframe')
+								)
+						}
+						className="renew-shell"
+					>
+						<Autorenew />
+					</CloudShellIconButton>
 
-				<CloudShellIconButton
-					aria-label="delete"
-					onClick={() => {
-						deleting = true;
-						setVisibility(false);
-						deleteCloudShell(user.IDEP);
-					}}
-					className="close-shell"
-				>
-					<DeleteIcon />
-				</CloudShellIconButton>
+					<CloudShellIconButton
+						aria-label="openinnewicon"
+						onClick={() => {
+							const cloudshell = document.getElementById(
+								'cloudshell-iframe'
+							) as HTMLImageElement;
+							window.open(String(cloudshell.src), '_blank');
+							setVisibility(false);
+						}}
+						className="opennewtab-shell"
+					>
+						<OpenInNewIcon />
+					</CloudShellIconButton>
 
-				<CloudShellIconButton
-					aria-label="close"
-					onClick={() => setVisibility(false)}
-					className="close-shell"
-				>
-					<CloseIcon />
-				</CloudShellIconButton>
+					<CloudShellIconButton
+						aria-label="delete"
+						onClick={() => {
+							setVisibility(false);
+							deleteCloudShell(user.IDEP);
+						}}
+						className="close-shell"
+					>
+						<DeleteIcon />
+					</CloudShellIconButton>
+
+					<CloudShellIconButton
+						aria-label="close"
+						onClick={() => setVisibility(false)}
+						className="close-shell"
+					>
+						<CloseIcon />
+					</CloudShellIconButton>
+				</div>
+				<CloudShellWindows />
 			</div>
-			{content}
 		</div>
 	);
+
 };
 
 export default CloudShell;
