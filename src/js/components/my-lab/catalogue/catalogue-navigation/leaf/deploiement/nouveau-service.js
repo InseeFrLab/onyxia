@@ -62,13 +62,12 @@ const NouveauService = ({
 	);
 
 	useEffect(() => {
-		if (authenticated)
-			axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then(
-				(res) => {
-					setService(res);
-					setLoading(false);
-				}
-			);
+		if (authenticated) {
+			getService(idCatalogue, idService).then((res) => {
+				setService(res);
+				setLoading(false);
+			});
+		}
 	}, [idCatalogue, idService, authenticated]);
 
 	useEffect(() => {
@@ -100,23 +99,11 @@ const NouveauService = ({
 			minioCredentials &&
 			ongletFields.length === 0
 		) {
-			const onglets =
-				(service && service.config && service.config.properties) || {};
-			const oF = getOnglets(onglets);
-			const fields = oF.map((onglet) => onglet.fields);
-			const fV = fields.reduce(
-				(acc, curr) => ({
-					...acc,
-					...arrayToObject(minioCredentials)(queryParams)(user)(curr),
-				}),
-				{}
-			);
-			const iFV = fields.reduce(
-				(acc, curr) => ({
-					...acc,
-					...arrayToObject(minioCredentials)({})(user)(curr),
-				}),
-				{}
+			const { iFV, fV, oF } = getOptions(
+				user,
+				service,
+				minioCredentials,
+				queryParams
 			);
 			setInitialValues(iFV);
 			setFieldsValues(fV);
@@ -318,7 +305,7 @@ const mapServiceToOnglets = (ongletFields) =>
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-const getValuesObject = (fieldsValues) =>
+export const getValuesObject = (fieldsValues) =>
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
 			path: key.split('.'),
@@ -338,3 +325,33 @@ const getPathValue = ({ path: [first, ...rest], value }) => (other = {}) => {
 
 const hasPwd = (user) =>
 	user && user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password;
+
+export const getOptions = (user, service, minioCredentials, queryParams) => {
+	const onglets =
+		(service && service.config && service.config.properties) || {};
+	const oF = getOnglets(onglets);
+	const fields = oF.map((onglet) => onglet.fields);
+	const fV = fields.reduce(
+		(acc, curr) => ({
+			...acc,
+			...arrayToObject(minioCredentials)(queryParams)(user)(curr),
+		}),
+		{}
+	);
+	const iFV = fields.reduce(
+		(acc, curr) => ({
+			...acc,
+			...arrayToObject(minioCredentials)({})(user)(curr),
+		}),
+		{}
+	);
+	return { fV, iFV, oF };
+};
+
+export const getService = async (idCatalogue, idService) => {
+	return await axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then(
+		(res) => {
+			return res;
+		}
+	);
+};
