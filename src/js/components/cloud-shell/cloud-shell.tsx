@@ -20,13 +20,20 @@ import {
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
 
+interface cloudShellData {
+	status?: string;
+	packageToDeploy?: any;
+	catalogId?: string;
+	url?: string;
+}
+
 const CloudShell = () => {
 	const user = useSelector((store) => store.user);
-	const [cloudShellStatus, setCloudShellStatus] = useState();
-	const [url, setUrl] = useState();
+	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
+	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
 	const [visibility, setVisibility] = useState(false);
-	const [minioCredentials, setMinioCredentials] = useState();
+	const [minioCredentials, setMinioCredentials] = useState<any>();
 	const dispatch = useDispatch();
 	const intervalId = React.useRef(0);
 	var deleting = false;
@@ -40,28 +47,33 @@ const CloudShell = () => {
 	// }
 
 	const launchCloudShell = (user) => {
-		axiosAuth(`${api.cloudShell}`).then((data) => {
-			const service = data.packageToDeploy;
-			setCloudShellStatus(data.status);
-			if (data.status === 'DOWN') {
+		axiosAuth.get<cloudShellData>(`${api.cloudShell}`).then((response) => {
+			var cloudshell = (response as any) as cloudShellData;
+			const catalogId = { catalogId: cloudshell.catalogId };
+			const service = cloudshell.packageToDeploy;
+			setCloudShellStatus(cloudshell.status);
+			if (cloudshell.status === 'DOWN') {
 				dispatch(
 					creerNouveauService(
 						{
 							...service,
-							catalogId: data.catalogId,
+							...catalogId,
 						},
 						getValuesObject(getOptions(user, service, minioCredentials, {}).fV),
 						false
 					)
 				).then((response) => {
-					axiosAuth(`${api.cloudShell}`).then((data) => {
-						setUrl(data.url);
-						setCloudShellStatus(data.status);
-					});
+					axiosAuth
+						.get<cloudShellData>(`${api.cloudShell}`)
+						.then((response: any) => {
+							cloudshell = (response as any) as cloudShellData;
+							setUrl(cloudshell.url);
+							setCloudShellStatus(cloudshell.status);
+						});
 				});
 			} else {
-				if (data.status === 'UP') {
-					setUrl(data.url);
+				if (cloudshell.status === 'UP') {
+					setUrl(cloudshell.url);
 				}
 			}
 		});
@@ -70,8 +82,8 @@ const CloudShell = () => {
 
 	const deleteCloudShell = (idep) => {
 		dispatch(requestDeleteMonService({ id: 'cloudshell' }));
-		setCloudShellStatus();
-		setUrl();
+		setCloudShellStatus(undefined);
+		setUrl(undefined);
 	};
 
 	useEffect(() => {
@@ -106,7 +118,7 @@ const CloudShell = () => {
 							(!cloudShellStatus || cloudShellStatus === 'DOWN') &&
 							deleting === false
 						) {
-							intervalId.current = launchCloudShell(user);
+							launchCloudShell(user);
 						}
 						setVisibility(true);
 					}}
@@ -123,7 +135,7 @@ const CloudShell = () => {
 		content = (
 			<Resizable
 				size={{
-					height: { height },
+					height: height,
 					width: '100%',
 				}}
 				onResizeStop={(e, direction, ref, d) => {
@@ -174,10 +186,10 @@ const CloudShell = () => {
 				<CloudShellIconButton
 					aria-label="openinnewicon"
 					onClick={() => {
-						window.open(
-							String(document.getElementById('cloudshell-iframe').src),
-							'_blank'
+						const cloudshell: any = document.getElementById(
+							'cloudshell-iframe'
 						);
+						window.open(String(cloudshell.src), '_blank');
 						setVisibility(false);
 					}}
 					className="opennewtab-shell"
