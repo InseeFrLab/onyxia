@@ -2,6 +2,8 @@ import axios from 'axios';
 import getKeycloak from './keycloak-config';
 import { setLocalToken } from 'js/utils';
 import conf from '../configuration';
+import store from 'js/redux/store';
+
 const BASE_URL = conf.API.BASE_URL;
 
 const refreshToken = (minValidity = 60) =>
@@ -21,7 +23,7 @@ const refreshToken = (minValidity = 60) =>
 
 const authorizeConfig = (kc) => (config) => ({
 	...config,
-	headers: { Authorization: `Bearer ${kc.token}` },
+	headers: { ...config.headers, Authorization: `Bearer ${kc.token}` },
 	'Content-Type': 'application/json;charset=utf-8',
 	Accept: 'application/json;charset=utf-8',
 });
@@ -39,6 +41,19 @@ if (conf.AUTHENTICATION.TYPE === 'oidc') {
 		(error) => Promise.reject(error)
 	);
 }
+
+const injectRegion = (config) => {
+	const selectedRegion = store?.getState()?.regions?.selectedRegion;
+	if (selectedRegion) {
+		config = {
+			...config,
+			headers: { 'ONYXIA-REGION': selectedRegion.id },
+		};
+	}
+	return config;
+};
+
+axiosAuth.interceptors.request.use(injectRegion);
 
 axiosAuth.interceptors.response.use(
 	(response) => response.data,
