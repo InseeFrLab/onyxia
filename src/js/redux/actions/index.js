@@ -5,3 +5,4 @@ export * from './secrets';
 export * from './constantes';
 export * from './cloud-shell';
 export * from './s3';
+export * from './regions';

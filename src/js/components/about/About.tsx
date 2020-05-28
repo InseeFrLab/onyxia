@@ -7,6 +7,9 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import SelectRegion from './SelectRegion';
 import { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
+import { useSelector, useDispatch } from 'react-redux';
+import { newRegions, regionChanged } from 'js/redux/actions';
+import { RootState } from 'js/redux';
 
 const EnTete = () => (
 	<div className="en-tete">
@@ -16,23 +19,31 @@ const EnTete = () => (
 	</div>
 );
 
+const extractRegion = (state: RootState) => state.regions.regions;
+const extractSelectedRegion = (state: RootState) =>
+	state.regions.selectedRegion;
 const About = () => {
-	const [configuration, setConfiguration] = useState<Configuration>();
-	const [selectedRegion, setSelectedRegion] = useState<Region>();
+	const dispatch = useDispatch();
+	const regions = useSelector(extractRegion);
+	const selectedRegion = useSelector(extractSelectedRegion);
 
 	useEffect(() => {
-		getConfiguration().then((resp) => setConfiguration(resp));
-	}, []);
+		getConfiguration().then((resp) => dispatch(newRegions(resp.regions)));
+	}, [dispatch]);
+
+	const changeRegion = (newRegion: Region) =>
+		dispatch(regionChanged(newRegion));
 
 	const gitInfo = GitInfo();
 	const versionInterface =
 		gitInfo.tags.length > 0 ? gitInfo.tags[0] : gitInfo.branch;
 	const versionInterfaceDate = gitInfo.commit.date;
-	const versionServeur = configuration
+	/*const versionServeur = configuration
 		? `${configuration.build.version} (${dayjs(
 				configuration.build.timestamp * 1000
 		  ).format()})`
-		: ' introuvable';
+		: ' introuvable';*/
+	const versionServeur = '';
 	return (
 		<>
 			<EnTete />
@@ -46,10 +57,12 @@ const About = () => {
 				<CopyableField label="Server version" value={versionServeur} copy />
 
 				<SelectRegion
-					regions={configuration?.regions}
+					regions={regions}
 					selectedRegion={selectedRegion?.id}
-					onRegionSelected={(region) => setSelectedRegion(region)}
+					onRegionSelected={(region) => changeRegion(region)}
 				/>
+
+				{JSON.stringify(regions)}
 			</div>
 		</>
 	);

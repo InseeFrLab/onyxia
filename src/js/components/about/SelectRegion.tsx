@@ -86,7 +86,7 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 							<TableRow
 								key={region.id}
 								selected={region.id === selectedRegion}
-								onClick={() => onRegionSelected(region)}
+								onClick={() => onRegionSelected && onRegionSelected(region)}
 							>
 								<TableCell component="th" scope="row">
 									{region.name}
