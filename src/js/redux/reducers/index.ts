@@ -3,7 +3,6 @@ import app from './app';
 import myLab from './my-lab';
 import mesFichiers from './mes-fichiers';
 import secrets from './secrets';
-import cloudShell from './cloud-shell';
 import user from './user';
 import regions from './regions';
 
@@ -12,7 +11,6 @@ const globalReducer = combineReducers({
 	myLab,
 	mesFichiers,
 	secrets,
-	cloudShell,
 	user,
 	regions,
 });
