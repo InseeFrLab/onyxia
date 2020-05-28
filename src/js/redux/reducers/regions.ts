@@ -7,8 +7,8 @@ interface RegionsState {
 }
 
 const initial: RegionsState = {
-	regions: [] as Region[],
-	selectedRegion: undefined as string,
+	regions: [],
+	selectedRegion: undefined,
 };
 
 export default (state = initial, action): RegionsState => {
@@ -16,7 +16,7 @@ export default (state = initial, action): RegionsState => {
 		case NEW_REGIONS:
 			const newState = { ...state };
 			if (!newState.selectedRegion && action.payload.regions.length > 0) {
-				newState.selectedRegion = action.payload.regions[0].id;
+				newState.selectedRegion = action.payload.regions[0];
 			}
 			return { ...newState, regions: action.payload.regions };
 		case REGION_CHANGED:

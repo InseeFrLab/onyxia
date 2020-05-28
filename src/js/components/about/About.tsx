@@ -26,9 +26,13 @@ const About = () => {
 	const dispatch = useDispatch();
 	const regions = useSelector(extractRegion);
 	const selectedRegion = useSelector(extractSelectedRegion);
+	const [configuration, setConfiguration] = useState<Configuration>();
 
 	useEffect(() => {
-		getConfiguration().then((resp) => dispatch(newRegions(resp.regions)));
+		getConfiguration().then((resp) => {
+			dispatch(newRegions(resp.regions));
+			setConfiguration(resp);
+		});
 	}, [dispatch]);
 
 	const changeRegion = (newRegion: Region) =>
@@ -38,12 +42,11 @@ const About = () => {
 	const versionInterface =
 		gitInfo.tags.length > 0 ? gitInfo.tags[0] : gitInfo.branch;
 	const versionInterfaceDate = gitInfo.commit.date;
-	/*const versionServeur = configuration
+	const versionServeur = configuration
 		? `${configuration.build.version} (${dayjs(
 				configuration.build.timestamp * 1000
 		  ).format()})`
-		: ' introuvable';*/
-	const versionServeur = '';
+		: ' introuvable';
 	return (
 		<>
 			<EnTete />
@@ -61,8 +64,6 @@ const About = () => {
 					selectedRegion={selectedRegion?.id}
 					onRegionSelected={(region) => changeRegion(region)}
 				/>
-
-				{JSON.stringify(regions)}
 			</div>
 		</>
 	);
