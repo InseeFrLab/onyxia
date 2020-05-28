@@ -34,6 +34,7 @@ const CloudShell = () => {
 	const [height, setHeight] = useState(200);
 	const [visibility, setVisibility] = useState(false);
 	const [minioCredentials, setMinioCredentials] = useState<any>();
+	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
 
 	const launchCloudShell = (user) => {
@@ -112,7 +113,7 @@ const CloudShell = () => {
 	};
 
 
-	const CloudShellWindows = () => {
+	const CloudShellWindow = () => {
 		return (<Resizable
 			size={{
 				height: height,
@@ -123,6 +124,7 @@ const CloudShell = () => {
 			}}
 		>
 			<iframe
+				key={reloadCloudshell}
 				title="Cloud shell"
 				height={height}
 				width="100%"
@@ -171,12 +173,7 @@ const CloudShell = () => {
 					<CloudShellIconButton
 						aria-label="autorenew"
 						onClick={() =>
-							document
-								.getElementById('cloudshell-iframe')
-								.parentNode.replaceChild(
-									document.getElementById('cloudshell-iframe').cloneNode(),
-									document.getElementById('cloudshell-iframe')
-								)
+							setReloadCloudShell(reloadCloudshell + 1)
 						}
 						className="renew-shell"
 					>
@@ -216,7 +213,7 @@ const CloudShell = () => {
 						<CloseIcon />
 					</CloudShellIconButton>
 				</div>
-				<CloudShellWindows />
+				<CloudShellWindow />
 			</div>
 		</div>
 	);
