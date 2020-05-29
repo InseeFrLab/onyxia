@@ -11,6 +11,7 @@ import {
 	TableRow,
 	TableCell,
 	TableBody,
+	Radio,
 } from '@material-ui/core';
 import { Region } from 'js/model/Region';
 import {
@@ -74,6 +75,7 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 				<Table aria-label="simple table">
 					<TableHead>
 						<TableRow>
+							<TableCell></TableCell>
 							<TableCell>Region</TableCell>
 							<TableCell>Localisation</TableCell>
 							<TableCell>Type</TableCell>
@@ -89,8 +91,16 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 								onClick={() => onRegionSelected && onRegionSelected(region)}
 							>
 								<TableCell component="th" scope="row">
-									{region.name}
+									<Radio
+										checked={region.id === selectedRegion}
+										onChange={() =>
+											onRegionSelected && onRegionSelected(region)
+										}
+										value={region.id}
+										inputProps={{ 'aria-label': region.id }}
+									/>
 								</TableCell>
+								<TableCell>{region.name}</TableCell>
 								<TableCell>{region?.location?.name || ''}</TableCell>
 								<TableCell>{region.id}</TableCell>
 								<TableCell>

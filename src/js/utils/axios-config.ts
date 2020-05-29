@@ -69,6 +69,8 @@ axiosPublic.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
+axiosPublic.interceptors.request.use(injectRegion);
+
 const axiosURL = axios.create();
 
 axiosURL.interceptors.response.use(

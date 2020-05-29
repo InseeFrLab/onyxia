@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
-import { axiosPublic, wrapPromise } from 'js/utils';
+import { axiosPublic } from 'js/utils';
 import api from 'js/redux/api';
 import { hasOptedInForBetaTest } from '../../../../../configuration/betatest';
 
-const resource = wrapPromise(axiosPublic(api.catalogue));
-
 const Catalogues = () => {
-	const { catalogs } = resource.read();
+	const [catalogs, setCatalogs] = useState([]);
 	const betaTester = hasOptedInForBetaTest();
+
+	useEffect(() => {
+		axiosPublic(api.catalogue).then((resp) => {
+			setCatalogs(resp.catalogs);
+		});
+	}, []);
+
 	return (
 		<div className="contenu catalogue">
 			<Grid container spacing={2}>
