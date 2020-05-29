@@ -26,11 +26,7 @@ const ListUrls = ({
 }) => (
 	<>
 		{urls.map((url) => (
-			<CopyableField
-				copy
-				value={url}
-				open={external && (() => window.open(url))}
-			/>
+			<CopyableField copy value={url} open={external} />
 		))}
 	</>
 );
