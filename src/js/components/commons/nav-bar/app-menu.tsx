@@ -110,15 +110,19 @@ export default ({
 						<ListItemText primary={D.mySecretsTitle} />
 					</ListItem>
 				) : null}
-				<ListItem>
-					<ListItemText primary="Informations" />
-				</ListItem>
-				<ListItem button component={Link} to="/about">
-					<ListItemIcon>
-						<Icon>infoIcon</Icon>
-					</ListItemIcon>
-					<ListItemText primary={D.about} />
-				</ListItem>
+				{hasOptedInForBetaTest() ? (
+					<>
+						<ListItem>
+							<ListItemText primary="Informations" />
+						</ListItem>
+						<ListItem button component={Link} to="/about">
+							<ListItemIcon>
+								<Icon>infoIcon</Icon>
+							</ListItemIcon>
+							<ListItemText primary={D.about} />
+						</ListItem>
+					</>
+				) : null}
 			</List>
 		</div>
 	</Drawer>

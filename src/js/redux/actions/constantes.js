@@ -63,3 +63,7 @@ export const CLOUDSHELL_STOPPED = 'onyxia/cloudShell/arrest';
 
 // S3
 export const NEW_S3_CREDENTIALS = 'onyxia/S3/newCredentials';
+
+// Regions
+export const NEW_REGIONS = 'onyxia/regions/newRegions';
+export const REGION_CHANGED = 'onyxia/regions/regionChanged';
