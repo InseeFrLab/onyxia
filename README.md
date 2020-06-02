@@ -28,9 +28,11 @@ docker run -p 8080:8080 --env BASE_API_URL=https://onyxia-api.yourdomain.com ins
 
 ### Using NodeJS
 
+We recommend using `yarn` instead of `npm` but both should work just fine.
+
 ```
-npm install
-npm run start
+yarn
+yarn start
 ```
 
 ## Configuration
