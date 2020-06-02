@@ -29,3 +29,5 @@ yarn-error.log*
 .vscode/
 
 android
+# We ignore package-lock.json as we recommend yarn
+package-lock.json
