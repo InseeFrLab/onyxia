@@ -3,6 +3,7 @@ import { CloudshellConfiguration } from './CloudshellConfiguration';
 export interface Region {
 	id: string;
 	name: string;
+	description?: string;
 	services: Services;
 	data: Data;
 	location?: Location;

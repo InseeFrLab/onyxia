@@ -79,8 +79,8 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 							<TableCell>Region</TableCell>
 							<TableCell>Localisation</TableCell>
 							<TableCell>Type</TableCell>
+							<TableCell>Description</TableCell>
 							<TableCell>Stockage</TableCell>
-							<TableCell>Monitoring</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -102,12 +102,14 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 								</TableCell>
 								<TableCell>{region.name}</TableCell>
 								<TableCell>{region?.location?.name || ''}</TableCell>
-								<TableCell>{region.id}</TableCell>
+								<TableCell>{region.services.type}</TableCell>
+								<TableCell>{region.description || ''}</TableCell>
 								<TableCell>
-									<SentimentSatisfiedAlt />
-								</TableCell>
-								<TableCell>
-									<SentimentVeryDissatisfied />
+									{region.data?.S3?.URL ? (
+										<SentimentSatisfiedAlt />
+									) : (
+										<SentimentVeryDissatisfied />
+									)}
 								</TableCell>
 							</TableRow>
 						))}
