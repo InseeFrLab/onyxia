@@ -1,5 +1,10 @@
 import Mustache from 'mustache';
 
+// Disable mustache html escaping
+Mustache.escape = function (text) {
+	return text;
+};
+
 export const getFieldSafeAttr = (field) => {
 	const media = (field.media && field.media.type && field.media.type) || '';
 	return !field['x-form']
