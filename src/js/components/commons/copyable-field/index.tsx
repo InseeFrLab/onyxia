@@ -12,15 +12,35 @@ import FileCopy from '@material-ui/icons/FileCopy';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Delete from '@material-ui/icons/Delete';
 
-import PropTypes from 'prop-types';
+interface Props {
+	value: string;
+	onChange?: (newValue: string) => void;
+	reset?: boolean;
+	label?: string;
+	description?: string;
+	open?: boolean;
+	copy: boolean;
+	del?: boolean;
+	type?: string;
+	options?: object;
+	onValidate?: (value: string) => void;
+	onDelete?: () => void;
+}
 
-class CopyableField extends React.Component {
+interface State {
+	edit: boolean;
+	value: string;
+	reset: boolean;
+	editable: boolean;
+}
+
+class CopyableField extends React.Component<Props, State> {
 	domInput = null;
-	state = { edit: false, value: null, reset: false, isEditable: false };
-	constructor(props) {
+	state = { edit: false, value: null, reset: false, editable: false };
+	constructor(props: Props) {
 		super(props);
 		this.state.value = props.value;
-		this.state.isEditable = props.onChange !== undefined;
+		this.state.editable = props.onChange !== undefined;
 		this.state.reset = props.reset || false;
 	}
 
@@ -42,7 +62,9 @@ class CopyableField extends React.Component {
 		return false;
 	};
 
-	open = () => window.open(this.props.value);
+	open = () => {
+		window.open(this.props.value);
+	};
 
 	handleEdit = () => {
 		this.setState((s, p) => {
@@ -107,20 +129,19 @@ class CopyableField extends React.Component {
 						inputRef={(r) => {
 							this.domInput = r;
 						}}
-						disabled={!this.state.isEditable || !this.state.edit}
+						disabled={!this.state.editable || !this.state.edit}
 						type={type}
-						label={label}
 						fullWidth
 						value={this.state.value}
 						onChange={this.handleChange}
 						endAdornment={
 							<InputAdornment position="end">
-								{this.state.isEditable && this.state.edit && !onValidate ? (
+								{this.state.editable && this.state.edit && !onValidate ? (
 									<IconButton aria-label="éditer" onClick={this.handleEdit}>
 										<Icon>clear</Icon>
 									</IconButton>
 								) : null}
-								{this.state.isEditable && !this.state.edit ? (
+								{this.state.editable && !this.state.edit ? (
 									<IconButton aria-label="éditer" onClick={this.handleEdit}>
 										<Icon>edit</Icon>
 									</IconButton>
@@ -156,13 +177,5 @@ class CopyableField extends React.Component {
 		);
 	}
 }
-
-CopyableField.propTypes = {
-	reset: PropTypes.bool,
-	label: PropTypes.string,
-	fontSize: PropTypes.number,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-	options: PropTypes.object,
-};
 
 export default CopyableField;
