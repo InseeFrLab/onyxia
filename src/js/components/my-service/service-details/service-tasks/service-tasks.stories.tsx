@@ -1,6 +1,6 @@
 import React from 'react';
 import ServiceTasks from './tasks';
-import basicService from 'js/model/sampledata/basic-service.json';
+import basicService from 'js/model/sampledata/service-basic.json';
 
 export default {
 	title: 'My service',
