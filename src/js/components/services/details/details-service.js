@@ -68,7 +68,7 @@ const DetailsService = () => {
 							<Fab
 								className="bouton"
 								color="primary"
-								title="rocketchat"
+								title="chat"
 								onClick={() => window.open(channel)}
 							>
 								<Icon>group</Icon>

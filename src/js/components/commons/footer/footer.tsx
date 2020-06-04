@@ -11,21 +11,18 @@ const Footer = () => {
 		<footer className="footer">
 			<Divider light />
 			<div className="liens-rapides">
-				{conf.FOOTER.GRAFANA_URL && (
+				{conf.FOOTER.MONITORING_URL && (
 					<LienRapide
-						url={conf.FOOTER.GRAFANA_URL}
+						url={conf.FOOTER.MONITORING_URL}
 						icon={<Icon>equalizer</Icon>}
 					>
-						Grafana
+						Monitoring
 					</LienRapide>
 				)}
 
-				{conf.FOOTER.ONYXIA.ROCKETCHAT && (
-					<LienRapide
-						url={conf.FOOTER.ONYXIA.ROCKETCHAT}
-						icon={<Icon>group</Icon>}
-					>
-						RocketChat
+				{conf.FOOTER.ONYXIA.CHAT && (
+					<LienRapide url={conf.FOOTER.ONYXIA.CHAT} icon={<Icon>group</Icon>}>
+						Chat
 					</LienRapide>
 				)}
 

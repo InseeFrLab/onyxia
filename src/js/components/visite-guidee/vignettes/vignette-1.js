@@ -61,7 +61,7 @@ export default {
 	},
 	actions: ({ next }) => (
 		<>
-			<Tooltip title="RocketChat">
+			<Tooltip title="Chat">
 				<Fab color="primary" onClick={() => window.open(conf.CHAT.URL)}>
 					<Icon height={20} width={20}>
 						group

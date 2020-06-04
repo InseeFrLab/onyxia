@@ -11,7 +11,7 @@ export * from './fil-d-ariane-utils';
 export * from './token-local-storage';
 export { default as typeRequest } from './mes-services-types-request';
 
-const grafanaBaseUri = conf.APP.GRAFANA_URI;
+const monitoringBaseUri = conf.APP.MONITORING_URI;
 
 const makeParamFromIdService = (id) =>
 	id
@@ -19,5 +19,5 @@ const makeParamFromIdService = (id) =>
 		.filter((s) => s.trim().length > 0)
 		.join('_');
 
-export const getGrafanaServiceUrl = (service) =>
-	`${grafanaBaseUri}${makeParamFromIdService(service.id)}`;
+export const getMonitoringServiceUrl = (service) =>
+	`${monitoringBaseUri}${makeParamFromIdService(service.id)}`;

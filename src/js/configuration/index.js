@@ -16,12 +16,12 @@ const conf = {
 		DNS: readConfig('DNS'),
 		GIT_PATH: readConfig('GIT_PATH'),
 		PASSWORD: readConfig('PASSWORD'),
-		GRAFANA_URI: readConfig('GRAFANA_BASE_URI'),
+		MONITORING_URI: readConfig('MONITORING_BASE_URI'),
 		CONTACT: readConfig('CONTACT'),
 		WARNING_MESSAGE: readConfig('WARNING_MESSAGE'),
 	},
 	ENDPOINTS: {
-		SALON_RC: readConfig('SALON_ROCKETCHAT'),
+		SALON_CHAT: readConfig('SALON_CHAT'),
 	},
 	KUBERNETES: {
 		KUB_SERVER_NAME: readConfig('KUB_SERVER_NAME'),
@@ -55,11 +55,11 @@ const conf = {
 	FOOTER: {
 		ONYXIA: {
 			GIT: readConfig('ONYXIA_GIT'),
-			ROCKETCHAT: readConfig('ONYXIA_ROCKETCHAT'),
+			CHAT: readConfig('ONYXIA_CHAT'),
 		},
 		SWAGGER_API: readConfig('SWAGGER_API'),
 		GHOST_URL: readConfig('GHOST_URL'),
-		GRAFANA_URL: readConfig('GRAFANA_URL'),
+		MONITORING_URL: readConfig('MONITORING_URL'),
 	},
 };
 
