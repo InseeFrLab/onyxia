@@ -1,5 +1,3 @@
-export { default as GrafanaIcon } from './grafana.icon';
-export { default as RocketChatIcon } from './rocket-chat.icon';
 export { default as GitlabIcon } from './gitlab.icon';
 export { default as WorkInProgress } from './work-in-progress.icon';
 export { default as MicroscopeIcon } from './microscope.icon';

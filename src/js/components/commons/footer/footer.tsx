@@ -2,11 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Button, Icon } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-import {
-	RocketChatIcon,
-	GrafanaIcon,
-	GhosthIcon,
-} from 'js/components/commons/icons';
+import { GhosthIcon } from 'js/components/commons/icons';
 import './footer.scss';
 import conf from '../../../configuration';
 
@@ -16,7 +12,10 @@ const Footer = () => {
 			<Divider light />
 			<div className="liens-rapides">
 				{conf.FOOTER.GRAFANA_URL && (
-					<LienRapide url={conf.FOOTER.GRAFANA_URL} icon={<GrafanaIcon />}>
+					<LienRapide
+						url={conf.FOOTER.GRAFANA_URL}
+						icon={<Icon>equalizer</Icon>}
+					>
 						Grafana
 					</LienRapide>
 				)}
@@ -24,7 +23,7 @@ const Footer = () => {
 				{conf.FOOTER.ONYXIA.ROCKETCHAT && (
 					<LienRapide
 						url={conf.FOOTER.ONYXIA.ROCKETCHAT}
-						icon={<RocketChatIcon />}
+						icon={<Icon>group</Icon>}
 					>
 						RocketChat
 					</LienRapide>
