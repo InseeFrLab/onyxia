@@ -1,6 +1,6 @@
 import React from 'react';
 import ServiceDetails from './details';
-import basicService from 'js/model/sampledata/basic-service.json';
+import basicService from 'js/model/sampledata/service-basic.json';
 
 export default {
 	title: 'My service',

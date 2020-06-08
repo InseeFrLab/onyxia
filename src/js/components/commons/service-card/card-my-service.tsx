@@ -1,5 +1,13 @@
-import React from 'react';
-import { Icon, IconButton, Badge } from '@material-ui/core/';
+import React, { useState } from 'react';
+import {
+	Icon,
+	IconButton,
+	Badge,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+} from '@material-ui/core/';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { CardService } from 'js/components/commons/service-card';
@@ -32,24 +40,53 @@ const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 	);
 };
 
-const getActions = (service) => (launch) => () => (
-	<>
-		{getLaunchIcon(service)(launch)}
-		<Link
-			to={`/my-service/${
-				service.id.startsWith('/') ? service.id.substring(1) : service.id
-			}`}
-		>
-			<IconButton
-				id={`bouton-details-${service.id}`}
-				color="secondary"
-				aria-label="plus de détails"
+const getActions = (service: Service) => (launch) => () => {
+	const [showPostInstall, setShowPostInstall] = useState(false);
+	return (
+		<>
+			{service.postInstallInstructions && (
+				<IconButton
+					id={`button-post-install-${service.id}`}
+					color="secondary"
+					aria-label="Post install instructions"
+					onClick={() => setShowPostInstall(true)}
+				>
+					<Icon>info</Icon>
+				</IconButton>
+			)}
+			{showPostInstall && (
+				<Dialog
+					open={true}
+					onClose={() => setShowPostInstall(false)}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+				>
+					<DialogTitle id="alert-dialog-title">{'Usage info'}</DialogTitle>
+					<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							{service.postInstallInstructions}
+						</DialogContentText>
+					</DialogContent>
+				</Dialog>
+			)}
+
+			{getLaunchIcon(service)(launch)}
+			<Link
+				to={`/my-service/${
+					service.id.startsWith('/') ? service.id.substring(1) : service.id
+				}`}
 			>
-				<Icon>build</Icon>
-			</IconButton>
-		</Link>
-	</>
-);
+				<IconButton
+					id={`bouton-details-${service.id}`}
+					color="secondary"
+					aria-label="plus de détails"
+				>
+					<Icon>build</Icon>
+				</IconButton>
+			</Link>
+		</>
+	);
+};
 
 const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 	service.status === ServiceStatus.Running ? (
