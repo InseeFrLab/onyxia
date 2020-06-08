@@ -20,9 +20,6 @@ const conf = {
 		CONTACT: readConfig('CONTACT'),
 		WARNING_MESSAGE: readConfig('WARNING_MESSAGE'),
 	},
-	ENDPOINTS: {
-		SALON_CHAT: readConfig('SALON_CHAT'),
-	},
 	KUBERNETES: {
 		KUB_SERVER_NAME: readConfig('KUB_SERVER_NAME'),
 		KUB_SERVER_URL: readConfig('KUB_SERVER_URL'),
@@ -32,7 +29,7 @@ const conf = {
 		VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
 	},
 	CHAT: {
-		URL: readConfig('CHAT_URL'),
+		CHAT_URL: readConfig('CHAT_URL'),
 	},
 	AUTHENTICATION: {
 		TYPE: readConfig('AUTH_TYPE'),
@@ -55,7 +52,6 @@ const conf = {
 	FOOTER: {
 		ONYXIA: {
 			GIT: readConfig('ONYXIA_GIT'),
-			CHAT: readConfig('ONYXIA_CHAT'),
 		},
 		SWAGGER_API: readConfig('SWAGGER_API'),
 		GHOST_URL: readConfig('GHOST_URL'),
