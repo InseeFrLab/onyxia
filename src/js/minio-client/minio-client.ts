@@ -56,7 +56,7 @@ export const getMinioToken = (refreh = false) =>
 				return credentials;
 		  });
 
-const getClient = () =>
+const getClient = (): Promise<Minio.Client> =>
 	MINIO_CLIENT
 		? Promise.resolve(MINIO_CLIENT)
 		: new Promise((resolve, reject) => {

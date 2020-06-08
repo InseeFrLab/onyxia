@@ -7,7 +7,11 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Ligne from 'js/components/commons/files';
 import Toolbar from './toolbar.component';
 import Progress from 'js/components/commons/progress';
-import { getMinioDirectoryName } from 'js/minio-client';
+import {
+	getMinioDirectoryName,
+	getMinioApi,
+	getMinioClient,
+} from 'js/minio-client';
 import {
 	createPolicyWithDirectory,
 	createPolicyWithoutDirectory,
@@ -15,7 +19,7 @@ import {
 	getBucketPolicy,
 	setBucketPolicy,
 } from 'js/minio-client';
-import MyPolicy from './../my-policy.component';
+import MyPolicy from '../my-policy.component';
 import './my-files.scss';
 
 class MyFiles extends React.Component {
@@ -381,6 +385,29 @@ class MyFiles extends React.Component {
 								</Fab>
 							</div>
 						) : null}
+					</Paper>
+					<Paper className="paragraphe" elevation={1}>
+						<Typography variant="h3" gutterBottom>
+							Partager un lien d'upload
+						</Typography>
+						<Typography variant="body2" gutterBottom>
+							Créer un lien d'upload vous permet de partager un lien avec un
+							partenaire. Ce lien lui permettra d'uploader un fichier sans
+							posséder de droits supplémentaires.
+						</Typography>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={() =>
+								getMinioClient().then((client) =>
+									getMinioApi(client)
+										.presignedPostBucket('f2wbnp', 7200)
+										.then((signedData) => console.log(signedData))
+								)
+							}
+						>
+							Créer un lien
+						</Button>
 					</Paper>
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" gutterBottom>
