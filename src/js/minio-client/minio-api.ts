@@ -112,9 +112,6 @@ export default (client: Client) => ({
 			expires.setSeconds(duration);
 			policy.setExpires(expires);
 			policy.setKeyStartsWith(keyPrefix + '/');
-			/*return resolve(
-				client.presignedPutObject('f2wbnp', 'hello.txt', 24 * 60 * 60)
-			);*/
 			return resolve(client.presignedPostPolicy(policy));
 		}),
 	getBucketPolicy: (bucket) => client.getBucketPolicy(bucket),
