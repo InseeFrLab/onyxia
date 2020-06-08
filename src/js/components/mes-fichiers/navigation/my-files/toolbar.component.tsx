@@ -1,6 +1,5 @@
 import React from 'react';
 import { Paper, Icon, Fab } from '@material-ui/core';
-import PropTypes from 'prop-types';
 
 const Toolbar = ({
 	isInPublicDirectory,
@@ -47,12 +46,5 @@ const Toolbar = ({
 		)}
 	</Paper>
 );
-Toolbar.propTypes = {
-	deleteFiles: PropTypes.func.isRequired,
-	isInPublicDirectory: PropTypes.bool.isRequired,
-	isPublicDirectory: PropTypes.bool.isRequired,
-	lockDirectory: PropTypes.func.isRequired,
-	unlockDirectory: PropTypes.func.isRequired,
-};
 
 export default Toolbar;

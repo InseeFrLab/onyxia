@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
 	Typography,
@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 	DialogContent,
 	DialogActions,
+	MenuItem,
 } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
@@ -457,6 +458,7 @@ MyFiles.propTypes = {
 const DialogShare = ({ visible, bucket, onClose }) => {
 	const [signedData, setSignedData] = React.useState();
 	const [folder, setFolder] = React.useState('');
+	const [duration, setDuration] = React.useState(24 * 3600);
 
 	const getCurlCommand = () => {
 		const parameters = Object.entries(signedData.formData)
@@ -465,6 +467,47 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 			.join(' ');
 		return `curl ${signedData.postURL} -F file=@<FILE> -F key=${signedData.formData.key}<NAME> ${parameters}`;
 	};
+
+	useEffect(() => {
+		if (folder.length > 0) {
+			getMinioClient().then((client) =>
+				getMinioApi(client)
+					.presignedPostBucket(bucket, folder, duration)
+					.then((signedData) =>
+						setSignedData({
+							...signedData,
+							formData: {
+								...signedData.formData,
+								'x-amz-security-token': client.sessionToken,
+							},
+						})
+					)
+			);
+		}
+	}, [folder, duration, bucket]);
+
+	const durations = [
+		{
+			value: 2 * 3600,
+			label: '2 heures',
+		},
+		{
+			value: 8 * 3600,
+			label: '8 heures',
+		},
+		{
+			value: 24 * 3600,
+			label: '24 heures',
+		},
+		{
+			value: 72 * 3600,
+			label: '72 heures',
+		},
+		{
+			value: 7 * 24 * 3600,
+			label: '7 jours',
+		},
+	];
 
 	return (
 		<Dialog open={visible} onClose={onClose}>
@@ -480,21 +523,23 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 					value={folder}
 					onChange={(e) => {
 						setFolder(e.target.value);
-						getMinioClient().then((client) =>
-							getMinioApi(client)
-								.presignedPostBucket(bucket, folder, 7200)
-								.then((signedData) =>
-									setSignedData({
-										...signedData,
-										formData: {
-											...signedData.formData,
-											'x-amz-security-token': client.sessionToken,
-										},
-									})
-								)
-						);
 					}}
 				/>
+				<br />
+				<TextField
+					label="Durée"
+					select
+					value={duration}
+					onChange={(e) => {
+						setDuration(e.target.value);
+					}}
+				>
+					{durations.map((option) => (
+						<MenuItem key={option.value} value={option.value}>
+							{option.label}
+						</MenuItem>
+					))}
+				</TextField>
 				<br />
 				{signedData && folder ? (
 					<>
