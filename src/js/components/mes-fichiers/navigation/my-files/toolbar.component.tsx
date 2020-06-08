@@ -1,6 +1,5 @@
 import React from 'react';
 import { Paper, Icon, Fab } from '@material-ui/core';
-import PropTypes from 'prop-types';
 
 const Toolbar = ({
 	isInPublicDirectory,
@@ -8,15 +7,26 @@ const Toolbar = ({
 	deleteFiles,
 	lockDirectory,
 	unlockDirectory,
+	createUploadLink,
 }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
+		{deleteFiles ? (
+			<Fab
+				className="bouton"
+				color="secondary"
+				title="supprimer les fichiers sélectionnés"
+				onClick={deleteFiles}
+			>
+				<Icon fontSize="small">delete</Icon>
+			</Fab>
+		) : null}
 		<Fab
 			className="bouton"
 			color="secondary"
-			title="supprimer les fichiers sélectionnés"
-			onClick={deleteFiles}
+			title="Créer un lien d'upload partenaire"
+			onClick={createUploadLink}
 		>
-			<Icon fontSize="small">delete</Icon>
+			<Icon fontSize="small">people</Icon>
 		</Fab>
 		{isInPublicDirectory ? null : (
 			<Fab
@@ -36,12 +46,5 @@ const Toolbar = ({
 		)}
 	</Paper>
 );
-Toolbar.propTypes = {
-	deleteFiles: PropTypes.func.isRequired,
-	isInPublicDirectory: PropTypes.bool.isRequired,
-	isPublicDirectory: PropTypes.bool.isRequired,
-	lockDirectory: PropTypes.func.isRequired,
-	unlockDirectory: PropTypes.func.isRequired,
-};
 
 export default Toolbar;
