@@ -113,6 +113,19 @@ export default ({
 				{hasOptedInForBetaTest() ? (
 					<>
 						<ListItem>
+							<ListItemText primary="DevOps" />
+						</ListItem>
+						<ListItem button component={Link} to="/cluster">
+							<ListItemIcon>
+								<Icon>domain</Icon>
+							</ListItemIcon>
+							<ListItemText primary={D.cluster} />
+						</ListItem>
+					</>
+				) : null}
+				{hasOptedInForBetaTest() ? (
+					<>
+						<ListItem>
 							<ListItemText primary="Informations" />
 						</ListItem>
 						<ListItem button component={Link} to="/about">
