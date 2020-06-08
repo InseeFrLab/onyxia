@@ -1,12 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Paper, Button, Icon, Fab } from '@material-ui/core';
+import {
+	Typography,
+	Paper,
+	Button,
+	Icon,
+	Fab,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+} from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Ligne from 'js/components/commons/files';
 import Toolbar from './toolbar.component';
 import Progress from 'js/components/commons/progress';
+import CopyableField from 'js/components/commons/copyable-field';
 import {
 	getMinioDirectoryName,
 	getMinioApi,
@@ -37,6 +48,7 @@ class MyFiles extends React.Component {
 		policy: undefined,
 		isInPublicDirectory: false,
 		isPublicDirectory: false,
+		popupUploadLink: false,
 	};
 	input = React.createRef();
 	stream = null;
@@ -314,9 +326,19 @@ class MyFiles extends React.Component {
 					<Toolbar
 						isInPublicDirectory={isInPublicDirectory}
 						isPublicDirectory={isPublicDirectory}
-						deleteFiles={this.deleteFiles}
+						deleteFiles={
+							Object.keys(this.state.checkedFiles).length > 0
+								? this.deleteFiles
+								: undefined
+						}
 						lockDirectory={this.lockDirectory}
 						unlockDirectory={this.unlockDirectory}
+						createUploadLink={() => this.setState({ popupUploadLink: true })}
+					/>
+					<DialogShare
+						visible={this.state.popupUploadLink}
+						bucket={bucketName}
+						onClose={() => this.setState({ popupUploadLink: false })}
 					/>
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" gutterBottom>
@@ -388,29 +410,6 @@ class MyFiles extends React.Component {
 					</Paper>
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" gutterBottom>
-							Partager un lien d'upload
-						</Typography>
-						<Typography variant="body2" gutterBottom>
-							Créer un lien d'upload vous permet de partager un lien avec un
-							partenaire. Ce lien lui permettra d'uploader un fichier sans
-							posséder de droits supplémentaires.
-						</Typography>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() =>
-								getMinioClient().then((client) =>
-									getMinioApi(client)
-										.presignedPostBucket('f2wbnp', 7200)
-										.then((signedData) => console.log(signedData))
-								)
-							}
-						>
-							Créer un lien
-						</Button>
-					</Paper>
-					<Paper className="paragraphe" elevation={1}>
-						<Typography variant="h3" gutterBottom>
 							Créer un Répertoire
 						</Typography>
 						<TextField
@@ -453,6 +452,67 @@ class MyFiles extends React.Component {
 
 MyFiles.propTypes = {
 	loadBucketContent: PropTypes.func.isRequired,
+};
+
+const DialogShare = ({ visible, bucket, onClose }) => {
+	const [signedData, setSignedData] = React.useState();
+	const [folder, setFolder] = React.useState('');
+
+	const getCurlCommand = () => {
+		const parameters = Object.entries(signedData.formData)
+			.filter((data) => data[0] !== 'key')
+			.map((data) => `-F ${data[0]}=${data[1]}`)
+			.join(' ');
+		return `curl ${signedData.postURL} -F file=@<FILE> -F key=${signedData.formData.key}<NAME> ${parameters}`;
+	};
+
+	return (
+		<Dialog open={visible} onClose={onClose}>
+			<DialogTitle>Partager un lien d'upload</DialogTitle>
+			<DialogContent>
+				<Typography variant="body2" gutterBottom>
+					Créer un lien d'upload vous permet de partager un lien avec un
+					partenaire. Ce lien lui permettra d'uploader un fichier sans posséder
+					de droits supplémentaires.
+				</Typography>
+				<TextField
+					label="Dossier de destination"
+					value={folder}
+					onChange={(e) => {
+						setFolder(e.target.value);
+						getMinioClient().then((client) =>
+							getMinioApi(client)
+								.presignedPostBucket(bucket, folder, 7200)
+								.then((signedData) =>
+									setSignedData({
+										...signedData,
+										formData: {
+											...signedData.formData,
+											'x-amz-security-token': client.sessionToken,
+										},
+									})
+								)
+						);
+					}}
+				/>
+				<br />
+				{signedData && folder ? (
+					<>
+						<br />
+						Avec la commande suivante, le partenaire pourra uploader des
+						fichiers dans le dossier <strong>{folder}</strong>
+						<br />
+						<CopyableField value={getCurlCommand()} copy></CopyableField>
+					</>
+				) : null}
+			</DialogContent>
+			<DialogActions>
+				<Button color="primary" autoFocus onClick={onClose}>
+					Terminé
+				</Button>
+			</DialogActions>
+		</Dialog>
+	);
 };
 
 const File = ({ files }) =>

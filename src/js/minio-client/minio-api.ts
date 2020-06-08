@@ -100,13 +100,18 @@ export default (client: Client) => ({
 				}
 			);
 		}),
-	presignedPostBucket: (bucketName: string, duration = 3600) =>
+	presignedPostBucket: (
+		bucketName: string,
+		keyPrefix: string,
+		duration = 3600
+	) =>
 		new Promise((resolve, reject) => {
 			const policy = new PostPolicy();
 			policy.setBucket(bucketName);
 			var expires = new Date();
 			expires.setSeconds(duration);
 			policy.setExpires(expires);
+			policy.setKeyStartsWith(keyPrefix + '/');
 			/*return resolve(
 				client.presignedPutObject('f2wbnp', 'hello.txt', 24 * 60 * 60)
 			);*/
