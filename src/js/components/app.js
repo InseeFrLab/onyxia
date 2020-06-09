@@ -35,6 +35,7 @@ import Notifications from 'js/components/notifications';
 import About from 'js/components/about';
 import 'typeface-roboto';
 import './app.scss';
+import RegionBanner from 'js/components/RegionsBanner';
 
 const theme = createTheme();
 const routerContext = createRouterContext(Accueil)('/accueil');
@@ -88,6 +89,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 			<>
 				<div className="application">
 					<NavBar />
+					<RegionBanner />
 					{invalidIdep(idep) && (
 						<Alert
 							severity="error"
