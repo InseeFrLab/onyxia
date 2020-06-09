@@ -5,13 +5,11 @@ import {
 	IconButton,
 	Collapse,
 	Grid,
-	Paper,
 	Button,
 	Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import { Region } from 'js/model/Region';
 import { getConfiguration } from 'js/api/configuration';
 import { RootState } from 'js/redux/';
 import { useHistory } from 'react-router-dom';
@@ -52,13 +50,15 @@ const RegionBanner = () => {
 	const regions = useSelector((store: RootState) => store.regions);
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
+	const betaTest = localStorage.getItem('betatest') === 'true';
+	console.log(betaTest);
 	useEffect(() => {
 		if (!regions.selectedRegion) {
 			getConfiguration();
 		}
 	}, [regions.selectedRegion]);
 
-	return regions?.selectedRegion ? (
+	return regions?.selectedRegion && regions.regions?.length > 1 && betaTest ? (
 		<>
 			<Collapse in={open}>
 				<Alert
