@@ -458,7 +458,7 @@ MyFiles.propTypes = {
 const DialogShare = ({ visible, bucket, onClose }) => {
 	const [signedData, setSignedData] = React.useState();
 	const [folder, setFolder] = React.useState('');
-	const [duration, setDuration] = React.useState(24 * 3600);
+	const [duration, setDuration] = React.useState(12 * 3600);
 
 	const getCurlCommand = () => {
 		const parameters = Object.entries(signedData.formData)
@@ -496,16 +496,8 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 			label: '8 heures',
 		},
 		{
-			value: 24 * 3600,
-			label: '24 heures',
-		},
-		{
-			value: 72 * 3600,
-			label: '72 heures',
-		},
-		{
-			value: 7 * 24 * 3600,
-			label: '7 jours',
+			value: 12 * 3600,
+			label: '12 heures',
 		},
 	];
 
@@ -527,7 +519,7 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 				/>
 				<br />
 				<TextField
-					label="Durée"
+					label="Durée de validité"
 					select
 					value={duration}
 					onChange={(e) => {
