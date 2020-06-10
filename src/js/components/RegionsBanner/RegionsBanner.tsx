@@ -14,44 +14,11 @@ import { getConfiguration } from 'js/api/configuration';
 import { RootState } from 'js/redux/';
 import { useHistory } from 'react-router-dom';
 
-// interface Props {
-// 	regions: RegionsState;
-// }
-
-// const Selectedregions = (props: Props) => {
-// 	const regions = props.regions;
-// 	const dispatch = useDispatch();
-
-// 	const changeRegion = (id: String) => {
-// 		dispatch(
-// 			regionChanged(regions.regions.filter((region) => region.id === id)[0])
-// 		);
-// 	};
-
-// 	return regions && regions.selectedRegion ? (
-// 		<Select
-// 			labelId="demo-simple-select-label"
-// 			id="demo-simple-select"
-// 			value={regions.selectedRegion.id}
-// 			onChange={(e) => changeRegion(e.target.value as String)}
-// 		>
-// 			{regions.regions.map((region) => (
-// 				<MenuItem key={region.id} value={region.id}>
-// 					{region.name}
-// 				</MenuItem>
-// 			))}
-// 		</Select>
-// 	) : (
-// 		<></>
-// 	);
-// };
-
 const RegionBanner = () => {
 	const regions = useSelector((store: RootState) => store.regions);
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
 	const betaTest = localStorage.getItem('betatest') === 'true';
-	console.log(betaTest);
 	useEffect(() => {
 		if (!regions.selectedRegion) {
 			getConfiguration();
