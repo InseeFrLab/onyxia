@@ -21,6 +21,7 @@ export interface Service {
 	env?: object;
 	tasks?: Task[];
 	events?: Event[];
+	postInstallInstructions?: string;
 	monitoring?: {
 		url: string;
 	};

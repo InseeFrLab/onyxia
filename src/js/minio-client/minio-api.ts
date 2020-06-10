@@ -1,11 +1,12 @@
 import fileReaderStream from 'filereader-stream';
+import { Client, PostPolicy } from 'minio';
 
-export default (client) => ({
+export default (client: Client) => ({
 	statObject: ({ bucketName, fileName }) =>
 		client.statObject(bucketName, fileName),
 	isBucketExist: (bucketName) => client.bucketExists(bucketName),
 	removeBucket: (bucketName) => client.removeBucket(bucketName),
-	createBucket: (bucket) => client.makeBucket(bucket),
+	createBucket: (bucket) => client.makeBucket(bucket, undefined),
 	listBuckets: () => client.listBuckets(),
 	listObjects: (name, prefix = '', rec = true) =>
 		client.listObjects(name, prefix, rec),
@@ -98,6 +99,20 @@ export default (client) => ({
 					resolve(presignedUrl);
 				}
 			);
+		}),
+	presignedPostBucket: (
+		bucketName: string,
+		keyPrefix: string,
+		duration = 3600
+	) =>
+		new Promise((resolve, reject) => {
+			const policy = new PostPolicy();
+			policy.setBucket(bucketName);
+			var expires = new Date();
+			expires.setSeconds(duration);
+			policy.setExpires(expires);
+			policy.setKeyStartsWith(keyPrefix + '/');
+			return resolve(client.presignedPostPolicy(policy));
 		}),
 	getBucketPolicy: (bucket) => client.getBucketPolicy(bucket),
 	setBucketPolicy: ({ bucketName, policy }) =>
