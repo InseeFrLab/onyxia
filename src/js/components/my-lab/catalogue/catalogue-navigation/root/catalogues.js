@@ -3,11 +3,11 @@ import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
 import { axiosPublic } from 'js/utils';
 import api from 'js/redux/api';
-import { hasOptedInForBetaTest } from '../../../../../configuration/betatest';
+import useBetaTest from 'js/components/hooks/useBetaTest';
 
 const Catalogues = () => {
 	const [catalogs, setCatalogs] = useState([]);
-	const betaTester = hasOptedInForBetaTest();
+	const [betaTester] = useBetaTest();
 
 	useEffect(() => {
 		axiosPublic(api.catalogue).then((resp) => {
