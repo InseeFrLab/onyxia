@@ -13,12 +13,14 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
 import { RootState } from 'js/redux/';
 import { useHistory } from 'react-router-dom';
+import useBetaTest from '../hooks/useBetaTest';
 
 const RegionBanner = () => {
 	const regions = useSelector((store: RootState) => store.regions);
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
-	const betaTest = localStorage.getItem('betatest') === 'true';
+	const [betaTest] = useBetaTest();
+	console.log(betaTest);
 	useEffect(() => {
 		if (!regions.selectedRegion) {
 			getConfiguration();

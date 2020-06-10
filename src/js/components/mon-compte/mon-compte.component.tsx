@@ -13,10 +13,6 @@ import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
-import {
-	hasOptedInForBetaTest,
-	changeBetaTestStatus,
-} from 'js/configuration/betatest';
 import exportMinio from './export-credentials-minio';
 import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
@@ -24,6 +20,7 @@ import S3Field from './s3';
 import GitField from './git';
 import { resetVaultPwd } from 'js/vault-client';
 import { User } from 'js/model/User';
+import useBetaTest from '../hooks/useBetaTest';
 
 interface Props {
 	user?: User;
@@ -33,7 +30,7 @@ interface Props {
 }
 
 const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
-	const [betatest, setBetatest] = useState(hasOptedInForBetaTest());
+	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
 
 	useEffect(() => {
@@ -50,9 +47,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	}, [user, s3loading]);
 
 	const handleChange = (event) => {
-		changeBetaTestStatus(event.target.checked).then(() =>
-			setBetatest(hasOptedInForBetaTest())
-		);
+		setBetaTest(event.target.checked);
 	};
 
 	if (!user) return null;
@@ -156,7 +151,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 				) : (
 					<Loader />
 				)}
-				{betatest ? (
+				{betaTest ? (
 					<Paper className="paragraphe" elevation={1}>
 						<Typography variant="h3" align="left">
 							Kubernetes
@@ -192,7 +187,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 								onChange={handleChange}
 								name="checkedB"
 								color="primary"
-								checked={betatest}
+								checked={betaTest}
 							/>
 						}
 						label={D.activateBetatest}
