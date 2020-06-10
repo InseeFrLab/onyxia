@@ -5,13 +5,13 @@ import { Avatar, Card, CardContent, Paper } from '@material-ui/core/';
 import { CardHeader, Grid, Icon } from '@material-ui/core/';
 import Button from '@material-ui/core/Button';
 import D from 'js/i18n';
-import { wrapPromise, axiosPublic } from 'js/utils';
+import { wrapPromise, axiosURL } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
 import conf from './../../configuration';
 
 const resource = wrapPromise(
-	axiosPublic(
+	axiosURL(
 		conf.CONTENT.HOMEPAGE_URL
 			? conf.CONTENT.HOMEPAGE_URL
 			: `${window.location.origin}/accueil.json`

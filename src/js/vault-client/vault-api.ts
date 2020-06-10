@@ -1,6 +1,6 @@
 import axios from 'axios';
 import generator from 'generate-password';
-import { axiosAuth, getToken } from 'js/utils';
+import { axiosURL, getToken } from 'js/utils';
 import { store } from 'js/redux';
 import { newVaultToken, newVaultData } from 'js/redux/actions';
 import conf from '../configuration';
@@ -64,7 +64,7 @@ export const getVaultToken = async () =>
 const fetchVaultToken = async () => {
 	const {
 		auth: { client_token: token },
-	} = await axiosAuth.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
+	} = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 		role: 'onyxia-user',
 		jwt: await getToken(),
 	});

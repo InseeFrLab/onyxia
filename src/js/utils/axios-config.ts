@@ -60,8 +60,6 @@ axiosAuth.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-const axiosPublicFolder = axios.create({ baseURL: BASE_URL });
-
 const axiosPublic = axios.create({ baseURL: BASE_URL });
 
 axiosPublic.interceptors.response.use(
@@ -78,4 +76,4 @@ axiosURL.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-export { axiosAuth, axiosPublic, axiosURL, axiosPublicFolder, refreshToken };
+export { axiosAuth, axiosPublic, axiosURL, refreshToken };
