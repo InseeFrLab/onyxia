@@ -20,7 +20,6 @@ const RegionBanner = () => {
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
 	const [betaTest] = useBetaTest();
-	console.log(betaTest);
 	useEffect(() => {
 		if (!regions.selectedRegion) {
 			getConfiguration();
