@@ -18,7 +18,7 @@ import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
 import { getVaultToken } from 'js/vault-client';
-import { hasOptedInForBetaTest } from 'js/configuration/betatest';
+import useBetaTest from 'js/components/hooks/useBetaTest';
 
 const NouveauService = ({
 	idCatalogue,
@@ -36,6 +36,7 @@ const NouveauService = ({
 	const [minioCredentials, setMinioCredentials] = useState(undefined);
 	const [contract, setContract] = useState(undefined);
 	const [loading, setLoading] = useState(true);
+	const [betaTester] = useBetaTest();
 
 	const queryParams = queryString.decode(getCleanParams());
 
@@ -181,7 +182,7 @@ const NouveauService = ({
 							>
 								Créer votre service
 							</Button>
-							{hasOptedInForBetaTest() ? (
+							{betaTester ? (
 								<IconButton
 									id="bouton-preview-nouveau-service"
 									variant="contained"

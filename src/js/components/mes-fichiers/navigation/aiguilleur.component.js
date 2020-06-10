@@ -33,7 +33,7 @@ class NavigationFile extends React.Component {
 		}
 		const bucket = this.props.buckets.find(
 			(b) => b.id === this.state.bucketName
-		);
+		) || { id: this.state.bucketName };
 
 		if (bucket) {
 			await openBucket(bucket);
