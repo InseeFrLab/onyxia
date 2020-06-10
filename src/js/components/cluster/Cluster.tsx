@@ -13,7 +13,7 @@ import exportKub from './exportCredentialsKub';
 const EnTete = () => (
 	<div className="en-tete">
 		<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-			Mon cluster
+			{D.cluster}
 		</Typography>
 	</div>
 );

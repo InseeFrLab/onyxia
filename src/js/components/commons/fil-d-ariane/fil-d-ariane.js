@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Icon } from '@material-ui/core';
 import './fil-d-ariane.scss';
+import D from 'js/i18n';
 
 export const fil = {
 	accueil: [
@@ -19,7 +20,7 @@ export const fil = {
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{
 			pathname: '/cluster',
-			component: <span>Mon cluster</span>,
+			component: <span>{D.cluster}</span>,
 		},
 	],
 	catalogues: [
