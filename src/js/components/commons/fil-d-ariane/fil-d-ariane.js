@@ -15,6 +15,13 @@ export const fil = {
 			component: <span>A propos</span>,
 		},
 	],
+	cluster: [
+		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		{
+			pathname: '/cluster',
+			component: <span>Mon cluster</span>,
+		},
+	],
 	catalogues: [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{

@@ -24,7 +24,7 @@ const Cluster = () => {
 	return (
 		<>
 			<EnTete />
-			<FilDAriane fil={fil.about} />
+			<FilDAriane fil={fil.cluster} />
 			<div className="contenu accueil">
 				<Paper className="paragraphe" elevation={1}>
 					<Typography variant="h3" align="left">
