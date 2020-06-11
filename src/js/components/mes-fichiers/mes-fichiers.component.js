@@ -12,7 +12,6 @@ class MesFichiers extends React.Component {
 		buckets: undefined,
 		client: undefined,
 		api: undefined,
-		bucketsAvatars: {},
 	};
 	constructor(props) {
 		super(props);
@@ -25,7 +24,6 @@ class MesFichiers extends React.Component {
 	init = async () => {
 		this.state.client = await getMinioClient();
 		this.setState({ api: getMinioApi(this.state.client) });
-		this.getBucketsAvatar(this.props.buckets);
 	};
 
 	static getDerivedStateFromProps = (props, state) => {
@@ -35,30 +33,6 @@ class MesFichiers extends React.Component {
 		}
 		return state;
 	};
-
-	async getBucketsAvatar(buckets) {
-		var result = {},
-			idx = 0;
-		if (this.state.api)
-			buckets.forEach(({ id }) => {
-				idx++;
-				this.state.api
-					.presignedGetObject({ bucketName: id, objectName: 'metadata/avatar' })
-					.then((res) => {
-						result[id] = res;
-						if (idx === buckets.length)
-							this.setState({ bucketsAvatars: result });
-					})
-					.catch((err) => {
-						console.error('ERR', err, err.code);
-						if (err.code === 'NoSuchKey')
-							result[id] = 'NoSuchKey Error provided';
-						if (idx === buckets.length)
-							this.setState({ bucketsAvatars: result });
-					});
-			});
-		return result;
-	}
 
 	render() {
 		const { buckets } = this.props;
@@ -89,14 +63,7 @@ class MesFichiers extends React.Component {
 						</Typography>
 						<div id="bucket-list">
 							{buckets.map(({ id, description }, i) => {
-								return (
-									<Bucket
-										key={i}
-										picture={this.state.bucketsAvatars[id]}
-										description={description}
-										id={id}
-									/>
-								);
+								return <Bucket key={i} description={description} id={id} />;
 							})}
 						</div>
 					</Paper>
@@ -108,7 +75,6 @@ class MesFichiers extends React.Component {
 
 const Bucket = ({ id, description, picture }) => (
 	<Link to={`/mes-fichiers/${id}`}>
-		<img src={picture} alt={id + "'s avatar"} />
 		<h4>{id}</h4>
 		<h5>{description}</h5>
 	</Link>
