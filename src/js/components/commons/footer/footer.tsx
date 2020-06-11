@@ -20,8 +20,11 @@ const Footer = () => {
 					</LienRapide>
 				)}
 
-				{conf.FOOTER.ONYXIA.CHAT && (
-					<LienRapide url={conf.FOOTER.ONYXIA.CHAT} icon={<Icon>group</Icon>}>
+				{conf.FOOTER.ONYXIA.CHAT_ROOM && (
+					<LienRapide
+						url={conf.FOOTER.ONYXIA.CHAT_ROOM}
+						icon={<Icon>group</Icon>}
+					>
 						Chat
 					</LienRapide>
 				)}

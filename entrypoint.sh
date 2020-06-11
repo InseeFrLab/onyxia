@@ -16,6 +16,7 @@ echo "window._env_['VAULT_BASE_URI'] = '$VAULT_BASE_URI';" >> /usr/share/nginx/h
 echo "window._env_['VAULT_KV_ENGINE'] = '$VAULT_KV_ENGINE';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['INSTANCES_MAX'] = '$INSTANCES_MAX';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['ONYXIA_GIT'] = '$ONYXIA_GIT';" >> /usr/share/nginx/html/env-config.js
+echo "window._env_['ONYXIA_CHAT_ROOM'] = '$ONYXIA_CHAT_ROOM';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['SWAGGER_API'] = '$SWAGGER_API';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['GHOST_URL'] = '$GHOST_URL';" >> /usr/share/nginx/html/env-config.js
 echo "window._env_['MONITORING_URL'] = '$MONITORING_URL';" >> /usr/share/nginx/html/env-config.js

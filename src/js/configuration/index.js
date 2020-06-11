@@ -52,6 +52,7 @@ const conf = {
 	FOOTER: {
 		ONYXIA: {
 			GIT: readConfig('ONYXIA_GIT'),
+			CHAT_ROOM: readConfig('ONYXIA_CHAT_ROOM'),
 		},
 		SWAGGER_API: readConfig('SWAGGER_API'),
 		GHOST_URL: readConfig('GHOST_URL'),
