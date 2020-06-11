@@ -35,7 +35,8 @@ import Notifications from 'js/components/notifications';
 import About from 'js/components/about';
 import 'typeface-roboto';
 import './app.scss';
-import RegionBanner from 'js/components/RegionsBanner';
+import RegionBanner from 'js/components/regionsBanner';
+import Cluster from 'js/components/cluster';
 
 const theme = createTheme();
 const routerContext = createRouterContext(Accueil)('/accueil');
@@ -103,6 +104,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 						<Switch>
 							<Route path="/accueil" component={Accueil} />
 							<Route path="/about" component={About} />
+							<PrivateRoute path="/cluster" component={Cluster} />
 							<Route exact path="/services" component={Services} />
 							<Route path="/services/*" component={ServiceDetails} />
 							<Route exact path="/trainings" component={Trainings} />
