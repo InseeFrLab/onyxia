@@ -12,6 +12,7 @@ const ServiceConf = ({ service }: Props) => {
 			env={service.env}
 			urls={service.urls}
 			internalUrls={service.internalUrls}
+			message={service.postInstallInstructions}
 		/>
 	);
 };

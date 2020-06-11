@@ -31,7 +31,7 @@ const RegionBanner = () => {
 			<Collapse in={open}>
 				<Alert
 					variant="filled"
-					severity="warning"
+					severity="success"
 					action={
 						<Button
 							aria-label="a-propos"

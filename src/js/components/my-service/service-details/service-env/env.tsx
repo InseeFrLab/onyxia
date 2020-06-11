@@ -15,6 +15,7 @@ interface Props {
 	env: object;
 	urls?: string[];
 	internalUrls?: string[];
+	message?: string;
 }
 
 const ListUrls = ({
@@ -31,10 +32,12 @@ const ListUrls = ({
 	</>
 );
 
-const ServiceEnv = ({ env, urls = [], internalUrls = [] }: Props) => {
+const ServiceEnv = ({ env, message, urls = [], internalUrls = [] }: Props) => {
 	const nbUrls = urls.length + internalUrls.length;
 	return (
 		<Paper className="paragraphe" elevation={1}>
+			{message && <Typography gutterBottom>{message}</Typography>}
+
 			{nbUrls > 0 && (
 				<>
 					<Typography variant="h3" gutterBottom>
