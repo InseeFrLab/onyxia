@@ -36,6 +36,7 @@ export interface Auth {
 
 export interface S3Config {
 	URL: string;
+	monitoring?: Monitoring;
 }
 
 export interface Location {
