@@ -6,7 +6,7 @@ const initial = {
 	currentDirectories: [],
 	bucketsPolicies: null,
 	waitingPaths: [],
-	userBuckets: [],
+	userBuckets: null,
 };
 
 export default (state = initial, { type, payload }) => {

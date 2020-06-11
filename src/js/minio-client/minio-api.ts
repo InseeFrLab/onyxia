@@ -6,7 +6,8 @@ export default (client: Client) => ({
 		client.statObject(bucketName, fileName),
 	isBucketExist: (bucketName) => client.bucketExists(bucketName),
 	removeBucket: (bucketName) => client.removeBucket(bucketName),
-	createBucket: (bucket) => client.makeBucket(bucket, undefined),
+	// @ts-ignore
+	createBucket: (bucket) => client.makeBucket(bucket),
 	listBuckets: () => client.listBuckets(),
 	listObjects: (name, prefix = '', rec = true) =>
 		client.listObjects(name, prefix, rec),
