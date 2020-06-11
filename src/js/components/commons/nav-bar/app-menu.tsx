@@ -19,6 +19,8 @@ import conf from 'js/configuration';
 import D from 'js/i18n';
 
 import useBetaTest from 'js/components/hooks/useBetaTest';
+import { RootState } from 'js/redux';
+import { useSelector } from 'react-redux';
 
 const ItemLogin = ({ login }) => (
 	<ListItem button onClick={login}>
@@ -40,6 +42,9 @@ export default ({
 	startVisite,
 }) => {
 	const [betaTester] = useBetaTest();
+	const selectedRegion = useSelector(
+		(state: RootState) => state.regions.selectedRegion
+	);
 	return (
 		<Drawer anchor="left" open={open} onClose={handleClose}>
 			<div className="menu" tabIndex={0}>
@@ -111,6 +116,19 @@ export default ({
 							</ListItemIcon>
 							<ListItemText primary={D.mySecretsTitle} />
 						</ListItem>
+					) : null}
+					{betaTester && selectedRegion?.services?.type === 'KUBERNETES' ? (
+						<>
+							<ListItem>
+								<ListItemText primary="DevOps" />
+							</ListItem>
+							<ListItem button component={Link} to="/cluster">
+								<ListItemIcon>
+									<Icon>domain</Icon>
+								</ListItemIcon>
+								<ListItemText primary={D.cluster} />
+							</ListItem>
+						</>
 					) : null}
 					{betaTester ? (
 						<>

@@ -8,7 +8,7 @@ import SelectRegion from './SelectRegion';
 import { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
 import { useSelector, useDispatch } from 'react-redux';
-import { newRegions, regionChanged } from 'js/redux/actions';
+import { regionChanged } from 'js/redux/actions';
 import { RootState } from 'js/redux';
 
 const EnTete = () => (
@@ -30,7 +30,6 @@ const About = () => {
 
 	useEffect(() => {
 		getConfiguration().then((resp) => {
-			dispatch(newRegions(resp.regions));
 			setConfiguration(resp);
 		});
 	}, [dispatch]);

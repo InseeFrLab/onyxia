@@ -14,7 +14,6 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import './mon-compte.scss';
 import exportMinio from './export-credentials-minio';
-import exportKub from './export-credentials-kub';
 import D from 'js/i18n';
 import S3Field from './s3';
 import GitField from './git';
@@ -151,35 +150,6 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 				) : (
 					<Loader />
 				)}
-				{betaTest ? (
-					<Paper className="paragraphe" elevation={1}>
-						<Typography variant="h3" align="left">
-							Kubernetes
-						</Typography>
-						<Typography variant="body1" align="left">
-							{D.k8sLoginExplanation}
-						</Typography>
-						<CopyableField
-							copy
-							label="Cluster Name"
-							value={user.KUBERNETES.KUB_SERVER_NAME}
-						/>
-						<CopyableField
-							copy
-							label="Api-server url"
-							value={user.KUBERNETES.KUB_SERVER_URL}
-						/>
-						<CopyableField copy label="Token" value={getKeycloak().token} />
-						<ExportCredentialsField
-							credentials={user}
-							exportTypes={exportKub}
-							text={D.exportKub}
-						/>
-					</Paper>
-				) : (
-					<></>
-				)}
-
 				<Paper className="paragraphe" elevation={1}>
 					<FormControlLabel
 						control={
