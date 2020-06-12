@@ -3,7 +3,7 @@ import { Region } from 'js/model/Region';
 
 interface RegionsState {
 	regions: Region[];
-	selectedRegion?: string;
+	selectedRegion?: Region;
 }
 
 const initial: RegionsState = {

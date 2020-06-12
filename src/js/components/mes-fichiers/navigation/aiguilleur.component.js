@@ -28,12 +28,12 @@ class NavigationFile extends React.Component {
 			await this.props.getUserInfo();
 		}
 
-		if (this.props.buckets.length === 0) {
+		if (!this.props.buckets) {
 			await this.props.loadUserBuckets(this.props.user.IDEP);
 		}
-		const bucket = this.props.buckets.find(
+		const bucket = this.props.buckets?.find(
 			(b) => b.id === this.state.bucketName
-		);
+		) || { id: this.state.bucketName };
 
 		if (bucket) {
 			await openBucket(bucket);

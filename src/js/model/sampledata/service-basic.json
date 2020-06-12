@@ -13,6 +13,7 @@
 	"status": "RUNNING",
 	"type": "MARATHON",
 	"env": {},
+	"postInstallInstructions": "Enjoy your service accessible at https://example.com",
 	"tasks": [
 		{ "id": "task1", "status": { "status": "status", "reason": "reason" } }
 	]

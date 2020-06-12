@@ -18,7 +18,9 @@ import {
 import conf from 'js/configuration';
 import D from 'js/i18n';
 
-import { hasOptedInForBetaTest } from 'js/configuration/betatest';
+import useBetaTest from 'js/components/hooks/useBetaTest';
+import { RootState } from 'js/redux';
+import { useSelector } from 'react-redux';
 
 const ItemLogin = ({ login }) => (
 	<ListItem button onClick={login}>
@@ -38,92 +40,111 @@ export default ({
 	login,
 	logout,
 	startVisite,
-}) => (
-	<Drawer anchor="left" open={open} onClose={handleClose}>
-		<div className="menu" tabIndex={0}>
-			<IconButton onClick={handleClose}>
-				<Clear />
-			</IconButton>
-			<List onClick={handleClose}>
-				{authenticated ? null : <ItemLogin login={login} />}
-				<ListItem button component={Link} to="/accueil">
-					<ListItemIcon>
-						<Home />
-					</ListItemIcon>
-					<ListItemText primary="Accueil" />
-				</ListItem>
-				<ListItem button component={Link} to="/visite-guidee">
-					<ListItemIcon>
-						<Icon>forward</Icon>
-					</ListItemIcon>
-					<ListItemText primary={D.guidedTourTitle} />
-				</ListItem>
-				<ListItem>
-					<ListItemText primary="La plateforme" />
-				</ListItem>
-				<ListItem
-					button
-					component={Link}
-					to="/trainings"
-					disabled={!conf.CONTENT.TRAININGS_URL}
-				>
-					<ListItemIcon>
-						<Icon>menu_book</Icon>
-					</ListItemIcon>
-					<ListItemText primary={D.trainingTitle} />
-				</ListItem>
-				<ListItem button component={Link} to="/services">
-					<ListItemIcon>
-						<PokerHandIcon width={30} height={30} />
-					</ListItemIcon>
-					<ListItemText primary="Services" />
-				</ListItem>
-				<ListItem>
-					<ListItemText primary="Services à la demande" />
-				</ListItem>
-				<ListItem button component={Link} to="/my-lab/catalogue">
-					<ListItemIcon>
-						<CatalogueIcon width={20} height={20} />
-					</ListItemIcon>
-					<ListItemText primary="Catalogue" />
-				</ListItem>
-				<ListItem button component={Link} to="/my-services">
-					<ListItemIcon>
-						<BecherIcon height={20} width={20} />
-					</ListItemIcon>
-					<ListItemText primary="Mon labo" />
-				</ListItem>
-				<ListItem>
-					<ListItemText primary="Données" />
-				</ListItem>
-				<ListItem button component={Link} to="/mes-fichiers">
-					<ListItemIcon>
-						<Icon>folder</Icon>
-					</ListItemIcon>
-					<ListItemText primary={D.myFilesTitle} />
-				</ListItem>
-				{hasOptedInForBetaTest() ? (
-					<ListItem button component={Link} to="/mes-secrets">
+}) => {
+	const [betaTester] = useBetaTest();
+	const selectedRegion = useSelector(
+		(state: RootState) => state.regions.selectedRegion
+	);
+	return (
+		<Drawer anchor="left" open={open} onClose={handleClose}>
+			<div className="menu" tabIndex={0}>
+				<IconButton onClick={handleClose}>
+					<Clear />
+				</IconButton>
+				<List onClick={handleClose}>
+					{authenticated ? null : <ItemLogin login={login} />}
+					<ListItem button component={Link} to="/accueil">
 						<ListItemIcon>
-							<Icon>vpn_key</Icon>
+							<Home />
 						</ListItemIcon>
-						<ListItemText primary={D.mySecretsTitle} />
+						<ListItemText primary="Accueil" />
 					</ListItem>
-				) : null}
-				{hasOptedInForBetaTest() ? (
-					<>
-						<ListItem>
-							<ListItemText primary="Informations" />
-						</ListItem>
-						<ListItem button component={Link} to="/about">
+					<ListItem button component={Link} to="/visite-guidee">
+						<ListItemIcon>
+							<Icon>forward</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.guidedTourTitle} />
+					</ListItem>
+					<ListItem>
+						<ListItemText primary="La plateforme" />
+					</ListItem>
+					<ListItem
+						button
+						component={Link}
+						to="/trainings"
+						disabled={!conf.CONTENT.TRAININGS_URL}
+					>
+						<ListItemIcon>
+							<Icon>menu_book</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.trainingTitle} />
+					</ListItem>
+					<ListItem button component={Link} to="/services">
+						<ListItemIcon>
+							<PokerHandIcon width={30} height={30} />
+						</ListItemIcon>
+						<ListItemText primary="Services" />
+					</ListItem>
+					<ListItem>
+						<ListItemText primary="Services à la demande" />
+					</ListItem>
+					<ListItem button component={Link} to="/my-lab/catalogue">
+						<ListItemIcon>
+							<CatalogueIcon width={20} height={20} />
+						</ListItemIcon>
+						<ListItemText primary="Catalogue" />
+					</ListItem>
+					<ListItem button component={Link} to="/my-services">
+						<ListItemIcon>
+							<BecherIcon height={20} width={20} />
+						</ListItemIcon>
+						<ListItemText primary="Mon labo" />
+					</ListItem>
+					<ListItem>
+						<ListItemText primary="Données" />
+					</ListItem>
+					<ListItem button component={Link} to="/mes-fichiers">
+						<ListItemIcon>
+							<Icon>folder</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.myFilesTitle} />
+					</ListItem>
+					{betaTester ? (
+						<ListItem button component={Link} to="/mes-secrets">
 							<ListItemIcon>
-								<Icon>infoIcon</Icon>
+								<Icon>vpn_key</Icon>
 							</ListItemIcon>
-							<ListItemText primary={D.about} />
+							<ListItemText primary={D.mySecretsTitle} />
 						</ListItem>
-					</>
-				) : null}
-			</List>
-		</div>
-	</Drawer>
-);
+					) : null}
+					{betaTester && selectedRegion?.services?.type === 'KUBERNETES' ? (
+						<>
+							<ListItem>
+								<ListItemText primary="DevOps" />
+							</ListItem>
+							<ListItem button component={Link} to="/cluster">
+								<ListItemIcon>
+									<Icon>domain</Icon>
+								</ListItemIcon>
+								<ListItemText primary={D.cluster} />
+							</ListItem>
+						</>
+					) : null}
+					{betaTester ? (
+						<>
+							<ListItem>
+								<ListItemText primary="Informations" />
+							</ListItem>
+							<ListItem button component={Link} to="/about">
+								<ListItemIcon>
+									<Icon>infoIcon</Icon>
+								</ListItemIcon>
+								<ListItemText primary={D.about} />
+							</ListItem>
+						</>
+					) : null}
+				</List>
+			</div>
+		</Drawer>
+	);
+};
