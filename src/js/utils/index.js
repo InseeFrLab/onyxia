@@ -10,14 +10,3 @@ export * from './service-utils';
 export * from './fil-d-ariane-utils';
 export * from './token-local-storage';
 export { default as typeRequest } from './mes-services-types-request';
-
-const monitoringBaseUri = conf.APP.MONITORING_URI;
-
-const makeParamFromIdService = (id) =>
-	id
-		.split('/')
-		.filter((s) => s.trim().length > 0)
-		.join('_');
-
-export const getMonitoringServiceUrl = (service) =>
-	`${monitoringBaseUri}${makeParamFromIdService(service.id)}`;

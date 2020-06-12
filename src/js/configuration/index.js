@@ -16,7 +16,6 @@ const conf = {
 		DNS: readConfig('DNS'),
 		GIT_PATH: readConfig('GIT_PATH'),
 		PASSWORD: readConfig('PASSWORD'),
-		MONITORING_URI: readConfig('MONITORING_BASE_URI'),
 		CONTACT: readConfig('CONTACT'),
 		WARNING_MESSAGE: readConfig('WARNING_MESSAGE'),
 	},
