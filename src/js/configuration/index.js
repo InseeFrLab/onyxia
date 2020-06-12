@@ -12,16 +12,8 @@ const conf = {
 		TRAININGS_URL: readConfig('TRAININGS_URL'),
 	},
 	APP: {
-		MAX_INSTANCES: readConfig('INSTANCES_MAX'),
-		DNS: readConfig('DNS'),
-		GIT_PATH: readConfig('GIT_PATH'),
-		PASSWORD: readConfig('PASSWORD'),
-		GRAFANA_URI: readConfig('GRAFANA_BASE_URI'),
 		CONTACT: readConfig('CONTACT'),
 		WARNING_MESSAGE: readConfig('WARNING_MESSAGE'),
-	},
-	ENDPOINTS: {
-		SALON_RC: readConfig('SALON_ROCKETCHAT'),
 	},
 	KUBERNETES: {
 		KUB_SERVER_NAME: readConfig('KUB_SERVER_NAME'),
@@ -32,7 +24,7 @@ const conf = {
 		VAULT_KV_ENGINE: readConfig('VAULT_KV_ENGINE'),
 	},
 	CHAT: {
-		URL: readConfig('CHAT_URL'),
+		CHAT_URL: readConfig('CHAT_URL'),
 	},
 	AUTHENTICATION: {
 		TYPE: readConfig('AUTH_TYPE'),
@@ -55,11 +47,11 @@ const conf = {
 	FOOTER: {
 		ONYXIA: {
 			GIT: readConfig('ONYXIA_GIT'),
-			ROCKETCHAT: readConfig('ONYXIA_ROCKETCHAT'),
+			CHAT_ROOM: readConfig('ONYXIA_CHAT_ROOM'),
 		},
 		SWAGGER_API: readConfig('SWAGGER_API'),
-		GHOST_URL: readConfig('GHOST_URL'),
-		GRAFANA_URL: readConfig('GRAFANA_URL'),
+		BLOG_URL: readConfig('BLOG_URL'),
+		MONITORING_URL: readConfig('MONITORING_URL'),
 	},
 };
 

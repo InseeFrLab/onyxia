@@ -2,11 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Button, Icon } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-import {
-	RocketChatIcon,
-	GrafanaIcon,
-	GhosthIcon,
-} from 'js/components/commons/icons';
 import './footer.scss';
 import conf from '../../../configuration';
 
@@ -15,25 +10,28 @@ const Footer = () => {
 		<footer className="footer">
 			<Divider light />
 			<div className="liens-rapides">
-				{conf.FOOTER.GRAFANA_URL && (
-					<LienRapide url={conf.FOOTER.GRAFANA_URL} icon={<GrafanaIcon />}>
-						Grafana
-					</LienRapide>
-				)}
-
-				{conf.FOOTER.ONYXIA.ROCKETCHAT && (
+				{conf.FOOTER.MONITORING_URL && (
 					<LienRapide
-						url={conf.FOOTER.ONYXIA.ROCKETCHAT}
-						icon={<RocketChatIcon />}
+						url={conf.FOOTER.MONITORING_URL}
+						icon={<Icon>equalizer</Icon>}
 					>
-						RocketChat
+						Monitoring
 					</LienRapide>
 				)}
 
-				{conf.FOOTER.GHOST_URL && (
+				{conf.FOOTER.ONYXIA.CHAT_ROOM && (
 					<LienRapide
-						url={conf.FOOTER.GHOST_URL}
-						icon={<GhosthIcon width={15} height={15} />}
+						url={conf.FOOTER.ONYXIA.CHAT_ROOM}
+						icon={<Icon>group</Icon>}
+					>
+						Chat Room for onyxia user
+					</LienRapide>
+				)}
+
+				{conf.FOOTER.BLOG_URL && (
+					<LienRapide
+						url={conf.FOOTER.BLOG_URL}
+						icon={<Icon>LibraryBooks</Icon>}
 					>
 						le blog de l'Innovation
 					</LienRapide>

@@ -1,13 +1,9 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { Fab, IconButton } from '@material-ui/core';
+import { Fab, IconButton, Icon } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Next, CarteMask } from './../vignette-commons';
-import {
-	MinioIcon,
-	GitlabIcon,
-	RocketChatIcon,
-} from 'js/components/commons/icons';
+import { MinioIcon, GitlabIcon } from 'js/components/commons/icons';
 import conf from 'js/configuration';
 import D from 'js/i18n';
 
@@ -65,9 +61,11 @@ export default {
 	},
 	actions: ({ next }) => (
 		<>
-			<Tooltip title="RocketChat">
+			<Tooltip title="Chat">
 				<Fab color="primary" onClick={() => window.open(conf.CHAT.URL)}>
-					<RocketChatIcon height={20} width={20} />
+					<Icon height={20} width={20}>
+						group
+					</Icon>
 				</Fab>
 			</Tooltip>
 			<Next next={next} />

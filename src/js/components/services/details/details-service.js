@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-	GrafanaIcon,
-	RocketChatIcon,
-	GithubIcon,
-} from 'js/components/commons/icons';
-import { Typography, Paper, Fab } from '@material-ui/core';
+import { GithubIcon } from 'js/components/commons/icons';
+import { Typography, Paper, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import CopyableField from 'js/components/commons/copyable-field';
 import { axiosURL, wrapPromise } from 'js/utils';
@@ -65,17 +61,17 @@ const DetailsService = () => {
 								title="dashboard"
 								onClick={() => window.open(dashboard)}
 							>
-								<GrafanaIcon />
+								<Icon>equalizer</Icon>
 							</Fab>
 						) : null}
 						{channel ? (
 							<Fab
 								className="bouton"
 								color="primary"
-								title="rocketchat"
+								title="chat"
 								onClick={() => window.open(channel)}
 							>
-								<RocketChatIcon />
+								<Icon>group</Icon>
 							</Fab>
 						) : null}
 						{scm ? (
