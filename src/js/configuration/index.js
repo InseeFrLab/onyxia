@@ -12,10 +12,6 @@ const conf = {
 		TRAININGS_URL: readConfig('TRAININGS_URL'),
 	},
 	APP: {
-		MAX_INSTANCES: readConfig('INSTANCES_MAX'),
-		DNS: readConfig('DNS'),
-		GIT_PATH: readConfig('GIT_PATH'),
-		PASSWORD: readConfig('PASSWORD'),
 		CONTACT: readConfig('CONTACT'),
 		WARNING_MESSAGE: readConfig('WARNING_MESSAGE'),
 	},
