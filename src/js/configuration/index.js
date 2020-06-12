@@ -55,7 +55,7 @@ const conf = {
 			CHAT_ROOM: readConfig('ONYXIA_CHAT_ROOM'),
 		},
 		SWAGGER_API: readConfig('SWAGGER_API'),
-		GHOST_URL: readConfig('GHOST_URL'),
+		BLOG_URL: readConfig('BLOG_URL'),
 		MONITORING_URL: readConfig('MONITORING_URL'),
 	},
 };

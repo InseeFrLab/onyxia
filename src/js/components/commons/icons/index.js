@@ -7,6 +7,5 @@ export { default as ArrowIcon } from './arrow.icon';
 export { default as BecherIcon } from './becher.icon';
 export { default as PauseIcon } from './pause.icon';
 export { default as PokerHandIcon } from './poker-hand.icon';
-export { default as GhosthIcon } from './ghost.icon';
 export { default as GithubIcon } from './github.icon';
 export { default as MinioIcon } from './minio.icon';

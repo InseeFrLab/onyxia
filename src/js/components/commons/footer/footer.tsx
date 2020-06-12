@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Button, Icon } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-import { GhosthIcon } from 'js/components/commons/icons';
 import './footer.scss';
 import conf from '../../../configuration';
 
@@ -25,14 +24,14 @@ const Footer = () => {
 						url={conf.FOOTER.ONYXIA.CHAT_ROOM}
 						icon={<Icon>group</Icon>}
 					>
-						Chat
+						Chat Room for onyxia user
 					</LienRapide>
 				)}
 
-				{conf.FOOTER.GHOST_URL && (
+				{conf.FOOTER.BLOG_URL && (
 					<LienRapide
-						url={conf.FOOTER.GHOST_URL}
-						icon={<GhosthIcon width={15} height={15} />}
+						url={conf.FOOTER.BLOG_URL}
+						icon={<Icon>LibraryBooks</Icon>}
 					>
 						le blog de l'Innovation
 					</LienRapide>
