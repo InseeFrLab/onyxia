@@ -1,4 +1,3 @@
-import conf from '../configuration';
 export { default as getKeycloak } from './keycloak-config';
 export * from './axios-config';
 export * from './form-field';
