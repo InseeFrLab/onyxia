@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { RocketChatIcon } from 'js/components/commons/icons';
 import {
 	Dialog,
 	DialogActions,
@@ -100,13 +99,13 @@ class DetailsService extends React.Component {
 								{service.labels.ONYXIA_CHANNEL ? (
 									<span>
 										{' '}
-										et le canal RocketChat
+										et le canal de Chat
 										<IconButton
 											color="secondary"
 											component="span"
 											onClick={() => window.open(service.labels.ONYXIA_CHANNEL)}
 										>
-											<RocketChatIcon />
+											<Icon>group</Icon>
 										</IconButton>
 									</span>
 								) : null}

@@ -4,11 +4,8 @@ const initial = {
 	USERNAME: '',
 	IDEP: undefined,
 	USERMAIL: '',
-	USERPASSWORD: conf.APP.PASSWORD,
 	USERKEY: 'https://example.com/placeholder.gpg',
 	STATUS: '',
-	GIT: conf.APP.GIT_PATH,
-	DNS: conf.APP.DNS,
 	UUID: '',
 	IP: '',
 	S3: {

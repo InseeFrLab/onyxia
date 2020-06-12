@@ -2,7 +2,6 @@
 	"USERMAIL": "toto@toto.fr",
 	"USERNAME": "El gato",
 	"AWS_ACCESS_KEY_ID": "QX5D1PTW59UTRAXXXXXX",
-	"USERPASSWORD": "changeme",
 	"S3": {
 		"AWS_DEFAULT_REGION": "us-east-1",
 		"AWS_EXPIRATION": "2019-12-07T17:10:12Z",
