@@ -2,6 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
 import { Arrow } from './../vignette-commons';
+import D from 'js/i18n';
 
 export default {
 	description: class Diapo extends React.Component {
@@ -37,13 +38,10 @@ export default {
 				<>
 					<Arrow dom={this.state.dom} />
 					<Typography variant="h6" gutterBottom>
-						Nouveau service personnel
+						{D.guidedTourSelfServiceCreationTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Sur cette page, vous pouvez configurer votre service en parcourant
-						les différents onglets d&rsquo;options. Le strict nécessaire est
-						rempli par défaut. Une fois terminé, vous pouvez valider la demande
-						en cliquant sur le bouton créer.
+						{D.guidedTourVignette6Text1}
 					</Typography>
 				</>
 			);
@@ -60,7 +58,7 @@ export default {
 					next();
 				}}
 			>
-				créer votre service
+				{D.guidedTourVignette6Text2}
 			</Button>
 		</>
 	),

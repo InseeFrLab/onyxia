@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Loader from '../commons/loader';
 import ServiceDetails from './service-details';
-import { getService, deleteService } from 'js/api/my-lab';
+import { getService, deleteServices } from 'js/api/my-lab';
 import { Service } from 'js/model';
 import Toolbar from './toolbar';
 import { Redirect } from 'react-router-dom';
@@ -25,7 +25,7 @@ const MyService = ({ serviceId }: Props) => {
 
 	const handleDelete = () => {
 		setLoading(true);
-		deleteService(service).then(() => {
+		deleteServices(service.id).then(() => {
 			setLoading(false);
 			setRedirect('/my-services');
 		});
@@ -44,6 +44,7 @@ const MyService = ({ serviceId }: Props) => {
 			<Toolbar
 				handleRefresh={() => refreshData()}
 				handleDelete={() => handleDelete()}
+				monitoringUrl={service?.monitoring?.url}
 			/>
 			{loading ? <Loader em={18} /> : <ServiceDetails service={service} />}
 		</div>

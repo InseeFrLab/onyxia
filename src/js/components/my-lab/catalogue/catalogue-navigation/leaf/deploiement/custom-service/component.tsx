@@ -34,7 +34,7 @@ const CustomService = ({
 				<Button
 					id="reset-configuration"
 					variant="contained"
-					color="primary"
+					color="secondary"
 					onClick={setInit}
 				>
 					{D.reinitConf}

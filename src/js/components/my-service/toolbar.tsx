@@ -6,9 +6,10 @@ import D from 'js/i18n';
 interface Props {
 	handleDelete?: () => void;
 	handleRefresh?: () => void;
+	monitoringUrl?: string;
 }
 
-const Toolbar = ({ handleDelete, handleRefresh }: Props) => {
+const Toolbar = ({ handleDelete, handleRefresh, monitoringUrl }: Props) => {
 	const [dialog, setDialog] = useState(false);
 	const wantDelete = () => {
 		setDialog(true);
@@ -22,7 +23,11 @@ const Toolbar = ({ handleDelete, handleRefresh }: Props) => {
 	};
 	return (
 		<Paper className="onyxia-toolbar" elevation={1}>
-			<Actions handleDelete={wantDelete} handleRefresh={handleRefresh} />
+			<Actions
+				handleDelete={wantDelete}
+				handleRefresh={handleRefresh}
+				monitoringUrl={monitoringUrl}
+			/>
 			<Dialog
 				open={dialog}
 				title={D.myServiceDialogTitle}
@@ -36,7 +41,7 @@ const Toolbar = ({ handleDelete, handleRefresh }: Props) => {
 	);
 };
 
-const Actions = ({ handleDelete, handleRefresh }) => (
+const Actions = ({ handleDelete, handleRefresh, monitoringUrl }) => (
 	<>
 		{handleRefresh && (
 			<Tooltip title="Refresh">
@@ -50,11 +55,23 @@ const Actions = ({ handleDelete, handleRefresh }) => (
 				</Fab>
 			</Tooltip>
 		)}
-		{handleDelete && (
-			<Tooltip title="Delete all">
+		{monitoringUrl && (
+			<Tooltip title="Monitoring">
 				<Fab
 					color="secondary"
-					aria-label="deleteAll"
+					aria-label="monitor"
+					classes={{ root: 'bouton' }}
+					onClick={() => window.open(monitoringUrl)}
+				>
+					<Icon>equalizer</Icon>
+				</Fab>
+			</Tooltip>
+		)}
+		{handleDelete && (
+			<Tooltip title="Delete">
+				<Fab
+					color="secondary"
+					aria-label="delete"
 					classes={{ root: 'bouton' }}
 					onClick={handleDelete}
 				>

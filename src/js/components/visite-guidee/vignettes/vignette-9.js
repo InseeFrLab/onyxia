@@ -2,26 +2,23 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Both } from './../vignette-commons';
 import { Icon, IconButton } from '@material-ui/core';
+import D from 'js/i18n';
 
 export default {
 	description: () => {
 		return (
 			<>
 				<Typography variant="h6" gutterBottom>
-					Mon labo
+					{D.guidedTourMyLabTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Une fois actif, vous pouvez accéder au service dès lors que celui-ci
-					dispose d&rsquo;une adresse. Ce n&rsquo;est pas le cas de tous les
-					services. PostgreSQL ne possède pas d&rsquo;interface web. Il vous
-					faut dans ce cas utiliser un second service, pgadmin pour manipuler
-					votre base de données.
+					{D.guidedTourVignette9Text1}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					<IconButton color="secondary">
 						<Icon fontSize="small">open_in_new</Icon>
 					</IconButton>
-					ouvre l&rsquo;interface de votre application.
+					{D.guidedTourVignette9Text2}
 				</Typography>
 			</>
 		);

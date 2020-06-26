@@ -150,8 +150,11 @@ class MyFiles extends React.Component {
 	createDirectory = () => {
 		const file = new Blob(['Test,Text'], { type: 'text/csv' });
 		file.name = '.keep';
-		const path =
-			this.props.path.slice(1).length > 0 ? `${this.props.path.slice(1)}/` : '';
+		var path =
+			this.props.path.slice(1).length > 0 ? `${this.props.path.slice(1)}` : '';
+		if (path.length > 0 && !path.endsWith('/')) {
+			path = path + '/';
+		}
 		const { directoryPath } = this.state;
 
 		const completePath = `${path}${directoryPath}`;

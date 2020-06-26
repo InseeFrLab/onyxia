@@ -2,6 +2,8 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Icon } from '@material-ui/core';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
+import D from 'js/i18n';
+
 
 export default {
 	description: class Vignette extends React.Component {
@@ -23,11 +25,10 @@ export default {
 				<>
 					<Arrow dom={this.state.dom} />
 					<Typography variant="h6" gutterBottom>
-						Mon labo
+						{D.guidedTourMyLabTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Vous pouvez maintenant accéder à la page de paramétrage de votre
-						application en cliquant sur le bouton détail de la carte.
+						{D.guidedTourVignette11Text1}
 					</Typography>
 				</>
 			);
@@ -39,6 +40,7 @@ export default {
 			<LinkTo
 				to={`/my-service/${serviceCree.id}`}
 				onClick={next}
+				title={D.btnDetails}
 				component={() => <Icon>more_horiz</Icon>}
 			/>
 		</>

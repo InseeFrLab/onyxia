@@ -53,7 +53,7 @@ const getActions = (service) => (launch) => () => (
 
 const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 	service.status === ServiceStatus.Running ? (
-		service.urls ? (
+		service.urls && service.urls.length > 0 ? (
 			<IconButton
 				color="secondary"
 				aria-label="ouvrir"

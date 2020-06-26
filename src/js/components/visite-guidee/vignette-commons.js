@@ -4,6 +4,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Link } from 'react-router-dom';
 import { Fab, Icon } from '@material-ui/core';
 import { ArrowIcon } from 'js/components/commons/icons';
+import D from 'js/i18n';
 
 export const LinkTo = ({
 	disabled = false,
@@ -11,20 +12,28 @@ export const LinkTo = ({
 	type = 'forward',
 	to = '/accueil',
 	component: Component = undefined,
+	title = '',
 }) => (
 	<Link to={to}>
-		<Fab className="fab" disabled={disabled} color="primary" onClick={onClick}>
-			<Icon>{Component ? <Component /> : type}</Icon>
-		</Fab>
+		<Tooltip title={title}>
+			<Fab
+				className="fab"
+				disabled={disabled}
+				color="primary"
+				onClick={onClick}
+			>
+				<Icon>{Component ? <Component /> : type}</Icon>
+			</Fab>
+		</Tooltip>
 	</Link>
 );
 
 export const Next = ({ next, disabled = false, type = 'arrow_right' }) => (
-	<Tooltip title="suivant">
+	<Tooltip title={D.btnNext}>
 		<Fab
 			className="bouton"
 			disabled={disabled}
-			aria-label="suivant"
+			aria-label={D.btnNext}
 			color="primary"
 			onClick={next}
 		>
@@ -34,11 +43,11 @@ export const Next = ({ next, disabled = false, type = 'arrow_right' }) => (
 );
 
 export const Prec = ({ prec, disabled = false, type = 'arrow_left' }) => (
-	<Tooltip title="précédent">
+	<Tooltip title={D.btnPrevious}>
 		<Fab
 			className="bouton"
 			disabled={disabled}
-			aria-label="suivant"
+			aria-label={D.btnPrevious}
 			color="secondary"
 			onClick={prec}
 		>

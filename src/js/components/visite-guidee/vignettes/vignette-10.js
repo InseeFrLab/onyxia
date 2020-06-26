@@ -2,6 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Both, Arrow } from './../vignette-commons';
 import { Icon, Fab } from '@material-ui/core';
+import D from 'js/i18n';
 
 export default {
 	description: () => {
@@ -11,12 +12,10 @@ export default {
 			<>
 				<Arrow dom={toolbar} />
 				<Typography variant="h6" gutterBottom>
-					Mon labo
+					{D.guidedTourMyLabTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
-					Au dessus des cartes de services, une barre d&rsquo;outils vous permet
-					d&rsquo;arrêter l&rsquo;ensemble des applications actives ou de
-					rafraîchir la liste.
+					{D.guidedTourVignette10Text1}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
 					<Fab color="secondary">

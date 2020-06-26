@@ -31,17 +31,6 @@ const ItemLogin = ({ login }) => (
 	</ListItem>
 );
 
-/*const ItemLogout = ({ logout }) => (
-  <ListItem button onClick={logout}>
-    <ListItemIcon>
-      <Icon className="login" style={{ color: "crimson" }}>
-        power_settings_new_icon
-      </Icon>
-    </ListItemIcon>
-    <ListItemText primary="logout" />
-  </ListItem>
-);*/
-
 export default ({
 	open,
 	handleClose,
@@ -67,7 +56,7 @@ export default ({
 					<ListItemIcon>
 						<Icon>forward</Icon>
 					</ListItemIcon>
-					<ListItemText primary="Visite guidée" />
+					<ListItemText primary={D.guidedTourTitle} />
 				</ListItem>
 				<ListItem>
 					<ListItemText primary="La plateforme" />
@@ -111,16 +100,25 @@ export default ({
 					<ListItemIcon>
 						<Icon>folder</Icon>
 					</ListItemIcon>
-					<ListItemText primary="Mes fichiers" />
+					<ListItemText primary={D.myFilesTitle} />
 				</ListItem>
 				{hasOptedInForBetaTest() ? (
 					<ListItem button component={Link} to="/mes-secrets">
 						<ListItemIcon>
 							<Icon>vpn_key</Icon>
 						</ListItemIcon>
-						<ListItemText primary="Mes secrets" />
+						<ListItemText primary={D.mySecretsTitle} />
 					</ListItem>
 				) : null}
+				<ListItem>
+					<ListItemText primary="Informations" />
+				</ListItem>
+				<ListItem button component={Link} to="/about">
+					<ListItemIcon>
+						<Icon>infoIcon</Icon>
+					</ListItemIcon>
+					<ListItemText primary={D.about} />
+				</ListItem>
 			</List>
 		</div>
 	</Drawer>
