@@ -19,6 +19,7 @@ import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
 import api from 'js/redux/api';
 import { getVaultToken } from 'js/vault-client';
 import useBetaTest from 'js/components/hooks/useBetaTest';
+import { getKeycloak } from 'js/utils';
 
 const NouveauService = ({
 	idCatalogue,
@@ -61,6 +62,12 @@ const NouveauService = ({
 		},
 		[creerNouveauService, service, idCatalogue, fieldsValues, contract]
 	);
+
+	useEffect(() => {
+		if (!authenticated) {
+			getKeycloak().login();
+		}
+	}, [authenticated]);
 
 	useEffect(() => {
 		if (authenticated) {
