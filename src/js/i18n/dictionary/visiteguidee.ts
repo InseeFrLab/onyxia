@@ -47,8 +47,8 @@ const dictionary = {
 		fr:
 			"Cette page vous présente l'ensemble des services partagés à votre disposition. " +
 			"Un service partagé est un service unique servant à l'ensemble des utilisateurs du datalab. " +
-			"Il s'agit d'applications collaboratives, telles d'une forge logicielle, de services " +
-			"transverses métier, tel qu'un service de géocodage  ou encore de services techniques " +
+			"Il s'agit d'applications collaboratives, telles qu'une forge logicielle, des services " +
+			"transverses métier, un service de géocodage  ou encore des services techniques " +
 			"comme le stockage de données ou le service d'authentification.",
 		en:
 			'This page presents you the set of shared services offered on the datalab. ' +
@@ -76,7 +76,8 @@ const dictionary = {
 	guidedTourVignette2Text2: {
 		fr:
 			"Un cône de signalisation vous barre l'accès lorsque le service est indisponible.",
-		en: 'A traffic cone indicates that the service is currently unavailable.',
+		en: 
+			'A traffic cone indicates that the service is currently unavailable.',
 	},
 	guidedTourVignette3Text1: {
 		fr:
@@ -113,7 +114,7 @@ const dictionary = {
 			'lorsque vous les arrêtez volontairement.',
 		en:
 			'Self services offered by the datalab are transient. Data you load disappears ' +
-			'when the service stops. It happends every week-end, on maintenance operation and ' +
+			'when the service stops. It happens every week-end, on maintenance operation and ' +
 			'also when you stop them purposely.',
 	},
 	guidedTourVignette5Text1: {
@@ -160,13 +161,13 @@ const dictionary = {
 	},
 	guidedTourVignette8Text1: {
 		fr:
-			'Votre labo contient tous les services que vous avez crées sous forme ' +
+			'Votre labo contient tous les services que vous avez créés sous forme ' +
 			"de cartes. Certains sont regroupés lorsqu'ils sont instanciés " +
 			'par lot. Chacune des cartes vous fournit des indicateurs synthétiques ' +
 			'sur vos consommations.',
 		en:
 			'Your lab contains all the services you have created presented on cards. ' +
-			'Some are grouped when they are batch instanciated. Cards show synthetic information ' +
+			'Some are grouped when they are batch instantiated. Cards show synthetic information ' +
 			'on your personal consumption.',
 	},
 	guidedTourVignette8Text2: {
@@ -174,20 +175,20 @@ const dictionary = {
 			"Si votre service n'est pas encore disponible, des roues crantées " +
 			"vous en bloqueront l'accès temporairement.",
 		en:
-			'If the creation of your service is still in progress, cog wheels will temporarely ' +
+			'If the creation of your service is still in progress, cog wheels will temporarily ' +
 			'block your access.',
 	},
 	guidedTourVignette9Text1: {
 		fr:
 			'Une fois actif, vous pouvez accéder au service dès lors que celui-ci ' +
-			"dispose d'une adresse web. Ce n'est pas le cas de tous les " +
-			"services. PostgreSQL ne possède pas d'interface web. Il vous " +
-			'faut dans ce cas utiliser un second service, pgadmin pour manipuler ' +
+			"dispose d'une adresse web. Ce n'est pas le cas de tous les services." +
+			"PostgreSQL ne possède pas d'interface web. Il vous " +
+			'faut dans ce cas utiliser un second service, pgAdmin pour manipuler ' +
 			'votre base de données.',
 		en:
-			'Once active, you can directly access to it, as long as it owns an web adress. ' +
+			'Once active, you can directly access to it, as long as it owns a web address. ' +
 			'Most services do, but few does not, such as PostgreSQL. In that case, you ' +
-			'may use an other service, for example PGadmin, to manipulate your database.',
+			'may use an other service, for example pgAdmin, to manipulate your database.',
 	},
 	guidedTourVignette9Text2: {
 		fr: "ouvre l'interface web de votre service.",
@@ -195,7 +196,7 @@ const dictionary = {
 	},
 	guidedTourVignette10Text1: {
 		fr:
-			"Au dessus des cartes de services, une barre d'outils vous permet " +
+			"Au-dessus des cartes de services, une barre d'outils vous permet " +
 			"d'arrêter l'ensemble des applications actives ou de rafraîchir la liste.",
 		en:
 			'On top of each card, a tool bar allows you to stop all active services or ' +
@@ -216,10 +217,10 @@ const dictionary = {
 	guidedTourVignette12Text1: {
 		fr:
 			"Sur la page de votre service, vous trouverez l'ensemble des " +
-			'informations propre à celui-ci. Vous pouvez ici modifier un certain ' +
+			'informations propres à celui-ci. Vous pouvez ici modifier un certain ' +
 			"nombre d'éléments comme les ressources mises en oeuvre par	l'application.",
 		en:
-			'On the service page, you can find all specific informaiton. You can modify ' +
+			'On the service page, you can find all specific information. You can modify ' +
 			'some of them, such as the resources accessed by your service.',
 	},
 	guidedTourVignette12Text2: {
