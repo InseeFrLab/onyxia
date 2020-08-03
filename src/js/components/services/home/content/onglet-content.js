@@ -4,8 +4,6 @@ import { Grid, IconButton, Icon } from '@material-ui/core';
 import {
 	CardService,
 	getServiceAvatar,
-	getTitle,
-	getSubtitle,
 } from 'js/components/commons/service-card';
 import { axiosURL, wrapPromise } from 'js/utils';
 import conf from 'js/configuration';
@@ -20,8 +18,8 @@ const OngletContent = () => {
 	const gridItems = services.map((service, i) => (
 		<CardService
 			key={i}
-			title={getTitle(service)}
-			subtitle={getSubtitle(service)}
+			title={service.title}
+			subtitle={service.subtitle}
 			avatar={getServiceAvatar(service)}
 			actions={createActionsCarte(service)(handleOpenService)}
 			contenu={createContenuCarte(service)}
