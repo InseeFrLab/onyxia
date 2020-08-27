@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { Paper, Fab, Icon, Tooltip } from '@material-ui/core/';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import { Link } from 'react-router-dom';
 import Dialog from 'js/components/commons/dialog';
 import D from 'js/i18n';
+import * as clipboard from 'clipboard-polyfill';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
 	hasService: Boolean;
+	userPassword?: String;
 	handleDeleteAll?: () => void;
 	handlePauseAll?: () => void;
 	handleRefresh?: () => void;
@@ -13,6 +18,7 @@ interface Props {
 
 const Toolbar = ({
 	hasService,
+	userPassword,
 	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
@@ -32,6 +38,7 @@ const Toolbar = ({
 		<Paper className="onyxia-toolbar" elevation={1}>
 			<Actions
 				hasService={hasService}
+				userPassword={userPassword}
 				handleDeleteAll={wantDelete}
 				handlePauseAll={handlePauseAll}
 				handleRefresh={handleRefresh}
@@ -51,6 +58,7 @@ const Toolbar = ({
 
 const Actions = ({
 	hasService,
+	userPassword,
 	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
@@ -106,6 +114,32 @@ const Actions = ({
 					</Tooltip>
 				)}
 			</>
+		)}
+		{userPassword ? (
+			<Tooltip title={D.getPassword}>
+				<Fab
+					color="primary"
+					aria-label={D.getPassword}
+					classes={{ root: 'bouton' }}
+					onClick={() => {
+						clipboard.writeText(userPassword);
+						toast(D.passwordCopiedToClipboard, {
+							position: 'bottom-left',
+							autoClose: 5000,
+							hideProgressBar: true,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: false,
+							progress: undefined,
+							type: 'info',
+						});
+					}}
+				>
+					<VpnKeyIcon />
+				</Fab>
+			</Tooltip>
+		) : (
+			<></>
 		)}
 	</>
 );

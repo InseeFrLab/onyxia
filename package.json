@@ -60,6 +60,7 @@
     "react-scripts": "^3.4.1",
     "react-snow-effect": "^1.2.0",
     "react-time-ago": "^6.0.0",
+    "react-toastify": "^6.0.8",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "remove-accents": "^0.4.2",
