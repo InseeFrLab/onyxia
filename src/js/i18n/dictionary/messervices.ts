@@ -36,6 +36,14 @@ const dictionary = {
 		en: 'This action will result in the potential loss of data and/or code',
 	},
 	serviceNotFound: { fr: 'Service introuvable', en: 'Service not found' },
+	getPassword: {
+		fr: 'Obtenir le mot de passe des services',
+		en: 'Get password',
+	},
+	passwordCopiedToClipboard: {
+		fr: 'Mot de passe copié dans le presse-papier',
+		en: 'Password copied to clipboard',
+	},
 };
 
 export default dictionary;
