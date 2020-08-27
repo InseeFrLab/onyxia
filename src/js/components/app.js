@@ -170,7 +170,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 				</div>
 				<VisiteGuidee />
 				<CloudShell />
-				<ToastContainer position="bottom-right" />
+				<ToastContainer position="bottom-left" />
 			</>
 		</Router>
 	</MuiThemeProvider>
