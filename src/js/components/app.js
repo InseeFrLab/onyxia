@@ -37,6 +37,7 @@ import 'typeface-roboto';
 import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
+import { ToastContainer } from 'react-toastify';
 
 const theme = createTheme();
 const routerContext = createRouterContext(Accueil)('/accueil');
@@ -169,6 +170,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 				</div>
 				<VisiteGuidee />
 				<CloudShell />
+				<ToastContainer position="bottom-right" />
 			</>
 		</Router>
 	</MuiThemeProvider>

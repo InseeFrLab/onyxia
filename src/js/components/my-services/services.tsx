@@ -4,15 +4,22 @@ import Cards from './cards';
 import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteServices } from 'js/api/my-lab';
+import { useSelector } from 'react-redux';
+import { RootState } from 'js/redux';
 
 interface Props {
 	groupId: string;
 }
 
+const extractUserPassword = (state: RootState) => {
+	return state.user.VAULT.DATA.password;
+};
+
 const Services = ({ groupId }: Props) => {
 	const [services, setServices] = useState<Service[]>([]);
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [loading, setLoading] = useState(true);
+	const userPassword = useSelector(extractUserPassword);
 
 	const loadData = (groupId?: String) => {
 		setLoading(true);
@@ -41,6 +48,7 @@ const Services = ({ groupId }: Props) => {
 	return (
 		<div className="contenu accueil">
 			<Toolbar
+				userPassword={userPassword}
 				hasService={
 					(services && services.length > 0) ||
 					(filteredGroups && filteredGroups.length > 0)
