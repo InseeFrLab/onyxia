@@ -1,11 +1,8 @@
 import React from 'react';
 import { Typography } from '@material-ui/core/';
 
-interface Props {
-	serviceId: string;
-}
 
-export default ({ serviceId }: Props) => (
+export default () => (
 	<div className="en-tete">
 		<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
 			Votre service

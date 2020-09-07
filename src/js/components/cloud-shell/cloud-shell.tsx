@@ -28,7 +28,7 @@ interface cloudShellData {
 }
 
 const CloudShell = () => {
-	const user = useSelector((store) => store.user);
+	const user = useSelector((store) => (store as any).user);
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -37,14 +37,15 @@ const CloudShell = () => {
 	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
 
-	const launchCloudShell = (user) => {
+
+	const launchCloudShell = (user: any) => {
 		axiosAuth.get<cloudShellData>(`${api.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
 			const service = cloudshell.packageToDeploy;
 			setCloudShellStatus(cloudshell.status);
 			if (cloudshell.status === 'DOWN') {
-				dispatch(
+				(dispatch(
 					creerNouveauService(
 						{
 							...service,
@@ -53,9 +54,9 @@ const CloudShell = () => {
 						getValuesObject(getOptions(user, service, minioCredentials, {}).fV),
 						false
 					)
-				).then((response) => {
+				) as any).then(() => {
 					axiosAuth
-						.get<cloudShellData>(`${api.cloudShell}`)
+						.get<cloudShellData>(api.cloudShell)
 						.then((response: any) => {
 							cloudshell = (response as any) as cloudShellData;
 							setUrl(cloudshell.url);
@@ -71,7 +72,7 @@ const CloudShell = () => {
 		return launchCloudShell;
 	};
 
-	const deleteCloudShell = (idep) => {
+	const deleteCloudShell = () => {
 		dispatch(requestDeleteMonService({ id: 'cloudshell' }));
 		setCloudShellStatus(undefined);
 		setUrl(undefined);
@@ -119,7 +120,7 @@ const CloudShell = () => {
 				height: height,
 				width: '100%',
 			}}
-			onResizeStop={(e, direction, ref, d) => {
+			onResizeStop={(...[,,,d]) => {
 				setHeight(height + d.height);
 			}}
 		>
@@ -128,7 +129,7 @@ const CloudShell = () => {
 				title="Cloud shell"
 				height={height}
 				width="100%"
-				src={url}
+				src={url!}
 				id="cloudshell-iframe"
 			></iframe>
 		</Resizable>
@@ -141,7 +142,7 @@ const CloudShell = () => {
 				.then((credentials) => {
 					setMinioCredentials(credentials);
 				})
-				.catch((e) => {
+				.catch(() => {
 					setMinioCredentials({});
 				});
 		}
@@ -198,7 +199,7 @@ const CloudShell = () => {
 						aria-label="delete"
 						onClick={() => {
 							setVisibility(false);
-							deleteCloudShell(user.IDEP);
+							(deleteCloudShell as any)(user.IDEP);
 						}}
 						className="close-shell"
 					>

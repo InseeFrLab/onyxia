@@ -7,6 +7,7 @@ import { WorkInProgress } from 'js/components/commons/icons';
 import Preloader from 'js/components/commons/preloader';
 import WarningIcon from '@material-ui/icons/Warning';
 
+
 const CarteService = ({
 	id = '',
 	actions: Actions,
@@ -18,6 +19,17 @@ const CarteService = ({
 	subtitle = null,
 	avatar = null,
 	expiration = false,
+}: {
+	id?: string;
+	actions: any;
+	contenu: any;
+	wait?: boolean;
+	down?: boolean;
+	pause?: boolean;
+	title?: null | string;
+	subtitle?: null | string;
+	avatar?: null | string;
+	expiration?: boolean
 }) => {
 	const [raised, setRaised] = useState(false);
 	return (

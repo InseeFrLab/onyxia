@@ -5,7 +5,7 @@
  * @param {string} lang the lang of the user
  * @param {any} dict
  */
-export const createDictionary = (lang) => (dict) =>
+export const createDictionary = (lang: any) => (dict: any): any =>
 	Object.keys(dict).reduce((acc, k) => {
 		const hasChildObject = Object.keys(dict[k]).find(
 			(key) =>

@@ -7,7 +7,8 @@ import {
 	removeObjectFromBucket,
 } from 'js/redux/actions';
 
-const mapStateToProps = (state, props) => {
+
+const mapStateToProps = (...[,props]: any[]) => {
 	return { ...props };
 };
 
@@ -17,4 +18,4 @@ export default connect(mapStateToProps, {
 	removeObjectFromBucket,
 	startWaiting,
 	stopWaiting,
-})(MyFiles);
+})(MyFiles as any);

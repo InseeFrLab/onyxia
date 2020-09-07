@@ -9,13 +9,13 @@ const MINIO_BASE_URI = conf.MINIO.BASE_URI;
 const MINIO_END_POINT = conf.MINIO.END_POINT;
 const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.MINIMUN_DURATION;
 const MINIO_PORT = conf.MINIO.PORT;
-let MINIO_CLIENT = null;
+let MINIO_CLIENT: Minio.Client | null = null;
 
 const getMinioDataFromStore = () => {
 	return store.getState().user.S3;
 };
 
-const broadcastNewCredentials = (credentials) => {
+const broadcastNewCredentials = (credentials: any) => {
 	store.dispatch(Actions.newS3Credentials(credentials));
 };
 
@@ -46,7 +46,7 @@ const fetchMinioToken = async () => {
 	return { accessKey, secretAccessKey, sessionToken, expiration };
 };
 
-export const getMinioToken = (refreh = false) =>
+export const getMinioToken = () =>
 	getMinioDataFromStore().AWS_EXPIRATION &&
 	Date.parse(getMinioDataFromStore().AWS_EXPIRATION) - Date.now() >=
 		MINIO_END_MINIMUM_DURATION_MS

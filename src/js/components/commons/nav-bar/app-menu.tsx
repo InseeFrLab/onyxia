@@ -22,7 +22,7 @@ import useBetaTest from 'js/components/hooks/useBetaTest';
 import { RootState } from 'js/redux';
 import { useSelector } from 'react-redux';
 
-const ItemLogin = ({ login }) => (
+const ItemLogin = ({ login }: any) => (
 	<ListItem button onClick={login}>
 		<ListItemIcon>
 			<Icon className="login" style={{ color: 'forestgreen' }}>
@@ -37,10 +37,8 @@ export default ({
 	open,
 	handleClose,
 	authenticated,
-	login,
-	logout,
-	startVisite,
-}) => {
+	login
+}: any) => {
 	const [betaTester] = useBetaTest();
 	const selectedRegion = useSelector(
 		(state: RootState) => state.regions.selectedRegion

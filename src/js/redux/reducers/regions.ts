@@ -11,7 +11,7 @@ const initial: RegionsState = {
 	selectedRegion: undefined,
 };
 
-export default (state = initial, action): RegionsState => {
+export default (state = initial, action: any): RegionsState => {
 	switch (action.type) {
 		case NEW_REGIONS:
 			const newState = { ...state };

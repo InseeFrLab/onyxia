@@ -45,14 +45,14 @@ const Footer = () => {
 	);
 };
 
-const LienRapide = ({ url, icon, children }) => (
+const LienRapide = ({ url, icon, children }: any) => (
 	<Button onClick={() => window.open(url)} className="lien-rapide">
 		<span className="icone">{icon}</span>
 		<span className="titre">{children}</span>
 	</Button>
 );
 
-const LienSimple = ({ children, href }) => (
+const LienSimple = ({ children, href }: any) => (
 	<a
 		href={href}
 		className="lien-simple"

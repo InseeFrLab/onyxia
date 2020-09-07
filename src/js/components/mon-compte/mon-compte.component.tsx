@@ -45,7 +45,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 		}
 	}, [user, s3loading]);
 
-	const handleChange = (event) => {
+	const handleChange = (event: any) => {
 		setBetaTest(event.target.checked);
 	};
 
@@ -157,7 +157,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 								onChange={handleChange}
 								name="checkedB"
 								color="primary"
-								checked={betaTest}
+								checked={betaTest as any}
 							/>
 						}
 						label={D.activateBetatest}
@@ -183,4 +183,4 @@ MonCompte.defaultProps = {
 
 export default MonCompte;
 
-const formatageDate = (date) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');
+const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');

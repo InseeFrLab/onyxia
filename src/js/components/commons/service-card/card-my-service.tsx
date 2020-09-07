@@ -28,19 +28,19 @@ const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 	return (
 		<CardService
 			id={service.id}
-			expiration={expiration && isExpired(expiration)}
+			expiration={(expiration && isExpired(expiration)) as any}
 			wait={service.status === 'DEPLOYING'}
 			pause={service.instances === 0}
-			title={getTitle(service)}
-			subtitle={getSubtitle(service)}
-			avatar={getServiceAvatar(service)}
+			title={getTitle(service) as any}
+			subtitle={getSubtitle(service) as any}
+			avatar={getServiceAvatar(service) as any}
 			actions={getActions(service)(handleClickLaunch)}
 			contenu={getContenu(service)}
 		/>
 	);
 };
 
-const getActions = (service: Service) => (launch) => () => {
+const getActions = (service: Service) => (launch: any) => () => {
 	const [showPostInstall, setShowPostInstall] = useState(false);
 	return (
 		<>
@@ -88,7 +88,7 @@ const getActions = (service: Service) => (launch) => () => {
 	);
 };
 
-const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
+const getLaunchIcon = (service: Service) => (handleClickLaunch: any) =>
 	service.status === ServiceStatus.Running ? (
 		service.urls && service.urls.length > 0 ? (
 			<IconButton
@@ -113,7 +113,7 @@ const getLaunchIcon = (service: Service) => (handleClickLaunch) =>
 		</IconButton>
 	);
 
-const getContenu = (service) => () => {
+const getContenu = (service: any) => () => {
 	const max = 5;
 	const cpu = Math.ceil(computeCpu(service.cpus)(max));
 	const ram = Math.ceil(compterRam(service.mem)(max));
@@ -152,11 +152,11 @@ const getContenu = (service) => () => {
 	);
 };
 
-const computeCpu = (cpu) => (max) => Math.min(max, (cpu * 10) / 2);
+const computeCpu = (cpu: any) => (max: any) => Math.min(max, (cpu * 10) / 2);
 
-const compterRam = (ram) => (max) => Math.min(max, ram / 2048);
+const compterRam = (ram: any) => (max: any) => Math.min(max, ram / 2048);
 
-const getLabel = (label) => (how) => () => (
+const getLabel = (label: any) => (how: any) => () => (
 	<span className="pile-label">
 		<Badge badgeContent={how} color="primary" classes={{ badge: 'badge' }}>
 			<span className="titre-label">{label}</span>
@@ -169,11 +169,11 @@ const getServiceUrl = (service: Service) =>
 
 export default CarteMonService;
 
-const dateExpiration = ({ env }) =>
+const dateExpiration = ({ env }: any) =>
 	env && env.AWS_EXPIRATION
 		? dayjs(env.AWS_EXPIRATION).format('YYYY-MM-DDTHH:mm:ssZ')
 		: undefined;
 
-const isExpired = (date) =>
+const isExpired = (date: any) =>
 	(date && !date.isValid()) ||
 	(date && date.isValid() && date.valueOf() - dayjs().valueOf() <= 0);

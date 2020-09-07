@@ -9,7 +9,7 @@ const MyServiceHome = () => {
 	const { serviceId } = useParams();
 	return (
 		<>
-			<Header serviceId={serviceId} />
+			<Header/>
 			<FilDAriane fil={fil.myService(serviceId)} />
 			<Service serviceId={`/${serviceId}`} />
 		</>

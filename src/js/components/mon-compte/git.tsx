@@ -30,12 +30,12 @@ const GitField = ({ values, idep, update }: Props) => {
 	};
 	return (
 		<>
-			{Object.entries(git).map(([k, v], i) => (
+			{Object.entries(git).map(([k, v]) => (
 				<CopyableField
 					key={k}
 					copy
-					label={labels[k] || k}
-					value={v.toString()}
+					label={(labels as any)[k] || k}
+					value={`${v}`}
 					type="string"
 					onChange={(newV: string) => {
 						setGit({ ...git, [k]: newV });
@@ -49,7 +49,7 @@ const GitField = ({ values, idep, update }: Props) => {
 
 export default GitField;
 
-const getGitData = (obj) =>
+const getGitData = (obj: any) =>
 	Object.entries(obj).reduce((acc, [k, v]) => {
 		if (k.startsWith('git')) return { ...acc, [k]: v };
 		return acc;

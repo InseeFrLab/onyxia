@@ -36,7 +36,7 @@ const initial = {
 	},
 };
 
-export default (state = initial, action) => {
+export default (state = initial, action: any) => {
 	switch (action.type) {
 		case types.SET_AUTHENTICATED: {
 			return {

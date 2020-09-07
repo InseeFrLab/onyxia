@@ -35,14 +35,14 @@ class VaultAPI {
 		return data.data.data ? data.data.data : [];
 	}
 
-	async createPath(path: string, payload) {
+	async createPath(path: string, payload: any) {
 		return axiosVault.put(
 			`/v1/${VAULT_KV_ENGINE}/data${path}`,
 			payload || { data: { foo: 'bar' } }
 		);
 	}
 
-	async uploadSecret(path: string, data) {
+	async uploadSecret(path: string, data: any) {
 		const old = await this.getSecret(path);
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
 			data: { ...old, ...data },
@@ -144,7 +144,7 @@ axiosVault.interceptors.request.use(
 	(error) => Promise.reject(error)
 );
 
-const authorizeConfig = (token: string) => (config) => ({
+const authorizeConfig = (token: string) => (config: any) => ({
 	...config,
 	headers: { 'X-Vault-Token': token },
 	'Content-Type': 'application/json;charset=utf-8',

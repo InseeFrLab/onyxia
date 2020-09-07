@@ -16,7 +16,7 @@ export const ServicesListe = ({
 	titre,
 	openService,
 	openDetails,
-}) => (
+}: any) => (
 	<Grid item sm={12} lg={4} classes={{ item: 'carte' }}>
 		<Card classes={{ root: 'container' }}>
 			<CardHeader
@@ -37,8 +37,8 @@ export const ServicesListe = ({
 	</Grid>
 );
 
-export const Liste = ({ liste, openService, openDetails }) => {
-	const items = liste.map((service, i) => {
+export const Liste = ({ liste, openService, openDetails }: any) => {
+	const items = liste.map((service: any, i: any) => {
 		const title = service.labels
 			? service.labels.ONYXIA_TITLE
 			: service.apps.length === 0
@@ -88,7 +88,7 @@ export const Liste = ({ liste, openService, openDetails }) => {
 };
 
 //
-const getColorClassStateService = ({ status }) => {
+const getColorClassStateService = ({ status }: any) => {
 	if (status === ServiceStatus.Running) {
 		return 'running';
 	} else if (status === ServiceStatus.Deploying) {

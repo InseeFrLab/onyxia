@@ -17,7 +17,7 @@ const MyBuckets = () => {
 	const user = useSelector((state: RootState) => state.user);
 
 	const buckets = useSelector(
-		(state: RootState) => state.mesFichiers.userBuckets
+		(state: RootState) => (state as any).mesFichiers.userBuckets
 	);
 
 	useEffect(() => {
@@ -51,13 +51,13 @@ const MyBuckets = () => {
 						La liste de vos dépots
 					</Typography>
 					<div id="bucket-list">
-						{buckets?.map(({ id, description }, i) => {
+						{buckets?.map(({ id, description }: any, i: any) => {
 							return (
 								<Bucket
 									key={i}
 									description={description}
 									id={id}
-									region={region}
+									region={region as any}
 								/>
 							);
 						})}

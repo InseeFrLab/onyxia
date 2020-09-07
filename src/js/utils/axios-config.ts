@@ -10,18 +10,18 @@ const refreshToken = (minValidity = 60) =>
 	new Promise((resolve, reject) => {
 		getKeycloak()
 			.updateToken(minValidity)
-			.then((refreshed) => {
+			.then((refreshed: any) => {
 				if (refreshed) {
 					setLocalToken(getKeycloak().token);
 				}
 				resolve(getKeycloak().token);
 			})
-			.catch((error) => {
+			.catch((error: Error) => {
 				reject(error);
 			});
 	});
 
-const authorizeConfig = (kc) => (config) => ({
+const authorizeConfig = (kc: any) => (config: any) => ({
 	...config,
 	headers: { ...config.headers, Authorization: `Bearer ${kc.token}` },
 	'Content-Type': 'application/json;charset=utf-8',
@@ -34,7 +34,7 @@ if (conf.AUTHENTICATION.TYPE === 'oidc') {
 	axiosAuth.interceptors.request.use(
 		(config) =>
 			refreshToken()
-				.then((token) =>
+				.then(() =>
 					Promise.resolve(authorizeConfig(getKeycloak())(config))
 				)
 				.catch(() => getKeycloak().login()),
@@ -42,7 +42,7 @@ if (conf.AUTHENTICATION.TYPE === 'oidc') {
 	);
 }
 
-const injectRegion = (config) => {
+const injectRegion = (config: any) => {
 	const selectedRegion = store?.getState()?.regions?.selectedRegion;
 	if (selectedRegion) {
 		config = {

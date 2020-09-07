@@ -19,25 +19,25 @@ const CarteMonGroupe = ({ group }: Props) => {
 			id={group.id}
 			wait={false}
 			pause={!running}
-			title={getTitle(group)}
-			subtitle="Groupe d'applications"
-			avatar={getAvatar(group)}
+			title={getTitle(group) as any}
+			subtitle={"Groupe d'applications"}
+			avatar={(getAvatar as any)(group)}
 			actions={getActions(group)}
 			contenu={getContenu(group)(running)}
 		/>
 	);
 };
 
-const getTitle = (groupe) =>
+const getTitle = (groupe: any) =>
 	groupe.apps.length > 0 ? groupe.apps[0].labels.ONYXIA_TITLE : 'Groupe vide';
 
-const getAvatar = (groupe) => (
+const getAvatar = () => (
 	<Avatar>
 		<Icon>folder</Icon>
 	</Avatar>
 );
 
-const getActions = (groupe) => () => (
+const getActions = (groupe: any) => () => (
 	<Link to={`/my-services${groupe.id}`}>
 		<IconButton color="secondary" aria-label="plus de détails">
 			<Icon>subdirectory_arrow_right</Icon>
@@ -45,7 +45,7 @@ const getActions = (groupe) => () => (
 	</Link>
 );
 
-const getContenu = (groupe) => (running) => () => {
+const getContenu = (groupe: any) => (running: any) => () => {
 	if (!running) return null;
 	const max = 5;
 	const cpu = Math.ceil(compterCpu(groupe.apps)(max));
@@ -78,7 +78,7 @@ const compterRam = (services: Service[]) => (max: number) =>
 		services.reduce((a, c) => a + c.mem / 2048 / services.length, 0)
 	);
 
-const getLabel = (label) => (how) => () => (
+const getLabel = (label: any) => (how: any) => () => (
 	<span className="pile-label">
 		<Badge badgeContent={how} color="primary" classes={{ badge: 'badge' }}>
 			<span className="titre-label">{label}</span>

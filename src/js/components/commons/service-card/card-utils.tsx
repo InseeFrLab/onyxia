@@ -5,7 +5,7 @@ import { Service } from 'js/model';
 export const getServiceAvatar = (service: Service) => {
 	const img = service.logo;
 	return (
-		<span className={`etat-service ${getColorClassStateService(service)}`}>
+		<span className={`etat-service ${getColorClassStateService()}`}>
 			<span className="bordure-carte">
 				<Avatar src={img} className="service-avatar" />
 			</span>
@@ -20,4 +20,4 @@ export const getSubtitle = (service: Service) =>
 	(service && service.labels && service.labels.ONYXIA_SUBTITLE) ||
 	'';
 
-const getColorClassStateService = (service: Service) => 'running';
+const getColorClassStateService = () => 'running';
