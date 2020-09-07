@@ -97,6 +97,8 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
                 })
             );
 
+            return;
+
         }
 
         initializeKeycloakProxy();
