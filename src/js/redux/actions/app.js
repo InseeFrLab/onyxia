@@ -1,6 +1,7 @@
 import { axiosAuth } from 'js/utils';
 import api from './../api';
-import { getKeycloak, clearLocalToken } from 'js/utils';
+import { getKeycloak } from "./js/utils";
+import { clearToken } from 'js/utils/localStorageToken';
 import { PUSHER } from 'js/components/notifications';
 import * as constantes from './constantes';
 
@@ -91,7 +92,7 @@ export const updateUserDone = (user) => ({
 });
 
 export const logout = () => () => {
-	clearLocalToken();
+	clearToken();
 	getKeycloak().logout({ redirectUri: `${window.location.origin}/accueil` });
 	return false;
 };

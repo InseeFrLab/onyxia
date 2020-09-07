@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { displayLogin, setRedirectUri, setFavicon } from 'js/redux/actions';
-import { gelLocalToken } from 'js/utils';
+import { getToken } from 'js/utils/localStorageToken';
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { getKeycloak } from 'js/utils';
 
@@ -22,7 +22,7 @@ class PrivateRoute extends React.Component {
 		{ authenticated, location, setRedirectUri, displayLogin },
 		state
 	) {
-		const token = gelLocalToken();
+		const token = getToken();
 		const isToken = token && token !== 'undefined';
 
 		if (!authenticated && !isToken) {

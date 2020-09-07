@@ -6,7 +6,7 @@ import {
 	uploadFile,
 	removeObject,
 } from 'js/minio-client/minio-tools';
-import { getDecodedToken } from 'js/utils';
+import { getDecodedToken } from 'js/utils/localStorageToken';
 import { PUSHER } from 'js/components/notifications';
 import * as constantes from './constantes';
 
@@ -17,7 +17,7 @@ export const getUserStatObject = ({ bucketName, fileName }) => async (
 };
 
 export const loadUserBuckets = (idep) => async (dispatch) => {
-	const token = await getDecodedToken();
+	const token = getDecodedToken();
 	const { gitlab_group } = token;
 	const buckets = Array.isArray(gitlab_group)
 		? [

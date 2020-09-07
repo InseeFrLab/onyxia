@@ -15,6 +15,7 @@
     "@testing-library/react": "^10.2.1",
     "@types/javascript-time-ago": "^2.0.1",
     "@types/jest": "^26.0.0",
+    "@types/jwt-decode": "^2.2.1",
     "@types/minio": "^7.0.5",
     "@types/node": "^14.0.13",
     "@types/react": "^16.9.36",
@@ -28,7 +29,7 @@
     "progress-bar-webpack-plugin": "^2.1.0",
     "source-map-explorer": "^2.4.2",
     "storybook-addon-material-ui": "^0.9.0-alpha.21",
-    "typescript": "^3.9.5",
+    "typescript": "^4.0.2",
     "webpack-bundle-analyzer": "^3.7.0"
   },
   "dependencies": {
@@ -41,6 +42,7 @@
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
     "dayjs": "^1.8.26",
+    "evt": "^1.8.9",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
     "generate-password": "^1.5.1",
@@ -69,6 +71,7 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "remove-accents": "^0.4.2",
+    "run-exclusive": "^2.2.14",
     "typeface-roboto": "^0.0.75"
   },
   "scripts": {

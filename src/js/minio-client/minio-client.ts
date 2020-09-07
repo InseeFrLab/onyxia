@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { getToken } from 'js/utils';
+import { getToken } from 'js/utils/localStorageToken';
 import store from 'js/redux/store';
 import * as Actions from 'js/redux/actions';
 import conf from '../configuration';

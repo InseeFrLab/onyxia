@@ -1,6 +1,6 @@
 import axios from 'axios';
 import getKeycloak from './keycloak-config';
-import { setLocalToken } from 'js/utils';
+import { setToken } from 'js/utils/localStorageToken';
 import conf from '../configuration';
 import store from 'js/redux/store';
 
@@ -12,7 +12,7 @@ const refreshToken = (minValidity = 60) =>
 			.updateToken(minValidity)
 			.then((refreshed: any) => {
 				if (refreshed) {
-					setLocalToken(getKeycloak().token);
+					setToken(getKeycloak().token);
 				}
 				resolve(getKeycloak().token);
 			})
