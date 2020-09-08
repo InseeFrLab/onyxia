@@ -1,9 +1,8 @@
-
 import { useState, useCallback, useEffect, useMemo } from "react";
 import * as runExclusive from "run-exclusive";
 
 /** 
- * Returns [ isRequestPending, makeRequestProxy, [lastRequestResult?] ] 
+ * Returns [ isRequestPending, makeRequestProxy, [<lastRequestResult>?] ] 
  * 
  * Take a function that takes some time to complete
  * and return a function that return void instead of Promise<U>
@@ -18,28 +17,20 @@ import * as runExclusive from "run-exclusive";
  * 
  **/
 export function useRequest<T extends any[], U>(
-  makeRequest: (...args: T) => Promise<U>
+  makeRequest: (...args: T)=> Promise<U>
 ): [
-    boolean,
-    (...args: T) => void,
-    [U] | [],
-  ] {
+  boolean,
+  (...args: T)=> void,
+  [U] | []
+] {
 
-  const [
-    { isRequestPending, dataWrap },
-    setIsRequestPendingAndDataWrap
-  ] = useState<{
-    isRequestPending: boolean;
-    dataWrap: [U] | [];
-  }>({
-    "isRequestPending": false,
-    "dataWrap": []
-  });
+  const [ isRequestPending, setIsRequestPending ]= useState(false);
+  const [ dataWrap, setDataWrap ]= useState<[U]|[]>([]);
 
-  const [args, setArgs] = useState<T | undefined>(undefined);
+  const [ args, setArgs ] = useState<T | undefined>(undefined);
 
   const runExclusiveMakeRequest = useMemo(
-    //NOTE: TypeScript why would you betray me like that? 
+    //NOTE: TypeScript why would you betray me like that? This should be inferable.
     () => runExclusive.build(makeRequest as any) as typeof makeRequest,
     [makeRequest]
   );
@@ -54,10 +45,7 @@ export function useRequest<T extends any[], U>(
 
     (async () => {
 
-      setIsRequestPendingAndDataWrap({
-        "isRequestPending": true,
-        "dataWrap": dataWrap
-      });
+      setIsRequestPending(true);
 
       const data = await runExclusiveMakeRequest(...args);
 
@@ -65,18 +53,15 @@ export function useRequest<T extends any[], U>(
         return;
       }
 
-      setIsRequestPendingAndDataWrap({
-        "isRequestPending": runExclusive.isRunning(runExclusiveMakeRequest),
-        "dataWrap": [data]
-      });
+      setIsRequestPending(runExclusive.isRunning(runExclusiveMakeRequest));
 
+      setDataWrap([data]);
 
     })();
 
     return () => { ignore = true; };
 
-
-  }, [args]);
+  }, [args, runExclusiveMakeRequest]);
 
   return [
     isRequestPending,
@@ -88,5 +73,3 @@ export function useRequest<T extends any[], U>(
   ];
 
 }
-
-

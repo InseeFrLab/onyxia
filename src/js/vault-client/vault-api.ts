@@ -63,9 +63,10 @@ export const getVaultToken = async () =>
 	getLocalToken() ? Promise.resolve(getLocalToken()) : fetchVaultToken();
 
 const fetchVaultToken = async () => {
+	//TODO: Remove the response interceptor
 	const {
 		auth: { client_token: token },
-	} = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
+	}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 		role: 'onyxia-user',
 		jwt: getToken(),
 	});

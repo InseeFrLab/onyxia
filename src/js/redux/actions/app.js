@@ -1,6 +1,6 @@
 import { axiosAuth } from 'js/utils';
 import api from './../api';
-import { getKeycloak } from "./js/utils";
+import { getKeycloak } from "js/utils";
 import { clearToken } from 'js/utils/localStorageToken';
 import { PUSHER } from 'js/components/notifications';
 import * as constantes from './constantes';

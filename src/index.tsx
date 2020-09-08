@@ -27,7 +27,6 @@ const keycloakDefaultConf = {
 
 const initializeKeycloak = async (): Promise<void> => {
 
-
     const isAuthenticated = await getKeycloak()
         .init({
             ...keycloakDefaultConf,
@@ -75,8 +74,8 @@ const initializeKeycloak = async (): Promise<void> => {
 const SplashScreen: React.FunctionComponent<{}> = () => {
 
     const [
-        , 
-        initializeKeycloakProxy, 
+        ,
+        initializeKeycloakProxy,
         { length: isKeycloakInitialized }
     ] = useRequest(initializeKeycloak);
 
@@ -106,7 +105,7 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
     });
 
     return shouldInitializeKeycloak && !isKeycloakInitialized ?
-        <h1>Initializing keycloak</h1> :
+        <h1>Initializing keycloak</h1> : //TODO: <= Actual splash screen here
         <Provider store={store}>
             <App />
         </Provider>;
@@ -115,7 +114,7 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
 
 reactDom.render(
     <React.StrictMode>
-        <SplashScreen />,
+        <SplashScreen />
     </React.StrictMode>,
     document.getElementById("root")
 );
