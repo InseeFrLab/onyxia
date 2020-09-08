@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
-//import { render } from 'react-dom';
-import * as reactDom from 'react-dom';
-import { Provider } from 'react-redux';
-import App_ from './js/components';
-import { store } from './js/redux';
-import { getKeycloak } from './js/utils';
-import { setAuthenticated } from './js/redux/actions';
-import { getToken, setToken } from "./js/utils/localStorageToken";
+import React, { useState } from "react";
+import * as reactDom from "react-dom";
+import { Provider } from "react-redux";
+import App_ from "js/components";
+import { store } from "js/redux";
+import { getKeycloak } from "js/utils";
+import { setAuthenticated } from "js/redux/actions";
+import { getToken, setToken } from "js/utils/localStorageToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import configuration from "./js/configuration";
-import { initVaultData } from 'js/vault-client';
-import { useRequest } from "./js/utils/hooks/useRequest";
+import configuration from "js/configuration";
+import { initVaultData } from "js/vault-client";
+import { useRequest } from "js/utils/hooks/useRequest";
 const App: any = App_;
-
-const shouldInitializeKeycloak = configuration.AUTHENTICATION.TYPE === "oidc";
 
 JavascriptTimeAgo.locale(fr);
 
@@ -79,6 +76,8 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
         { length: isKeycloakInitialized }
     ] = useRequest(initializeKeycloak);
 
+    const shouldInitializeKeycloak = configuration.AUTHENTICATION.TYPE === "oidc";
+
     //NOTE: useState instead of useEffect because it's callback is executed synchronously.
     useState(() => {
 
@@ -92,7 +91,7 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
                 setAuthenticated({
                     "accessToken": kc.token,
                     "refreshToken": kc.refreshToken,
-                    "idToken": kc.idToken,
+                    "idToken": kc.idToken
                 })
             );
 
