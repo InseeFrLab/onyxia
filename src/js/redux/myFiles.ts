@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState, AppThunk } from "../store";
+import type { RootState, AppThunk } from "./store";
 import { id } from "evt/tools/typeSafety/id";
 import { getDecodedToken } from "js/utils/localStorageToken";
 import * as minio from "js/minio-client/minio-tools";

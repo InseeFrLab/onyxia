@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import vignettes from './vignettes';
-import { setSelectedService, creerNouveauService } from 'js/redux/actions';
+import { setServiceSelected, creerNouveauService } from 'js/redux/actions';
 import Visite from './visite-guidee.component';
 
 const mapStateToProps = (state) => {
@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
 
 const mapToDispatchToProps = (d) => ({
 	setFirstService: (firstService) => {
-		d(setSelectedService(firstService));
+		d(setServiceSelected(firstService));
 	},
 	creerPremier: () => {
 		d(

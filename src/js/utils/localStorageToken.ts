@@ -22,5 +22,6 @@ export const getDecodedToken = () => {
 
 	//TODO: Se what the decoded object actually is. 
 	return decode<{ gitlab_group: string[] | null; }>(token);
+
 }
 
