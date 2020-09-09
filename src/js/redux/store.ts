@@ -1,3 +1,23 @@
+
+import { configureStore } from "@reduxjs/toolkit";
+import type { ThunkAction, Action } from "@reduxjs/toolkit";
+import * as myFiles from "./reducers/myFiles";
+
+export const store = configureStore({
+  "reducer": {
+    [myFiles.name]: myFiles.reducer
+  }
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
+
+/*
 import { createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { compose, applyMiddleware } from 'redux';
@@ -17,3 +37,8 @@ const initStore = initialState =>
 	);
 
 export default initStore();
+*/
+
+
+
+

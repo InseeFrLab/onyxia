@@ -1,17 +1,45 @@
-import * as types from 'js/redux/actions/constantes';
 
-const initial = {
-	catalogue: [],
-	mesServices: [],
-	mesGroupes: [],
-	groupe: null,
-	serviceSelected: null,
-	serviceCree: false,
-	serviceCreationEchec: false,
-	mesServicesWaiting: [],
-	mesServicesTypeRequest: null,
-	refresh: false,
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
+import { id }  from "evt/tools/typeSafety/id";
+
+//TODO: Rename franglish
+export type State = {
+	catalogue: {__brand:"0";}[];
+	mesServices: {__brand:"1";}[];
+	mesGroupes: {__brand:"2";}[];
+	groupe: {__brand:"3";};
+	serviceSelected: {__brand:"4"};
+	serviceCree: boolean;
+	serviceCreationEchec: boolean;
+	mesServicesWaiting: {__brand:"5";}[];
+	mesServicesTypeRequest: {__brand:"6";};
+	refresh: boolean;
 };
+
+export const name= "myLab";
+
+const slice = createSlice({
+	name,
+	"initialState": id<State>({
+		"catalogue": [],
+		"mesServices": [],
+		"mesGroupes": [],
+		"groupe": null as any,
+		"serviceSelected": null as any,
+		"serviceCree": false,
+		"serviceCreationEchec": false,
+		"mesServicesWaiting": [],
+		"mesServicesTypeRequest": null as any,
+		"refresh": false
+	}),
+	"reducers": {
+
+
+	}
+});
+
 
 export default (state = initial, action) => {
 	switch (action.type) {

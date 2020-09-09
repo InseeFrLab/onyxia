@@ -13,7 +13,7 @@ export const setToken = (token: string) =>
 export const clearToken = ()=> 
 	safeLocalStorage.removeItem(KEY);
 
-/** Assert getToken() !== undefined (user is authenticated) */
+/** Assert getToken() !== undefined (meaning user is authenticated) */
 export const getDecodedToken = () => { 
 
 	const token = getToken();
@@ -21,6 +21,6 @@ export const getDecodedToken = () => {
 	assert(token !== undefined, "Wrong assertion, user should be logged here");
 
 	//TODO: Se what the decoded object actually is. 
-	decode<{ gitlab_group: unknown; }>(token);
+	return decode<{ gitlab_group: string[] | null; }>(token);
 }
 
