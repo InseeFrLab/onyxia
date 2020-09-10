@@ -4,19 +4,19 @@ import { safeLocalStorage } from "./safeLocalStorage";
 
 const KEY = "onyxia/localStorage/user/token";
 
-export const getToken = () =>
+export const get = () =>
 	safeLocalStorage.getItem(KEY) ?? undefined;
 
-export const setToken = (token: string) => 
+export const set = (token: string) => 
 	safeLocalStorage.setItem(KEY, token);
 
-export const clearToken = ()=> 
+export const clear = ()=> 
 	safeLocalStorage.removeItem(KEY);
 
 /** Assert getToken() !== undefined (meaning user is authenticated) */
-export const getDecodedToken = () => { 
+export const getDecoded = () => { 
 
-	const token = getToken();
+	const token = get();
 
 	assert(token !== undefined, "Wrong assertion, user should be logged here");
 

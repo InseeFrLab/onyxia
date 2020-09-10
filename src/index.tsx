@@ -4,8 +4,9 @@ import { Provider } from "react-redux";
 import App_ from "js/components";
 import { store } from "js/redux";
 import { getKeycloak } from "js/utils";
+//TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { setAuthenticated } from "js/redux/actions";
-import { getToken, setToken } from "js/utils/localStorageToken";
+import * as localStorageToken from "js/utils/localStorageToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from "js/configuration";
@@ -29,7 +30,7 @@ const initializeKeycloak = async (): Promise<void> => {
             ...keycloakDefaultConf,
             ...(() => {
 
-                const localToken = getToken();
+                const localToken = localStorageToken.get();
 
                 return localToken ? { "token": localToken } : {};
 
@@ -48,7 +49,7 @@ const initializeKeycloak = async (): Promise<void> => {
 
     const kc = getKeycloak();
 
-    setToken(kc.token);
+    localStorageToken.set(kc.token);
 
     store.dispatch(
         setAuthenticated({
@@ -85,7 +86,7 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
 
             const kc = getKeycloak();
 
-            setToken('FAKE_TOKEN');
+            localStorageToken.set("FAKE_TOKEN");
 
             store.dispatch(
                 setAuthenticated({

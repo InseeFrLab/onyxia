@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState, AppThunk } from "./store";
 import { id } from "evt/tools/typeSafety/id";
-import { getDecodedToken } from "js/utils/localStorageToken";
+import * as localStorageToken from "js/utils/localStorageToken";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 
@@ -45,7 +45,7 @@ const slice = createSlice({
 
 			const { idep } = payload;
 
-			const { gitlab_group } = getDecodedToken();
+			const { gitlab_group } = localStorageToken.getDecoded();
 
 			state.userBuckets = [
 				{

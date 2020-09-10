@@ -93,3 +93,40 @@ export default (state = initial, action: any) => {
 			return state;
 	}
 };
+
+
+//NOTE: Moved
+const setUserInfo = (user) => ({
+	type: constantes.SET_USER_INFO,
+	payload: { user },
+});
+
+const updateUserDone = (user) => ({
+	type: constantes.USER_UPDATE,
+	payload: { user },
+});
+
+export const getUserInfo = () => async (dispatch) =>
+	axiosAuth
+		.get(api.userInfo)
+		.then((user) => dispatch(setUserInfo(user)))
+		.catch((err) => {
+			// TODO
+		});
+
+
+export const updateUser = () => (dispatch) => {
+	dispatch(startWaiting());
+	axiosAuth
+		.get(api.updateUser)
+		.then((user) => {
+			dispatch(stopWaiting());
+			dispatch(updateUserDone(user));
+			PUSHER.push('mise à jour réussie.');
+			// dispatch(produceMessageIntraining('mise à jour réussie.'));
+		})
+		.catch((err) => {
+			// TODO
+		});
+	return false;
+};

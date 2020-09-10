@@ -15,6 +15,7 @@ export type State = {
 	mesServices: State.Service[];
 	//TODO rename selected<->Service
 	serviceSelected: Pick<State.Service, "id"> | null;
+	mesServicesWaiting: string[]; //Array of ids
 };
 
 export namespace State {
@@ -31,7 +32,8 @@ const slice = createSlice({
 	name,
 	"initialState": id<State>({
 		"mesServices": [],
-		"serviceSelected": null
+		"serviceSelected": null,
+		"mesServicesWaiting": []
 	}),
 	"reducers": {
 		"setServiceSelected": (
@@ -48,9 +50,15 @@ const slice = createSlice({
 
 			const { service } = payload;
 
-			state.mesServices = state.mesServices.filter(
-				({ id }) => id !== service.id
-			);
+			const { mesServices } = state;
+
+			const serviceToDelete= mesServices.find(({ id })=> id === service.id );
+
+			if( serviceToDelete === undefined ){
+				return;
+			}
+
+			mesServices.splice(mesServices.indexOf(serviceToDelete),1);
 
 		},
 		"updateMonService": (
@@ -58,17 +66,50 @@ const slice = createSlice({
 			{ payload }: PayloadAction<{ service: State["mesServices"][number]; }>
 		) => {
 
+
 			const { service } = payload;
 
-			for (let i = 0; i < state.mesServices.length; i++) {
-				if (state.mesServices[i].id !== service.id) {
-					continue;
-				}
-				state.mesServices[i] = service;
+			const { mesServices } = state;
+
+			const oldService = mesServices.find(({ id })=> id === service.id);
+
+			if( oldService === undefined ){
+				return;
 			}
 
+			mesServices[mesServices.indexOf(oldService)]= service;
 
 		},
+		"cardStartWaiting": (
+			state,
+			{ payload }: PayloadAction<{ id: State["mesServicesWaiting"][number]; }>
+		) => {
+
+			const { id }  = payload;
+
+			state.mesServicesWaiting.push(id);
+
+		},
+		"cardStopWaiting": (
+			state,
+			{ payload }: PayloadAction<{ id: State["mesServicesWaiting"][number]}>
+		) => {
+
+			const { id } = payload;
+
+			const { mesServicesWaiting } = state;
+
+			const index = mesServicesWaiting.indexOf(id);
+
+			if( index < 0 ){
+				return;
+			}
+
+			mesServicesWaiting.splice(index, 1);
+			
+
+		}
+
 
 
 
@@ -149,11 +190,11 @@ const asyncActions = {
 
 		const { service } = payload;
 
-		dispatch(appActions.cardStartWaiting(service.id));
+		dispatch(syncActions.cardStartWaiting({ "id": service.id }));
 
 		await api.deleteServices(service.id);
 
-		dispatch(appActions.cardStopWaiting(service.id));
+		dispatch(syncActions.cardStopWaiting({ "id": service.id }));
 
 		dispatch(syncActions.deleteMonService({ service }));
 
