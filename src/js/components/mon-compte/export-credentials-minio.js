@@ -14,7 +14,7 @@ Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
            "AWS_S3_ENDPOINT"= "${c.AWS_S3_ENDPOINT}")
 
 library("aws.s3")
-bucketlist()`,
+bucketlist(region="")`,
 	},
 	{
 		id: 'r_bis',
