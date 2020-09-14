@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 import App_ from "js/components";
@@ -11,7 +11,8 @@ import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from "js/configuration";
 import { initVaultData } from "js/vault-client";
-import { useRequest } from "js/utils/hooks/useRequest";
+import { Evt } from "evt";
+import { useStatefulEvt } from "evt/hooks";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
@@ -69,20 +70,16 @@ const initializeKeycloak = async (): Promise<void> => {
 
 };
 
-const SplashScreen: React.FunctionComponent<{}> = () => {
+const SplashScreen = () => <h1>Initializing keycloak</h1>; //TODO: <= Actual splash screen here
 
-    const [
-        ,
-        initializeKeycloakProxy,
-        { length: isKeycloakInitialized }
-    ] = useRequest(initializeKeycloak);
-
-    const shouldInitializeKeycloak = configuration.AUTHENTICATION.TYPE === "oidc";
-
-    //NOTE: useState instead of useEffect because it's callback is executed synchronously.
-    useState(() => {
-
-        if (!shouldInitializeKeycloak) {
+/** 
+ * evtIsKeycloakInitialized.state === false while initializeKeycloak() has not resolved,
+ * it is sets to true after.
+ */
+const evtIsKeycloakInitialized =
+    configuration.AUTHENTICATION.TYPE === "oidc" ?
+        Evt.from(initializeKeycloak().then(() => true)).toStateful(false) :
+        (() => {
 
             const kc = getKeycloak();
 
@@ -96,16 +93,19 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
                 })
             );
 
-            return;
+            return Evt.create(true);
 
-        }
 
-        initializeKeycloakProxy();
+        })();
 
-    });
 
-    return shouldInitializeKeycloak && !isKeycloakInitialized ?
-        <h1>Initializing keycloak</h1> : //TODO: <= Actual splash screen here
+const Switcher = () => {
+
+    //NOTE: Hook that trigger render when evtIsKeycloakInitialized.state value changes.
+    useStatefulEvt([evtIsKeycloakInitialized]);
+
+    return !evtIsKeycloakInitialized.state ?
+        <SplashScreen /> :
         <Provider store={store}>
             <App />
         </Provider>;
@@ -114,7 +114,7 @@ const SplashScreen: React.FunctionComponent<{}> = () => {
 
 reactDom.render(
     <React.StrictMode>
-        <SplashScreen />
+        <Switcher />
     </React.StrictMode>,
     document.getElementById("root")
 );
