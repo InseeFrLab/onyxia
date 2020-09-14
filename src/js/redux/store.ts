@@ -3,11 +3,16 @@ import { configureStore } from "@reduxjs/toolkit";
 import type { ThunkAction, Action } from "@reduxjs/toolkit";
 import * as myFiles from "./myFiles";
 import * as myLab from "./myLab";
+import * as app from "./app";
+import * as user from "./user";
 
 export const store = configureStore({
   "reducer": {
 	[myFiles.name]: myFiles.reducer,
-	[myLab.name]: myLab.reducer
+	[myLab.name]: myLab.reducer,
+	[app.name]: app.reducer,
+	[user.name]: user.reducer
+
   }
 });
 

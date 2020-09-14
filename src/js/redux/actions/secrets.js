@@ -48,18 +48,4 @@ export const updateVaultSecret = ({ location, data }) => async (dispatch) => {
 
 export const createPath = (path) => async (dispatch) => {};
 
-export const newVaultToken = (token) => async (dispatch) =>
-	dispatch({
-		type: constantes.NEW_VAULT_TOKEN,
-		payload: {
-			token,
-		},
-	});
 
-export const newVaultData = (data) => async (dispatch) =>
-	dispatch({
-		type: constantes.NEW_VAULT_DATA,
-		payload: {
-			data,
-		},
-	});

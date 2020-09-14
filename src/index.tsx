@@ -5,7 +5,7 @@ import App_ from "js/components";
 import { store } from "js/redux";
 import { getKeycloak } from "js/utils";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
-import { setAuthenticated } from "js/redux/actions";
+import { actions as userActions } from "js/redux/user";
 import * as localStorageToken from "js/utils/localStorageToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
@@ -53,7 +53,7 @@ const initializeKeycloak = async (): Promise<void> => {
     localStorageToken.set(kc.token);
 
     store.dispatch(
-        setAuthenticated({
+        userActions.setAuthenticated({
             "accessToken": kc.token,
             "refreshToken": kc.refreshToken,
             "idToken": kc.idToken
@@ -78,7 +78,9 @@ const SplashScreen = () => <h1>Initializing keycloak</h1>; //TODO: <= Actual spl
  */
 const evtIsKeycloakInitialized =
     configuration.AUTHENTICATION.TYPE === "oidc" ?
-        Evt.from(initializeKeycloak().then(() => true)).toStateful(false) :
+        Evt.from(initializeKeycloak().then(() => true))
+            .toStateful(false)
+        :
         (() => {
 
             const kc = getKeycloak();
@@ -86,7 +88,7 @@ const evtIsKeycloakInitialized =
             localStorageToken.set("FAKE_TOKEN");
 
             store.dispatch(
-                setAuthenticated({
+                userActions.setAuthenticated({
                     "accessToken": kc.token,
                     "refreshToken": kc.refreshToken,
                     "idToken": kc.idToken

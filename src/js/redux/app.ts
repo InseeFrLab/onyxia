@@ -1,9 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "evt/tools/typeSafety/id";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import * as localStorageToken from "js/utils/localStorageToken";
+import { actions as userActions } from "./user";
 
 export type State = {
 	authenticated: boolean;
@@ -15,7 +16,32 @@ export type State = {
 	faviconUrl: string;
 };
 
-export const name= "app";
+export const name = "app";
+
+const asyncThunks = {
+	//TODO: As is, this has really no business being an redux action.
+	...(() => {
+
+		const typePrefix = "logout";
+
+		return {
+			[typePrefix]: createAsyncThunk(
+				`${name}/${typePrefix}`,
+				async () => {
+
+					localStorageToken.clear();
+
+					await getKeycloakInstance()
+						.logout({ "redirectUri": `${window.location.origin}/accueil` });
+
+
+				}
+			)
+		};
+
+
+	})()
+};
 
 const slice = createSlice({
 	name,
@@ -29,9 +55,6 @@ const slice = createSlice({
 		"faviconUrl": "/onyxia.png",
 	}),
 	"reducers": {
-		"setAuthenticated": state => {
-			state.authenticated = true;
-		},
 		"startWaiting": state => {
 			state.waiting = true;
 		},
@@ -63,7 +86,7 @@ const slice = createSlice({
 			{ payload }: PayloadAction<{ width: State["screenWidth"]; }>
 		) => {
 
-			const { width } = payload;
+			const { width } = payload;
 
 			state.screenWidth = width;
 
@@ -71,12 +94,12 @@ const slice = createSlice({
 		"setFavicon": (
 			state,
 			{ payload }: PayloadAction<{ url: State["faviconUrl"]; }>
-		)=> {
+		) => {
 
 			const { url } = payload;
 
 			state.faviconUrl = url;
-			
+
 		},
 		"startVisite": (
 			state
@@ -85,27 +108,19 @@ const slice = createSlice({
 			state.visite = true;
 
 		}
+	},
+	"extraReducers": {
+		[userActions.setAuthenticated.type]: state => {
+			state.authenticated = true;
+		}
 	}
 });
 
 const { actions: syncActions } = slice;
 
-
-const asyncActions = {
-	//TODO: As is, this has really no business being an redux action.
-	"logout": () => async () => {
-
-		localStorageToken.clear();
-
-		await getKeycloakInstance()
-			.logout({ "redirectUri": `${window.location.origin}/accueil` });
-
-	}
-};
-
 export const actions = {
 	...syncActions,
-	...asyncActions
+	...asyncThunks
 };
 
 export const select = (state: RootState) => state.myFiles;
