@@ -1,6 +1,5 @@
 
 import { configureStore } from "@reduxjs/toolkit";
-import type { ThunkAction, Action } from "@reduxjs/toolkit";
 import * as myFiles from "./myFiles";
 import * as myLab from "./myLab";
 import * as app from "./app";
@@ -17,12 +16,6 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;
 
 /*
 import { createStore } from 'redux';
