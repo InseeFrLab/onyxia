@@ -95,13 +95,6 @@ const asyncThunks = {
 
                     return user as AxiosResponse<Parameters<typeof syncActions.setUserInfo>[0]>
 
-
-
-
-
-
-
-
                 }
             )
         };
