@@ -55,10 +55,20 @@ const slice = createSlice({
 		"faviconUrl": "/onyxia.png",
 	}),
 	"reducers": {
+		/*
+		{
+  			type: 'onyxia/app/startWaiting'
+		}
+		*/
 		"startWaiting": state => {
 			state.waiting = true;
 		},
-		"stopWaiting": state => {
+		/*
+		{
+			type: 'onyxia/app/stopWaiting'
+		}
+		*/
+		"stopWaiting": state => { //USED
 			state.waiting = false;
 		},
 		"setRedirectUri": (
@@ -81,6 +91,14 @@ const slice = createSlice({
 			state.displayLogin = doDisplay;
 
 		},
+		/*
+		{
+		  type: 'onyxia/app/appResize',
+		  payload: {
+		    width: 2560
+		  }
+		}
+		*/
 		"applicationResize": (
 			state,
 			{ payload }: PayloadAction<{ width: State["screenWidth"]; }>
@@ -101,6 +119,11 @@ const slice = createSlice({
 			state.faviconUrl = url;
 
 		},
+		/*
+		{
+  			type: 'onyxia/app/startVisite'
+		}
+		*/
 		"startVisite": (
 			state
 		) => {

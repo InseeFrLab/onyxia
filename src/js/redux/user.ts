@@ -10,6 +10,7 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { PUSHER } from "js/components/notifications";
 import { actions as appActions } from "./app";
 import type { RootState } from "./store";
+import { actions as secretsActions } from "./secrets";
 
 
 //TODO: All caps here result in unnecessary work in the reducers.
@@ -106,6 +107,19 @@ const asyncThunks = {
 
 
 const reusableReducers = {
+    /*
+    {
+      type: 'onyxia/app/setUserInfo',
+      payload: {
+        user: {
+          email: 'joseph.garrone.gj@gmail.com',
+          idep: 'jgarrone',
+          nomComplet: 'Joseph Garrone',
+          ip: '81.64.22.177'
+        }
+      }
+    }
+    */
     "setUserInfo": (
         state: State,
         { payload }: {
@@ -114,8 +128,8 @@ const reusableReducers = {
                 idep: string;
                 nomComplet: string;
                 ip: string;
-                sshPublicKey: string;
-                password: string;
+                sshPublicKey?: string;
+                password?: string;
             }
         }
     ) => {
@@ -129,10 +143,46 @@ const reusableReducers = {
 
         const { SSH } = state;
 
-        SSH.SSH_PUBLIC_KEY = sshPublicKey;
-        SSH.SSH_KEY_PASSWORD = password;
 
+        if( sshPublicKey ){
+            SSH.SSH_PUBLIC_KEY = sshPublicKey;
+        }
+
+        if( password ){
+            SSH.SSH_KEY_PASSWORD = password;
+        }
+
+
+    },
+    /*
+    {
+      type: 'onyxia/mesSecrets/newVaultData',
+      payload: {
+        data: {
+          password: 'yQgE0SG54rJGfwZ23k0V',
+          git_user_name: 'Joseph Garrone',
+          git_user_mail: 'joseph.garrone.gj@gmail.com',
+          git_credentials_cache_duration: '0'
+        }
+      }
     }
+    */
+    "newVaultData": (
+        state: State,
+        { payload }: {
+            payload: {
+                data: Record<string, string>;
+            }
+        }
+    ) => {
+
+
+        const { data } = payload;
+
+        Object.keys(data)
+            .forEach(key => state.VAULT.DATA[key] = data[key]);
+
+    },
 };
 
 
@@ -175,7 +225,17 @@ const slice = createSlice({
     }),
     "reducers": {
         //TODO: We should be able to assume there is no more prop on KEYCLOAK
-        "setAuthenticated": (
+        /*
+        {
+          type: 'onyxia/app/setAthenticated',
+          payload: {
+            accessToken: 'eyJhbJVcGNsb3VkIiwiYXVkIjpbIm9ue...',
+            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCIgOiA...',
+            idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldU...'
+          }
+        }
+        */
+        "setAuthenticated": ( //USED
             state,
             { payload }: PayloadAction<{
                 idToken: string;
@@ -193,6 +253,19 @@ const slice = createSlice({
             KEYCLOAK.KC_ACCESS_TOKEN = accessToken;
 
         },
+        /*
+        {
+        type: 'onyxia/S3/newCredentials',
+        payload: {
+            credentials: {
+            accessKey: 'JOC...SEHE',
+            secretAccessKey: 'c5Db1Y...HxNLX',
+            sessionToken: 'ey...zobOPxHT_LRRjHw',
+            expiration: '2020-09-16T01:50:26Z'
+            }
+        }
+        }
+        */
         "newS3Credentials": (
             state,
             { payload }: PayloadAction<{
@@ -213,6 +286,14 @@ const slice = createSlice({
             S3.AWS_SESSION_TOKEN = sessionToken;
 
         },
+        /*
+        {
+          type: 'onyxia/mesSecrets/newVaultToken',
+          payload: {
+            token: 's.CFtVm4AJzsFCDzxZ1XuVMJeF'
+          }
+        }
+        */
         "newVaultToken": (
             state,
             { payload }: PayloadAction<{
@@ -223,19 +304,6 @@ const slice = createSlice({
             const { token } = payload;
 
             state.VAULT.VAULT_TOKEN = token;
-
-        },
-        "newVaultData": (
-            state,
-            { payload }: PayloadAction<{
-                data: Record<string, string>;
-            }>
-        ) => {
-
-            const { data } = payload;
-
-            Object.keys(data)
-                .forEach(key => state.VAULT.DATA[key] = data[key]);
 
         },
         ...reusableReducers
@@ -299,6 +367,12 @@ const slice = createSlice({
 
             }
 
+        );
+
+
+        builder.addCase(
+            secretsActions.updateVaultSecret.fulfilled,
+            (state, { payload }) => reusableReducers.newVaultData(state, { payload })
         );
 
     }

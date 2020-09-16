@@ -38,7 +38,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to={`/my-service/${serviceCree.id}`}
+				to={`/my-service/${serviceCree.id}`} //TODO: Throw exception serviceCree is undefined.
 				onClick={next}
 				title={D.btnDetails}
 				component={() => <Icon>more_horiz</Icon>}

@@ -1,14 +1,17 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import * as React from "react";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
 import { id } from "evt/tools/typeSafety/id";
 import { actions as appActions } from "./app";
 import { axiosAuth } from "js/utils/axios-config";
-import localApi_todo_rename from "./api";
+import { resApiPaths } from "js/restApiPaths";
 import { PUSHER } from "js/components/notifications";
 import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
+import { assert } from "evt/tools/typeSafety/assert";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 
 //TODO: Rename franglish
 export type State = {
@@ -65,11 +68,10 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
 					const response = await axiosAuth.put(
 						service.category === "group" ?
-							localApi_todo_rename.nouveauGroupe :
-							localApi_todo_rename.nouveauService,
+							resApiPaths.nouveauGroupe :
+							resApiPaths.nouveauService,
 						{
 							"catalogId": service.catalogId,
 							"packageName": service.name,
@@ -79,11 +81,20 @@ const asyncThunks = {
 						}
 					).catch((error: Error) => error);
 
+					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
+					//(axios middleware.
+					assert(typeGuard<{ id: string; }>(response));
+
 					dispatch(appActions.stopWaiting());
 
 					if (response instanceof Error) {
 
-						PUSHER.push(<messages.ServiceEchecMessage nom={ service.name } />);
+						PUSHER.push(
+							React.createElement(
+								messages.ServiceEchecMessage,
+								{ "nom": service.name }
+							)
+						);
 
 						return;
 
@@ -94,7 +105,16 @@ const asyncThunks = {
 						return;
 					}
 
-					PUSHER.push(<messages.ServiceCreeMessage id={ response.id } message = { service.postInstallNotes } />);
+					PUSHER.push(
+						React.createElement(
+							messages.ServiceCreeMessage,
+							{ 
+								"id": response.id,
+								"message": service.postInstallNotes
+							}
+						)
+					);
+
 
 				}
 			)
@@ -126,7 +146,14 @@ const asyncThunks = {
 
 					dispatch(syncActions.deleteMonService({ service }));
 
-					PUSHER.push(<messages.ServiceSupprime id={ service.id } />);
+					PUSHER.push(
+						React.createElement(
+							messages.ServiceSupprime,
+							{ 
+								"id": service.id
+							}
+						)
+					);
 
 				}
 			)
@@ -144,6 +171,14 @@ const slice = createSlice({
 		"mesServicesWaiting": []
 	}),
 	"reducers": {
+		/*
+		{
+          type: 'onyxia/myLab/setSelectedService',
+          payload: {
+            service: null
+          }
+        }
+		*/
 		"setServiceSelected": (
 			state,
 			{ payload }: PayloadAction<{ service: State["serviceSelected"]; }>
