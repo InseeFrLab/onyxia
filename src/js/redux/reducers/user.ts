@@ -32,6 +32,8 @@ const initial = {
 	VAULT: {
 		VAULT_ADDR: conf.VAULT.VAULT_BASE_URI,
 		VAULT_TOKEN: undefined,
+		VAULT_MOUNT: conf.VAULT.VAULT_KV_ENGINE,
+		VAULT_TOP_DIR: undefined,
 		DATA: {},
 	},
 };
@@ -60,6 +62,10 @@ export default (state = initial, action) => {
 				SSH: {
 					SSH_PUBLIC_KEY: action.payload.user.sshPublicKey,
 					SSH_KEY_PASSWORD: action.payload.user.password,
+				},
+				VAULT: {
+					...state.VAULT,
+					VAULT_TOP_DIR: action.payload.user.idep,
 				},
 			};
 		case types.NEW_S3_CREDENTIALS:
