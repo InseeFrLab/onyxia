@@ -2,7 +2,7 @@ import React from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 import App_ from "js/components";
-import { store } from "js/redux";
+import { store } from "js/redux/store";
 import { getKeycloak } from "js/utils";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
@@ -11,8 +11,7 @@ import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import configuration from "js/configuration";
 import { initVaultData } from "js/vault-client";
-import { Evt } from "evt";
-import { useStatefulEvt } from "evt/hooks";
+import { useAsync } from "react-async-hook";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
@@ -72,16 +71,11 @@ const initializeKeycloak = async (): Promise<void> => {
 
 const SplashScreen = () => <h1>Initializing keycloak</h1>; //TODO: <= Actual splash screen here
 
-/** 
- * evtIsKeycloakInitialized.state === false while initializeKeycloak() has not resolved,
- * it is sets to true after.
- */
-const evtIsKeycloakInitialized =
-    configuration.AUTHENTICATION.TYPE === "oidc" ?
-        Evt.from(initializeKeycloak().then(() => true))
-            .toStateful(false)
-        :
-        (() => {
+const Switcher = () => {
+
+    const asyncInitializeKeycloak = useAsync(async ()=> {
+
+        if( configuration.AUTHENTICATION.TYPE !== "oidc" ){
 
             const kc = getKeycloak();
 
@@ -95,28 +89,23 @@ const evtIsKeycloakInitialized =
                 })
             );
 
-            return Evt.create(true);
+            return;
 
+        }
 
-        })();
+        await initializeKeycloak();
 
+    }, []);
 
-const Switcher = () => {
-
-    //NOTE: Hook that trigger render when evtIsKeycloakInitialized.state value changes.
-    useStatefulEvt([evtIsKeycloakInitialized]);
-
-    return !evtIsKeycloakInitialized.state ?
-        <SplashScreen /> :
-        <Provider store={store}>
-            <App />
-        </Provider>;
+    return !asyncInitializeKeycloak.result ? <SplashScreen /> : <App />;
 
 };
 
 reactDom.render(
     <React.StrictMode>
-        <Switcher />
+        <Provider store={store}>
+            <Switcher />
+        </Provider>
     </React.StrictMode>,
     document.getElementById("root")
 );
