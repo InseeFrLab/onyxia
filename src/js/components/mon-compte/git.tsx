@@ -35,7 +35,7 @@ const GitField = ({ values, idep, update }: Props) => {
 					key={k}
 					copy
 					label={labels[k] || k}
-					value={v.toString()}
+					value={v?.toString()}
 					type="string"
 					onChange={(newV: string) => {
 						setGit({ ...git, [k]: newV });
