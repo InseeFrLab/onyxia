@@ -11,8 +11,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
 import { axiosAuth } from 'js/utils';
-import api from 'js/redux/api';
-import { creerNouveauService, requestDeleteMonService } from 'js/redux/actions';
+import { resApiPaths } from "js/restApiPaths";
+import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from 'js/minio-client';
 import { getVaultToken } from 'js/vault-client';
 import {
@@ -39,24 +39,24 @@ const CloudShell = () => {
 
 
 	const launchCloudShell = (user: any) => {
-		axiosAuth.get<cloudShellData>(`${api.cloudShell}`).then((response) => {
+		axiosAuth.get<cloudShellData>(`${resApiPaths.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
 			const service = cloudshell.packageToDeploy;
 			setCloudShellStatus(cloudshell.status);
 			if (cloudshell.status === 'DOWN') {
 				(dispatch(
-					creerNouveauService(
-						{
+					myLabActions.creerNouveauService({
+						"service": {
 							...service,
 							...catalogId,
 						},
-						getValuesObject(getOptions(user, service, minioCredentials, {}).fV),
-						false
-					)
+						"options": getValuesObject(getOptions(user, service, minioCredentials, {}).fV) as any,
+						"dryRun": false
+					})
 				) as any).then(() => {
 					axiosAuth
-						.get<cloudShellData>(api.cloudShell)
+						.get<cloudShellData>(resApiPaths.cloudShell)
 						.then((response: any) => {
 							cloudshell = (response as any) as cloudShellData;
 							setUrl(cloudshell.url);
@@ -73,7 +73,9 @@ const CloudShell = () => {
 	};
 
 	const deleteCloudShell = () => {
-		dispatch(requestDeleteMonService({ id: 'cloudshell' }));
+		dispatch(myLabActions.requestDeleteMonService(
+			{ "service": { id: 'cloudshell' } })
+		);
 		setCloudShellStatus(undefined);
 		setUrl(undefined);
 	};
