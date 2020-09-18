@@ -71,7 +71,8 @@
     "react-toastify": "^6.0.8",
     "remove-accents": "^0.4.2",
     "run-exclusive": "^2.2.14",
-    "typeface-roboto": "^0.0.75"
+    "typeface-roboto": "^0.0.75",
+    "react-async-hook": "^3.6.1"
   },
   "scripts": {
     "start": "react-scripts start",

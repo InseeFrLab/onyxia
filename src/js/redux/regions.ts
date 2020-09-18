@@ -5,7 +5,7 @@ import { id } from "evt/tools/typeSafety/id";
 import type { RootState } from "./store";
 
 export type State = {
-	regions: Region[];
+	regions: Region[] | undefined;
 	selectedRegion: Region | undefined;
 };
 
@@ -14,7 +14,7 @@ export const name = "regions"; //TODO: French
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
-		"regions": [],
+		"regions": undefined,
 		"selectedRegion": undefined
 	}),
 	"reducers": {

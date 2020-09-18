@@ -5,6 +5,7 @@ import * as myLab from "./myLab";
 import * as app from "./app";
 import * as user from "./user";
 import * as regions from "./regions";
+import * as reactRedux from "react-redux";
 
 export const store = configureStore({
   "reducer": {
@@ -16,5 +17,12 @@ export const store = configureStore({
   }
 });
 
+/** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
+export const useDispatch = ()=> reactRedux.useDispatch<typeof store.dispatch>();
+
 export type RootState = ReturnType<typeof store.getState>;
+
+export const useSelector: reactRedux.TypedUseSelectorHook<RootState> =
+  reactRedux.useSelector;
+
 
