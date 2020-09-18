@@ -1,8 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector } from 'react-redux';
-import { RootState } from 'js/redux';
+import { useSelector } from "js/redux/store";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import { getKeycloak } from 'js/utils';
@@ -19,7 +18,8 @@ const EnTete = () => (
 );
 
 const Cluster = () => {
-	const user = useSelector((state: RootState) => state.user);
+
+	const user= useSelector(state => state.user);
 
 	return (
 		<>
