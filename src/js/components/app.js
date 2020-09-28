@@ -11,7 +11,7 @@ import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import ReactResizeDetector from 'react-resize-detector';
-import Alert from 'js/components/commons/alert';
+import { Alert } from 'js/components/commons/Alert';
 import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
