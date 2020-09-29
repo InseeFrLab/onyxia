@@ -1,4 +1,4 @@
-export const resApiPaths = {
+export const restApiPaths = {
 	"catalogue": "/public/catalog",
 	"services": "/public/our-lab/apps",
 	"mesServices": "/my-lab/group",
@@ -12,5 +12,12 @@ export const resApiPaths = {
 	},
 	"task": "/my-lab/task",
 	"cloudShell": "/cloudshell",
-	"servicesV2": "/my-lab/services"
+	"servicesV2": "/my-lab/services",
+
+	//TODO: Cleanup!
+	"myServices": '/my-lab/services',
+	"getService": '/my-lab/app',
+	"deleteService": '/my-lab/app',
+	"getLogs": '/my-lab/app/logs',
+	"configuration": '/public/configuration',
 };

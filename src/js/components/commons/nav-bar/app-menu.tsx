@@ -15,7 +15,7 @@ import {
 	CatalogueIcon,
 	PokerHandIcon,
 } from 'js/components/commons/icons';
-import conf from 'js/configuration';
+import { env } from 'js/env';
 import D from 'js/i18n';
 
 import useBetaTest from 'js/components/hooks/useBetaTest';
@@ -70,7 +70,7 @@ export default ({
 						button
 						component={Link}
 						to="/trainings"
-						disabled={!conf.CONTENT.TRAININGS_URL}
+						disabled={!env.CONTENT.TRAININGS_URL}
 					>
 						<ListItemIcon>
 							<Icon>menu_book</Icon>

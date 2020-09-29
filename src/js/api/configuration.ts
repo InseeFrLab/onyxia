@@ -1,4 +1,4 @@
-import apiPaths from 'js/configuration/api-paths';
+import { restApiPaths } from 'js/restApiPaths';
 import { Region } from 'js/model/Region';
 import { axiosPublic } from 'js/utils';
 import { store } from "js/redux/store";
@@ -16,7 +16,7 @@ export interface Build {
 
 export const getConfiguration = async () => {
 	return await axiosPublic
-		.get<Configuration>(apiPaths.configuration)
+		.get<Configuration>(restApiPaths.configuration)
 		.then((resp) => {
 			const configuration = (resp as unknown) as Configuration;
 			store.dispatch(

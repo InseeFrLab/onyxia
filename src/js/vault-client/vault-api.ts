@@ -4,10 +4,10 @@ import { axiosURL } from 'js/utils';
 import { getToken } from 'js/utils/localStorageToken';
 import { store } from 'js/redux';
 import { newVaultToken, newVaultData } from 'js/redux/actions';
-import conf from '../configuration';
+import { env } from 'js/env';
 
-const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
-const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
+const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
+const VAULT_KV_ENGINE = env.VAULT.VAULT_KV_ENGINE;
 
 interface VaultProfile {
 	password?: string;

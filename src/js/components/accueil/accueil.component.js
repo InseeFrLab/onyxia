@@ -8,7 +8,7 @@ import D from 'js/i18n';
 import { wrapPromise, axiosURL } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
-import conf from './../../configuration';
+import { env } from "js/env";
 
 const resource = wrapPromise(
 	axiosURL(

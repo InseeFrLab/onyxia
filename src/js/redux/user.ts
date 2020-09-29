@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import conf from '../configuration';
+import { env } from 'js/env';
 import { id } from "evt/tools/typeSafety/id";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { resApiPaths } from "js/restApiPaths";
+import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import type { AxiosResponse } from "axios";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -70,7 +70,7 @@ const asyncThunks = {
                 { rejectValue: { axiosErrorMessage: string; }; }
             >(
                 `${name}/${typePrefix}`,
-                (...[, { rejectWithValue }]) => axiosAuth.get(resApiPaths.userInfo)
+                (...[, { rejectWithValue }]) => axiosAuth.get(restApiPaths.userInfo)
                     .then(user => user)
                     .catch((error: Error) => rejectWithValue({ "axiosErrorMessage": error.message }))
             )
@@ -90,7 +90,7 @@ const asyncThunks = {
                     dispatch(appActions.startWaiting());
 
                     const user = await axiosAuth
-                        .get(resApiPaths.updateUser);
+                        .get(restApiPaths.updateUser);
 
                     dispatch(appActions.stopWaiting());
 
@@ -201,7 +201,7 @@ const slice = createSlice({
             "AWS_SECRET_ACCESS_KEY": undefined,
             "AWS_SESSION_TOKEN": undefined,
             "AWS_DEFAULT_REGION": 'us-east-1',
-            "AWS_S3_ENDPOINT": conf.MINIO.END_POINT,
+            "AWS_S3_ENDPOINT": env.MINIO.END_POINT,
             "AWS_EXPIRATION": undefined,
         },
         "SSH": {
@@ -214,11 +214,11 @@ const slice = createSlice({
             "KC_ACCESS_TOKEN": undefined,
         },
         "KUBERNETES": {
-            "KUB_SERVER_NAME": conf.KUBERNETES.KUB_SERVER_NAME,
-            "KUB_SERVER_URL": conf.KUBERNETES.KUB_SERVER_URL,
+            "KUB_SERVER_NAME": env.KUBERNETES.KUB_SERVER_NAME,
+            "KUB_SERVER_URL": env.KUBERNETES.KUB_SERVER_URL,
         },
         "VAULT": {
-            "VAULT_ADDR": conf.VAULT.VAULT_BASE_URI,
+            "VAULT_ADDR": env.VAULT.VAULT_BASE_URI,
             "VAULT_TOKEN": undefined,
             "DATA": {},
         },

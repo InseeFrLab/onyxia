@@ -12,7 +12,7 @@ import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import ReactResizeDetector from 'react-resize-detector';
 import { Alert } from 'js/components/commons/Alert';
-import config from 'js/configuration';
+import {env} from 'js/env';
 import { invalidIdep } from 'js/utils/idep';
 import Accueil from './accueil';
 import MyService from 'js/components/my-service';

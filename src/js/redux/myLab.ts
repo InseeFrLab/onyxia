@@ -6,7 +6,7 @@ import type { RootState } from "./store";
 import { id } from "evt/tools/typeSafety/id";
 import { actions as appActions } from "./app";
 import { axiosAuth } from "js/utils/axios-config";
-import { resApiPaths } from "js/restApiPaths";
+import { restApiPaths } from "js/restApiPaths";
 import { PUSHER } from "js/components/notifications";
 import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
@@ -70,8 +70,8 @@ const asyncThunks = {
 
 					const response = await axiosAuth.put(
 						service.category === "group" ?
-							resApiPaths.nouveauGroupe :
-							resApiPaths.nouveauService,
+							restApiPaths.nouveauGroupe :
+							restApiPaths.nouveauService,
 						{
 							"catalogId": service.catalogId,
 							"packageName": service.name,

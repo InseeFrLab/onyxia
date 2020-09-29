@@ -3,12 +3,12 @@ import * as Minio from 'minio';
 import { getToken } from 'js/utils/localStorageToken';
 import store from 'js/redux/store';
 import * as Actions from 'js/redux/actions';
-import conf from '../configuration';
+import { env } from "js/env";
 
-const MINIO_BASE_URI = conf.MINIO.BASE_URI;
-const MINIO_END_POINT = conf.MINIO.END_POINT;
-const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.MINIMUN_DURATION;
-const MINIO_PORT = conf.MINIO.PORT;
+const MINIO_BASE_URI = env.MINIO.BASE_URI;
+const MINIO_END_POINT = env.MINIO.END_POINT;
+const MINIO_END_MINIMUM_DURATION_MS = env.MINIO.MINIMUN_DURATION;
+const MINIO_PORT = env.MINIO.PORT;
 let MINIO_CLIENT: Minio.Client | null = null;
 
 const getMinioDataFromStore = () => {

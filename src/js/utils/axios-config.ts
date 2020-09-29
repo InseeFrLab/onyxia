@@ -1,10 +1,10 @@
 import axios from 'axios';
 import getKeycloak from './keycloak-config';
 import { setToken } from 'js/utils/localStorageToken';
-import conf from '../configuration';
+import { env } from '.js/env';
 import store from 'js/redux/store';
 
-const BASE_URL = conf.API.BASE_URL;
+const BASE_URL = env.API.BASE_URL;
 
 const refreshToken = (minValidity = 60) =>
 	new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ const authorizeConfig = (kc: any) => (config: any) => ({
 
 const axiosAuth = axios.create({ baseURL: BASE_URL });
 
-if (conf.AUTHENTICATION.TYPE === 'oidc') {
+if (env.AUTHENTICATION.TYPE === 'oidc') {
 	axiosAuth.interceptors.request.use(
 		(config) =>
 			refreshToken()

@@ -1,6 +1,7 @@
 import { axiosAuth } from 'js/utils';
-import apiPaths from 'js/configuration/api-paths';
 import { Service, Group } from 'js/model';
+
+import { restApiPaths } from "js/restApiPaths";
 
 interface ServicesListing {
 	apps: Service[];
@@ -9,7 +10,7 @@ interface ServicesListing {
 
 export const getServices = async (groupId?: String) => {
 	return await axiosAuth
-		.get<ServicesListing>(apiPaths.myServices, {
+		.get<ServicesListing>(restApiPaths.myServices, {
 			params: {
 				groupId: groupId,
 			},
@@ -19,7 +20,7 @@ export const getServices = async (groupId?: String) => {
 
 export const getService = async (id: string) => {
 	return await axiosAuth
-		.get<Service>(apiPaths.getService, {
+		.get<Service>(restApiPaths.getService, {
 			params: {
 				serviceId: id,
 			},
@@ -31,7 +32,7 @@ export const deleteServices = (path?: string, bulk?: boolean) => {
 	if (path && bulk && !path.startsWith('/')) {
 		path = '/' + path;
 	}
-	return axiosAuth.delete(`${apiPaths.deleteService}`, {
+	return axiosAuth.delete(`${restApiPaths.deleteService}`, {
 		params: {
 			path: path,
 			bulk: bulk,
@@ -41,7 +42,7 @@ export const deleteServices = (path?: string, bulk?: boolean) => {
 
 export const getLogs = async (serviceId: string, taskId: string) => {
 	return await axiosAuth
-		.get<string>(apiPaths.getLogs, {
+		.get<string>(restApiPaths.getLogs, {
 			params: {
 				serviceId: serviceId,
 				taskId: taskId,

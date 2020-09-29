@@ -11,7 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
 import { axiosAuth } from 'js/utils';
-import { resApiPaths } from "js/restApiPaths";
+import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from 'js/minio-client';
 import { getVaultToken } from 'js/vault-client';
@@ -39,7 +39,7 @@ const CloudShell = () => {
 
 
 	const launchCloudShell = (user: any) => {
-		axiosAuth.get<cloudShellData>(`${resApiPaths.cloudShell}`).then((response) => {
+		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
 			const service = cloudshell.packageToDeploy;
@@ -56,7 +56,7 @@ const CloudShell = () => {
 					})
 				) as any).then(() => {
 					axiosAuth
-						.get<cloudShellData>(resApiPaths.cloudShell)
+						.get<cloudShellData>(restApiPaths.cloudShell)
 						.then((response: any) => {
 							cloudshell = (response as any) as cloudShellData;
 							setUrl(cloudshell.url);

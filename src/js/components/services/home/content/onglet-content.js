@@ -6,9 +6,9 @@ import {
 	getServiceAvatar,
 } from 'js/components/commons/service-card';
 import { axiosURL, wrapPromise } from 'js/utils';
-import conf from 'js/configuration';
+import { env } from "js/env";
 
-const resource = wrapPromise(axiosURL(conf.CONTENT.SERVICES_URL));
+const resource = wrapPromise(axiosURL(env.CONTENT.SERVICES_URL));
 
 const OngletContent = () => {
 	const { services } = resource.read();
