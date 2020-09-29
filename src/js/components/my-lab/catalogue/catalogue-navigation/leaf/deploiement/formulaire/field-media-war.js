@@ -7,7 +7,7 @@ import MenuList from '@material-ui/core/MenuList';
 import RootRef from '@material-ui/core/RootRef';
 import { getMinioClient, getMinioApi } from 'js/minio-client';
 import conf from 'js/configuration';
-import { HidablePane } from 'js/components/commons/atoms';
+import { HidablePane } from 'js/components/commons/HidablePane';
 
 const MINIO_BASE_URI = conf.MINIO.BASE_URI || '';
 
