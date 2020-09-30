@@ -2,7 +2,7 @@ import axios from 'axios';
 import generator from 'generate-password';
 import { axiosURL } from 'js/utils';
 import { getToken } from 'js/utils/localStorageToken';
-import { store } from 'js/redux';
+import { store } from 'js/redux/store';
 import { newVaultToken, newVaultData } from 'js/redux/actions';
 import { env } from 'js/env';
 

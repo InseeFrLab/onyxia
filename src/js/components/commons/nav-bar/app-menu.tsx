@@ -19,8 +19,8 @@ import { env } from 'js/env';
 import D from 'js/i18n';
 
 import useBetaTest from 'js/components/hooks/useBetaTest';
-import { RootState } from 'js/redux';
-import { useSelector } from 'react-redux';
+import type { RootState } from "js/redux/store";
+import { useSelector } from "js/redux/store";
 
 const ItemLogin = ({ login }: any) => (
 	<ListItem button onClick={login}>

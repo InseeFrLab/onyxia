@@ -5,7 +5,7 @@ import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteServices } from 'js/api/my-lab';
 import { useSelector } from 'react-redux';
-import { RootState } from 'js/redux';
+import type { RootState } from 'js/redux/store';
 
 interface Props {
 	groupId: string;

@@ -9,7 +9,6 @@ import { IconButton, Icon } from '@material-ui/core/';
 import MenuIcon from '@material-ui/icons/Menu';
 import AppMenu from './app-menu';
 import { LoginModal } from 'js/components/authentication';
-import { SMALL_POINT } from 'js/redux/reducers';
 import './nav-bar.scss';
 
 class Navbar extends React.Component {
@@ -100,7 +99,7 @@ class Navbar extends React.Component {
 	}
 }
 const LoginButton = ({ handleClick, screenType }) =>
-	screenType === SMALL_POINT ? (
+	screenType === "SMALL" ? (
 		<Fab
 			id="bouton-login"
 			data-testid="bouton-login"
@@ -123,7 +122,7 @@ const LoginButton = ({ handleClick, screenType }) =>
 	);
 
 const LogoMonCompte = ({ screenType }) =>
-	screenType === SMALL_POINT ? (
+	screenType === "SMALL" ? (
 		<Fab id="bouton-mon-compte" mini>
 			<Icon className="bouton-mon-compte-mini">person</Icon>
 		</Fab>

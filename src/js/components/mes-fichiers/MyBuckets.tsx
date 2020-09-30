@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
-import { RootState } from 'js/redux';
+import type { RootState } from 'js/redux/store';
 import { useSelector, useDispatch } from 'react-redux';
 import { Region } from 'js/model/Region';
 import { loadUserBuckets } from 'js/redux/actions';

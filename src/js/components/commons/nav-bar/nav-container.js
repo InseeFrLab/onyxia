@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import NavBar from './nav-bar';
+/*
 import {
 	setAuthenticated,
 	displayLogin,
@@ -8,6 +9,9 @@ import {
 	logout,
 	startVisite,
 } from 'js/redux/actions';
+*/
+
+
 
 const mapStateToProps = (state, ownProps) => {
 	const {

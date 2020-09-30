@@ -2,7 +2,6 @@ import React from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import createAiguilleur from 'js/components/commons/variable-location';
-import { VAULT_STATUS } from 'js/redux';
 import Leaf from './mes-secrets-leaf.component';
 import Node from './mes-secrets-node.component';
 import Loader from 'js/components/commons/loader';
@@ -45,7 +44,7 @@ class MesSecrets extends React.Component {
 			return { ...state, init: true };
 		}
 		if (
-			props.sealedStatus === VAULT_STATUS.unsealed &&
+			props.sealedStatus === "VAULT_STATUS_UNSEALED" &&
 			state.location !== search &&
 			user
 		) {
@@ -72,8 +71,8 @@ class MesSecrets extends React.Component {
 
 	render() {
 		const { sealedStatus } = this.props;
-		if (sealedStatus === VAULT_STATUS.unknow) return <Loader em={18} />;
-		return sealedStatus === VAULT_STATUS.sealed ? (
+		if (sealedStatus === "VAULT_STATUS_UNKNOWN") return <Loader em={18} />;
+		return sealedStatus === "VAULT_STATUS_SEALED" ? (
 			<>
 				<SealedChest {...this.props} />
 			</>

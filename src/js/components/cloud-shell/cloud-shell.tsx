@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from "js/redux/store";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -28,7 +28,7 @@ interface cloudShellData {
 }
 
 const CloudShell = () => {
-	const user = useSelector((store) => (store as any).user);
+	const user = useSelector(store => store.user);
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);

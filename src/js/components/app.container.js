@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { applicationResize } from 'js/redux/actions';
+import { actions as appActions } from "js/redux/app";
 import App from './app';
 
 const mapStateToProps = (state) => ({
@@ -9,4 +9,4 @@ const mapStateToProps = (state) => ({
 	idep: state.user.IDEP,
 });
 
-export default connect(mapStateToProps, { applicationResize })(App);
+export default connect(mapStateToProps, { "applicationResize": appActions.applicationResize })(App);

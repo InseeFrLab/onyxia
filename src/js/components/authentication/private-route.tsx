@@ -1,12 +1,9 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-//import { displayLogin, setRedirectUri, setFavicon } from 'js/redux/actions';
 import { actions as appActions } from "js/redux/app";
-//import { actions as userActions } from "js/redux/user";
 
 
-//import { getToken } from 'js/utils/localStorageToken';
 import * as localStorageToken from "js/utils/localStorageToken";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { getKeycloak } from 'js/utils';
