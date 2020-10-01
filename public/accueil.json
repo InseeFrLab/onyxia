@@ -1,25 +1,36 @@
 {
 	"bienvenue": {
 		"titre": "Bienvenue sur Onyxia",
-		"image": { "url": "/images/spyrales.jpg", "titleColor": "gold" },
-		"contenu": "Enjoy :)",
-		"boutonQuestion": "Poser une question"
+		"image": { "url": "/images/home.svg", "titleColor": "black" },
+		"contenu": "Travailler avec Python et R, Disposer de toute la puissance dont vous avez besoin !"
 	},
 	"cartes": [
 		{
-			"titre": "Essayer",
-			"icone": "assignment_turned_in",
-			"contenu": "En quelques clics, venez tester des applications simples ou complexes, sans autres pré-requis que votre seule imagination ! Ni téléchargement, ni installation, choisissez et démarrez vos essais !"
-		},
-		{
-			"titre": "Collaborer",
+			"titre": "Un environnement ergonomique et des services à la demande",
 			"icone": "share",
-			"contenu": "Messagerie instantanée, éditeurs collaboratifs de tableurs et de documents texte, forge logicielle, service d'échange de fichiers... Autant d'outils pour travailler à plusieurs mains."
+			"contenu": "Analyser les données, faites du calcul distribué et profitez d’un large catalogue de services. Réserver la puissance de calcul dont vous avez besoin.",
+			"action": {
+				"url": "/images/spyrales.jpg",
+				"contenu": "Consulter le catalogue"
+			}
 		},
 		{
-			"titre": "Proposer",
+			"titre": "Une communauté active et entousiaste à votre écoute",
 			"icone": "highlight",
-			"contenu": "Sur la plateforme innovation, le changement c'est vous ! Vos idées, vos envies pour co-construire les services et décider ensemble de l'avenir de ce grand bac-à-sable."
+			"contenu": "Profitez de ressources pédagogiques mise à votre dispotion (Tutoriels, formations et canaux d’échanges)",
+			"action": {
+				"url": "/images/spyrales.jpg",
+				"contenu": "Rejoindre la communauté"
+			}
+		},
+		{
+			"titre": "Un espace de stockage en ligne",
+			"icone": "assignment_turned_in",
+			"contenu": "Pour accéder facilement à vos données depuis votre code - Implémentation API S3",
+			"action": {
+				"url": "/images/spyrales.jpg",
+				"contenu": "Consulter des données"
+			}
 		}
 	],
 	"precautions": {

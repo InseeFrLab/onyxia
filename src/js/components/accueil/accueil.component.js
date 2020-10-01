@@ -21,7 +21,7 @@ const resource = wrapPromise(
 const Accueil = () => {
 	const { bienvenue, cartes, precautions, applications } = resource.read();
 	const imgTitleColor =
-		(bienvenue.image && bienvenue.image.titleColor) || 'snow';
+		(bienvenue.image && bienvenue.image.titleColor) || 'black';
 	return (
 		<>
 			{/* <Chrismas /> */}
@@ -33,9 +33,14 @@ const Accueil = () => {
 					contenu={bienvenue.contenu}
 				/>
 				<Grid className="valeurs" container spacing={2} alignItems="flex-end">
-					{cartes.map(({ titre, contenu, icone }, i) => (
+					{cartes.map(({ titre, contenu, icone, action }, i) => (
 						<Carte title={titre} icon={icone} key={i}>
 							<Typography variant="body1">{contenu}</Typography>
+							{action && (
+								<Link to={action.url}>
+									<Button variant="outlined">{action.contenu}</Button>
+								</Link>
+							)}
 						</Carte>
 					))}
 				</Grid>
@@ -43,29 +48,21 @@ const Accueil = () => {
 					{precautions.contenu}
 				</Precautions>
 				<div className="applications">
-					{applications.map(
-						({ nom, image, resume, external, internal, avantages }, i) => (
+					{applications &&
+						applications.map(({ nom, image, contenu, external }, i) => (
 							<App
 								paire={i % 2 === 0}
 								key={i}
 								color={i % 2 === 0 ? 'gainsboro' : 'snow'}
 							>
-								<Commentaires
-									title={nom}
-									external={external}
-									internal={internal}
-								>
+								<Commentaires title={nom} external={external}>
 									<Typography variant="body1" className="resume">
-										{resume}
+										{contenu}
 									</Typography>
-									{avantages.map((av, j) => (
-										<Benefit key={j}>{av}</Benefit>
-									))}
 								</Commentaires>
 								<Image name="r-studio" url={image} />
 							</App>
-						)
-					)}
+						))}
 				</div>
 			</div>
 		</>
@@ -130,12 +127,12 @@ const ExternalLink = ({ url }) => (
 	</Button>
 );
 
-const Benefit = ({ children }) => (
+/*const Benefit = ({ children }) => (
 	<Typography variant="body1" className="avantage">
 		<Icon className="chevron">keyboard_arrow_right</Icon>
 		<span>{children}</span>
 	</Typography>
-);
+);*/
 
 const Precautions = ({ titre, children }) => (
 	<div className="precautions">
@@ -152,20 +149,22 @@ const Precautions = ({ titre, children }) => (
 );
 
 const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
-	<div className="bienvenue">
-		<img alt="innovation" src={image} />
-		<div className="message">
-			<div className="title" style={{ color: imgTitleColor }}>
-				<h1>{titre}</h1>
+	<Paper elevation={3} className="bienvenue">
+		<div style={{ width: '50%', float: 'left' }}>
+			<div className="message">
+				<div className="title" style={{ color: imgTitleColor }}>
+					<Typography variant="h1">{titre}</Typography>
+					<Typography variant="h2">{contenu}</Typography>
+					<Link to="/visite-guidee">
+						<Button variant="outlined">{D.startVisit}</Button>
+					</Link>
+				</div>
 			</div>
 		</div>
-		<Paper className="content">
-			<p>{contenu}</p>
-			<Link to="/visite-guidee">
-				<Button variant="outlined">{D.startVisit}</Button>
-			</Link>
-		</Paper>
-	</div>
+		<div style={{ width: '50%', float: 'right' }}>
+			<img alt="innovation" src={image} />
+		</div>
+	</Paper>
 );
 
 export default Accueil;

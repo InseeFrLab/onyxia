@@ -4,30 +4,21 @@
 	margin-right: auto;
 	width: 95%;
 	.bienvenue {
-		position: relative;
-		height: 450px;
-		img {
-			width: 100%;
-			height: 450px;
-		}
+		margin-top: 0.5em;
 		.message {
-			position: absolute;
-			width: 100%;
-			height: 100%;
 			background-color: #00000000;
-			top: 0;
-			left: 0;
-
 			.title {
 				margin: 0;
 				background-color: transparent;
-				font-family: avenir, helvetica, sans-serif;
-				position: absolute;
+				font-family: roboto, sans-serif;
+				padding-left: 0.4em;
+				margin: 0;
 				h1 {
-					padding-left: 0.4em;
-					margin: 0;
-					font-size: 3.5em;
+					font-size: 2.25em;
 					font-weight: bold;
+				}
+				h2 {
+					font-size: 3em;
 				}
 			}
 		}
@@ -46,7 +37,10 @@
 	.valeurs {
 		margin-top: 200px;
 		.carte {
-			height: 300px;
+			h3 {
+				font-size: 2.25em;
+				font-weight: bold;
+			}
 		}
 	}
 
