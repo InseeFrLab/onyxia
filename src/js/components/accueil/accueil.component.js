@@ -150,13 +150,13 @@ const Precautions = ({ titre, children }) => (
 
 const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 	<Paper elevation={3} className="bienvenue">
-		<div style={{ width: '100%', background: 'no-repeat url(' + image + ')', backgroundSize: 'contain', backgroundPosition: 'right' }}>
-			<div className="message" style={{ width: '50%' }}>
+		<div style={{ width: '100%', background: 'no-repeat url(' + image + ')', backgroundSize: '48.7% 100%', backgroundPosition: 'right' }}>
+			<div className="message">
 				<div className="title" style={{ color: imgTitleColor }}>
 					<Typography variant="h1">{titre}</Typography>
 					<Typography variant="h2">{contenu}</Typography>
 					<Link to="/visite-guidee">
-						<Button variant="outlined">{D.startVisit}</Button>
+						<Button  style={{ width: '50%', borderRadius: '37.5px', border: '2px solid black', textTransform: 'initial', lineHeight: '1', fontSize: '1.2em' }}>{D.startVisit}</Button>
 					</Link>
 				</div>
 			</div>

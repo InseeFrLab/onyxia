@@ -4,22 +4,24 @@
 	margin-right: auto;
 	width: 100%;
 	.bienvenue {
-		margin-top: 0.5em;
 		background-color: transparent;
+		padding: 2em 0 5em 8.55%;
 		.message {
 			background-color: #00000000;
+			width: 34.2%;
 			.title {
 				margin: 0;
 				background-color: transparent;
 				font-family: roboto, sans-serif;
-				padding-left: 0.4em;
+				padding-left: 0;
 				margin: 0;
 				h1 {
 					font-size: 2.25em;
 					font-weight: bold;
 				}
 				h2 {
-					font-size: 3em;
+					font-size: 2.5em;
+					font-weight: 400;
 				}
 			}
 		}
