@@ -150,8 +150,8 @@ const Precautions = ({ titre, children }) => (
 
 const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 	<Paper elevation={3} className="bienvenue">
-		<div style={{ width: '50%', float: 'left' }}>
-			<div className="message">
+		<div style={{ width: '100%', background: 'no-repeat url(' + image + ')', backgroundSize: 'contain', backgroundPosition: 'right' }}>
+			<div className="message" style={{ width: '50%' }}>
 				<div className="title" style={{ color: imgTitleColor }}>
 					<Typography variant="h1">{titre}</Typography>
 					<Typography variant="h2">{contenu}</Typography>
@@ -160,9 +160,6 @@ const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 					</Link>
 				</div>
 			</div>
-		</div>
-		<div style={{ width: '50%', float: 'right' }}>
-			<img alt="innovation" src={image} style={{ width: '100%' }} />
 		</div>
 	</Paper>
 );
