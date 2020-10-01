@@ -162,7 +162,7 @@ const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 			</div>
 		</div>
 		<div style={{ width: '50%', float: 'right' }}>
-			<img alt="innovation" src={image} />
+			<img alt="innovation" src={image} style={{ width: '100%' }} />
 		</div>
 	</Paper>
 );
