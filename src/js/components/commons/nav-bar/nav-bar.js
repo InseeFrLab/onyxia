@@ -64,7 +64,7 @@ class Navbar extends React.Component {
 							/>
 						</Link>
 						<Typography variant="h1" color="inherit" className="flex">
-							ONYXIA
+							Onyxia
 						</Typography>
 
 						{authenticated ? (
