@@ -5,10 +5,11 @@
 	width: 100%;
 	.bienvenue {
 		background-color: transparent;
-		padding: 2em 0 5em 8.55%;
+		padding: 2em 0 150px 75px;
+		display: flex;
+		justify-content: space-between;
 		.message {
 			background-color: #00000000;
-			width: 34.2%;
 			.title {
 				margin: 0;
 				background-color: transparent;
@@ -17,11 +18,24 @@
 				margin: 0;
 				h1 {
 					font-size: 2.25em;
-					font-weight: bold;
+					font-weight: 500;
+					position: relative;
+					display: inline-block;
+					margin-bottom: 1.25em;
+				}
+				h1::after {
+					display: block;
+					position: absolute;
+					content: '';
+					bottom: -40%;
+					width: 82%;
+					border-bottom: 1px solid black;
 				}
 				h2 {
-					font-size: 2.5em;
+					font-size: 2.75em;
 					font-weight: 400;
+					white-space: pre-line;
+					margin-bottom: 1em;
 				}
 			}
 		}
@@ -38,11 +52,22 @@
 	}
 
 	.valeurs {
-		margin-top: 200px;
+		margin-top: 50px;
+		.MuiCard-root {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			.MuiCardContent-root {
+				flex-grow: 1;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+		}
 		.carte {
 			h3 {
-				font-size: 2.25em;
-				font-weight: bold;
+				font-size: 1.75em;
+				font-weight: 500;
 			}
 		}
 	}
