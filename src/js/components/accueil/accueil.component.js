@@ -9,6 +9,8 @@ import { wrapPromise, axiosURL } from 'js/utils';
 // import Chrismas from "js/components/commons/chrismas";
 import './accueil.scss';
 import conf from './../../configuration';
+import createTheme from 'js/components/material-ui-theme';
+const theme = createTheme()
 
 const resource = wrapPromise(
 	axiosURL(
@@ -93,7 +95,7 @@ const App = ({ children, paire, color = '#e5e5e5' }) => (
 );
 
 const Image = ({ url, name = 'application' }) => (
-	<div className="image" style={{ backgroundColor: '#5c6bc0' }}>
+	<div className="image" style={{ backgroundColor: theme.palette.primary.main }}>
 		<img alt={name} src={url} />
 	</div>
 );
