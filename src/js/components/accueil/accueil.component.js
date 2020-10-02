@@ -32,13 +32,13 @@ const Accueil = () => {
 					titre={bienvenue.titre}
 					contenu={bienvenue.contenu}
 				/>
-				<Grid className="valeurs" container spacing={2} alignItems="flex-end">
+				<Grid className="valeurs" container spacing={6} justify='space-around' alignItems="stretch" style= {{ width: '95%', margin: 'auto' }}>
 					{cartes.map(({ titre, contenu, icone, action }, i) => (
 						<Carte title={titre} icon={icone} key={i}>
-							<Typography variant="body1">{contenu}</Typography>
+							<Typography variant="body1" style={{ marginBottom: '50px' }}>{contenu}</Typography>
 							{action && (
 								<Link to={action.url}>
-									<Button variant="outlined">{action.contenu}</Button>
+									<Button variant="outlined" style={{ borderRadius: '37.5px', border: '2px solid black', textTransform: 'initial', lineHeight: '1', fontSize: '1.425em' }}>{action.contenu}</Button>
 								</Link>
 							)}
 						</Carte>
@@ -70,8 +70,8 @@ const Accueil = () => {
 };
 
 const Carte = ({ icon = 'star', title, children }) => (
-	<Grid item lg={4} md={6} xs={12} classes={{ item: 'carte' }}>
-		<Card className="carte">
+	<Grid item lg={4} md={4} xs={12} classes={{ item: 'carte' }}>
+		<Card className="carte" style={{ backgroundColor: '#f5f5f5' }}>
 			<CardHeader
 				avatar={
 					<Avatar>
@@ -85,7 +85,7 @@ const Carte = ({ icon = 'star', title, children }) => (
 	</Grid>
 );
 
-const App = ({ children, paire, color = 'snow' }) => (
+const App = ({ children, paire, color = '#e5e5e5' }) => (
 	<div className="app" style={{ backgroundColor: color }}>
 		{children[paire ? 0 : 1]}
 		{children[paire ? 1 : 0]}
@@ -150,19 +150,18 @@ const Precautions = ({ titre, children }) => (
 
 const Welcome = ({ image, imgTitleColor, titre, contenu }) => (
 	<Paper elevation={3} className="bienvenue">
-		<div style={{ width: '50%', float: 'left' }}>
+		<div style={{ flexBasis: '34.2%', flexGrow: '1', flexShrink: '0' }}>
 			<div className="message">
 				<div className="title" style={{ color: imgTitleColor }}>
 					<Typography variant="h1">{titre}</Typography>
 					<Typography variant="h2">{contenu}</Typography>
 					<Link to="/visite-guidee">
-						<Button variant="outlined">{D.startVisit}</Button>
+						<Button  style={{ width: '47%', borderRadius: '37.5px', border: '2px solid black', textTransform: 'initial', lineHeight: '1', fontSize: '1.425em' }}>{D.startVisit}</Button>
 					</Link>
 				</div>
 			</div>
 		</div>
-		<div style={{ width: '50%', float: 'right' }}>
-			<img alt="innovation" src={image} />
+		<div style={{ flexBasis: '50%', flexGrow: '1', background: 'no-repeat url(' + image + ')', backgroundSize: 'contain', backgroundPosition: 'right' }} >
 		</div>
 	</Paper>
 );
