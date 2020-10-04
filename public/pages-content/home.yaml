@@ -1,0 +1,91 @@
+---
+hero:
+  smallerText: Bienvenue sur sspcloud.fr
+  image: "/images/dots.svg"
+  biggerText: |
+    Travaillez avec Python et R, disposer de toute la puissance dont vous
+    avez besoin !
+  button:
+    url: "/visite-guidee"
+    label: Commencer
+papers:
+- title: Un catalogue de services sur mesure 
+  image: "/images/bullet-point-1.svg"
+  button:
+    url: "/visite-guidee"
+    label: Voir les cas d'usages
+  body: |
+    Ne perdez plus de temps à configurer vos outils. 
+    Ne soyez plus limité par la puissance de votre ordinateur.
+- title: Une communauté active et enthousiaste à votre écoute
+  image: "/images/bullet-point-2.svg"
+  button:
+    url: "/visite-guidee"
+    label: Rejoindre le chat
+  body: |
+    Profitez de ressources mises à votre disposions: Tutoriels, 
+    formations et canaux d’échanges.
+- title: Un espace pour stocker vos données brutes
+  image: "/images/bullet-point-3.svg"
+  button:
+    url: "/visite-guidee"
+    label: Importer des données
+  body: |
+    Accéder facilement depuis votre code à vos fichiers CSV ou autre. (API S3)
+project_history:
+  smallerText: Le projet en quelques mots
+  image: "/images/insee_fr_lab.png"
+  biggerText: |
+    Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une 
+    plateforme mutualisée de services d’outils de statistique et de datascience. 
+    Un des objectifs de notre projet est de partager les outils et les 
+    connaissances au sein du service statistique public (SSP). 
+    Dans le cadre d'une collaboration publique.  Onyxia est un
+    projet open-source. 
+  button:
+    url: "https://github.com/InseeFrLab"
+    label: Contribuer au projet
+service_highlight:  
+- title: Un endroit où enregistrer votre code.
+  body: |
+    Nous mettons à votre disposition un gestionnaire de dépôt GIT 
+    afin de vous aidée a collaboré et géré les versions successives
+    de vos scripts.
+    Ce service est comparable à GitHub ou GitLab.com mais est
+    uniquement réservé aux utilisateurs de la plateforme.
+  image: "/images/git.svg"
+  button:
+    url: "https://git.lab.sspcloud.fr"
+    label: Découvrir
+- title: RStudio, depuis votre navigateur
+  body: | 
+    RStudio est LE logiciel à utiliser pour travailler avec R.
+    Vous n'avez rien à installer et les calculs sont effectués 
+    sur les supercalculateurs de l'INSEE qui sont, nous vous l'assurons, 
+    beaucoup plus rapides que vos postes de travail. 
+  image: "/images/r.svg"
+  button:
+    url: "/visite-guidee"
+    label: Découvrir
+- title: Jupyter
+  body: |
+    Jupyter est un logiciel accessible depuis votre navigateur
+    qui vous permet de crée et de partager des documents qui contiennent
+    des morceaux de code. 
+    Parfait pour documenter un processus de traitement
+    de données tout en obtenant du même coup les résultats du traitement.
+  image: "/images/jupyter_logo.svg"
+  button:
+    url: "/visite-guidee"
+    label: Découvrir
+warning:
+  title: Précautions d'usages
+  message: |
+    Le datalab est un terrain d'exploration. Les garanties de service sont 
+    par conséquent limitées: n'y laissez surtout pas de données sensibles. 
+    Le contenu pédagogique doit être de la donnée ouverte. De plus cette 
+    instance d'Onyxia a vocation à être améliorée en fonction de vos retours.
+
+    
+    
+
