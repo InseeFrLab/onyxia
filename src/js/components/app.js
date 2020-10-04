@@ -14,7 +14,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import Alert from 'js/components/commons/alert';
 import config from 'js/configuration';
 import { invalidIdep } from 'js/utils/idep';
-import Accueil from './accueil';
+import { Home } from './home/Home';
 import MyService from 'js/components/my-service';
 import MyServices from 'js/components/my-services';
 import Services, { ServiceDetails } from 'js/components/services';
@@ -38,9 +38,12 @@ import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
+import { useSelector } from "react-redux";
+
+const initialPathname = "/accueil";
 
 const theme = createTheme();
-const routerContext = createRouterContext(Accueil)('/accueil');
+const routerContext = createRouterContext(Home)(initialPathname);
 const Route = createRouteComponent(routerContext)(NativeRoute);
 const PrivateRoute = createPrivateRouteComponent(routerContext);
 
@@ -51,8 +54,7 @@ const App = ({
 	messageIntraining,
 	consumeMessageIntraining,
 	idep,
-}) =>
-	requestError ? (
+}) => requestError ? (
 		<App404 />
 	) : (
 		<AppFeelGood
@@ -77,103 +79,108 @@ const App404 = () => (
 	</MuiThemeProvider>
 );
 
-const AppFeelGood = ({ waiting, applicationResize, idep }) => (
-	<MuiThemeProvider theme={theme}>
-		<ReactResizeDetector
-			handleWidth
-			handleHeight
-			onResize={(width) => applicationResize(width)}
-		/>
-		{waiting ? <Preloader /> : null}
-		<CssBaseline />
-		<Favicon />
-		<Router>
-			<>
-				<div className="application">
-					<NavBar />
-					<RegionBanner />
-					{invalidIdep(idep) && (
-						<Alert
-							severity="error"
-							message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${config.APP.CONTACT}`}
-						/>
-					)}
-					{config.APP.WARNING_MESSAGE && (
-						<Alert severity="warning" message={config.APP.WARNING_MESSAGE} />
-					)}
-					<main role="main">
-						<Switch>
-							<Route path="/accueil" component={Accueil} />
-							<Route path="/about" component={About} />
-							<PrivateRoute path="/cluster" component={Cluster} />
-							<Route exact path="/services" component={Services} />
-							<Route path="/services/*" component={ServiceDetails} />
-							<Route exact path="/trainings" component={Trainings} />
-							<PrivateRoute path="/trainings/:id" component={Trainings} />
-							<Route exact path="/my-lab/catalogue" component={Catalogue} />
-							<Route
-								path="/my-lab/catalogue/:catalogue"
-								component={Catalogue}
-							/>
+const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
-							<PrivateRoute exact path="/my-services" component={MyServices} />
+	const isAuthenticated = useSelector(state => state.app.authenticated);
 
-							<PrivateRoute
-								exact
-								path="/my-services/:groupId+"
-								component={MyServices}
+	return (
+		<MuiThemeProvider theme={theme}>
+			<ReactResizeDetector
+				handleWidth
+				handleHeight
+				onResize={(width) => applicationResize(width)}
+			/>
+			{waiting ? <Preloader /> : null}
+			<CssBaseline />
+			<Favicon />
+			<Router>
+				<>
+					<div className="application">
+						<NavBar />
+						<RegionBanner />
+						{invalidIdep(idep) && (
+							<Alert
+								severity="error"
+								message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${config.APP.CONTACT}`}
 							/>
+						)}
+						{config.APP.WARNING_MESSAGE && (
+							<Alert severity="warning" message={config.APP.WARNING_MESSAGE} />
+						)}
+						<main role="main">
+							<Switch>
+								<Route path={initialPathname} component={Home} />
+								<Route path="/about" component={About} />
+								<PrivateRoute path="/cluster" component={Cluster} />
+								<Route exact path="/services" component={Services} />
+								<Route path="/services/*" component={ServiceDetails} />
+								<Route exact path="/trainings" component={Trainings} />
+								<PrivateRoute path="/trainings/:id" component={Trainings} />
+								<Route exact path="/my-lab/catalogue" component={Catalogue} />
+								<Route
+									path="/my-lab/catalogue/:catalogue"
+									component={Catalogue}
+								/>
 
-							<PrivateRoute
-								exact
-								path="/my-service/:serviceId+"
-								component={MyService}
-							/>
+								<PrivateRoute exact path="/my-services" component={MyServices} />
 
-							<PrivateRoute path="/mon-compte" component={MonCompte} />
-							<PrivateRoute
-								exact
-								path="/mes-fichiers"
-								component={MesFichiers}
-							/>
+								<PrivateRoute
+									exact
+									path="/my-services/:groupId+"
+									component={MyServices}
+								/>
 
-							<PrivateRoute
-								path="/mes-fichiers/:bucketName"
-								exact
-								component={NavigationFiles}
-							/>
-							<PrivateRoute
-								path="/mes-fichiers/:bucketName/*"
-								component={NavigationFiles}
-							/>
-							<PrivateRoute
-								exact
-								path="/mes-secrets"
-								component={MesSecretsHome}
-							/>
-							<PrivateRoute
-								path="/mes-secrets/:idep/*"
-								component={MesSecrets}
-							/>
-							<PrivateRoute path="/mes-secrets/:idep" component={MesSecrets} />
+								<PrivateRoute
+									exact
+									path="/my-service/:serviceId+"
+									component={MyService}
+								/>
 
-							<PrivateRoute
-								path="/visite-guidee"
-								component={VisiteGuideeDebut}
-							/>
-							<Route path="/" component={() => <Redirect to="/accueil" />} />
-						</Switch>
-					</main>
-					<Footer />
-					<Notifications />
-					<QuickAccess />
-				</div>
-				<VisiteGuidee />
-				<CloudShell />
-				<ToastContainer position="bottom-left" />
-			</>
-		</Router>
-	</MuiThemeProvider>
-);
+								<PrivateRoute path="/mon-compte" component={MonCompte} />
+								<PrivateRoute
+									exact
+									path="/mes-fichiers"
+									component={MesFichiers}
+								/>
+
+								<PrivateRoute
+									path="/mes-fichiers/:bucketName"
+									exact
+									component={NavigationFiles}
+								/>
+								<PrivateRoute
+									path="/mes-fichiers/:bucketName/*"
+									component={NavigationFiles}
+								/>
+								<PrivateRoute
+									exact
+									path="/mes-secrets"
+									component={MesSecretsHome}
+								/>
+								<PrivateRoute
+									path="/mes-secrets/:idep/*"
+									component={MesSecrets}
+								/>
+								<PrivateRoute path="/mes-secrets/:idep" component={MesSecrets} />
+
+								<PrivateRoute
+									path="/visite-guidee"
+									component={VisiteGuideeDebut}
+								/>
+								<Route path="/" component={() => <Redirect to="/accueil" />} />
+							</Switch>
+						</main>
+						{/*<Footer />*/}
+						<Notifications />
+						{isAuthenticated && <QuickAccess />}
+					</div>
+					<VisiteGuidee />
+					<CloudShell />
+					<ToastContainer position="bottom-left" />
+				</>
+			</Router>
+		</MuiThemeProvider>
+	);
+};
 
 export default App;

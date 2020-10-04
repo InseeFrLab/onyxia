@@ -56,8 +56,9 @@ class Navbar extends React.Component {
 						>
 							<MenuIcon />
 						</IconButton>
-						<Link to="/accueil" className="avatar">
+						<Link to="/accueil">
 							<img
+								className="avatar"
 								src={isNoel() ? '/onyxia-noel.svg' : '/onyxia.svg'}
 								alt="onyxia"
 							/>
@@ -98,19 +99,28 @@ class Navbar extends React.Component {
 		);
 	}
 }
-
 const LoginButton = ({ handleClick, screenType }) =>
+	screenType === SMALL_POINT ? (
+		<Fab
+			id="bouton-login"
+			data-testid="bouton-login"
+			mini
+			onClick={handleClick}
+		>
+			<Icon className="login-mini">login</Icon>
+		</Fab>
+	) : (
 		<Fab
 			id="bouton-login"
 			data-testid="bouton-login"
 			variant="extended"
-			mini={screenType === SMALL_POINT}
 			aria-label="login"
 			onClick={handleClick}
 		>
-			<Icon color="primary">login</Icon>
-			{screenType !== SMALL_POINT && <span>LOGIN</span>}
+			<Icon className="login">login</Icon>
+			login
 		</Fab>
+	);
 
 const LogoMonCompte = ({ screenType }) =>
 	screenType === SMALL_POINT ? (
