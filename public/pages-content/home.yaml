@@ -1,91 +1,64 @@
 ---
 hero:
-  smallerText: Bienvenue sur sspcloud.fr
+  smallerText: Welcome to the Onyxia Datalab !
   image: "/images/dots.svg"
   biggerText: |
-    Travaillez avec Python et R, disposer de toute la puissance dont vous
-    avez besoin !
+    This homepage can be customized by editing the public/pages-content/home.yaml file or overriding the HOMEPAGE_URL environment variable.
   button:
     url: "/visite-guidee"
-    label: Commencer
+    label: Start
 papers:
-- title: Un catalogue de services sur mesure 
+- title: On-demand datascience services 
   image: "/images/bullet-point-1.svg"
   button:
-    url: "/visite-guidee"
-    label: Voir les cas d'usages
+    url: "/my-lab/catalogue"
+    label: Browse catalog
   body: |
-    Ne perdez plus de temps à configurer vos outils. 
-    Ne soyez plus limité par la puissance de votre ordinateur.
-- title: Une communauté active et enthousiaste à votre écoute
+    Analyze data, run distributed calculations and more ! 
+    Use as much computing power as you need. 
+- title: An opensource project with a growing community
   image: "/images/bullet-point-2.svg"
   button:
-    url: "/visite-guidee"
-    label: Rejoindre le chat
+    url: "https://github.com/inseefrlab/onyxia-ui"
+    label: View on github
   body: |
-    Profitez de ressources mises à votre disposions: Tutoriels, 
-    formations et canaux d’échanges.
-- title: Un espace pour stocker vos données brutes
+    Feel free to contribute, report bugs or ask for help !
+- title: Datastorage made easy
   image: "/images/bullet-point-3.svg"
   button:
-    url: "/visite-guidee"
-    label: Importer des données
+    url: "/mes-fichiers"
+    label: Browse my files
   body: |
-    Accéder facilement depuis votre code à vos fichiers CSV ou autre. (API S3)
+    Easily access your data from either Onyxia or programmatically using S3
 project_history:
-  smallerText: Le projet en quelques mots
+  smallerText: About Onyxia
   image: "/images/insee_fr_lab.png"
   biggerText: |
-    Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une 
-    plateforme mutualisée de services d’outils de statistique et de datascience. 
-    Un des objectifs de notre projet est de partager les outils et les 
-    connaissances au sein du service statistique public (SSP). 
-    Dans le cadre d'une collaboration publique.  Onyxia est un
-    projet open-source. 
+    Onyxia is a free and open-source project which started at Insee (French National Statistical Institute).  
+    Onyxia can be installed on any Kubernetes cluster.  
   button:
     url: "https://github.com/InseeFrLab"
-    label: Contribuer au projet
+    label: View on github
 service_highlight:  
-- title: Un endroit où enregistrer votre code.
-  body: |
-    Nous mettons à votre disposition un gestionnaire de dépôt GIT 
-    afin de vous aidée a collaboré et géré les versions successives
-    de vos scripts.
-    Ce service est comparable à GitHub ou GitLab.com mais est
-    uniquement réservé aux utilisateurs de la plateforme.
-  image: "/images/git.svg"
-  button:
-    url: "https://git.lab.sspcloud.fr"
-    label: Découvrir
-- title: RStudio, depuis votre navigateur
+- title: RStudio
   body: | 
-    RStudio est LE logiciel à utiliser pour travailler avec R.
-    Vous n'avez rien à installer et les calculs sont effectués 
-    sur les supercalculateurs de l'INSEE qui sont, nous vous l'assurons, 
-    beaucoup plus rapides que vos postes de travail. 
+    RStudio is the reference IDE for R programming.
   image: "/images/r.svg"
   button:
-    url: "/visite-guidee"
-    label: Découvrir
+    url: "/my-lab/catalogue/inseefrlab-datascience/rstudio"
+    label: Discover
 - title: Jupyter
   body: |
-    Jupyter est un logiciel accessible depuis votre navigateur
-    qui vous permet de crée et de partager des documents qui contiennent
-    des morceaux de code. 
-    Parfait pour documenter un processus de traitement
-    de données tout en obtenant du même coup les résultats du traitement.
+    Jupyter notebooks let you code, run and share Python and R code directly from your web browser.
   image: "/images/jupyter_logo.svg"
   button:
-    url: "/visite-guidee"
-    label: Découvrir
+    url: "/my-lab/catalogue/inseefrlab-datascience/jupyter"
+    label: Discover
 warning:
-  title: Précautions d'usages
+  title: Disclaimer
   message: |
-    Le datalab est un terrain d'exploration. Les garanties de service sont 
-    par conséquent limitées: n'y laissez surtout pas de données sensibles. 
-    Le contenu pédagogique doit être de la donnée ouverte. De plus cette 
-    instance d'Onyxia a vocation à être améliorée en fonction de vos retours.
-
-    
-    
+    This is a demo instance.  
+    You should not use it for anything other than testing Onyxia and experimenting.  
+    Only open datasets are allowed. 
+    Data and services can be wiped at any moment.  
 
