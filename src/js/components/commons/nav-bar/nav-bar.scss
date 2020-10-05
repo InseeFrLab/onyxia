@@ -3,7 +3,7 @@
 .root {
 	flex-grow: 1;
 	h1 {
-		font-size: 24px;
+		font-size: 3em;
 		font-weight: bolder;
 	}
 }
@@ -55,12 +55,8 @@
 
 .login {
 	margin-right: 5px;
-	color: forestgreen;
 }
 
-.login-mini {
-	color: forestgreen;
-}
 
 .logout {
 	margin-right: 5px;
