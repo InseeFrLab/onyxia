@@ -1,46 +1,60 @@
 import axios from 'axios';
-import getKeycloak from './keycloak-config';
-import { setToken } from 'js/utils/localStorageToken';
-import { env } from '.js/env';
-import store from 'js/redux/store';
+import { getKeycloakInstance } from "./getKeycloakInstance";
+import * as localStorageToken from './localStorageToken';
+import { env } from 'js/env';
+import { store } from 'js/redux/store';
+import { assert } from "evt/tools/typeSafety/assert";
 
 const BASE_URL = env.API.BASE_URL;
 
-const refreshToken = (minValidity = 60) =>
-	new Promise((resolve, reject) => {
-		getKeycloak()
-			.updateToken(minValidity)
-			.then((refreshed: any) => {
-				if (refreshed) {
-					setToken(getKeycloak().token);
-				}
-				resolve(getKeycloak().token);
-			})
-			.catch((error: Error) => {
-				reject(error);
-			});
-	});
+const refreshToken = (minValidity = 60) => {
+
+
+	const keycloakInstance = getKeycloakInstance();
+
+	return keycloakInstance
+		.updateToken(minValidity)
+		.then((refreshed: any) => {
+			if (refreshed) {
+
+				assert(keycloakInstance.token !== undefined); //TODO: figure out
+
+				localStorageToken.set(keycloakInstance.token);
+			}
+			return keycloakInstance.token;
+		});
+
+};
+
+
 
 const authorizeConfig = (kc: any) => (config: any) => ({
 	...config,
-	headers: { ...config.headers, Authorization: `Bearer ${kc.token}` },
-	'Content-Type': 'application/json;charset=utf-8',
-	Accept: 'application/json;charset=utf-8',
+	"headers": { ...config.headers, "Authorization": `Bearer ${kc.token}` },
+	"Content-Type": 'application/json;charset=utf-8',
+	"Accept": 'application/json;charset=utf-8',
 });
 
-const axiosAuth = axios.create({ baseURL: BASE_URL });
+const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-if (env.AUTHENTICATION.TYPE === 'oidc') {
+walk: {
+
+	if (env.AUTHENTICATION.TYPE !== 'oidc') {
+		break walk;
+	}
+
 	axiosAuth.interceptors.request.use(
-		(config) =>
+		config =>
 			refreshToken()
 				.then(() =>
-					Promise.resolve(authorizeConfig(getKeycloak())(config))
+					Promise.resolve(authorizeConfig(getKeycloakInstance())(config))
 				)
-				.catch(() => getKeycloak().login()),
-		(error) => Promise.reject(error)
+				.catch(() => getKeycloakInstance().login()),
+		error => Promise.reject(error)
 	);
+
 }
+
 
 const injectRegion = (config: any) => {
 	const selectedRegion = store?.getState()?.regions?.selectedRegion;

@@ -1,12 +1,12 @@
 import keycloak_js from "keycloak-js";
-import conf from "../configuration";
+import { env } from "../env";
 
 let keycloakInstance: keycloak_js.KeycloakInstance | undefined = undefined;
 
 export const getKeycloakInstance = () => {
 
 	if (keycloakInstance === undefined) {
-		keycloakInstance = keycloak_js(conf.AUTHENTICATION.OIDC);
+		keycloakInstance = keycloak_js(env.AUTHENTICATION.OIDC);
 	}
 	return keycloakInstance;
 

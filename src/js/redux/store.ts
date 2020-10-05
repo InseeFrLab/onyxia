@@ -17,6 +17,14 @@ export const store = configureStore({
   }
 });
 
+export const actions = {
+	...myFiles.actions,
+	...myLab.actions,
+	...app.actions,
+	...user.actions,
+	...regions.actions
+};
+
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = ()=> reactRedux.useDispatch<typeof store.dispatch>();
 

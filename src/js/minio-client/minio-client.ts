@@ -1,8 +1,11 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { getToken } from 'js/utils/localStorageToken';
-import store from 'js/redux/store';
-import * as Actions from 'js/redux/actions';
+import * as localStorageToken  from "js/utils/localStorageToken";
+import { store } from 'js/redux/store';
+import { actions as userActions } from "js/redux/user";
+import { assert } from "evt/tools/typeSafety/assert";
+
+
 import { env } from "js/env";
 
 const MINIO_BASE_URI = env.MINIO.BASE_URI;
@@ -16,11 +19,11 @@ const getMinioDataFromStore = () => {
 };
 
 const broadcastNewCredentials = (credentials: any) => {
-	store.dispatch(Actions.newS3Credentials(credentials));
+	store.dispatch(userActions.newS3Credentials(credentials));
 };
 
 const fetchMinioToken = async () => {
-	const kcToken = await getToken();
+	const kcToken = localStorageToken.get();
 	const url = `${MINIO_BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${kcToken}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);
 	let accessKey = null;
@@ -46,33 +49,45 @@ const fetchMinioToken = async () => {
 	return { accessKey, secretAccessKey, sessionToken, expiration };
 };
 
-export const getMinioToken = () =>
-	getMinioDataFromStore().AWS_EXPIRATION &&
-	Date.parse(getMinioDataFromStore().AWS_EXPIRATION) - Date.now() >=
-		MINIO_END_MINIMUM_DURATION_MS
-		? Promise.resolve(getMinioDataFromStore())
-		: fetchMinioToken().then((credentials) => {
-				broadcastNewCredentials(credentials);
-				return credentials;
-		  });
+export const getMinioToken = () => {
+
+	const minioDataFromStore = getMinioDataFromStore();
+
+	return minioDataFromStore.AWS_EXPIRATION &&
+		Date.parse(minioDataFromStore.AWS_EXPIRATION) - Date.now() >= MINIO_END_MINIMUM_DURATION_MS ? 
+		Promise.resolve(minioDataFromStore) as never //TODO!!!
+		: 
+		fetchMinioToken().then((credentials) => {
+			broadcastNewCredentials(credentials);
+			return credentials;
+		});
+
+}
 
 const getClient = (): Promise<Minio.Client> =>
 	MINIO_CLIENT
 		? Promise.resolve(MINIO_CLIENT)
-		: new Promise((resolve, reject) => {
-				getMinioToken()
-					.then((credentials) => {
-						MINIO_CLIENT = new Minio.Client({
-							endPoint: MINIO_END_POINT,
-							port: MINIO_PORT,
-							useSSL: true,
-							accessKey: credentials.accessKey,
-							secretKey: credentials.secretAccessKey,
-							sessionToken: credentials.sessionToken,
-						});
-						resolve(MINIO_CLIENT);
-					})
-					.catch((err) => reject(err));
-		  });
+		:
+			getMinioToken().then(credentials => {
+
+					assert(
+						credentials.accessKey !== null && 
+						credentials.secretAccessKey !== null && 
+						credentials.sessionToken !== null
+					); //TODO
+
+
+					MINIO_CLIENT = new Minio.Client({
+						endPoint: MINIO_END_POINT,
+						port: MINIO_PORT,
+						useSSL: true,
+						accessKey: credentials.accessKey,
+						secretKey: credentials.secretAccessKey,
+						sessionToken: credentials.sessionToken
+					});
+					return MINIO_CLIENT;
+
+				});
+
 
 export default getClient;

@@ -1,4 +1,4 @@
-import store from '../redux/store';
+import { store } from "js/redux/store";
 
 export const getContext = () => {
 	return store.getState().user;

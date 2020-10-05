@@ -1,13 +1,14 @@
 import axios from 'axios';
 import generator from 'generate-password';
 import { axiosURL } from 'js/utils';
-import { getToken } from 'js/utils/localStorageToken';
+import * as localStorageToken from 'js/utils/localStorageToken';
 import { store } from 'js/redux/store';
-import { newVaultToken, newVaultData } from 'js/redux/actions';
+import { actions as userActions } from "js/redux/user";
 import { env } from 'js/env';
 
 const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
 const VAULT_KV_ENGINE = env.VAULT.VAULT_KV_ENGINE;
+
 
 interface VaultProfile {
 	password?: string;
@@ -48,7 +49,7 @@ class VaultAPI {
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
 			data: { ...old, ...data },
 		});
-		store.dispatch(newVaultData(data));
+		store.dispatch(userActions.newVaultData({ data }));
 	}
 }
 
@@ -68,9 +69,9 @@ const fetchVaultToken = async () => {
 		auth: { client_token: token },
 	}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 		role: 'onyxia-user',
-		jwt: getToken(),
+		jwt: localStorageToken.get(),
 	});
-	store.dispatch(newVaultToken(token));
+	store.dispatch(userActions.newVaultToken({ token }));
 	return token;
 };
 
@@ -109,7 +110,7 @@ export const initVaultData = (idep: string, name: string, mail: string) => {
 						git_credentials_cache_duration:
 							git_credentials_cache_duration || '0',
 					});
-				else store.dispatch(newVaultData(data));
+				else store.dispatch(userActions.newVaultData({ data }));
 			}
 		)
 		.catch(() => {
@@ -126,7 +127,7 @@ export const resetVaultData = (idep: string, data: VaultProfile) => {
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
-		.then(() => store.dispatch(newVaultData(payload.data)));
+		.then(() => store.dispatch(userActions.newVaultData({ "data": payload.data as any })));
 };
 
 export const resetVaultPwd = (idep: string) =>
