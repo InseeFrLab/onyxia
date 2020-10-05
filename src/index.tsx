@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 import App_ from "js/components";
@@ -9,9 +9,10 @@ import { actions as userActions } from "js/redux/user";
 import * as localStorageToken from "js/utils/localStorageToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import configuration from "js/configuration";
+import { env } from "js/env";
 import { initVaultData } from "js/vault-client";
 import { useAsync } from "react-async-hook";
+import Loader from "js/components/commons/loader";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
@@ -23,59 +24,9 @@ const keycloakDefaultConf = {
     "checkLoginIframe": false
 };
 
-const initializeKeycloak = async (): Promise<void> => {
-
-    const isAuthenticated = await getKeycloak()
-        .init({
-            ...keycloakDefaultConf,
-            ...(() => {
-
-                const localToken = localStorageToken.get();
-
-                return localToken ? { "token": localToken } : {};
-
-            })()
-        })
-        .catch((error: Error) => error);
-
-    //TODO: Make sure that result is always an object.
-    if (isAuthenticated instanceof Error) {
-        throw isAuthenticated;
-    }
-
-    if (!isAuthenticated) {
-        return;
-    }
-
-    const kc = getKeycloak();
-
-    localStorageToken.set(kc.token);
-
-    store.dispatch(
-        userActions.setAuthenticated({
-            "accessToken": kc.token,
-            "refreshToken": kc.refreshToken,
-            "idToken": kc.idToken
-        })
-    );
-
-    const {
-        preferred_username,
-        name,
-        email
-    } = kc.tokenParsed;
-
-    initVaultData(preferred_username, name, email);
-
-};
-
-const SplashScreen = () => <h1>Initializing keycloak</h1>; //TODO: <= Actual splash screen here
-
-const Switcher = () => {
-
-    const asyncInitializeKeycloak = useAsync(async ()=> {
-
-        if( configuration.AUTHENTICATION.TYPE !== "oidc" ){
+const initializeKeycloak: () => Promise<void> =
+    env.AUTHENTICATION.TYPE !== "oidc" ?
+        (() => {
 
             const kc = getKeycloak();
 
@@ -89,22 +40,62 @@ const Switcher = () => {
                 })
             );
 
-            return;
+            return Promise.resolve();
 
-        }
+        })
+        :
+        (async () => {
 
-        await initializeKeycloak();
+            const isAuthenticated = await getKeycloak()
+                .init({
+                    ...keycloakDefaultConf,
+                    ...(() => {
 
-    }, []);
+                        const localToken = localStorageToken.get();
 
-    return !asyncInitializeKeycloak.result ? <SplashScreen /> : <App />;
+                        return localToken ? { "token": localToken } : {};
 
-};
+                    })()
+                })
+                .catch((error: Error) => error);
+
+            //TODO: Make sure that result is always an object.
+            if (isAuthenticated instanceof Error) {
+                throw isAuthenticated;
+            }
+
+            if (!isAuthenticated) {
+                return;
+            }
+
+            const kc = getKeycloak();
+
+            localStorageToken.set(kc.token);
+
+            store.dispatch(
+                userActions.setAuthenticated({
+                    "accessToken": kc.token,
+                    "refreshToken": kc.refreshToken,
+                    "idToken": kc.idToken
+                })
+            );
+
+            const {
+                preferred_username,
+                name,
+                email
+            } = kc.tokenParsed;
+
+            initVaultData(preferred_username, name, email);
+
+        });
 
 reactDom.render(
     <React.StrictMode>
         <Provider store={store}>
-            <Switcher />
+            {useAsync(initializeKeycloak, []).status !== "success" ?
+                <Loader em={30} /> :
+                <App />}
         </Provider>
     </React.StrictMode>,
     document.getElementById("root")
