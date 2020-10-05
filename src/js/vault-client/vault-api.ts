@@ -62,6 +62,7 @@ export const getVaultToken = async () =>
 	getLocalToken() ? Promise.resolve(getLocalToken()) : fetchVaultToken();
 
 const fetchVaultToken = async () => {
+	try{
 	const {
 		auth: { client_token: token },
 	} = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
@@ -70,6 +71,9 @@ const fetchVaultToken = async () => {
 	});
 	store.dispatch(newVaultToken(token));
 	return token;
+	}catch{
+		return "";
+	}
 };
 
 const buildDefaultPwd = () =>
