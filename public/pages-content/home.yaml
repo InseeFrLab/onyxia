@@ -1,0 +1,64 @@
+---
+hero:
+  smallerText: Welcome to the Onyxia Datalab !
+  image: "/images/dots.svg"
+  biggerText: |
+    This homepage can be customized by editing the public/pages-content/home.yaml file or overriding the HOMEPAGE_URL environment variable.
+  button:
+    url: "/visite-guidee"
+    label: Start
+papers:
+- title: On-demand datascience services 
+  image: "/images/bullet-point-1.svg"
+  button:
+    url: "/my-lab/catalogue"
+    label: Browse catalog
+  body: |
+    Analyze data, run distributed calculations and more ! 
+    Use as much computing power as you need. 
+- title: An opensource project with a growing community
+  image: "/images/bullet-point-2.svg"
+  button:
+    url: "https://github.com/inseefrlab/onyxia-ui"
+    label: View on github
+  body: |
+    Feel free to contribute, report bugs or ask for help !
+- title: Datastorage made easy
+  image: "/images/bullet-point-3.svg"
+  button:
+    url: "/mes-fichiers"
+    label: Browse my files
+  body: |
+    Easily access your data from either Onyxia or programmatically using S3
+project_history:
+  smallerText: About Onyxia
+  image: "/images/insee_fr_lab.png"
+  biggerText: |
+    Onyxia is a free and open-source project which started at Insee (French National Statistical Institute).  
+    Onyxia can be installed on any Kubernetes cluster.  
+  button:
+    url: "https://github.com/InseeFrLab"
+    label: View on github
+service_highlight:  
+- title: RStudio
+  body: | 
+    RStudio is the reference IDE for R programming.
+  image: "/images/r.svg"
+  button:
+    url: "/my-lab/catalogue/inseefrlab-datascience/rstudio"
+    label: Discover
+- title: Jupyter
+  body: |
+    Jupyter notebooks let you code, run and share Python and R code directly from your web browser.
+  image: "/images/jupyter_logo.svg"
+  button:
+    url: "/my-lab/catalogue/inseefrlab-datascience/jupyter"
+    label: Discover
+warning:
+  title: Disclaimer
+  message: |
+    This is a demo instance.  
+    You should not use it for anything other than testing Onyxia and experimenting.  
+    Only open datasets are allowed. 
+    Data and services can be wiped at any moment.  
+

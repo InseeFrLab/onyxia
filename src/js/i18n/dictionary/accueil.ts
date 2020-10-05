@@ -1,7 +1,7 @@
 const dictionary = {
 	startVisit: {
-		fr: 'Démarrez la Visite !',
-		en: 'Start visit!',
+		fr: 'Commencer',
+		en: 'Start',
 	},
 };
 
