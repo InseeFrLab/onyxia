@@ -64,7 +64,7 @@ class Navbar extends React.Component {
 							/>
 						</Link>
 						<Typography variant="h1" color="inherit" className="flex">
-							ONYXIA
+							Onyxia
 						</Typography>
 
 						{authenticated ? (
@@ -107,7 +107,7 @@ const LoginButton = ({ handleClick, screenType }) =>
 			mini
 			onClick={handleClick}
 		>
-			<Icon className="login-mini">power_settings_new_icon</Icon>
+			<Icon className="login-mini">login</Icon>
 		</Fab>
 	) : (
 		<Fab
@@ -117,7 +117,7 @@ const LoginButton = ({ handleClick, screenType }) =>
 			aria-label="login"
 			onClick={handleClick}
 		>
-			<Icon className="login">power_settings_new_icon</Icon>
+			<Icon className="login">login</Icon>
 			login
 		</Fab>
 	);
