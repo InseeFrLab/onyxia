@@ -88,7 +88,9 @@ export const Home: React.FC = () => {
 				{contentRoot.papers.map((paper) => (
 					<div>
 						<section>
-							<img src={paper.image} alt="logo" />
+							<div>
+								<img src={paper.image} alt="logo" />
+							</div>
 							<h1>{paper.title}</h1>
 						</section>
 						<p>{paper.body}</p>
@@ -111,7 +113,9 @@ export const Home: React.FC = () => {
 					/>
 				</section>
 				{screenType === LARGE_POINT && (
-					<img src={contentRoot.project_history.image} alt="Logo INSEEFrLab" />
+					<div className="imageContainer">
+						<img src={contentRoot.project_history.image} alt="Logo INSEEFrLab" />
+					</div>
 				)}
 			</div>
 			<div className="service_highlight">
