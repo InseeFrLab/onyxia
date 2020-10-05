@@ -14,7 +14,7 @@ import { SMALL_POINT, LARGE_POINT, MEDIUM_POINT } from 'js/redux/reducers';
 const theme = createTheme()
 
 const fetchContent = (): Promise<Content.Root> => (axiosURL as any)(
-	conf.CONTENT.HOMEPAGE_URL ?? "/pages-content/home.yaml"
+	conf.CONTENT.HOMEPAGE_URL || "/pages-content/home.yaml"
 ).then(parseYaml);
 
 /** Generated with from content/home.yaml with https://jsonformatter.org/yaml-to-typescript */
