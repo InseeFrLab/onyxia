@@ -1,7 +1,9 @@
 import { connect } from 'react-redux';
 import vignettes from './vignettes';
-import { setServiceSelected, creerNouveauService } from 'js/redux/actions';
+import { store } from 'js/redux/store';
 import Visite from './visite-guidee.component';
+
+const { setServiceSelected, creerNouveauService } = store;
 
 const mapStateToProps = (state) => {
 	const { visite } = state.app;

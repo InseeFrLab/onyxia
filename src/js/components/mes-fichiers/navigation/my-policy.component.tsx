@@ -9,9 +9,11 @@ import {
 	Fab,
 } from '@material-ui/core';
 
-import PropTypes from 'prop-types';
+export const MyPolicy: React.FC<{ 
+	policy: { Resource: string[] }; 
+	handleDelete?: (path: string)=> void; 
+}> = ({ policy, handleDelete }) => {
 
-const MyPolicy = ({ policy, handleDelete }) => {
 	if (!policy) return null;
 
 	const { Resource } = policy;
@@ -33,8 +35,7 @@ const MyPolicy = ({ policy, handleDelete }) => {
 									size="small"
 									color="secondary"
 									aria-label="Supprimer"
-									onClick={() =>
-										typeof handleDelete === 'function'
+									onClick={() => typeof handleDelete === 'function'
 											? handleDelete(path)
 											: null
 									}
@@ -49,16 +50,3 @@ const MyPolicy = ({ policy, handleDelete }) => {
 		</Paper>
 	);
 };
-
-MyPolicy.propTypes = {
-	handleDelete: PropTypes.func.isRequired,
-	policy: PropTypes.shape({
-		Resource: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.arrayOf(PropTypes.string),
-		]).isRequired,
-	}),
-	path: PropTypes.string.isRequired,
-};
-
-export default MyPolicy;

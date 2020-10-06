@@ -41,7 +41,7 @@ export const HidablePane: React.FC<{
 		style.width = `${rect.width}px`;
 
 
-	}, [anchor, wrapperRef.current]);
+	}, [anchor]);
 
 
 	const hide = useCallback(
@@ -67,7 +67,7 @@ export const HidablePane: React.FC<{
 
 
 		},
-		[requestShow]
+		[requestShow, timer]
 	);
 
 	const display = useCallback(
@@ -77,7 +77,7 @@ export const HidablePane: React.FC<{
 			setIsDisplayed(true);
 			setIsHidden(false);
 		},
-		[]
+		[timer]
 	);
 
 	useEvt(ctx => {
@@ -124,7 +124,7 @@ export const HidablePane: React.FC<{
 
 	const postProcessing = useCallback(
 		()=> setIsDisplayed(post?.() ?? true) , 
-		[]
+		[post]
 		);
 
 	return (
@@ -139,7 +139,7 @@ export const HidablePane: React.FC<{
 					return;
 				} 
 				display("panel");
-			},[display])}
+			},[isDisplayed, display])}
 			onMouseLeave={useCallback(event => {
 				event.stopPropagation();
 				hide("panel");

@@ -10,9 +10,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AppMenu from './app-menu';
 import { LoginModal } from 'js/components/authentication';
 import './style.scss';
-import {ScreenType} from "js/model/ScreenType";
+import {getScreenTypeFromWidth} from "js/model/ScreenType";
+import type {ScreenType} from "js/model/ScreenType";
 
-import { actions, useSelector } from "js/redux/store";
+import { actions, useSelector, useDispatch } from "js/redux/store";
+
 
 
 
@@ -21,9 +23,10 @@ export const Navbar: React.FC<{}> = ()=>{
 	const [ isOpen, setIsOpen ] = useState(false);
 
 	const authenticated = useSelector(state=> state.app.authenticated);
-	const screenType = useSelector(state=> ScreenType.get(state.app.screenWidth));
+	const screenType = useSelector(state=> getScreenTypeFromWidth(state.app.screenWidth));
 	const displayLogin = useSelector(state => state.app.displayLogin);
 	const redirectUri = useSelector(state => state.app.redirectUri);
+	const dispatch = useDispatch();
 
 	useEffect(()=>{
 
@@ -31,16 +34,16 @@ export const Navbar: React.FC<{}> = ()=>{
 			return;
 		}
 
-		actions.getUserInfo();
+		dispatch(actions.getUserInfo());
 
-	},[]);
+	},[authenticated, dispatch]);
 
 
 	const handleClickMenu = useCallback(() => setIsOpen(true), []);
 	const handleClose = useCallback(() => setIsOpen(false), []);
-	const handleLogout = useCallback(() => { actions.logout() }, []);
-	const handleLogin = useCallback(() => actions.displayLogin({ "doDisplay": true }), []);
-	const handleCloseLoginModal = useCallback(() => actions.displayLogin({ "doDisplay": false }), []);
+	const handleLogout = useCallback(() => { dispatch(actions.logout()) }, [dispatch]);
+	const handleLogin = useCallback(() => dispatch(actions.displayLogin({ "doDisplay": true })), [dispatch]);
+	const handleCloseLoginModal = useCallback(() => dispatch(actions.displayLogin({ "doDisplay": false })), [dispatch]);
 
 	return (
 		<div className="root">
@@ -147,5 +150,3 @@ const isNoel = () => {
 
 	return false;
 };
-
-export default Navbar;

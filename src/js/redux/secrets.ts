@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import type { RootState } from "./store";
 import { axiosAuth } from "js/utils/axios-config";
-import conf from "js/configuration";
+import { env } from "js/env";
 import { actions as appActions } from "./app";
 import createVaultApi from "js/vault-client";
 const VAULT = createVaultApi();
-const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI as string;
+const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI as string;
 
 export type State = {
 	sealedStatus:

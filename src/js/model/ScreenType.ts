@@ -1,23 +1,18 @@
 
 export type ScreenType = "SMALL" | "MEDIUM" | "LARGE";
 
-export namespace ScreenType {
+export function getScreenTypeFromWidth(screenWidth: number) {
+    return screenWidth < getScreenTypeBreakpoint("SMALL")
+        ? "SMALL"
+        : screenWidth < getScreenTypeBreakpoint("MEDIUM")
+            ? "MEDIUM"
+            : "LARGE";
+}
 
-    export function get(width: number): ScreenType {
-        return width < getBreakPoint("SMALL")
-            ? "SMALL"
-            : width < getBreakPoint("MEDIUM")
-                ? "MEDIUM"
-                : "LARGE";
+export function getScreenTypeBreakpoint(screenType: ScreenType): number {
+    switch (screenType) {
+        case "SMALL": return 600;
+        case "MEDIUM": return 960;
+        case "LARGE": return 1280;
     }
-
-    export function getBreakPoint(screenType: ScreenType): number {
-        switch (screenType) {
-            case "SMALL": return 600;
-            case "MEDIUM": return 960;
-            case "LARGE": return 1280;
-        }
-
-    }
-
 }

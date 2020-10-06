@@ -24,7 +24,7 @@ export const ServiceDemarreMessage: FunctionComponent<{ elapsed: number, id: str
 	);
 
 export const ServiceArreteMessage: FunctionComponent<{ elapsed: number; id: string; }> = 
-({ elapsed: elapsed, id }) => (
+({ elapsed, id }) => (
 	<Message icon="pause" color="orange" id={id}>
 		Votre service a été arrêté en {Math.ceil(elapsed / 1000)} secondes.
 	</Message>

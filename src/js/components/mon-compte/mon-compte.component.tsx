@@ -8,7 +8,7 @@ import { getMinioToken } from 'js/minio-client';
 import CopyableField from 'js/components/commons/copyable-field';
 import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { getKeycloak } from 'js/utils';
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -28,7 +28,7 @@ interface Props {
 	logout: () => void;
 }
 
-const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
+export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
 
@@ -109,7 +109,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 					) : (
 						<Loader />
 					)}
-					<CopyableField copy label={D.oidcToken} value={getKeycloak().token} />
+					<CopyableField copy label={D.oidcToken} value={getKeycloakInstance().token!} />
 				</Paper>
 
 				{credentials ? (
@@ -181,6 +181,5 @@ MonCompte.defaultProps = {
 	user: { idep: '', nomComplet: '', email: '', ip: '' },
 };
 
-export default MonCompte;
 
 const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');

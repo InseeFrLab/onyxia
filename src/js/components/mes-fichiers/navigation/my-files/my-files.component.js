@@ -31,7 +31,7 @@ import {
 	getBucketPolicy,
 	setBucketPolicy,
 } from 'js/minio-client';
-import MyPolicy from '../my-policy.component';
+import { MyPolicy } from '../my-policy.component';
 import './my-files.scss';
 
 class MyFiles extends React.Component {

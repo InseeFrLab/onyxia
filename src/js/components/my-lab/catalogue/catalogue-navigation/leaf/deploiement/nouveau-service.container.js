@@ -1,6 +1,8 @@
 import { connect } from 'react-redux';
 import NouveauService from './nouveau-service';
-import { creerNouveauService } from 'js/redux/actions';
+import { actions } from 'js/redux/store';
+
+const { creerNouveauService } = actions;
 
 const mapStateToProps = (state, props) => {
 	const { screenWidth, authenticated } = state.app;

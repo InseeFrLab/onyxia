@@ -13,6 +13,11 @@ import type { RootState } from "./store";
 import { actions as secretsActions } from "./secrets";
 
 
+/*
+type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
+assert(typeGuard<UnpackAxiosResponse<typeof user>>(user));
+*/
+
 //TODO: All caps here result in unnecessary work in the reducers.
 //Make things more consistent across the codebase.
 export type State = {
@@ -65,13 +70,13 @@ const asyncThunks = {
             //Take as a reference for later on how to type Thunk lifecycle.
             // https://redux-toolkit.js.org/usage/usage-with-typescript#createasyncthunk
             [typePrefix]: createAsyncThunk<
-                AxiosResponse<Parameters<typeof syncActions.setUserInfo>[0]>,
+                Parameters<typeof syncActions.setUserInfo>[0],
                 undefined,
                 { rejectValue: { axiosErrorMessage: string; }; }
             >(
                 `${name}/${typePrefix}`,
                 (...[, { rejectWithValue }]) => axiosAuth.get(restApiPaths.userInfo)
-                    .then(user => user)
+                    .then(user => user as any)
                     .catch((error: Error) => rejectWithValue({ "axiosErrorMessage": error.message }))
             )
         };
@@ -94,7 +99,7 @@ const asyncThunks = {
 
                     dispatch(appActions.stopWaiting());
 
-                    return user as AxiosResponse<Parameters<typeof syncActions.setUserInfo>[0]>
+                    return user as unknown as Parameters<typeof syncActions.setUserInfo>[0];
 
                 }
             )

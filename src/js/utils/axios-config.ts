@@ -37,9 +37,11 @@ const authorizeConfig = (kc: any) => (config: any) => ({
 
 const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
+// eslint-disable-next-line
 walk: {
 
 	if (env.AUTHENTICATION.TYPE !== 'oidc') {
+		// eslint-disable-next-line
 		break walk;
 	}
 

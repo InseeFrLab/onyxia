@@ -21,7 +21,7 @@ export type State = {
 	mesServicesWaiting: string[]; //Array of ids
 };
 
-export namespace State {
+export declare namespace State {
 
 	export type Service = {
 		id: "cloudshell";

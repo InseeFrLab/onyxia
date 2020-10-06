@@ -1,9 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 import App_ from "js/components";
 import { store } from "js/redux/store";
-import { getKeycloak } from "js/utils";
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
 import * as localStorageToken from "js/utils/localStorageToken";
@@ -13,6 +13,8 @@ import { env } from "js/env";
 import { initVaultData } from "js/vault-client";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
+import { assert } from "evt/tools/typeSafety/assert";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
@@ -22,21 +24,19 @@ const keycloakDefaultConf = {
     "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
     "responseMode": "query",
     "checkLoginIframe": false
-};
+} as const;
 
 const initializeKeycloak: () => Promise<void> =
     env.AUTHENTICATION.TYPE !== "oidc" ?
         (() => {
 
-            const kc = getKeycloak();
-
             localStorageToken.set("FAKE_TOKEN");
 
             store.dispatch(
                 userActions.setAuthenticated({
-                    "accessToken": kc.token,
-                    "refreshToken": kc.refreshToken,
-                    "idToken": kc.idToken
+                    "accessToken": "fake",
+                    "refreshToken": "fake",
+                    "idToken": "fake"
                 })
             );
 
@@ -46,8 +46,9 @@ const initializeKeycloak: () => Promise<void> =
         :
         (async () => {
 
-            const isAuthenticated = await getKeycloak()
-                .init({
+            const kc = getKeycloakInstance();
+
+            const isAuthenticated = await kc.init({
                     ...keycloakDefaultConf,
                     ...(() => {
 
@@ -68,7 +69,13 @@ const initializeKeycloak: () => Promise<void> =
                 return;
             }
 
-            const kc = getKeycloak();
+            //NOTE: We know it as user is authenticated
+            assert(
+                kc.token !== undefined &&
+                kc.refreshToken !== undefined &&
+                kc.idToken !== undefined &&
+                typeGuard<Record<string,string>>(kc.tokenParsed)
+            );
 
             localStorageToken.set(kc.token);
 

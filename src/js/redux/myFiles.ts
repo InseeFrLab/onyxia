@@ -10,15 +10,15 @@ import { PUSHER } from "js/components/notifications";
 
 export type State = {
 	currentBucket: { __brand: "0"; };
-	currentObjects: { __brand: "1"; }[];
+	currentObjects: { name: string; }[];
 	currentDirectories: { __brand: "2"; }[];
 	/** bucket -> policy */
 	bucketsPolicies: Record<string, { __brand: "3" }>;
-	userBuckets: State.Bucket[];
+	userBuckets: State.Bucket[] | undefined;
 };
 
 
-export namespace State {
+export declare namespace State {
 
 	export type Bucket = {
 		id: string;
@@ -51,12 +51,14 @@ const asyncThunks = {
 
 					dispatch(syncActions.emptyCurrentBucket());
 
+					// eslint-disable-next-line
 					walkGetUserBucketPolicy: {
 
 						const policy = await minio.getBucketPolicy(bucketName)
 							.catch(() => undefined);
 
 						if (policy === undefined) {
+							// eslint-disable-next-line
 							break walkGetUserBucketPolicy;
 						}
 
@@ -77,8 +79,8 @@ const asyncThunks = {
 						"data",
 						object => dispatch(
 							"prefix" in object ?
-								syncActions.addDirectoryToCurrentBucket(object) :
-								syncActions.addObjectToCurrentBucket(object)
+								syncActions.addDirectoryToCurrentBucket({ "directory": object as any }) : //TODO
+								syncActions.addObjectToCurrentBucket({ object })
 						)
 					);
 
@@ -181,7 +183,7 @@ const slice = createSlice({
 		"currentObjects": [],
 		"currentDirectories": [],
 		"bucketsPolicies": null as any,
-		"userBuckets": [] //TODO, Warning: was previously null
+		"userBuckets": undefined
 	}),
 	"reducers": {
 		"loadUserBuckets": (

@@ -1,12 +1,16 @@
 import { connect } from 'react-redux';
 import MyFiles from './my-files.component';
-import { startWaiting, stopWaiting } from 'js/redux/actions';
 import {
-	loadBucketContent,
-	uploadFileToBucket,
-	removeObjectFromBucket,
-} from 'js/redux/actions';
+	actions
+} from 'js/redux/store';
 
+const { 
+	loadBucketContent, 
+	uploadFileToBucket, 
+	removeObjectFromBucket, 
+	startWaiting, 
+	stopWaiting 
+} = actions;
 
 const mapStateToProps = (...[,props]: any[]) => {
 	return { ...props };

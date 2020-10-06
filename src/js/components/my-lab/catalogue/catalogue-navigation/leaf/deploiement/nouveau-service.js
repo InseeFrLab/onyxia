@@ -16,10 +16,10 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic, fromUser, filterOnglets } from 'js/utils';
-import api from 'js/redux/api';
+import { restApiPaths } from 'js/restApiPaths';
 import { getVaultToken } from 'js/vault-client';
 import useBetaTest from 'js/components/hooks/useBetaTest';
-import { getKeycloak } from 'js/utils';
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 
 const NouveauService = ({
 	idCatalogue,
@@ -65,7 +65,7 @@ const NouveauService = ({
 
 	useEffect(() => {
 		if (!authenticated) {
-			getKeycloak().login();
+			getKeycloakInstance().login();
 		}
 	}, [authenticated]);
 
@@ -357,7 +357,7 @@ export const getOptions = (user, service, minioCredentials, queryParams) => {
 };
 
 export const getService = async (idCatalogue, idService) => {
-	return await axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then(
+	return await axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`).then(
 		(res) => {
 			return res;
 		}

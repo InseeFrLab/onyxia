@@ -6,7 +6,7 @@ import { actions as appActions } from "js/redux/app";
 
 import * as localStorageToken from "js/utils/localStorageToken";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
-import { getKeycloak } from 'js/utils';
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) => (
 	<PrivateRoute {...props} routerContext={RouterContext} />
@@ -22,7 +22,6 @@ class PrivateRoute extends React.Component {
 	}
 	static getDerivedStateFromProps(
 		{ authenticated, location, setRedirectUri, displayLogin }: any,
-		state: any
 	) {
 		const token = localStorageToken.get();
 		const isToken = token && token !== 'undefined';
@@ -32,7 +31,7 @@ class PrivateRoute extends React.Component {
 			displayLogin(true);
 		}
 		if (!authenticated && isToken) {
-			getKeycloak().login();
+			getKeycloakInstance().login();
 		}
 		return {
 			isToken,

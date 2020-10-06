@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import Alert from '@material-ui/lab/Alert';
 import {
 	IconButton,
@@ -11,12 +10,12 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
-import { RootState } from 'js/redux/';
 import { useHistory } from 'react-router-dom';
 import useBetaTest from '../hooks/useBetaTest';
+import { useSelector } from "js/redux/store";
 
 const RegionBanner = () => {
-	const regions = useSelector((store: RootState) => store.regions);
+	const regions = useSelector(store => store.regions);
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
 	const [betaTest] = useBetaTest();
@@ -26,7 +25,7 @@ const RegionBanner = () => {
 		}
 	}, [regions.selectedRegion]);
 
-	return regions?.selectedRegion && regions.regions?.length > 1 && betaTest ? (
+	return regions?.selectedRegion && (regions?.regions?.length ?? 0) > 1 && betaTest ? (
 		<>
 			<Collapse in={open}>
 				<Alert

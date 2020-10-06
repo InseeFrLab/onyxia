@@ -1,10 +1,12 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
-import { startVisite } from 'js/redux/actions';
+import { actions } from 'js/redux/store';
 import VisiteGuide from './visite-guidee.component';
 import { Next, LinkTo, Arrow } from './vignette-commons';
 import D from 'js/i18n';
+
+const { startVisite } = actions;
 
 const ETAPES = [
 	{

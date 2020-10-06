@@ -7,14 +7,14 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
 import { axiosPublic } from 'js/utils';
 import { getAvatar } from 'js/utils/service-utils';
-import api from 'js/redux/api';
+import { restApiPaths } from 'js/restApiPaths';
 
 const Service = ({ idCatalogue, idService }) => {
 	const [service, setService] = useState({});
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axiosPublic(`${api.catalogue}/${idCatalogue}/${idService}`).then((res) => {
+		axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`).then((res) => {
 			setService(res);
 			setLoading(false);
 		});

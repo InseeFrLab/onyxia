@@ -10,8 +10,7 @@ import { env } from 'js/env';
 import createTheme from 'js/components/material-ui-theme';
 import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
-import { ScreenType } from "js/model/ScreenType";
-//import { SMALL_POINT, LARGE_POINT, MEDIUM_POINT } from 'js/redux/reducers';
+import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
 import { useSelector } from "js/redux/store";
 const theme = createTheme();
 
@@ -57,7 +56,7 @@ declare namespace Content {
 export const Home: React.FC = () => {
 
 	const screenWidth = useSelector(state => state.app.screenWidth);
-	const screenType = ScreenType.get(screenWidth);
+	const screenType = getScreenTypeFromWidth(screenWidth);
 
 	const { result: contentRoot } = useAsync(fetchContent, []);
 
@@ -74,7 +73,7 @@ export const Home: React.FC = () => {
 							: undefined,
 				}}
 			>
-				{screenWidth > ScreenType.getBreakPoint("SMALL") && (
+				{screenWidth > getScreenTypeBreakpoint("SMALL") && (
 					<Typography variant="h1">{contentRoot.hero.smallerText}</Typography>
 				)}
 				<Typography variant="h2">{contentRoot.hero.biggerText}</Typography>

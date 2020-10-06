@@ -7,8 +7,8 @@ import Status from './status.component';
 import Toolbar from './toolbar.component';
 import Details from './details.component';
 import * as minio from 'js/minio-client';
-import MyPolicy from './../my-policy.component';
-import conf from './../../../../configuration/';
+import { MyPolicy } from './../my-policy.component';
+import { env } from 'js/env';
 import {
 	getMinioDirectoryName,
 	createPolicyWithDirectory,
@@ -20,7 +20,7 @@ import {
 } from 'js/minio-client';
 import './my-file.scss';
 
-const MINIO_BASE_URI = conf.MINIO.BASE_URI;
+const MINIO_BASE_URI = env.MINIO.BASE_URI;
 
 const MonFichier = ({
 	file,
