@@ -14,7 +14,7 @@ Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
            "AWS_S3_ENDPOINT"= "${c.AWS_S3_ENDPOINT}")
 
 library("aws.s3")
-bucketlist()`,
+bucketlist(region="")`,
 	},
 	{
 		id: 'r_bis',
@@ -51,6 +51,27 @@ minio$list_buckets()`,
 			`
 import s3fs
 fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
+	},
+	{
+		id: 'env',
+		label: 'Environment variables',
+		fileName: '.bashrc',
+		text: (c) => `
+export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
+export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
+export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
+export AWS_SESSION_TOKEN= ${c.AWS_SESSION_TOKEN}
+export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
+ 		`,
+	},
+	{
+		id: 'mc',
+		label: 'MC client',
+		fileName: '.bashrc',
+		text: (c) =>
+			`
+   export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
+       `,
 	},
 	{
 		id: 'env',
@@ -145,7 +166,7 @@ website_error =
 website_index = index.html
 `,
 	},
-  	{
+	{
 		id: 'rclone',
 		label: 'rclone (.conf)',
 		fileName: 'rclone.conf',

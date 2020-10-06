@@ -52,6 +52,8 @@ export type State = {
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
+        VAULT_MOUNT: string,
+        VAULT_TOP_DIR: string | undefined,
         DATA: Record<string, string>;
     }
 };
@@ -146,7 +148,7 @@ const reusableReducers = {
         state.USERNAME = nomComplet;
         state.IP = ip;
 
-        const { SSH } = state;
+        const { SSH, VAULT } = state;
 
 
         if( sshPublicKey ){
@@ -156,6 +158,8 @@ const reusableReducers = {
         if( password ){
             SSH.SSH_KEY_PASSWORD = password;
         }
+
+        VAULT.VAULT_TOP_DIR = idep;
 
 
     },
@@ -225,6 +229,8 @@ const slice = createSlice({
         "VAULT": {
             "VAULT_ADDR": env.VAULT.VAULT_BASE_URI,
             "VAULT_TOKEN": undefined,
+            "VAULT_MOUNT": env.VAULT.VAULT_KV_ENGINE,
+            "VAULT_TOP_DIR": undefined,
             "DATA": {},
         },
     }),
