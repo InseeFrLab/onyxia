@@ -12,6 +12,8 @@ import { actions as appActions } from "./app";
 import type { RootState } from "./store";
 import { actions as secretsActions } from "./secrets";
 
+console.log("import user");
+
 
 /*
 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;

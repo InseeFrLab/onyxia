@@ -7,12 +7,12 @@ const { setServiceSelected, creerNouveauService } = store;
 
 const mapStateToProps = (state) => {
 	const { visite } = state.app;
-	const { catalogue, mesServices } = state.myLab;
+	const { mesServices } = state.myLab;
 
 	return {
 		visite,
 		etapes: vignettes,
-		firstService: catalogue.length > 0 ? catalogue[0] : null,
+		firstService: null,
 		serviceCree: mesServices.find(
 			(s) => s.labels.ONYXIA_TITLE === 'rstudio-example'
 		),

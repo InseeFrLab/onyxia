@@ -9,6 +9,8 @@ import createVaultApi from "js/vault-client";
 const VAULT = createVaultApi();
 const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI as string;
 
+console.log("import secrets");
+
 export type State = {
 	sealedStatus:
 	"VAULT_STATUS_SEALED" |

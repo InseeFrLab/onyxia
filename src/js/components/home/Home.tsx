@@ -84,8 +84,8 @@ export const Home: React.FC = () => {
 				/>
 			</div>
 			<div className="papers">
-				{contentRoot.papers.map((paper) => (
-					<div>
+				{contentRoot.papers.map((paper, i) => (
+					<div key={i}>
 						<section>
 							<div>
 								<img src={paper.image} alt="logo" />
@@ -118,8 +118,8 @@ export const Home: React.FC = () => {
 				)}
 			</div>
 			<div className="service_highlight">
-				{contentRoot.service_highlight.map((o) => (
-					<div>
+				{contentRoot.service_highlight.map((o,i) => (
+					<div key={i}>
 						<img src={o.image} alt={o.title} />
 						<h1>{o.title}</h1>
 						<p>{o.body}</p>
@@ -137,16 +137,21 @@ export const Home: React.FC = () => {
 	);
 };
 
-const ButtonLinked: React.FC<{ label: string; target: string }> = ({
+const ButtonLinked: React.FC<{ label: string; target: string; }> = ({
 	label,
 	target,
-}) =>
-	target?.startsWith('http') ? (
+}) => {
+
+	const Child = ()=> <Button>{label}</Button>;
+
+	return target?.startsWith('http') ? (
 		<a href={target} target="_blank" rel="noopener noreferrer">
-			<Button>{label}</Button>
+			<Child />
 		</a>
 	) : (
 		<Link to={target}>
-			<Button>{label}</Button>
+			<Child />
 		</Link>
 	);
+
+}

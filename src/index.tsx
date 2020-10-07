@@ -97,12 +97,20 @@ const initializeKeycloak: () => Promise<void> =
 
         });
 
+    
+console.log("on est là et c'est beau");
+
+const Root: React.FC = () =>
+    useAsync(initializeKeycloak, []).status !== "success" ?
+        <Loader em={30} /> :
+        <App />
+    ;
+
+
 reactDom.render(
     <React.StrictMode>
         <Provider store={store}>
-            {useAsync(initializeKeycloak, []).status !== "success" ?
-                <Loader em={30} /> :
-                <App />}
+            <Root />
         </Provider>
     </React.StrictMode>,
     document.getElementById("root")

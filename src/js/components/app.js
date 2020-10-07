@@ -45,7 +45,7 @@ const routerContext = createRouterContext(Home)('/accueil');
 const Route = createRouteComponent(routerContext)(NativeRoute);
 const PrivateRoute = createPrivateRouteComponent(routerContext);
 
-const App = ({
+export const App = ({
 	requestError,
 	waiting,
 	applicationResize,
@@ -80,10 +80,11 @@ const App404 = () => (
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 	<MuiThemeProvider theme={theme}>
+		{/* Throw "findDOMNode is deprecated in StrictMode" warning */}
 		<ReactResizeDetector
 			handleWidth
 			handleHeight
-			onResize={(width) => applicationResize(width)}
+			onResize={width =>  applicationResize({ width }) }
 		/>
 		{waiting ? <Preloader /> : null}
 		<CssBaseline />
@@ -178,3 +179,4 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => (
 );
 
 export default App;
+

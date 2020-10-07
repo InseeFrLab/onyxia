@@ -4,7 +4,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import * as localStorageToken from "js/utils/localStorageToken";
-import { actions as userActions } from "./user";
+//import { actions as userActions } from "./user";
+
+console.log("import app");
 
 export type State = {
 	authenticated: boolean;
@@ -132,11 +134,36 @@ const slice = createSlice({
 
 		}
 	},
+	/*
 	"extraReducers": {
 		[userActions.setAuthenticated.type]: state => {
 			state.authenticated = true;
 		}
 	}
+	*/
+	"extraReducers": {
+		"user/setAuthenticated": state => {
+			state.authenticated = true;
+		}
+	}
+
+	/*
+	"extraReducers": builder => {
+
+		//Hack to avoid problems with require cycles
+		(async () => { await Promise.resolve();
+
+			console.log("===", userActions.setAuthenticated.type);
+
+			builder.addCase(
+				userActions.setAuthenticated.type,
+				state => { state.authenticated = true; }
+			);
+
+		})();
+
+	}
+	*/
 });
 
 const { actions: syncActions } = slice;
