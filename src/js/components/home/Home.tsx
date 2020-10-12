@@ -138,21 +138,23 @@ export const Home: React.FC = () => {
 	);
 };
 
-const ButtonLinked: React.FC<{ label: string; target: string; }> = ({
-	label,
-	target,
-}) => {
+const ButtonLinked: React.FC<{ label: string; target: string; }> =
+	({ label, target, }) => {
 
-	const Child = ()=> <Button>{label}</Button>;
 
-	return target?.startsWith('http') ? (
-		<a href={target} target="_blank" rel="noopener noreferrer">
-			<Child />
-		</a>
-	) : (
-		<Link to={target}>
-			<Child />
-		</Link>
-	);
+		const InternalOrExternalLink: React.FC = ({ children }) =>
+			target?.startsWith('http') ?
+				(
+					<a href={target} target="_blank" rel="noopener noreferrer">
+						{children}
+					</a>
+				) : (
+					<Link to={target}>
+						{children}
+					</Link>
+				);
 
-}
+		return <InternalOrExternalLink> <Button>{label}</Button> </InternalOrExternalLink>;
+
+
+	};
