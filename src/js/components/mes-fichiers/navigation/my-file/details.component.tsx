@@ -28,7 +28,7 @@ const Details: React.FC<{ file: any; statusPolicy?: string; }> = ({ file, status
 
 const getSizeLabel = (size: number) =>
 	size > 1000000000
-		? `${(size / Math.pow(1024, 2)).toFixed(3)} go`
+		? `${(size / Math.pow(1024, 3)).toFixed(2)} go`
 		: size > 1000000
 		? `${Math.round(size / Math.pow(1024, 2)).toFixed(2)} mo`
 		: `${Math.round(size / 1024).toFixed(2)} ko`;

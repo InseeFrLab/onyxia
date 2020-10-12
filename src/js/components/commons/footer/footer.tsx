@@ -38,8 +38,8 @@ const Footer = () => {
 				)}
 			</div>
 			<Typography gutterBottom noWrap>
-				<LienSimple href={env.FOOTER.ONYXIA.GIT}>contribuer</LienSimple>
-				<LienSimple href={env.FOOTER.SWAGGER_API}>notre api</LienSimple>
+				<LienSimple href={env.FOOTER.ONYXIA.GIT}>Contribuer au projet</LienSimple>
+				<LienSimple href={env.FOOTER.SWAGGER_API}>REST API</LienSimple>
 			</Typography>
 		</footer>
 	);

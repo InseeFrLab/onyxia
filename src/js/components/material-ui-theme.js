@@ -9,7 +9,7 @@ export default () =>
 		palette: {
 			primary: {
 				light: '#8d98f2',
-				main: '#5c6bc0',
+				main: '#5C6DBA',
 				dark: '#23408e',
 				contrastText: '#fff',
 			},
