@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { axiosPublic } from 'js/utils';
+import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from 'js/restApiPaths';
 import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';

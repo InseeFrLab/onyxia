@@ -1,13 +1,5 @@
 import keycloak_js from "keycloak-js";
 import { env } from "../env";
+import memoizee from "memoizee";
 
-let keycloakInstance: keycloak_js.KeycloakInstance | undefined = undefined;
-
-export const getKeycloakInstance = () => {
-
-	if (keycloakInstance === undefined) {
-		keycloakInstance = keycloak_js(env.AUTHENTICATION.OIDC);
-	}
-	return keycloakInstance;
-
-};
+export const getKeycloakInstance= memoizee(()=> keycloak_js(env.AUTHENTICATION.OIDC));

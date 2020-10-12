@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "./store";
 import { id } from "evt/tools/typeSafety/id";
 import * as localStorageToken from "js/utils/localStorageToken";
+import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 
@@ -10,8 +10,8 @@ import { PUSHER } from "js/components/notifications";
 
 export type State = {
 	currentBucket: { __brand: "0"; };
-	currentObjects: { name: string; }[];
-	currentDirectories: { __brand: "2"; }[];
+	currentObjects: (Blob & { name: string; })[];
+	currentDirectories: { prefix: string; }[];
 	/** bucket -> policy */
 	bucketsPolicies: Record<string, { __brand: "3" }>;
 	userBuckets: State.Bucket[] | undefined;
@@ -48,6 +48,12 @@ const asyncThunks = {
 				) => {
 
 					const { bucketName, prefix, rec } = payload;
+
+					assert(
+						typeof bucketName === "string" &&
+						typeof prefix === "string" &&
+						typeof rec === "boolean"
+					);
 
 					dispatch(syncActions.emptyCurrentBucket());
 
@@ -106,7 +112,7 @@ const asyncThunks = {
 					payload: {
 						file: Blob & { name: string; };
 						bucketName: string;
-						notify: (msg: string, params: { size: number, stream: any; }) => void;
+						notify: (msg: string, params: Blob) => void;
 						path: string;
 					}
 				) => {
@@ -116,6 +122,13 @@ const asyncThunks = {
 					//TODO: Franglish
 
 					const { file, bucketName, notify, path } = payload;
+
+					assert(
+						typeof file === "object" &&
+						typeof bucketName === "string" && 
+						typeof notify === "function" &&
+						typeof path === "string"
+					);
 
 					const result = await minio.uploadFile({ bucketName, file, notify, path })
 						.catch(() => undefined);
@@ -155,6 +168,11 @@ const asyncThunks = {
 
 					const { bucketName, objectName } = payload;
 
+					assert(
+						typeof bucketName === "string" &&
+						typeof objectName === "string"
+					);
+
 					const result = await minio.removeObject({ bucketName, objectName })
 						.catch(() => undefined);
 
@@ -176,6 +194,18 @@ const asyncThunks = {
 	})()
 };
 
+/*
+import { useDispatch } from "./store";
+import { unwrapResult } from "@reduxjs/toolkit";
+
+const dispatch = useDispatch();
+
+dispatch(
+	asyncThunks.loadBucketContent({ bucketName: null as any, prefix: null as any, rec: null as any })
+).then(unwrapResult).then(x => { });
+*/
+
+
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
@@ -192,6 +222,8 @@ const slice = createSlice({
 		) => {
 
 			const { idep } = payload;
+
+			assert( typeof idep === "string" );
 
 			const { gitlab_group } = localStorageToken.getDecoded();
 
@@ -224,13 +256,22 @@ const slice = createSlice({
 			state,
 			{ payload }: PayloadAction<{ object: State["currentObjects"][number]; }>
 		) => {
-			state.currentObjects.push(payload.object);
+
+			const { object } = payload;
+
+			assert( typeof object === "object");
+
+			state.currentObjects.push(object);
 		},
 		"addDirectoryToCurrentBucket": (
 			state,
 			{ payload }: PayloadAction<{ directory: State["currentDirectories"][number]; }>
 		) => {
-			state.currentDirectories.push(payload.directory);
+			const { directory } = payload;
+
+			assert( false );
+
+			state.currentDirectories.push(directory);
 		},
 		"setBucketPolicy": (
 			state,
@@ -240,6 +281,14 @@ const slice = createSlice({
 			}>
 		) => {
 			const { bucket, policy } = payload;
+
+			assert(false);
+
+			assert(
+				typeof bucket === "string" &&
+				typeof policy === "string" 
+			);
+
 			state.bucketsPolicies[bucket] = policy;
 		}
 	}
@@ -251,8 +300,6 @@ export const actions = {
 	...id<Pick<typeof syncActions, "loadUserBuckets">>(syncActions),
 	...asyncThunks
 };
-
-export const select = (state: RootState) => state.myFiles;
 
 export const reducer = slice.reducer;
 

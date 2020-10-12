@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import { actions } from 'js/redux/store';
-import MyFile from './my-file.component';
+import { MyFile as MyFileUnconnected } from './my-file.component';
 
 const { startWaiting, stopWaiting } = actions;
 
-export default connect(undefined, {
+export const MyFile = connect(undefined, {
 	startWaiting,
 	stopWaiting,
-})(MyFile);
+})(MyFileUnconnected);

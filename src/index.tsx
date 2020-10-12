@@ -97,8 +97,6 @@ const initializeKeycloak: () => Promise<void> =
 
         });
 
-    
-console.log("on est là et c'est beau");
 
 const Root: React.FC = () =>
     useAsync(initializeKeycloak, []).status !== "success" ?

@@ -1,15 +1,29 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import type { RootState } from "./store";
 import { axiosAuth } from "js/utils/axios-config";
 import { env } from "js/env";
-import { actions as appActions } from "./app";
 import createVaultApi from "js/vault-client";
+import { assert } from "evt/tools/typeSafety/assert";
+import memoize from "memoizee";
 const VAULT = createVaultApi();
 const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI as string;
 
-console.log("import secrets");
+
+/** We avoid importing app right away to prevent require cycles */
+export const getAppActions = memoize(
+	async () => {
+
+		const { actions: appActions } = await import("./app");
+
+		return { appActions };
+
+	},
+	{ "async": true }
+);
+
+
+
 
 export type State = {
 	sealedStatus:
@@ -47,6 +61,10 @@ const asyncThunks = {
 
 					const { path } = payload;
 
+					assert( typeof path === "string");
+
+					const { appActions } = await getAppActions();
+
 					dispatch(appActions.startWaiting());
 
 					const secrets = await VAULT.getSecretsList(path) as State["vaultSecretsList"];
@@ -70,6 +88,10 @@ const asyncThunks = {
 				async (payload: { path: string; }, { dispatch }) => {
 
 					const { path } = payload;
+
+					assert( typeof path === "string");
+
+					const { appActions } = await getAppActions();
 
 					dispatch(appActions.startWaiting());
 
@@ -95,6 +117,10 @@ const asyncThunks = {
 
 					const { location, data } = payload;
 
+					assert( typeof location === "string" && typeof data === "object");
+
+					const { appActions } = await getAppActions();
+
 					dispatch(appActions.startWaiting());
 
 					await VAULT.uploadSecret(location, data);
@@ -109,6 +135,11 @@ const asyncThunks = {
 
 	})()
 };
+
+
+
+
+
 
 
 
@@ -128,6 +159,8 @@ const slice = createSlice({
 			asyncThunks.checkVaultStatus.fulfilled,
 			(state, { payload: isSealed }) => {
 
+				assert(typeof isSealed === "boolean");
+
 				state.sealedStatus = isSealed ?
 					"VAULT_STATUS_SEALED" :
 					"VAULT_STATUS_UNSEALED";
@@ -141,6 +174,8 @@ const slice = createSlice({
 
 				const { secrets } = payload;
 
+				assert(false);
+
 				state.vaultSecretsList = secrets;
 
 			}
@@ -151,6 +186,8 @@ const slice = createSlice({
 			(state, { payload }) => {
 
 				const { secrets } = payload;
+
+				assert(false);
 
 				state.vaultSecret = secrets;
 
@@ -166,8 +203,6 @@ export const actions = {
 	...syncActions,
 	...asyncThunks
 };
-
-export const select = (state: RootState) => state.myFiles;
 
 export const reducer = slice.reducer;
 

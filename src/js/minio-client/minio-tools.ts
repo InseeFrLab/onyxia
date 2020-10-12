@@ -1,4 +1,4 @@
-import getMinioClient from './minio-client';
+import { getMinioClient} from './minio-client';
 import getMinioApi from './minio-api';
 
 export const presignedGetObject = async ({ bucketName, objectName }: any) => {

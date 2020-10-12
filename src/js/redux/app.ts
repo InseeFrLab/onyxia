@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { RootState } from "./store";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import * as localStorageToken from "js/utils/localStorageToken";
-//import { actions as userActions } from "./user";
+import { assert } from "evt/tools/typeSafety/assert";
 
-console.log("import app");
+import { actions as userActions } from "./user";
 
 export type State = {
 	authenticated: boolean;
@@ -54,7 +53,7 @@ const slice = createSlice({
 		"displayLogin": false,
 		"screenWidth": 0,
 		"visite": false,
-		"faviconUrl": "/onyxia.png",
+		"faviconUrl": "/onyxia.png"
 	}),
 	"reducers": {
 		/*
@@ -80,6 +79,8 @@ const slice = createSlice({
 
 			const { uri } = payload;
 
+			assert(typeof uri === "string");
+
 			state.redirectUri = uri;
 
 		},
@@ -89,6 +90,8 @@ const slice = createSlice({
 		) => {
 
 			const { doDisplay } = payload;
+
+			assert(typeof doDisplay === "boolean");
 
 			state.displayLogin = doDisplay;
 
@@ -108,6 +111,8 @@ const slice = createSlice({
 
 			const { width } = payload;
 
+			assert(typeof width === "number");
+
 			state.screenWidth = width;
 
 		},
@@ -117,6 +122,8 @@ const slice = createSlice({
 		) => {
 
 			const { url } = payload;
+
+			assert(typeof url === "string");
 
 			state.faviconUrl = url;
 
@@ -134,46 +141,28 @@ const slice = createSlice({
 
 		}
 	},
-	/*
 	"extraReducers": {
 		[userActions.setAuthenticated.type]: state => {
 			state.authenticated = true;
 		}
 	}
-	*/
+	/*
 	"extraReducers": {
 		"user/setAuthenticated": state => {
 			state.authenticated = true;
 		}
-	}
-
-	/*
-	"extraReducers": builder => {
-
-		//Hack to avoid problems with require cycles
-		(async () => { await Promise.resolve();
-
-			console.log("===", userActions.setAuthenticated.type);
-
-			builder.addCase(
-				userActions.setAuthenticated.type,
-				state => { state.authenticated = true; }
-			);
-
-		})();
-
 	}
 	*/
 });
 
 const { actions: syncActions } = slice;
 
+
+
 export const actions = {
 	...syncActions,
 	...asyncThunks
 };
-
-export const select = (state: RootState) => state.myFiles;
 
 export const reducer = slice.reducer;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import createAiguilleur from 'js/components/commons/variable-location';
+import { createAiguilleur } from 'js/components/commons/variable-location/createAiguilleur';
 import Leaf from './mes-secrets-leaf.component';
 import Node from './mes-secrets-node.component';
 import Loader from 'js/components/commons/loader';
@@ -14,12 +14,13 @@ const isLeaf = async ({ pathname, search }) => {
 };
 
 const Aiguilleur = createAiguilleur({
-	leaf: Leaf,
-	node: Node,
-	isLeaf,
+	Leaf,
+	Node,
+	isLeaf
 });
 
 class MesSecrets extends React.Component {
+
 	state = {
 		init: false,
 		vaultSecretInit: false,

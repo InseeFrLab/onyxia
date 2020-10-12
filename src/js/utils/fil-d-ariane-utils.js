@@ -1,5 +1,5 @@
 import React from 'react';
-import { extractServiceId } from './index';
+import { extractServiceId } from './service-utils';
 
 export const extractCreateFil = (serviceId) =>
 	createFil(extractServiceId(serviceId));

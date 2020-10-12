@@ -106,16 +106,15 @@ export default (client: Client) => ({
 		bucketName: string,
 		keyPrefix: string,
 		duration = 3600
-	) =>
-		new Promise((resolve) => {
-			const policy = new PostPolicy();
-			policy.setBucket(bucketName);
-			var expires = new Date();
-			expires.setSeconds(duration);
-			policy.setExpires(expires);
-			policy.setKeyStartsWith(keyPrefix + '/');
-			return resolve(client.presignedPostPolicy(policy));
-		}),
+	) => {
+		const policy = new PostPolicy();
+		policy.setBucket(bucketName);
+		var expires = new Date();
+		expires.setSeconds(duration);
+		policy.setExpires(expires);
+		policy.setKeyStartsWith(keyPrefix + '/');
+		return client.presignedPostPolicy(policy);
+	},
 	getBucketPolicy: (bucket: any) => client.getBucketPolicy(bucket),
 	setBucketPolicy: ({ bucketName, policy }: any) =>
 		new Promise((resolve, reject) => {

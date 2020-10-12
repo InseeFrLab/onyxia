@@ -6,23 +6,25 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Status from './status.component';
 import Toolbar from './toolbar.component';
 import Details from './details.component';
-import * as minio from 'js/minio-client';
-import { MyPolicy } from './../my-policy.component';
+import * as minioTools from 'js/minio-client/minio-tools';
+import * as minioPolicy from "js/minio-client/minio-policy";
+import { MyPolicy } from '../my-policy.component';
 import { env } from 'js/env';
-import {
-	getMinioDirectoryName,
-	createPolicyWithDirectory,
-	createPolicyWithoutDirectory,
-	initBucketPolicy,
-	getBucketPolicy,
-	setBucketPolicy,
-	removeObject,
-} from 'js/minio-client';
 import './my-file.scss';
+import { id } from "evt/tools/typeSafety/id";
+import type { actions } from "js/redux/store";
+import type { HandleThunkActionCreator } from "react-redux";
 
 const MINIO_BASE_URI = env.MINIO.BASE_URI;
 
-const MonFichier = ({
+export const MyFile: React.FC<{
+	file: Blob & { name: string; };
+	bucketName: string;
+	fileName: string;
+	path: string;
+	startWaiting: HandleThunkActionCreator<typeof actions["startWaiting"]>, 
+	stopWaiting: HandleThunkActionCreator<typeof actions["stopWaiting"]>
+}> = ({
 	file,
 	bucketName,
 	fileName,
@@ -31,16 +33,16 @@ const MonFichier = ({
 	stopWaiting,
 }) => {
 	// state
-	const [policy, setPolicy] = useState(undefined);
+	const [policy, setPolicy] = useState<{ Resource: string[]; } | undefined>(undefined);
 	const [isPublicFile, setIsPublicFile] = useState(false);
 	const [isInPublicDirectory, setIsInPublicDirectory] = useState(false);
-	const [fileUrl, setFileUrl] = useState(undefined);
+	const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
 	const [expiration, setExpiration] = useState(undefined);
 	const [publicSubdirectoriesPath] = useState(() =>
 		getPublicSubdirectoriesPath(bucketName)(fileName)
 	);
 	//
-	const minioPath = getMinioDirectoryName(bucketName)(`/${fileName}`);
+	const minioPath = minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`);
 	const minioDownloadUrl = `${MINIO_BASE_URI}/${bucketName}/${fileName}`;
 
 	// comportements
@@ -51,16 +53,16 @@ const MonFichier = ({
 	const download = async () => window.open(await generatePresignedUrl());
 	const deleteFile = async () => {
 		startWaiting();
-		removeObject({ bucketName, objectName: fileName });
+		minioTools.removeObject({ bucketName, objectName: fileName });
 		stopWaiting();
 	};
 
-	const removeFromPolicy = async (minioPath) => {
+	const removeFromPolicy = async (minioPath: string) => {
 		startWaiting();
 		try {
-			const policy = await createPolicyWithoutDirectory(bucketName)(minioPath);
-			await setBucketPolicy({ bucketName, policy });
-			setIsPublicFile(undefined);
+			const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(minioPath);
+			await minioTools.setBucketPolicy({ bucketName, policy });
+			setIsPublicFile(undefined as unknown as any);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -70,11 +72,11 @@ const MonFichier = ({
 	const toggleStatus = async () => {
 		startWaiting();
 		if (isPublicFile) {
-			const policy = await createPolicyWithoutDirectory(bucketName)(minioPath);
-			await setBucketPolicy({ bucketName, policy });
+			const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(minioPath);
+			await minioTools.setBucketPolicy({ bucketName, policy });
 		} else {
-			const policy = await createPolicyWithDirectory(bucketName)(minioPath);
-			await setBucketPolicy({ bucketName, policy });
+			const policy = await minioPolicy.createPolicyWithDirectory(bucketName)(minioPath);
+			await minioTools.setBucketPolicy({ bucketName, policy });
 		}
 		setIsPublicFile(!isPublicFile);
 		stopWaiting();
@@ -91,9 +93,9 @@ const MonFichier = ({
 				if (!check.isInpublicDirectory && !check.isPublicFile) {
 					const url = await generatePresignedUrl();
 					setFileUrl(url);
-					setExpiration(getExpirationString(url));
+					setExpiration(getExpirationString(url) as any);
 				} else {
-					setFileUrl(minioDownloadUrl);
+					setFileUrl(minioDownloadUrl as any);
 				}
 				setIsPublicFile(check.isPublicFile);
 				setIsInPublicDirectory(check.isInpublicDirectory);
@@ -139,7 +141,7 @@ const MonFichier = ({
 					expiration={expiration}
 					toggleStatus={toggleStatus}
 				/>
-				<MyPolicy handleDelete={removeFromPolicy} policy={policy} path={path} />
+				<MyPolicy handleDelete={removeFromPolicy} policy={policy}/>
 			</div>
 		</>
 	);
@@ -149,15 +151,17 @@ const MonFichier = ({
  * Examine le statut public du fichier et de ses répertoires parents.
  * ({publicSubdirectoriesPath: [string]}) => (props: object) => ({ isPublicFile: bool, isInpublicDirectory: bool })
  */
-const createCheckFileStatus = (publicSubdirectoriesPath) => async ({
-	bucketName,
-	fileName,
-}) => {
+const createCheckFileStatus = (publicSubdirectoriesPath: string[]) => async ({ bucketName, fileName, }: { bucketName: string; fileName: string; }): Promise<{
+	isPublicFile: boolean;
+	isInpublicDirectory: boolean;
+	policy: { Resource: string[] } | undefined
+}> => {
+
 	try {
-		const policiesString = await getBucketPolicy(bucketName);
+		const policiesString = await minioTools.getBucketPolicy(bucketName);
 		const policies = JSON.parse(policiesString);
 		const [policy] = policies.Statement;
-		const minioPath = `${getMinioDirectoryName(bucketName)(`/${fileName}`)}`;
+		const minioPath = `${minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`)}`;
 
 		if (policy) {
 			const isInpublicDirectory = publicSubdirectoriesPath.reduce(
@@ -171,7 +175,7 @@ const createCheckFileStatus = (publicSubdirectoriesPath) => async ({
 		}
 	} catch ({ code, name }) {
 		if (code && name && name === 'S3Error' && code === 'NoSuchBucketPolicy') {
-			await initBucketPolicy(bucketName);
+			await minioTools.initBucketPolicy(bucketName);
 			return await createCheckFileStatus(publicSubdirectoriesPath)({
 				bucketName,
 				fileName,
@@ -186,31 +190,31 @@ const createCheckFileStatus = (publicSubdirectoriesPath) => async ({
 };
 
 /* */
-const checkDownloadUrl = ({ bucketName, fileName }) =>
-	minio.presignedGetObject({
+const checkDownloadUrl = ({ bucketName, fileName }: { bucketName: string; fileName: string; }) =>
+	minioTools.presignedGetObject({
 		bucketName,
 		objectName: fileName,
 	});
 
 /* */
-const getPublicSubdirectoriesPath = (bucketName) => (fileName) =>
+const getPublicSubdirectoriesPath = (bucketName: string) => (fileName: string) =>
 	fileName
 		.split('/')
 		.filter((t) => t.trim().length > 0)
 		.reduce((a, c) => [...a, `${a[a.length - 1]}/${c}`], [''])
-		.map((p) => getMinioDirectoryName(bucketName)(`${p}/*`));
+		.map((p) => minioTools.getMinioDirectoryName(bucketName)(`${p}/*`));
 
 /* */
-const getExpirationString = (presignedUrl) => {
+const getExpirationString = (presignedUrl: string) => {
 	const u = new URL(presignedUrl);
-	const params = u.search
+	const params: any = u.search
 		.split('&')
 		.filter((p) => p.length > 0)
 		.reduce((a, r) => {
 			const [k, w] = r.split('=');
 			return { ...a, [k]: w };
 		}, {});
-	const start = params['X-Amz-Date'];
+	const start: string = params['X-Amz-Date'];
 	const duration = parseInt(params['X-Amz-Expires']);
 
 	return dayjs(start)
@@ -220,7 +224,7 @@ const getExpirationString = (presignedUrl) => {
 };
 
 /* */
-const getParentPath = (bucketName) => (fileName) => {
+const getParentPath = (bucketName: string) => (fileName: string) => {
 	const tmp = fileName.split('/');
 	if (tmp.length > 1) {
 		const last = fileName.replace(`/${tmp[tmp.length - 1]}`, '');
@@ -230,13 +234,13 @@ const getParentPath = (bucketName) => (fileName) => {
 	}
 };
 
-MonFichier.propTypes = {
+MyFile.propTypes = {
 	bucketName: PropTypes.string.isRequired,
 	fileName: PropTypes.string.isRequired,
 };
 
 /* */
-const getFilPaths = (path) =>
+const getFilPaths = (path: string) =>
 	path
 		.split('/')
 		.filter((f) => f.length > 0)
@@ -245,7 +249,6 @@ const getFilPaths = (path) =>
 				a.length === 0
 					? [{ label: f, path: `/${f}/` }]
 					: [...a, { label: f, path: `${a[a.length - 1].path}${f}/` }],
-			[]
+			id<{ label: string; path: string; }[]>([])
 		);
 
-export default MonFichier;

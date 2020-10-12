@@ -1,10 +1,15 @@
 import axios from 'axios';
 import generator from 'generate-password';
-import { axiosURL } from 'js/utils';
+import { axiosURL } from "js/utils/axios-config";
 import * as localStorageToken from 'js/utils/localStorageToken';
-import { store } from 'js/redux/store';
-import { actions as userActions } from "js/redux/user";
 import { env } from 'js/env';
+import memoize from "memoizee";
+
+/** We avoid importing app right away to prevent require cycles */
+export const getStore = memoize(
+	() => import("js/redux/store"),
+	{ "async": true }
+);
 
 const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
 const VAULT_KV_ENGINE = env.VAULT.VAULT_KV_ENGINE;
@@ -49,19 +54,27 @@ class VaultAPI {
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
 			data: { ...old, ...data },
 		});
-		store.dispatch(userActions.newVaultData({ data }));
+
+		const { store, actions } = await getStore();
+		store.dispatch(actions.newVaultData({ data }));
 	}
 }
 
 export default VaultAPI;
 
-const getLocalToken = () => store.getState().user.VAULT.VAULT_TOKEN;
 
 /**
  *
  */
-export const getVaultToken = async () =>
-	getLocalToken() ? Promise.resolve(getLocalToken()) : fetchVaultToken();
+export const getVaultToken = async () => {
+
+	const { store } = await getStore();
+
+	const { VAULT_TOKEN } = store.getState().user.VAULT;
+
+	return VAULT_TOKEN ?? fetchVaultToken();
+
+}
 
 const fetchVaultToken = async () => {
 	//TODO: Remove the response interceptor
@@ -71,7 +84,8 @@ const fetchVaultToken = async () => {
 		role: 'onyxia-user',
 		jwt: localStorageToken.get(),
 	});
-	store.dispatch(userActions.newVaultToken({ token }));
+	const { store, actions } = await getStore();
+	store.dispatch(actions.newVaultToken({ token }));
 	return token;
 };
 
@@ -110,7 +124,7 @@ export const initVaultData = (idep: string, name: string, mail: string) => {
 						git_credentials_cache_duration:
 							git_credentials_cache_duration || '0',
 					});
-				else store.dispatch(userActions.newVaultData({ data }));
+				else getStore().then(({ store, actions }) => store.dispatch(actions.newVaultData({ data })));
 			}
 		)
 		.catch(() => {
@@ -127,7 +141,8 @@ export const resetVaultData = (idep: string, data: VaultProfile) => {
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
-		.then(() => store.dispatch(userActions.newVaultData({ "data": payload.data as any })));
+		.then(() => getStore())
+		.then(({ store, actions }) => store.dispatch(actions.newVaultData({ "data": payload.data as any })));
 };
 
 export const resetVaultPwd = (idep: string) =>

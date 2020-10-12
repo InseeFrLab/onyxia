@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 
 export const MyPolicy: React.FC<{ 
-	policy: { Resource: string[] }; 
+	policy?: { Resource: string[] }; 
 	handleDelete?: (path: string)=> void; 
 }> = ({ policy, handleDelete }) => {
 

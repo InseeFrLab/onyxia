@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, IconButton, Icon } from '@material-ui/core';
-import {
-	CardService,
-	getServiceAvatar,
-} from 'js/components/commons/service-card';
-import { axiosURL, wrapPromise } from 'js/utils';
+import { getServiceAvatar} from 'js/components/commons/service-card';
+import { CarteService } from "js/components/commons/service-card/card-service.component";
+import { axiosURL } from "js/utils/axios-config";
+import { wrapPromise } from 'js/utils';
 import { env } from "js/env";
 
 const resource = wrapPromise(axiosURL(env.CONTENT.SERVICES_URL));
@@ -16,7 +15,7 @@ const OngletContent = () => {
 	const handleOpenService = (service) => window.open(service.link);
 
 	const gridItems = services.map((service, i) => (
-		<CardService
+		<CarteService
 			key={i}
 			title={service.title}
 			subtitle={service.subtitle}

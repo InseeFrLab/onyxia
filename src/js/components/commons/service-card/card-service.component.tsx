@@ -8,7 +8,7 @@ import Preloader from 'js/components/commons/preloader';
 import WarningIcon from '@material-ui/icons/Warning';
 
 
-const CarteService = ({
+export const CarteService = ({
 	id = '',
 	actions: Actions,
 	contenu: Contenu,
@@ -98,4 +98,3 @@ CarteService.propTypes = {
 	wait: PropTypes.bool,
 };
 
-export default CarteService;

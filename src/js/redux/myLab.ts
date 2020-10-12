@@ -2,9 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "./store";
 import { id } from "evt/tools/typeSafety/id";
-import { actions as appActions } from "./app";
 import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { PUSHER } from "js/components/notifications";
@@ -12,6 +10,8 @@ import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
 import { assert } from "evt/tools/typeSafety/assert";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+
+import { actions as appActions } from "./app";
 
 //TODO: Rename franglish
 export type State = {
@@ -33,6 +33,26 @@ export const name = "myLab";
 
 
 const asyncThunks = {
+	/*
+		payload: {
+			service: {
+				category: "group" | "service";
+				catalogId: "inseefrlab-datascience";
+				name: string;
+				currentVersion: number;
+				postInstallNotes?: string;
+			};
+			options: {
+				onyxia: {
+					friendly_name: "rstudio-example"
+				},
+				service: {
+					cpus: number;
+					mem: number;
+				};
+		};
+		dryRun?: boolean;
+	*/
 	...(() => {
 
 		const typePrefix = "creerNouveauService";
@@ -44,7 +64,7 @@ const asyncThunks = {
 					payload: {
 						service: {
 							category: "group" | "service";
-							catalogId: "inseefrlab-datascience";
+							catalogId: string;
 							name: string;
 							currentVersion: number;
 							postInstallNotes?: string;
@@ -61,10 +81,21 @@ const asyncThunks = {
 						dryRun?: boolean;
 					},
 					{ dispatch }
-				) => {
+				): Promise<object | undefined> => {
 
-					const { service, options } = payload;
-					const dryRun = payload.dryRun ?? false;
+					const { 
+						service, 
+						options, 
+						dryRun = false 
+					} = payload;
+
+					assert(
+						typeof service === "object" &&
+						typeof options === "object" &&
+						typeof dryRun === "boolean"
+					);
+
+
 
 					dispatch(appActions.startWaiting());
 
@@ -81,9 +112,6 @@ const asyncThunks = {
 						}
 					).catch((error: Error) => error);
 
-					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
-					//(axios middleware.
-					assert(typeGuard<{ id: string; }>(response));
 
 					dispatch(appActions.stopWaiting());
 
@@ -100,6 +128,10 @@ const asyncThunks = {
 
 					}
 
+					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
+					//(axios middleware.
+					assert(typeGuard<{ id: string; }>(response));
+
 					if (dryRun) {
 						//TODO: Debatable...
 						return;
@@ -114,6 +146,8 @@ const asyncThunks = {
 							}
 						)
 					);
+
+					return response;
 
 
 				}
@@ -137,6 +171,8 @@ const asyncThunks = {
 				) => {
 
 					const { service } = payload;
+
+					assert(false);
 
 					dispatch(syncActions.cardStartWaiting({ "id": service.id }));
 
@@ -193,6 +229,8 @@ const slice = createSlice({
 
 			const { service } = payload;
 
+			assert(typeof service === "object");
+
 			const { mesServices } = state;
 
 			const serviceToDelete = mesServices.find(({ id }) => id === service.id);
@@ -212,6 +250,8 @@ const slice = createSlice({
 
 			const { service } = payload;
 
+			assert(typeof service === "object");
+
 			const { mesServices } = state;
 
 			const oldService = mesServices.find(({ id }) => id === service.id);
@@ -230,6 +270,8 @@ const slice = createSlice({
 
 			const { id } = payload;
 
+			assert(typeof id === "string");
+
 			state.mesServicesWaiting.push(id);
 
 		},
@@ -240,6 +282,8 @@ const slice = createSlice({
 		) => {
 
 			const { id } = payload;
+
+			assert(typeof id === "string");
 
 			const { mesServicesWaiting } = state;
 
@@ -262,7 +306,5 @@ export const actions = {
 	...id<Pick<typeof syncActions, "setServiceSelected" | "updateMonService">>(syncActions),
 	...asyncThunks
 };
-
-export const select = (state: RootState) => state.myFiles;
 
 export const reducer = slice.reducer;

@@ -4,7 +4,7 @@ import Loader from 'js/components/commons/loader';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { axiosURL } from 'js/utils';
+import { axiosURL } from "js/utils/axios-config";
 import './style.scss';
 import { env } from 'js/env';
 import createTheme from 'js/components/material-ui-theme';
@@ -12,6 +12,7 @@ import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
 import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
 import { useSelector } from "js/redux/store";
+
 const theme = createTheme();
 
 const fetchContent = (): Promise<Content.Root> =>

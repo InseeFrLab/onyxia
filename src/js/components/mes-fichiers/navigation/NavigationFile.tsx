@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react';
-import MyFiles from './my-files';
-import MyFile from './my-file';
-import { isBucketExist, createBucket } from 'js/minio-client';
+import { MyFiles } from "./my-files/my-files.container";
+import { MyFile } from "./my-file/my-file.container";
+import * as minioTools from "js/minio-client/minio-tools";
 import { actions, useSelector, useDispatch } from "js/redux/store";
 
 export const NavigationFile: React.FC<{
@@ -92,13 +92,13 @@ export const NavigationFile: React.FC<{
 					break walk;
 				}
 
-				if (!await isBucketExist(bucket.id)) {
+				if (!await minioTools.isBucketExist(bucket.id)) {
 
 					if (isUnmounted) {
 						return;
 					}
 
-					await createBucket(bucket.id)
+					await minioTools.createBucket(bucket.id)
 
 				}
 

@@ -10,10 +10,10 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
-import { axiosAuth } from 'js/utils';
+import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
-import { getMinioToken } from 'js/minio-client';
+import { getMinioToken } from "js/minio-client/minio-client";
 import { getVaultToken } from 'js/vault-client';
 import {
 	getOptions,

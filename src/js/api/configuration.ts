@@ -1,6 +1,6 @@
 import { restApiPaths } from 'js/restApiPaths';
 import { Region } from 'js/model/Region';
-import { axiosPublic } from 'js/utils';
+import { axiosPublic } from "js/utils/axios-config";
 import { store } from "js/redux/store";
 import { actions as regionsActions } from "js/redux/regions";
 

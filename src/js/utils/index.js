@@ -1,4 +1,3 @@
-export * from './axios-config';
 export * from './form-field';
 export * from './object';
 export * from './promise';

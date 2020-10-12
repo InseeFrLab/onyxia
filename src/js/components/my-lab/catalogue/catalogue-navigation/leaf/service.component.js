@@ -5,11 +5,11 @@ import { Typography, Fab, Icon } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
-import { axiosPublic } from 'js/utils';
+import { axiosPublic } from "js/utils/axios-config";
 import { getAvatar } from 'js/utils/service-utils';
 import { restApiPaths } from 'js/restApiPaths';
 
-const Service = ({ idCatalogue, idService }) => {
+export const Service = ({ idCatalogue, idService }) => {
 	const [service, setService] = useState({});
 	const [loading, setLoading] = useState(true);
 
@@ -52,8 +52,6 @@ const Service = ({ idCatalogue, idService }) => {
 		</>
 	);
 };
-
-export default Service;
 
 Service.propTypes = {
 	idCatalogue: PropTypes.string.isRequired,

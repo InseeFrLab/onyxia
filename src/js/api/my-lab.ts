@@ -1,4 +1,4 @@
-import { axiosAuth } from 'js/utils';
+import { axiosAuth } from "js/utils/axios-config";
 import { Service, Group } from 'js/model';
 
 import { restApiPaths } from "js/restApiPaths";

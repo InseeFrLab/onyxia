@@ -1,19 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { env } from 'js/env';
-import { id } from "evt/tools/typeSafety/id";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { id } from "evt/tools/typeSafety/id";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { assert } from "evt/tools/typeSafety/assert";
+
+import { env } from 'js/env';
 import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
-import type { AxiosResponse } from "axios";
-import { assert } from "evt/tools/typeSafety/assert";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { PUSHER } from "js/components/notifications";
-import { actions as appActions } from "./app";
-import type { RootState } from "./store";
+import type { AxiosResponse } from "axios";
 import { actions as secretsActions } from "./secrets";
-
-console.log("import user");
-
 
 /*
 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
@@ -96,6 +92,8 @@ const asyncThunks = {
                 `${name}/${typePrefix}`,
                 async (...[, { dispatch }]) => {
 
+                    const { actions: appActions } = await import("./app");
+
                     dispatch(appActions.startWaiting());
 
                     const user = await axiosAuth
@@ -145,6 +143,15 @@ const reusableReducers = {
 
         const { email, idep, nomComplet, ip, sshPublicKey, password } = payload;
 
+        assert(
+            typeof email === "string" &&
+            typeof idep === "string" &&
+            typeof nomComplet === "string" && 
+            typeof ip === "string" &&
+            typeof sshPublicKey === "string" &&
+            typeof password === "string"
+        );
+
         state.USERMAIL = email;
         state.IDEP = idep;
         state.USERNAME = nomComplet;
@@ -189,6 +196,8 @@ const reusableReducers = {
 
 
         const { data } = payload;
+
+        assert( typeof data === "object");
 
         Object.keys(data)
             .forEach(key => state.VAULT.DATA[key] = data[key]);
@@ -259,6 +268,12 @@ const slice = createSlice({
 
             const { idToken, refreshToken, accessToken } = payload;
 
+            assert( 
+                typeof idToken === "string" &&
+                typeof refreshToken === "string" &&
+                typeof accessToken === "string"
+            );
+
             const { KEYCLOAK } = state;
 
             KEYCLOAK.KC_ID_TOKEN = idToken;
@@ -291,6 +306,13 @@ const slice = createSlice({
 
             const { accessKey, secretAccessKey, expiration, sessionToken } = payload;
 
+            assert(
+                typeof accessKey === "string" &&
+                typeof secretAccessKey === "string" &&
+                typeof expiration === "string" &&
+                typeof sessionToken === "string" 
+            );
+
             const { S3 } = state;
 
             S3.AWS_ACCESS_KEY_ID = accessKey;
@@ -316,6 +338,8 @@ const slice = createSlice({
 
             const { token } = payload;
 
+            assert( typeof token === "string" );
+
             state.VAULT.VAULT_TOKEN = token;
 
         },
@@ -326,6 +350,8 @@ const slice = createSlice({
         builder.addCase(
             asyncThunks.getUserInfo.fulfilled,
             (state, { payload: user }) => {
+
+                assert(typeof user === "object");
 
                 //NOTE: There is a middleware in front of Axios responses.
                 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
@@ -356,6 +382,7 @@ const slice = createSlice({
             asyncThunks.updateUser.fulfilled,
             (state, { payload: user }) => {
 
+                assert(typeof user === "object");
 
 
                 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
@@ -398,8 +425,6 @@ export const actions = {
     ...syncActions,
     ...asyncThunks
 };
-
-export const select = (state: RootState) => state.user;
 
 export const reducer = slice.reducer;
 

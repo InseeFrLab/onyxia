@@ -2,27 +2,32 @@ import axios from 'axios';
 import { getKeycloakInstance } from "./getKeycloakInstance";
 import * as localStorageToken from './localStorageToken';
 import { env } from 'js/env';
-import { store } from 'js/redux/store';
 import { assert } from "evt/tools/typeSafety/assert";
+import memoize from "memoizee";
+
+/** We avoid importing app right away to prevent require cycles */
+export const getStore = memoize(
+	() => import("js/redux/store"),
+	{ "async": true }
+);
+
 
 const BASE_URL = env.API.BASE_URL;
 
-const refreshToken = (minValidity = 60) => {
-
+export const refreshToken = async (minValidity = 60) => {
 
 	const keycloakInstance = getKeycloakInstance();
 
-	return keycloakInstance
-		.updateToken(minValidity)
-		.then((refreshed: any) => {
-			if (refreshed) {
+	const refreshed: any = await keycloakInstance.updateToken(minValidity);
 
-				assert(keycloakInstance.token !== undefined); //TODO: figure out
+	if (refreshed) {
 
-				localStorageToken.set(keycloakInstance.token);
-			}
-			return keycloakInstance.token;
-		});
+		assert(keycloakInstance.token !== undefined); //TODO: figure out
+
+		localStorageToken.set(keycloakInstance.token);
+	}
+
+	return keycloakInstance.token;
 
 };
 
@@ -35,7 +40,7 @@ const authorizeConfig = (kc: any) => (config: any) => ({
 	"Accept": 'application/json;charset=utf-8',
 });
 
-const axiosAuth = axios.create({ "baseURL": BASE_URL });
+export const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
 // eslint-disable-next-line
 walk: {
@@ -57,9 +62,11 @@ walk: {
 
 }
 
+const injectRegion = async (config: any) => {
 
-const injectRegion = (config: any) => {
-	const selectedRegion = store?.getState()?.regions?.selectedRegion;
+	const { store } = await getStore();
+
+	const selectedRegion = store.getState().regions.selectedRegion;
 	if (selectedRegion) {
 		config = {
 			...config,
@@ -76,7 +83,7 @@ axiosAuth.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-const axiosPublic = axios.create({ baseURL: BASE_URL });
+export const axiosPublic = axios.create({ baseURL: BASE_URL });
 
 axiosPublic.interceptors.response.use(
 	(response) => response.data,
@@ -85,11 +92,9 @@ axiosPublic.interceptors.response.use(
 
 axiosPublic.interceptors.request.use(injectRegion);
 
-const axiosURL = axios.create();
+export const axiosURL = axios.create();
 
 axiosURL.interceptors.response.use(
 	(response) => response.data,
 	(error) => Promise.reject(error)
 );
-
-export { axiosAuth, axiosPublic, axiosURL, refreshToken };

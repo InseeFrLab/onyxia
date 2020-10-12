@@ -3,7 +3,8 @@ import { withRouter } from 'react-router-dom';
 import { Typography, Grid } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import TrainingCard from 'js/components/commons/training-card';
-import { axiosURL, wrapPromise } from 'js/utils';
+import { wrapPromise } from 'js/utils';
+import { axiosURL } from "js/utils/axios-config";
 import { env } from "js/env";
 
 const resource = wrapPromise(axiosURL(env.CONTENT.TRAININGS_URL));

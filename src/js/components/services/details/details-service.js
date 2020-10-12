@@ -3,7 +3,8 @@ import { GithubIcon } from 'js/components/commons/icons';
 import { Typography, Paper, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import CopyableField from 'js/components/commons/copyable-field';
-import { axiosURL, wrapPromise } from 'js/utils';
+import { axiosURL } from "js/utils/axios-config";
+import { wrapPromise } from 'js/utils';
 import { env } from 'js/env';
 
 const resource = wrapPromise(axiosURL(env.CONTENT.SERVICES_URL));

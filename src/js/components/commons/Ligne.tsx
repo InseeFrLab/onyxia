@@ -1,9 +1,20 @@
 import React from 'react';
 import { Button, Icon } from '@material-ui/core';
+import type { IconTypeMap } from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 
-const Ligne = ({
+type Props= {
+	path: string;
+	name: string;
+	icone: string;
+	color?: IconTypeMap["props"]["color"];
+	handleCheck?: (e: { target: { checked: boolean; }})=> void;
+	checked?: boolean;
+	onClick?: ()=> void;
+};
+
+export const Ligne: React.FC<Props> = ({
 	path,
 	name,
 	icone,
@@ -34,4 +45,3 @@ const Ligne = ({
 	</>
 );
 
-export default Ligne;

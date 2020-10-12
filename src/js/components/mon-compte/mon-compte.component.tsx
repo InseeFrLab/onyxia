@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { getMinioToken } from 'js/minio-client';
+import { getMinioToken } from "js/minio-client/minio-client";
 import CopyableField from 'js/components/commons/copyable-field';
 import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';

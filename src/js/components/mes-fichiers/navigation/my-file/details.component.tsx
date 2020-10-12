@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Typography, Paper } from '@material-ui/core';
 
-const Details = ({ file, statusPolicy }) => (
+const Details: React.FC<{ file: any; statusPolicy?: string; }> = ({ file, statusPolicy }) => (
 	<Paper className="paragraphe" elevation={1}>
 		<Typography variant="h3" gutterBottom>
 			Caractéristiques
@@ -26,7 +26,7 @@ const Details = ({ file, statusPolicy }) => (
 	</Paper>
 );
 
-const getSizeLabel = (size) =>
+const getSizeLabel = (size: number) =>
 	size > 1000000000
 		? `${(size / Math.pow(1024, 2)).toFixed(3)} go`
 		: size > 1000000
@@ -34,7 +34,7 @@ const getSizeLabel = (size) =>
 		: `${Math.round(size / 1024).toFixed(2)} ko`;
 
 /* */
-const formatageDate = (date) => dayjs(date).format('DD/MM/YYYY');
+const formatageDate = (date: string) => dayjs(date).format('DD/MM/YYYY');
 
 Details.propTypes = {
 	file: PropTypes.shape({

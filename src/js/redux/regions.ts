@@ -2,7 +2,7 @@ import type { Region } from "js/model/Region";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import type { RootState } from "./store";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type State = {
 	regions: Region[] | undefined;
@@ -96,7 +96,9 @@ const slice = createSlice({
 		) => {
 			const { regions } = payload;
 
-			state.selectedRegion = regions?.[0] ?? state.selectedRegion;
+			assert( regions instanceof Array );
+
+			state.selectedRegion = regions[0] ?? state.selectedRegion;
 
 			state.regions = regions;
 
@@ -107,6 +109,8 @@ const slice = createSlice({
 		) => {
 
 			const { newRegion } = payload;
+
+			assert(typeof newRegion === "object");
 
 			state.selectedRegion = newRegion;
 
@@ -119,7 +123,5 @@ const { actions: syncActions } = slice;
 export const actions = {
 	...syncActions
 };
-
-export const select = (state: RootState) => state.myFiles;
 
 export const reducer = slice.reducer;

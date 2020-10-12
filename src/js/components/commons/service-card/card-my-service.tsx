@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core/';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-import { CardService } from 'js/components/commons/service-card';
+import { CarteService } from 'js/components/commons/service-card/card-service.component';
 import Pile from 'js/components/commons/pile';
 import Chronometer from 'js/components/commons/chronometer';
 import { getServiceAvatar, getTitle, getSubtitle } from './card-utils';
@@ -26,7 +26,7 @@ interface Props {
 const CarteMonService = ({ service, handleClickLaunch }: Props) => {
 	const expiration = dateExpiration({ env: {} }); // TODO : restore this
 	return (
-		<CardService
+		<CarteService
 			id={service.id}
 			expiration={(expiration && isExpired(expiration)) as any}
 			wait={service.status === 'DEPLOYING'}

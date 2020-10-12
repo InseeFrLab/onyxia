@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import {
 	Typography,
 	Paper,
@@ -15,52 +14,82 @@ import {
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import Ligne from 'js/components/commons/files';
+import { Ligne } from 'js/components/commons/Ligne';
 import Toolbar from './toolbar.component';
 import Progress from 'js/components/commons/progress';
 import CopyableField from 'js/components/commons/copyable-field';
-import {
-	getMinioDirectoryName,
-	getMinioApi,
-	getMinioClient,
-} from 'js/minio-client';
-import {
-	createPolicyWithDirectory,
-	createPolicyWithoutDirectory,
-	initBucketPolicy,
-	getBucketPolicy,
-	setBucketPolicy,
-} from 'js/minio-client';
+
+import { getMinioClient, getMinioToken } from "js/minio-client/minio-client";
+import * as minioTools from "js/minio-client/minio-tools";
+import getMinioApi from 'js/minio-client/minio-api';
+import * as minioPolicy from "js/minio-client/minio-policy";
+import { id } from "evt/tools/typeSafety/id";
+import type { actions } from "js/redux/store";
+import { assert } from "evt/tools/typeSafety/assert";
+import type { HandleThunkActionCreator } from "react-redux";
+
+
 import { MyPolicy } from '../my-policy.component';
 import './my-files.scss';
 
-class MyFiles extends React.Component {
-	unmount = false;
-	state = {
-		directoryPath: '',
-		precPath: undefined,
-		files: undefined,
-		filePath: undefined,
-		uploadSeq: false,
-		checkedFiles: {},
-		sizeTotal: 0,
-		sizeCurrent: 0,
-		//
-		policy: undefined,
-		isInPublicDirectory: false,
-		isPublicDirectory: false,
-		popupUploadLink: false,
-	};
-	input = React.createRef();
-	stream = null;
 
-	constructor(props) {
+export type Props = {
+	files: (Blob & { name: string; })[];
+	directories: { prefix: string; }[];
+	bucketName: string;
+	refresh: () => void;
+	path: string;
+	loadBucketContent: HandleThunkActionCreator<typeof actions["loadBucketContent"]>, 
+	uploadFileToBucket: HandleThunkActionCreator<typeof actions["uploadFileToBucket"]>, 
+	removeObjectFromBucket: HandleThunkActionCreator<typeof actions["removeObjectFromBucket"]>, 
+	startWaiting: HandleThunkActionCreator<typeof actions["startWaiting"]>, 
+	stopWaiting: HandleThunkActionCreator<typeof actions["stopWaiting"]>
+};
+
+type State = {
+	directoryPath: string;
+	precPath: string | undefined,
+	files: Props["files"] | undefined,
+	filePath: string | undefined,
+	uploadSeq: boolean,
+	checkedFiles: Record<string, boolean>;
+	sizeTotal: number,
+	sizeCurrent: number,
+
+	policy: { Resource: string[]; } | undefined;
+	isInPublicDirectory: boolean;
+	isPublicDirectory: boolean;
+	popupUploadLink: boolean;
+};
+
+export class MyFiles extends React.Component<Props,State> {
+	unmount = false;
+	state: State= {
+		"directoryPath": '',
+		"precPath": undefined,
+		"files": undefined,
+		"filePath": undefined,
+		"uploadSeq": false,
+		"checkedFiles": {},
+		"sizeTotal": 0,
+		"sizeCurrent": 0,
+		//
+		"policy": undefined,
+		"isInPublicDirectory": false,
+		"isPublicDirectory": false,
+		"popupUploadLink": false,
+	};
+	input = React.createRef<HTMLInputElement>();
+	stream: (Blob["stream"] & { destroy?: ()=> void; }) | null = null;
+
+	constructor(props: Props) {
 		super(props);
 		this.state.precPath = props.path;
 		this.checkFolderStatus();
 	}
 
-	static getDerivedStateFromProps({ files, path, ...props }, state) {
+	static getDerivedStateFromProps({ files }: Props, state: State) {
+
 		const checkedFiles = files.reduce(
 			(a, { name }) => ({ ...a, [name]: state.checkedFiles[name] || false }),
 			{}
@@ -75,15 +104,15 @@ class MyFiles extends React.Component {
 		}
 	};
 
-	handleChangeDirectory = (e) =>
+	handleChangeDirectory = (e: { target: { value: string; }}) =>
 		this.setState({ directoryPath: e.target.value });
 
-	handleCheck = (name) => (e) =>
+	handleCheck = (name: string) => (e: { target: { checked: boolean; }}) =>
 		this.setState({
 			checkedFiles: { ...this.state.checkedFiles, [name]: e.target.checked },
 		});
 
-	checkedAllFiles = (e) =>
+	checkedAllFiles = (e: { target: { checked: boolean; }}) =>
 		this.setState({
 			checkedFiles: Object.keys(this.state.checkedFiles).reduce(
 				(a, k) => ({ ...a, [k]: e.target.checked }),
@@ -94,19 +123,14 @@ class MyFiles extends React.Component {
 	deleteFiles = () => {
 		const checked = Object.entries(this.state.checkedFiles).reduce(
 			(a, [name, etat]) => (etat ? [...a, name] : a),
-			[]
+			id<string[]>([])
 		);
 		if (checked.length > 0) {
 			const promises = checked.map(
-				(name) =>
-					new Promise((resolve, reject) => {
-						this.props
-							.removeObjectFromBucket({
-								objectName: name,
-								bucketName: this.props.bucketName,
-							})
-							.then((result) => resolve(result))
-							.catch((err) => reject(err));
+				name => this.props
+					.removeObjectFromBucket({
+						objectName: name,
+						bucketName: this.props.bucketName,
 					})
 			);
 
@@ -116,22 +140,30 @@ class MyFiles extends React.Component {
 		}
 	};
 
-	handleChangeFile = (e) =>
+	handleChangeFile = (e: { target: { value: string; files: FileList | null; }; }) => {
+
+		assert(e.target.files !== null);
+
 		this.setState({
-			files: Object.values(e.target.files),
-			filePath: e.target.value,
+			"files": Object.values(e.target.files),
+			"filePath": e.target.value
 		});
+
+	};
 
 	stopStream = () => {
 		if (this.stream && this.stream.destroy) {
 			this.stream.destroy();
-			this.props.consumeDownloadedFile();
-			this.setState({ uploadSeq: false });
+			//this.props.consumeDownloadedFile();
+			this.setState({ "uploadSeq": false });
 		}
 	};
 
 	upload = () => {
 		const { files } = this.state;
+
+		assert(!!files);
+
 		const { bucketName, uploadFileToBucket, path } = this.props;
 		this.setState({
 			uploadSeq: true,
@@ -140,18 +172,13 @@ class MyFiles extends React.Component {
 		});
 
 		const promises = files.map(
-			(file) =>
-				new Promise((resolve, reject) =>
-					uploadFileToBucket({
-						path:
-							path[path.length - 1] === '/' ? path.slice(1, -1) : path.slice(1),
-						file,
-						bucketName: bucketName,
-						notify: this.notifyUpload,
-					})
-						.then((result) => resolve(file))
-						.catch((err) => reject(file))
-				)
+			file => uploadFileToBucket({
+				path:
+					path[path.length - 1] === '/' ? path.slice(1, -1) : path.slice(1),
+				file,
+				bucketName: bucketName,
+				notify: this.notifyUpload,
+			})
 		);
 
 		Promise.all(promises).then(() => {
@@ -165,8 +192,11 @@ class MyFiles extends React.Component {
 	};
 
 	createDirectory = () => {
-		const file = new Blob(['Test,Text'], { type: 'text/csv' });
-		file.name = '.keep';
+		const file: NonNullable<State["files"]>[number] = Object.assign(
+			new Blob(['Test,Text'], { type: 'text/csv' }),
+			{ "name": ".keep" }
+		);
+
 		var path =
 			this.props.path.slice(1).length > 0 ? `${this.props.path.slice(1)}` : '';
 		if (path.length > 0 && !path.endsWith('/')) {
@@ -182,14 +212,14 @@ class MyFiles extends React.Component {
 				bucketName: this.props.bucketName,
 				notify: () => null,
 			})
-			.then((result) => {
+			.then(() => {
 				this.props.refresh();
 				this.setState({ directoryPath: '' });
 			})
-			.catch((err) => {});
+			.catch(() => { });
 	};
 
-	notifyUpload = (msg, params) => {
+	notifyUpload = (msg: string, params: Blob) => {
 		if (msg === 'data') {
 			const { size, stream } = params;
 			this.stream = stream;
@@ -239,7 +269,7 @@ class MyFiles extends React.Component {
 			} catch ({ code, name, ...rest }) {
 				console.debug('debug', { code, name, ...rest });
 				if (code === 'NoSuchBucketPolicy') {
-					await initBucketPolicy(bucketName);
+					await minioTools.initBucketPolicy(bucketName);
 					await this.checkFolderStatus();
 				}
 			}
@@ -247,7 +277,7 @@ class MyFiles extends React.Component {
 			this.props.stopWaiting();
 		};
 
-		if (!this.unmount) fetchStatus();
+		if (!this.unmount) return fetchStatus();
 	};
 
 	unlockDirectory = async () => {
@@ -255,10 +285,10 @@ class MyFiles extends React.Component {
 		const { bucketName, path } = this.props;
 		try {
 			const minioPath = getMinioPath(bucketName)(path);
-			const policy = await createPolicyWithDirectory(bucketName)(
+			const policy = await minioPolicy.createPolicyWithDirectory(bucketName)(
 				`${minioPath}*`
 			);
-			await setBucketPolicy({ bucketName, policy });
+			await minioTools.setBucketPolicy({ bucketName, policy });
 			await this.checkFolderStatus();
 		} catch (e) {
 			// TODO
@@ -271,10 +301,10 @@ class MyFiles extends React.Component {
 		const { bucketName, path } = this.props;
 		try {
 			const minioPath = getMinioPath(bucketName)(path);
-			const policy = await createPolicyWithoutDirectory(bucketName)(
+			const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(
 				`${minioPath}*`
 			);
-			await setBucketPolicy({ bucketName, policy });
+			await minioTools.setBucketPolicy({ bucketName, policy });
 			await this.checkFolderStatus();
 		} catch (e) {
 			// TODO
@@ -282,12 +312,12 @@ class MyFiles extends React.Component {
 		return false;
 	};
 
-	deletePublicDirectory = async (minioPath) => {
+	deletePublicDirectory = async (minioPath: string) => {
 		this.props.startWaiting();
 		const { bucketName } = this.props;
 		try {
-			const policy = await createPolicyWithoutDirectory(bucketName)(minioPath);
-			await setBucketPolicy({ bucketName, policy });
+			const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(minioPath);
+			await minioTools.setBucketPolicy({ bucketName, policy });
 			await this.checkFolderStatus();
 		} catch (e) {
 			// TODO
@@ -308,7 +338,7 @@ class MyFiles extends React.Component {
 					a.length === 0
 						? [{ label: f, path: `/${f}/` }]
 						: [...a, { label: f, path: `${a[a.length - 1].path}${f}/` }],
-				[]
+				id<{ label: string; path: string; }[]>([])
 			);
 		return (
 			<>
@@ -397,7 +427,7 @@ class MyFiles extends React.Component {
 						<Button
 							variant="contained"
 							color="primary"
-							onClick={() => this.input.current.click()}
+							onClick={() => this.input.current!.click()}
 						>
 							Choisissez un ou plusieurs fichiers
 						</Button>
@@ -436,7 +466,6 @@ class MyFiles extends React.Component {
 					<MyPolicy
 						handleDelete={this.deletePublicDirectory}
 						policy={policy}
-						path={path}
 					/>
 				</div>
 				<Progress
@@ -451,16 +480,20 @@ class MyFiles extends React.Component {
 	}
 }
 
-MyFiles.propTypes = {
-	loadBucketContent: PropTypes.func.isRequired,
-};
 
-const DialogShare = ({ visible, bucket, onClose }) => {
-	const [signedData, setSignedData] = React.useState();
+const DialogShare: React.FC<{
+	visible: boolean;
+	bucket: string;
+	onClose: () => void;
+}> = ({ visible, bucket, onClose }) => {
+	const [signedData, setSignedData] = React.useState<{ postURL: string; formData: Record<string, string>; }>();
 	const [folder, setFolder] = React.useState('');
 	const [duration, setDuration] = React.useState(12 * 3600);
 
 	const getCurlCommand = () => {
+
+		assert(!!signedData);
+
 		const parameters = Object.entries(signedData.formData)
 			.filter((data) => data[0] !== 'key')
 			.map((data) => `-F ${data[0]}=${data[1]}`)
@@ -469,18 +502,21 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 	};
 
 	useEffect(() => {
+
 		if (folder.length > 0) {
 			getMinioClient().then((client) =>
 				getMinioApi(client)
 					.presignedPostBucket(bucket, folder, duration)
 					.then((signedData) =>
-						setSignedData({
-							...signedData,
-							formData: {
-								...signedData.formData,
-								'x-amz-security-token': client.sessionToken,
-							},
-						})
+						getMinioToken().then(({ sessionToken }) =>
+							setSignedData({
+								...signedData,
+								formData: {
+									...signedData.formData,
+									'x-amz-security-token': sessionToken,
+								},
+							})
+						)
 					)
 			);
 		}
@@ -523,7 +559,7 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 					select
 					value={duration}
 					onChange={(e) => {
-						setDuration(e.target.value);
+						setDuration(parseInt(e.target.value));
 					}}
 				>
 					{durations.map((option) => (
@@ -552,46 +588,47 @@ const DialogShare = ({ visible, bucket, onClose }) => {
 	);
 };
 
-const File = ({ files }) =>
+const File: React.FC<{ files?: Props["files"]; }> = ({ files }) =>
 	files ? (
-		files.map((file, i) => (
-			<div key={i} className="dialogue-upload">
-				<span> {`nom : ${file.name}`}</span>
-				<span> {`taille : ${file.size}ko`}</span>
-			</div>
-		))
-	) : (
-		<div>vous n&rsquo;avez pas choisi de fichier</div>
-	);
+		<>
+			{files.map((file, i) => (
+				<div key={i} className="dialogue-upload">
+					<span> {`nom : ${file.name}`}</span>
+					<span> {`taille : ${file.size}ko`}</span>
+				</div>
+			))
+			}
+		</>
+	) :
+		<div>vous n&rsquo;avez pas choisi de fichier</div>;
 
-const isValidePath = (path) =>
+
+const isValidePath = (path: string) =>
 	path && path.trim().length > 0
 		? path.toLowerCase().match(/^[a-z0-9]/i)
 		: false;
 
-export default MyFiles;
-
-const getPath = (bucketName) => (path) =>
+const getPath = (bucketName: string) => (path: string) =>
 	path.startsWith('/')
 		? `/mes-fichiers/${bucketName}${path}`
 		: `/mes-fichiers/${bucketName}/${path}`;
 
-const getName = (name) =>
+const getName = (name: string) =>
 	name
 		.split('/')
 		.filter((f) => f.length > 0)
-		.reduce((a, v) => v);
+		.reduce((...[, v]) => v);
 
 /* 
     outils de gestion pour les policies sur répertoire.
 
 */
 
-const getMinioPath = (bucketName) => (path) =>
-	getMinioDirectoryName(bucketName)(path.trim().length === 0 ? '/' : path);
+const getMinioPath = (bucketName: string) => (path: string) =>
+	minioTools.getMinioDirectoryName(bucketName)(path.trim().length === 0 ? '/' : path);
 
-const getSubDirectories = (bucketName) => (directory) => {
-	const tokens = directory.split('/').filter((p) => p.trim('').length !== 0);
+const getSubDirectories = (bucketName: string) => (directory: string) => {
+	const tokens = directory.split('/').filter((p) => p.trim().length !== 0);
 
 	if (tokens.length === 0) return [];
 
@@ -600,17 +637,17 @@ const getSubDirectories = (bucketName) => (directory) => {
 			current: `${a.current}${subpath}/`,
 			stack: [
 				...a.stack,
-				getMinioDirectoryName(bucketName)(`${a.current}${subpath}/*`),
+				minioTools.getMinioDirectoryName(bucketName)(`${a.current}${subpath}/*`),
 			],
 		}),
-		{ current: '', stack: [] }
+		{ current: '', stack: id<string[]>([]) }
 	);
 	const { stack } = tmp;
 	return stack;
 };
 
-const fetchPolicy = async (bucketName) => {
-	const policyString = await getBucketPolicy(bucketName);
+const fetchPolicy = async (bucketName: string) => {
+	const policyString = await minioTools.getBucketPolicy(bucketName);
 
 	const {
 		Statement: [policy],

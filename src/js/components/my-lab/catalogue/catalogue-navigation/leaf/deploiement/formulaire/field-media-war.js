@@ -5,7 +5,8 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import RootRef from '@material-ui/core/RootRef';
-import { getMinioClient, getMinioApi } from 'js/minio-client';
+import getMinioApi from 'js/minio-client/minio-api';
+import { getMinioClient } from "js/minio-client/minio-client";
 import { env } from 'js/env';
 import { HidablePane } from 'js/components/commons/HidablePane';
 
