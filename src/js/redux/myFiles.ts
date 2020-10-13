@@ -8,7 +8,6 @@ import { PUSHER } from "js/components/notifications";
 
 
 export type State = {
-	currentBucket: { __brand: "0"; };
 	currentObjects: (Blob & { name: string; })[];
 	currentDirectories: { prefix: string; }[];
 	/** bucket -> policy */
@@ -213,10 +212,9 @@ dispatch(
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
-		"currentBucket": null as any,
 		"currentObjects": [],
 		"currentDirectories": [],
-		"bucketsPolicies": null as any,
+		"bucketsPolicies": {},
 		"userBuckets": undefined
 	}),
 	"reducers": {

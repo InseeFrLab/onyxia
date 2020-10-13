@@ -3,6 +3,8 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions, useSelector, useDispatch } from "js/redux/store";
+import { useLocation } from "react-router-dom";
+
 
 export const NavigationFile: React.FC<{
 	match: { params: { bucketName: string; } };
@@ -10,15 +12,41 @@ export const NavigationFile: React.FC<{
 
 	const dispatch = useDispatch();
 	const [bucketName] = useState(props.match.params.bucketName);
-	const [pathname, setPathname] = useState(decodeURI(window.location.pathname));
+
+	//NOTE: Exactly the same as window.location.pathname but we can be sure that there is a
+	// re-render when it's changed.
+	const { pathname: window_location_pathname }= useLocation();
+
+	const [pathname, setPathname] = useState(decodeURI(window_location_pathname));
 	const [racine] = useState(`/mes-fichiers/${bucketName}`);
 	const [bucketExist, setBucketExist] = useState(false);
 	const userBuckets = useSelector(state => state.myFiles.userBuckets);
 	const idep = useSelector(state => state.user.IDEP);
 	const currentObjects = useSelector(state => state.myFiles.currentObjects);
 	const currentDirectories = useSelector(state => state.myFiles.currentDirectories);
-
 	const [isInitializationCompleted, completeInitialization] = useReducer(() => true, false);
+
+
+	//NOTE: There is a new render when the location is changed
+	useEffect(() => {
+
+		const where = decodeURI(window_location_pathname);
+
+		if (where === pathname) {
+			return;
+		}
+
+		dispatch(
+			actions.loadBucketContent({
+				bucketName,
+				"prefix": where.replace(`${racine}`, ''),
+				"rec": false
+			})
+		);
+
+		setPathname(where);
+
+	},[pathname, dispatch, bucketName, racine, window_location_pathname ] );
 
 	const refresh = useCallback(() => {
 
@@ -31,21 +59,6 @@ export const NavigationFile: React.FC<{
 		);
 
 	}, [bucketName, pathname, racine, dispatch]);
-
-	useEffect(() => {
-
-		const where = decodeURI(window.location.pathname);
-
-		if (where === pathname) {
-			return;
-		}
-
-		refresh();
-
-		setPathname(where);
-
-
-	}, [pathname, refresh]);
 
 
 
@@ -121,7 +134,6 @@ export const NavigationFile: React.FC<{
 		return () => { isUnmounted = true };
 
 
-
 	}, [isInitializationCompleted, idep, userBuckets, bucketName, refresh, dispatch]);
 
 
@@ -132,13 +144,6 @@ export const NavigationFile: React.FC<{
 	const here = pathname.replace(racine, '');
 	const file = currentObjects.find(({ name }) => name === here);
 
-	/*
-	if( 1 === 1 + 1 ){
-		console.log( file, currentDirectories, MyFile, MyFiles );
-	}
-
-	return <></>;
-	*/
 	return file ? (
 		<MyFile
 			fileName={decodeURI(here).substr(1)}
