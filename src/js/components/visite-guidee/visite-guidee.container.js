@@ -21,21 +21,21 @@ const mapStateToProps = (state) => {
 
 const mapToDispatchToProps = dispatch => ({
 	"setFirstService": firstService => {
-		dispatch(setServiceSelected(firstService));
+		dispatch(setServiceSelected({ "service": firstService }));
 	},
 	"creerPremier": () => {
 		dispatch(
-			creerNouveauService(
-				{
-					name: 'rstudio',
-					catalogId: 'inseefrlab-datascience',
-					currentVersion: 10,
+			creerNouveauService({
+				"service": {
+					"name": "rstudio",
+					"catalogId": "inseefrlab-datascience",
+					"currentVersion": 10,
 				},
-				{
-					onyxia: { friendly_name: 'rstudio-example' },
-					service: { cpus: 0.2, mem: 1024 },
+				"options": {
+					"onyxia": { "friendly_name": "rstudio-example" },
+					"service": { "cpus": 0.2, "mem": 1024 },
 				}
-			)
+			})
 		);
 	},
 });
