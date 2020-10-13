@@ -148,8 +148,8 @@ const reusableReducers = {
             typeof idep === "string" &&
             typeof nomComplet === "string" && 
             typeof ip === "string" &&
-            typeof sshPublicKey === "string" &&
-            typeof password === "string"
+            (sshPublicKey === undefined || typeof sshPublicKey === "string") &&
+            (password === undefined || typeof password === "string")
         );
 
         state.USERMAIL = email;
