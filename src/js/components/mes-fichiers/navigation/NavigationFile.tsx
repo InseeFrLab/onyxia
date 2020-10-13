@@ -20,26 +20,6 @@ export const NavigationFile: React.FC<{
 
 	const [isInitializationCompleted, completeInitialization] = useReducer(() => true, false);
 
-	useEffect(() => {
-
-		const where = decodeURI(window.location.pathname);
-
-		if (where === pathname) {
-			return;
-		}
-
-		dispatch(actions.loadBucketContent({
-			bucketName,
-			"prefix": where.replace(`${racine}`, ''),
-			"rec": false
-		}));
-
-		setPathname(where);
-
-
-	}, [bucketName, pathname, racine, dispatch]);
-
-
 	const refresh = useCallback(() => {
 
 		dispatch(
@@ -54,6 +34,22 @@ export const NavigationFile: React.FC<{
 
 	useEffect(() => {
 
+		const where = decodeURI(window.location.pathname);
+
+		if (where === pathname) {
+			return;
+		}
+
+		refresh();
+
+		setPathname(where);
+
+
+	}, [pathname, refresh]);
+
+
+
+	useEffect(() => {
 
 		if (isInitializationCompleted) {
 			return;
@@ -92,18 +88,21 @@ export const NavigationFile: React.FC<{
 					break walk;
 				}
 
-				if (!await minioTools.isBucketExist(bucket.id)) {
+				const doesBucketExist = await minioTools.isBucketExist(bucket.id);
+
+				if (isUnmounted) {
+					return;
+				}
+
+				if (!doesBucketExist) {
+
+					await minioTools.createBucket(bucket.id)
 
 					if (isUnmounted) {
 						return;
 					}
 
-					await minioTools.createBucket(bucket.id)
 
-				}
-
-				if (isUnmounted) {
-					return;
 				}
 
 
@@ -133,6 +132,13 @@ export const NavigationFile: React.FC<{
 	const here = pathname.replace(racine, '');
 	const file = currentObjects.find(({ name }) => name === here);
 
+	/*
+	if( 1 === 1 + 1 ){
+		console.log( file, currentDirectories, MyFile, MyFiles );
+	}
+
+	return <></>;
+	*/
 	return file ? (
 		<MyFile
 			fileName={decodeURI(here).substr(1)}

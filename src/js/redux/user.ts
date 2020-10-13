@@ -16,6 +16,15 @@ type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
 assert(typeGuard<UnpackAxiosResponse<typeof user>>(user));
 */
 
+export type S3 = {
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_SESSION_TOKEN: string;
+    AWS_DEFAULT_REGION: 'us-east-1';
+    AWS_S3_ENDPOINT: string;
+    AWS_EXPIRATION: string;
+};
+
 //TODO: All caps here result in unnecessary work in the reducers.
 //Make things more consistent across the codebase.
 export type State = {
@@ -26,14 +35,7 @@ export type State = {
     STATUS: string;
     UUID: string;
     IP: string;
-    S3: {
-        AWS_ACCESS_KEY_ID: string | undefined;
-        AWS_SECRET_ACCESS_KEY: string | undefined,
-        AWS_SESSION_TOKEN: string | undefined,
-        AWS_DEFAULT_REGION: 'us-east-1',
-        AWS_S3_ENDPOINT: string,
-        AWS_EXPIRATION: undefined | string,
-    },
+    S3: S3 | undefined;
     SSH: {
         SSH_PUBLIC_KEY: string;
         SSH_KEY_PASSWORD: string;
@@ -146,7 +148,7 @@ const reusableReducers = {
         assert(
             typeof email === "string" &&
             typeof idep === "string" &&
-            typeof nomComplet === "string" && 
+            typeof nomComplet === "string" &&
             typeof ip === "string" &&
             (sshPublicKey === undefined || typeof sshPublicKey === "string") &&
             (password === undefined || typeof password === "string")
@@ -160,11 +162,11 @@ const reusableReducers = {
         const { SSH, VAULT } = state;
 
 
-        if( sshPublicKey ){
+        if (sshPublicKey) {
             SSH.SSH_PUBLIC_KEY = sshPublicKey;
         }
 
-        if( password ){
+        if (password) {
             SSH.SSH_KEY_PASSWORD = password;
         }
 
@@ -197,7 +199,7 @@ const reusableReducers = {
 
         const { data } = payload;
 
-        assert( typeof data === "object");
+        assert(typeof data === "object");
 
         Object.keys(data)
             .forEach(key => state.VAULT.DATA[key] = data[key]);
@@ -216,14 +218,7 @@ const slice = createSlice({
         "STATUS": "",
         "UUID": "",
         "IP": "",
-        "S3": {
-            "AWS_ACCESS_KEY_ID": undefined,
-            "AWS_SECRET_ACCESS_KEY": undefined,
-            "AWS_SESSION_TOKEN": undefined,
-            "AWS_DEFAULT_REGION": 'us-east-1',
-            "AWS_S3_ENDPOINT": env.MINIO.END_POINT,
-            "AWS_EXPIRATION": undefined,
-        },
+        "S3": undefined,
         "SSH": {
             "SSH_PUBLIC_KEY": '',
             "SSH_KEY_PASSWORD": '',
@@ -268,7 +263,7 @@ const slice = createSlice({
 
             const { idToken, refreshToken, accessToken } = payload;
 
-            assert( 
+            assert(
                 typeof idToken === "string" &&
                 typeof refreshToken === "string" &&
                 typeof accessToken === "string"
@@ -310,15 +305,17 @@ const slice = createSlice({
                 typeof accessKey === "string" &&
                 typeof secretAccessKey === "string" &&
                 typeof expiration === "string" &&
-                typeof sessionToken === "string" 
+                typeof sessionToken === "string"
             );
 
-            const { S3 } = state;
-
-            S3.AWS_ACCESS_KEY_ID = accessKey;
-            S3.AWS_SECRET_ACCESS_KEY = secretAccessKey;
-            S3.AWS_EXPIRATION = expiration;
-            S3.AWS_SESSION_TOKEN = sessionToken;
+            state.S3 = {
+                "AWS_ACCESS_KEY_ID": accessKey,
+                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                "AWS_EXPIRATION": expiration,
+                "AWS_SESSION_TOKEN": sessionToken,
+                "AWS_DEFAULT_REGION": "us-east-1",
+                "AWS_S3_ENDPOINT": env.MINIO.END_POINT
+            };
 
         },
         /*
@@ -338,7 +335,7 @@ const slice = createSlice({
 
             const { token } = payload;
 
-            assert( typeof token === "string" );
+            assert(typeof token === "string");
 
             state.VAULT.VAULT_TOKEN = token;
 
