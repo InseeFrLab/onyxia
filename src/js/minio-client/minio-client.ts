@@ -88,10 +88,5 @@ export const getMinioClient = memoize(
 		}); 
 
 	},
-	{ "async": true }
+	{ "promise": true }
 );
-
-
-
-
-

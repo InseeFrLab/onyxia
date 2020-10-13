@@ -19,7 +19,7 @@ export const getAppActions = memoize(
 		return { appActions };
 
 	},
-	{ "async": true }
+	{ "promise": true }
 );
 
 
@@ -117,7 +117,10 @@ const asyncThunks = {
 
 					const { location, data } = payload;
 
-					assert( typeof location === "string" && typeof data === "object");
+					assert( 
+						typeof location === "string" && 
+						typeof data === "object"
+					);
 
 					const { appActions } = await getAppActions();
 
@@ -174,8 +177,6 @@ const slice = createSlice({
 
 				const { secrets } = payload;
 
-				assert(false);
-
 				state.vaultSecretsList = secrets;
 
 			}
@@ -186,8 +187,6 @@ const slice = createSlice({
 			(state, { payload }) => {
 
 				const { secrets } = payload;
-
-				assert(false);
 
 				state.vaultSecret = secrets;
 

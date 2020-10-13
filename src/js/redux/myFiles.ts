@@ -2,23 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import * as localStorageToken from "js/utils/localStorageToken";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 
-//TODO: Refactor
 
 export type State = {
 	currentBucket: { __brand: "0"; };
 	currentObjects: (Blob & { name: string; })[];
 	currentDirectories: { prefix: string; }[];
 	/** bucket -> policy */
-	bucketsPolicies: Record<string, { __brand: "3" }>;
+	bucketsPolicies: Record<string, State.Policy>;
 	userBuckets: State.Bucket[] | undefined;
 };
 
-
 export declare namespace State {
+
+
+	export type Policy = {
+		Version: string;
+		Statement: never[];
+	};
 
 	export type Bucket = {
 		id: string;
@@ -125,7 +129,7 @@ const asyncThunks = {
 
 					assert(
 						typeof file === "object" &&
-						typeof bucketName === "string" && 
+						typeof bucketName === "string" &&
 						typeof notify === "function" &&
 						typeof path === "string"
 					);
@@ -223,7 +227,7 @@ const slice = createSlice({
 
 			const { idep } = payload;
 
-			assert( typeof idep === "string" );
+			assert(typeof idep === "string");
 
 			const { gitlab_group } = localStorageToken.getDecoded();
 
@@ -259,7 +263,7 @@ const slice = createSlice({
 
 			const { object } = payload;
 
-			assert( typeof object === "object");
+			assert(typeof object === "object");
 
 			state.currentObjects.push(object);
 		},
@@ -268,8 +272,6 @@ const slice = createSlice({
 			{ payload }: PayloadAction<{ directory: State["currentDirectories"][number]; }>
 		) => {
 			const { directory } = payload;
-
-			assert( false );
 
 			state.currentDirectories.push(directory);
 		},
@@ -280,16 +282,16 @@ const slice = createSlice({
 				policy: State["bucketsPolicies"][string];
 			}>
 		) => {
-			const { bucket, policy } = payload;
 
-			assert(false);
+			const { bucket, policy } = payload;
 
 			assert(
 				typeof bucket === "string" &&
-				typeof policy === "string" 
+				typeof policy === "object"
 			);
 
 			state.bucketsPolicies[bucket] = policy;
+
 		}
 	}
 });

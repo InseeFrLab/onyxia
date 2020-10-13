@@ -8,7 +8,7 @@ import memoize from "memoizee";
 /** We avoid importing app right away to prevent require cycles */
 export const getStore = memoize(
 	() => import("js/redux/store"),
-	{ "async": true }
+	{ "promise": true }
 );
 
 

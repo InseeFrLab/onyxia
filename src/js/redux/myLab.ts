@@ -172,8 +172,6 @@ const asyncThunks = {
 
 					const { service } = payload;
 
-					assert(false);
-
 					dispatch(syncActions.cardStartWaiting({ "id": service.id }));
 
 					await api.deleteServices(service.id);
