@@ -30,7 +30,7 @@ export const Navbar: React.FC<{}> = ()=>{
 
 	useEffect(()=>{
 
-		if( authenticated ){
+		if( !authenticated ){
 			return;
 		}
 
