@@ -13,17 +13,15 @@ export default {
 			this.service = props.serviceCree;
 		}
 		componentDidMount() {
-			const bouton = document.getElementById(
-				`bouton-details-${this.service.id}`
-			);
-			bouton.style.zIndex = 1302;
-			bouton.onclick = (e) => this.props.next();
-			this.setState({ dom: bouton });
+			const button = document.querySelector(`a[href$="${this.service.id}"] > button`);
+			button.style.zIndex = 1302;
+			button.onclick = () => this.props.next();
+			this.setState({ "dom": button });
 		}
 		render() {
 			return (
 				<>
-					<Arrow dom={this.state.dom} />
+					{this.state.dom && <Arrow dom={this.state.dom} /> }
 					<Typography variant="h6" gutterBottom>
 						{D.guidedTourMyLabTitle}
 					</Typography>
@@ -34,11 +32,11 @@ export default {
 			);
 		}
 	},
-	actions: ({ prec, next, serviceCree }) => (
+	"actions": ({ prec, next, serviceCree }) => (
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to={`/my-service/${serviceCree.id}`} //TODO: Throw exception serviceCree is undefined.
+				to={`/my-service${serviceCree.id}`}
 				onClick={next}
 				title={D.btnDetails}
 				component={() => <Icon>more_horiz</Icon>}

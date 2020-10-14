@@ -11,9 +11,9 @@ const mapStateToProps = (state) => {
 
 	return {
 		visite,
-		etapes: vignettes,
-		firstService: null,
-		serviceCree: mesServices.find(
+		"etapes": vignettes,
+		"firstService": null,
+		"serviceCree": mesServices.find(
 			(s) => s.labels.ONYXIA_TITLE === 'rstudio-example'
 		),
 	};
@@ -32,7 +32,7 @@ const mapToDispatchToProps = dispatch => ({
 					"currentVersion": 10,
 				},
 				"options": {
-					"onyxia": { "friendly_name": "rstudio-example" },
+					"onyxia": { "friendlyName": "rstudio-example" },
 					"service": { "cpus": 0.2, "mem": 1024 },
 				}
 			})

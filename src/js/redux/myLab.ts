@@ -15,7 +15,7 @@ import { actions as appActions } from "./app";
 
 //TODO: Rename franglish
 export type State = {
-	mesServices: State.Service[];
+	mesServices: State.Service[]; //NOTE: This is used just as a hack for 'visite-guidée' do not rely on!
 	//TODO rename selected<->Service
 	serviceSelected: Pick<State.Service, "id"> | null;
 	mesServicesWaiting: string[]; //Array of ids
@@ -99,7 +99,7 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					const response = await axiosAuth.put(
+					const services = await axiosAuth.put(
 						service.category === "group" ?
 							restApiPaths.nouveauGroupe :
 							restApiPaths.nouveauService,
@@ -115,7 +115,7 @@ const asyncThunks = {
 
 					dispatch(appActions.stopWaiting());
 
-					if (response instanceof Error) {
+					if (services instanceof Error) {
 
 						PUSHER.push(
 							React.createElement(
@@ -130,7 +130,14 @@ const asyncThunks = {
 
 					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
 					//(axios middleware.
-					assert(typeGuard<{ id: string; }>(response));
+					assert(typeGuard<State.Service[]>(services));
+
+
+					for( const service of services ) {
+
+						dispatch(syncActions.addService({ service }));
+
+					}
 
 					if (dryRun) {
 						//TODO: Debatable...
@@ -141,13 +148,13 @@ const asyncThunks = {
 						React.createElement(
 							messages.ServiceCreeMessage,
 							{ 
-								"id": response.id,
+								"id": services[0].id,
 								"message": service.postInstallNotes
 							}
 						)
 					);
 
-					return response;
+					return services;
 
 
 				}
@@ -219,6 +226,16 @@ const slice = createSlice({
 		) => {
 			const { service } = payload;
 			state.serviceSelected = service;
+		},
+		"addService": (
+			state,
+			{ payload }: PayloadAction<{ service: State.Service; }>
+		)=> {
+
+			const { service } = payload;
+
+			state.mesServices.push(service);
+
 		},
 		"deleteMonService": (
 			state,
