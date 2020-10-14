@@ -1,5 +1,5 @@
 import React from "react";
-import { NouveauService } from './deploiement/nouveau-service.container';
+import { NouveauService } from './deploiement/nouveau-service';
 import { Service } from './service.component';
 
 export const Leaf: React.FC<{ location: string; }> = ({ location }) => {

@@ -140,8 +140,7 @@ const asyncThunks = {
 					}
 
 					if (dryRun) {
-						//TODO: Debatable...
-						return;
+						return services;
 					}
 
 					PUSHER.push(
