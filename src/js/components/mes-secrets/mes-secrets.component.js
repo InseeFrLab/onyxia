@@ -51,11 +51,11 @@ class MesSecrets extends React.Component {
 		) {
 			isLeaf(window.location).then((is) => {
 				if (!is) {
-					props.getVaultSecretsList(
-						props.match.url.replace('/mes-secrets', '')
-					);
+					props.getVaultSecretsList({
+						"path": props.match.url.replace('/mes-secrets', '')
+					});
 				} else {
-					props.getVaultSecret(props.match.url.replace('/mes-secrets', ''));
+					props.getVaultSecret({ "path": props.match.url.replace('/mes-secrets', '') });
 				}
 			});
 

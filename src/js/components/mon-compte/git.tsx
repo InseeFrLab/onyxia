@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import CopyableField from 'js/components/commons/copyable-field';
 import D from 'js/i18n';
+import type { actions as secretsActions } from "js/redux/secrets";
+import type { HandleThunkActionCreator } from "react-redux";
 
 interface Props {
 	values: object;
 	idep: string;
-	update: (o: object) => void;
+	updateVaultSecret: HandleThunkActionCreator<typeof secretsActions["updateVaultSecret"]>;
 }
 
 const labels = {
@@ -14,7 +16,7 @@ const labels = {
 	git_credentials_cache_duration: D.gitCacheDuration,
 };
 
-const GitField = ({ values, idep, update }: Props) => {
+const GitField = ({ values, idep, updateVaultSecret }: Props) => {
 	const [git, setGit] = useState({});
 
 	useEffect(() => {
@@ -23,9 +25,9 @@ const GitField = ({ values, idep, update }: Props) => {
 
 	if (Object.values(git).length === 0) return null;
 	const onValidate = (k: string, v: string) => {
-		update({
-			location: `/${idep}/.onyxia/profile`,
-			data: { [k]: v },
+		updateVaultSecret({
+			"location": `/${idep}/.onyxia/profile`,
+			"data": { [k]: v },
 		});
 	};
 	return (

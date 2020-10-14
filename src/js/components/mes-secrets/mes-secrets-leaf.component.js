@@ -23,7 +23,7 @@ export default ({ location, vaultSecret, updateVaultSecret }) => (
 				{vaultSecret ? (
 					<SecretsForm
 						secretData={vaultSecret}
-						onUpdate={updateVaultSecret}
+						updateVaultSecret={updateVaultSecret}
 						location={location.replace('/mes-secrets', '')}
 					></SecretsForm>
 				) : (

@@ -20,11 +20,13 @@ import GitField from './git';
 import { resetVaultPwd } from 'js/vault-client';
 import { User } from 'js/model/User';
 import useBetaTest from '../hooks/useBetaTest';
+import type { actions as secretsActions } from "js/redux/secrets";
+import type { HandleThunkActionCreator } from "react-redux";
 
 interface Props {
 	user?: User;
 	getUserInfo: () => void;
-	updateVaultSecret: (o: object) => void;
+	updateVaultSecret: HandleThunkActionCreator<typeof secretsActions["updateVaultSecret"]>;
 	logout: () => void;
 }
 
@@ -91,7 +93,7 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 					<GitField
 						idep={user.IDEP}
 						values={user.VAULT && user.VAULT.DATA}
-						update={updateVaultSecret}
+						updateVaultSecret={updateVaultSecret}
 					/>
 				</Paper>
 
