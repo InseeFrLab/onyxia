@@ -13,9 +13,9 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 
 import { actions as appActions } from "./app";
 
-//TODO: Rename franglish
+//TODO: Rename franglish, all theses states can be deleted, they are never used.
 export type State = {
-	mesServices: State.Service[]; //NOTE: This is used just as a hack for 'visite-guidée' do not rely on!
+	mesServices: State.Service[]; 
 	//TODO rename selected<->Service
 	serviceSelected: Pick<State.Service, "id"> | null;
 	mesServicesWaiting: string[]; //Array of ids
@@ -95,7 +95,10 @@ const asyncThunks = {
 						typeof dryRun === "boolean"
 					);
 
-
+					console.log(JSON.stringify({
+						service,
+						options,
+					}, null, 2));
 
 					dispatch(appActions.startWaiting());
 
@@ -131,13 +134,6 @@ const asyncThunks = {
 					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
 					//(axios middleware.
 					assert(typeGuard<State.Service[]>(services));
-
-
-					for( const service of services ) {
-
-						dispatch(syncActions.addService({ service }));
-
-					}
 
 					if (dryRun) {
 						return services;
@@ -225,16 +221,6 @@ const slice = createSlice({
 		) => {
 			const { service } = payload;
 			state.serviceSelected = service;
-		},
-		"addService": (
-			state,
-			{ payload }: PayloadAction<{ service: State.Service; }>
-		)=> {
-
-			const { service } = payload;
-
-			state.mesServices.push(service);
-
 		},
 		"deleteMonService": (
 			state,

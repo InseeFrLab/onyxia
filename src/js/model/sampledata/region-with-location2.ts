@@ -1,6 +1,9 @@
-{
-	"id": "eu-west-1",
-	"name": "eu-west-1",
+import type { Region } from "../Region";
+
+export const regionWithLocation2: Region = {
+	"id": "datalab",
+	"name": "DG Insee",
+	"description": "A second region with location data",
 	"services": {
 		"type": "MARATHON",
 		"namespacePrefix": "users",
@@ -20,5 +23,10 @@
 		"S3": {
 			"URL": "minio.example.com"
 		}
+	},
+	"location": {
+		"name": "St. Ghislain (Belgium)",
+		"lat": 50.8503,
+		"long": 4.3517
 	}
 }

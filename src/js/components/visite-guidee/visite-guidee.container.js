@@ -2,42 +2,87 @@ import { connect } from 'react-redux';
 import vignettes from './vignettes';
 import { actions } from 'js/redux/store';
 import Visite from './visite-guidee.component';
+import { axiosPublic } from "js/utils/axios-config";
+import { restApiPaths } from "js/restApiPaths";
+import { getMinioToken } from "js/minio-client/minio-client";
+import {
+	getOptions,
+	getValuesObject,
+} from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
+import { store } from "js/redux/store";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { Deferred } from "evt/tools/Deferred";
+import { assert } from "evt/tools/typeSafety/assert";
+import { getServices } from "js/api/my-lab";
 
-const { setServiceSelected, creerNouveauService } = actions;
+const { creerNouveauService } = actions;
 
 const mapStateToProps = (state) => {
 	const { visite } = state.app;
-	const { mesServices } = state.myLab;
-
 	return {
 		visite,
 		"etapes": vignettes,
-		"firstService": null,
-		"serviceCree": mesServices.find(
-			(s) => s.labels.ONYXIA_TITLE === 'rstudio-example'
-		),
 	};
 };
 
+let dServiceCreeId;
+
 const mapToDispatchToProps = dispatch => ({
-	"setFirstService": firstService => {
-		dispatch(setServiceSelected({ "service": firstService }));
-	},
-	"creerPremier": () => {
+	"creerPremier": async () => {
+
+		dServiceCreeId = new Deferred();
+
+		const orchestratorType = store.getState().regions.selectedRegion.services.type;
+
+		const catalogId = orchestratorType === "KUBERNETES" ?
+			"inseefrlab-helm-charts-datascience" :
+			"inseefrlab-datascience";
+
+		const service = {
+			...await axiosPublic(`${restApiPaths.catalogue}/${catalogId}/rstudio`),
+			catalogId
+		};
+
 		dispatch(
 			creerNouveauService({
-				"service": {
-					"name": "rstudio",
-					"catalogId": "inseefrlab-datascience",
-					"currentVersion": 10,
-				},
-				"options": {
-					"onyxia": { "friendlyName": "rstudio-example" },
-					"service": { "cpus": 0.2, "mem": 1024 },
-				}
+				service,
+				"options": getValuesObject(
+					getOptions(
+						store.getState().user,
+						service,
+						await getMinioToken(),
+						{}
+					).fV
+				)
 			})
-		);
+		)
+			.then(unwrapResult)
+			.then(async contracts => {
+
+				switch (orchestratorType) {
+					case "KUBERNETES": 
+
+						const { apps } = await getServices();
+
+						const { id }= apps
+							.sort((a, b) => b.startedAt - a.startedAt)
+							.filter(({ name }) => /rstudio/.test(name))[0];
+
+						console.log({ id });
+
+						dServiceCreeId.resolve(id);
+
+					break;;
+					case "MARATHON":
+						dServiceCreeId.resolve(contracts[0].id);
+						break;
+					default: assert(false);
+				}
+			});
+
 	},
+	"getServiceCreeId": () => dServiceCreeId.pr
 });
+
 
 export default connect(mapStateToProps, mapToDispatchToProps)(Visite);

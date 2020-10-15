@@ -1,7 +1,9 @@
-{
-	"id": "eu-west-2",
-	"name": "eu-west-2",
-	"description": "A second region with location data",
+
+import { Region } from "../Region";
+
+export const basicRegion: Region = {
+	"id": "datalab",
+	"name": "DG Insee",
 	"services": {
 		"type": "MARATHON",
 		"namespacePrefix": "users",
@@ -21,10 +23,5 @@
 		"S3": {
 			"URL": "minio.example.com"
 		}
-	},
-	"location": {
-		"name": "St. Ghislain (Belgium)",
-		"lat": 50.8503,
-		"long": 4.3517
 	}
 }

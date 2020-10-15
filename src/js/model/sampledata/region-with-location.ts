@@ -1,6 +1,9 @@
-{
-	"id": "eu-west-1",
-	"name": "eu-west-1",
+
+import type { Region } from "../Region";
+
+export const regionWithLocation: Region = {
+	"id": "datalab",
+	"name": "DG Insee",
 	"description": "A region with location data",
 	"services": {
 		"type": "MARATHON",

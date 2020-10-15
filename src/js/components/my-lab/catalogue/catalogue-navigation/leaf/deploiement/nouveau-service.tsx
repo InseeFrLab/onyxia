@@ -428,10 +428,5 @@ export const getOptions = (
 	return { fV, iFV, oF };
 };
 
-export const getService = async (idCatalogue: string, idService: string) => {
-	return await axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`).then(
-		(res) => {
-			return res;
-		}
-	);
-};
+export const getService = async (idCatalogue: string, idService: string) => 
+	axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`);
