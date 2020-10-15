@@ -95,11 +95,6 @@ const asyncThunks = {
 						typeof dryRun === "boolean"
 					);
 
-					console.log(JSON.stringify({
-						service,
-						options,
-					}, null, 2));
-
 					dispatch(appActions.startWaiting());
 
 					const services = await axiosAuth.put(
@@ -143,7 +138,7 @@ const asyncThunks = {
 						React.createElement(
 							messages.ServiceCreeMessage,
 							{ 
-								"id": services[0].id,
+								"id": service.name,
 								"message": service.postInstallNotes
 							}
 						)
