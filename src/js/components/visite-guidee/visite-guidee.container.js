@@ -62,13 +62,16 @@ const mapToDispatchToProps = dispatch => ({
 				switch (orchestratorType) {
 					case "KUBERNETES": 
 
+						dispatch(actions.startWaiting());
+
 						const { apps } = await getServices();
+
+						dispatch(actions.stopWaiting());
 
 						const { id }= apps
 							.sort((a, b) => b.startedAt - a.startedAt)
 							.filter(({ name }) => /rstudio/.test(name))[0];
 
-						console.log({ id });
 
 						dServiceCreeId.resolve(id);
 
