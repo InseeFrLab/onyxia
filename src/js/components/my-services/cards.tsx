@@ -3,7 +3,7 @@ import { Grid } from '@material-ui/core/';
 import { CardMyGroup } from 'js/components/commons/service-card';
 import CardChecker from './card-checker';
 import { Service, Group } from 'js/model';
-import Alert from 'js/components/commons/alert';
+import { Alert } from "js/components/commons/Alert";
 import D from 'js/i18n';
 
 interface Props {

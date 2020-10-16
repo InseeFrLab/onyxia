@@ -13,7 +13,7 @@ class SecretsForm extends React.Component {
 			currentData: this.props.secretData,
 		};
 		this.handleChange = this.handleChange.bind(this);
-		this.onUpdate = this.onUpdate.bind(this);
+		this.updateVaultSecret = this.updateVaultSecret.bind(this);
 	}
 
 	handleChange = (key) => (newValue) => {
@@ -29,8 +29,8 @@ class SecretsForm extends React.Component {
 	};
 
 	onUpdate = () => {
-		if (this.props.onUpdate) {
-			this.props.onUpdate({
+		if (this.props.updateVaultSecret) {
+			this.props.updateVaultSecret({
 				location: this.props.location,
 				data: this.state.currentData,
 			});

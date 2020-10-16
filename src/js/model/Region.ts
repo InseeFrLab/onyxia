@@ -1,7 +1,7 @@
 import { CloudshellConfiguration } from './CloudshellConfiguration';
 
 export interface Region {
-	id: string;
+	id: "datalab" | "gke";
 	name: string;
 	description?: string;
 	services: Services;
@@ -11,11 +11,12 @@ export interface Region {
 }
 
 export interface Services {
-	type: string;
+	type: "MARATHON" | "KUBERNETES";
 	namespacePrefix: string;
 	marathonDnsSuffix?: string;
 	cloudshell?: CloudshellConfiguration;
 	monitoring?: Monitoring;
+	expose?: { domain: string; };
 }
 
 export interface Monitoring {

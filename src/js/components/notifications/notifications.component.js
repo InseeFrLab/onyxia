@@ -2,7 +2,7 @@ import React from 'react';
 import { Snackbar, SnackbarContent, IconButton, Icon } from '@material-ui/core';
 import './notifications.scss';
 
-export const PUSHER = { push: () => null };
+export const PUSHER = { push: (message) => null };
 let ID_MESSAGE = 0;
 
 class Notifications extends React.Component {

@@ -12,8 +12,8 @@ interface Props {
 
 const MyService = ({ serviceId }: Props) => {
 	const [loading, setLoading] = useState(false);
-	const [service, setService] = useState<Service>(undefined);
-	const [redirect, setRedirect] = useState<string>(undefined);
+	const [service, setService] = useState<Service>(undefined as any);
+	const [redirect, setRedirect] = useState<string>(undefined as any);
 
 	const refreshData = useCallback(() => {
 		setLoading(true);

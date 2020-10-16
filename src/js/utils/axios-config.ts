@@ -1,49 +1,72 @@
 import axios from 'axios';
-import getKeycloak from './keycloak-config';
-import { setLocalToken } from 'js/utils';
-import conf from '../configuration';
-import store from 'js/redux/store';
+import { getKeycloakInstance } from "./getKeycloakInstance";
+import * as localStorageToken from './localStorageToken';
+import { env } from 'js/env';
+import { assert } from "evt/tools/typeSafety/assert";
+import memoize from "memoizee";
 
-const BASE_URL = conf.API.BASE_URL;
+/** We avoid importing app right away to prevent require cycles */
+export const getStore = memoize(
+	() => import("js/redux/store"),
+	{ "promise": true }
+);
 
-const refreshToken = (minValidity = 60) =>
-	new Promise((resolve, reject) => {
-		getKeycloak()
-			.updateToken(minValidity)
-			.then((refreshed) => {
-				if (refreshed) {
-					setLocalToken(getKeycloak().token);
-				}
-				resolve(getKeycloak().token);
-			})
-			.catch((error) => {
-				reject(error);
-			});
-	});
 
-const authorizeConfig = (kc) => (config) => ({
+const BASE_URL = env.API.BASE_URL;
+
+export const refreshToken = async (minValidity = 60) => {
+
+	const keycloakInstance = getKeycloakInstance();
+
+	const refreshed: any = await keycloakInstance.updateToken(minValidity);
+
+	if (refreshed) {
+
+		assert(keycloakInstance.token !== undefined); //TODO: figure out
+
+		localStorageToken.set(keycloakInstance.token);
+	}
+
+	return keycloakInstance.token;
+
+};
+
+
+
+const authorizeConfig = (kc: any) => (config: any) => ({
 	...config,
-	headers: { ...config.headers, Authorization: `Bearer ${kc.token}` },
-	'Content-Type': 'application/json;charset=utf-8',
-	Accept: 'application/json;charset=utf-8',
+	"headers": { ...config.headers, "Authorization": `Bearer ${kc.token}` },
+	"Content-Type": 'application/json;charset=utf-8',
+	"Accept": 'application/json;charset=utf-8',
 });
 
-const axiosAuth = axios.create({ baseURL: BASE_URL });
+export const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-if (conf.AUTHENTICATION.TYPE === 'oidc') {
+// eslint-disable-next-line
+walk: {
+
+	if (env.AUTHENTICATION.TYPE !== 'oidc') {
+		// eslint-disable-next-line
+		break walk;
+	}
+
 	axiosAuth.interceptors.request.use(
-		(config) =>
+		config =>
 			refreshToken()
-				.then((token) =>
-					Promise.resolve(authorizeConfig(getKeycloak())(config))
+				.then(() =>
+					Promise.resolve(authorizeConfig(getKeycloakInstance())(config))
 				)
-				.catch(() => getKeycloak().login()),
-		(error) => Promise.reject(error)
+				.catch(() => getKeycloakInstance().login()),
+		error => Promise.reject(error)
 	);
+
 }
 
-const injectRegion = (config) => {
-	const selectedRegion = store?.getState()?.regions?.selectedRegion;
+const injectRegion = async (config: any) => {
+
+	const { store } = await getStore();
+
+	const selectedRegion = store.getState().regions.selectedRegion;
 	if (selectedRegion) {
 		config = {
 			...config,
@@ -60,7 +83,7 @@ axiosAuth.interceptors.response.use(
 	(error) => Promise.reject(error)
 );
 
-const axiosPublic = axios.create({ baseURL: BASE_URL });
+export const axiosPublic = axios.create({ baseURL: BASE_URL });
 
 axiosPublic.interceptors.response.use(
 	(response) => response.data,
@@ -69,11 +92,9 @@ axiosPublic.interceptors.response.use(
 
 axiosPublic.interceptors.request.use(injectRegion);
 
-const axiosURL = axios.create();
+export const axiosURL = axios.create();
 
 axiosURL.interceptors.response.use(
 	(response) => response.data,
 	(error) => Promise.reject(error)
 );
-
-export { axiosAuth, axiosPublic, axiosURL, refreshToken };

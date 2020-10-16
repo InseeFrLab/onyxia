@@ -1,0 +1,27 @@
+
+import { Region } from "../Region";
+
+export const basicRegion: Region = {
+	"id": "datalab",
+	"name": "DG Insee",
+	"services": {
+		"type": "MARATHON",
+		"namespacePrefix": "users",
+		"marathonDnsSuffix": "marathon.containerip.dcos.thisdcos.directory",
+		"expose": {
+			"domain": "apps.example.com"
+		},
+		"monitoring": {
+			"URLPattern": "https://graphana.example.com/$appIdSlug"
+		},
+		"cloudshell": {
+			"catalogId": "internal",
+			"packageName": "shelly"
+		}
+	},
+	"data": {
+		"S3": {
+			"URL": "minio.example.com"
+		}
+	}
+}

@@ -8,7 +8,7 @@ import {
 	Button,
 	Divider,
 } from '@material-ui/core';
-import { getKeycloak } from 'js/utils';
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
@@ -19,7 +19,7 @@ class LogMe extends React.Component {
 	handleLogin = () => {
 		const redirectUri =
 			this.props.redirectUri || `${window.location.origin}/accueil`;
-		getKeycloak().login({
+		getKeycloakInstance().login({
 			redirectUri,
 		});
 	};

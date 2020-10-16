@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from "js/redux/store";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -10,10 +10,10 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
-import { axiosAuth } from 'js/utils';
-import api from 'js/redux/api';
-import { creerNouveauService, requestDeleteMonService } from 'js/redux/actions';
-import { getMinioToken } from 'js/minio-client';
+import { axiosAuth } from "js/utils/axios-config";
+import { restApiPaths } from "js/restApiPaths";
+import { actions as myLabActions } from "js/redux/myLab";
+import { getMinioToken } from "js/minio-client/minio-client";
 import { getVaultToken } from 'js/vault-client';
 import {
 	getOptions,
@@ -28,7 +28,7 @@ interface cloudShellData {
 }
 
 const CloudShell = () => {
-	const user = useSelector((store) => store.user);
+	const user = useSelector(store => store.user);
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -37,25 +37,26 @@ const CloudShell = () => {
 	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
 
-	const launchCloudShell = (user) => {
-		axiosAuth.get<cloudShellData>(`${api.cloudShell}`).then((response) => {
+
+	const launchCloudShell = (user: any) => {
+		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
 			const service = cloudshell.packageToDeploy;
 			setCloudShellStatus(cloudshell.status);
 			if (cloudshell.status === 'DOWN') {
-				dispatch(
-					creerNouveauService(
-						{
+				(dispatch(
+					myLabActions.creerNouveauService({
+						"service": {
 							...service,
 							...catalogId,
 						},
-						getValuesObject(getOptions(user, service, minioCredentials, {}).fV),
-						false
-					)
-				).then((response) => {
+						"options": getValuesObject(getOptions(user, service, minioCredentials, {}).fV) as any,
+						"dryRun": false
+					})
+				) as any).then(() => {
 					axiosAuth
-						.get<cloudShellData>(`${api.cloudShell}`)
+						.get<cloudShellData>(restApiPaths.cloudShell)
 						.then((response: any) => {
 							cloudshell = (response as any) as cloudShellData;
 							setUrl(cloudshell.url);
@@ -71,8 +72,10 @@ const CloudShell = () => {
 		return launchCloudShell;
 	};
 
-	const deleteCloudShell = (idep) => {
-		dispatch(requestDeleteMonService({ id: 'cloudshell' }));
+	const deleteCloudShell = () => {
+		dispatch(myLabActions.requestDeleteMonService(
+			{ "service": { id: 'cloudshell' } })
+		);
 		setCloudShellStatus(undefined);
 		setUrl(undefined);
 	};
@@ -119,7 +122,7 @@ const CloudShell = () => {
 				height: height,
 				width: '100%',
 			}}
-			onResizeStop={(e, direction, ref, d) => {
+			onResizeStop={(...[,,,d]) => {
 				setHeight(height + d.height);
 			}}
 		>
@@ -128,7 +131,7 @@ const CloudShell = () => {
 				title="Cloud shell"
 				height={height}
 				width="100%"
-				src={url}
+				src={url!}
 				id="cloudshell-iframe"
 			></iframe>
 		</Resizable>
@@ -141,7 +144,7 @@ const CloudShell = () => {
 				.then((credentials) => {
 					setMinioCredentials(credentials);
 				})
-				.catch((e) => {
+				.catch(() => {
 					setMinioCredentials({});
 				});
 		}
@@ -198,7 +201,7 @@ const CloudShell = () => {
 						aria-label="delete"
 						onClick={() => {
 							setVisibility(false);
-							deleteCloudShell(user.IDEP);
+							(deleteCloudShell as any)(user.IDEP);
 						}}
 						className="close-shell"
 					>

@@ -5,8 +5,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/InseeFrLab/onyxia-ui/badge.svg?branch=master)](https://coveralls.io/github/InseeFrLab/onyxia-ui?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-This app is used at [Insee](https://insee.fr).  
-This is the Web UI. See [Onyxia-API](https://github.com/inseefrlab/onyxia-api) for the server part.
+Onyxia, a platform that provide tools for data analysis.
+It provides R Studio and python environnement alongside many other service that you can start on demand.
+Onyxia is developed by the French National institute of statistic and economic studies ( [Insee](https://insee.fr) ).  
+This project is the frontend part of the platform (the website, build with React).
+It interacts with the [Onyxia-API](https://github.com/inseefrlab/onyxia-api) (Rest API).
 
 The opensourcing (and documentation) is still a work in progress, please be patient :)
 
