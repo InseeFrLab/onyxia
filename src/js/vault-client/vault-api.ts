@@ -1,12 +1,19 @@
 import axios from 'axios';
 import generator from 'generate-password';
-import { axiosURL, getToken } from 'js/utils';
-import { store } from 'js/redux';
-import { newVaultToken, newVaultData } from 'js/redux/actions';
-import conf from '../configuration';
+import { axiosURL } from "js/utils/axios-config";
+import * as localStorageToken from 'js/utils/localStorageToken';
+import { env } from 'js/env';
+import memoize from "memoizee";
 
-const VAULT_BASE_URI = conf.VAULT.VAULT_BASE_URI;
-const VAULT_KV_ENGINE = conf.VAULT.VAULT_KV_ENGINE;
+/** We avoid importing app right away to prevent require cycles */
+export const getStore = memoize(
+	() => import("js/redux/store"),
+	{ "promise": true }
+);
+
+const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
+const VAULT_KV_ENGINE = env.VAULT.VAULT_KV_ENGINE;
+
 
 interface VaultProfile {
 	password?: string;
@@ -35,45 +42,51 @@ class VaultAPI {
 		return data.data.data ? data.data.data : [];
 	}
 
-	async createPath(path: string, payload) {
+	async createPath(path: string, payload: any) {
 		return axiosVault.put(
 			`/v1/${VAULT_KV_ENGINE}/data${path}`,
 			payload || { data: { foo: 'bar' } }
 		);
 	}
 
-	async uploadSecret(path: string, data) {
+	async uploadSecret(path: string, data: any) {
 		const old = await this.getSecret(path);
 		await axiosVault.put(`/v1/${VAULT_KV_ENGINE}/data${path}`, {
 			data: { ...old, ...data },
 		});
-		store.dispatch(newVaultData(data));
+
+		const { store, actions } = await getStore();
+		store.dispatch(actions.newVaultData({ data }));
 	}
 }
 
 export default VaultAPI;
 
-const getLocalToken = () => store.getState().user.VAULT.VAULT_TOKEN;
 
 /**
  *
  */
-export const getVaultToken = async () =>
-	getLocalToken() ? Promise.resolve(getLocalToken()) : fetchVaultToken();
+export const getVaultToken = async () => {
+
+	const { store } = await getStore();
+
+	const { VAULT_TOKEN } = store.getState().user.VAULT;
+
+	return VAULT_TOKEN ?? fetchVaultToken();
+
+}
 
 const fetchVaultToken = async () => {
-	try{
+	//TODO: Remove the response interceptor
 	const {
 		auth: { client_token: token },
-	} = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
+	}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 		role: 'onyxia-user',
-		jwt: await getToken(),
+		jwt: localStorageToken.get(),
 	});
-	store.dispatch(newVaultToken(token));
+	const { store, actions } = await getStore();
+	store.dispatch(actions.newVaultToken({ token }));
 	return token;
-	}catch{
-		return "";
-	}
 };
 
 const buildDefaultPwd = () =>
@@ -111,7 +124,7 @@ export const initVaultData = (idep: string, name: string, mail: string) => {
 						git_credentials_cache_duration:
 							git_credentials_cache_duration || '0',
 					});
-				else store.dispatch(newVaultData(data));
+				else getStore().then(({ store, actions }) => store.dispatch(actions.newVaultData({ data })));
 			}
 		)
 		.catch(() => {
@@ -128,7 +141,8 @@ export const resetVaultData = (idep: string, data: VaultProfile) => {
 	const payload = { data };
 	axiosVault
 		.post(`/v1/${VAULT_KV_ENGINE}/data/${idep}/.onyxia/profile`, payload)
-		.then(() => store.dispatch(newVaultData(payload.data)));
+		.then(() => getStore())
+		.then(({ store, actions }) => store.dispatch(actions.newVaultData({ "data": payload.data as any })));
 };
 
 export const resetVaultPwd = (idep: string) =>
@@ -148,7 +162,7 @@ axiosVault.interceptors.request.use(
 	(error) => Promise.reject(error)
 );
 
-const authorizeConfig = (token: string) => (config) => ({
+const authorizeConfig = (token: string) => (config: any) => ({
 	...config,
 	headers: { 'X-Vault-Token': token },
 	'Content-Type': 'application/json;charset=utf-8',

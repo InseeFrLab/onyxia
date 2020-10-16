@@ -16,7 +16,7 @@ const Toolbar = ({ handleDelete, handleRefresh, monitoringUrl }: Props) => {
 	};
 	const onValid = () => {
 		setDialog(false);
-		handleDelete();
+		handleDelete!();
 	};
 	const onCancel = () => {
 		setDialog(false);
@@ -41,7 +41,7 @@ const Toolbar = ({ handleDelete, handleRefresh, monitoringUrl }: Props) => {
 	);
 };
 
-const Actions = ({ handleDelete, handleRefresh, monitoringUrl }) => (
+const Actions = ({ handleDelete, handleRefresh, monitoringUrl }: any) => (
 	<>
 		{handleRefresh && (
 			<Tooltip title="Refresh">

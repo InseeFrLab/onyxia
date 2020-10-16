@@ -41,7 +41,7 @@ const task = (memory) => (serviceId) => (dispatch) => {
 							delete memory[serviceId];
 							if (!isServiceWaiting(service)) {
 								dispatch(cardStoptWaiting(serviceId));
-								dispatch(updateMonService(service));
+								dispatch(updateMonService({ service }));
 								resolve(dayjs().valueOf() - startAt);
 							} else {
 								reload(num + 1);

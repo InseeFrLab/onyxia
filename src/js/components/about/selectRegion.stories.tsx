@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import SelectRegion from './SelectRegion';
-import basicRegion from 'js/model/sampledata/region-basic.json';
-import regionWithLocation from 'js/model/sampledata/region-with-location.json';
-import regionWithLocation2 from 'js/model/sampledata/region-with-location2.json';
+import { basicRegion } from "js/model/sampledata/region-basic";
+import { regionWithLocation } from "js/model/sampledata/region-with-location";
+import { regionWithLocation2 } from 'js/model/sampledata/region-with-location2';
 
 export default {
 	title: 'Select region',

@@ -1,20 +1,19 @@
 import { connect } from 'react-redux';
-import MyFiles from './my-files.component';
-import { startWaiting, stopWaiting } from 'js/redux/actions';
-import {
+import { MyFiles as MyFilesUnconnected } from './my-files.component';
+import { actions } from 'js/redux/store';
+
+const {
 	loadBucketContent,
 	uploadFileToBucket,
 	removeObjectFromBucket,
-} from 'js/redux/actions';
+	startWaiting,
+	stopWaiting
+} = actions;
 
-const mapStateToProps = (state, props) => {
-	return { ...props };
-};
-
-export default connect(mapStateToProps, {
+export const MyFiles = connect(undefined, {
 	loadBucketContent,
 	uploadFileToBucket,
 	removeObjectFromBucket,
 	startWaiting,
 	stopWaiting,
-})(MyFiles);
+})(MyFilesUnconnected);

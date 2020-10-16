@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
-import { axiosPublic } from 'js/utils';
-import api from 'js/redux/api';
+import { axiosPublic } from "js/utils/axios-config";
+import { restApiPaths } from 'js/restApiPaths';
 import useBetaTest from 'js/components/hooks/useBetaTest';
 
 const Catalogues = () => {
@@ -10,7 +10,7 @@ const Catalogues = () => {
 	const [betaTester] = useBetaTest();
 
 	useEffect(() => {
-		axiosPublic(api.catalogue).then((resp) => {
+		axiosPublic(restApiPaths.catalogue).then((resp) => {
 			setCatalogs(resp.catalogs);
 		});
 	}, []);

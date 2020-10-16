@@ -6,7 +6,8 @@ import 'js/components/app.scss';
 import { withRouter, useParams } from 'react-router-dom';
 
 const MyServicesHome = () => {
-	const { groupId } = useParams();
+	//TODO: Make sure groupId exists in URL params.
+	const { groupId } = useParams<{ groupId: string; }>();
 	return (
 		<>
 			<Header />

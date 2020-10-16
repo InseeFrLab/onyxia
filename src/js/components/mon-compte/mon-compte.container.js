@@ -1,6 +1,8 @@
 import { connect } from 'react-redux';
-import { logout, getUserInfo, updateVaultSecret } from 'js/redux/actions';
-import MonCompte from './mon-compte.component';
+import { actions } from 'js/redux/store';
+import { MonCompte } from './mon-compte.component';
+
+const { logout, getUserInfo, updateVaultSecret } = actions;
 
 const mapStateToProps = ({ user }) => ({ user });
 

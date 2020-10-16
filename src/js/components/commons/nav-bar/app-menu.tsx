@@ -15,14 +15,15 @@ import {
 	CatalogueIcon,
 	PokerHandIcon,
 } from 'js/components/commons/icons';
-import conf from 'js/configuration';
+import { env } from 'js/env';
 import D from 'js/i18n';
 
 import useBetaTest from 'js/components/hooks/useBetaTest';
-import { RootState } from 'js/redux';
-import { useSelector } from 'react-redux';
+import type { RootState } from "js/redux/store";
+import { useSelector } from "js/redux/store";
 
-const ItemLogin = ({ login }) => (
+
+const ItemLogin = ({ login }: any) => (
 	<ListItem button onClick={login}>
 		<ListItemIcon>
 			<Icon className="login" style={{ color: 'forestgreen' }}>
@@ -37,10 +38,8 @@ export default ({
 	open,
 	handleClose,
 	authenticated,
-	login,
-	logout,
-	startVisite,
-}) => {
+	login
+}: any) => {
 	const [betaTester] = useBetaTest();
 	const selectedRegion = useSelector(
 		(state: RootState) => state.regions.selectedRegion
@@ -72,7 +71,7 @@ export default ({
 						button
 						component={Link}
 						to="/trainings"
-						disabled={!conf.CONTENT.TRAININGS_URL}
+						disabled={!env.CONTENT.TRAININGS_URL}
 					>
 						<ListItemIcon>
 							<Icon>menu_book</Icon>

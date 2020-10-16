@@ -40,17 +40,14 @@ export default {
 			);
 		};
 	},
-	actions: ({ firstService, next, setFirstService, prec }) => (
+	actions: ({ firstService, next, prec }) => (
 		<>
 			<Prec prec={prec} />
 			<LinkTo
 				to="/my-lab/catalogue/inseefrlab-datascience"
 				type="add"
 				title={D.btnSelfServiceCreation}
-				onClick={() => {
-					setFirstService(firstService);
-					next();
-				}}
+				onClick={next}
 			/>
 		</>
 	),

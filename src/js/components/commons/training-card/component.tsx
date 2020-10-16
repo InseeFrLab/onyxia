@@ -36,6 +36,11 @@ const TrainingCard = ({ training }: Props) => {
 		hasPart,
 		deployment,
 	} = training;
+
+	if( abstract === undefined ){
+		throw new Error("Make it strict! Jo TODO");
+	}
+
 	const description =
 		abstract.length > 100 ? `${abstract.slice(0, 100)}...` : abstract;
 	const copyright = `${copyrightHolder}${
