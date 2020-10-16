@@ -17,7 +17,7 @@ class PrivateRoute extends React.Component {
 	constructor(props: any) {
 		super(props);
 		if (props.faviconUrl !== ONYXIA_FAVICON.onyxia) {
-			(this.props as any).setFavicon(ONYXIA_FAVICON.onyxia);
+			(this.props as any).setFavicon({ "url": ONYXIA_FAVICON.onyxia });
 		}
 	}
 	static getDerivedStateFromProps(
@@ -27,8 +27,8 @@ class PrivateRoute extends React.Component {
 		const isToken = token && token !== 'undefined';
 
 		if (!authenticated && !isToken) {
-			setRedirectUri(`${window.location.origin}${location.pathname}`);
-			displayLogin(true);
+			setRedirectUri({ "uri": `${window.location.origin}${location.pathname}` });
+			displayLogin({ "doDisplay": true });
 		}
 		if (!authenticated && isToken) {
 			getKeycloakInstance().login();

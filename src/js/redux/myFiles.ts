@@ -197,18 +197,6 @@ const asyncThunks = {
 	})()
 };
 
-/*
-import { useDispatch } from "./store";
-import { unwrapResult } from "@reduxjs/toolkit";
-
-const dispatch = useDispatch();
-
-dispatch(
-	asyncThunks.loadBucketContent({ bucketName: null as any, prefix: null as any, rec: null as any })
-).then(unwrapResult).then(x => { });
-*/
-
-
 const slice = createSlice({
 	name,
 	"initialState": id<State>({

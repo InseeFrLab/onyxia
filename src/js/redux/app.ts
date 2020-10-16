@@ -146,13 +146,6 @@ const slice = createSlice({
 			state.authenticated = true;
 		}
 	}
-	/*
-	"extraReducers": {
-		"user/setAuthenticated": state => {
-			state.authenticated = true;
-		}
-	}
-	*/
 });
 
 const { actions: syncActions } = slice;
