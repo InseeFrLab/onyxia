@@ -36,7 +36,7 @@ interface State {
 
 class CopyableField extends React.Component<Props, State> {
 	domInput = null;
-	state = { edit: false, value: null, reset: false, editable: false };
+	state = { edit: false, value: null as any as string, reset: false, editable: false };
 	constructor(props: Props) {
 		super(props);
 		this.state.value = props.value;
@@ -44,7 +44,7 @@ class CopyableField extends React.Component<Props, State> {
 		this.state.reset = props.reset || false;
 	}
 
-	static getDerivedStateFromProps(props, state) {
+	static getDerivedStateFromProps(props: any, state: any) {
 		const ns = { ...state };
 		ns.isEditable = props.onChange !== undefined;
 		if (props.value !== state.value && !state.edit) {
@@ -82,7 +82,7 @@ class CopyableField extends React.Component<Props, State> {
 		this.setState((s, p) => {
 			if (s.edit && p.onChange) {
 				p.onChange(p.value);
-				p.onValidate(p.value);
+				p.onValidate?.(p.value);
 			}
 			return {
 				value: p.value,
@@ -91,11 +91,10 @@ class CopyableField extends React.Component<Props, State> {
 		});
 	};
 
-	handleChange = (e) => {
-		const value =
-			this.props.type === 'number' ? Number(e.target.value) : e.target.value;
+	handleChange = (e: any) => {
+		const value = this.props.type === 'number' ? Number(e.target.value) : e.target.value;
 		this.setState({ value });
-		this.props.onChange(value);
+		this.props.onChange?.(value);
 	};
 
 	del = () => {

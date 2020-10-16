@@ -1,21 +1,22 @@
+//@ts-ignore
 import fileReaderStream from 'filereader-stream';
 import { Client, PostPolicy } from 'minio';
 
 export default (client: Client) => ({
-	statObject: ({ bucketName, fileName }) =>
+	statObject: ({ bucketName, fileName }: any) =>
 		client.statObject(bucketName, fileName),
-	isBucketExist: (bucketName) => client.bucketExists(bucketName),
-	removeBucket: (bucketName) => client.removeBucket(bucketName),
+	isBucketExist: (bucketName: any) => client.bucketExists(bucketName),
+	removeBucket: (bucketName: any) => client.removeBucket(bucketName),
 	// @ts-ignore
 	createBucket: (bucket) => client.makeBucket(bucket),
 	listBuckets: () => client.listBuckets(),
-	listObjects: (name, prefix = '', rec = true) =>
+	listObjects: (name: any, prefix = '', rec = true) =>
 		client.listObjects(name, prefix, rec),
-	putObject: ({ file, bucketName, notify, path }) =>
+	putObject: ({ file, bucketName, notify, path }: any) =>
 		new Promise((resolve, reject) => {
 			const stream = fileReaderStream(file);
 			stream
-				.on('data', (chunk) => {
+				.on('data', (chunk: any) => {
 					if (notify) {
 						notify('data', { size: chunk.length, stream });
 					}
@@ -47,7 +48,7 @@ export default (client: Client) => ({
 				}
 			);
 		}),
-	removeObject: ({ bucketName, objectName }) =>
+	removeObject: ({ bucketName, objectName }: any) =>
 		new Promise((resolve, reject) => {
 			client.removeObject(bucketName, objectName, (err) => {
 				if (err) {
@@ -57,14 +58,14 @@ export default (client: Client) => ({
 				resolve(true);
 			});
 		}),
-	getObject: ({ bucketName, objectName, size, notify }) =>
+	getObject: ({ bucketName, objectName, notify }: any) =>
 		new Promise((resolve, reject) => {
 			client.getObject(bucketName, objectName, (err, stream) => {
 				if (err) {
 					reject(err);
 					return;
 				}
-				const chunks = [];
+				const chunks: any[] = [];
 				stream.on('data', (chunk) => {
 					chunks.push(chunk);
 					if (notify) {
@@ -86,7 +87,7 @@ export default (client: Client) => ({
 				});
 			});
 		}),
-	presignedGetObject: ({ bucketName, objectName, duration = 3600 }) =>
+	presignedGetObject: ({ bucketName, objectName, duration = 3600 }: any) =>
 		new Promise((resolve, reject) => {
 			client.presignedGetObject(
 				bucketName,
@@ -105,18 +106,17 @@ export default (client: Client) => ({
 		bucketName: string,
 		keyPrefix: string,
 		duration = 3600
-	) =>
-		new Promise((resolve, reject) => {
-			const policy = new PostPolicy();
-			policy.setBucket(bucketName);
-			var expires = new Date();
-			expires.setSeconds(duration);
-			policy.setExpires(expires);
-			policy.setKeyStartsWith(keyPrefix + '/');
-			return resolve(client.presignedPostPolicy(policy));
-		}),
-	getBucketPolicy: (bucket) => client.getBucketPolicy(bucket),
-	setBucketPolicy: ({ bucketName, policy }) =>
+	) => {
+		const policy = new PostPolicy();
+		policy.setBucket(bucketName);
+		var expires = new Date();
+		expires.setSeconds(duration);
+		policy.setExpires(expires);
+		policy.setKeyStartsWith(keyPrefix + '/');
+		return client.presignedPostPolicy(policy);
+	},
+	getBucketPolicy: (bucket: any) => client.getBucketPolicy(bucket),
+	setBucketPolicy: ({ bucketName, policy }: any) =>
 		new Promise((resolve, reject) => {
 			client.setBucketPolicy(bucketName, JSON.stringify(policy), (err) => {
 				if (err) {

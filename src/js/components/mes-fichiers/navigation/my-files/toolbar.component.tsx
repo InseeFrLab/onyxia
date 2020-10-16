@@ -8,7 +8,7 @@ const Toolbar = ({
 	lockDirectory,
 	unlockDirectory,
 	createUploadLink,
-}) => (
+}: any) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
 		{deleteFiles ? (
 			<Fab

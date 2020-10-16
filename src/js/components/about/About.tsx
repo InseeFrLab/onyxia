@@ -1,54 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import Typography from '@material-ui/core/Typography';
 import dayjs from 'dayjs';
 import GitInfo from 'react-git-info/macro';
-import { Configuration, getConfiguration } from 'js/api/configuration';
-import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
+import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
+import { getConfiguration } from 'js/api/configuration';
 import SelectRegion from './SelectRegion';
-import { Region } from 'js/model/Region';
+import type { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
-import { useSelector, useDispatch } from 'react-redux';
-import { regionChanged } from 'js/redux/actions';
-import { RootState } from 'js/redux';
+import { actions as regionActions } from "js/redux/regions";
+import { useDispatch, useSelector } from "js/redux/store";
+import { useAsync } from "react-async-hook";
 
-const EnTete = () => (
-	<div className="en-tete">
-		<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-			A propos d'Onyxia
-		</Typography>
-	</div>
-);
+export const About = () => {
 
-const extractRegion = (state: RootState) => state.regions.regions;
-const extractSelectedRegion = (state: RootState) =>
-	state.regions.selectedRegion;
-const About = () => {
+	//NOTE: We wrap the states in an object so we
+	//can establish that !!configuration => !!regions
+	const state = (function useClosure() {
+
+		const regions = useSelector(({ regions }) => regions.regions);
+		const selectedRegion = useSelector(({ regions }) => regions.selectedRegion);
+
+		//NOTE: After getConfiguration we know for sure that
+		//regions and selectedRegion are not undefined.
+		const configuration = useAsync(getConfiguration, []).result;
+
+		return {
+			configuration,
+			regions,
+			selectedRegion,
+		} as unknown as (
+				{
+					configuration: undefined;
+				} |
+				{
+					configuration: NonNullable<typeof configuration>;
+					regions: NonNullable<typeof regions>;
+					selectedRegion: NonNullable<typeof selectedRegion>;
+				}
+			);
+
+	})();
+
 	const dispatch = useDispatch();
-	const regions = useSelector(extractRegion);
-	const selectedRegion = useSelector(extractSelectedRegion);
-	const [configuration, setConfiguration] = useState<Configuration>();
-
-	useEffect(() => {
-		getConfiguration().then((resp) => {
-			setConfiguration(resp);
-		});
-	}, [dispatch]);
 
 	const changeRegion = (newRegion: Region) =>
-		dispatch(regionChanged(newRegion));
+		dispatch(regionActions.regionChanged({ newRegion }));
 
 	const gitInfo = GitInfo();
-	const versionInterface =
-		gitInfo.tags.length > 0 ? gitInfo.tags[0] : gitInfo.branch;
+
+	const versionInterface = gitInfo.tags?.[0] ?? gitInfo.branch;
+
 	const versionInterfaceDate = gitInfo.commit.date;
-	const versionServeur = configuration
-		? `${configuration.build.version} (${dayjs(
-				configuration.build.timestamp * 1000
-		  ).format()})`
-		: ' introuvable';
+
+	const serverVersion = useMemo(
+		() => !state.configuration ?
+			"Loading server version..."
+			:
+			[
+				state.configuration.build.version,
+				" (",
+				dayjs(state.configuration.build.timestamp * 1000).format(),
+				")"
+			].join(""),
+		[state.configuration]
+	);
+
 	return (
 		<>
-			<EnTete />
+			<div className="en-tete">
+				<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
+					A propos d'Onyxia
+		</Typography>
+			</div>
 			<FilDAriane fil={fil.about} />
 			<div className="contenu accueil">
 				<CopyableField
@@ -56,16 +79,17 @@ const About = () => {
 					value={`${versionInterface} (${versionInterfaceDate})`}
 					copy
 				/>
-				<CopyableField label="Server version" value={versionServeur} copy />
+				<CopyableField label="Server version" value={serverVersion} copy />
 
-				<SelectRegion
-					regions={regions}
-					selectedRegion={selectedRegion?.id}
-					onRegionSelected={(region) => changeRegion(region)}
-				/>
+				{!state.configuration ?
+					<span>Fetching configuration</span> :
+					<SelectRegion
+						regions={state.regions}
+						selectedRegion={state.selectedRegion.id}
+						onRegionSelected={region => changeRegion(region)}
+					/>}
 			</div>
 		</>
 	);
 };
 
-export default About;

@@ -1,12 +1,14 @@
 import { connect } from 'react-redux';
 import MesSecrets from './mes-secrets.component';
-import {
+import { actions } from 'js/redux/store';
+
+const {
 	checkVaultStatus,
 	getVaultSecretsList,
 	getVaultSecret,
 	updateVaultSecret,
-	getUserInfo,
-} from 'js/redux/actions';
+	getUserInfo
+}= actions;
 
 const dispatchStateToProps = (state) => {
 	const { sealedStatus, vaultSecretsList, vaultSecret } = state.secrets;

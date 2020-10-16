@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { axiosPublic } from 'js/utils';
-import api from 'js/redux/api';
+import { axiosPublic } from "js/utils/axios-config";
+import { restApiPaths } from 'js/restApiPaths';
 import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';
 import Loader from 'js/components/commons/loader';
@@ -18,7 +18,7 @@ const Node = ({ location }) => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axiosPublic(`${api.catalogue}/${idCatalogue}`).then((res) => {
+		axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}`).then((res) => {
 			setCatalogue(res);
 			setChips(
 				res.catalog.packages.reduce(

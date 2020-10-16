@@ -4,7 +4,7 @@ import { Fab, IconButton, Icon } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Next, CarteMask } from './../vignette-commons';
 import { MinioIcon, GitlabIcon } from 'js/components/commons/icons';
-import conf from 'js/configuration';
+import { env } from "js/env";
 import D from 'js/i18n';
 
 export default {
@@ -62,7 +62,7 @@ export default {
 	actions: ({ next }) => (
 		<>
 			<Tooltip title="Chat">
-				<Fab color="primary" onClick={() => window.open(conf.CHAT.URL)}>
+				<Fab color="primary" onClick={() => window.open(env.CHAT.URL)}>
 					<Icon height={20} width={20}>
 						group
 					</Icon>

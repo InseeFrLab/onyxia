@@ -45,7 +45,7 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 									id={`bouton-service-${service.name}`}
 									color="primary"
 									aria-label="Nouveau"
-									onClick={() => setServiceSelected(service)}
+									onClick={() => setServiceSelected({ service })}
 								>
 									<Icon>more_horiz</Icon>
 								</Fab>
@@ -58,7 +58,7 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 									id={`bouton-service-${service.name}`}
 									color="primary"
 									aria-label="Nouveau"
-									onClick={() => setServiceSelected(service)}
+									onClick={() => setServiceSelected({ service })}
 								>
 									<Icon>add</Icon>
 								</Fab>

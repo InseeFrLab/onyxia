@@ -29,7 +29,7 @@ const Toolbar = ({
 	};
 	const onValid = () => {
 		setDialog(false);
-		handleDeleteAll();
+		handleDeleteAll!();
 	};
 	const onCancel = () => {
 		setDialog(false);
@@ -62,7 +62,7 @@ const Actions = ({
 	handleDeleteAll,
 	handlePauseAll,
 	handleRefresh,
-}) => (
+}: any) => (
 	<>
 		{handleRefresh && (
 			<Tooltip title="Refresh">

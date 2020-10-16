@@ -5,19 +5,6 @@ import D from 'js/i18n';
 
 export default {
 	description: class Vignette extends React.Component {
-		state = { dom: null };
-		constructor(props) {
-			super(props);
-			this.service = props.serviceCree;
-		}
-		componentDidMount() {
-			const bouton = document.getElementById(
-				`bouton-details-${this.service.id}`
-			);
-			bouton.style.zIndex = 1302;
-			bouton.onclick = (e) => this.props.next();
-			this.setState({ dom: bouton });
-		}
 		render() {
 			return (
 				<>
@@ -34,7 +21,7 @@ export default {
 			);
 		}
 	},
-	actions: ({ prec, next, serviceCree }) => {
+	actions: ({ prec, next }) => {
 		return (
 			<>
 				<Prec prec={prec} />

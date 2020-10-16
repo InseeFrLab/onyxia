@@ -1,0 +1,81 @@
+@import './../../app.scss';
+
+.root {
+	flex-grow: 1;
+	h1 {
+		font-size: 3em;
+		font-weight: bolder;
+	}
+}
+
+.acces-rapide {
+	position: fixed;
+	right: 50px;
+	bottom: 25px;
+
+	.paper {
+		background-color: $secondaryColor;
+		padding: 0;
+		margin: 0;
+		min-height: 44px;
+	}
+	.bouton {
+		.fold {
+			font-size: 20px;
+		}
+	}
+	.lien {
+		display: inline-block;
+		color: snow;
+	}
+	.focused {
+		background-color: #fff4e6;
+		color: $secondaryColor;
+	}
+}
+
+.flex {
+	flex-grow: 1;
+}
+
+.menubutton {
+	margin-left: -12;
+	margin-right: 20;
+}
+
+.avatar {
+	width: 60px;
+	height: 60px;
+	margin-right: 10px;
+}
+
+.menu {
+	width: 250px;
+}
+
+.login {
+	margin-right: 5px;
+}
+
+
+.logout {
+	margin-right: 5px;
+	color: crimson;
+}
+
+.logout-mini {
+	color: crimson;
+}
+
+.bouton-mon-compte {
+	margin-right: 5px;
+	color: cornflowerblue;
+}
+.bouton-mon-compte-mini {
+	color: cornflowerblue;
+}
+
+.avatar {
+	width: 50px;
+	height: 50px;
+}
