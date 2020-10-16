@@ -1,8 +1,8 @@
-import apiPaths from 'js/configuration/api-paths';
+import { restApiPaths } from 'js/restApiPaths';
 import { Region } from 'js/model/Region';
-import { axiosPublic } from 'js/utils';
-import store from 'js/redux/store';
-import * as Actions from 'js/redux/actions';
+import { axiosPublic } from "js/utils/axios-config";
+import { store } from "js/redux/store";
+import { actions as regionsActions } from "js/redux/regions";
 
 export interface Configuration {
 	regions: Region[];
@@ -16,10 +16,14 @@ export interface Build {
 
 export const getConfiguration = async () => {
 	return await axiosPublic
-		.get<Configuration>(apiPaths.configuration)
+		.get<Configuration>(restApiPaths.configuration)
 		.then((resp) => {
 			const configuration = (resp as unknown) as Configuration;
-			store.dispatch(Actions.newRegions(configuration.regions));
+			store.dispatch(
+				regionsActions.newRegions({ 
+					"regions": configuration.regions 
+				})
+			);
 			return configuration;
 		});
 };

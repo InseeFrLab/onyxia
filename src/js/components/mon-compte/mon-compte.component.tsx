@@ -4,11 +4,11 @@ import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { getMinioToken } from 'js/minio-client';
+import { getMinioToken } from "js/minio-client/minio-client";
 import CopyableField from 'js/components/commons/copyable-field';
 import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { getKeycloak } from 'js/utils';
+import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -20,15 +20,17 @@ import GitField from './git';
 import { resetVaultPwd } from 'js/vault-client';
 import { User } from 'js/model/User';
 import useBetaTest from '../hooks/useBetaTest';
+import type { actions as secretsActions } from "js/redux/secrets";
+import type { HandleThunkActionCreator } from "react-redux";
 
 interface Props {
 	user?: User;
 	getUserInfo: () => void;
-	updateVaultSecret: (o: object) => void;
+	updateVaultSecret: HandleThunkActionCreator<typeof secretsActions["updateVaultSecret"]>;
 	logout: () => void;
 }
 
-const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
+export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
 
@@ -45,7 +47,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 		}
 	}, [user, s3loading]);
 
-	const handleChange = (event) => {
+	const handleChange = (event: any) => {
 		setBetaTest(event.target.checked);
 	};
 
@@ -91,7 +93,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 					<GitField
 						idep={user.IDEP}
 						values={user.VAULT && user.VAULT.DATA}
-						update={updateVaultSecret}
+						updateVaultSecret={updateVaultSecret}
 					/>
 				</Paper>
 
@@ -109,7 +111,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 					) : (
 						<Loader />
 					)}
-					<CopyableField copy label={D.oidcToken} value={getKeycloak().token} />
+					<CopyableField copy label={D.oidcToken} value={getKeycloakInstance().token!} />
 				</Paper>
 
 				{credentials ? (
@@ -157,7 +159,7 @@ const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
 								onChange={handleChange}
 								name="checkedB"
 								color="primary"
-								checked={betaTest}
+								checked={betaTest as any}
 							/>
 						}
 						label={D.activateBetatest}
@@ -181,6 +183,5 @@ MonCompte.defaultProps = {
 	user: { idep: '', nomComplet: '', email: '', ip: '' },
 };
 
-export default MonCompte;
 
-const formatageDate = (date) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');
+const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');

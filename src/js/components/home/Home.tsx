@@ -1,21 +1,23 @@
+
 import React from 'react';
 import Loader from 'js/components/commons/loader';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { axiosURL } from 'js/utils';
+import { axiosURL } from "js/utils/axios-config";
 import './style.scss';
-import conf from '../../configuration';
+import { env } from 'js/env';
 import createTheme from 'js/components/material-ui-theme';
 import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
-import { useSelector } from 'react-redux';
-import { SMALL_POINT, LARGE_POINT, MEDIUM_POINT } from 'js/redux/reducers';
+import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
+import { useSelector } from "js/redux/store";
+
 const theme = createTheme();
 
 const fetchContent = (): Promise<Content.Root> =>
 	(axiosURL as any)(
-		conf.CONTENT.HOMEPAGE_URL || '/pages-content/home.yaml'
+		env.CONTENT.HOMEPAGE_URL || '/pages-content/home.yaml'
 	).then(parseYaml);
 
 declare namespace Content {
@@ -53,11 +55,9 @@ declare namespace Content {
 }
 
 export const Home: React.FC = () => {
-	const screenType:
-		| typeof SMALL_POINT
-		| typeof MEDIUM_POINT
-		| typeof LARGE_POINT
-		| null = useSelector((state) => state.app.screenType);
+
+	const screenWidth = useSelector(state => state.app.screenWidth);
+	const screenType = getScreenTypeFromWidth(screenWidth);
 
 	const { result: contentRoot } = useAsync(fetchContent, []);
 
@@ -69,12 +69,12 @@ export const Home: React.FC = () => {
 				className="hero"
 				style={{
 					backgroundImage:
-						screenType === LARGE_POINT
+						screenType === "LARGE"
 							? `url(${contentRoot.hero.image})`
 							: undefined,
 				}}
 			>
-				{screenType > SMALL_POINT && (
+				{screenWidth > getScreenTypeBreakpoint("SMALL") && (
 					<Typography variant="h1">{contentRoot.hero.smallerText}</Typography>
 				)}
 				<Typography variant="h2">{contentRoot.hero.biggerText}</Typography>
@@ -85,8 +85,8 @@ export const Home: React.FC = () => {
 				/>
 			</div>
 			<div className="papers">
-				{contentRoot.papers.map((paper) => (
-					<div>
+				{contentRoot.papers.map((paper, i) => (
+					<div key={i}>
 						<section>
 							<div>
 								<img src={paper.image} alt="logo" />
@@ -112,15 +112,15 @@ export const Home: React.FC = () => {
 						target={contentRoot.project_history.button.url}
 					/>
 				</section>
-				{screenType === LARGE_POINT && (
+				{screenType === "LARGE" && (
 					<div className="imageContainer">
 						<img src={contentRoot.project_history.image} alt="Logo INSEEFrLab" />
 					</div>
 				)}
 			</div>
 			<div className="service_highlight">
-				{contentRoot.service_highlight.map((o) => (
-					<div>
+				{contentRoot.service_highlight.map((o,i) => (
+					<div key={i}>
 						<img src={o.image} alt={o.title} />
 						<h1>{o.title}</h1>
 						<p>{o.body}</p>
@@ -138,16 +138,23 @@ export const Home: React.FC = () => {
 	);
 };
 
-const ButtonLinked: React.FC<{ label: string; target: string }> = ({
-	label,
-	target,
-}) =>
-	target?.startsWith('http') ? (
-		<a href={target} target="_blank" rel="noopener noreferrer">
-			<Button>{label}</Button>
-		</a>
-	) : (
-		<Link to={target}>
-			<Button>{label}</Button>
-		</Link>
-	);
+const ButtonLinked: React.FC<{ label: string; target: string; }> =
+	({ label, target, }) => {
+
+
+		const InternalOrExternalLink: React.FC = ({ children }) =>
+			target?.startsWith('http') ?
+				(
+					<a href={target} target="_blank" rel="noopener noreferrer">
+						{children}
+					</a>
+				) : (
+					<Link to={target}>
+						{children}
+					</Link>
+				);
+
+		return <InternalOrExternalLink> <Button>{label}</Button> </InternalOrExternalLink>;
+
+
+	};

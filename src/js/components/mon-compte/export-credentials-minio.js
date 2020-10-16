@@ -62,7 +62,7 @@ export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
 export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
 export AWS_SESSION_TOKEN= ${c.AWS_SESSION_TOKEN}
 export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
-		`,
+ 		`,
 	},
 	{
 		id: 'mc',
@@ -70,8 +70,8 @@ export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		fileName: '.bashrc',
 		text: (c) =>
 			`
-  export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
-      `,
+   export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
+       `,
 	},
 	{
 		id: 'env',
@@ -166,7 +166,7 @@ website_error =
 website_index = index.html
 `,
 	},
-  	{
+	{
 		id: 'rclone',
 		label: 'rclone (.conf)',
 		fileName: 'rclone.conf',

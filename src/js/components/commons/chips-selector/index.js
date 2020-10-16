@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import removeAccents from 'remove-accents';
 import { TextField, InputAdornment, Icon } from '@material-ui/core';
 import RootRef from '@material-ui/core/RootRef';
-import { HidablePane } from 'js/components/commons/atoms';
+import { HidablePane } from 'js/components/commons/HidablePane';
 import './chips-selector.scss';
 
 const getChips = (search) => (chips) =>

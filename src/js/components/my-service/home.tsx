@@ -6,10 +6,11 @@ import 'js/components/app.scss';
 import { withRouter, useParams } from 'react-router-dom';
 
 const MyServiceHome = () => {
-	const { serviceId } = useParams();
+	//TODO: Makes sure there is actually a serviceId here
+	const { serviceId } = useParams<{ serviceId: string; }>();
 	return (
 		<>
-			<Header serviceId={serviceId} />
+			<Header/>
 			<FilDAriane fil={fil.myService(serviceId)} />
 			<Service serviceId={`/${serviceId}`} />
 		</>

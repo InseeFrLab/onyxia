@@ -19,12 +19,12 @@ interface Props {
 	tasks?: Task[];
 }
 
-const ServiceTasks = ({ serviceId, serviceType, tasks }: Props) => {
-	const [logs, setLogs] = useState(undefined);
+const ServiceTasks = ({ serviceId, tasks }: Props) => {
+	const [logs, setLogs] = useState<string>("");
 	return (
 		<>
 			<Grid container spacing={2} classes={{ container: 'cartes' }}>
-				{tasks.map(({ id, status }) => {
+				{tasks!.map(({ id, status }) => {
 					const content = status
 						? `${status.status} ${status.reason ? `(${status.reason})` : ''}`
 						: '';
@@ -55,11 +55,13 @@ const ServiceTasks = ({ serviceId, serviceType, tasks }: Props) => {
 			</Grid>
 			{logs ? (
 				<Paper elevation={3} className="tasks-log">
-					{logs.split('\n').map((l: string, i: string) => (
-						<div key={`log-${i}`} className="log-content">
-							{l}
-						</div>
-					))}
+					{logs
+						.split('\n')
+						.map((l: string, i: number) => (
+							<div key={`log-${i}`} className="log-content">
+								{l}
+							</div>
+						))}
 				</Paper>
 			) : (
 				<></>

@@ -21,6 +21,7 @@ import {
 
 // Hack, see https://stackoverflow.com/a/56411961
 // Without it, marker image is broken
+//@ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -62,8 +63,9 @@ const SelectRegion = ({ regions, selectedRegion, onRegionSelected }: Props) => {
 					/>
 					{regions.filter(hasGeolocationData).map((region) => (
 						<Marker
-							position={[region.location.lat, region.location.long]}
-							opacity={isSelected(region, selectedRegion) ? 1.0 : 0.5}
+							//position={[region.location?.lat, region!?.location.long]}
+							position={[region.location?.lat!,region.location?.long!]}
+							opacity={isSelected(region, selectedRegion!) ? 1.0 : 0.5}
 							key={region.id}
 							onClick={() => onRegionSelected && onRegionSelected(region)}
 						></Marker>

@@ -1,78 +1,92 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { getToken } from 'js/utils';
-import store from 'js/redux/store';
-import * as Actions from 'js/redux/actions';
-import conf from '../configuration';
-
-const MINIO_BASE_URI = conf.MINIO.BASE_URI;
-const MINIO_END_POINT = conf.MINIO.END_POINT;
-const MINIO_END_MINIMUM_DURATION_MS = conf.MINIO.MINIMUN_DURATION;
-const MINIO_PORT = conf.MINIO.PORT;
-let MINIO_CLIENT = null;
-
-const getMinioDataFromStore = () => {
-	return store.getState().user.S3;
-};
-
-const broadcastNewCredentials = (credentials) => {
-	store.dispatch(Actions.newS3Credentials(credentials));
-};
+import * as localStorageToken  from "js/utils/localStorageToken";
+import { assert } from "evt/tools/typeSafety/assert";
+import memoize from "memoizee";
+import { env } from "js/env";
 
 const fetchMinioToken = async () => {
-	const kcToken = await getToken();
-	const url = `${MINIO_BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${kcToken}&DurationSeconds=43200&Version=2011-06-15`;
+
+	const kcToken = localStorageToken.get();
+
+	assert(kcToken !== undefined);
+
+	const url = `${env.MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${kcToken}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);
-	let accessKey = null;
-	let secretAccessKey = null;
-	let sessionToken = null;
-	let expiration = null;
-	if (minioResponse.data) {
-		const parser = new DOMParser();
-		const xmlDoc = parser.parseFromString(minioResponse.data, 'text/xml');
-		const root = xmlDoc.getElementsByTagName(
-			'AssumeRoleWithClientGrantsResponse'
-		)[0];
-		const credentials = root.getElementsByTagName('Credentials')[0];
-		accessKey = credentials.getElementsByTagName('AccessKeyId')[0].childNodes[0]
-			.nodeValue;
-		secretAccessKey = credentials.getElementsByTagName('SecretAccessKey')[0]
-			.childNodes[0].nodeValue;
-		sessionToken = credentials.getElementsByTagName('SessionToken')[0]
-			.childNodes[0].nodeValue;
-		expiration = credentials.getElementsByTagName('Expiration')[0].childNodes[0]
-			.nodeValue;
-	}
+
+	assert(!!minioResponse.data);
+
+	const parser = new DOMParser();
+	const xmlDoc = parser.parseFromString(minioResponse.data, 'text/xml');
+	const root = xmlDoc.getElementsByTagName(
+		'AssumeRoleWithClientGrantsResponse'
+	)[0];
+
+	const credentials = root.getElementsByTagName("Credentials")[0];
+	const accessKey = credentials.getElementsByTagName("AccessKeyId")[0].childNodes[0]
+		.nodeValue;
+	const secretAccessKey = credentials.getElementsByTagName("SecretAccessKey")[0]
+		.childNodes[0].nodeValue;
+	const sessionToken = credentials.getElementsByTagName("SessionToken")[0]
+		.childNodes[0].nodeValue;
+	const expiration = credentials.getElementsByTagName("Expiration")[0].childNodes[0]
+		.nodeValue;
+
+
+	assert(
+		accessKey !== null &&
+		secretAccessKey !== null &&
+		sessionToken !== null &&
+		expiration !== null
+	); //TODO
+
 	return { accessKey, secretAccessKey, sessionToken, expiration };
 };
 
-export const getMinioToken = (refreh = false) =>
-	getMinioDataFromStore().AWS_EXPIRATION &&
-	Date.parse(getMinioDataFromStore().AWS_EXPIRATION) - Date.now() >=
-		MINIO_END_MINIMUM_DURATION_MS
-		? Promise.resolve(getMinioDataFromStore())
-		: fetchMinioToken().then((credentials) => {
-				broadcastNewCredentials(credentials);
-				return credentials;
-		  });
+export async function getMinioToken() {
 
-const getClient = (): Promise<Minio.Client> =>
-	MINIO_CLIENT
-		? Promise.resolve(MINIO_CLIENT)
-		: new Promise((resolve, reject) => {
-				getMinioToken()
-					.then((credentials) => {
-						MINIO_CLIENT = new Minio.Client({
-							endPoint: MINIO_END_POINT,
-							port: MINIO_PORT,
-							useSSL: true,
-							accessKey: credentials.accessKey,
-							secretKey: credentials.secretAccessKey,
-							sessionToken: credentials.sessionToken,
-						});
-						resolve(MINIO_CLIENT);
-					})
-					.catch((err) => reject(err));
-		  });
+	const { store, actions } = await import("js/redux/store");
 
-export default getClient;
+	const { S3 }  = store.getState().user;
+
+	if (
+		S3 && (Date.parse(S3.AWS_EXPIRATION) - Date.now()) >= env.MINIO.MINIMUN_DURATION
+	) {
+
+		return {
+			"accessKey": S3.AWS_ACCESS_KEY_ID, 
+			"secretAccessKey": S3.AWS_SECRET_ACCESS_KEY, 
+			"sessionToken": S3.AWS_SESSION_TOKEN, 
+			"expiration": S3.AWS_EXPIRATION
+		};
+
+
+	}
+
+	const credentials = await fetchMinioToken();
+
+	store.dispatch(actions.newS3Credentials(credentials));
+
+	return credentials;
+
+}
+
+
+/** Get an instance of Minio.Client, only instantiated the first time */
+export const getMinioClient = memoize(
+	async () => {
+
+		const credentials = await getMinioToken();
+
+		return new Minio.Client({
+			"endPoint": env.MINIO.END_POINT,
+			"port": env.MINIO.PORT,
+			"useSSL": true,
+			"accessKey": credentials.accessKey,
+			"secretKey": credentials.secretAccessKey,
+			"sessionToken": credentials.sessionToken
+		}); 
+
+	},
+	{ "promise": true }
+);

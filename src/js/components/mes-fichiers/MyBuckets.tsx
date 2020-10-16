@@ -3,28 +3,28 @@ import { Link } from 'react-router-dom';
 import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
-import { RootState } from 'js/redux';
-import { useSelector, useDispatch } from 'react-redux';
 import { Region } from 'js/model/Region';
-import { loadUserBuckets } from 'js/redux/actions';
+import { useSelector, useDispatch } from "js/redux/store";
+import { actions as myFilesActions } from "js/redux/myFiles";
 
-const MyBuckets = () => {
+
+export const MyBuckets = () => {
 	const dispatch = useDispatch();
 	const region = useSelector(
-		(state: RootState) => state.regions.selectedRegion
+		state => state.regions.selectedRegion
 	);
 
-	const user = useSelector((state: RootState) => state.user);
+	const idep = useSelector(state => state.user.IDEP);
 
 	const buckets = useSelector(
-		(state: RootState) => state.mesFichiers.userBuckets
+		state => state.myFiles.userBuckets
 	);
 
 	useEffect(() => {
-		if (user.IDEP && !buckets) {
-			dispatch(loadUserBuckets(user.IDEP));
+		if ( idep && !buckets) {
+			dispatch(myFilesActions.loadUserBuckets({ idep }));
 		}
-	});
+	}, [ idep, dispatch, buckets ]);
 
 	return (
 		<>
@@ -51,13 +51,13 @@ const MyBuckets = () => {
 						La liste de vos dépots
 					</Typography>
 					<div id="bucket-list">
-						{buckets?.map(({ id, description }, i) => {
+						{buckets?.map(({ id, description }: any, i: any) => {
 							return (
 								<Bucket
 									key={i}
 									description={description}
 									id={id}
-									region={region}
+									region={region as any}
 								/>
 							);
 						})}
@@ -104,4 +104,3 @@ const Bucket = ({
 		</>
 	);
 };
-export default MyBuckets;
