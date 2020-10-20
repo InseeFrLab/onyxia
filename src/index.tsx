@@ -14,7 +14,6 @@ import { initVaultData } from "js/vault-client";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
