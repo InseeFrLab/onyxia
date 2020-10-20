@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getKeycloakInstance } from "./getKeycloakInstance";
-import { locallyStoredOidcJwt } from './locallyStoredOidcJwt';
+import { locallyStoredOidcAccessToken } from './locallyStoredOidcAccessToken';
 import { env } from 'js/env';
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
@@ -24,7 +24,7 @@ export const refreshToken = async (minValidity = 60) => {
 
 		assert(keycloakInstance.token !== undefined); //TODO: figure out
 
-		locallyStoredOidcJwt.set(keycloakInstance.token);
+		locallyStoredOidcAccessToken.set(keycloakInstance.token);
 
 	}
 

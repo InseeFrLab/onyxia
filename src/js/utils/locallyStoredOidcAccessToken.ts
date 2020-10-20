@@ -46,28 +46,28 @@ const localStorage = (() => {
 
 })();
 
-const KEY = "onyxia/localStorage/user/token";
+const key = "onyxia/localStorage/user/token";
 
-export type ParsedOidcJwt = {
+export type ParsedOidcAccessToken = {
 	gitlab_group: string[] | null;
 	preferred_username: string;
 	name: string;
 	email: string;
 };
 
-export const locallyStoredOidcJwt = {
-	"get": () => ({ "oidcJwt": localStorage.getItem(KEY) ?? undefined }),
-	"set": (token: string) => localStorage.setItem(KEY, token),
-	"clear": () => localStorage.removeItem(KEY),
+export const locallyStoredOidcAccessToken = {
+	"get": () => ({ "oidcAccessToken": localStorage.getItem(key) ?? undefined }),
+	"set": (token: string) => localStorage.setItem(key, token),
+	"clear": () => localStorage.removeItem(key),
 	/** Assert getToken() !== undefined (meaning user is authenticated) */
 	"getParsed": () => {
 
-		const { oidcJwt } = locallyStoredOidcJwt.get();
+		const { oidcAccessToken } = locallyStoredOidcAccessToken.get();
 
-		assert(oidcJwt !== undefined, "Wrong assertion, user should be logged here");
+		assert(oidcAccessToken !== undefined, "Wrong assertion, user should be logged here");
 
 		//TODO: Se what the decoded object actually is. 
-		return decodeJwt<ParsedOidcJwt>(oidcJwt);
+		return decodeJwt<ParsedOidcAccessToken>(oidcAccessToken);
 
 	}
 };
