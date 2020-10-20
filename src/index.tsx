@@ -18,13 +18,6 @@ const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
-const keycloakDefaultConf = {
-    "onLoad": "check-sso",
-    "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
-    "responseMode": "query",
-    "checkLoginIframe": false
-} as const;
-
 assert(
     env.AUTHENTICATION.TYPE === "oidc",
     [
@@ -38,7 +31,10 @@ const initializeKeycloak = async (): Promise<void> => {
     const kc = getKeycloakInstance();
 
     const isAuthenticated = await kc.init({
-        ...keycloakDefaultConf,
+        "onLoad": "check-sso",
+        "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
+        "responseMode": "query",
+        "checkLoginIframe": false,
         "token": locallyStoredOidcAccessToken.get().oidcAccessToken
     }).catch((error: Error) => error);
 
