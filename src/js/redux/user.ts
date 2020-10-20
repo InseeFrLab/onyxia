@@ -39,23 +39,23 @@ export type State = {
     SSH: {
         SSH_PUBLIC_KEY: string;
         SSH_KEY_PASSWORD: string;
-    },
+    };
     KEYCLOAK: {
         KC_ID_TOKEN: string | undefined;
         KC_REFRESH_TOKEN: string | undefined;
         KC_ACCESS_TOKEN: string | undefined;
-    },
+    } | undefined;
     KUBERNETES: {
         KUB_SERVER_NAME: string;
         KUB_SERVER_URL: string;
-    },
+    };
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
         VAULT_MOUNT: string,
         VAULT_TOP_DIR: string | undefined,
         DATA: Record<string, string>;
-    }
+    };
 };
 
 export const name = "user";
@@ -223,11 +223,7 @@ const slice = createSlice({
             "SSH_PUBLIC_KEY": '',
             "SSH_KEY_PASSWORD": '',
         },
-        "KEYCLOAK": {
-            "KC_ID_TOKEN": undefined,
-            "KC_REFRESH_TOKEN": undefined,
-            "KC_ACCESS_TOKEN": undefined,
-        },
+        "KEYCLOAK": undefined,
         "KUBERNETES": {
             "KUB_SERVER_NAME": env.KUBERNETES.KUB_SERVER_NAME,
             "KUB_SERVER_URL": env.KUBERNETES.KUB_SERVER_URL,
@@ -241,17 +237,6 @@ const slice = createSlice({
         },
     }),
     "reducers": {
-        //TODO: We should be able to assume there is no more prop on KEYCLOAK
-        /*
-        {
-          type: 'onyxia/app/setAthenticated',
-          payload: {
-            accessToken: 'eyJhbJVcGNsb3VkIiwiYXVkIjpbIm9ue...',
-            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCIgOiA...',
-            idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldU...'
-          }
-        }
-        */
         "setAuthenticated": ( //USED
             state,
             { payload }: PayloadAction<{
@@ -263,17 +248,11 @@ const slice = createSlice({
 
             const { idToken, refreshToken, accessToken } = payload;
 
-            assert(
-                typeof idToken === "string" &&
-                typeof refreshToken === "string" &&
-                typeof accessToken === "string"
-            );
-
-            const { KEYCLOAK } = state;
-
-            KEYCLOAK.KC_ID_TOKEN = idToken;
-            KEYCLOAK.KC_REFRESH_TOKEN = refreshToken;
-            KEYCLOAK.KC_ACCESS_TOKEN = accessToken;
+            state.KEYCLOAK = {
+                "KC_ID_TOKEN": idToken,
+                "KC_REFRESH_TOKEN": refreshToken,
+                "KC_ACCESS_TOKEN": accessToken
+            };
 
         },
         /*
