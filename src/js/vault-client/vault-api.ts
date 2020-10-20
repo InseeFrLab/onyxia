@@ -1,7 +1,7 @@
 import axios from 'axios';
 import generator from 'generate-password';
 import { axiosURL } from "js/utils/axios-config";
-import * as localStorageToken from 'js/utils/localStorageToken';
+import { locallyStoredOidcJwt } from 'js/utils/locallyStoredOidcJwt';
 import { env } from 'js/env';
 import memoize from "memoizee";
 
@@ -81,7 +81,7 @@ export const { getVaultToken } = (() => {
 			auth: { client_token: vaultToken },
 		}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 			"role": "onyxia-user",
-			"jwt": localStorageToken.get()
+			"jwt": locallyStoredOidcJwt.get()
 		});
 		const { store, actions } = await getStore();
 		store.dispatch(actions.newVaultToken({ "token": vaultToken }));

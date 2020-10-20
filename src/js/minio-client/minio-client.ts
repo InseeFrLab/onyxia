@@ -1,17 +1,17 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import * as localStorageToken  from "js/utils/localStorageToken";
+import { locallyStoredOidcJwt } from "js/utils/locallyStoredOidcJwt";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 import { env } from "js/env";
 
 const fetchMinioToken = async () => {
 
-	const kcToken = localStorageToken.get();
+	const oidcJwt = locallyStoredOidcJwt.get();
 
-	assert(kcToken !== undefined);
+	assert(oidcJwt !== undefined);
 
-	const url = `${env.MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${kcToken}&DurationSeconds=43200&Version=2011-06-15`;
+	const url = `${env.MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${oidcJwt}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);
 
 	assert(!!minioResponse.data);

@@ -6,7 +6,7 @@ import { store } from "js/redux/store";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
-import * as localStorageToken from "js/utils/localStorageToken";
+import { locallyStoredOidcJwt } from "js/utils/locallyStoredOidcJwt";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import { env } from "js/env";
@@ -30,7 +30,7 @@ const initializeKeycloak: () => Promise<void> =
     env.AUTHENTICATION.TYPE !== "oidc" ?
         (() => {
 
-            localStorageToken.set("FAKE_TOKEN");
+            locallyStoredOidcJwt.set("FAKE_TOKEN");
 
             store.dispatch(
                 userActions.setAuthenticated({
@@ -52,9 +52,9 @@ const initializeKeycloak: () => Promise<void> =
                     ...keycloakDefaultConf,
                     ...(() => {
 
-                        const localToken = localStorageToken.get();
+                        const oidcJwt = locallyStoredOidcJwt.get();
 
-                        return localToken ? { "token": localToken } : {};
+                        return oidcJwt ? { "token": oidcJwt } : {};
 
                     })()
                 })
@@ -77,7 +77,7 @@ const initializeKeycloak: () => Promise<void> =
                 typeGuard<Record<string,string>>(kc.tokenParsed)
             );
 
-            localStorageToken.set(kc.token);
+            locallyStoredOidcJwt.set(kc.token);
 
             store.dispatch(
                 userActions.setAuthenticated({

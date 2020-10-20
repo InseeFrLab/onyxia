@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { actions as appActions } from "js/redux/app";
 
 
-import * as localStorageToken from "js/utils/localStorageToken";
+import { locallyStoredOidcJwt } from "js/utils/locallyStoredOidcJwt";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 
@@ -23,8 +23,8 @@ class PrivateRoute extends React.Component {
 	static getDerivedStateFromProps(
 		{ authenticated, location, setRedirectUri, displayLogin }: any,
 	) {
-		const token = localStorageToken.get();
-		const isToken = token && token !== 'undefined';
+		const oidcJwt = locallyStoredOidcJwt.get();
+		const isToken = oidcJwt && oidcJwt !== 'undefined';
 
 		if (!authenticated && !isToken) {
 			setRedirectUri({ "uri": `${window.location.origin}${location.pathname}` });
