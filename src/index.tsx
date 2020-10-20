@@ -63,8 +63,7 @@ const initializeKeycloak = async (): Promise<void> => {
     assert(
         kc.token !== undefined &&
         kc.refreshToken !== undefined &&
-        kc.idToken !== undefined &&
-        typeGuard<Record<string, string>>(kc.tokenParsed)
+        kc.idToken !== undefined
     );
 
     locallyStoredOidcJwt.set(kc.token);
@@ -81,7 +80,7 @@ const initializeKeycloak = async (): Promise<void> => {
         preferred_username,
         name,
         email
-    } = kc.tokenParsed;
+    } = locallyStoredOidcJwt.getParsed();
 
     initVaultData(preferred_username, name, email);
 

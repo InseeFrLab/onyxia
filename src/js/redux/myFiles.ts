@@ -215,7 +215,7 @@ const slice = createSlice({
 
 			assert(typeof idep === "string");
 
-			const { gitlab_group } = locallyStoredOidcJwt.getDecoded();
+			const { gitlab_group } = locallyStoredOidcJwt.getParsed();
 
 			state.userBuckets = [
 				{
