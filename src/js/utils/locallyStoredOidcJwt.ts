@@ -1,5 +1,5 @@
 import { assert } from "evt/tools/typeSafety/assert";
-import decode from "jwt-decode";
+import decodeJwt from "jwt-decode";
 import { id } from "evt/tools/typeSafety/id";
 
 /** 
@@ -48,6 +48,10 @@ const localStorage = (() => {
 
 const KEY = "onyxia/localStorage/user/token";
 
+export type DecodedOidcJwt = {
+	gitlab_group: string[] | null;
+};
+
 export const locallyStoredOidcJwt = {
 	"get": () => ({ "oidcJwt": localStorage.getItem(KEY) ?? undefined }),
 	"set": (token: string) => localStorage.setItem(KEY, token),
@@ -60,7 +64,7 @@ export const locallyStoredOidcJwt = {
 		assert(oidcJwt !== undefined, "Wrong assertion, user should be logged here");
 
 		//TODO: Se what the decoded object actually is. 
-		return decode<{ gitlab_group: string[] | null; }>(oidcJwt);
+		return decodeJwt<DecodedOidcJwt>(oidcJwt);
 
 	}
 };
