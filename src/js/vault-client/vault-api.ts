@@ -63,31 +63,35 @@ class VaultAPI {
 export default VaultAPI;
 
 
-/**
- *
- */
-export const getVaultToken = async (): Promise<string> => {
+export const { getVaultToken } = (() => {
 
-	const { store } = await getStore();
+	const getVaultToken = async (): Promise<string> => {
 
-	const { VAULT_TOKEN } = store.getState().user.VAULT;
+		const { store } = await getStore();
 
-	return VAULT_TOKEN ?? fetchVaultToken();
+		const { VAULT_TOKEN } = store.getState().user.VAULT;
 
-}
+		return VAULT_TOKEN ?? fetchVaultToken();
 
-const fetchVaultToken = async () => {
-	//TODO: Remove the response interceptor
-	const {
-		auth: { client_token: token },
-	}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
-		role: 'onyxia-user',
-		jwt: localStorageToken.get(),
-	});
-	const { store, actions } = await getStore();
-	store.dispatch(actions.newVaultToken({ token }));
-	return token;
-};
+	}
+
+	const fetchVaultToken = async () => {
+		//TODO: Remove the response interceptor
+		const {
+			auth: { client_token: vaultToken },
+		}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
+			"role": "onyxia-user",
+			"jwt": localStorageToken.get()
+		});
+		const { store, actions } = await getStore();
+		store.dispatch(actions.newVaultToken({ "token": vaultToken }));
+		return vaultToken;
+	};
+
+	return { getVaultToken };
+
+})();
+
 
 const buildDefaultPwd = () =>
 	generator.generate({
