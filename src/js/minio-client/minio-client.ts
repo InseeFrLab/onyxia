@@ -7,7 +7,7 @@ import { env } from "js/env";
 
 const fetchMinioToken = async () => {
 
-	const oidcJwt = locallyStoredOidcJwt.get();
+	const { oidcJwt } = locallyStoredOidcJwt.get();
 
 	assert(oidcJwt !== undefined);
 

@@ -23,7 +23,7 @@ class PrivateRoute extends React.Component {
 	static getDerivedStateFromProps(
 		{ authenticated, location, setRedirectUri, displayLogin }: any,
 	) {
-		const oidcJwt = locallyStoredOidcJwt.get();
+		const { oidcJwt } = locallyStoredOidcJwt.get();
 		const isToken = oidcJwt && oidcJwt !== 'undefined';
 
 		if (!authenticated && !isToken) {

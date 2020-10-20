@@ -81,7 +81,7 @@ export const { getVaultToken } = (() => {
 			auth: { client_token: vaultToken },
 		}: any = await axiosURL.post(`${VAULT_BASE_URI}/v1/auth/jwt/login`, {
 			"role": "onyxia-user",
-			"jwt": locallyStoredOidcJwt.get()
+			"jwt": locallyStoredOidcJwt.get().oidcJwt
 		});
 		const { store, actions } = await getStore();
 		store.dispatch(actions.newVaultToken({ "token": vaultToken }));

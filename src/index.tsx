@@ -52,7 +52,7 @@ const initializeKeycloak: () => Promise<void> =
                     ...keycloakDefaultConf,
                     ...(() => {
 
-                        const oidcJwt = locallyStoredOidcJwt.get();
+                        const { oidcJwt } = locallyStoredOidcJwt.get();
 
                         return oidcJwt ? { "token": oidcJwt } : {};
 

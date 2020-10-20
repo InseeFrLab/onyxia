@@ -49,18 +49,18 @@ const localStorage = (() => {
 const KEY = "onyxia/localStorage/user/token";
 
 export const locallyStoredOidcJwt = {
-	"get": () => localStorage.getItem(KEY) ?? undefined,
+	"get": () => ({ "oidcJwt": localStorage.getItem(KEY) ?? undefined }),
 	"set": (token: string) => localStorage.setItem(KEY, token),
 	"clear": () => localStorage.removeItem(KEY),
 	/** Assert getToken() !== undefined (meaning user is authenticated) */
 	"getDecoded": () => {
 
-		const token = locallyStoredOidcJwt.get();
+		const { oidcJwt } = locallyStoredOidcJwt.get();
 
-		assert(token !== undefined, "Wrong assertion, user should be logged here");
+		assert(oidcJwt !== undefined, "Wrong assertion, user should be logged here");
 
 		//TODO: Se what the decoded object actually is. 
-		return decode<{ gitlab_group: string[] | null; }>(token);
+		return decode<{ gitlab_group: string[] | null; }>(oidcJwt);
 
 	}
 };
