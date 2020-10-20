@@ -13,8 +13,8 @@ import { env } from "js/env";
 import { initVaultData } from "js/vault-client";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
-import { assert } from "evt/tools/typeSafety/assert";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { assert } from "evt/tools/typeSafety/assert";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
@@ -26,76 +26,66 @@ const keycloakDefaultConf = {
     "checkLoginIframe": false
 } as const;
 
-const initializeKeycloak: () => Promise<void> =
-    env.AUTHENTICATION.TYPE !== "oidc" ?
-        (() => {
+assert(
+    env.AUTHENTICATION.TYPE === "oidc",
+    [
+        "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
+        "the only authentication mechanism currently supported"
+    ].join(" ")
+);
 
-            locallyStoredOidcJwt.set("FAKE_TOKEN");
+const initializeKeycloak = async (): Promise<void> => {
 
-            store.dispatch(
-                userActions.setAuthenticated({
-                    "accessToken": "fake",
-                    "refreshToken": "fake",
-                    "idToken": "fake"
-                })
-            );
+    const kc = getKeycloakInstance();
 
-            return Promise.resolve();
+    const isAuthenticated = await kc.init({
+        ...keycloakDefaultConf,
+        ...(() => {
 
+            const { oidcJwt } = locallyStoredOidcJwt.get();
+
+            return oidcJwt ? { "token": oidcJwt } : {};
+
+        })()
+    })
+        .catch((error: Error) => error);
+
+    //TODO: Make sure that result is always an object.
+    if (isAuthenticated instanceof Error) {
+        throw isAuthenticated;
+    }
+
+    if (!isAuthenticated) {
+        return;
+    }
+
+    //NOTE: We know it as user is authenticated
+    assert(
+        kc.token !== undefined &&
+        kc.refreshToken !== undefined &&
+        kc.idToken !== undefined &&
+        typeGuard<Record<string, string>>(kc.tokenParsed)
+    );
+
+    locallyStoredOidcJwt.set(kc.token);
+
+    store.dispatch(
+        userActions.setAuthenticated({
+            "accessToken": kc.token,
+            "refreshToken": kc.refreshToken,
+            "idToken": kc.idToken
         })
-        :
-        (async () => {
+    );
 
-            const kc = getKeycloakInstance();
+    const {
+        preferred_username,
+        name,
+        email
+    } = kc.tokenParsed;
 
-            const isAuthenticated = await kc.init({
-                    ...keycloakDefaultConf,
-                    ...(() => {
+    initVaultData(preferred_username, name, email);
 
-                        const { oidcJwt } = locallyStoredOidcJwt.get();
-
-                        return oidcJwt ? { "token": oidcJwt } : {};
-
-                    })()
-                })
-                .catch((error: Error) => error);
-
-            //TODO: Make sure that result is always an object.
-            if (isAuthenticated instanceof Error) {
-                throw isAuthenticated;
-            }
-
-            if (!isAuthenticated) {
-                return;
-            }
-
-            //NOTE: We know it as user is authenticated
-            assert(
-                kc.token !== undefined &&
-                kc.refreshToken !== undefined &&
-                kc.idToken !== undefined &&
-                typeGuard<Record<string,string>>(kc.tokenParsed)
-            );
-
-            locallyStoredOidcJwt.set(kc.token);
-
-            store.dispatch(
-                userActions.setAuthenticated({
-                    "accessToken": kc.token,
-                    "refreshToken": kc.refreshToken,
-                    "idToken": kc.idToken
-                })
-            );
-
-            const {
-                preferred_username,
-                name,
-                email
-            } = kc.tokenParsed;
-
-            initVaultData(preferred_username, name, email);
-
-        });
+};
 
 
 const Root: React.FC = () =>
