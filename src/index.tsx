@@ -39,15 +39,8 @@ const initializeKeycloak = async (): Promise<void> => {
 
     const isAuthenticated = await kc.init({
         ...keycloakDefaultConf,
-        ...(() => {
-
-            const { oidcAccessToken } = locallyStoredOidcAccessToken.get();
-
-            return oidcAccessToken ? { "token": oidcAccessToken } : {};
-
-        })()
-    })
-        .catch((error: Error) => error);
+        "token": locallyStoredOidcAccessToken.get().oidcAccessToken
+    }).catch((error: Error) => error);
 
     //TODO: Make sure that result is always an object.
     if (isAuthenticated instanceof Error) {
