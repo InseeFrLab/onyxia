@@ -66,7 +66,7 @@ export default VaultAPI;
 /**
  *
  */
-export const getVaultToken = async () => {
+export const getVaultToken = async (): Promise<string> => {
 
 	const { store } = await getStore();
 
@@ -148,23 +148,21 @@ export const resetVaultData = (idep: string, data: VaultProfile) => {
 export const resetVaultPwd = (idep: string) =>
 	resetVaultData(idep, { password: buildDefaultPwd() });
 
-/**
- *
- */
-const axiosVault = axios.create({
-	baseURL: VAULT_BASE_URI,
-});
-axiosVault.interceptors.request.use(
-	(config) =>
-		getVaultToken()
-			.then((token) => Promise.resolve(authorizeConfig(token)(config)))
-			.catch((error) => console.log(`Error ${error}`)),
-	(error) => Promise.reject(error)
-);
+const { axiosVault } = (() => {
 
-const authorizeConfig = (token: string) => (config: any) => ({
-	...config,
-	headers: { 'X-Vault-Token': token },
-	'Content-Type': 'application/json;charset=utf-8',
-	Accept: 'application/json;charset=utf-8',
-});
+	const axiosVault = axios.create({ "baseURL": VAULT_BASE_URI });
+
+	axiosVault.interceptors.request.use(
+		async axiosRequestConfig => ({
+			...axiosRequestConfig,
+			"headers": { 'X-Vault-Token': await getVaultToken() },
+			"Content-Type": "application/json;charset=utf-8",
+			"Accept": "application/json;charset=utf-8"
+		}),
+	);
+
+	return { axiosVault };
+
+})();
+
+
