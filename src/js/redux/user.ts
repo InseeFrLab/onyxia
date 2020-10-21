@@ -9,7 +9,14 @@ import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
-import { actions as secretsActions } from "./secrets";
+import { vaultApi } from "js/vault";
+import memoize from "memoizee";
+
+/** We avoid importing app right away to prevent require cycles */
+const getApp = memoize(
+	() => import("./app"),
+	{ "promise": true }
+);
 
 /*
 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
@@ -94,7 +101,7 @@ const asyncThunks = {
                 `${name}/${typePrefix}`,
                 async (...[, { dispatch }]) => {
 
-                    const { actions: appActions } = await import("./app");
+                    const { actions: appActions } = await getApp();
 
                     dispatch(appActions.startWaiting());
 
@@ -111,6 +118,37 @@ const asyncThunks = {
 
 
     })(),
+	...(() => {
+
+		const typePrefix = "updateVaultSecret";
+
+		return {
+			[typePrefix]: createAsyncThunk(
+				`${name}/${typePrefix}`,
+				async (payload: { location: string; data: Record<string, string>; }, { dispatch }) => {
+
+					const { location, data } = payload;
+
+					assert( 
+						typeof location === "string" && 
+						typeof data === "object"
+					);
+
+                    const { actions: appActions } = await getApp();
+
+					dispatch(appActions.startWaiting());
+
+					await vaultApi.uploadSecret({ "path": location, data });
+
+					dispatch(appActions.stopWaiting());
+
+					return { data };
+
+				}
+			)
+		};
+
+	})()
 
 };
 
@@ -395,7 +433,7 @@ const slice = createSlice({
 
 
         builder.addCase(
-            secretsActions.updateVaultSecret.fulfilled,
+            asyncThunks.updateVaultSecret.fulfilled,
             (state, { payload }) => reusableReducers.newVaultData(state, { payload })
         );
 

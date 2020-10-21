@@ -27,8 +27,6 @@ import Footer from './commons/footer';
 import Preloader from './commons/preloader';
 import VisiteGuidee, { VisiteGuideeDebut } from 'js/components/visite-guidee';
 import Favicon from 'js/components/commons/favicon';
-import MesSecretsHome from 'js/components/mes-secrets/home';
-import MesSecrets from 'js/components/mes-secrets';
 import Notifications from 'js/components/notifications';
 import { Navbar } from 'js/components/commons/nav-bar/Navbar';
 import { About } from 'js/components/about/About';
@@ -40,6 +38,7 @@ import { ToastContainer } from 'react-toastify';
 import { env } from "js/env";
 import { useSelector } from "js/redux/store";
 import { ResizeDetector } from "js/components/commons/ResizeDetector";
+import { MySecrets } from "js/components/MySecrets";
 
 const initialPathname = "/accueil";
 
@@ -153,14 +152,8 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 								<PrivateRoute
 									exact
 									path="/mes-secrets"
-									component={MesSecretsHome}
+									component={MySecrets}
 								/>
-								<PrivateRoute
-									path="/mes-secrets/:idep/*"
-									component={MesSecrets}
-								/>
-								<PrivateRoute path="/mes-secrets/:idep" component={MesSecrets} />
-
 								<PrivateRoute
 									path="/visite-guidee"
 									component={VisiteGuideeDebut}

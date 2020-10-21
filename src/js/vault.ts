@@ -175,7 +175,7 @@ export const vaultApi = {
 /** Assert user logged in ( Valid Access Token in local storage ) */
 export async function initVaultData() {
 
-	const parsedOidcAccessToken= locallyStoredOidcAccessToken.getParsed();
+	const parsedOidcAccessToken = locallyStoredOidcAccessToken.getParsed();
 
 	const maybeVaultProfile: VaultProfile | {} = await axiosVault([
 		`/v1/${VAULT_KV_ENGINE}/data`,
@@ -184,7 +184,7 @@ export async function initVaultData() {
 	].join("/"))
 		.then(axiosResponse => axiosResponse.data?.data?.data ?? {});
 
-	if (!("password" in maybeVaultProfile)) {
+	if (!("git_credentials_cache_duration" in maybeVaultProfile)) {
 
 		await setOrUpdateVaultProfile({
 			"parsedOidcAccessTokenPreferredUsername": parsedOidcAccessToken.preferred_username,

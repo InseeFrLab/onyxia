@@ -20,13 +20,13 @@ import GitField from './git';
 import { vaultApi } from "js/vault";
 import { User } from 'js/model/User';
 import useBetaTest from '../hooks/useBetaTest';
-import type { actions as secretsActions } from "js/redux/secrets";
+import type { actions as userActions } from "js/redux/user";
 import type { HandleThunkActionCreator } from "react-redux";
 
 interface Props {
 	user?: User;
 	getUserInfo: () => void;
-	updateVaultSecret: HandleThunkActionCreator<typeof secretsActions["updateVaultSecret"]>;
+	updateVaultSecret: HandleThunkActionCreator<typeof userActions["updateVaultSecret"]>;
 	logout: () => void;
 }
 
