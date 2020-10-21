@@ -10,7 +10,6 @@ import {
 import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
-import ReactResizeDetector from 'react-resize-detector';
 import { Alert } from 'js/components/commons/Alert';
 import { invalidIdep } from 'js/utils/idep';
 import { Home } from "js/components/home/Home";
@@ -40,6 +39,7 @@ import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { env } from "js/env";
 import { useSelector } from "js/redux/store";
+import { ResizeDetector } from "js/components/commons/ResizeDetector";
 
 const initialPathname = "/accueil";
 
@@ -87,12 +87,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	return (
 		<MuiThemeProvider theme={theme}>
-			{/* Throw "findDOMNode is deprecated in StrictMode" warning */}
-			<ReactResizeDetector
-				handleWidth
-				handleHeight
-				onResize={width => applicationResize({ width })}
-			/>
+			<ResizeDetector onResize={applicationResize}/>
 			{waiting ? <Preloader /> : null}
 			<CssBaseline />
 			<Favicon />
