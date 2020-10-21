@@ -17,7 +17,7 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import GitField from './git';
-import { resetVaultPwd } from 'js/vault-client';
+import { vaultApi } from "js/vault";
 import { User } from 'js/model/User';
 import useBetaTest from '../hooks/useBetaTest';
 import type { actions as secretsActions } from "js/redux/secrets";
@@ -88,7 +88,7 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						value={
 							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
 						}
-						handleReset={() => resetVaultPwd(user.IDEP)}
+						handleReset={() => vaultApi.resetVaultPwd()}
 					/>
 					<GitField
 						idep={user.IDEP}

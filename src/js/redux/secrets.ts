@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { axiosAuth } from "js/utils/axios-config";
 import { env } from "js/env";
-import createVaultApi from "js/vault-client";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
-const VAULT = createVaultApi();
-const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI as string;
+import { vaultApi } from "js/vault";
+
+const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
 
 
 /** We avoid importing app right away to prevent require cycles */
@@ -67,7 +67,7 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					const secrets = await VAULT.getSecretsList(path) as State["vaultSecretsList"];
+					const secrets = await vaultApi.getSecretsList({ path }) as State["vaultSecretsList"];
 
 					dispatch(appActions.stopWaiting());
 
@@ -95,7 +95,7 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					const secrets = await VAULT.getSecret(path) as State["vaultSecret"];
+					const secrets = await vaultApi.getSecret({ path }) as State["vaultSecret"];
 
 					dispatch(appActions.stopWaiting());
 
@@ -126,7 +126,7 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					await VAULT.uploadSecret(location, data);
+					await vaultApi.uploadSecret({ "path": location, data });
 
 					dispatch(appActions.stopWaiting());
 

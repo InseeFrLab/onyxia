@@ -10,7 +10,7 @@ import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessTo
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import { env } from "js/env";
-import { initVaultData } from "js/vault-client";
+import { initVaultData } from "js/vault";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -26,7 +26,7 @@ assert(
     ].join(" ")
 );
 
-const initializeKeycloak = async (): Promise<void> => {
+const initializeUserSessionIfLoggedIn = async (): Promise<void> => {
 
     const kc = getKeycloakInstance();
 
@@ -44,7 +44,10 @@ const initializeKeycloak = async (): Promise<void> => {
     }
 
     if (!isAuthenticated) {
+
+        locallyStoredOidcAccessToken.clear();
         return;
+
     }
 
     //NOTE: We know it as user is authenticated
@@ -64,19 +67,13 @@ const initializeKeycloak = async (): Promise<void> => {
         })
     );
 
-    const {
-        preferred_username,
-        name,
-        email
-    } = locallyStoredOidcAccessToken.getParsed();
-
-    initVaultData(preferred_username, name, email);
+    await initVaultData();
 
 };
 
 
 const Root: React.FC = () =>
-    useAsync(initializeKeycloak, []).status !== "success" ?
+    useAsync(initializeUserSessionIfLoggedIn, []).status !== "success" ?
         <Loader em={30} /> :
         <App />
     ;

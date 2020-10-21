@@ -191,18 +191,26 @@ const reusableReducers = {
         state: State,
         { payload }: {
             payload: {
-                data: Record<string, string>;
+                data: Record<string, string | undefined>;
             }
         }
     ) => {
-
 
         const { data } = payload;
 
         assert(typeof data === "object");
 
         Object.keys(data)
-            .forEach(key => state.VAULT.DATA[key] = data[key]);
+            .forEach(key => {
+                const v = data[key];
+
+                if( v === undefined ){
+                    return;
+                }
+
+                state.VAULT.DATA[key] = v;
+
+            });
 
     },
 };

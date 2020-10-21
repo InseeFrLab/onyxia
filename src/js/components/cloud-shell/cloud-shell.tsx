@@ -14,7 +14,6 @@ import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from "js/minio-client/minio-client";
-import { getVaultToken } from 'js/vault-client';
 import {
 	getOptions,
 	getValuesObject,
@@ -149,14 +148,6 @@ const CloudShell = () => {
 				});
 		}
 	}, [minioCredentials]);
-
-	useEffect(() => {
-		getVaultToken();
-	}, [user]);
-
-
-
-
 
 	if (!visibility || cloudShellStatus === 'DOWN') {
 		return <CloudShellStartButton />;
