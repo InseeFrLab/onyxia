@@ -19,6 +19,6 @@ export const MySecrets: React.FC = () => {
         <>
             <h1>Here are the secrets currently stored at {path}</h1>
             {JSON.stringify(profile, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
-        </>
+        </>;
 
 };
