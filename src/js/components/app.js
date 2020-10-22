@@ -37,8 +37,9 @@ import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { env } from "js/env";
 import { useSelector } from "js/redux/store";
-import { ResizeDetector } from "js/components/commons/ResizeDetector";
 import { MySecrets } from "js/components/MySecrets";
+import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
 
 const initialPathname = "/accueil";
 
@@ -84,9 +85,18 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const isAuthenticated = useSelector(state => state.app.authenticated);
 
+	useEvt(ctx => {
+
+		const onResize= ()=> applicationResize({ "width": window.innerWidth });
+
+		onResize();
+
+		Evt.from(ctx, window, "resize").attach(onResize);
+
+	}, []);
+
 	return (
 		<MuiThemeProvider theme={theme}>
-			<ResizeDetector onResize={applicationResize}/>
 			{waiting ? <Preloader /> : null}
 			<CssBaseline />
 			<Favicon />
