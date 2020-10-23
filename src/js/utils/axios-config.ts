@@ -41,31 +41,39 @@ const authorizeConfig = (kc: any) => (config: any) => ({
 	"Accept": 'application/json;charset=utf-8',
 });
 
-export const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-// eslint-disable-next-line
-walk: {
+export const { axiosAuth } = (() => {
 
-	if (env.AUTHENTICATION.TYPE !== 'oidc') {
-		// eslint-disable-next-line
-		break walk;
+	const axiosAuth = axios.create({ "baseURL": BASE_URL });
+
+	// eslint-disable-next-line
+	walk: {
+
+		if (env.AUTHENTICATION.TYPE !== "oidc") {
+			// eslint-disable-next-line
+			break walk;
+		}
+
+		axiosAuth.interceptors.request.use(
+			config =>
+				refreshToken()
+					.then(() =>
+						Promise.resolve(authorizeConfig(getKeycloakInstance())(config))
+					)
+					.catch(() => getKeycloakInstance().login()),
+			error => Promise.reject(error)
+		);
+
 	}
 
-	axiosAuth.interceptors.request.use(
-		config =>
-			refreshToken()
-				.then(() =>
-					Promise.resolve(authorizeConfig(getKeycloakInstance())(config))
-				)
-				.catch(() => getKeycloakInstance().login()),
-		error => Promise.reject(error)
-	);
+	return { axiosAuth };
 
-}
+})();
+
 
 const injectRegion = async (config: any) => {
 
-	const { store } = await getStore();
+	const { store } = await getStore();
 
 	const selectedRegion = store.getState().regions.selectedRegion;
 	if (selectedRegion) {

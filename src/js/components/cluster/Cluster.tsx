@@ -8,6 +8,7 @@ import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
 import D from 'js/i18n';
 import exportKub from './exportCredentialsKub';
+import { env } from "js/env";
 
 const EnTete = () => (
 	<div className="en-tete">
@@ -33,16 +34,19 @@ const Cluster = () => {
 					<Typography variant="body1" align="left">
 						{D.k8sLoginExplanation}
 					</Typography>
-					<CopyableField
-						copy
-						label="Cluster Name"
-						value={user.KUBERNETES.KUB_SERVER_NAME}
-					/>
-					<CopyableField
-						copy
-						label="Api-server url"
-						value={user.KUBERNETES.KUB_SERVER_URL}
-					/>
+					{ env.KUBERNETES !== undefined && 
+						<>
+							<CopyableField
+								copy
+								label="Cluster Name"
+								value={env.KUBERNETES.KUB_SERVER_NAME}
+							/>
+							<CopyableField
+								copy
+								label="Api-server url"
+								value={env.KUBERNETES.KUB_SERVER_URL}
+							/>
+						</>}
 					<CopyableField copy label="Token" value={getKeycloakInstance().token!} />
 					<ExportCredentialsField
 						credentials={user}

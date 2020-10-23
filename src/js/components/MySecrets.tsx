@@ -1,17 +1,21 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { vaultApi } from "js/vault";
 import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 
-const path = `/${locallyStoredOidcAccessToken.getParsed().preferred_username}/.onyxia/profile`;
 
 export const MySecrets: React.FC = () => {
 
+    const path = useMemo(
+        ()=>`/${locallyStoredOidcAccessToken.getParsed().preferred_username}/.onyxia/profile`, 
+        []
+    );
+
     const { result: profile }= useAsync(
         () => vaultApi.getSecret({ path }),
-        []
+        [ path ]
     );
 
     return profile === undefined ? 

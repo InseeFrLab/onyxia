@@ -52,10 +52,6 @@ export type State = {
         KC_REFRESH_TOKEN: string | undefined;
         KC_ACCESS_TOKEN: string | undefined;
     } | undefined;
-    KUBERNETES: {
-        KUB_SERVER_NAME: string;
-        KUB_SERVER_URL: string;
-    };
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
@@ -270,10 +266,6 @@ const slice = createSlice({
             "SSH_KEY_PASSWORD": '',
         },
         "KEYCLOAK": undefined,
-        "KUBERNETES": {
-            "KUB_SERVER_NAME": env.KUBERNETES.KUB_SERVER_NAME,
-            "KUB_SERVER_URL": env.KUBERNETES.KUB_SERVER_URL,
-        },
         "VAULT": {
             "VAULT_ADDR": env.VAULT.VAULT_BASE_URI,
             "VAULT_TOKEN": undefined,
