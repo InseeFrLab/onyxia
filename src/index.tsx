@@ -6,100 +6,74 @@ import { store } from "js/redux/store";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
-import * as localStorageToken from "js/utils/localStorageToken";
+import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import { env } from "js/env";
-import { initVaultData } from "js/vault-client";
+import { getEnv } from "js/env";
+import { initVaultData } from "js/vault";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
-import { assert } from "evt/tools/typeSafety/assert";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { assert } from "evt/tools/typeSafety/assert";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
-const keycloakDefaultConf = {
-    "onLoad": "check-sso",
-    "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
-    "responseMode": "query",
-    "checkLoginIframe": false
-} as const;
+assert(
+    getEnv().AUTHENTICATION.TYPE === "oidc",
+    [
+        "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
+        "the only authentication mechanism currently supported"
+    ].join(" ")
+);
 
-const initializeKeycloak: () => Promise<void> =
-    env.AUTHENTICATION.TYPE !== "oidc" ?
-        (() => {
+const initializeUserSessionIfLoggedIn = async (): Promise<void> => {
 
-            localStorageToken.set("FAKE_TOKEN");
+    const kc = getKeycloakInstance();
 
-            store.dispatch(
-                userActions.setAuthenticated({
-                    "accessToken": "fake",
-                    "refreshToken": "fake",
-                    "idToken": "fake"
-                })
-            );
+    const isAuthenticated = await kc.init({
+        "onLoad": "check-sso",
+        "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
+        "responseMode": "query",
+        "checkLoginIframe": false,
+        "token": locallyStoredOidcAccessToken.get().oidcAccessToken
+    }).catch((error: Error) => error);
 
-            return Promise.resolve();
+    //TODO: Make sure that result is always an object.
+    if (isAuthenticated instanceof Error) {
+        throw isAuthenticated;
+    }
 
+    if (!isAuthenticated) {
+
+        locallyStoredOidcAccessToken.clear();
+        return;
+
+    }
+
+    //NOTE: We know it as user is authenticated
+    assert(
+        kc.token !== undefined &&
+        kc.refreshToken !== undefined &&
+        kc.idToken !== undefined
+    );
+
+    locallyStoredOidcAccessToken.set(kc.token);
+
+    store.dispatch(
+        userActions.setAuthenticated({
+            "accessToken": kc.token,
+            "refreshToken": kc.refreshToken,
+            "idToken": kc.idToken
         })
-        :
-        (async () => {
+    );
 
-            const kc = getKeycloakInstance();
+    await initVaultData();
 
-            const isAuthenticated = await kc.init({
-                    ...keycloakDefaultConf,
-                    ...(() => {
-
-                        const localToken = localStorageToken.get();
-
-                        return localToken ? { "token": localToken } : {};
-
-                    })()
-                })
-                .catch((error: Error) => error);
-
-            //TODO: Make sure that result is always an object.
-            if (isAuthenticated instanceof Error) {
-                throw isAuthenticated;
-            }
-
-            if (!isAuthenticated) {
-                return;
-            }
-
-            //NOTE: We know it as user is authenticated
-            assert(
-                kc.token !== undefined &&
-                kc.refreshToken !== undefined &&
-                kc.idToken !== undefined &&
-                typeGuard<Record<string,string>>(kc.tokenParsed)
-            );
-
-            localStorageToken.set(kc.token);
-
-            store.dispatch(
-                userActions.setAuthenticated({
-                    "accessToken": kc.token,
-                    "refreshToken": kc.refreshToken,
-                    "idToken": kc.idToken
-                })
-            );
-
-            const {
-                preferred_username,
-                name,
-                email
-            } = kc.tokenParsed;
-
-            initVaultData(preferred_username, name, email);
-
-        });
+};
 
 
 const Root: React.FC = () =>
-    useAsync(initializeKeycloak, []).status !== "success" ?
+    useAsync(initializeUserSessionIfLoggedIn, []).status !== "success" ?
         <Loader em={30} /> :
         <App />
     ;

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import CopyableField from 'js/components/commons/copyable-field';
 import D from 'js/i18n';
-import type { actions as secretsActions } from "js/redux/secrets";
+import type { actions as userActions } from "js/redux/user";
 import type { HandleThunkActionCreator } from "react-redux";
 
 interface Props {
 	values: object;
 	idep: string;
-	updateVaultSecret: HandleThunkActionCreator<typeof secretsActions["updateVaultSecret"]>;
+	updateVaultSecret: HandleThunkActionCreator<typeof userActions["updateVaultSecret"]>;
 }
 
 const labels = {

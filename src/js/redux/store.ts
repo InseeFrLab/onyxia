@@ -6,7 +6,6 @@ import * as regions from "./regions";
 import * as reactRedux from "react-redux";
 import * as user from "./user";
 import * as app from "./app";
-import * as secrets from "./secrets";
 
 export const store = configureStore({
   "reducer": {
@@ -15,7 +14,6 @@ export const store = configureStore({
 	[app.name]: app.reducer,
 	[user.name]: user.reducer,
 	[regions.name]: regions.reducer,
-	[secrets.name]: secrets.reducer
   }
 });
 
@@ -25,7 +23,6 @@ export const actions = {
 	...app.actions,
 	...user.actions,
 	...regions.actions,
-	...secrets.actions
 };
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
