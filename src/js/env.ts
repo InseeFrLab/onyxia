@@ -6,7 +6,7 @@ const assert: typeof _assert = process.env["NODE_ENV"] === "test" ?
 	(() => { }) : _assert;
 
 function getEnvVar(key: string): string;
-function getEnvVar(key: string, options: { mandatory: false; }): string;
+function getEnvVar(key: string, options: { mandatory: false; }): string | undefined;
 function getEnvVar(key: string, options: { parseInt: true; }): number;
 function getEnvVar(key: string, options: { mandatory: false; parseInt: true; }): number | undefined;
 function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: boolean; }): string | number | undefined {
