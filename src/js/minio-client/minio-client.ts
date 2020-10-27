@@ -1,17 +1,18 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import * as localStorageToken  from "js/utils/localStorageToken";
+import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
-import { env } from "js/env";
+import { getEnv } from "js/env";
+
 
 const fetchMinioToken = async () => {
 
-	const kcToken = localStorageToken.get();
+	const { oidcAccessToken } = locallyStoredOidcAccessToken.get();
 
-	assert(kcToken !== undefined);
+	assert(oidcAccessToken !== undefined);
 
-	const url = `${env.MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${kcToken}&DurationSeconds=43200&Version=2011-06-15`;
+	const url = `${getEnv().MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${oidcAccessToken}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);
 
 	assert(!!minioResponse.data);
@@ -50,7 +51,7 @@ export async function getMinioToken() {
 	const { S3 }  = store.getState().user;
 
 	if (
-		S3 && (Date.parse(S3.AWS_EXPIRATION) - Date.now()) >= env.MINIO.MINIMUN_DURATION
+		S3 && (Date.parse(S3.AWS_EXPIRATION) - Date.now()) >= getEnv().MINIO.MINIMUM_DURATION
 	) {
 
 		return {
@@ -79,8 +80,8 @@ export const getMinioClient = memoize(
 		const credentials = await getMinioToken();
 
 		return new Minio.Client({
-			"endPoint": env.MINIO.END_POINT,
-			"port": env.MINIO.PORT,
+			"endPoint": getEnv().MINIO.END_POINT,
+			"port": getEnv().MINIO.PORT,
 			"useSSL": true,
 			"accessKey": credentials.accessKey,
 			"secretKey": credentials.secretAccessKey,

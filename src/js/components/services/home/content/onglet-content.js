@@ -5,7 +5,9 @@ import { getServiceAvatar} from 'js/components/commons/service-card';
 import { CarteService } from "js/components/commons/service-card/card-service.component";
 import { axiosURL } from "js/utils/axios-config";
 import { wrapPromise } from 'js/utils';
-import { env } from "js/env";
+import { getEnv } from "js/env";
+
+const env = getEnv();
 
 const resource = wrapPromise(axiosURL(env.CONTENT.SERVICES_URL));
 

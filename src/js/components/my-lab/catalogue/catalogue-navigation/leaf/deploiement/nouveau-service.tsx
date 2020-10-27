@@ -19,7 +19,6 @@ import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic } from "js/utils/axios-config";
 import { fromUser, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
-import { getVaultToken } from 'js/vault-client';
 import useBetaTest from 'js/components/hooks/useBetaTest';
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import { id } from "evt/tools/typeSafety/id";
@@ -131,10 +130,6 @@ export const NouveauService: React.FC<Props> = ({
 				.then(setMinioCredentials)
 		}
 	}, [minioCredentials, authenticated]);
-
-	useEffect(() => {
-		if (!authenticated) getVaultToken();
-	}, [authenticated, user]);
 
 	useEffect(() => {
 		if (queryParams.auto) {
