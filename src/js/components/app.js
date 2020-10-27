@@ -10,7 +10,6 @@ import {
 import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
-import ReactResizeDetector from 'react-resize-detector';
 import { Alert } from 'js/components/commons/Alert';
 import { invalidIdep } from 'js/utils/idep';
 import { Home } from "js/components/home/Home";
@@ -28,8 +27,6 @@ import Footer from './commons/footer';
 import Preloader from './commons/preloader';
 import VisiteGuidee, { VisiteGuideeDebut } from 'js/components/visite-guidee';
 import Favicon from 'js/components/commons/favicon';
-import MesSecretsHome from 'js/components/mes-secrets/home';
-import MesSecrets from 'js/components/mes-secrets';
 import Notifications from 'js/components/notifications';
 import { Navbar } from 'js/components/commons/nav-bar/Navbar';
 import { About } from 'js/components/about/About';
@@ -38,8 +35,13 @@ import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
-import { env } from "js/env";
+import { getEnv } from "js/env";
 import { useSelector } from "js/redux/store";
+import { MySecrets } from "js/components/MySecrets";
+import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
+
+const env = getEnv();
 
 const initialPathname = "/accueil";
 
@@ -85,14 +87,18 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const isAuthenticated = useSelector(state => state.app.authenticated);
 
+	useEvt(ctx => {
+
+		const onResize= ()=> applicationResize({ "width": window.innerWidth });
+
+		onResize();
+
+		Evt.from(ctx, window, "resize").attach(onResize);
+
+	}, []);
+
 	return (
 		<MuiThemeProvider theme={theme}>
-			{/* Throw "findDOMNode is deprecated in StrictMode" warning */}
-			<ReactResizeDetector
-				handleWidth
-				handleHeight
-				onResize={width => applicationResize({ width })}
-			/>
 			{waiting ? <Preloader /> : null}
 			<CssBaseline />
 			<Favicon />
@@ -158,14 +164,8 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 								<PrivateRoute
 									exact
 									path="/mes-secrets"
-									component={MesSecretsHome}
+									component={MySecrets}
 								/>
-								<PrivateRoute
-									path="/mes-secrets/:idep/*"
-									component={MesSecrets}
-								/>
-								<PrivateRoute path="/mes-secrets/:idep" component={MesSecrets} />
-
 								<PrivateRoute
 									path="/visite-guidee"
 									component={VisiteGuideeDebut}

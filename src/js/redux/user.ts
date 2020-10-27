@@ -3,13 +3,21 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { assert } from "evt/tools/typeSafety/assert";
-
-import { env } from 'js/env';
+import { getEnv } from 'js/env';
 import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
-import { actions as secretsActions } from "./secrets";
+import { vaultApi } from "js/vault";
+import memoize from "memoizee";
+
+const env = getEnv();
+
+/** We avoid importing app right away to prevent require cycles */
+const getApp = memoize(
+	() => import("./app"),
+	{ "promise": true }
+);
 
 /*
 type UnpackAxiosResponse<T> = T extends AxiosResponse<infer U> ? U : never;
@@ -39,23 +47,19 @@ export type State = {
     SSH: {
         SSH_PUBLIC_KEY: string;
         SSH_KEY_PASSWORD: string;
-    },
+    };
     KEYCLOAK: {
         KC_ID_TOKEN: string | undefined;
         KC_REFRESH_TOKEN: string | undefined;
         KC_ACCESS_TOKEN: string | undefined;
-    },
-    KUBERNETES: {
-        KUB_SERVER_NAME: string;
-        KUB_SERVER_URL: string;
-    },
+    } | undefined;
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
         VAULT_MOUNT: string,
         VAULT_TOP_DIR: string | undefined,
         DATA: Record<string, string>;
-    }
+    };
 };
 
 export const name = "user";
@@ -94,7 +98,7 @@ const asyncThunks = {
                 `${name}/${typePrefix}`,
                 async (...[, { dispatch }]) => {
 
-                    const { actions: appActions } = await import("./app");
+                    const { actions: appActions } = await getApp();
 
                     dispatch(appActions.startWaiting());
 
@@ -111,6 +115,37 @@ const asyncThunks = {
 
 
     })(),
+	...(() => {
+
+		const typePrefix = "updateVaultSecret";
+
+		return {
+			[typePrefix]: createAsyncThunk(
+				`${name}/${typePrefix}`,
+				async (payload: { location: string; data: Record<string, string>; }, { dispatch }) => {
+
+					const { location, data } = payload;
+
+					assert( 
+						typeof location === "string" && 
+						typeof data === "object"
+					);
+
+                    const { actions: appActions } = await getApp();
+
+					dispatch(appActions.startWaiting());
+
+					await vaultApi.uploadSecret({ "path": location, data });
+
+					dispatch(appActions.stopWaiting());
+
+					return { data };
+
+				}
+			)
+		};
+
+	})()
 
 };
 
@@ -191,18 +226,26 @@ const reusableReducers = {
         state: State,
         { payload }: {
             payload: {
-                data: Record<string, string>;
+                data: Record<string, string | undefined>;
             }
         }
     ) => {
-
 
         const { data } = payload;
 
         assert(typeof data === "object");
 
         Object.keys(data)
-            .forEach(key => state.VAULT.DATA[key] = data[key]);
+            .forEach(key => {
+                const v = data[key];
+
+                if( v === undefined ){
+                    return;
+                }
+
+                state.VAULT.DATA[key] = v;
+
+            });
 
     },
 };
@@ -223,15 +266,7 @@ const slice = createSlice({
             "SSH_PUBLIC_KEY": '',
             "SSH_KEY_PASSWORD": '',
         },
-        "KEYCLOAK": {
-            "KC_ID_TOKEN": undefined,
-            "KC_REFRESH_TOKEN": undefined,
-            "KC_ACCESS_TOKEN": undefined,
-        },
-        "KUBERNETES": {
-            "KUB_SERVER_NAME": env.KUBERNETES.KUB_SERVER_NAME,
-            "KUB_SERVER_URL": env.KUBERNETES.KUB_SERVER_URL,
-        },
+        "KEYCLOAK": undefined,
         "VAULT": {
             "VAULT_ADDR": env.VAULT.VAULT_BASE_URI,
             "VAULT_TOKEN": undefined,
@@ -241,17 +276,6 @@ const slice = createSlice({
         },
     }),
     "reducers": {
-        //TODO: We should be able to assume there is no more prop on KEYCLOAK
-        /*
-        {
-          type: 'onyxia/app/setAthenticated',
-          payload: {
-            accessToken: 'eyJhbJVcGNsb3VkIiwiYXVkIjpbIm9ue...',
-            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCIgOiA...',
-            idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldU...'
-          }
-        }
-        */
         "setAuthenticated": ( //USED
             state,
             { payload }: PayloadAction<{
@@ -263,17 +287,11 @@ const slice = createSlice({
 
             const { idToken, refreshToken, accessToken } = payload;
 
-            assert(
-                typeof idToken === "string" &&
-                typeof refreshToken === "string" &&
-                typeof accessToken === "string"
-            );
-
-            const { KEYCLOAK } = state;
-
-            KEYCLOAK.KC_ID_TOKEN = idToken;
-            KEYCLOAK.KC_REFRESH_TOKEN = refreshToken;
-            KEYCLOAK.KC_ACCESS_TOKEN = accessToken;
+            state.KEYCLOAK = {
+                "KC_ID_TOKEN": idToken,
+                "KC_REFRESH_TOKEN": refreshToken,
+                "KC_ACCESS_TOKEN": accessToken
+            };
 
         },
         /*
@@ -408,7 +426,7 @@ const slice = createSlice({
 
 
         builder.addCase(
-            secretsActions.updateVaultSecret.fulfilled,
+            asyncThunks.updateVaultSecret.fulfilled,
             (state, { payload }) => reusableReducers.newVaultData(state, { payload })
         );
 
