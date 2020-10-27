@@ -1,5 +1,8 @@
 import Mustache from 'mustache';
 import type { RootState } from "js/redux/store";
+import { getEnv } from "js/env";
+
+const env = getEnv();
 
 // Disable mustache html escaping
 Mustache.escape = text => text;
@@ -12,30 +15,30 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 };
 
 const formatUser = (user: RootState["user"]) => ({
-	user: {
-		idep: user.IDEP,
-		name: user.USERNAME,
-		email: user.USERMAIL,
-		password: (user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password) || '',
-		key: user.USERKEY,
-		ip: user.IP,
+	"user": {
+		"idep": user.IDEP,
+		"name": user.USERNAME,
+		"email": user.USERMAIL,
+		"password": (user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password) || '',
+		"key": user.USERKEY,
+		"ip": user.IP,
 	},
-	git: {
-		name:
+	"git": {
+		"name":
 			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_name) || '',
-		email:
+		"email":
 			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_mail) || '',
-		credentials_cache_duration:
+		"credentials_cache_duration":
 			(user.VAULT &&
 				user.VAULT.DATA &&
 				user.VAULT.DATA.git_credentials_cache_duration) ||
 			'0',
 	},
-	status: user.STATUS,
-	keycloak: { ...user.KEYCLOAK },
-	kubernetes: { ...user.KUBERNETES },
-	vault: { ...user.VAULT },
-	s3: { ...user.S3 },
+	"status": user.STATUS,
+	"keycloak": { ...user.KEYCLOAK },
+	"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
+	"vault": { ...user.VAULT },
+	"s3": { ...user.S3 },
 });
  
 
