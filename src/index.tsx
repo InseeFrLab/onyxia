@@ -9,7 +9,7 @@ import { actions as userActions } from "js/redux/user";
 import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import { env } from "js/env";
+import { getEnv } from "js/env";
 import { initVaultData } from "js/vault";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
@@ -19,7 +19,7 @@ const App: any = App_;
 JavascriptTimeAgo.locale(fr);
 
 assert(
-    env.AUTHENTICATION.TYPE === "oidc",
+    getEnv().AUTHENTICATION.TYPE === "oidc",
     [
         "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
         "the only authentication mechanism currently supported"

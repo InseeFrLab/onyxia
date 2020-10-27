@@ -8,7 +8,9 @@ import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
 import D from 'js/i18n';
 import exportKub from './exportCredentialsKub';
-import { env } from "js/env";
+import { getEnv } from "js/env";
+
+const env = getEnv();
 
 const EnTete = () => (
 	<div className="en-tete">

@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { axiosURL } from "js/utils/axios-config";
 import './style.scss';
-import { env } from "js/env";
+import { getEnv } from "js/env";
 import createTheme from 'js/components/material-ui-theme';
 import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
@@ -17,7 +17,7 @@ const theme = createTheme();
 
 const fetchContent = (): Promise<Content.Root> =>
 	(axiosURL as any)(
-		env.CONTENT.HOMEPAGE_URL ?? "/pages-content/home.yaml"
+		getEnv().CONTENT.HOMEPAGE_URL ?? "/pages-content/home.yaml"
 	).then(parseYaml);
 
 declare namespace Content {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getKeycloakInstance } from "./getKeycloakInstance";
 import { locallyStoredOidcAccessToken } from './locallyStoredOidcAccessToken';
-import { env } from 'js/env';
+import { getEnv } from 'js/env';
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 
@@ -12,7 +12,7 @@ export const getStore = memoize(
 );
 
 
-const BASE_URL = env.API.BASE_URL;
+const BASE_URL = getEnv().API.BASE_URL;
 
 export const refreshToken = async (minValidity = 60) => {
 
@@ -49,7 +49,7 @@ export const { axiosAuth } = (() => {
 	// eslint-disable-next-line
 	walk: {
 
-		if (env.AUTHENTICATION.TYPE !== "oidc") {
+		if (getEnv().AUTHENTICATION.TYPE !== "oidc") {
 			// eslint-disable-next-line
 			break walk;
 		}

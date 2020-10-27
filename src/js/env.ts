@@ -1,5 +1,9 @@
 import { id } from "evt/tools/typeSafety/id";
-import { assert } from "evt/tools/typeSafety/assert";
+import memoizee from "memoizee";
+import { assert as _assert } from "evt/tools/typeSafety/assert";
+
+const assert: typeof _assert = process.env["NODE_ENV"] === "test" ? 
+	(() => { }) : _assert;
 
 function getEnvVar(key: string): string;
 function getEnvVar(key: string, options: { mandatory: false; }): string;
@@ -38,8 +42,7 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 }
 
-
-export const env = {
+export const getEnv = memoizee(() => ({
 	"API": {
 		"BASE_URL": getEnvVar("BASE_API_URL")
 	},
@@ -85,15 +88,15 @@ export const env = {
 			'confidential-port': number;
 		};
 	} | {
-		TYPE: "not_oidc";
+		TYPE: "none";
 	}>((() => {
 
-		const TYPE = getEnvVar("AUTH_TYPE")?.toLowerCase() ?? "not_oidc";
+		const TYPE = getEnvVar("AUTH_TYPE")?.toLowerCase() ?? "none";
 
-		assert(TYPE === "oidc" || TYPE === "not_oidc");
+		assert(TYPE === "oidc" || TYPE === "none");
 
 		switch (TYPE) {
-			case "not_oidc": return { TYPE } as const;
+			case "none": return { TYPE } as const;
 			case "oidc": return {
 				TYPE,
 				"OIDC": {
@@ -113,7 +116,7 @@ export const env = {
 		"BASE_URI": getEnvVar("MINIO_BASE_URI"),
 		"END_POINT": getEnvVar("MINIO_END_POINT"),
 		"PORT": getEnvVar("MINIO_PORT", { "parseInt": true }),
-		"MINIMUN_DURATION": getEnvVar("MINIO_END_MINIMUM_DURATION_MS", { "parseInt": true })
+		"MINIMUM_DURATION": getEnvVar("MINIO_END_MINIMUM_DURATION_MS", { "parseInt": true })
 	},
 	"FOOTER": {
 		"ONYXIA": {
@@ -124,5 +127,4 @@ export const env = {
 		"BLOG_URL": getEnvVar("BLOG_URL"),
 		"MONITORING_URL": getEnvVar("MONITORING_URL", { "mandatory": false })
 	}
-};
-
+}));

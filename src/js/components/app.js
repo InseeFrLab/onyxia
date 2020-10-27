@@ -35,11 +35,13 @@ import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
-import { env } from "js/env";
+import { getEnv } from "js/env";
 import { useSelector } from "js/redux/store";
 import { MySecrets } from "js/components/MySecrets";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
+
+const env = getEnv();
 
 const initialPathname = "/accueil";
 

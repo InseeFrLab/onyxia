@@ -3,14 +3,15 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { assert } from "evt/tools/typeSafety/assert";
-
-import { env } from 'js/env';
+import { getEnv } from 'js/env';
 import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
 import { vaultApi } from "js/vault";
 import memoize from "memoizee";
+
+const env = getEnv();
 
 /** We avoid importing app right away to prevent require cycles */
 const getApp = memoize(

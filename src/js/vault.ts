@@ -1,11 +1,10 @@
 import axios from 'axios';
 import generator from 'generate-password';
 import { locallyStoredOidcAccessToken } from 'js/utils/locallyStoredOidcAccessToken';
-import { env } from 'js/env';
+import { getEnv } from 'js/env';
 import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
-
 
 /** We avoid importing app right away to prevent require cycles */
 const getStore = memoize(
@@ -13,8 +12,8 @@ const getStore = memoize(
 	{ "promise": true }
 );
 
-const VAULT_BASE_URI = env.VAULT.VAULT_BASE_URI;
-const VAULT_KV_ENGINE = env.VAULT.VAULT_KV_ENGINE;
+const VAULT_BASE_URI = getEnv().VAULT.VAULT_BASE_URI;
+const VAULT_KV_ENGINE = getEnv().VAULT.VAULT_KV_ENGINE;
 
 async function getVaultToken(): Promise<string> {
 

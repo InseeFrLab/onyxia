@@ -1,9 +1,12 @@
 import keycloak_js from "keycloak-js";
-import { env } from "../env";
+import { getEnv } from "../env";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoizee from "memoizee";
 
+
 export const getKeycloakInstance= memoizee(()=> {
+
+    const env = getEnv();
 
     assert(env.AUTHENTICATION.TYPE === "oidc");
 

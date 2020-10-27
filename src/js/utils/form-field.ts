@@ -1,6 +1,8 @@
 import Mustache from 'mustache';
 import type { RootState } from "js/redux/store";
-import { env } from "js/env";
+import { getEnv } from "js/env";
+
+const env = getEnv();
 
 // Disable mustache html escaping
 Mustache.escape = text => text;
