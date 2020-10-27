@@ -5,8 +5,10 @@ export const getAvatar = (service) =>
 	service && service.resource && service.resource.images ? (
 		<Avatar src={service.resource.images['icon-small']} />
 	) : (
-		<Avatar>A</Avatar>
-	);
+			service && service.icon ?
+				<Avatar src={service.icon} /> :
+				<Avatar>?</Avatar>
+		);
 
 export const formatUrl = (url) => {
 	return url;
@@ -35,8 +37,8 @@ const getAvLast = ([first, ...rest]) =>
 	rest.length === 0
 		? []
 		: rest.length === 1
-		? [first]
-		: [first, ...getAvLast(rest)];
+			? [first]
+			: [first, ...getAvLast(rest)];
 
 export const getParamsFromProps = (props) =>
 	props.match && props.match.params ? props.match.params : undefined;
