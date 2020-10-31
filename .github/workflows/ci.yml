@@ -36,6 +36,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build
+          path: build
       - name: Docker meta
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v1.6.0
