@@ -31,6 +31,7 @@ export type S3 = {
     AWS_DEFAULT_REGION: 'us-east-1';
     AWS_S3_ENDPOINT: string;
     AWS_EXPIRATION: string;
+    AWS_BUCKET_NAME: string;
 };
 
 //TODO: All caps here result in unnecessary work in the reducers.
@@ -326,13 +327,16 @@ const slice = createSlice({
                 typeof sessionToken === "string"
             );
 
+            assert(state.IDEP !== undefined, "here, IDEP is supposed to be set");
+
             state.S3 = {
                 "AWS_ACCESS_KEY_ID": accessKey,
                 "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                 "AWS_EXPIRATION": expiration,
                 "AWS_SESSION_TOKEN": sessionToken,
                 "AWS_DEFAULT_REGION": "us-east-1",
-                "AWS_S3_ENDPOINT": env.MINIO.END_POINT
+                "AWS_S3_ENDPOINT": env.MINIO.END_POINT,
+                "AWS_BUCKET_NAME": state.IDEP
             };
 
         },
