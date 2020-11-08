@@ -5,9 +5,9 @@ on:
   #- cron: "0 10 * * *" # everyday at 10am
   push:
     branches:
-      - "**"
+      - '**'
     tags:
-      - "*"
+      - '*'
   pull_request:
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - run: yarn
+      - run: yarn --frozen-lockfile
       - run: yarn build
       - name: Upload build
         uses: actions/upload-artifact@v2
