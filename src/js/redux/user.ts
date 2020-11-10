@@ -53,6 +53,7 @@ export type State = {
         KC_REFRESH_TOKEN: string | undefined;
         KC_ACCESS_TOKEN: string | undefined;
     } | undefined;
+    /*
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
@@ -60,6 +61,7 @@ export type State = {
         VAULT_TOP_DIR: string | undefined,
         DATA: Record<string, string>;
     };
+    */
 };
 
 export const name = "user";

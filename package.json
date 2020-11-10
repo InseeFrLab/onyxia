@@ -36,7 +36,7 @@
     "react-app-rewired": "^2.1.6",
     "source-map-explorer": "^2.4.2",
     "storybook-addon-material-ui": "^0.9.0-alpha.21",
-    "typescript": "^3.9.6",
+    "typescript": "^4.0.5",
     "webpack-bundle-analyzer": "^3.7.0"
   },
   "dependencies": {
@@ -50,10 +50,9 @@
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
     "dayjs": "^1.8.26",
-    "evt": "^1.9.0",
+    "evt": "^1.9.4",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
-    "generate-password": "^1.5.1",
     "js-yaml": "^3.14.0",
     "jsoneditor": "^9.0.0",
     "jsoneditor-react": "^3.0.0",
@@ -64,6 +63,7 @@
     "minio": "^7.0.16",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
+    "path": "^0.12.7",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
     "react": "^16.13.1",
