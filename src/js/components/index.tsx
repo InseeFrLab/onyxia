@@ -1,32 +1,36 @@
 import React from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
-import App_ from "js/components";
-import { store } from "js/redux/store";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
 import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import { getEnv } from "js/env";
-import { initVaultData } from "js/vault";
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
+import { getEnv } from "../env";
+
+import { createStore } from "js/../libs/setup";
+
+import App_ from "js/components/app.container";
 const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
+const env = getEnv();
+
 assert(
-    getEnv().AUTHENTICATION.TYPE === "oidc",
+    env.AUTHENTICATION.TYPE === "oidc",
     [
         "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
         "the only authentication mechanism currently supported"
     ].join(" ")
 );
 
-const initializeUserSessionIfLoggedIn = async (): Promise<void> => {
+
+const initializeUserSessionIfLoggedIn = async () => {
 
     const kc = getKeycloakInstance();
 
@@ -59,6 +63,22 @@ const initializeUserSessionIfLoggedIn = async (): Promise<void> => {
 
     locallyStoredOidcAccessToken.set(kc.token);
 
+    const { email, preferred_username } = locallyStoredOidcAccessToken.getParsed();
+
+    //TODO: Should be the only entry point of the app initialization.
+    const { store } = await createStore({
+        "username": preferred_username,
+        email,
+        "paramsNeededToInitializeVaultClient": {
+            "useInMemoryClient": false,
+            "engine": env.VAULT.ENGINE,
+            "baseUri": env.VAULT.BASE_URI,
+            "role": env.VAULT.ROLE,
+            "oidcAccessToken": kc.token
+        }
+    });
+
+    //TODO: Anti pattern
     store.dispatch(
         userActions.setAuthenticated({
             "accessToken": kc.token,
@@ -67,23 +87,30 @@ const initializeUserSessionIfLoggedIn = async (): Promise<void> => {
         })
     );
 
-    await initVaultData();
+    return store;
+
 
 };
 
 
-const Root: React.FC = () =>
-    useAsync(initializeUserSessionIfLoggedIn, []).status !== "success" ?
+const LoaderOrApp: React.FC = () => {
+
+    const { result: store } = useAsync(initializeUserSessionIfLoggedIn, []);
+
+    return store === undefined ?
         <Loader em={30} /> :
-        <App />
-    ;
+        <Provider store={store}>
+            <App />
+        </Provider>
+        ;
+
+};
+
 
 
 reactDom.render(
     <React.StrictMode>
-        <Provider store={store}>
-            <Root />
-        </Provider>
+        <LoaderOrApp />
     </React.StrictMode>,
     document.getElementById("root")
 );

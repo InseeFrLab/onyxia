@@ -8,8 +8,11 @@ import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
-import { vaultApi } from "js/vault";
+//import { vaultApi } from "js/vault";
+import { prVaultClient } from "js/../libs/secondaryAdapters/restVaultClient";
 import memoize from "memoizee";
+
+import { } from "js/../libs/secondaryAdapters/restVaultClient";
 
 const env = getEnv();
 
@@ -53,7 +56,6 @@ export type State = {
         KC_REFRESH_TOKEN: string | undefined;
         KC_ACCESS_TOKEN: string | undefined;
     } | undefined;
-    /*
     VAULT: {
         VAULT_ADDR: string;
         VAULT_TOKEN: string | undefined;
@@ -61,7 +63,6 @@ export type State = {
         VAULT_TOP_DIR: string | undefined,
         DATA: Record<string, string>;
     };
-    */
 };
 
 export const name = "user";
@@ -137,7 +138,7 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					await vaultApi.uploadSecret({ "path": location, data });
+                    await (await prVaultClient).put({ "path": location, "secret": data });
 
 					dispatch(appActions.stopWaiting());
 
@@ -270,9 +271,9 @@ const slice = createSlice({
         },
         "KEYCLOAK": undefined,
         "VAULT": {
-            "VAULT_ADDR": env.VAULT.VAULT_BASE_URI,
+            "VAULT_ADDR": env.VAULT.BASE_URI,
             "VAULT_TOKEN": undefined,
-            "VAULT_MOUNT": env.VAULT.VAULT_KV_ENGINE,
+            "VAULT_MOUNT": env.VAULT.ENGINE,
             "VAULT_TOP_DIR": undefined,
             "DATA": {},
         },

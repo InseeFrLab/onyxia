@@ -1,0 +1,2 @@
+
+import "js/components/index";

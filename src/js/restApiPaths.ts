@@ -20,4 +20,4 @@ export const restApiPaths = {
 	"deleteService": '/my-lab/app',
 	"getLogs": '/my-lab/app/logs',
 	"configuration": '/public/configuration',
-};
+} as const;

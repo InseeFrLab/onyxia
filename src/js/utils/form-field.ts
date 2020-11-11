@@ -1,5 +1,5 @@
 import Mustache from 'mustache';
-import type { RootState } from "js/redux/store";
+import type { RootState } from "js/../libs/setup";
 import { getEnv } from "js/env";
 
 const env = getEnv();

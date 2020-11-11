@@ -13,7 +13,7 @@ import './style.scss';
 import {getScreenTypeFromWidth} from "js/model/ScreenType";
 import type {ScreenType} from "js/model/ScreenType";
 
-import { actions, useSelector, useDispatch } from "js/redux/store";
+import { actions, useSelector, useDispatch } from "js/redux/legacyActions";
 
 
 

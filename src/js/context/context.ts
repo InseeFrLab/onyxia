@@ -1,4 +1,4 @@
-import { store } from "js/redux/store";
+import { store } from "js/redux/legacyActions";
 
 export const getContext = () => {
 	return store.getState().user;

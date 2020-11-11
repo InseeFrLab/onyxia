@@ -69,7 +69,7 @@ const { reducer, actions } = createSlice({
 
 export { reducer };
 
-const getProfileKeyPathFactory = (params: { username: string; }) => {
+export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
     const { username } = params;
 

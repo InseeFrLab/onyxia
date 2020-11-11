@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import vignettes from './vignettes';
-import { actions } from 'js/redux/store';
+import { actions } from 'js/redux/legacyActions';
 import Visite from './visite-guidee.component';
 import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
@@ -9,7 +9,7 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { store } from "js/redux/store";
+import { store } from "js/redux/legacyActions";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";

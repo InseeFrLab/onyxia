@@ -12,7 +12,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
 import { useHistory } from 'react-router-dom';
 import useBetaTest from '../hooks/useBetaTest';
-import { useSelector } from "js/redux/store";
+import { useSelector } from "js/redux/legacyActions";
 
 const RegionBanner = () => {
 	const regions = useSelector(store => store.regions);

@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
-import { actions } from 'js/redux/store';
+import { actions } from 'js/redux/legacyActions';
 import VisiteGuide from './visite-guidee.component';
 import { Next, LinkTo, Arrow } from './vignette-commons';
 import D from 'js/i18n';

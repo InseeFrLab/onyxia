@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { actions } from 'js/redux/store';
+import { actions } from 'js/redux/legacyActions';
 import { MonCompte } from './mon-compte.component';
 
 const { logout, getUserInfo, updateVaultSecret } = actions;

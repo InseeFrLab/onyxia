@@ -46,7 +46,7 @@ const fetchMinioToken = async () => {
 
 export async function getMinioToken() {
 
-	const { store, actions } = await import("js/redux/store");
+	const { store, actions } = await import("js/redux/legacyActions");
 
 	const { S3 }  = store.getState().user;
 

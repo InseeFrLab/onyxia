@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { MyFiles as MyFilesUnconnected } from './my-files.component';
-import { actions } from 'js/redux/store';
+import { actions } from 'js/redux/legacyActions';
 
 const {
 	loadBucketContent,

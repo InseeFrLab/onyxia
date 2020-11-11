@@ -11,10 +11,9 @@ function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-export function createRestImplOfVaultClient(
+export function createInMemoryImplOfVaultClient(
     params: {
         engine: string;
-        defaultPath: string;
     }
 ): VaultClient {
 

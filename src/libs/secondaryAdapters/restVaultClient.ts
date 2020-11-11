@@ -5,10 +5,11 @@ import memoize from "memoizee";
 import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
 import type { Secret, SecretWithMetadata, VaultClient } from "../ports/VaultClient";
+import { Deferred } from "evt/tools/Deferred";
 
 const version = "v1";
 
-export function createInMemoryImplOfVaultClient(
+export function createRestImplOfVaultClient(
 	params: {
 		baseUri: string;
 		engine: string;
@@ -26,7 +27,7 @@ export function createInMemoryImplOfVaultClient(
 		oidcAccessToken
 	})
 
-	return {
+	const vaultClient: VaultClient = {
 		"config": {
 			engine
 		},
@@ -78,7 +79,16 @@ export function createInMemoryImplOfVaultClient(
 		}
 	};
 
+	dVaultClient.resolve(vaultClient);
+
+	return vaultClient;
+
 }
+
+const dVaultClient = new Deferred<VaultClient>();
+
+/** @deprecated */
+export const { pr: prVaultClient } = dVaultClient;
 
 
 function getAxiosInstance(

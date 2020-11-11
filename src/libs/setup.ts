@@ -1,8 +1,8 @@
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { createRestImplOfVaultClient } from "./secondaryAdapters/inMemoryVaultClient";
-import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/restVaultClient";
+import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/inMemoryVaultClient";
+import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient";
 import * as translateVaultRequests from "./useCases/translateVaultRequests";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as viewAndEditUserProfileUseCase from "./useCases/viewAndEditUserProfile";
@@ -10,30 +10,54 @@ import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
 import { id } from "evt/tools/typeSafety/id";
 import { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
+import { Deferred } from "evt/tools/Deferred";
+import { assert } from "evt/tools/typeSafety/assert";
+
+/* ---------- Legacy ---------- */
+import * as myFiles from "js/redux/myFiles";
+import * as myLab from "js/redux/myLab";
+import * as regions from "js/redux/regions";
+import * as user from "js/redux/user";
+import * as app from "js/redux/app";
+
+
+
 
 export type Dependencies = {
     vaultClient: VaultClient;
     evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
 };
 
-export async function getStore(
+
+export async function createStore(
     params: {
-        vault: {
-            username: string;
-            email: string;
-            defaultPath: string;
-        } & ({
+        username: string;
+        email: string;
+        paramsNeededToInitializeVaultClient:
+        {
             useInMemoryClient: false;
-        } & Parameters<typeof createRestImplOfVaultClient>[0] | {
+        } & Parameters<typeof createRestImplOfVaultClient>[0]
+        |
+        {
             useInMemoryClient: true;
-            baseUri: string;
-            role: string;
-            oidcAccessToken: string;
-        } & Parameters<typeof createInMemoryImplOfVaultClient>[0])
+        } & Parameters<typeof createInMemoryImplOfVaultClient>[0]
     }
 ) {
 
-    const { vault } = params;
+    assert(
+        createStore.isFirstInvocation,
+        "createStore has already been called, " +
+        "only one instance of the store is supposed to" +
+        "be created"
+    );
+
+    createStore.isFirstInvocation = false;
+
+    const {
+        username,
+        email,
+        paramsNeededToInitializeVaultClient
+    } = params;
 
     const {
         vaultClientProxy: vaultClient,
@@ -41,9 +65,9 @@ export async function getStore(
     } = getVaultClientProxyWithTranslator({
         "translateForClientType": "CLI",
         "vaultClient":
-            vault.useInMemoryClient ?
-                createInMemoryImplOfVaultClient(vault) :
-                createRestImplOfVaultClient(vault),
+            paramsNeededToInitializeVaultClient.useInMemoryClient ?
+                createInMemoryImplOfVaultClient(paramsNeededToInitializeVaultClient) :
+                createRestImplOfVaultClient(paramsNeededToInitializeVaultClient),
     });
 
 
@@ -51,7 +75,14 @@ export async function getStore(
         "reducer": {
             [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
             [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
-            [viewAndEditUserProfileUseCase.sliceName]: viewAndEditUserProfileUseCase.reducer
+            [viewAndEditUserProfileUseCase.sliceName]: viewAndEditUserProfileUseCase.reducer,
+
+            // Legacy
+            [myFiles.name]: myFiles.reducer,
+            [myLab.name]: myLab.reducer,
+            [app.name]: app.reducer,
+            [user.name]: user.reducer,
+            [regions.name]: regions.reducer,
         },
         "middleware": getDefaultMiddleware({
             "thunk": {
@@ -72,26 +103,31 @@ export async function getStore(
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
-            { "path": vault.defaultPath }
+            { "path": username }
         )
     );
 
     await store.dispatch(
         viewAndEditUserProfileUseCase.privateThunks.initializeProfile(
             {
-                "username": vault.username,
-                "email": vault.email
+                "username": username,
+                email
             }
         )
     );
+
+    dStoreInstance.resolve(store);
 
     return { store };
 
 }
 
+createStore.isFirstInvocation = true;
 
-export type RootState = ReturnType<AsyncReturnType<typeof getStore>["store"]["getState"]>;
 
+export type Store = AsyncReturnType<typeof createStore>["store"];
+
+export type RootState = ReturnType<Store["getState"]>;
 
 export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
     ReturnType,
@@ -99,4 +135,14 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
     Dependencies,
     Action<string>
 >;
+
+const dStoreInstance = new Deferred<Store>();
+
+/** 
+ * A promise that resolve to the store instance.
+ * If createStore isn't called it's pending forever.
+ * 
+ * @deprecated: use "js/react/hooks" to interact with the store.
+ */
+export const { pr: prStore } = dStoreInstance;
 
