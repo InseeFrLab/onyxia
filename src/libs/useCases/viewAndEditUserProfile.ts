@@ -174,7 +174,6 @@ export const thunks = {
                     "value": generatePassword()
                 })
             )
-
 };
 
 

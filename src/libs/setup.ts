@@ -124,6 +124,11 @@ export async function createStore(
 
 createStore.isFirstInvocation = true;
 
+export const thunks = {
+    [viewAndEditUserProfileUseCase.sliceName]: viewAndEditUserProfileUseCase.thunks,
+    [secretExplorerUseCase.sliceName]: secretExplorerUseCase.thunks,
+    [translateVaultRequests.sliceName]: translateVaultRequests.thunks
+};
 
 export type Store = AsyncReturnType<typeof createStore>["store"];
 
@@ -136,6 +141,9 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
     Action<string>
 >;
 
+
+
+
 const dStoreInstance = new Deferred<Store>();
 
 /** 
@@ -145,4 +153,5 @@ const dStoreInstance = new Deferred<Store>();
  * @deprecated: use "js/react/hooks" to interact with the store.
  */
 export const { pr: prStore } = dStoreInstance;
+
 

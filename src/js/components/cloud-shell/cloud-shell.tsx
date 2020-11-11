@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from "js/redux/legacyActions";
+import { useDispatch, useSelector } from "js/redux/hooks";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';

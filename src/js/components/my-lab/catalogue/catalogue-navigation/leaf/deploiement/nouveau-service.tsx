@@ -26,7 +26,8 @@ import { assert } from "evt/tools/typeSafety/assert";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, actions } from "js/redux/legacyActions";
+import { actions } from "js/redux/legacyActions";
+import { useDispatch, useSelector } from "js/redux/hooks";
 import type { RootState } from "js/redux/legacyActions";
 
 type Service = {

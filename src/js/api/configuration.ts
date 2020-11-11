@@ -1,7 +1,7 @@
 import { restApiPaths } from 'js/restApiPaths';
 import { Region } from 'js/model/Region';
 import { axiosPublic } from "js/utils/axios-config";
-import { store } from "js/redux/legacyActions";
+import { prStore } from "js/../libs/setup";
 import { actions as regionsActions } from "js/redux/regions";
 
 export interface Configuration {
@@ -15,7 +15,10 @@ export interface Build {
 }
 
 export const getConfiguration = async () => {
-	return await axiosPublic
+
+	const store= await prStore;
+
+	return axiosPublic
 		.get<Configuration>(restApiPaths.configuration)
 		.then((resp) => {
 			const configuration = (resp as unknown) as Configuration;

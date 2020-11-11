@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector } from "js/redux/legacyActions";
+import { useSelector } from "js/redux/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";

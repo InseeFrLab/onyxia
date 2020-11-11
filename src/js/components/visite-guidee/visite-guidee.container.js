@@ -9,7 +9,7 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { store } from "js/redux/legacyActions";
+import { prStore } from "js/../libs/setup";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -32,7 +32,7 @@ const mapToDispatchToProps = dispatch => ({
 
 		dServiceCreeId = new Deferred();
 
-		const orchestratorType = store.getState().regions.selectedRegion.services.type;
+		const orchestratorType = (await prStore).getState().regions.selectedRegion.services.type;
 
 		const catalogId = orchestratorType === "KUBERNETES" ?
 			"inseefrlab-helm-charts-datascience" :
@@ -43,12 +43,13 @@ const mapToDispatchToProps = dispatch => ({
 			catalogId
 		};
 
+
 		dispatch(
 			creerNouveauService({
 				service,
 				"options": getValuesObject(
 					getOptions(
-						store.getState().user,
+						(await prStore).getState().user,
 						service,
 						await getMinioToken(),
 						{}

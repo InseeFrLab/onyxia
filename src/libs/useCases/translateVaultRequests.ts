@@ -1,5 +1,3 @@
-
-
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
@@ -46,6 +44,3 @@ export const thunks = {
 
         }
 };
-
-
-

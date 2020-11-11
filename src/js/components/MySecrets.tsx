@@ -1,28 +1,41 @@
 
-import React, { useMemo } from "react";
-import { vaultApi } from "js/vault";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
-import { useAsync } from "react-async-hook";
-import Loader from "js/components/commons/loader";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "js/redux/hooks";
+import { thunks } from "js/../libs/setup";
 
 
 export const MySecrets: React.FC = () => {
 
-    const path = useMemo(
-        ()=>`/${locallyStoredOidcAccessToken.getParsed().preferred_username}/.onyxia/profile`, 
-        []
-    );
+    const dispatch = useDispatch();
 
-    const { result: profile }= useAsync(
-        () => vaultApi.getSecret({ path }),
-        [ path ]
-    );
+    const viewAndEditUserProfile = useSelector(state => state.viewAndEditUserProfile);
+    const secretExplorer = useSelector(state => state.secretExplorer);
 
-    return profile === undefined ? 
-        <Loader em={30} /> :
+    useEffect(() => {
+
+        (async () => {
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            console.log("Go, update kaggleApiToken");
+
+            dispatch(
+                thunks.viewAndEditUserProfile.changeValue({
+                    "key": "kaggleApiToken",
+                    "value": `${Date.now()}`
+                })
+            );
+
+        })();
+
+
+    }, []);
+
+    return (
         <>
-            <h1>Here are the secrets currently stored at {path}</h1>
-            {JSON.stringify(profile, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
-        </>;
+            <h1>Here are the secrets currently stored at {secretExplorer.currentPath}</h1>
+            {JSON.stringify(viewAndEditUserProfile, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
+        </>
+    );
 
 };

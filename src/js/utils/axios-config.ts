@@ -95,7 +95,7 @@ export const { axiosAuth } = (() => {
 })();
 
 
-const { axiosPublic } = (() => {
+export const { axiosPublic } = (() => {
 
 	const axiosPublic = axios.create({ baseURL: BASE_URL });
 
