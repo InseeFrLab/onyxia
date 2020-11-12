@@ -60,11 +60,11 @@ export const { axiosAuth } = (() => {
 
 				const keycloakInstance = getKeycloakInstance();
 
-				const refreshed: any = await keycloakInstance.updateToken(60);
+				const refreshed = await keycloakInstance.updateToken(60);
 
 				if (refreshed) {
 
-					assert(keycloakInstance.token !== undefined); //TODO: figure out
+					assert(keycloakInstance.token !== undefined); 
 
 					locallyStoredOidcAccessToken.set(keycloakInstance.token);
 

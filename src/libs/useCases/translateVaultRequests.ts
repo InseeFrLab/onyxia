@@ -5,12 +5,10 @@ import type { getVaultClientProxyWithTranslator } from "../ports/VaultClient";
 import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
 
 export type VaultTranslatorState = {
-    selectedClientType: Parameters<typeof getVaultClientProxyWithTranslator>[0]["translateForClientType"];
-    evtTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
+    selectedVaultClientType: Parameters<typeof getVaultClientProxyWithTranslator>[0]["translateForClientType"];
 };
 
 export const sliceName = "translateVaultRequests";
-
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
@@ -26,21 +24,30 @@ export { reducer };
 
 export const thunks = {
     "selectTranslator":
-        (params: { clientType: VaultTranslatorState["selectedClientType"]; }): AppThunk<void> => (...args) => {
+        (params: { clientType: VaultTranslatorState["selectedVaultClientType"]; }): AppThunk<void> => dispatch => {
 
             const { clientType } = params;
 
-            const [dispatch, , { evtVaultCliTranslation }] = args;
 
             switch (clientType) {
                 case "CLI":
                     dispatch(
                         actions.translatorSelected({
-                            "selectedClientType": clientType,
-                            "evtTranslation": evtVaultCliTranslation
+                            "selectedVaultClientType": clientType
                         })
                     );
             }
 
-        }
+        },
+    "getSelectedTranslator":
+        () => (...[, getState, { evtVaultCliTranslation }]: Parameters<AppThunk<void>>) => {
+
+            const key = "evtVaultTranslation";
+
+            switch (getState().translateVaultRequests.selectedVaultClientType) {
+                case "CLI":
+                    return { [key]: evtVaultCliTranslation };
+            }
+
+        },
 };
