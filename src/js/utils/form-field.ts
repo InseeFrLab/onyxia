@@ -35,6 +35,7 @@ const formatUser = (
 	"keycloak": { ...user.KEYCLOAK },
 	"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
 	"vault": { ...user.VAULT },
+	"kaggleApiToken": viewAndEditUserProfileState.kaggleApiToken.value,
 	"s3": { ...user.S3 },
 });
  

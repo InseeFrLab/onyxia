@@ -104,7 +104,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					/>
 					<EditableCopyableField
 						copy
-						label={D.gitUserName}
+						label={D.gitUserEmail}
 						value={viewAndEditUserProfileState.gitEmail.value}
 						type="string"
 						onValidate={(value: string) => dispatch(
@@ -114,12 +114,22 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					/>
 					<EditableCopyableField
 						copy
-						label={D.gitUserName}
+						label={D.gitCacheDuration}
 						value={"" + viewAndEditUserProfileState.gitCredentialCacheDuration.value}
 						type="string"
 						onValidate={(value: string) => dispatch(
 							thunks.viewAndEditUserProfile.changeValue(
 								{ "key": "gitCredentialCacheDuration", "value": parseInt(value) || 0 })
+						)}
+					/>
+					<EditableCopyableField
+						copy
+						label={D.kaggleApiToken}
+						value={viewAndEditUserProfileState.kaggleApiToken.value ?? ""}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.viewAndEditUserProfile.changeValue(
+								{ "key": "kaggleApiToken", value })
 						)}
 					/>
 
