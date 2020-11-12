@@ -1,5 +1,5 @@
 
-import { generatePlaceholderInitialState } from "../utils/generatePlaceholderInitialState";
+import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
@@ -36,7 +36,7 @@ export const sliceName = "userProfileInVault";
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
-    "initialState": generatePlaceholderInitialState<UserProfileInVaultState>(
+    "initialState": createObjectThatThrowsIfAccessed<UserProfileInVaultState>(
         "The user profile should have been initialized during the store initialization"
     ),
     "reducers": {

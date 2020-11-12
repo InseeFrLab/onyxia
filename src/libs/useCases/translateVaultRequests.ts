@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import type { getVaultClientProxyWithTranslator } from "../ports/VaultClient";
-import { generatePlaceholderInitialState } from "../utils/generatePlaceholderInitialState";
+import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
 
 export type VaultTranslatorState = {
     selectedClientType: Parameters<typeof getVaultClientProxyWithTranslator>[0]["translateForClientType"];
@@ -14,7 +14,7 @@ export const sliceName = "translateVaultRequests";
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
-    "initialState": generatePlaceholderInitialState<VaultTranslatorState>(
+    "initialState": createObjectThatThrowsIfAccessed<VaultTranslatorState>(
         "A translator should have been selected in the store initialization"
     ),
     "reducers": {

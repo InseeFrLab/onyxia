@@ -11,6 +11,7 @@ import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
 import { getEnv } from "../env";
+import { actions } from "js/redux/legacyActions";
 
 import { createStore } from "js/../libs/setup";
 
@@ -50,7 +51,10 @@ const initializeUserSessionIfLoggedIn = async () => {
     if (!isAuthenticated) {
 
         locallyStoredOidcAccessToken.clear();
-        return;
+
+        const { store } = await createStore({ "isUserLoggedIn": false });
+
+        return store;
 
     }
 
@@ -67,6 +71,7 @@ const initializeUserSessionIfLoggedIn = async () => {
 
     //TODO: Should be the only entry point of the app initialization.
     const { store } = await createStore({
+        "isUserLoggedIn": true,
         "username": preferred_username,
         email,
         "paramsNeededToInitializeVaultClient": {
@@ -86,6 +91,8 @@ const initializeUserSessionIfLoggedIn = async () => {
             "idToken": kc.idToken
         })
     );
+
+    await store.dispatch(actions.getUserInfo());
 
     return store;
 

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import type { AppThunk } from "../setup";
-import { generatePlaceholderInitialState } from "../utils/generatePlaceholderInitialState";
+import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
 
 export declare type SecretExplorerState =
     SecretExplorerState.Loaded |
@@ -38,7 +38,7 @@ export const sliceName = "secretExplorer";
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
-    "initialState": generatePlaceholderInitialState<SecretExplorerState>(
+    "initialState": createObjectThatThrowsIfAccessed<SecretExplorerState>(
         "Navigation to the default path should have been done in the store initialization"
     ),
     "reducers": {

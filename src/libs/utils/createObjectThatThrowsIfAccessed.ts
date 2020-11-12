@@ -1,5 +1,5 @@
 
-export function generatePlaceholderInitialState<State extends object>(
+export function createObjectThatThrowsIfAccessed<State extends object>(
     debugMessage?: string
 ): State {
 

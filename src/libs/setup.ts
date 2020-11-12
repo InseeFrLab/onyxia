@@ -8,10 +8,10 @@ import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
 import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
-import { id } from "evt/tools/typeSafety/id";
-import { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
+import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
+import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -28,9 +28,16 @@ export type Dependencies = {
     evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
 };
 
+export declare type CreateStoreParams = CreateStoreParams.UserNotLoggedIn | CreateStoreParams.UserLoggedIn;
 
-export async function createStore(
-    params: {
+export declare namespace CreateStoreParams {
+
+    export type UserNotLoggedIn = {
+        isUserLoggedIn: false;
+    };
+
+    export type UserLoggedIn = {
+        isUserLoggedIn: true;
         username: string;
         email: string;
         paramsNeededToInitializeVaultClient:
@@ -41,23 +48,34 @@ export async function createStore(
         {
             useInMemoryClient: true;
         } & Parameters<typeof createInMemoryImplOfVaultClient>[0]
-    }
-) {
+    };
 
-    assert(
-        createStore.isFirstInvocation,
-        "createStore has already been called, " +
-        "only one instance of the store is supposed to" +
-        "be created"
-    );
+}
 
-    createStore.isFirstInvocation = false;
+const reducer = {
+        // Legacy
+        [myFiles.name]: myFiles.reducer,
+        [myLab.name]: myLab.reducer,
+        [app.name]: app.reducer,
+        [user.name]: user.reducer,
+        [regions.name]: regions.reducer,
 
-    const {
-        username,
-        email,
-        paramsNeededToInitializeVaultClient
-    } = params;
+        [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
+        [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
+        [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer
+};
+
+const getMiddleware = (params: { dependencies: Dependencies; })=> ({
+        "middleware": getDefaultMiddleware({
+            "thunk": {
+                "extraArgument": params.dependencies
+            },
+        }),
+});
+
+async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) {
+
+    const { username, email, paramsNeededToInitializeVaultClient } = params;
 
     const {
         vaultClientProxy: vaultClient,
@@ -70,30 +88,15 @@ export async function createStore(
                 createRestImplOfVaultClient(paramsNeededToInitializeVaultClient),
     });
 
-
     const store = configureStore({
-        "reducer": {
-            [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
-            [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
-            [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer,
-
-            // Legacy
-            [myFiles.name]: myFiles.reducer,
-            [myLab.name]: myLab.reducer,
-            [app.name]: app.reducer,
-            [user.name]: user.reducer,
-            [regions.name]: regions.reducer,
-        },
-        "middleware": getDefaultMiddleware({
-            "thunk": {
-                "extraArgument": id<Dependencies>({
+        reducer,
+        ...getMiddleware({
+            "dependencies": {
                     vaultClient,
                     evtVaultCliTranslation
-                })
-            },
-        }),
+            }
+        })
     });
-
 
     store.dispatch(
         translateVaultRequests.thunks.selectTranslator(
@@ -116,13 +119,55 @@ export async function createStore(
         )
     );
 
+    return { store };
+
+}
+
+
+async function createStoreForNonLoggedUser(
+    _params: CreateStoreParams.UserNotLoggedIn
+): Promise<AsyncReturnType<typeof createStoreForLoggedUser>> {
+
+    const store = configureStore({
+        reducer,
+        ...getMiddleware({
+            "dependencies": {
+                "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
+                "evtVaultCliTranslation": createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>()
+            }
+        })
+    });
+
+    return { store };
+
+
+}
+
+createStore.isFirstInvocation = true;
+
+export async function createStore(params: CreateStoreParams) {
+
+    assert(
+        createStore.isFirstInvocation,
+        "createStore has already been called, " +
+        "only one instance of the store is supposed to" +
+        "be created"
+    );
+
+    createStore.isFirstInvocation = false;
+
+    const { store } = await (
+        params.isUserLoggedIn ?
+            createStoreForLoggedUser(params) :
+            createStoreForNonLoggedUser(params)
+    );
+
     dStoreInstance.resolve(store);
 
     return { store };
 
 }
 
-createStore.isFirstInvocation = true;
 
 export const thunks = {
     [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.thunks,
