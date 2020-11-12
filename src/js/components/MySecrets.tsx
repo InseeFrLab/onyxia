@@ -8,7 +8,7 @@ export const MySecrets: React.FC = () => {
 
     const dispatch = useDispatch();
 
-    const userProfileInVolt = useSelector(state => state.userProfileInVolt);
+    const userProfileInVault = useSelector(state => state.userProfileInVault);
     const secretExplorer = useSelector(state => state.secretExplorer);
 
     useEffect(() => {
@@ -20,7 +20,7 @@ export const MySecrets: React.FC = () => {
             console.log("Go, update kaggleApiToken");
 
             dispatch(
-                thunks.userProfileInVolt.changeValue({
+                thunks.userProfileInVault.changeValue({
                     "key": "kaggleApiToken",
                     "value": `${Date.now()}`
                 })
@@ -34,7 +34,7 @@ export const MySecrets: React.FC = () => {
     return (
         <>
             <h1>Here are the secrets currently stored at {secretExplorer.currentPath}</h1>
-            {JSON.stringify(userProfileInVolt, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
+            {JSON.stringify(userProfileInVault, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
         </>
     );
 

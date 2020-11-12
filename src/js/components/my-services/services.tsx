@@ -12,7 +12,7 @@ interface Props {
 }
 
 const extractUserPassword = (state: RootState) => {
-	return state.userProfileInVolt.userServicePassword.value;
+	return state.userProfileInVault.userServicePassword.value;
 };
 
 const Services = ({ groupId }: Props) => {

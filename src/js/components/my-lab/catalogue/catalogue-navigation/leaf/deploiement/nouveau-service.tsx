@@ -68,7 +68,7 @@ export const NouveauService: React.FC<Props> = ({
 		}[];
 	}[]>([]);
 	const user = useSelector(state => state.user);
-	const userProfileInVoltState = useSelector(state => state.userProfileInVolt);
+	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
 	const authenticated = useSelector(state => state.app.authenticated);
 	const dispatch = useDispatch();
 
@@ -147,7 +147,7 @@ export const NouveauService: React.FC<Props> = ({
 		) {
 			const { iFV, fV, oF } = getOptions(
 				user,
-				userProfileInVoltState,
+				userProfileInVaultState,
 				service,
 				minioCredentials,
 				queryParams
@@ -156,7 +156,7 @@ export const NouveauService: React.FC<Props> = ({
 			setFieldsValues(fV);
 			setOngletFields(oF as any);
 		}
-	}, [user, userProfileInVoltState, service, minioCredentials, ongletFields, queryParams]);
+	}, [user, userProfileInVaultState, service, minioCredentials, ongletFields, queryParams]);
 
 	const handlechangeField = (path: string) => (value: string) => {
 		setFieldsValues({ ...fieldsValues, [path]: value });
@@ -336,14 +336,14 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 const arrayToObject =
 	(minioCredentials: MinioCredentials) =>
 		(queryParams: Record<string, string>) =>
-			(user: RootState["user"], userProfileInVoltState: RootState["userProfileInVolt"]) =>
+			(user: RootState["user"], userProfileInVaultState: RootState["userProfileInVault"]) =>
 				(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
 					const obj: Record<string, any> = {};
 					const fromParams = getFromQueryParams(queryParams);
 					fields.forEach(({ path, field }) =>
 						obj[path] =
 						fromParams(path)(field) ||
-						fromUser({ ...user, minio: { ...minioCredentials } } as any, userProfileInVoltState)(field as any) ||
+						fromUser({ ...user, minio: { ...minioCredentials } } as any, userProfileInVaultState)(field as any) ||
 						getDefaultSingleOption(field)
 					);
 					return obj;
@@ -397,7 +397,7 @@ const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value
 
 export const getOptions = (
 	user: RootState["user"],
-	userProfileInVolt: RootState["userProfileInVolt"],
+	userProfileInVault: RootState["userProfileInVault"],
 	service: Service,
 	minioCredentials: MinioCredentials,
 	queryParams: Record<string, string>
@@ -411,7 +411,7 @@ export const getOptions = (
 			...acc,
 			...arrayToObject(minioCredentials)(queryParams)(
 				user, 
-				userProfileInVolt
+				userProfileInVault
 			)(curr as any),
 		}),
 		{}
@@ -421,7 +421,7 @@ export const getOptions = (
 			...acc,
 			...arrayToObject(minioCredentials)({})(
 				user, 
-				userProfileInVolt
+				userProfileInVault
 			)(curr as any),
 		}),
 		{}

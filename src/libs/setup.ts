@@ -5,7 +5,7 @@ import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/inMemoryVau
 import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient";
 import * as translateVaultRequests from "./useCases/translateVaultRequests";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
-import * as userProfileInVoltUseCase from "./useCases/userProfileInVolt";
+import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
 import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
 import { id } from "evt/tools/typeSafety/id";
@@ -75,7 +75,7 @@ export async function createStore(
         "reducer": {
             [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
             [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
-            [userProfileInVoltUseCase.sliceName]: userProfileInVoltUseCase.reducer,
+            [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer,
 
             // Legacy
             [myFiles.name]: myFiles.reducer,
@@ -108,7 +108,7 @@ export async function createStore(
     );
 
     await store.dispatch(
-        userProfileInVoltUseCase.privateThunks.initializeProfile(
+        userProfileInVaultUseCase.privateThunks.initializeProfile(
             {
                 "username": username,
                 email
@@ -125,7 +125,7 @@ export async function createStore(
 createStore.isFirstInvocation = true;
 
 export const thunks = {
-    [userProfileInVoltUseCase.sliceName]: userProfileInVoltUseCase.thunks,
+    [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.thunks,
     [secretExplorerUseCase.sliceName]: secretExplorerUseCase.thunks,
     [translateVaultRequests.sliceName]: translateVaultRequests.thunks
 };

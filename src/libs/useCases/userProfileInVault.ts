@@ -4,10 +4,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
-import { id, Id } from "evt/tools/typeSafety/id";
+import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
-export type UserProfileInVolt = Id<Record<string, string | number | null>, {
+type UserProfileInVault = Id<Record<string, string | number | null>, {
     username: string;
     email: string;
     userServicePassword: string;
@@ -17,30 +17,30 @@ export type UserProfileInVolt = Id<Record<string, string | number | null>, {
     gitCredentialCacheDuration: number;
 }>;
 
-export type ImmutableKeys = Id<keyof UserProfileInVolt, "username">;
-export type MutableKeys = Exclude<keyof UserProfileInVolt, ImmutableKeys>;
+export type ImmutableKeys = Id<keyof UserProfileInVault, "username">;
+export type MutableKeys = Exclude<keyof UserProfileInVault, ImmutableKeys>;
 
-export type UserProfileInVoltState = {
-    [K in keyof UserProfileInVolt]: {
-        value: UserProfileInVolt[K];
+export type UserProfileInVaultState = {
+    [K in keyof UserProfileInVault]: {
+        value: UserProfileInVault[K];
         isBeingChanged: K extends ImmutableKeys ? false : boolean;
     };
 };
 
 export type ChangeValueParams<K extends MutableKeys = MutableKeys> = {
     key: K;
-    value: UserProfileInVolt[K];
+    value: UserProfileInVault[K];
 };
 
-export const sliceName = "userProfileInVolt";
+export const sliceName = "userProfileInVault";
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
-    "initialState": generatePlaceholderInitialState<UserProfileInVoltState>(
+    "initialState": generatePlaceholderInitialState<UserProfileInVaultState>(
         "The user profile should have been initialized during the store initialization"
     ),
     "reducers": {
-        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfileInVolt; }>]) => {
+        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfileInVault; }>]) => {
 
             const { userProfile } = payload;
 
@@ -61,10 +61,7 @@ const { reducer, actions } = createSlice({
         "changeCompleted": (state, { payload }: PayloadAction<{ key: MutableKeys; }>) => {
             state[payload.key].isBeingChanged = false;
         }
-
-
     }
-
 });
 
 export { reducer };
@@ -73,7 +70,7 @@ export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
     const { username } = params;
 
-    const getProfileKeyPath = (params: { key: keyof UserProfileInVolt; }) => {
+    const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
 
         const { key } = params;
 
@@ -97,13 +94,7 @@ export const privateThunks = {
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({ username });
 
-
-            await vaultClient.put({
-                "path": getProfileKeyPath({ "key": id<keyof UserProfileInVolt>("username") }),
-                "secret": { "value": username }
-            });
-
-            const userProfile: UserProfileInVolt = {
+            const userProfileInVault: UserProfileInVault = {
                 username,
                 email,
                 "userServicePassword": generatePassword(),
@@ -114,7 +105,7 @@ export const privateThunks = {
             };
 
 
-            for (const key of objectKeys(userProfile)) {
+            for (const key of objectKeys(userProfileInVault)) {
 
                 const path = getProfileKeyPath({ key: key });
 
@@ -130,18 +121,18 @@ export const privateThunks = {
 
                     await vaultClient.put({
                         path,
-                        "secret": { "value": userProfile[key] }
+                        "secret": { "value": userProfileInVault[key] }
                     });
 
                     continue;
 
                 }
 
-                Object.assign(userProfile, { [key]: secretWithMetadata.secret["value"] });
+                Object.assign(userProfileInVault, { [key]: secretWithMetadata.secret["value"] });
 
             }
 
-            dispatch(actions.initializationCompleted({ userProfile }));
+            dispatch(actions.initializationCompleted({ userProfile: userProfileInVault }));
 
         },
 };
@@ -155,7 +146,7 @@ export const thunks = {
             dispatch(actions.changeStarted(params));
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({
-                "username": getState().userProfileInVolt.username.value
+                "username": getState().userProfileInVault.username.value
             });
 
             await vaultClient.put({
@@ -175,6 +166,3 @@ export const thunks = {
                 })
             )
 };
-
-
-
