@@ -28,7 +28,7 @@ import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector } from "js/redux/hooks";
-import type { RootState } from "js/redux/legacyActions";
+import type { RootState } from "js/../libs/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -68,6 +68,7 @@ export const NouveauService: React.FC<Props> = ({
 		}[];
 	}[]>([]);
 	const user = useSelector(state => state.user);
+	const viewAndEditUserProfileState = useSelector(state => state.viewAndEditUserProfile);
 	const authenticated = useSelector(state => state.app.authenticated);
 	const dispatch = useDispatch();
 
@@ -140,13 +141,13 @@ export const NouveauService: React.FC<Props> = ({
 
 	useEffect(() => {
 		if (
-			hasPwd(user) &&
 			service &&
 			minioCredentials &&
 			ongletFields.length === 0
 		) {
 			const { iFV, fV, oF } = getOptions(
 				user,
+				viewAndEditUserProfileState,
 				service,
 				minioCredentials,
 				queryParams
@@ -155,7 +156,7 @@ export const NouveauService: React.FC<Props> = ({
 			setFieldsValues(fV);
 			setOngletFields(oF as any);
 		}
-	}, [user, service, minioCredentials, ongletFields, queryParams]);
+	}, [user, viewAndEditUserProfileState, service, minioCredentials, ongletFields, queryParams]);
 
 	const handlechangeField = (path: string) => (value: string) => {
 		setFieldsValues({ ...fieldsValues, [path]: value });
@@ -335,14 +336,14 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 const arrayToObject =
 	(minioCredentials: MinioCredentials) =>
 		(queryParams: Record<string, string>) =>
-			(user: RootState["user"]) =>
+			(user: RootState["user"], viewAndEditUserProfileState: RootState["viewAndEditUserProfile"]) =>
 				(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
 					const obj: Record<string, any> = {};
 					const fromParams = getFromQueryParams(queryParams);
 					fields.forEach(({ path, field }) =>
 						obj[path] =
 						fromParams(path)(field) ||
-						fromUser({ ...user, minio: { ...minioCredentials } } as any)(field as any) ||
+						fromUser({ ...user, minio: { ...minioCredentials } } as any, viewAndEditUserProfileState)(field as any) ||
 						getDefaultSingleOption(field)
 					);
 					return obj;
@@ -394,11 +395,9 @@ const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value
 		};
 	};
 
-const hasPwd = (user: RootState["user"]) =>
-	user && user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password;
-
 export const getOptions = (
 	user: RootState["user"],
+	viewAndEditUserProfile: RootState["viewAndEditUserProfile"],
 	service: Service,
 	minioCredentials: MinioCredentials,
 	queryParams: Record<string, string>
@@ -410,19 +409,25 @@ export const getOptions = (
 	const fV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)(queryParams)(user)(curr as any),
+			...arrayToObject(minioCredentials)(queryParams)(
+				user, 
+				viewAndEditUserProfile
+			)(curr as any),
 		}),
 		{}
 	);
 	const iFV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)({})(user)(curr as any),
+			...arrayToObject(minioCredentials)({})(
+				user, 
+				viewAndEditUserProfile
+			)(curr as any),
 		}),
 		{}
 	);
 	return { fV, iFV, oF };
 };
 
-export const getService = async (idCatalogue: string, idService: string) => 
+export const getService = async (idCatalogue: string, idService: string) =>
 	axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`);

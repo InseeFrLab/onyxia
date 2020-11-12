@@ -18,7 +18,7 @@ let user: RootState["user"] = {
 		"AWS_DEFAULT_REGION": "us-east-1",
 		"AWS_S3_ENDPOINT": "s3.example.com"
 	}
-};
+} as any;
 
 prStore.then(store=> user = store.getState().user);
 

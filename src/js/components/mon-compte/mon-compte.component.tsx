@@ -16,23 +16,26 @@ import './mon-compte.scss';
 import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
-import GitField from './git';
-import { vaultApi } from "js/vault";
-import { User } from 'js/model/User';
 import useBetaTest from '../hooks/useBetaTest';
-import type { actions as userActions } from "js/redux/user";
-import type { HandleThunkActionCreator } from "react-redux";
+import type { RootState } from "js/../libs/setup";
+import { thunks } from "js/../libs/setup";
+import { useDispatch, useSelector } from "js/redux/hooks";
+import type { Props as CopyableFieldProps } from "../commons/copyable-field";
+
 
 interface Props {
-	user?: User;
+	user?: RootState["user"];
 	getUserInfo: () => void;
-	updateVaultSecret: HandleThunkActionCreator<typeof userActions["updateVaultSecret"]>;
 	logout: () => void;
 }
 
-export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
+export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
+
+	const viewAndEditUserProfileState = useSelector(state => state.viewAndEditUserProfile);
+
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (!user) {
@@ -85,16 +88,44 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
-						value={
-							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
-						}
-						handleReset={() => vaultApi.resetVaultPwd()}
+						value={viewAndEditUserProfileState.userServicePassword.value}
+						handleReset={() => dispatch(thunks.viewAndEditUserProfile.renewUserServicePassword())}
 					/>
-					<GitField
-						idep={user.IDEP}
-						values={user.VAULT && user.VAULT.DATA}
-						updateVaultSecret={updateVaultSecret}
+
+					<EditableCopyableField
+						copy
+						label={D.gitUserName}
+						value={viewAndEditUserProfileState.gitName.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.viewAndEditUserProfile.changeValue(
+								{ "key": "gitName", value })
+						)}
 					/>
+					<EditableCopyableField
+						copy
+						label={D.gitUserName}
+						value={viewAndEditUserProfileState.gitEmail.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.viewAndEditUserProfile.changeValue(
+								{ "key": "gitEmail", value })
+						)}
+					/>
+					<EditableCopyableField
+						copy
+						label={D.gitUserName}
+						value={"" + viewAndEditUserProfileState.gitCredentialCacheDuration.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.viewAndEditUserProfile.changeValue(
+								{ "key": "gitCredentialCacheDuration", "value": parseInt(value) || 0 })
+						)}
+					/>
+
+
+
+
 				</Paper>
 
 				<Paper className="paragraphe" elevation={1}>
@@ -109,8 +140,8 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 							<CopyableField copy label="IP" value={user.IP} />
 						</>
 					) : (
-						<Loader />
-					)}
+							<Loader />
+						)}
 					<CopyableField copy label={D.oidcToken} value={getKeycloakInstance().token!} />
 				</Paper>
 
@@ -150,8 +181,8 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						/>
 					</Paper>
 				) : (
-					<Loader />
-				)}
+						<Loader />
+					)}
 				<Paper className="paragraphe" elevation={1}>
 					<FormControlLabel
 						control={
@@ -185,3 +216,16 @@ MonCompte.defaultProps = {
 
 
 const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');
+
+
+const EditableCopyableField = (props: Omit<CopyableFieldProps, "onChange">) => {
+
+	const [value, setValue] = useState(props.value);
+
+	return <CopyableField
+		{...props}
+		value={value}
+		onChange={(value: string) => setValue(value)}
+	/>
+
+};

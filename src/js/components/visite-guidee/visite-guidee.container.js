@@ -32,7 +32,9 @@ const mapToDispatchToProps = dispatch => ({
 
 		dServiceCreeId = new Deferred();
 
-		const orchestratorType = (await prStore).getState().regions.selectedRegion.services.type;
+		const store = await prStore;
+
+		const orchestratorType = store.getState().regions.selectedRegion.services.type;
 
 		const catalogId = orchestratorType === "KUBERNETES" ?
 			"inseefrlab-helm-charts-datascience" :
@@ -49,7 +51,8 @@ const mapToDispatchToProps = dispatch => ({
 				service,
 				"options": getValuesObject(
 					getOptions(
-						(await prStore).getState().user,
+						store.getState().user,
+						store.getState().viewAndEditUserProfile,
 						service,
 						await getMinioToken(),
 						{}

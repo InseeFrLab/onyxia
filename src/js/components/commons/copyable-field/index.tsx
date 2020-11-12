@@ -12,7 +12,7 @@ import FileCopy from '@material-ui/icons/FileCopy';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Delete from '@material-ui/icons/Delete';
 
-interface Props {
+export interface Props {
 	value: string;
 	onChange?: (newValue: string) => void;
 	reset?: boolean;

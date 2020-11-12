@@ -28,6 +28,7 @@ interface cloudShellData {
 
 const CloudShell = () => {
 	const user = useSelector(store => store.user);
+	const viewAndEditUserProfileState = useSelector(store => store.viewAndEditUserProfile);
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -37,7 +38,7 @@ const CloudShell = () => {
 	const dispatch = useDispatch();
 
 
-	const launchCloudShell = (user: any) => {
+	const launchCloudShell = () => {
 		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
@@ -50,7 +51,7 @@ const CloudShell = () => {
 							...service,
 							...catalogId,
 						},
-						"options": getValuesObject(getOptions(user, service, minioCredentials, {}).fV) as any,
+						"options": getValuesObject(getOptions(user, viewAndEditUserProfileState, service, minioCredentials, {}).fV) as any,
 						"dryRun": false
 					})
 				) as any).then(() => {
@@ -68,7 +69,6 @@ const CloudShell = () => {
 				}
 			}
 		});
-		return launchCloudShell;
 	};
 
 	const deleteCloudShell = () => {
@@ -100,9 +100,8 @@ const CloudShell = () => {
 				<IconButton
 					aria-label="maximize"
 					onClick={() => {
-						if (
-							(!cloudShellStatus || cloudShellStatus === 'DOWN')) {
-							launchCloudShell(user);
+						if ( (!cloudShellStatus || cloudShellStatus === 'DOWN')) {
+							launchCloudShell();
 						}
 						setVisibility(true);
 					}}

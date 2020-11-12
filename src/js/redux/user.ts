@@ -8,8 +8,6 @@ import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
-//import { vaultApi } from "js/vault";
-import { prVaultClient } from "js/../libs/secondaryAdapters/restVaultClient";
 import memoize from "memoizee";
 
 import { } from "js/../libs/secondaryAdapters/restVaultClient";
@@ -61,7 +59,6 @@ export type State = {
         VAULT_TOKEN: string | undefined;
         VAULT_MOUNT: string,
         VAULT_TOP_DIR: string | undefined,
-        DATA: Record<string, string>;
     };
 };
 
@@ -118,37 +115,6 @@ const asyncThunks = {
 
 
     })(),
-	...(() => {
-
-		const typePrefix = "updateVaultSecret";
-
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async (payload: { location: string; data: Record<string, string>; }, { dispatch }) => {
-
-					const { location, data } = payload;
-
-					assert( 
-						typeof location === "string" && 
-						typeof data === "object"
-					);
-
-                    const { actions: appActions } = await getApp();
-
-					dispatch(appActions.startWaiting());
-
-                    await (await prVaultClient).put({ "path": location, "secret": data });
-
-					dispatch(appActions.stopWaiting());
-
-					return { data };
-
-				}
-			)
-		};
-
-	})()
 
 };
 
@@ -211,46 +177,7 @@ const reusableReducers = {
         VAULT.VAULT_TOP_DIR = idep;
 
 
-    },
-    /*
-    {
-      type: 'onyxia/mesSecrets/newVaultData',
-      payload: {
-        data: {
-          password: 'yQgE0SG54rJGfwZ23k0V',
-          git_user_name: 'Joseph Garrone',
-          git_user_mail: 'joseph.garrone.gj@gmail.com',
-          git_credentials_cache_duration: '0'
-        }
-      }
     }
-    */
-    "newVaultData": (
-        state: State,
-        { payload }: {
-            payload: {
-                data: Record<string, string | undefined>;
-            }
-        }
-    ) => {
-
-        const { data } = payload;
-
-        assert(typeof data === "object");
-
-        Object.keys(data)
-            .forEach(key => {
-                const v = data[key];
-
-                if( v === undefined ){
-                    return;
-                }
-
-                state.VAULT.DATA[key] = v;
-
-            });
-
-    },
 };
 
 
@@ -274,8 +201,7 @@ const slice = createSlice({
             "VAULT_ADDR": env.VAULT.BASE_URI,
             "VAULT_TOKEN": undefined,
             "VAULT_MOUNT": env.VAULT.ENGINE,
-            "VAULT_TOP_DIR": undefined,
-            "DATA": {},
+            "VAULT_TOP_DIR": undefined
         },
     }),
     "reducers": {
@@ -425,12 +351,6 @@ const slice = createSlice({
 
             }
 
-        );
-
-
-        builder.addCase(
-            asyncThunks.updateVaultSecret.fulfilled,
-            (state, { payload }) => reusableReducers.newVaultData(state, { payload })
         );
 
     }

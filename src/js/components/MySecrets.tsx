@@ -29,7 +29,7 @@ export const MySecrets: React.FC = () => {
         })();
 
 
-    }, []);
+    }, [dispatch]);
 
     return (
         <>
