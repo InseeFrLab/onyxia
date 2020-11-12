@@ -16,26 +16,26 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 
 const formatUser = (
 	user: RootState["user"], 
-	viewAndEditUserProfileState: RootState["viewAndEditUserProfile"]
+	userProfileInVoltState: RootState["userProfileInVolt"]
 ) => ({
 	"user": {
 		"idep": user.IDEP,
 		"name": user.USERNAME,
 		"email": user.USERMAIL,
-		"password": viewAndEditUserProfileState.userServicePassword.value,
+		"password": userProfileInVoltState.userServicePassword.value,
 		"key": user.USERKEY,
 		"ip": user.IP,
 	},
 	"git": {
-		"name": viewAndEditUserProfileState.gitName.value,
-		"email": viewAndEditUserProfileState.email.value,
-		"credentials_cache_duration": viewAndEditUserProfileState.gitCredentialCacheDuration.value
+		"name": userProfileInVoltState.gitName.value,
+		"email": userProfileInVoltState.email.value,
+		"credentials_cache_duration": userProfileInVoltState.gitCredentialCacheDuration.value
 	},
 	"status": user.STATUS,
 	"keycloak": { ...user.KEYCLOAK },
 	"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
 	"vault": { ...user.VAULT },
-	"kaggleApiToken": viewAndEditUserProfileState.kaggleApiToken.value,
+	"kaggleApiToken": userProfileInVoltState.kaggleApiToken.value,
 	"s3": { ...user.S3 },
 });
  
@@ -43,11 +43,11 @@ const formatUser = (
 
 
 export const fromUser = 
-	(user: RootState["user"], viewAndEditUserProfileState: RootState["viewAndEditUserProfile"]) => 
+	(user: RootState["user"], userProfileInVoltState: RootState["userProfileInVolt"]) => 
 		(field: Record<string, Field>) => {
 			if (!field['x-form'] || !field['x-form'].value) return '';
 			const { value } = field['x-form'];
-			const formattedUser = formatUser(user, viewAndEditUserProfileState);
+			const formattedUser = formatUser(user, userProfileInVoltState);
 			return Mustache.render(value, formattedUser);
 		};
 

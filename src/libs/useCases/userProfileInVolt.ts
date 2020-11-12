@@ -7,7 +7,7 @@ import { join as pathJoin } from "path";
 import { id, Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
-export type UserProfile = Id<Record<string, string | number | null>, {
+export type UserProfileInVolt = Id<Record<string, string | number | null>, {
     username: string;
     email: string;
     userServicePassword: string;
@@ -17,30 +17,30 @@ export type UserProfile = Id<Record<string, string | number | null>, {
     gitCredentialCacheDuration: number;
 }>;
 
-export type ImmutableKeys = Id<keyof UserProfile, "username">;
-export type MutableKeys = Exclude<keyof UserProfile, ImmutableKeys>;
+export type ImmutableKeys = Id<keyof UserProfileInVolt, "username">;
+export type MutableKeys = Exclude<keyof UserProfileInVolt, ImmutableKeys>;
 
-export type ViewAndEditUserProfileState = {
-    [K in keyof UserProfile]: {
-        value: UserProfile[K];
+export type UserProfileInVoltState = {
+    [K in keyof UserProfileInVolt]: {
+        value: UserProfileInVolt[K];
         isBeingChanged: K extends ImmutableKeys ? false : boolean;
     };
 };
 
 export type ChangeValueParams<K extends MutableKeys = MutableKeys> = {
     key: K;
-    value: UserProfile[K];
+    value: UserProfileInVolt[K];
 };
 
-export const sliceName = "viewAndEditUserProfile";
+export const sliceName = "userProfileInVolt";
 
 const { reducer, actions } = createSlice({
     "name": sliceName,
-    "initialState": generatePlaceholderInitialState<ViewAndEditUserProfileState>(
+    "initialState": generatePlaceholderInitialState<UserProfileInVoltState>(
         "The user profile should have been initialized during the store initialization"
     ),
     "reducers": {
-        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfile; }>]) => {
+        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfileInVolt; }>]) => {
 
             const { userProfile } = payload;
 
@@ -73,7 +73,7 @@ export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
     const { username } = params;
 
-    const getProfileKeyPath = (params: { key: keyof UserProfile; }) => {
+    const getProfileKeyPath = (params: { key: keyof UserProfileInVolt; }) => {
 
         const { key } = params;
 
@@ -99,11 +99,11 @@ export const privateThunks = {
 
 
             await vaultClient.put({
-                "path": getProfileKeyPath({ "key": id<keyof UserProfile>("username") }),
+                "path": getProfileKeyPath({ "key": id<keyof UserProfileInVolt>("username") }),
                 "secret": { "value": username }
             });
 
-            const userProfile: UserProfile = {
+            const userProfile: UserProfileInVolt = {
                 username,
                 email,
                 "userServicePassword": generatePassword(),
@@ -155,7 +155,7 @@ export const thunks = {
             dispatch(actions.changeStarted(params));
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({
-                "username": getState().viewAndEditUserProfile.username.value
+                "username": getState().userProfileInVolt.username.value
             });
 
             await vaultClient.put({

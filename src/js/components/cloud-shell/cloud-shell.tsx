@@ -28,7 +28,7 @@ interface cloudShellData {
 
 const CloudShell = () => {
 	const user = useSelector(store => store.user);
-	const viewAndEditUserProfileState = useSelector(store => store.viewAndEditUserProfile);
+	const userProfileInVoltState = useSelector(store => store.userProfileInVolt);
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -51,7 +51,7 @@ const CloudShell = () => {
 							...service,
 							...catalogId,
 						},
-						"options": getValuesObject(getOptions(user, viewAndEditUserProfileState, service, minioCredentials, {}).fV) as any,
+						"options": getValuesObject(getOptions(user, userProfileInVoltState, service, minioCredentials, {}).fV) as any,
 						"dryRun": false
 					})
 				) as any).then(() => {

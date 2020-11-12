@@ -33,7 +33,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
 
-	const viewAndEditUserProfileState = useSelector(state => state.viewAndEditUserProfile);
+	const userProfileInVoltState = useSelector(state => state.userProfileInVolt);
 
 	const dispatch = useDispatch();
 
@@ -88,47 +88,47 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
-						value={viewAndEditUserProfileState.userServicePassword.value}
-						handleReset={() => dispatch(thunks.viewAndEditUserProfile.renewUserServicePassword())}
+						value={userProfileInVoltState.userServicePassword.value}
+						handleReset={() => dispatch(thunks.userProfileInVolt.renewUserServicePassword())}
 					/>
 
 					<EditableCopyableField
 						copy
 						label={D.gitUserName}
-						value={viewAndEditUserProfileState.gitName.value}
+						value={userProfileInVoltState.gitName.value}
 						type="string"
 						onValidate={(value: string) => dispatch(
-							thunks.viewAndEditUserProfile.changeValue(
+							thunks.userProfileInVolt.changeValue(
 								{ "key": "gitName", value })
 						)}
 					/>
 					<EditableCopyableField
 						copy
 						label={D.gitUserEmail}
-						value={viewAndEditUserProfileState.gitEmail.value}
+						value={userProfileInVoltState.gitEmail.value}
 						type="string"
 						onValidate={(value: string) => dispatch(
-							thunks.viewAndEditUserProfile.changeValue(
+							thunks.userProfileInVolt.changeValue(
 								{ "key": "gitEmail", value })
 						)}
 					/>
 					<EditableCopyableField
 						copy
 						label={D.gitCacheDuration}
-						value={"" + viewAndEditUserProfileState.gitCredentialCacheDuration.value}
+						value={"" + userProfileInVoltState.gitCredentialCacheDuration.value}
 						type="string"
 						onValidate={(value: string) => dispatch(
-							thunks.viewAndEditUserProfile.changeValue(
+							thunks.userProfileInVolt.changeValue(
 								{ "key": "gitCredentialCacheDuration", "value": parseInt(value) || 0 })
 						)}
 					/>
 					<EditableCopyableField
 						copy
 						label={D.kaggleApiToken}
-						value={viewAndEditUserProfileState.kaggleApiToken.value ?? ""}
+						value={userProfileInVoltState.kaggleApiToken.value ?? ""}
 						type="string"
 						onValidate={(value: string) => dispatch(
-							thunks.viewAndEditUserProfile.changeValue(
+							thunks.userProfileInVolt.changeValue(
 								{ "key": "kaggleApiToken", value })
 						)}
 					/>

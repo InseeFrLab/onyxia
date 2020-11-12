@@ -52,7 +52,7 @@ const mapToDispatchToProps = dispatch => ({
 				"options": getValuesObject(
 					getOptions(
 						store.getState().user,
-						store.getState().viewAndEditUserProfile,
+						store.getState().userProfileInVolt,
 						service,
 						await getMinioToken(),
 						{}
