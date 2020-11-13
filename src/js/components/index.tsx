@@ -96,13 +96,16 @@ const initializeUserSessionIfLoggedIn = async () => {
 
     return store;
 
-
 };
 
 
 const LoaderOrApp: React.FC = () => {
 
-    const { result: store } = useAsync(initializeUserSessionIfLoggedIn, []);
+    const { result: store, error } = useAsync(initializeUserSessionIfLoggedIn, []);
+
+    if (error) {
+        throw error;
+    }
 
     return store === undefined ?
         <Loader em={30} /> :

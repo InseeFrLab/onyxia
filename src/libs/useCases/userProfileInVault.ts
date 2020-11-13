@@ -74,7 +74,7 @@ export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
         const { key } = params;
 
-        return pathJoin(username, ".onyxia", "profile", key);
+        return pathJoin(username, ".onyxia", key);
 
     };
 
@@ -82,7 +82,7 @@ export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
 }
 
-const generatePassword = () => Math.random().toString(36).slice(-20);
+const generatePassword = () => Array(2).fill("").map(()=> Math.random().toString(36).slice(-10)).join("");
 
 export const privateThunks = {
     "initializeProfile":
@@ -104,7 +104,6 @@ export const privateThunks = {
                 "gitCredentialCacheDuration": 0
             };
 
-
             for (const key of objectKeys(userProfileInVault)) {
 
                 const path = getProfileKeyPath({ key: key });
@@ -112,7 +111,6 @@ export const privateThunks = {
                 const secretWithMetadata = await vaultClient.get({
                     path
                 }).catch(() => undefined);
-
 
                 if (
                     !secretWithMetadata ||

@@ -53,24 +53,24 @@ export declare namespace CreateStoreParams {
 }
 
 const reducer = {
-        // Legacy
-        [myFiles.name]: myFiles.reducer,
-        [myLab.name]: myLab.reducer,
-        [app.name]: app.reducer,
-        [user.name]: user.reducer,
-        [regions.name]: regions.reducer,
+    // Legacy
+    [myFiles.name]: myFiles.reducer,
+    [myLab.name]: myLab.reducer,
+    [app.name]: app.reducer,
+    [user.name]: user.reducer,
+    [regions.name]: regions.reducer,
 
-        [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
-        [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
-        [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer
+    [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
+    [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
+    [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer
 };
 
-const getMiddleware = (params: { dependencies: Dependencies; })=> ({
-        "middleware": getDefaultMiddleware({
-            "thunk": {
-                "extraArgument": params.dependencies
-            },
-        }),
+const getMiddleware = (params: { dependencies: Dependencies; }) => ({
+    "middleware": getDefaultMiddleware({
+        "thunk": {
+            "extraArgument": params.dependencies
+        },
+    }),
 });
 
 async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) {
@@ -92,8 +92,8 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
         reducer,
         ...getMiddleware({
             "dependencies": {
-                    vaultClient,
-                    evtVaultCliTranslation
+                vaultClient,
+                evtVaultCliTranslation
             }
         })
     });

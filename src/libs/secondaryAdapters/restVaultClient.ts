@@ -40,7 +40,6 @@ export function createRestImplOfVaultClient(
 				{ "params": { "list": "true" } }
 			);
 
-
 			const [nodes, leafs] = axiosResponse.data.data.keys
 				.reduce(...partition<string>(key => key.endsWith("/")));
 
@@ -49,11 +48,17 @@ export function createRestImplOfVaultClient(
 		},
 		"get": async params => {
 
+			console.log("get!");
+
 			const { path } = params;
+
+			console.log({ path });
 
 			const axiosResponse = await axiosInstance.get<{ data: SecretWithMetadata; }>(
 				pathJoin(version, "data", path)
 			);
+
+			console.log({ axiosResponse });
 
 			const { data: secret } = axiosResponse.data;
 
@@ -102,12 +107,16 @@ function getAxiosInstance(
 
 	const { baseUri, engine, role, oidcAccessToken } = params;
 
-	const axiosInstance = axios.create({ "baseURL": baseUri });
+	console.log({ baseUri });
+
+	const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
+
+	const axiosInstance = createAxiosInstance();
 
 	const getVaultToken = memoize(
 		async () => {
 
-			const axiosResponse = await axiosInstance
+			const axiosResponse = await createAxiosInstance()
 				.post(
 					`/${version}/auth/jwt/login`,
 					{

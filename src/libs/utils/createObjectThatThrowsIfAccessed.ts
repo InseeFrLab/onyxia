@@ -3,15 +3,23 @@ export function createObjectThatThrowsIfAccessed<State extends object>(
     debugMessage?: string
 ): State {
 
-    const throwError = (prop: string | number | symbol): never => {
-        throw new Error(`Cannot access ${String(prop)} yet ${debugMessage ?? ""}`);
-    }
+    const get: NonNullable<ProxyHandler<State>["get"]> = (...args) => {
+
+        const [, prop] = args
+
+        if (typeof prop === "symbol") {
+            return Reflect.get(...args);
+        }
+
+        throw new Error(`Cannot access ${prop} yet ${debugMessage ?? ""}`);
+
+    };
 
     return new Proxy<State>(
         {} as any,
         {
-            "get": (...[, prop]) => throwError(prop),
-            "set": (...[, prop]) => throwError(prop)
+            get,
+            "set": get
         }
     );
 
