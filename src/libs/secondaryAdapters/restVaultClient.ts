@@ -22,10 +22,12 @@ export function createRestImplOfVaultClient(
 
 	const { axiosInstance } = getAxiosInstance({
 		baseUri,
-		engine,
 		role,
 		oidcAccessToken
 	})
+
+	const ctxPathJoin = (...args: Parameters<typeof pathJoin>) => 
+		pathJoin(version, engine, ...args);
 
 	const vaultClient: VaultClient = {
 		"config": {
@@ -36,7 +38,7 @@ export function createRestImplOfVaultClient(
 			const { path } = params;
 
 			const axiosResponse = await axiosInstance.get<{ data: { keys: string[]; } }>(
-				pathJoin(version, "metadata", path),
+				ctxPathJoin("metadata", path),
 				{ "params": { "list": "true" } }
 			);
 
@@ -48,17 +50,11 @@ export function createRestImplOfVaultClient(
 		},
 		"get": async params => {
 
-			console.log("get!");
-
 			const { path } = params;
 
-			console.log({ path });
-
 			const axiosResponse = await axiosInstance.get<{ data: SecretWithMetadata; }>(
-				pathJoin(version, "data", path)
+				ctxPathJoin("data", path)
 			);
-
-			console.log({ axiosResponse });
 
 			const { data: secret } = axiosResponse.data;
 
@@ -70,7 +66,7 @@ export function createRestImplOfVaultClient(
 			const { path, secret } = params;
 
 			await axiosInstance.put<{ data: Secret; }>(
-				pathJoin(version, "data", path),
+				ctxPathJoin("data", path),
 				{ "data": secret }
 			);
 
@@ -79,7 +75,9 @@ export function createRestImplOfVaultClient(
 
 			const { path } = params;
 
-			await axiosInstance.delete(pathJoin(version, "data", path));
+			await axiosInstance.delete(
+				ctxPathJoin("data", path)
+			);
 
 		}
 	};
@@ -99,13 +97,12 @@ export const { pr: prVaultClient } = dVaultClient;
 function getAxiosInstance(
 	params: {
 		baseUri: string;
-		engine: string;
 		role: string;
 		oidcAccessToken: string;
 	}
 ): { axiosInstance: AxiosInstance; } {
 
-	const { baseUri, engine, role, oidcAccessToken } = params;
+	const { baseUri, role, oidcAccessToken } = params;
 
 	console.log({ baseUri });
 
@@ -135,8 +132,7 @@ function getAxiosInstance(
 		async axiosRequestConfig => ({
 			...axiosRequestConfig,
 			"headers": {
-				"X-Vault-Token": await getVaultToken(),
-				"X-Vault-Namespace": engine
+				"X-Vault-Token": await getVaultToken()
 			},
 			"Content-Type": "application/json;charset=utf-8",
 			"Accept": "application/json;charset=utf-8"
