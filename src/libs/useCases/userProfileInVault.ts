@@ -46,7 +46,7 @@ const { reducer, actions } = createSlice({
 
             return Object.fromEntries(
                 Object.entries(userProfile)
-                    .map(([key, value]) => [key, { "secret": value, "isBeingChanged": false }])
+                    .map(([key, value]) => [key, { value, "isBeingChanged": false }])
             ) as any;
 
         },
@@ -69,6 +69,10 @@ export { reducer };
 export const getProfileKeyPathFactory = (params: { username: string; }) => {
 
     const { username } = params;
+
+    if( typeof username !== "string"){
+        throw new Error("wtf");
+    }
 
     const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
 

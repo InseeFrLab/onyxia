@@ -6570,10 +6570,10 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-evt@^1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/evt/-/evt-1.9.4.tgz#8bab34f328a059e8e5903797f657d22300fffb64"
-  integrity sha512-AiyrlDNndP3KrsIfVz09YOcONz9E7GOnowaErn0GfmVhvhNvAF+k2bsM/WQHFxf74wFIzMT3qpIv+lwACsHnVQ==
+evt@^1.9.5:
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-1.9.5.tgz#89ff8f925135230e02211b8abaf259da68480a00"
+  integrity sha512-+yKt7JVO7jRP+L0eIcbagUYwd3WWykgrUixuzyrUcLsJXRlrvFSbQRuNjb8NAkeYZNXZsrSZLKKmBJUG7obxSQ==
   dependencies:
     minimal-polyfills "^2.1.5"
     run-exclusive "^2.2.14"

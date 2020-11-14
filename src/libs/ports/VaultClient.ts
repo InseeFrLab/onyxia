@@ -130,7 +130,7 @@ function getVaultClientTranslator(
                                     ].join("\n")
                                     }`
                             )
-                        ].join("\\"),
+                        ].join(" \\\n"),
                     "fmtResult": ({ inputs: [{ path }] }) =>
                         `Success! Data written to: ${pathJoin(engine, path)}`
                 },
@@ -191,16 +191,17 @@ export function getVaultClientProxyWithTranslator(
                 "cmdId": getCounter(),
                 "type": "cmd",
                 "value": "==> TODO client initialization <=="
-            });
+            })
 
             const createMethodProxy = <MethodName extends MethodNames<VaultClient>>(
                 _methodName: MethodName
             ): VaultClient[MethodName] => {
 
                 //NOTE: Mitigate type vulnerability.
-                const methodName = _methodName as "list";
+                const methodName = _methodName as "get";
 
                 const methodProxy = async (...args: Parameters<VaultClient[typeof methodName]>) => {
+
 
                     const cmdId = getCounter();
 

@@ -52,13 +52,18 @@ export function createRestImplOfVaultClient(
 
 			const { path } = params;
 
-			const axiosResponse = await axiosInstance.get<{ data: SecretWithMetadata; }>(
+			const axiosResponse = await axiosInstance.get<{
+				data: {
+					data: SecretWithMetadata["secret"];
+					metadata: SecretWithMetadata["metadata"]
+				}
+			}>(
 				ctxPathJoin("data", path)
 			);
 
-			const { data: secret } = axiosResponse.data;
+			const { data: { data: secret, metadata } } = axiosResponse.data;
 
-			return secret;
+			return { secret, metadata };
 
 		},
 		"put": async params => {

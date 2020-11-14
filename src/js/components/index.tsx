@@ -120,7 +120,7 @@ const LoaderOrApp: React.FC = () => {
 
 reactDom.render(
     <React.StrictMode>
-        <LoaderOrApp />
+        <LoaderOrApp />,
     </React.StrictMode>,
     document.getElementById("root")
 );

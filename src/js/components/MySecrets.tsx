@@ -20,7 +20,7 @@ export const MySecrets: React.FC = () => {
         const { evtVaultTranslation } = dispatch(thunks.translateVaultRequests.getSelectedTranslator());
 
         evtVaultTranslation.attach(ctx, data => {
-            console.log(JSON.stringify(data, null, 2));
+            console.log("$ " + data.value);
         });
 
     }, [dispatch, selectedVaultClientType]);
@@ -48,7 +48,7 @@ export const MySecrets: React.FC = () => {
     return (
         <>
             <h1>Here are the secrets currently stored at {secretExplorer.currentPath}</h1>
-            {JSON.stringify(userProfileInVault, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
+            {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str,i) => <p key={i}>{str}</p>)}
         </>
     );
 
