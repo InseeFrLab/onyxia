@@ -26,6 +26,7 @@ import * as app from "js/redux/app";
 export type Dependencies = {
     vaultClient: VaultClient;
     evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
+    username: string;
 };
 
 export declare type CreateStoreParams = CreateStoreParams.UserNotLoggedIn | CreateStoreParams.UserLoggedIn;
@@ -93,7 +94,8 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
         ...getMiddleware({
             "dependencies": {
                 vaultClient,
-                evtVaultCliTranslation
+                evtVaultCliTranslation,
+                username
             }
         })
     });
@@ -111,12 +113,7 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
     );
 
     await store.dispatch(
-        userProfileInVaultUseCase.privateThunks.initializeProfile(
-            {
-                "username": username,
-                email
-            }
-        )
+        userProfileInVaultUseCase.privateThunks.initializeProfile({ email })
     );
 
     return { store };
@@ -133,7 +130,8 @@ async function createStoreForNonLoggedUser(
         ...getMiddleware({
             "dependencies": {
                 "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
-                "evtVaultCliTranslation": createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>()
+                "evtVaultCliTranslation": createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
+                "username": ""
             }
         })
     });

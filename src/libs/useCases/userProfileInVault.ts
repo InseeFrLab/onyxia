@@ -8,8 +8,6 @@ import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
 type UserProfileInVault = Id<Record<string, string | number | null>, {
-    username: string;
-    email: string;
     userServicePassword: string;
     kaggleApiToken: string | null;
     gitName: string;
@@ -17,17 +15,15 @@ type UserProfileInVault = Id<Record<string, string | number | null>, {
     gitCredentialCacheDuration: number;
 }>;
 
-export type ImmutableKeys = Id<keyof UserProfileInVault, "username">;
-export type MutableKeys = Exclude<keyof UserProfileInVault, ImmutableKeys>;
 
 export type UserProfileInVaultState = {
     [K in keyof UserProfileInVault]: {
         value: UserProfileInVault[K];
-        isBeingChanged: K extends ImmutableKeys ? false : boolean;
+        isBeingChanged: boolean;
     };
 };
 
-export type ChangeValueParams<K extends MutableKeys = MutableKeys> = {
+export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserProfileInVault> = {
     key: K;
     value: UserProfileInVault[K];
 };
@@ -58,7 +54,7 @@ const { reducer, actions } = createSlice({
             wrap.isBeingChanged = true;
 
         },
-        "changeCompleted": (state, { payload }: PayloadAction<{ key: MutableKeys; }>) => {
+        "changeCompleted": (state, { payload }: PayloadAction<{ key: keyof UserProfileInVault; }>) => {
             state[payload.key].isBeingChanged = false;
         }
     }
@@ -90,17 +86,15 @@ const generatePassword = () => Array(2).fill("").map(()=> Math.random().toString
 
 export const privateThunks = {
     "initializeProfile":
-        (params: { username: string; email: string; }): AppThunk => async (...args) => {
+        (params: { email: string; }): AppThunk => async (...args) => {
 
-            const { username, email } = params;
+            const { email } = params;
 
-            const [dispatch, , { vaultClient }] = args;
+            const [dispatch, , { vaultClient, username }] = args;
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({ username });
 
             const userProfileInVault: UserProfileInVault = {
-                username,
-                email,
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
                 "gitName": username,
@@ -143,13 +137,11 @@ export const thunks = {
     "changeValue":
         (params: ChangeValueParams): AppThunk => async (...args) => {
 
-            const [dispatch, getState, { vaultClient }] = args;
+            const [dispatch,, { vaultClient, username }] = args;
 
             dispatch(actions.changeStarted(params));
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({
-                "username": getState().userProfileInVault.username.value
-            });
+            const { getProfileKeyPath } = getProfileKeyPathFactory({ username });
 
             await vaultClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
