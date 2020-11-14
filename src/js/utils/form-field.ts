@@ -28,7 +28,7 @@ const formatUser = (
 	},
 	"git": {
 		"name": userProfileInVaultState.gitName.value,
-		"email": userProfileInVaultState.email.value,
+		"email": user.USERMAIL,
 		"credentials_cache_duration": userProfileInVaultState.gitCredentialCacheDuration.value
 	},
 	"status": user.STATUS,
