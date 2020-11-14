@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import { thunks } from "js/../libs/setup";
 import { useEvt } from "evt/hooks";
@@ -24,26 +24,6 @@ export const MySecrets: React.FC = () => {
         });
 
     }, [dispatch, selectedVaultClientType]);
-
-    useEffect(() => {
-
-        (async () => {
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            console.log("Go, update kaggleApiToken");
-
-            dispatch(
-                thunks.userProfileInVault.changeValue({
-                    "key": "kaggleApiToken",
-                    "value": `${Date.now()}`
-                })
-            );
-
-        })();
-
-
-    }, [dispatch]);
 
     return (
         <>
