@@ -110,7 +110,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						{invalidIdep(idep) && (
 							<Alert
 								severity="error"
-								message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
+								message={`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
 							/>
 						)}
 						{env.APP.WARNING_MESSAGE && (

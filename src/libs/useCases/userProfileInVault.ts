@@ -62,19 +62,15 @@ const { reducer, actions } = createSlice({
 
 export { reducer };
 
-export const getProfileKeyPathFactory = (params: { username: string; }) => {
+export const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
-    const { username } = params;
-
-    if( typeof username !== "string"){
-        throw new Error("wtf");
-    }
+    const { idep } = params;
 
     const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
 
         const { key } = params;
 
-        return pathJoin(username, ".onyxia", key);
+        return pathJoin(idep, ".onyxia", key);
 
     };
 
@@ -90,14 +86,14 @@ export const privateThunks = {
 
             const { email } = params;
 
-            const [dispatch, , { vaultClient, username }] = args;
+            const [dispatch, , { vaultClient, idep }] = args;
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({ username });
+            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
             const userProfileInVault: UserProfileInVault = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
-                "gitName": username,
+                "gitName": idep,
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0
             };
@@ -137,11 +133,11 @@ export const thunks = {
     "changeValue":
         (params: ChangeValueParams): AppThunk => async (...args) => {
 
-            const [dispatch,, { vaultClient, username }] = args;
+            const [dispatch,, { vaultClient, idep }] = args;
 
             dispatch(actions.changeStarted(params));
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({ username });
+            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
             await vaultClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),

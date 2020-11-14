@@ -72,7 +72,7 @@ const initializeUserSessionIfLoggedIn = async () => {
     //TODO: Should be the only entry point of the app initialization.
     const { store } = await createStore({
         "isUserLoggedIn": true,
-        "username": preferred_username,
+        "idep": preferred_username,
         email,
         "paramsNeededToInitializeVaultClient": {
             "useInMemoryClient": false,

@@ -26,7 +26,7 @@ import * as app from "js/redux/app";
 export type Dependencies = {
     vaultClient: VaultClient;
     evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
-    username: string;
+    idep: string;
 };
 
 export declare type CreateStoreParams = CreateStoreParams.UserNotLoggedIn | CreateStoreParams.UserLoggedIn;
@@ -39,7 +39,7 @@ export declare namespace CreateStoreParams {
 
     export type UserLoggedIn = {
         isUserLoggedIn: true;
-        username: string;
+        idep: string;
         email: string;
         paramsNeededToInitializeVaultClient:
         {
@@ -76,7 +76,7 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
 
 async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) {
 
-    const { username, email, paramsNeededToInitializeVaultClient } = params;
+    const { idep, email, paramsNeededToInitializeVaultClient } = params;
 
     const {
         vaultClientProxy: vaultClient,
@@ -95,7 +95,7 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
             "dependencies": {
                 vaultClient,
                 evtVaultCliTranslation,
-                username
+                idep
             }
         })
     });
@@ -108,7 +108,7 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
-            { "path": username }
+            { "path": idep }
         )
     );
 
@@ -131,7 +131,7 @@ async function createStoreForNonLoggedUser(
             "dependencies": {
                 "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
                 "evtVaultCliTranslation": createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
-                "username": ""
+                "idep": ""
             }
         })
     });
