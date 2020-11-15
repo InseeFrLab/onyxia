@@ -56,10 +56,9 @@ export interface VaultClient {
         }
     ): Promise<void>;
 
-    misc: Readonly<{
-        engine: string;
-        evtToken: StatefulReadonlyEvt<string>;
-    }>;
+    readonly engine: string;
+    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
+
 
 }
 
@@ -186,7 +185,7 @@ export function getVaultClientProxyWithTranslator(
 
             const translator = getVaultClientTranslator({
                 "clientType": translateForClientType,
-                "engine": vaultClient.misc.engine
+                "engine": vaultClient.engine
             });
 
             evtTranslation.postAsyncOnceHandled({
@@ -236,7 +235,8 @@ export function getVaultClientProxyWithTranslator(
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
                 "delete": createMethodProxy("delete"),
-                "misc": vaultClient.misc
+                "engine": vaultClient.engine,
+                "evtVaultToken": vaultClient.evtVaultToken
             };
 
         })(),

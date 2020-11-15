@@ -1,9 +1,9 @@
 
-export function createObjectThatThrowsIfAccessed<State extends object>(
+export function createObjectThatThrowsIfAccessed<T extends object>(
     debugMessage?: string
-): State {
+): T {
 
-    const get: NonNullable<ProxyHandler<State>["get"]> = (...args) => {
+    const get: NonNullable<ProxyHandler<T>["get"]> = (...args) => {
 
         const [, prop] = args
 
@@ -15,7 +15,7 @@ export function createObjectThatThrowsIfAccessed<State extends object>(
 
     };
 
-    return new Proxy<State>(
+    return new Proxy<T>(
         {} as any,
         {
             get,
@@ -24,3 +24,25 @@ export function createObjectThatThrowsIfAccessed<State extends object>(
     );
 
 }
+
+export function createPropertyThatThrowIfAccessed<T extends object, PropertyName extends keyof T>(
+    propertyName: PropertyName,
+    debugMessage?: string
+): { [K in PropertyName]: T[K]; } {
+
+    const getAndSet = () => {
+        throw new Error(`Cannot access ${propertyName} yet ${debugMessage ?? ""}`);
+    };
+
+    return Object.defineProperty(
+        {},
+        propertyName,
+        {
+            "get": getAndSet,
+            "set": getAndSet,
+            "enumerable": true
+        }
+    );
+
+}
+
