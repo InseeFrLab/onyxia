@@ -6,6 +6,8 @@ import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
 import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+import { parseOidcAccessToken } from "../ports/KeycloakClient";
+import { assert } from "evt/tools/typeSafety/assert";
 
 type UserProfileInVault = Id<Record<string, string | number | null>, {
     userServicePassword: string;
@@ -28,10 +30,10 @@ export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserPro
     value: UserProfileInVault[K];
 };
 
-export const sliceName = "userProfileInVault";
+export const name = "userProfileInVault";
 
 const { reducer, actions } = createSlice({
-    "name": sliceName,
+    name,
     "initialState": createObjectThatThrowsIfAccessed<UserProfileInVaultState>(
         "The user profile should have been initialized during the store initialization"
     ),
@@ -81,12 +83,14 @@ export const getProfileKeyPathFactory = (params: { idep: string; }) => {
 const generatePassword = () => Array(2).fill("").map(()=> Math.random().toString(36).slice(-10)).join("");
 
 export const privateThunks = {
-    "initializeProfile":
-        (params: { email: string; }): AppThunk => async (...args) => {
+    "initialize":
+        (): AppThunk => async (...args) => {
 
-            const { email } = params;
+            const [dispatch, , { vaultClient, keycloakClient }] = args;
 
-            const [dispatch, , { vaultClient, idep }] = args;
+            assert(keycloakClient.isUserLoggedIn);
+
+            const { idep, email } = parseOidcAccessToken(keycloakClient);
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
@@ -133,7 +137,11 @@ export const thunks = {
     "changeValue":
         (params: ChangeValueParams): AppThunk => async (...args) => {
 
-            const [dispatch,, { vaultClient, idep }] = args;
+            const [dispatch,, { vaultClient, keycloakClient }] = args;
+
+            assert(keycloakClient.isUserLoggedIn);
+
+            const { idep } = parseOidcAccessToken(keycloakClient);
 
             dispatch(actions.changeStarted(params));
 

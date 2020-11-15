@@ -22,9 +22,6 @@ export function createInMemoryImplOfVaultClient(
     const map = new Map<string, SecretWithMetadata>();
 
     return {
-        "config": {
-            engine
-        },
         "list": async params => {
 
             const path = formatPath(params.path);
@@ -79,7 +76,12 @@ export function createInMemoryImplOfVaultClient(
 
             map.delete(path);
 
-        }
+        },
+
+        "misc": {
+            engine,
+            "getVaultToken": () => { throw new Error("N.A"); }
+        },
     };
 
 

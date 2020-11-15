@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { actions as userActions } from "js/redux/user";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
+import { evtLocallyStoredOidcAccessToken, parseOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import { useAsync } from "react-async-hook";
@@ -40,7 +40,7 @@ const initializeUserSessionIfLoggedIn = async () => {
         "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
         "responseMode": "query",
         "checkLoginIframe": false,
-        "token": locallyStoredOidcAccessToken.get().oidcAccessToken
+        "token": evtLocallyStoredOidcAccessToken.state
     }).catch((error: Error) => error);
 
     //TODO: Make sure that result is always an object.
@@ -50,7 +50,7 @@ const initializeUserSessionIfLoggedIn = async () => {
 
     if (!isAuthenticated) {
 
-        locallyStoredOidcAccessToken.clear();
+        evtLocallyStoredOidcAccessToken.state = undefined;
 
         const { store } = await createStore({ "isUserLoggedIn": false });
 
@@ -65,9 +65,9 @@ const initializeUserSessionIfLoggedIn = async () => {
         kc.idToken !== undefined
     );
 
-    locallyStoredOidcAccessToken.set(kc.token);
+    evtLocallyStoredOidcAccessToken.state = kc.token;
 
-    const { email, preferred_username } = locallyStoredOidcAccessToken.getParsed();
+    const { email, preferred_username } = parseOidcAccessToken(evtLocallyStoredOidcAccessToken.state);
 
     //TODO: Should be the only entry point of the app initialization.
     const { store } = await createStore({
@@ -79,11 +79,13 @@ const initializeUserSessionIfLoggedIn = async () => {
             "engine": env.VAULT.ENGINE,
             "baseUri": env.VAULT.BASE_URI,
             "role": env.VAULT.ROLE,
-            "oidcAccessToken": kc.token
+            //NOTE: If the token is cleared (logout) we don't propagate the event
+            "evtOidcAccessToken": evtLocallyStoredOidcAccessToken
+                .pipe(state => state === undefined ? null : [state])
         }
     });
 
-    //TODO: Anti pattern
+    //TODO: Fix this anti pattern
     store.dispatch(
         userActions.setAuthenticated({
             "accessToken": kc.token,

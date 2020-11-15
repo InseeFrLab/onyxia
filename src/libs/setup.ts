@@ -12,6 +12,9 @@ import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
+import { createImplOfKeycloakClientBasedOnOfficialAddapter } from "./secondaryAdapters/basedOnOfficialAdapterKeycloakClient";
+import type { KeycloakClient } from "./ports/KeycloakClient";
+import { parseOidcAccessToken } from "./ports/KeycloakClient";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -21,37 +24,50 @@ import * as user from "js/redux/user";
 import * as app from "js/redux/app";
 
 
-
-
 export type Dependencies = {
     vaultClient: VaultClient;
     evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
-    idep: string;
+    keycloakClient: KeycloakClient;
 };
 
-export declare type CreateStoreParams = CreateStoreParams.UserNotLoggedIn | CreateStoreParams.UserLoggedIn;
 
-export declare namespace CreateStoreParams {
+export type CreateStoreParams = {
+    paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
+    paramsNeededToInitializeKeycloakClient: ParamsNeededToInitializeKeycloakClient;
+};
 
-    export type UserNotLoggedIn = {
-        isUserLoggedIn: false;
-    };
+export declare type ParamsNeededToInitializeVaultClient = 
+ParamsNeededToInitializeVaultClient.InMemory |
+ParamsNeededToInitializeVaultClient.Real;
 
-    export type UserLoggedIn = {
-        isUserLoggedIn: true;
-        idep: string;
-        email: string;
-        paramsNeededToInitializeVaultClient:
-        {
-            useInMemoryClient: false;
-        } & Parameters<typeof createRestImplOfVaultClient>[0]
-        |
-        {
-            useInMemoryClient: true;
-        } & Parameters<typeof createInMemoryImplOfVaultClient>[0]
-    };
+export declare namespace ParamsNeededToInitializeVaultClient {
+
+    export type InMemory = {
+        doUseInMemoryClient: true;
+    } & Parameters<typeof createInMemoryImplOfVaultClient>[0];
+
+    export type Real = {
+        doUseInMemoryClient: false;
+    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0], "evtOidcAccessToken">;
 
 }
+
+export declare type ParamsNeededToInitializeKeycloakClient = 
+ParamsNeededToInitializeKeycloakClient.InMemory |
+ParamsNeededToInitializeKeycloakClient.Real;
+
+export declare namespace ParamsNeededToInitializeKeycloakClient {
+
+    export type InMemory = {
+        doUseInMemoryClient: true;
+    };
+
+    export type Real = {
+        doUseInMemoryClient: false;
+    } & Parameters<typeof createImplOfKeycloakClientBasedOnOfficialAddapter>[0];
+
+}
+
 
 const reducer = {
     // Legacy
@@ -61,9 +77,9 @@ const reducer = {
     [user.name]: user.reducer,
     [regions.name]: regions.reducer,
 
-    [translateVaultRequests.sliceName]: translateVaultRequests.reducer,
-    [secretExplorerUseCase.sliceName]: secretExplorerUseCase.reducer,
-    [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.reducer
+    [translateVaultRequests.name]: translateVaultRequests.reducer,
+    [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
+    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -74,9 +90,15 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
     }),
 });
 
-async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) {
+async function createStoreForLoggedUser(
+    params: { 
+        paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
+        keycloakClient: KeycloakClient.LoggedIn; 
+    }
+) {
 
-    const { idep, email, paramsNeededToInitializeVaultClient } = params;
+    //const { idep, email, paramsNeededToInitializeVaultClient } = params;
+    const { keycloakClient, paramsNeededToInitializeVaultClient } = params;
 
     const {
         vaultClientProxy: vaultClient,
@@ -84,9 +106,14 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
     } = getVaultClientProxyWithTranslator({
         "translateForClientType": "CLI",
         "vaultClient":
-            paramsNeededToInitializeVaultClient.useInMemoryClient ?
+        paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
                 createInMemoryImplOfVaultClient(paramsNeededToInitializeVaultClient) :
-                createRestImplOfVaultClient(paramsNeededToInitializeVaultClient),
+                createRestImplOfVaultClient({
+                    ...paramsNeededToInitializeVaultClient,
+                    "evtOidcAccessToken": keycloakClient.evtOidcTokens.pipe(({ accessToken }) => [accessToken]),
+                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired": 
+                        keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                }),
     });
 
     const store = configureStore({
@@ -95,25 +122,19 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
             "dependencies": {
                 vaultClient,
                 evtVaultCliTranslation,
-                idep
+                keycloakClient
             }
         })
     });
 
     store.dispatch(
-        translateVaultRequests.thunks.selectTranslator(
-            { "clientType": "CLI" }
-        )
-    );
-
-    store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
-            { "path": idep }
+            { "path": parseOidcAccessToken(keycloakClient).idep }
         )
     );
 
     await store.dispatch(
-        userProfileInVaultUseCase.privateThunks.initializeProfile({ email })
+        userProfileInVaultUseCase.privateThunks.initialize()
     );
 
     return { store };
@@ -122,16 +143,19 @@ async function createStoreForLoggedUser(params: CreateStoreParams.UserLoggedIn) 
 
 
 async function createStoreForNonLoggedUser(
-    _params: CreateStoreParams.UserNotLoggedIn
+    params: { keycloakClient: KeycloakClient.NotLoggedIn; }
 ): Promise<AsyncReturnType<typeof createStoreForLoggedUser>> {
 
+    const { keycloakClient } = params;
     const store = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
-                "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
-                "evtVaultCliTranslation": createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
-                "idep": ""
+                "vaultClient": 
+                    createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
+                "evtVaultCliTranslation": 
+                    createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
+                keycloakClient
             }
         })
     });
@@ -154,11 +178,34 @@ export async function createStore(params: CreateStoreParams) {
 
     createStore.isFirstInvocation = false;
 
-    const { store } = await (
-        params.isUserLoggedIn ?
-            createStoreForLoggedUser(params) :
-            createStoreForNonLoggedUser(params)
+    const { 
+        paramsNeededToInitializeKeycloakClient,
+        paramsNeededToInitializeVaultClient
+    } = params;
+
+    assert(
+        !paramsNeededToInitializeKeycloakClient.doUseInMemoryClient,
+        "TODO: We need a mock implementation of KeycloakClient"
     );
+
+    const keycloakClient =
+        await createImplOfKeycloakClientBasedOnOfficialAddapter(
+            paramsNeededToInitializeKeycloakClient
+        );
+
+
+    const { store } = await (
+        keycloakClient.isUserLoggedIn ?
+            createStoreForLoggedUser({ keycloakClient, paramsNeededToInitializeVaultClient }) :
+            createStoreForNonLoggedUser({ keycloakClient })
+    );
+
+    if( keycloakClient.isUserLoggedIn ){
+
+
+
+        dKeyCloakClient.resolve(keycloakClient);
+    }
 
     dStoreInstance.resolve(store);
 
@@ -167,10 +214,13 @@ export async function createStore(params: CreateStoreParams) {
 }
 
 
+
+
+
 export const thunks = {
-    [userProfileInVaultUseCase.sliceName]: userProfileInVaultUseCase.thunks,
-    [secretExplorerUseCase.sliceName]: secretExplorerUseCase.thunks,
-    [translateVaultRequests.sliceName]: translateVaultRequests.thunks
+    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
+    [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
+    [translateVaultRequests.name]: translateVaultRequests.thunks
 };
 
 export type Store = AsyncReturnType<typeof createStore>["store"];
@@ -196,5 +246,10 @@ const dStoreInstance = new Deferred<Store>();
  * @deprecated: use "js/react/hooks" to interact with the store.
  */
 export const { pr: prStore } = dStoreInstance;
+
+const dKeyCloakClient = new Deferred<KeycloakClient.LoggedIn>();
+
+/** @deprecated */
+export const { pr: keycloakClient }= dKeyCloakClient;
 
 

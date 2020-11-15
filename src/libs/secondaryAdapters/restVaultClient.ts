@@ -6,6 +6,8 @@ import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
 import type { Secret, SecretWithMetadata, VaultClient } from "../ports/VaultClient";
 import { Deferred } from "evt/tools/Deferred";
+import { StatefulReadonlyEvt } from "evt";
+import { Evt } from "evt";
 
 const version = "v1";
 
@@ -14,25 +16,30 @@ export function createRestImplOfVaultClient(
 		baseUri: string;
 		engine: string;
 		role: string;
-		oidcAccessToken: string;
+		evtOidcAccessToken: StatefulReadonlyEvt<string>;
+		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
 	}
 ): VaultClient {
 
-	const { baseUri, engine, role, oidcAccessToken } = params;
+	const {
+		baseUri,
+		engine,
+		role,
+		evtOidcAccessToken,
+		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
+	} = params;
 
-	const { axiosInstance } = getAxiosInstance({
+	const { axiosInstance, getVaultToken } = getAxiosInstance({
 		baseUri,
 		role,
-		oidcAccessToken
+		evtOidcAccessToken,
+		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
 	})
 
-	const ctxPathJoin = (...args: Parameters<typeof pathJoin>) => 
+	const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
 		pathJoin(version, engine, ...args);
 
 	const vaultClient: VaultClient = {
-		"config": {
-			engine
-		},
 		"list": async params => {
 
 			const { path } = params;
@@ -84,7 +91,11 @@ export function createRestImplOfVaultClient(
 				ctxPathJoin("data", path)
 			);
 
-		}
+		},
+		"misc": {
+			engine,
+			getVaultToken
+		},
 	};
 
 	dVaultClient.resolve(vaultClient);
@@ -103,47 +114,72 @@ function getAxiosInstance(
 	params: {
 		baseUri: string;
 		role: string;
-		oidcAccessToken: string;
-	}
-): { axiosInstance: AxiosInstance; } {
+	} & Pick<
+		Parameters<typeof createRestImplOfVaultClient>[0],
+		"evtOidcAccessToken" | 
+		"renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
+	>
+): { 
+	axiosInstance: AxiosInstance; 
+	evtVaultToken: StatefulReadonlyEvt<string | undefined>; 
+} {
 
-	const { baseUri, role, oidcAccessToken } = params;
+	const {
+		baseUri,
+		role,
+		evtOidcAccessToken,
+		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
+	} = params;
 
-	console.log({ baseUri });
 
 	const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
 
-	const axiosInstance = createAxiosInstance();
+	const evtVaultToken = Evt.create<string | undefined>(undefined);
 
-	const getVaultToken = memoize(
+	Evt.useEffect(
 		async () => {
+
+			evtVaultToken.state = undefined;
 
 			const axiosResponse = await createAxiosInstance()
 				.post(
 					`/${version}/auth/jwt/login`,
 					{
 						role,
-						"jwt": oidcAccessToken
+						"jwt": evtOidcAccessToken.state
 					}
 				);
 
-			return axiosResponse.data.auth.client_token;
+			evtVaultToken.state = axiosResponse.data.auth.client_token;
 
 		},
-		{ "promise": true }
+		evtOidcAccessToken.evtChange
 	);
+
+
+	const axiosInstance = createAxiosInstance();
 
 	axiosInstance.interceptors.request.use(
-		async axiosRequestConfig => ({
-			...axiosRequestConfig,
-			"headers": {
-				"X-Vault-Token": await getVaultToken()
-			},
-			"Content-Type": "application/json;charset=utf-8",
-			"Accept": "application/json;charset=utf-8"
-		}),
+		async axiosRequestConfig => {
+
+			await renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired();
+
+			const vaultToken = evtVaultToken.state ??
+				await evtVaultToken.waitFor( vaultToken => vaultToken !== undefined);
+			return {
+				...axiosRequestConfig,
+				"headers": {
+					"X-Vault-Token": vaultToken
+				},
+				"Content-Type": "application/json;charset=utf-8",
+				"Accept": "application/json;charset=utf-8"
+			};
+		}
 	);
 
-	return { axiosInstance };
+	return { 
+		axiosInstance, 
+		"evtVaultToken": evtVaultToken.pipe(vaultToken => vaultToken === undefined ? null 
+	};
 
 }

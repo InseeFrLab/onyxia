@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getKeycloakInstance } from "./getKeycloakInstance";
-import { locallyStoredOidcAccessToken } from './locallyStoredOidcAccessToken';
+import { evtLocallyStoredOidcAccessToken } from './evtLocallyStoredOidcAccessToken';
 import { getEnv } from 'js/env';
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
@@ -66,7 +66,7 @@ export const { axiosAuth } = (() => {
 
 					assert(keycloakInstance.token !== undefined); 
 
-					locallyStoredOidcAccessToken.set(keycloakInstance.token);
+					evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
 
 				}
 				return {

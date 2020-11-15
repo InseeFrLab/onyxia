@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
+import { evtLocallyStoredOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 import { getEnv } from "js/env";
@@ -8,7 +8,7 @@ import { getEnv } from "js/env";
 
 const fetchMinioToken = async () => {
 
-	const { oidcAccessToken } = locallyStoredOidcAccessToken.get();
+	const oidcAccessToken = evtLocallyStoredOidcAccessToken.state;
 
 	assert(oidcAccessToken !== undefined);
 

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
+import { evtLocallyStoredOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 
 import { actions as userActions } from "./user";
@@ -30,7 +30,7 @@ const asyncThunks = {
 				`${name}/${typePrefix}`,
 				async () => {
 
-					locallyStoredOidcAccessToken.clear();
+					evtLocallyStoredOidcAccessToken.state = undefined;
 
 					await getKeycloakInstance()
 						.logout({ "redirectUri": `${window.location.origin}/accueil` });

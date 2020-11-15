@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
+import { evtLocallyStoredOidcAccessToken, parseOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
@@ -215,7 +215,9 @@ const slice = createSlice({
 
 			assert(typeof idep === "string");
 
-			const { gitlab_group } = locallyStoredOidcAccessToken.getParsed();
+			assert(evtLocallyStoredOidcAccessToken.state !== undefined);
+
+			const { gitlab_group } = parseOidcAccessToken(evtLocallyStoredOidcAccessToken.state);
 
 			state.userBuckets = [
 				{

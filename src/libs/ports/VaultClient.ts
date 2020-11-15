@@ -1,7 +1,7 @@
 
 import { join as pathJoin } from "path";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
-import type { NonPostableEvt, UnpackEvt } from "evt";
+import type { NonPostableEvt, UnpackEvt, StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
 import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 
@@ -27,9 +27,6 @@ export type SecretWithMetadata = {
 
 export interface VaultClient {
 
-    config: Readonly<{
-        engine: string;
-    }>;
 
     list(
         params: {
@@ -58,6 +55,11 @@ export interface VaultClient {
             path: string;
         }
     ): Promise<void>;
+
+    misc: Readonly<{
+        engine: string;
+        evtToken: StatefulReadonlyEvt<string>;
+    }>;
 
 }
 
@@ -184,7 +186,7 @@ export function getVaultClientProxyWithTranslator(
 
             const translator = getVaultClientTranslator({
                 "clientType": translateForClientType,
-                "engine": vaultClient.config.engine
+                "engine": vaultClient.misc.engine
             });
 
             evtTranslation.postAsyncOnceHandled({
@@ -234,7 +236,7 @@ export function getVaultClientProxyWithTranslator(
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
                 "delete": createMethodProxy("delete"),
-                "config": vaultClient.config
+                "misc": vaultClient.misc
             };
 
         })(),

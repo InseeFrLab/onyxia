@@ -1,6 +1,6 @@
-import { assert } from "evt/tools/typeSafety/assert";
 import decodeJwt from "jwt-decode";
 import { id } from "evt/tools/typeSafety/id";
+import { Evt } from "evt";
 
 /** 
  * window.localStorage or, if the browser does not implement it, 
@@ -46,7 +46,6 @@ const localStorage = (() => {
 
 })();
 
-const key = "onyxia/localStorage/user/token";
 
 export type ParsedOidcAccessToken = {
 	gitlab_group: string[] | null;
@@ -55,20 +54,27 @@ export type ParsedOidcAccessToken = {
 	email: string;
 };
 
-export const locallyStoredOidcAccessToken = {
-	"get": () => ({ "oidcAccessToken": localStorage.getItem(key) ?? undefined }),
-	"set": (token: string) => localStorage.setItem(key, token),
-	"clear": () => localStorage.removeItem(key),
-	/** Assert getToken() !== undefined (meaning user is authenticated) */
-	"getParsed": () => {
+const key = "onyxia/localStorage/user/token";
 
-		const { oidcAccessToken } = locallyStoredOidcAccessToken.get();
+export const evtLocallyStoredOidcAccessToken = Evt.create(localStorage.getItem(key) ?? undefined);
 
-		assert(oidcAccessToken !== undefined, "Wrong assertion, user should be logged here");
+evtLocallyStoredOidcAccessToken.evtChange.attach(oidcAccessToken => {
 
-		//TODO: Se what the decoded object actually is. 
-		return decodeJwt<ParsedOidcAccessToken>(oidcAccessToken);
+
+	if (oidcAccessToken === undefined) {
+
+		localStorage.removeItem(key)
+
+	} else {
+
+		localStorage.setItem(key, oidcAccessToken);
 
 	}
-};
+
+});
+
+export function parseOidcAccessToken(oidcAccessToken: string) {
+	return decodeJwt<ParsedOidcAccessToken>(oidcAccessToken);
+}
+
 

@@ -34,10 +34,10 @@ export declare namespace SecretExplorerState {
 
 }
 
-export const sliceName = "secretExplorer";
+export const name = "secretExplorer";
 
 const { reducer, actions } = createSlice({
-    "name": sliceName,
+    name,
     "initialState": createObjectThatThrowsIfAccessed<SecretExplorerState>(
         "Navigation to the default path should have been done in the store initialization"
     ),
