@@ -20,7 +20,7 @@ type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfi
 const vaultConfigByClient = new WeakMap<VaultClient, VaultConfig>();
 const keycloakConfigByClient = new WeakMap<KeycloakClient, KeycloakConfig>();
 
-export type State = {
+export type TokenState = {
     areTokensBeingRefreshed: boolean;
     oidcTokens: {
         accessToken: string;
@@ -32,17 +32,17 @@ export type State = {
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": id<State>({} as any),
+    "initialState": id<TokenState>({} as any),
     "reducers": {
-        "oidcTokensRenewed": (state, { payload }: PayloadAction<Pick<State, "oidcTokens">>) => {
+        "oidcTokensRenewed": (state, { payload }: PayloadAction<Pick<TokenState, "oidcTokens">>) => {
             const { oidcTokens } = payload;
             state.oidcTokens = oidcTokens;
         },
-        "vaultTokenRenewed": (state, { payload }: PayloadAction<Pick<State, "vaultToken">>) => {
+        "vaultTokenRenewed": (state, { payload }: PayloadAction<Pick<TokenState, "vaultToken">>) => {
             const { vaultToken } = payload;
             state.vaultToken = vaultToken;
         },
-        "startedOrStoppedRefreshing": (state, { payload }: PayloadAction<Pick<State, "areTokensBeingRefreshed">>) => {
+        "startedOrStoppedRefreshing": (state, { payload }: PayloadAction<Pick<TokenState, "areTokensBeingRefreshed">>) => {
             const { areTokensBeingRefreshed } = payload;
             state.areTokensBeingRefreshed = areTokensBeingRefreshed;
         }
@@ -104,10 +104,7 @@ export const privateThunks = {
             evtOidcTokens.post(evtOidcTokens.state);
             evtVaultToken.post(evtVaultToken.state);
 
-
         }
-
-
 }
 
 export const thunks = {
@@ -123,14 +120,16 @@ export const thunks = {
 
         },
     /** Once this thunk resolves we can assume oidc tokens and Volt token to be valid */
-    "refreshTokenIfNeeded":
+    "refreshTokenIfExpiresInLessThan8Hours":
         (): AppThunk => async (...args) => {
 
             const [, , { keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
-            keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
+            keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
+                { "minValidity": 3600 * 8 }
+            );
 
         }
 

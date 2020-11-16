@@ -31,7 +31,14 @@ export declare namespace KeycloakClient {
 
         evtOidcTokens: StatefulReadonlyEvt<OidcTokens | undefined>;
 
-        renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
+        /**
+         * Renew the token if it has less than minValidity seconds left before it expires.
+         * 
+         * @param minValidity — If not specified, 10 is used.
+         */
+        renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
+            params?: { minValidity?: number; }
+        ): Promise<void>;
 
         logout(): Promise<never>;
 

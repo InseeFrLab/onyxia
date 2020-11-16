@@ -67,9 +67,11 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
                 }]
         ),
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-            async () => {
+            async params => {
 
-                if (!keycloakInstance.isTokenExpired(60)) {
+                const { minValidity = 10 } = params ?? {};
+
+                if (!keycloakInstance.isTokenExpired(minValidity)) {
                     return;
                 }
 
