@@ -59,7 +59,7 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
         "isUserLoggedIn": true,
         "evtOidcTokens": evtLocallyStoredOidcAccessToken.pipe(
             oidcAccessToken => oidcAccessToken === undefined ?
-                null :
+                [ undefined ] :
                 [{
                     "accessToken": oidcAccessToken,
                     "idToken": keycloakInstance.idToken!,
@@ -69,7 +69,13 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired":
             async () => {
 
-                const refreshed = await keycloakInstance.updateToken(60)
+                if (!keycloakInstance.isTokenExpired(60)) {
+                    return;
+                }
+
+                evtLocallyStoredOidcAccessToken.state = undefined;
+
+                const refreshed = await keycloakInstance.updateToken(-1)
                     .catch((error: Error) => error);
 
                 if (refreshed instanceof Error) {
@@ -79,13 +85,12 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
 
                 }
 
-                if (refreshed) {
+                assert(
+                    refreshed &&
+                    keycloakInstance.token !== undefined
+                );
 
-                    assert(keycloakInstance.token !== undefined);
-
-                    evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
-
-                }
+                evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
 
 
             },

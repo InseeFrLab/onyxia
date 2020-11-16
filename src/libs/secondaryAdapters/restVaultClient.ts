@@ -7,6 +7,7 @@ import type { Secret, SecretWithMetadata, VaultClient } from "../ports/VaultClie
 import { Deferred } from "evt/tools/Deferred";
 import { StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
+import memoizee from "memoizee";
 
 const version = "v1";
 
@@ -15,7 +16,7 @@ export function createRestImplOfVaultClient(
 		baseUri: string;
 		engine: string;
 		role: string;
-		evtOidcAccessToken: StatefulReadonlyEvt<string>;
+		evtOidcAccessToken: StatefulReadonlyEvt<string | undefined>;
 		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
 	}
 ): VaultClient {
@@ -28,7 +29,7 @@ export function createRestImplOfVaultClient(
 		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
 	} = params;
 
-	const { axiosInstance, evtVaultToken } = getAxiosInstance({
+	const { axiosInstance, evtVaultToken } = getAxiosInstanceAndEvtVaultToken({
 		baseUri,
 		role,
 		evtOidcAccessToken,
@@ -107,7 +108,7 @@ const dVaultClient = new Deferred<VaultClient>();
 export const { pr: prVaultClient } = dVaultClient;
 
 
-function getAxiosInstance(
+function getAxiosInstanceAndEvtVaultToken(
 	params: {
 		baseUri: string;
 		role: string;
@@ -131,33 +132,32 @@ function getAxiosInstance(
 
 	const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
 
-	const evtVaultToken = Evt.create<string | undefined>(undefined);
-
-	{
-
-		const onOidcAccessTokenRenewed = async () => {
-
-			evtVaultToken.state = undefined;
+	const fetchVaultToken = memoizee(
+		async (oidcAccessToken: string): Promise<string> => {
 
 			const axiosResponse = await createAxiosInstance()
 				.post(
 					`/${version}/auth/jwt/login`,
 					{
 						role,
-						"jwt": evtOidcAccessToken.state
+						"jwt": oidcAccessToken
 					}
 				);
 
-			evtVaultToken.state = axiosResponse.data.auth.client_token;
+			return axiosResponse.data.auth.client_token;
 
-		};
+		},
+		{ "promise": true }
+	);
 
-		evtOidcAccessToken.evtChange.attach(onOidcAccessTokenRenewed);
-
-		onOidcAccessTokenRenewed();
-
-	}
-
+	const evtVaultToken = Evt.asyncPipe(
+		evtOidcAccessToken.evtChange,
+		oidcAccessToken => 
+			oidcAccessToken === undefined ?
+				[ undefined ]:
+				fetchVaultToken(oidcAccessToken)
+					.then(vaultToken => [vaultToken])
+	);
 
 	const axiosInstance = createAxiosInstance();
 
@@ -166,8 +166,9 @@ function getAxiosInstance(
 
 			await renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-			const vaultToken = evtVaultToken.state ??
-				await evtVaultToken.waitFor(vaultToken => vaultToken !== undefined);
+			const vaultToken = evtVaultToken.state ?? 
+				(await evtVaultToken.evtChange.waitFor(x => !x ? null : [x]));
+
 			return {
 				...axiosRequestConfig,
 				"headers": {

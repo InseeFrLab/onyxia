@@ -1,15 +1,16 @@
 
-import type { AppThunk, ParamsNeededToInitializeKeycloakClient, ParamsNeededToInitializeVaultClient } from "../setup";
+import type {
+    AppThunk,
+    ParamsNeededToInitializeKeycloakClient,
+    ParamsNeededToInitializeVaultClient
+} from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { VaultClient } from "../ports/VaultClient";
 import type { KeycloakClient } from "../ports/KeycloakClient";
 import { createSlice } from "@reduxjs/toolkit";
-import { 
-    createObjectThatThrowsIfAccessed,
-    createPropertyThatThrowIfAccessed
-} from "../utils/createObjectThatThrowsIfAccessed";
 import { assert } from "evt/tools/typeSafety/assert";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "evt/tools/typeSafety/id";
+import { Evt } from "evt";
 
 export const name = "buildContract";
 
@@ -19,61 +20,29 @@ type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfi
 const vaultConfigByClient = new WeakMap<VaultClient, VaultConfig>();
 const keycloakConfigByClient = new WeakMap<KeycloakClient, KeycloakConfig>();
 
-/*
-export declare type ContractExtrasState =
-    ContractExtrasState.NotBeingRefreshed |
-    ContractExtrasState.BeingRefreshed;
-export declare namespace ContractExtrasState {
-
-    export type NotBeingRefreshed = {
-        areTokensBeingRefreshed: false;
-        oidcTokens: {
-            accessToken: string;
-            idToken: string;
-            refreshToken: string;
-        };
-        vaultToken: string;
-    };
-
-    export type BeingRefreshed = {
-        areTokensBeingRefreshed: true;
-    };
-
-}
-*/
-
-
 export type State = {
-        areTokensBeingRefreshed: boolean;
-        oidcTokens: {
-            accessToken: string;
-            idToken: string;
-            refreshToken: string;
-        };
-        vaultToken: string;
+    areTokensBeingRefreshed: boolean;
+    oidcTokens: {
+        accessToken: string;
+        idToken: string;
+        refreshToken: string;
+    };
+    vaultToken: string;
 };
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": id<State>({
-        "areTokensBeingRefreshed": true,
-        "oidcTokens": createObjectThatThrowsIfAccessed(),
-        ...createPropertyThatThrowIfAccessed<State, "vaultToken">("vaultToken")
-    }),
+    "initialState": id<State>({} as any),
     "reducers": {
-        /*
-        "initializationCompleted":
-            (...[, { payload }]: [any, PayloadAction<ContractExtrasState.NotBeingRefreshed>]) => payload,
-            */
-        "oidcTokensRenewed": (state, { payload }: PayloadAction<Pick<State, "oidcTokens">>)=> {
-            const { oidcTokens } = payload;
+        "oidcTokensRenewed": (state, { payload }: PayloadAction<Pick<State, "oidcTokens">>) => {
+            const { oidcTokens } = payload;
             state.oidcTokens = oidcTokens;
         },
-        "vaultTokenRenewed": (state, { payload }: PayloadAction<Pick<State, "vaultToken">>)=> {
-            const { vaultToken } = payload;
+        "vaultTokenRenewed": (state, { payload }: PayloadAction<Pick<State, "vaultToken">>) => {
+            const { vaultToken } = payload;
             state.vaultToken = vaultToken;
         },
-        "startedOrStoppedRefreshing": (state, { payload }: PayloadAction<Pick<State, "areTokensBeingRefreshed">>)=> {
+        "startedOrStoppedRefreshing": (state, { payload }: PayloadAction<Pick<State, "areTokensBeingRefreshed">>) => {
             const { areTokensBeingRefreshed } = payload;
             state.areTokensBeingRefreshed = areTokensBeingRefreshed;
         }
@@ -101,29 +70,40 @@ export const privateThunks = {
             vaultConfigByClient.set(vaultClient, vaultConfig);
             keycloakConfigByClient.set(keycloakClient, keycloakConfig);
 
-
             assert(keycloakClient.isUserLoggedIn);
 
+            const evtOidcTokens = keycloakClient.evtOidcTokens.pipe();
+            const evtVaultToken = vaultClient.evtVaultToken.pipe();
 
-            keycloakClient.evtOidcTokens.attach(oidcTokens => 
-                dispatch(actions.oidcTokensRenewed({ oidcTokens }))
+            evtOidcTokens.$attach(
+                oidcTokens => !oidcTokens ? null : [oidcTokens],
+                oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 
-
-
-            vaultClient.evtVaultToken
-            .attach(
-                vaultToken => { 
-
-                    if( vaultToken === undefined ){
-                        dispatch(actions.startedOrStoppedRefreshing({ "areTokensBeingRefreshed": true }));
-                    }else{
-                        dispatch(actions.vaultTokenRenewed({ vaultToken }));
-                        dispatch(actions.startedOrStoppedRefreshing({"areTokensBeingRefreshed": false }));
-                    }
-
-                }
+            evtVaultToken.$attach(
+                vaultToken => !vaultToken ? null : [vaultToken],
+                vaultToken => dispatch(actions.vaultTokenRenewed({ vaultToken }))
             );
+
+            Evt.merge([
+                evtVaultToken,
+                evtOidcTokens
+            ])
+                .toStateful()
+                .pipe(() => [
+                    evtVaultToken === undefined ||
+                    evtOidcTokens === undefined
+                ])
+                .attach(
+                    areTokensBeingRefreshed =>
+                        dispatch(actions.startedOrStoppedRefreshing({ areTokensBeingRefreshed }))
+                );
+
+
+            //TODO: Make so that attach on stateful evt invokes with state
+            evtOidcTokens.post(evtOidcTokens.state);
+            evtVaultToken.post(evtVaultToken.state);
+
 
         }
 
@@ -131,7 +111,6 @@ export const privateThunks = {
 }
 
 export const thunks = {
-
     "getParamsNeededToInitializeKeycloakAndVolt":
         () => async (...args: Parameters<AppThunk>) => {
 
@@ -144,26 +123,15 @@ export const thunks = {
 
         },
     /** Once this thunk resolves we can assume oidc tokens and Volt token to be valid */
-    "refreshAllTokens":
+    "refreshTokenIfNeeded":
         (): AppThunk => async (...args) => {
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
-
-            dispatch(actions.startedOrStoppedRefreshing({ "areTokensBeingRefreshed": true }));
+            const [, , { keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
-            await keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
+            keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-            if (vaultClient.evtVaultToken.state === undefined) {
-                await vaultClient.evtVaultToken.evtChange.waitFor();
-            }
-
-            dispatch(actions.startedOrStoppedRefreshing({ "areTokensBeingRefreshed": false }));
-
-        },
-
-
-
+        }
 
 };
