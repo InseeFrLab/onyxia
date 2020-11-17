@@ -117,8 +117,8 @@ const getEvtLocallyStoredOidcAccessToken = () => {
     const evtLocallyStoredOidcAccessToken = Evt.create(localStorage.getItem(key) ?? undefined);
 
     evtLocallyStoredOidcAccessToken
-        .evtChangeDiff
-        .attach(({ newState: oidcAccessToken }) => {
+        .toStateless()
+        .attach(oidcAccessToken => {
 
             if (oidcAccessToken === undefined) {
 
