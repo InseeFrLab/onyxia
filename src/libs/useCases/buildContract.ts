@@ -102,7 +102,7 @@ export const privateThunks = {
 
 export const thunks = {
     "getParamsNeededToInitializeKeycloakAndVolt":
-        () => async (...args: Parameters<AppThunk>) => {
+        () => (...args: Parameters<AppThunk>) => {
 
             const [, , { vaultClient, keycloakClient }] = args;
 

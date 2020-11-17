@@ -2,15 +2,33 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { actions as appActions } from "js/redux/app";
-
-
-import { evtLocallyStoredOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
+import { assert } from "evt/tools/typeSafety/assert";
+import type { UnpackPromise } from "evt/tools/typeSafety";
+import { prKeycloakClient } from "js/../libs/setup";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) => (
 	<PrivateRoute {...props} routerContext={RouterContext} />
 );
+
+//NOTE: Very temporary hack.
+let keycloakClient: UnpackPromise<typeof prKeycloakClient> | undefined = undefined;
+let oidcAccessToken: string | undefined = undefined;
+prKeycloakClient.then(v => { 
+	keycloakClient = v;
+
+	if( !keycloakClient.isUserLoggedIn ){
+		return;
+	}
+
+	keycloakClient.evtOidcTokens.attach(
+		oidcTokens => oidcAccessToken = oidcTokens?.accessToken
+	);
+
+});
+
+
+
 
 class PrivateRoute extends React.Component {
 	state = { isToken: false };
@@ -23,7 +41,6 @@ class PrivateRoute extends React.Component {
 	static getDerivedStateFromProps(
 		{ authenticated, location, setRedirectUri, displayLogin }: any,
 	) {
-		const oidcAccessToken = evtLocallyStoredOidcAccessToken.state;
 		const isToken = oidcAccessToken !== undefined;
 
 		if (!authenticated && !isToken) {
@@ -31,7 +48,14 @@ class PrivateRoute extends React.Component {
 			displayLogin({ "doDisplay": true });
 		}
 		if (!authenticated && isToken) {
-			getKeycloakInstance().login();
+
+			assert(
+				keycloakClient &&
+				!keycloakClient.isUserLoggedIn
+			);
+
+			keycloakClient.login();
+
 		}
 		return { isToken };
 	}
@@ -49,8 +73,8 @@ class PrivateRoute extends React.Component {
 					!authenticated && !this.state.isToken ? (
 						<Redirect to={pathname} />
 					) : (
-						<Route {...rest} component={Component} />
-					)
+							<Route {...rest} component={Component} />
+						)
 				}
 			</RouterContext.Consumer>
 		);

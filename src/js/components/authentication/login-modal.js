@@ -12,16 +12,22 @@ import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
+import { prKeycloakClient } from "js/../libs/setup";
+import { assert } from "evt/tools/typeSafety/assert";
 
 class LogMe extends React.Component {
 	handleClose = () => {};
 
-	handleLogin = () => {
+	handleLogin = async () => {
 		const redirectUri =
 			this.props.redirectUri || `${window.location.origin}/accueil`;
-		getKeycloakInstance().login({
-			redirectUri,
-		});
+
+		const keycloakClient = await prKeycloakClient;
+
+		assert(!keycloakClient.isUserLoggedIn);
+
+		keycloakClient.login({ redirectUri });
+
 	};
 
 	render() {

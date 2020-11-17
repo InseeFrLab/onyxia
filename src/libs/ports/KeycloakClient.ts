@@ -52,6 +52,7 @@ export declare namespace KeycloakClient {
 export type ParsedOidcAccessToken = {
     idep: string;
     email: string;
+    gitlab_group: string[] | null;
 };
 
 export async function parseOidcAccessToken(
@@ -60,7 +61,8 @@ export async function parseOidcAccessToken(
 
     const {
         email,
-        preferred_username
+        preferred_username,
+        gitlab_group
     } = decodeJwt<{
         gitlab_group: string[] | null;
         preferred_username: string;
@@ -72,6 +74,7 @@ export async function parseOidcAccessToken(
 
     return {
         "idep": preferred_username,
-        email
+        email,
+        gitlab_group
     };
 }

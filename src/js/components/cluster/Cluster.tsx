@@ -4,7 +4,6 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { useSelector } from "js/redux/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
 import D from 'js/i18n';
 import exportKub from './exportCredentialsKub';
@@ -23,6 +22,8 @@ const EnTete = () => (
 const Cluster = () => {
 
 	const user= useSelector(state => state.user);
+
+	const oidcAccessToken = useSelector(state => state.buildContract.oidcTokens.accessToken);
 
 	return (
 		<>
@@ -49,7 +50,7 @@ const Cluster = () => {
 								value={env.KUBERNETES.KUB_SERVER_URL}
 							/>
 						</>}
-					<CopyableField copy label="Token" value={getKeycloakInstance().token!} />
+					<CopyableField copy label="Token" value={oidcAccessToken} />
 					<ExportCredentialsField
 						credentials={user}
 						exportTypes={exportKub}

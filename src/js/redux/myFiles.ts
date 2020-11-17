@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { evtLocallyStoredOidcAccessToken, parseOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
+import { prKeycloakClient } from "js/../libs/setup";
+import { parseOidcAccessToken } from "js/../libs/ports/KeycloakClient";
 
 
 export type State = {
@@ -197,6 +198,24 @@ const asyncThunks = {
 	})()
 };
 
+
+//NOTE: Terrible hack just as a temporary workaround
+let gitlab_group: string[] | null | undefined = undefined;
+
+prKeycloakClient.then(keycloakClient => {
+
+	if (!keycloakClient.isUserLoggedIn) {
+		return;
+	}
+
+	keycloakClient.evtOidcTokens.attach(async () =>
+		gitlab_group = (await parseOidcAccessToken(keycloakClient)).gitlab_group
+	);
+
+});
+
+
+
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
@@ -214,10 +233,7 @@ const slice = createSlice({
 			const { idep } = payload;
 
 			assert(typeof idep === "string");
-
-			assert(evtLocallyStoredOidcAccessToken.state !== undefined);
-
-			const { gitlab_group } = parseOidcAccessToken(evtLocallyStoredOidcAccessToken.state);
+			assert(gitlab_group !== undefined);
 
 			state.userBuckets = [
 				{

@@ -8,7 +8,6 @@ import { getMinioToken } from "js/minio-client/minio-client";
 import CopyableField from 'js/components/commons/copyable-field';
 import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -22,7 +21,6 @@ import { thunks } from "js/../libs/setup";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
-
 interface Props {
 	user?: RootState["user"];
 	getUserInfo: () => void;
@@ -34,6 +32,8 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 	const [s3loading, setS3Loading] = useState(false);
 
 	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
+
+	const { accessToken: oidcAccessToken } = useSelector(state => state.buildContract.oidcTokens);
 
 	const dispatch = useDispatch();
 
@@ -152,7 +152,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					) : (
 							<Loader />
 						)}
-					<CopyableField copy label={D.oidcToken} value={getKeycloakInstance().token!} />
+					<CopyableField copy label={D.oidcToken} value={oidcAccessToken} />
 				</Paper>
 
 				{credentials ? (

@@ -20,7 +20,6 @@ import { axiosPublic } from "js/utils/axios-config";
 import { fromUser, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
 import useBetaTest from 'js/components/hooks/useBetaTest';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
@@ -29,6 +28,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import type { RootState } from "js/../libs/setup";
+import { prKeycloakClient } from "js/../libs/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -112,9 +112,16 @@ export const NouveauService: React.FC<Props> = ({
 	);
 
 	useEffect(() => {
-		if (!authenticated) {
-			getKeycloakInstance().login();
+
+		if (authenticated) {
+			return;
 		}
+
+		prKeycloakClient.then(keycloakClient => {
+			assert(!keycloakClient.isUserLoggedIn);
+			keycloakClient.login();
+		});
+
 	}, [authenticated]);
 
 	useEffect(() => {

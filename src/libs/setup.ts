@@ -220,9 +220,9 @@ export async function createStore(params: CreateStoreParams) {
             )
         );
 
-        dKeyCloakClient.resolve(keycloakClient);
-
     }
+
+    dKeyCloakClient.resolve(keycloakClient);
 
     dStoreInstance.resolve(store);
 
@@ -265,7 +265,7 @@ const dStoreInstance = new Deferred<Store>();
  */
 export const { pr: prStore } = dStoreInstance;
 
-const dKeyCloakClient = new Deferred<KeycloakClient.LoggedIn>();
+const dKeyCloakClient = new Deferred<KeycloakClient>();
 
 /** @deprecated */
 export const { pr: prKeycloakClient } = dKeyCloakClient;

@@ -1,16 +1,19 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { evtLocallyStoredOidcAccessToken } from "js/utils/evtLocallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 import { getEnv } from "js/env";
-
+import { prKeycloakClient } from "js/../libs/setup";
+import { nonNullable } from "evt";
 
 const fetchMinioToken = async () => {
 
-	const oidcAccessToken = evtLocallyStoredOidcAccessToken.state;
+	const keycloakClient = await prKeycloakClient;
 
-	assert(oidcAccessToken !== undefined);
+	assert(keycloakClient.isUserLoggedIn);
+
+	const { accessToken: oidcAccessToken } = 
+		await keycloakClient.evtOidcTokens.waitFor(nonNullable());
 
 	const url = `${getEnv().MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${oidcAccessToken}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);
