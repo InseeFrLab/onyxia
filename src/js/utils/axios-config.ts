@@ -1,8 +1,5 @@
 import axios from 'axios';
-import { getKeycloakInstance } from "./getKeycloakInstance";
-import { evtLocallyStoredOidcAccessToken } from './evtLocallyStoredOidcAccessToken';
 import { getEnv } from 'js/env';
-import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 
 const BASE_URL = getEnv().API.BASE_URL;
@@ -47,41 +44,34 @@ const { injectRegion } = (() => {
 })();
 
 
+import { prKeycloakClient } from "js/../libs/setup";
 
 
 export const { axiosAuth } = (() => {
 
 	const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-	if (getEnv().AUTHENTICATION.TYPE === "oidc") {
-
+	prKeycloakClient.then(keycloakClient=> 
 		axiosAuth.interceptors.request.use(
 			async config => {
 
-				const keycloakInstance = getKeycloakInstance();
+				await keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-				const refreshed = await keycloakInstance.updateToken(60);
-
-				if (refreshed) {
-
-					assert(keycloakInstance.token !== undefined); 
-
-					evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
-
-				}
 				return {
 					...(config as any),
-					"headers": { ...config.headers, "Authorization": `Bearer ${keycloakInstance.token}` },
+					"headers": { 
+						...config.headers, 
+						"Authorization": `Bearer ${keycloakClient.evtOidcTokens.state!.accessToken}`
+					},
 					"Content-Type": 'application/json;charset=utf-8',
 					"Accept": 'application/json;charset=utf-8',
 				};
 
-
 			},
 			error => { throw error; }
-		);
+		)
+	);
 
-	}
 
 	axiosAuth.interceptors.request.use(injectRegion);
 

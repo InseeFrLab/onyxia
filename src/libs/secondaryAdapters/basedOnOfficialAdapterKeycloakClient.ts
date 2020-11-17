@@ -116,19 +116,21 @@ const getEvtLocallyStoredOidcAccessToken = () => {
 
     const evtLocallyStoredOidcAccessToken = Evt.create(localStorage.getItem(key) ?? undefined);
 
-    evtLocallyStoredOidcAccessToken.evtChange.attach(oidcAccessToken => {
+    evtLocallyStoredOidcAccessToken
+        .evtChangeDiff
+        .attach(({ newState: oidcAccessToken }) => {
 
-        if (oidcAccessToken === undefined) {
+            if (oidcAccessToken === undefined) {
 
-            localStorage.removeItem(key)
+                localStorage.removeItem(key)
 
-        } else {
+            } else {
 
-            localStorage.setItem(key, oidcAccessToken);
+                localStorage.setItem(key, oidcAccessToken);
 
-        }
+            }
 
-    });
+        });
 
     return { evtLocallyStoredOidcAccessToken };
 

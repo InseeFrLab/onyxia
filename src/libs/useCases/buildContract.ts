@@ -10,7 +10,7 @@ import type { KeycloakClient } from "../ports/KeycloakClient";
 import { createSlice } from "@reduxjs/toolkit";
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
-import { Evt } from "evt";
+import { Evt, nonNullable } from "evt";
 
 export const name = "buildContract";
 
@@ -72,37 +72,30 @@ export const privateThunks = {
 
             assert(keycloakClient.isUserLoggedIn);
 
-            const evtOidcTokens = keycloakClient.evtOidcTokens.pipe();
-            const evtVaultToken = vaultClient.evtVaultToken.pipe();
-
-            evtOidcTokens.$attach(
-                oidcTokens => !oidcTokens ? null : [oidcTokens],
+            keycloakClient.evtOidcTokens.$attach(
+                nonNullable(),
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 
-            evtVaultToken.$attach(
-                vaultToken => !vaultToken ? null : [vaultToken],
+            vaultClient.evtVaultToken.$attach(
+                nonNullable(),
                 vaultToken => dispatch(actions.vaultTokenRenewed({ vaultToken }))
             );
 
             Evt.merge([
-                evtVaultToken,
-                evtOidcTokens
+                vaultClient.evtVaultToken,
+                vaultClient.evtVaultToken
             ])
                 .toStateful()
-                .pipe(() => [
-                    evtVaultToken === undefined ||
-                    evtOidcTokens === undefined
-                ])
-                .attach(
+                .$attach(
+                    () => [
+                        vaultClient.evtVaultToken.state === undefined ||
+                        vaultClient.evtVaultToken.state === undefined
+                    ],
                     areTokensBeingRefreshed =>
                         dispatch(actions.startedOrStoppedRefreshing({ areTokensBeingRefreshed }))
                 );
 
-
-            //TODO: Make so that attach on stateful evt invokes with state
-            evtOidcTokens.post(evtOidcTokens.state);
-            evtVaultToken.post(evtVaultToken.state);
 
         }
 }

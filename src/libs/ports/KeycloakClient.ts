@@ -1,6 +1,8 @@
 
 import type { StatefulReadonlyEvt } from "evt";
+import { nonNullable } from "evt";
 import decodeJwt from "jwt-decode";
+
 
 export type OidcTokens = Readonly<{
     accessToken: string;
@@ -65,10 +67,7 @@ export async function parseOidcAccessToken(
         name: string;
         email: string;
     }>(
-        keycloakClient.evtOidcTokens.state?.accessToken ??
-        await keycloakClient.evtOidcTokens
-            .evtChange
-            .waitFor(oidcTokens => !oidcTokens ? null : [oidcTokens.accessToken])
+        (await keycloakClient.evtOidcTokens.waitFor(nonNullable())).accessToken
     );
 
     return {

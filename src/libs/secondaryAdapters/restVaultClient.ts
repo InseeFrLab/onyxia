@@ -6,8 +6,9 @@ import { partition } from "evt/tools/reducers";
 import type { Secret, SecretWithMetadata, VaultClient } from "../ports/VaultClient";
 import { Deferred } from "evt/tools/Deferred";
 import { StatefulReadonlyEvt } from "evt";
-import { Evt } from "evt";
+import { Evt, nonNullable } from "evt";
 import memoizee from "memoizee";
+
 
 const version = "v1";
 
@@ -166,13 +167,10 @@ function getAxiosInstanceAndEvtVaultToken(
 
 			await renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-			const vaultToken = evtVaultToken.state ?? 
-				(await evtVaultToken.evtChange.waitFor(x => !x ? null : [x]));
-
 			return {
 				...axiosRequestConfig,
 				"headers": {
-					"X-Vault-Token": vaultToken
+					"X-Vault-Token": await evtVaultToken.waitFor(nonNullable())
 				},
 				"Content-Type": "application/json;charset=utf-8",
 				"Accept": "application/json;charset=utf-8"

@@ -50,7 +50,7 @@
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
     "dayjs": "^1.8.26",
-    "evt": "^1.9.7",
+    "evt": "2.0.0-beta.2",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
     "js-yaml": "^3.14.0",

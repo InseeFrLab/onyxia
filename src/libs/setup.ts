@@ -113,7 +113,7 @@ async function createStoreForLoggedUser(
                 createRestImplOfVaultClient({
                     ...paramsNeededToInitializeVaultClient,
                     "evtOidcAccessToken": keycloakClient.evtOidcTokens
-                        .pipe(oidcTokens => [!oidcTokens ? undefined : oidcTokens.accessToken]),
+                        .pipe(oidcTokens => [oidcTokens?.accessToken]),
                     "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
                         keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
                 }),
@@ -268,6 +268,6 @@ export const { pr: prStore } = dStoreInstance;
 const dKeyCloakClient = new Deferred<KeycloakClient.LoggedIn>();
 
 /** @deprecated */
-export const { pr: keycloakClient } = dKeyCloakClient;
+export const { pr: prKeycloakClient } = dKeyCloakClient;
 
 

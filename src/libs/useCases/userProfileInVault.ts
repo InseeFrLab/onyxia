@@ -90,7 +90,7 @@ export const privateThunks = {
 
             assert(keycloakClient.isUserLoggedIn);
 
-            const { idep, email } = parseOidcAccessToken(keycloakClient);
+            const { idep, email } = await parseOidcAccessToken(keycloakClient);
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
@@ -141,7 +141,7 @@ export const thunks = {
 
             assert(keycloakClient.isUserLoggedIn);
 
-            const { idep } = parseOidcAccessToken(keycloakClient);
+            const { idep } = await parseOidcAccessToken(keycloakClient);
 
             dispatch(actions.changeStarted(params));
 
