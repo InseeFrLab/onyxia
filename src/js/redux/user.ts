@@ -10,8 +10,6 @@ import { PUSHER } from "js/components/notifications";
 import type { AxiosResponse } from "axios";
 import memoize from "memoizee";
 
-import { } from "js/../libs/secondaryAdapters/restVaultClient";
-
 const env = getEnv();
 
 /** We avoid importing app right away to prevent require cycles */

@@ -49,7 +49,10 @@ export declare namespace ParamsNeededToInitializeVaultClient {
 
     export type Real = {
         doUseInMemoryClient: false;
-    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0], "evtOidcAccessToken">;
+    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0], 
+        "evtOidcAccessToken" |
+        "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
+    >;
 
 }
 
@@ -226,7 +229,14 @@ export async function createStore(params: CreateStoreParams) {
 
     dStoreInstance.resolve(store);
 
-    return { store };
+    //TODO: Move the rest of the redux slices inside.
+    if (keycloakClient.isUserLoggedIn) {
+    
+        await store.dispatch(user.actions.getUserInfo());
+
+    }
+
+    return store;
 
 }
 
@@ -241,7 +251,7 @@ export const thunks = {
     [buildContract.name]: buildContract.thunks
 };
 
-export type Store = AsyncReturnType<typeof createStore>["store"];
+export type Store = AsyncReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
 
