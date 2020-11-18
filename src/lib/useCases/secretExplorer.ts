@@ -2,7 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import type { AppThunk } from "../setup";
-import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } from "../utils/createObjectThatThrowsIfAccessed";
+
+const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory(
+    { "isPropertyWhitelisted": isPropertyAccessedByRedux }
+);
 
 export declare type SecretExplorerState =
     SecretExplorerState.Loaded |
@@ -38,9 +42,9 @@ export const name = "secretExplorer";
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<SecretExplorerState>(
-        "Navigation to the default path should have been done in the store initialization"
-    ),
+    "initialState": createObjectThatThrowsIfAccessed<SecretExplorerState>({
+        "debugMessage": "Navigation to the default path should have been done in the store initialization"
+    }),
     "reducers": {
         "navigationStarted": (...[, { payload }]: [any, PayloadAction<{ path: string; }>]) => {
 

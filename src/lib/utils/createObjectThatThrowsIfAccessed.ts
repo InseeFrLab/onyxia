@@ -1,17 +1,27 @@
 
 export function createObjectThatThrowsIfAccessed<T extends object>(
-    debugMessage?: string
+    params?: { 
+        debugMessage?: string,
+        isPropertyWhitelisted?: (prop: string | number | symbol) => boolean
+    }
 ): T {
+
+    const { 
+        debugMessage = "", 
+        isPropertyWhitelisted = ()=> false
+    } = params ?? {};
 
     const get: NonNullable<ProxyHandler<T>["get"]> = (...args) => {
 
         const [, prop] = args
 
-        if (typeof prop === "symbol") {
+        if( isPropertyWhitelisted(prop) ){
             return Reflect.get(...args);
+
         }
 
-        throw new Error(`Cannot access ${prop} yet ${debugMessage ?? ""}`);
+
+        throw new Error(`Cannot access ${String(prop)} yet ${debugMessage}`);
 
     };
 
@@ -24,6 +34,40 @@ export function createObjectThatThrowsIfAccessed<T extends object>(
     );
 
 }
+
+export function createObjectThatThrowsIfAccessedFactory(
+    params: {
+        isPropertyWhitelisted?: (prop: string | number | symbol) => boolean
+    }
+){
+
+    const { isPropertyWhitelisted } = params;
+
+    return { 
+        "createObjectThatThrowsIfAccessed": <T extends object>(
+            params?: {
+                debugMessage?: string,
+            }
+        )=> {
+
+            const { debugMessage } = params ?? {};
+
+            return createObjectThatThrowsIfAccessed<T>({
+                debugMessage,
+                isPropertyWhitelisted
+            });
+
+        }
+
+    };
+
+}
+
+export function isPropertyAccessedByRedux( prop: string | number | symbol) {
+    console.log(String(prop), typeof prop === "symbol");
+    return prop === "window" || prop === "toJSON";
+}
+
 
 export function createPropertyThatThrowIfAccessed<T extends object, PropertyName extends keyof T>(
     propertyName: PropertyName,

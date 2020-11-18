@@ -1,5 +1,3 @@
-
-import { createObjectThatThrowsIfAccessed } from "../utils/createObjectThatThrowsIfAccessed";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
@@ -8,6 +6,11 @@ import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import { parseOidcAccessToken } from "../ports/KeycloakClient";
 import { assert } from "evt/tools/typeSafety/assert";
+import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } from "../utils/createObjectThatThrowsIfAccessed";
+
+const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory(
+    { "isPropertyWhitelisted": isPropertyAccessedByRedux }
+);
 
 type UserProfileInVault = Id<Record<string, string | number | null>, {
     userServicePassword: string;
@@ -34,9 +37,9 @@ export const name = "userProfileInVault";
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<UserProfileInVaultState>(
-        "The user profile should have been initialized during the store initialization"
-    ),
+    "initialState": createObjectThatThrowsIfAccessed<UserProfileInVaultState>({
+        "debugMessage": "The user profile should have been initialized during the store initialization"
+    }),
     "reducers": {
         "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfileInVault; }>]) => {
 
