@@ -1,9 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { assert } from "evt/tools/typeSafety/assert";
-import { actions as userActions } from "./user";
-import { prKeycloakClient } from "lib/setup";
+import { assert } from "evt/tools/typeSafety/assert";
+import type { AppThunk } from "lib/setup";
 
 export type State = {
 	authenticated: boolean;
@@ -18,29 +17,18 @@ export type State = {
 export const name = "app";
 
 const asyncThunks = {
-	//TODO: As is, this has really no business being an redux action.
-	...(() => {
+	"logout":
+		(): AppThunk<Promise<never>> => async (...args) => {
 
-		const typePrefix = "logout";
+			const [, , { keycloakClient }] = args;
 
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async () => {
+			assert(keycloakClient.isUserLoggedIn);
 
-					const keycloakClient=  await prKeycloakClient;
+			return keycloakClient.logout();
 
-					assert(keycloakClient.isUserLoggedIn);
-
-					await keycloakClient.logout();
-
-				}
-			)
-		};
-
-
-	})()
+		}
 };
+
 
 const slice = createSlice({
 	name,
@@ -56,7 +44,7 @@ const slice = createSlice({
 	"reducers": {
 		/*
 		{
-  			type: 'onyxia/app/startWaiting'
+				type: 'onyxia/app/startWaiting'
 		}
 		*/
 		"startWaiting": state => {
@@ -94,14 +82,6 @@ const slice = createSlice({
 			state.displayLogin = doDisplay;
 
 		},
-		/*
-		{
-		  type: 'onyxia/app/appResize',
-		  payload: {
-		    width: 2560
-		  }
-		}
-		*/
 		"applicationResize": (
 			state,
 			{ payload }: PayloadAction<{ width: State["screenWidth"]; }>
@@ -126,22 +106,17 @@ const slice = createSlice({
 			state.faviconUrl = url;
 
 		},
-		/*
-		{
-  			type: 'onyxia/app/startVisite'
-		}
-		*/
-		"startVisite": (
-			state
-		) => {
-
+		"startVisite": (state) => {
 			state.visite = true;
+		},
+		"setIsAuthenticated": (
+			state,
+			{ payload }: PayloadAction<{ isUserLoggedIn: boolean; }>
+		) => {
+			const { isUserLoggedIn } = payload;
 
-		}
-	},
-	"extraReducers": {
-		[userActions.setAuthenticated.type]: state => {
-			state.authenticated = true;
+			state.authenticated = isUserLoggedIn;
+
 		}
 	}
 });

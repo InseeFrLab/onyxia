@@ -37,7 +37,7 @@ import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
 import { useSelector } from "js/redux/hooks";
-import { MySecrets } from "js/components/MySecrets";
+import { MySecrets } from "js/components/MySecrets";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 
@@ -87,15 +87,12 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const isAuthenticated = useSelector(state => state.app.authenticated);
 
-	useEvt(ctx => {
-
-		const onResize= ()=> applicationResize({ "width": window.innerWidth });
-
-		onResize();
-
-		Evt.from(ctx, window, "resize").attach(onResize);
-
-	}, []);
+	useEvt(
+		ctx => Evt.from(ctx, window, "resize")
+			.toStateful()
+			.attach(() => applicationResize({ "width": window.innerWidth })),
+		[]
+	);
 
 	return (
 		<MuiThemeProvider theme={theme}>

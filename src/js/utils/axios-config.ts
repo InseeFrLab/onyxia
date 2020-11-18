@@ -13,7 +13,6 @@ const { injectRegion } = (() => {
 		{ "promise": true }
 	);
 
-
 	async function injectRegion(config: any) {
 
 		const store = await getStore();
@@ -44,14 +43,20 @@ const { injectRegion } = (() => {
 })();
 
 
-import { prKeycloakClient } from "lib/setup";
 
 
 export const { axiosAuth } = (() => {
 
 	const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-	prKeycloakClient.then(keycloakClient=> 
+	(async () => {
+
+		const keycloakClient = await import("lib/setup").then(({ prKeycloakClient }) => prKeycloakClient);
+
+		if (!keycloakClient.isUserLoggedIn) {
+			return;
+		}
+
 		axiosAuth.interceptors.request.use(
 			async config => {
 
@@ -59,8 +64,8 @@ export const { axiosAuth } = (() => {
 
 				return {
 					...(config as any),
-					"headers": { 
-						...config.headers, 
+					"headers": {
+						...config.headers,
 						"Authorization": `Bearer ${keycloakClient.evtOidcTokens.state!.accessToken}`
 					},
 					"Content-Type": 'application/json;charset=utf-8',
@@ -69,9 +74,9 @@ export const { axiosAuth } = (() => {
 
 			},
 			error => { throw error; }
-		)
-	);
+		);
 
+	})();
 
 	axiosAuth.interceptors.request.use(injectRegion);
 

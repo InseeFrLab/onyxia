@@ -8,7 +8,6 @@ import {
 	Button,
 	Divider,
 } from '@material-ui/core';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';

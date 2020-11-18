@@ -180,7 +180,10 @@ export const NouveauService: React.FC<Props> = ({
 			setFieldsValues(fV);
 			setOngletFields(oF as any);
 		}
-	}, [user, userProfileInVaultState, service, minioCredentials, ongletFields, queryParams]);
+	}, [
+		user, userProfileInVaultState, keycloakConfig, vaultConfig, 
+		oidcTokens, vaultToken,  service, minioCredentials, ongletFields, queryParams
+	]);
 
 	const handlechangeField = (path: string) => (value: string) => {
 		setFieldsValues({ ...fieldsValues, [path]: value });

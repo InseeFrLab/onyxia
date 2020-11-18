@@ -207,6 +207,13 @@ export async function createStore(params: CreateStoreParams) {
             createStoreForNonLoggedUser({ keycloakClient })
     );
 
+    //TODO: Finish refactoring
+    store.dispatch(
+        app.actions.setIsAuthenticated(
+            { "isUserLoggedIn": keycloakClient.isUserLoggedIn }
+        )
+    );
+
     if (keycloakClient.isUserLoggedIn) {
 
         store.dispatch(

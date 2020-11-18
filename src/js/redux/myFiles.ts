@@ -4,8 +4,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
-import { prKeycloakClient } from "lib/setup";
-import { parseOidcAccessToken } from "lib/ports/KeycloakClient";
+
 
 
 export type State = {
@@ -199,23 +198,6 @@ const asyncThunks = {
 };
 
 
-//NOTE: Terrible hack just as a temporary workaround
-let gitlab_group: string[] | null | undefined = undefined;
-
-prKeycloakClient.then(keycloakClient => {
-
-	if (!keycloakClient.isUserLoggedIn) {
-		return;
-	}
-
-	keycloakClient.evtOidcTokens.attach(async () =>
-		gitlab_group = (await parseOidcAccessToken(keycloakClient)).gitlab_group
-	);
-
-});
-
-
-
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
@@ -233,26 +215,13 @@ const slice = createSlice({
 			const { idep } = payload;
 
 			assert(typeof idep === "string");
-			assert(gitlab_group !== undefined);
 
 			state.userBuckets = [
 				{
 					"id": idep,
 					"description": "bucket personnel", //TODO: Franglish
 					"isPublic": false
-				},
-				...(
-					gitlab_group ?
-						gitlab_group
-							.map(group => group.split(":"))
-							.map(([id, ...rest]) => ({
-								"id": `groupe-${id}`,
-								"description": rest.join(""),
-								"isPublic": true,
-							}))
-						:
-						[]
-				)
+				}
 			];
 
 		},

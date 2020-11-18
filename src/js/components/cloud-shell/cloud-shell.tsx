@@ -12,13 +12,13 @@ import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
 import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
-import { actions as myLabActions } from "js/redux/myLab";
+import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from "js/minio-client/minio-client";
 import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-
+import { thunks } from "lib/setup";
 interface cloudShellData {
 	status?: string;
 	packageToDeploy?: any;
@@ -37,6 +37,17 @@ const CloudShell = () => {
 	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
 
+	const [{
+		keycloakConfig,
+		vaultConfig
+	}] = useState(
+		() => dispatch(
+			thunks.buildContract.getParamsNeededToInitializeKeycloakAndVolt()
+		)
+	);
+
+	const { oidcTokens, vaultToken } = useSelector(state => state.buildContract);
+
 
 	const launchCloudShell = () => {
 		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
@@ -51,7 +62,20 @@ const CloudShell = () => {
 							...service,
 							...catalogId,
 						},
-						"options": getValuesObject(getOptions(user, userProfileInVaultState, service, minioCredentials, {}).fV) as any,
+						"options": getValuesObject(
+							getOptions(
+								{
+									user,
+									userProfileInVaultState,
+									keycloakConfig,
+									vaultConfig,
+									oidcTokens,
+									vaultToken
+								},
+								service,
+								{}
+							).fV
+						) as any,
 						"dryRun": false
 					})
 				) as any).then(() => {
@@ -100,7 +124,7 @@ const CloudShell = () => {
 				<IconButton
 					aria-label="maximize"
 					onClick={() => {
-						if ( (!cloudShellStatus || cloudShellStatus === 'DOWN')) {
+						if ((!cloudShellStatus || cloudShellStatus === 'DOWN')) {
 							launchCloudShell();
 						}
 						setVisibility(true);
@@ -120,7 +144,7 @@ const CloudShell = () => {
 				height: height,
 				width: '100%',
 			}}
-			onResizeStop={(...[,,,d]) => {
+			onResizeStop={(...[, , , d]) => {
 				setHeight(height + d.height);
 			}}
 		>
