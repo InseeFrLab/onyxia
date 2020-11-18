@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "js/redux/hooks";
-import { thunks } from "js/../libs/setup";
+import { thunks } from "lib/setup";
 import { useEvt } from "evt/hooks";
 
 

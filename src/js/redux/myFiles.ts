@@ -4,8 +4,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
-import { prKeycloakClient } from "js/../libs/setup";
-import { parseOidcAccessToken } from "js/../libs/ports/KeycloakClient";
+import { prKeycloakClient } from "lib/setup";
+import { parseOidcAccessToken } from "lib/ports/KeycloakClient";
 
 
 export type State = {

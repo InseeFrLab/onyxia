@@ -1,6 +1,6 @@
 
 import * as reactRedux from "react-redux";
-import type { Store, RootState } from "js/../libs/setup";
+import type { Store, RootState } from "lib/setup";
 
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */

@@ -9,8 +9,8 @@ import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
 import { getEnv } from "../env";
 
-import { createStore } from "js/../libs/setup";
-import type { ParamsNeededToInitializeKeycloakClient, ParamsNeededToInitializeVaultClient } from "js/../libs/setup";
+import { createStore } from "lib/setup";
+import type { ParamsNeededToInitializeKeycloakClient, ParamsNeededToInitializeVaultClient } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 
 import App_ from "js/components/app.container";

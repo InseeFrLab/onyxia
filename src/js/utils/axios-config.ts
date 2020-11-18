@@ -8,7 +8,7 @@ const { injectRegion } = (() => {
 
 	/** We avoid importing app right away to prevent require cycles */
 	const getStore = memoize(
-		() => import("js/../libs/setup")
+		() => import("lib/setup")
 			.then(ns => ns.prStore),
 		{ "promise": true }
 	);
@@ -44,7 +44,7 @@ const { injectRegion } = (() => {
 })();
 
 
-import { prKeycloakClient } from "js/../libs/setup";
+import { prKeycloakClient } from "lib/setup";
 
 
 export const { axiosAuth } = (() => {

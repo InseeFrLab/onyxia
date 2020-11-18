@@ -1,5 +1,5 @@
-import { prStore } from "js/../libs/setup";
-import type { RootState } from "js/../libs/setup";
+import { prStore } from "lib/setup";
+import type { RootState } from "lib/setup";
 
 let user: RootState["user"] = {
 	"SSH": {

@@ -3,7 +3,7 @@ import * as Minio from 'minio';
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
 import { getEnv } from "js/env";
-import { prKeycloakClient } from "js/../libs/setup";
+import { prKeycloakClient } from "lib/setup";
 import { nonNullable } from "evt";
 
 const fetchMinioToken = async () => {
@@ -50,7 +50,7 @@ const fetchMinioToken = async () => {
 export async function getMinioToken() {
 
 	const { actions } = await import("js/redux/legacyActions");
-	const store = await import("js/../libs/setup").then(({ prStore })=> prStore);
+	const store = await import("lib/setup").then(({ prStore })=> prStore);
 
 	const { S3 }  = store.getState().user;
 

@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import { actions as userActions } from "./user";
-import { prKeycloakClient } from "js/../libs/setup";
+import { prKeycloakClient } from "lib/setup";
 
 export type State = {
 	authenticated: boolean;

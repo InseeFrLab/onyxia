@@ -1,7 +1,7 @@
 import { restApiPaths } from 'js/restApiPaths';
 import { Region } from 'js/model/Region';
 import { axiosPublic } from "js/utils/axios-config";
-import { prStore } from "js/../libs/setup";
+import { prStore } from "lib/setup";
 import { actions as regionsActions } from "js/redux/regions";
 
 export interface Configuration {

@@ -5,7 +5,7 @@ import { actions as appActions } from "js/redux/app";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { assert } from "evt/tools/typeSafety/assert";
 import type { UnpackPromise } from "evt/tools/typeSafety";
-import { prKeycloakClient } from "js/../libs/setup";
+import { prKeycloakClient } from "lib/setup";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) => (
 	<PrivateRoute {...props} routerContext={RouterContext} />

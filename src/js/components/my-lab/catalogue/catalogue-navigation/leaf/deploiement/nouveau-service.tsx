@@ -28,7 +28,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prKeycloakClient, thunks } from "js/../libs/setup";
+import { prKeycloakClient, thunks } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";

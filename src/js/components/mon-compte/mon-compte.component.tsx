@@ -16,8 +16,8 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import useBetaTest from '../hooks/useBetaTest';
-import type { RootState } from "js/../libs/setup";
-import { thunks } from "js/../libs/setup";
+import type { RootState } from "lib/setup";
+import { thunks } from "lib/setup";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 

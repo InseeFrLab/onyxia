@@ -1,8 +1,8 @@
 import Mustache from 'mustache';
-import type { RootState } from "js/../libs/setup";
+import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
-import type { KeycloakConfig, VaultConfig } from "js/../libs/useCases/buildContract";
-import type { OidcTokens } from "js/../libs/ports/KeycloakClient";
+import type { KeycloakConfig, VaultConfig } from "lib/useCases/buildContract";
+import type { OidcTokens } from "lib/ports/KeycloakClient";
 
 const env = getEnv();
 

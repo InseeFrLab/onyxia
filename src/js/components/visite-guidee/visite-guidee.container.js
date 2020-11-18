@@ -9,7 +9,7 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { prStore } from "js/../libs/setup";
+import { prStore } from "lib/setup";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";

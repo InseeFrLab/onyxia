@@ -1,5 +1,5 @@
 import type { State as UserState } from "js/redux/user";
-import type { TokenState } from "js/../libs/useCases/buildContract";
+import type { TokenState } from "lib/useCases/buildContract";
 import { getEnv } from "js/env";
 
 const env = getEnv();
