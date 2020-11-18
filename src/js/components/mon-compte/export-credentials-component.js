@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Typography, Grid, Select, MenuItem } from '@material-ui/core';
 import { ExportFileButton, CopyButton } from 'js/components/commons/buttons';
+import { useSelector } from "js/redux/hooks";
 
 const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
 	const [exportTypeId, changeExportType] = useState(exportTypes[0].id);
 	const exportType = exportTypes.find((type) => type.id === exportTypeId);
+	const { oidcTokens } = useSelector(state => state.buildContract);
 
 	const handleChange = (e) => changeExportType(e.target.value);
 	return (
@@ -37,7 +39,7 @@ const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
 					<Grid item>
 						<ExportFileButton
 							fileName={exportType.fileName}
-							content={exportType.text(credentials)}
+							content={exportType.text(credentials, oidcTokens)}
 						/>
 					</Grid>
 					<Grid item>

@@ -17,7 +17,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic } from "js/utils/axios-config";
-import { fromUser, filterOnglets } from 'js/utils';
+import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
 import useBetaTest from 'js/components/hooks/useBetaTest';
 import { id } from "evt/tools/typeSafety/id";
@@ -27,8 +27,8 @@ import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector } from "js/redux/hooks";
-import type { RootState } from "js/../libs/setup";
-import { prKeycloakClient } from "js/../libs/setup";
+import type { BuildMustacheViewParams } from "js/utils/form-field";
+import { prKeycloakClient, thunks } from "js/../libs/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -146,6 +146,18 @@ export const NouveauService: React.FC<Props> = ({
 		}
 	}, [queryParams.auto, handleClickCreer]);
 
+	const [{
+		keycloakConfig,
+		vaultConfig
+	}] = useState(() =>
+		dispatch(
+			thunks.buildContract
+				.getParamsNeededToInitializeKeycloakAndVolt()
+		)
+	);
+
+	const { oidcTokens, vaultToken } = useSelector(state => state.buildContract);
+
 	useEffect(() => {
 		if (
 			service &&
@@ -153,10 +165,15 @@ export const NouveauService: React.FC<Props> = ({
 			ongletFields.length === 0
 		) {
 			const { iFV, fV, oF } = getOptions(
-				user,
-				userProfileInVaultState,
+				{
+					user,
+					userProfileInVaultState,
+					keycloakConfig,
+					vaultConfig,
+					oidcTokens,
+					vaultToken
+				},
 				service,
-				minioCredentials,
 				queryParams
 			);
 			setInitialValues(iFV);
@@ -340,21 +357,21 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 	return fields;
 };
 
+
 const arrayToObject =
-	(minioCredentials: MinioCredentials) =>
-		(queryParams: Record<string, string>) =>
-			(user: RootState["user"], userProfileInVaultState: RootState["userProfileInVault"]) =>
-				(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
-					const obj: Record<string, any> = {};
-					const fromParams = getFromQueryParams(queryParams);
-					fields.forEach(({ path, field }) =>
-						obj[path] =
-						fromParams(path)(field) ||
-						fromUser({ ...user, minio: { ...minioCredentials } } as any, userProfileInVaultState)(field as any) ||
-						getDefaultSingleOption(field)
-					);
-					return obj;
-				};
+	(queryParams: Record<string, string>) =>
+		(buildMustacheViewParams: BuildMustacheViewParams) =>
+			(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
+				const obj: Record<string, any> = {};
+				const fromParams = getFromQueryParams(queryParams);
+				fields.forEach(({ path, field }) =>
+					obj[path] =
+					fromParams(path)(field) ||
+					mustacheRender(field as any, buildMustacheViewParams) ||
+					getDefaultSingleOption(field)
+				);
+				return obj;
+			};
 
 const getCleanParams = () =>
 	window.location.search.startsWith('?')
@@ -403,10 +420,8 @@ const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value
 	};
 
 export const getOptions = (
-	user: RootState["user"],
-	userProfileInVault: RootState["userProfileInVault"],
+	buildMustacheParams: BuildMustacheViewParams,
 	service: Service,
-	minioCredentials: MinioCredentials,
 	queryParams: Record<string, string>
 ) => {
 	const onglets =
@@ -416,20 +431,14 @@ export const getOptions = (
 	const fV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)(queryParams)(
-				user, 
-				userProfileInVault
-			)(curr as any),
+			...arrayToObject(queryParams)(buildMustacheParams)(curr as any),
 		}),
 		{}
 	);
 	const iFV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)({})(
-				user, 
-				userProfileInVault
-			)(curr as any),
+			...arrayToObject({})(buildMustacheParams)(curr as any),
 		}),
 		{}
 	);

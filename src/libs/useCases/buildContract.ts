@@ -14,8 +14,8 @@ import { Evt, nonNullable } from "evt";
 
 export const name = "buildContract";
 
-type VaultConfig = Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">;
-type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"];
+export type VaultConfig = Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">;
+export type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"];
 
 const vaultConfigByClient = new WeakMap<VaultClient, VaultConfig>();
 const keycloakConfigByClient = new WeakMap<KeycloakClient, KeycloakConfig>();

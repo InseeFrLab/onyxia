@@ -85,15 +85,6 @@ const initializeUserSessionIfLoggedIn = async () => {
         }
     });
 
-    //TODO: Fix this anti pattern
-    store.dispatch(
-        userActions.setAuthenticated({
-            "accessToken": kc.token,
-            "refreshToken": kc.refreshToken,
-            "idToken": kc.idToken
-        })
-    );
-
     await store.dispatch(actions.getUserInfo());
 
     return store;

@@ -49,17 +49,6 @@ export type State = {
         SSH_PUBLIC_KEY: string;
         SSH_KEY_PASSWORD: string;
     };
-    KEYCLOAK: {
-        KC_ID_TOKEN: string | undefined;
-        KC_REFRESH_TOKEN: string | undefined;
-        KC_ACCESS_TOKEN: string | undefined;
-    } | undefined;
-    VAULT: {
-        VAULT_ADDR: string;
-        VAULT_TOKEN: string | undefined;
-        VAULT_MOUNT: string,
-        VAULT_TOP_DIR: string | undefined,
-    };
 };
 
 export const name = "user";
@@ -163,7 +152,7 @@ const reusableReducers = {
         state.USERNAME = nomComplet;
         state.IP = ip;
 
-        const { SSH, VAULT } = state;
+        const { SSH } = state;
 
 
         if (sshPublicKey) {
@@ -173,9 +162,6 @@ const reusableReducers = {
         if (password) {
             SSH.SSH_KEY_PASSWORD = password;
         }
-
-        VAULT.VAULT_TOP_DIR = idep;
-
 
     }
 };
@@ -195,34 +181,9 @@ const slice = createSlice({
         "SSH": {
             "SSH_PUBLIC_KEY": '',
             "SSH_KEY_PASSWORD": '',
-        },
-        "KEYCLOAK": undefined,
-        "VAULT": {
-            "VAULT_ADDR": env.VAULT.BASE_URI,
-            "VAULT_TOKEN": undefined,
-            "VAULT_MOUNT": env.VAULT.ENGINE,
-            "VAULT_TOP_DIR": undefined
-        },
+        }
     }),
     "reducers": {
-        "setAuthenticated": ( //USED
-            state,
-            { payload }: PayloadAction<{
-                idToken: string;
-                refreshToken: string;
-                accessToken: string
-            }>
-        ) => {
-
-            const { idToken, refreshToken, accessToken } = payload;
-
-            state.KEYCLOAK = {
-                "KC_ID_TOKEN": idToken,
-                "KC_REFRESH_TOKEN": refreshToken,
-                "KC_ACCESS_TOKEN": accessToken
-            };
-
-        },
         /*
         {
         type: 'onyxia/S3/newCredentials',
@@ -263,28 +224,6 @@ const slice = createSlice({
                 "AWS_DEFAULT_REGION": "us-east-1",
                 "AWS_S3_ENDPOINT": env.MINIO.END_POINT
             };
-
-        },
-        /*
-        {
-          type: 'onyxia/mesSecrets/newVaultToken',
-          payload: {
-            token: 's.CFtVm4AJzsFCDzxZ1XuVMJeF'
-          }
-        }
-        */
-        "newVaultToken": (
-            state,
-            { payload }: PayloadAction<{
-                token: string;
-            }>
-        ) => {
-
-            const { token } = payload;
-
-            assert(typeof token === "string");
-
-            state.VAULT.VAULT_TOKEN = token;
 
         },
         ...reusableReducers
