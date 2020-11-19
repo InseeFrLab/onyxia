@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
@@ -198,18 +197,6 @@ export const MonCompte = () => {
 	);
 };
 
-MonCompte.propTypes = {
-	user: PropTypes.shape({
-		idep: PropTypes.string,
-		nomComplet: PropTypes.string,
-		email: PropTypes.string,
-		ip: PropTypes.string,
-	}),
-};
-
-MonCompte.defaultProps = {
-	user: { idep: '', nomComplet: '', email: '', ip: '' },
-};
 
 
 const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');

@@ -8,7 +8,7 @@ import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 export declare type Secret = { [key: string]: Secret.Value; };
 
 export declare namespace Secret {
-    export type Value = string | number | null | Value[] | { [key: string]: Value; };
+    export type Value = string | boolean | number | null | Value[] | { [key: string]: Value; };
 
 }
 

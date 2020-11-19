@@ -53,7 +53,6 @@ export const useMustacheParams = () => {
 
     return { mustacheParams };
 
-
 };
 
 

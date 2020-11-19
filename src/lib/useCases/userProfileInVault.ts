@@ -12,7 +12,7 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     { "isPropertyWhitelisted": isPropertyAccessedByRedux }
 );
 
-export type UserProfileInVault = Id<Record<string, string | number | null>, {
+export type UserProfileInVault = Id<Record<string, string | boolean | number | null>, {
     userServicePassword: string;
     kaggleApiToken: string | null;
     gitName: string;
@@ -20,28 +20,11 @@ export type UserProfileInVault = Id<Record<string, string | number | null>, {
     gitCredentialCacheDuration: number;
 }>;
 
-
 export type UserProfileInVaultState = {
     [K in keyof UserProfileInVault]: {
         value: UserProfileInVault[K];
         isBeingChanged: boolean;
     };
-};
-
-export function removeChangeStateFromUserProfileInVaultState(state: UserProfileInVaultState): UserProfileInVault {
-
-    const userProfileInVault: any = {};
-
-    objectKeys(state).forEach(key => userProfileInVault[key] = state[key].value);
-
-    return userProfileInVault;
-
-}
-
-
-export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserProfileInVault> = {
-    key: K;
-    value: UserProfileInVault[K];
 };
 
 export const name = "userProfileInVault";
@@ -78,23 +61,43 @@ const { reducer, actions } = createSlice({
 
 export { reducer };
 
-export const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
-    const { idep } = params;
+export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserProfileInVault> = {
+    key: K;
+    value: UserProfileInVault[K];
+};
 
-    const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
+export const thunks = {
+    "changeValue":
+        <K extends keyof UserProfileInVault>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
 
-        const { key } = params;
+            const [dispatch,, { vaultClient, keycloakClient }] = args;
 
-        return pathJoin(idep, ".onyxia", key);
+            assert(keycloakClient.isUserLoggedIn);
 
-    };
+            const { idep } = await parseOidcAccessToken(keycloakClient);
 
-    return { getProfileKeyPath };
+            dispatch(actions.changeStarted(params));
 
-}
+            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
-const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
+            await vaultClient.put({
+                "path": getProfileKeyPath({ "key": params.key }),
+                "secret": { "value": params.value }
+            });
+
+            dispatch(actions.changeCompleted(params));
+
+        },
+    "renewUserServicePassword":
+        (): AppThunk => dispatch =>
+            dispatch(
+                thunks.changeValue({
+                    "key": "userServicePassword",
+                    "value": generatePassword()
+                })
+            )
+};
 
 export const privateThunks = {
     "initialize":
@@ -108,6 +111,7 @@ export const privateThunks = {
 
             const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
 
+            //Default value
             const userProfileInVault: UserProfileInVault = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
@@ -147,34 +151,31 @@ export const privateThunks = {
         },
 };
 
-export const thunks = {
-    "changeValue":
-        (params: ChangeValueParams): AppThunk => async (...args) => {
+const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
+export const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
-            assert(keycloakClient.isUserLoggedIn);
+    const { idep } = params;
 
-            const { idep } = await parseOidcAccessToken(keycloakClient);
+    const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
 
-            dispatch(actions.changeStarted(params));
+        const { key } = params;
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
+        return pathJoin(idep, ".onyxia", key);
 
-            await vaultClient.put({
-                "path": getProfileKeyPath({ "key": params.key }),
-                "secret": { "value": params.value }
-            });
+    };
 
-            dispatch(actions.changeCompleted(params));
+    return { getProfileKeyPath };
 
-        },
-    "renewUserServicePassword":
-        (): AppThunk => dispatch =>
-            dispatch(
-                thunks.changeValue({
-                    "key": "userServicePassword",
-                    "value": generatePassword()
-                })
-            )
-};
+}
+
+export function removeChangeStateFromUserProfileInVaultState(state: UserProfileInVaultState): UserProfileInVault {
+
+    const userProfileInVault: any = {};
+
+    objectKeys(state).forEach(key => userProfileInVault[key] = state[key].value);
+
+    return userProfileInVault;
+
+}
+

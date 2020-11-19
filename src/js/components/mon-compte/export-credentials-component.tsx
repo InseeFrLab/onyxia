@@ -29,9 +29,9 @@ const ExportCredentialsField: React.FC<{
 							value={exportTypeId}
 							onChange={handleChange}
 						>
-							{exportTypes.map(({ id, label }) => (
+							{exportTypes.map(({ id, label }, i) => (
 								//@ts-ignore
-								<MenuItem key={id} variant="body1" value={id}>
+								<MenuItem key={i} variant="body1" value={id}>
 									{label}
 								</MenuItem>
 							))}
