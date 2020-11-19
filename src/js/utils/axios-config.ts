@@ -42,41 +42,45 @@ const { injectRegion } = (() => {
 
 })();
 
-
-
-
 export const { axiosAuth } = (() => {
 
 	const axiosAuth = axios.create({ "baseURL": BASE_URL });
 
-	(async () => {
+	const getKeycloakClient = memoize(
+		() => import("lib/setup")
+			.then(ns => ns.prKeycloakClient),
+		{ "promise": true }
+	);
 
-		const keycloakClient = await import("lib/setup").then(({ prKeycloakClient }) => prKeycloakClient);
+	axiosAuth.interceptors.request.use(
+		async config => {
 
-		if (!keycloakClient.isUserLoggedIn) {
-			return;
-		}
+			const keycloakClient = await getKeycloakClient();
 
-		axiosAuth.interceptors.request.use(
-			async config => {
+			if (!keycloakClient.isUserLoggedIn) {
+				return config;
+			}
 
-				await keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
+			await keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-				return {
-					...(config as any),
-					"headers": {
-						...config.headers,
-						"Authorization": `Bearer ${keycloakClient.evtOidcTokens.state!.accessToken}`
-					},
-					"Content-Type": 'application/json;charset=utf-8',
-					"Accept": 'application/json;charset=utf-8',
-				};
+			const newConf= {
+				...(config as any),
+				"headers": {
+					...config.headers,
+					"Authorization": `Bearer ${keycloakClient.evtOidcTokens.state!.accessToken}`
+				},
+				"Content-Type": 'application/json;charset=utf-8',
+				"Accept": 'application/json;charset=utf-8',
+			};
 
-			},
-			error => { throw error; }
-		);
+			console.log(JSON.stringify(newConf, null, 2));
 
-	})();
+			return newConf;
+
+		},
+		error => { throw error; }
+	);
+
 
 	axiosAuth.interceptors.request.use(injectRegion);
 
