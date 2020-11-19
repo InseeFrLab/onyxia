@@ -18,8 +18,6 @@ const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
-console.log("load!");
-
 const Root = () => {
 
     const [env] = useState(() => getEnv());

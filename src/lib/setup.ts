@@ -175,8 +175,6 @@ createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
 
-    console.log("createStore", JSON.stringify(params, null, 2));
-
     assert(
         createStore.isFirstInvocation,
         "createStore has already been called, " +

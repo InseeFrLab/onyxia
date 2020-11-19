@@ -63,7 +63,7 @@ export const { axiosAuth } = (() => {
 
 			await keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
 
-			const newConf= {
+			return {
 				...(config as any),
 				"headers": {
 					...config.headers,
@@ -72,10 +72,6 @@ export const { axiosAuth } = (() => {
 				"Content-Type": 'application/json;charset=utf-8',
 				"Accept": 'application/json;charset=utf-8',
 			};
-
-			console.log(JSON.stringify(newConf, null, 2));
-
-			return newConf;
 
 		},
 		error => { throw error; }
