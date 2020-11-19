@@ -26,9 +26,9 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector } from "js/redux/hooks";
+import { useDispatch, useSelector, useMustacheParams, useUserProfile } from "js/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prKeycloakClient, thunks } from "lib/setup";
+import { prKeycloakClient } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -67,8 +67,6 @@ export const NouveauService: React.FC<Props> = ({
 			}, "hidden">>
 		}[];
 	}[]>([]);
-	const user = useSelector(state => state.user);
-	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
 	const authenticated = useSelector(state => state.app.authenticated);
 	const dispatch = useDispatch();
 
@@ -77,6 +75,7 @@ export const NouveauService: React.FC<Props> = ({
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
 	const [betaTester] = useBetaTest();
+	const { userProfile: { idep } } = useUserProfile();
 
 	const queryParams = queryString.decode(getCleanParams());
 
@@ -146,43 +145,30 @@ export const NouveauService: React.FC<Props> = ({
 		}
 	}, [queryParams.auto, handleClickCreer]);
 
-	const [{
-		keycloakConfig,
-		vaultConfig
-	}] = useState(() =>
-		dispatch(
-			thunks.buildContract
-				.getParamsNeededToInitializeKeycloakAndVolt()
-		)
-	);
 
-	const { oidcTokens, vaultToken } = useSelector(state => state.buildContract);
+	const { mustacheParams } = useMustacheParams();
 
 	useEffect(() => {
-		if (
-			service &&
-			minioCredentials &&
-			ongletFields.length === 0
-		) {
-			const { iFV, fV, oF } = getOptions(
-				{
-					user,
-					userProfileInVaultState,
-					keycloakConfig,
-					vaultConfig,
-					oidcTokens,
-					vaultToken
-				},
-				service,
-				queryParams
-			);
-			setInitialValues(iFV);
-			setFieldsValues(fV);
-			setOngletFields(oF as any);
+
+		if (!service || ongletFields.length !== 0 || mustacheParams.s3 === undefined) {
+			return;
 		}
+
+		const { iFV, fV, oF } = getOptions(
+			//NOTE: we should be able to just write mustacheParams but
+			//TS is not clever enough to figure it out.
+			{ ...mustacheParams, "s3": mustacheParams.s3 }, 
+			service,
+			queryParams
+		);
+		setInitialValues(iFV);
+		setFieldsValues(fV);
+		setOngletFields(oF as any);
 	}, [
-		user, userProfileInVaultState, keycloakConfig, vaultConfig, 
-		oidcTokens, vaultToken,  service, minioCredentials, ongletFields, queryParams
+		mustacheParams,
+		service,
+		ongletFields,
+		queryParams
 	]);
 
 	const handlechangeField = (path: string) => (value: string) => {
@@ -239,7 +225,7 @@ export const NouveauService: React.FC<Props> = ({
 								</Typography>
 							</div>
 							<Formulaire
-								user={user}
+								user={{ idep }}
 								name={ongletContent.nom}
 								handleChange={handlechangeField}
 								fields={ongletContent.fields}

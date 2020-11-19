@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector } from "js/redux/hooks";
+import { useSelector, useUserProfile } from "js/redux/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
@@ -21,9 +21,9 @@ const EnTete = () => (
 
 const Cluster = () => {
 
-	const user= useSelector(state => state.user);
 
 	const oidcAccessToken = useSelector(state => state.buildContract.oidcTokens.accessToken);
+	const { userProfile: { idep }} = useUserProfile();
 
 	return (
 		<>
@@ -52,7 +52,7 @@ const Cluster = () => {
 						</>}
 					<CopyableField copy label="Token" value={oidcAccessToken} />
 					<ExportCredentialsField
-						credentials={user}
+						credentials={{ idep, oidcAccessToken }}
 						exportTypes={exportKub}
 						text={D.exportKub}
 					/>

@@ -63,11 +63,13 @@ export function createObjectThatThrowsIfAccessedFactory(
 
 }
 
-export function isPropertyAccessedByRedux( prop: string | number | symbol) {
-    console.log(String(prop), typeof prop === "symbol");
-    return prop === "window" || prop === "toJSON";
+export function isPropertyAccessedByRedux(prop: string | number | symbol) {
+    switch (typeof prop) {
+        case "symbol": return String(prop) === "Symbol(immer-state)";
+        case "string": return ["window", "toJSON"].includes(prop)
+        case "number": return false;
+    }
 }
-
 
 export function createPropertyThatThrowIfAccessed<T extends object, PropertyName extends keyof T>(
     propertyName: PropertyName,

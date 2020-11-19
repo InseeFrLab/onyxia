@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useUserProfile } from "js/redux/hooks";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -18,7 +18,6 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { thunks } from "lib/setup";
 interface cloudShellData {
 	status?: string;
 	packageToDeploy?: any;
@@ -27,8 +26,8 @@ interface cloudShellData {
 }
 
 const CloudShell = () => {
-	const user = useSelector(store => store.user);
-	const userProfileInVaultState = useSelector(store => store.userProfileInVault);
+
+	const { userProfile: { idep } } = useUserProfile();
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -37,17 +36,8 @@ const CloudShell = () => {
 	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
 
-	const [{
-		keycloakConfig,
-		vaultConfig
-	}] = useState(
-		() => dispatch(
-			thunks.buildContract.getParamsNeededToInitializeKeycloakAndVolt()
-		)
-	);
 
-	const { oidcTokens, vaultToken } = useSelector(state => state.buildContract);
-
+	const { mustacheParams } = useMustacheParams();
 
 	const launchCloudShell = () => {
 		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
@@ -64,14 +54,7 @@ const CloudShell = () => {
 						},
 						"options": getValuesObject(
 							getOptions(
-								{
-									user,
-									userProfileInVaultState,
-									keycloakConfig,
-									vaultConfig,
-									oidcTokens,
-									vaultToken
-								},
+								{ ...mustacheParams, "s3": mustacheParams.s3! },
 								service,
 								{}
 							).fV
@@ -215,7 +198,7 @@ const CloudShell = () => {
 						aria-label="delete"
 						onClick={() => {
 							setVisibility(false);
-							(deleteCloudShell as any)(user.IDEP);
+							(deleteCloudShell as any)(idep);
 						}}
 						className="close-shell"
 					>

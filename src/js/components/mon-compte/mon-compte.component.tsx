@@ -16,18 +16,11 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import useBetaTest from '../hooks/useBetaTest';
-import type { RootState } from "lib/setup";
 import { thunks } from "lib/setup";
-import { useDispatch, useSelector } from "js/redux/hooks";
+import { useDispatch, useSelector, useUserProfile } from "js/redux/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
-interface Props {
-	user?: RootState["user"];
-	getUserInfo: () => void;
-	logout: () => void;
-}
-
-export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
+export const MonCompte = () => {
 	const [betaTest, setBetaTest] = useBetaTest();
 	const [s3loading, setS3Loading] = useState(false);
 
@@ -37,26 +30,20 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 
 	const dispatch = useDispatch();
 
-	useEffect(() => {
-		if (!user) {
-			getUserInfo();
-		}
-	});
+	const { userProfile } = useUserProfile();
+	const { s3, ip }= useSelector(state=> state.user);
 
 	useEffect(() => {
-		if (user && !s3loading && (!user.S3 || !user.S3.AWS_EXPIRATION)) {
+		if (!s3loading && (!s3 || !s3.AWS_EXPIRATION)) {
 			setS3Loading(true);
 			getMinioToken().then(() => setS3Loading(false));
 		}
-	}, [user, s3loading]);
+	}, [s3, s3loading]);
 
-	const handleChange = (event: any) => {
-		setBetaTest(event.target.checked);
-	};
 
-	if (!user) return null;
+	if (!s3) return null;
 
-	const credentials = user.S3;
+	const credentials = s3;
 
 	return (
 		<>
@@ -67,7 +54,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					color="textPrimary"
 					gutterBottom
 				>
-					{D.hello} {user.USERNAME}
+					{D.hello} {userProfile.nomComplet}
 				</Typography>
 			</div>
 			<FilDAriane fil={fil.monCompte} />
@@ -77,7 +64,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 						className="bouton-rouge"
 						color="primary"
 						title="logout"
-						onClick={logout}
+						onClick={() => dispatch(thunks.app.logout())}
 					>
 						<Icon>power_settings_new_icon</Icon>
 					</Fab>
@@ -139,15 +126,15 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 				</Paper>
 
 				<Paper className="paragraphe" elevation={1}>
-					{user.IDEP ? (
+					{userProfile.idep ? (
 						<>
 							<Typography variant="h3" align="left">
 								{D.user}
 							</Typography>
-							<CopyableField copy label="Idep" value={user.IDEP} />
-							<CopyableField copy label="Nom complet" value={user.USERNAME} />
-							<CopyableField copy label="Email" value={user.USERMAIL} />
-							<CopyableField copy label="IP" value={user.IP} />
+							<CopyableField copy label="Idep" value={userProfile.idep} />
+							<CopyableField copy label="Nom complet" value={userProfile.nomComplet} />
+							<CopyableField copy label="Email" value={userProfile.email} />
+							<CopyableField copy label="IP" value={ip} />
 						</>
 					) : (
 							<Loader />
@@ -197,7 +184,7 @@ export const MonCompte = ({ user, getUserInfo, logout }: Props) => {
 					<FormControlLabel
 						control={
 							<Switch
-								onChange={handleChange}
+								onChange={event => { setBetaTest(event.target.checked); }}
 								name="checkedB"
 								color="primary"
 								checked={betaTest as any}

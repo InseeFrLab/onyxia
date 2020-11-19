@@ -4,7 +4,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch } from "js/redux/hooks";
+import { useSelector, useDispatch, useUserProfile } from "js/redux/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 
 
@@ -14,7 +14,7 @@ export const MyBuckets = () => {
 		state => state.regions.selectedRegion
 	);
 
-	const idep = useSelector(state => state.user.IDEP);
+	const { userProfile: { idep } } = useUserProfile();
 
 	const buckets = useSelector(
 		state => state.myFiles.userBuckets

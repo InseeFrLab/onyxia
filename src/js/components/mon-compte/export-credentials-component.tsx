@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Typography, Grid, Select, MenuItem } from '@material-ui/core';
 import { ExportFileButton, CopyButton } from 'js/components/commons/buttons';
-import { useSelector } from "js/redux/hooks";
 
-const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
+const ExportCredentialsField: React.FC<{
+		text: string; 
+		credentials: any; 
+		exportTypes: { id: string; label: string; text(c: any): string; fileName: string }[]; 
+ }> = ( { credentials, exportTypes, text }) => {
 	const [exportTypeId, changeExportType] = useState(exportTypes[0].id);
-	const exportType = exportTypes.find((type) => type.id === exportTypeId);
-	const { oidcTokens } = useSelector(state => state.buildContract);
+	const exportType = exportTypes.find((type) => type.id === exportTypeId)!;
 
-	const handleChange = (e) => changeExportType(e.target.value);
+	const handleChange = (e: any) => changeExportType(e.target.value);
 	return (
 		<React.Fragment>
 			<Grid
@@ -28,6 +30,7 @@ const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
 							onChange={handleChange}
 						>
 							{exportTypes.map(({ id, label }) => (
+								//@ts-ignore
 								<MenuItem key={id} variant="body1" value={id}>
 									{label}
 								</MenuItem>
@@ -39,7 +42,7 @@ const ExportCredentialsField = ({ credentials, exportTypes, text }) => {
 					<Grid item>
 						<ExportFileButton
 							fileName={exportType.fileName}
-							content={exportType.text(credentials, oidcTokens)}
+							content={exportType.text(credentials)}
 						/>
 					</Grid>
 					<Grid item>

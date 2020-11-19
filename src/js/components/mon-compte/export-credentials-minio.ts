@@ -1,9 +1,13 @@
+
+import type { S3 } from "js/redux/user";
+
+
 const exportTypes = [
 	{
 		id: 'r',
 		label: 'R (aws.S3)',
 		fileName: 'credentials.R',
-		text: (c) =>
+		text: (c: S3) =>
 			`
 install.packages("aws.s3", repos = "https://cloud.R-project.org")
 
@@ -20,7 +24,7 @@ bucketlist(region="")`,
 		id: 'r_bis',
 		label: 'R (paws)',
 		fileName: 'credentials.R',
-		text: (c) =>
+		text: (c: S3) =>
 			`
 install.packages("paws", repos = "https://cloud.R-project.org")
 
@@ -47,7 +51,7 @@ minio$list_buckets()`,
 		id: 'python',
 		label: 'Python (s3fs)',
 		fileName: 'credentials.py',
-		text: (c) =>
+		text: (c: S3) =>
 			`
 import s3fs
 fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
@@ -56,7 +60,7 @@ fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDP
 		id: 'env',
 		label: 'Environment variables',
 		fileName: '.bashrc',
-		text: (c) => `
+		text: (c: S3) => `
 export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
 export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
@@ -68,7 +72,7 @@ export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		id: 'mc',
 		label: 'MC client',
 		fileName: '.bashrc',
-		text: (c) =>
+		text: (c: S3) =>
 			`
    export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
        `,
@@ -77,7 +81,7 @@ export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		id: 'env',
 		label: 'Environment variables',
 		fileName: '.bashrc',
-		text: (c) => `
+		text: (c: S3) => `
 export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
 export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
@@ -89,7 +93,7 @@ export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		id: 's3cmd',
 		label: 's3cmd (.s3cfg)',
 		fileName: '.s3cfg',
-		text: (c) =>
+		text: (c: S3) =>
 			`
 [default]
 access_key = ${c.AWS_ACCESS_KEY_ID}
@@ -170,7 +174,7 @@ website_index = index.html
 		id: 'rclone',
 		label: 'rclone (.conf)',
 		fileName: 'rclone.conf',
-		text: (c) =>
+		text: (c: S3) =>
 			`
 [minio]
 type = s3

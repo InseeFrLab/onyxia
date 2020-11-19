@@ -18,6 +18,8 @@ const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
+console.log("load!");
+
 const Root = () => {
 
     const [env] = useState(() => getEnv());
@@ -57,7 +59,8 @@ const Root = () => {
     }
 
     return (
-        <React.StrictMode>
+        //<React.StrictMode>
+        <>
             {
                 store === undefined ?
                     <Loader em={30} /> :
@@ -65,7 +68,8 @@ const Root = () => {
                         <App />
                     </Provider>
             }
-        </React.StrictMode>
+        </>
+        //</React.StrictMode>
     );
 
 };

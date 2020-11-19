@@ -139,7 +139,6 @@ async function createStoreForLoggedUser(
         )
     );
 
-
     await store.dispatch(
         userProfileInVaultUseCase.privateThunks.initialize()
     );
@@ -176,6 +175,8 @@ createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
 
+    console.log("createStore", JSON.stringify(params, null, 2));
+
     assert(
         createStore.isFirstInvocation,
         "createStore has already been called, " +
@@ -194,6 +195,7 @@ export async function createStore(params: CreateStoreParams) {
         !paramsNeededToInitializeKeycloakClient.doUseInMemoryClient,
         "TODO: We need a mock implementation of KeycloakClient"
     );
+
 
     const keycloakClient =
         await createImplOfKeycloakClientBasedOnOfficialAddapter(
@@ -238,8 +240,8 @@ export async function createStore(params: CreateStoreParams) {
 
     //TODO: Move the rest of the redux slices inside.
     if (keycloakClient.isUserLoggedIn) {
-    
-        await store.dispatch(user.actions.getUserInfo());
+
+        await store.dispatch(user.privateThunks.initialize());
 
     }
 
@@ -255,7 +257,9 @@ export const thunks = {
     [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
     [translateVaultRequests.name]: translateVaultRequests.thunks,
-    [buildContract.name]: buildContract.thunks
+    [buildContract.name]: buildContract.thunks,
+    [user.name]: user.thunk,
+    [app.name]: app.thunk
 };
 
 export type Store = AsyncReturnType<typeof createStore>;

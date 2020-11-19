@@ -12,7 +12,7 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     { "isPropertyWhitelisted": isPropertyAccessedByRedux }
 );
 
-type UserProfileInVault = Id<Record<string, string | number | null>, {
+export type UserProfileInVault = Id<Record<string, string | number | null>, {
     userServicePassword: string;
     kaggleApiToken: string | null;
     gitName: string;
@@ -27,6 +27,17 @@ export type UserProfileInVaultState = {
         isBeingChanged: boolean;
     };
 };
+
+export function removeChangeStateFromUserProfileInVaultState(state: UserProfileInVaultState): UserProfileInVault {
+
+    const userProfileInVault: any = {};
+
+    objectKeys(state).forEach(key => userProfileInVault[key] = state[key].value);
+
+    return userProfileInVault;
+
+}
+
 
 export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserProfileInVault> = {
     key: K;
@@ -83,7 +94,7 @@ export const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
 }
 
-const generatePassword = () => Array(2).fill("").map(()=> Math.random().toString(36).slice(-10)).join("");
+const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
 
 export const privateThunks = {
     "initialize":
@@ -140,7 +151,7 @@ export const thunks = {
     "changeValue":
         (params: ChangeValueParams): AppThunk => async (...args) => {
 
-            const [dispatch,, { vaultClient, keycloakClient }] = args;
+            const [dispatch, , { vaultClient, keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
@@ -159,7 +170,7 @@ export const thunks = {
 
         },
     "renewUserServicePassword":
-        (): AppThunk => dispatch => 
+        (): AppThunk => dispatch =>
             dispatch(
                 thunks.changeValue({
                     "key": "userServicePassword",

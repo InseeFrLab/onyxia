@@ -20,7 +20,7 @@ import Trainings from 'js/components/trainings';
 import Catalogue from './my-lab/catalogue';
 import { MyBuckets } from 'js/components/mes-fichiers/MyBuckets';
 import { NavigationFile } from 'js/components/mes-fichiers/navigation/NavigationFile';
-import MonCompte from 'js/components/mon-compte';
+import { MonCompte } from 'js/components/mon-compte/mon-compte.component';
 import CloudShell from 'js/components/cloud-shell';
 import QuickAccess from './commons/nav-bar/quick-access';
 import Footer from './commons/footer';
@@ -174,7 +174,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						<Notifications />
 						{isAuthenticated && <QuickAccess />}
 					</div>
-					<CloudShell />
+					{isAuthenticated && <CloudShell />}
 					<VisiteGuidee />
 					<ToastContainer position="bottom-left" />
 				</>

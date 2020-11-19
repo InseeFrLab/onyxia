@@ -55,11 +55,13 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
 
     }
 
+    evtLocallyStoredOidcAccessToken.state = keycloakInstance.token!;
+
     return id<KeycloakClient.LoggedIn>({
         "isUserLoggedIn": true,
         "evtOidcTokens": evtLocallyStoredOidcAccessToken.pipe(
             oidcAccessToken => oidcAccessToken === undefined ?
-                [ undefined ] :
+                [undefined] :
                 [{
                     "accessToken": oidcAccessToken,
                     "idToken": keycloakInstance.idToken!,
@@ -69,7 +71,7 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired":
             async params => {
 
-                const { minValidity = 10 } = params ?? {};
+                const { minValidity = 10 } = params ?? {};
 
                 if (!keycloakInstance.isTokenExpired(minValidity)) {
                     return;
@@ -77,20 +79,20 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
 
                 evtLocallyStoredOidcAccessToken.state = undefined;
 
-                const refreshed = await keycloakInstance.updateToken(-1)
-                    .catch((error: Error) => error);
+                const error = await keycloakInstance.updateToken(-1)
+                    .then(
+                        () => undefined,
+                        (error: Error) => error
+                    );
 
-                if (refreshed instanceof Error) {
+                if (error) {
 
                     //NOTE: Never resolves
                     await login({ "redirectUri": window.location.href });
 
                 }
 
-                assert(
-                    refreshed &&
-                    keycloakInstance.token !== undefined
-                );
+                assert(keycloakInstance.token !== undefined);
 
                 evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
 

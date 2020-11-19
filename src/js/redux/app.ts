@@ -16,7 +16,7 @@ export type State = {
 
 export const name = "app";
 
-const asyncThunks = {
+export const thunk = {
 	"logout":
 		(): AppThunk<Promise<never>> => async (...args) => {
 
@@ -126,8 +126,7 @@ const { actions: syncActions } = slice;
 
 
 export const actions = {
-	...syncActions,
-	...asyncThunks
+	...syncActions
 };
 
 export const reducer = slice.reducer;

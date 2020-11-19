@@ -59,17 +59,17 @@ export async function getMinioToken() {
 	const { actions } = await import("js/redux/legacyActions");
 	const store = await import("lib/setup").then(({ prStore }) => prStore);
 
-	const { S3 } = store.getState().user;
+	const { s3 } = store.getState().user;
 
 	if (
-		S3 && (Date.parse(S3.AWS_EXPIRATION) - Date.now()) >= getEnv().MINIO.MINIMUM_DURATION
+		s3 && (Date.parse(s3.AWS_EXPIRATION) - Date.now()) >= getEnv().MINIO.MINIMUM_DURATION
 	) {
 
 		return {
-			"accessKey": S3.AWS_ACCESS_KEY_ID,
-			"secretAccessKey": S3.AWS_SECRET_ACCESS_KEY,
-			"sessionToken": S3.AWS_SESSION_TOKEN,
-			"expiration": S3.AWS_EXPIRATION
+			"accessKey": s3.AWS_ACCESS_KEY_ID,
+			"secretAccessKey": s3.AWS_SECRET_ACCESS_KEY,
+			"sessionToken": s3.AWS_SESSION_TOKEN,
+			"expiration": s3.AWS_EXPIRATION
 		};
 
 

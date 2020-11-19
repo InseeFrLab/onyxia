@@ -6,7 +6,6 @@ export const restApiPaths = {
 	"nouveauService": "/my-lab/app",
 	"nouveauGroupe": "/my-lab/group",
 	"changerEtatService": "/my-lab/app",
-	"updateUser": "/user/update",
 	"myLab": {
 		"app": "/my-lab/app"
 	},

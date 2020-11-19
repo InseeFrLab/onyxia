@@ -1,8 +1,10 @@
 import Mustache from 'mustache';
 import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
-import type { KeycloakConfig, VaultConfig } from "lib/useCases/buildContract";
+import type { KeycloakConfig, VaultConfig } from "lib/useCases/buildContract";
 import type { OidcTokens } from "lib/ports/KeycloakClient";
+import type { UserProfile } from "js/redux/user";
+import type { UserProfileInVault } from "lib/useCases/userProfileInVault";
 
 const env = getEnv();
 
@@ -16,9 +18,12 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 		: { ...field, ...field['x-form'], media };
 };
 
+
 export type BuildMustacheViewParams = {
-	user: RootState["user"];
-	userProfileInVaultState: RootState["userProfileInVault"];
+	s3: NonNullable<RootState["user"]["s3"]>;
+	ip: string;
+	userProfile: UserProfile;
+	userProfileInVault: UserProfileInVault;
 	keycloakConfig: KeycloakConfig;
 	vaultConfig: VaultConfig;
 	oidcTokens: OidcTokens;
@@ -30,25 +35,26 @@ export type BuildMustacheViewParams = {
 const buildMustacheView = (params: BuildMustacheViewParams) => {
 
 	const {
-		user, userProfileInVaultState,
+		s3, ip, userProfile,
+		userProfileInVault,
 		vaultConfig, oidcTokens, vaultToken
 	} = params;
 
 	return {
 		"user": {
-			"idep": user.IDEP,
-			"name": user.USERNAME,
-			"email": user.USERMAIL,
-			"password": userProfileInVaultState.userServicePassword.value,
-			"key": user.USERKEY,
-			"ip": user.IP,
+			"idep": userProfile.idep,
+			"name": userProfile.nomComplet,
+			"email": userProfile.email,
+			"password": userProfileInVault.userServicePassword,
+			"key": "https://example.com/placeholder.gpg",
+			"ip": ip,
 		},
 		"git": {
-			"name": userProfileInVaultState.gitName.value,
-			"email": user.USERMAIL,
-			"credentials_cache_duration": userProfileInVaultState.gitCredentialCacheDuration.value
+			"name": userProfileInVault.gitName,
+			"email": userProfileInVault.gitEmail,
+			"credentials_cache_duration": userProfileInVault.gitCredentialCacheDuration
 		},
-		"status": user.STATUS,
+		"status": "",
 		"keycloak": {
 			"KC_ID_TOKEN": oidcTokens.idToken,
 			"KC_REFRESH_TOKEN": oidcTokens.refreshToken,
@@ -59,10 +65,10 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"VAULT_ADDR": vaultConfig.baseUri,
 			"VAULT_TOKEN": vaultToken,
 			"VAULT_MOUNT": vaultConfig.engine,
-			"VAULT_TOP_DIR": user.IDEP,
+			"VAULT_TOP_DIR": userProfile.idep,
 		},
-		"kaggleApiToken": userProfileInVaultState.kaggleApiToken.value,
-		"s3": { ...user.S3 },
+		"kaggleApiToken": userProfileInVault.kaggleApiToken,
+		s3
 	};
 
 };
@@ -79,7 +85,7 @@ export const mustacheRender = (
 	const { value: template = "" } = field?.["x-form"] ?? {};
 
 	return Mustache.render(
-		template, 
+		template,
 		buildMustacheView(buildMustacheViewParams)
 	);
 };
