@@ -101,7 +101,7 @@ function getVaultClientTranslator(
                         `vault kv get ${pathJoin(engine, path)}`,
                     "fmtResult": ({ result: secretWithMetadata }) => {
 
-                        const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 1;
+                        const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 2;
 
                         return [
                             "==== Data ====",
@@ -110,8 +110,8 @@ function getVaultClientTranslator(
                             ...Object.entries(secretWithMetadata.secret)
                                 .map(
                                     ([key, value]) =>
-                                        key.padEnd(n) +
-                                            typeof value === "string" ? value : JSON.stringify(value)
+                                            key.padEnd(n) +
+                                            (typeof value === "string" ? value : JSON.stringify(value))
                                 )
                         ].join("\n");
 
@@ -124,11 +124,13 @@ function getVaultClientTranslator(
                             ...Object.entries(secret).map(
                                 ([key, value]) => `${key}=${typeof value === "string" ?
                                     `"${value.replace(/"/g, '\\"')}"` :
-                                    [
-                                        "-<<EOF",
-                                        `heredoc > ${JSON.stringify(value, null, 2)}`,
-                                        "heredoc> EOF"
-                                    ].join("\n")
+                                    typeof value === "number" || typeof value === "boolean" ?
+                                        value :
+                                        [
+                                            "-<<EOF",
+                                            `heredoc > ${JSON.stringify(value, null, 2)}`,
+                                            "heredoc> EOF"
+                                        ].join("\n")
                                     }`
                             )
                         ].join(" \\\n"),

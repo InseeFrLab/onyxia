@@ -36,10 +36,8 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useSelector } from "js/redux/hooks";
+import { useIsUserLoggedIn } from "js/redux/hooks";
 import { MySecrets } from "js/components/MySecrets";
-import { Evt } from "evt";
-import { useEvt } from "evt/hooks";
 
 const env = getEnv();
 
@@ -85,14 +83,7 @@ const App404 = () => (
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
-	const isAuthenticated = useSelector(state => state.app.authenticated);
-
-	useEvt(
-		ctx => Evt.from(ctx, window, "resize")
-			.toStateful()
-			.attach(() => applicationResize({ "width": window.innerWidth })),
-		[]
-	);
+	const { isUserLoggedIn } = useIsUserLoggedIn();
 
 	return (
 		<MuiThemeProvider theme={theme}>
@@ -172,9 +163,9 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						</main>
 						<Footer />
 						<Notifications />
-						{isAuthenticated && <QuickAccess />}
+						{isUserLoggedIn && <QuickAccess />}
 					</div>
-					{isAuthenticated && <CloudShell />}
+					{isUserLoggedIn && <CloudShell />}
 					<VisiteGuidee />
 					<ToastContainer position="bottom-left" />
 				</>

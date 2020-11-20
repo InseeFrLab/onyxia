@@ -25,7 +25,7 @@ export const MonCompte = () => {
 
 	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
 
-	const { accessToken: oidcAccessToken } = useSelector(state => state.buildContract.oidcTokens);
+	const { accessToken: oidcAccessToken } = useSelector(state => state.tokens.oidcTokens);
 
 	const dispatch = useDispatch();
 
@@ -202,6 +202,7 @@ export const MonCompte = () => {
 const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');
 
 
+//TODO: Double call in strict mode
 const EditableCopyableField = (props: Omit<CopyableFieldProps, "onChange">) => {
 
 	const [value, setValue] = useState(props.value);

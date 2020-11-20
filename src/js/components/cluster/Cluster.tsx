@@ -22,7 +22,7 @@ const EnTete = () => (
 const Cluster = () => {
 
 
-	const oidcAccessToken = useSelector(state => state.buildContract.oidcTokens.accessToken);
+	const oidcAccessToken = useSelector(state => state.tokens.oidcTokens.accessToken);
 	const { userProfile: { idep }} = useUserProfile();
 
 	return (

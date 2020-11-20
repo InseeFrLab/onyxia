@@ -12,7 +12,7 @@ import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt, nonNullable } from "evt";
 
-export const name = "buildContract";
+export const name = "tokens";
 
 export type VaultConfig = Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">;
 export type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"];

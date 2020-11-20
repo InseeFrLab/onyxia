@@ -11,7 +11,6 @@ export const MySecrets: React.FC = () => {
 
     const {
         userProfileInVault,
-        secretExplorer,
         translateVaultRequests: { selectedVaultClientType }
     } = useSelector(state => state);
 
@@ -27,7 +26,6 @@ export const MySecrets: React.FC = () => {
 
     return (
         <>
-            <h1>Here are the secrets currently stored at {secretExplorer.currentPath}</h1>
             {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str,i) => <p key={i}>{str}</p>)}
         </>
     );

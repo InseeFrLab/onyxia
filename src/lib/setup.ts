@@ -6,7 +6,7 @@ import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient
 import * as translateVaultRequests from "./useCases/translateVaultRequests";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
-import * as buildContract from "./useCases/buildContract";
+import * as buildContract from "./useCases/tokens";
 import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
@@ -122,6 +122,18 @@ async function createStoreForLoggedUser(
                 }),
     });
 
+
+    evtVaultCliTranslation.attach(
+        ({ type }) => type === "cmd",
+        cmd => evtVaultCliTranslation.attachOnce(
+            ({ cmdId }) => cmdId === cmd.cmdId,
+            resp => console.log(
+                `%c$ ${cmd.value}\n\n${resp.value}`, 
+                'background: #222; color: #bada55'
+            )
+        )
+    );
+
     const store = configureStore({
         reducer,
         ...getMiddleware({
@@ -207,13 +219,6 @@ export async function createStore(params: CreateStoreParams) {
             createStoreForNonLoggedUser({ keycloakClient })
     );
 
-    //TODO: Finish refactoring
-    store.dispatch(
-        app.actions.setIsAuthenticated(
-            { "isUserLoggedIn": keycloakClient.isUserLoggedIn }
-        )
-    );
-
     if (keycloakClient.isUserLoggedIn) {
 
         store.dispatch(
@@ -224,7 +229,9 @@ export async function createStore(params: CreateStoreParams) {
                             "baseUri": "",
                             "engine": paramsNeededToInitializeVaultClient.engine,
                             "role": ""
-                        } : paramsNeededToInitializeVaultClient,
+                        }
+                        :
+                        paramsNeededToInitializeVaultClient,
                     "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
                 }
             )

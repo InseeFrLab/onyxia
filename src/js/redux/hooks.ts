@@ -15,7 +15,7 @@ export const useUserProfile = () => {
 
     const dispatch = useDispatch();
 
-    const [ userProfile ]= useState(() => dispatch(thunks.user.getUserProfile()));
+    const [userProfile] = useState(() => dispatch(thunks.user.getUserProfile()));
 
     return { userProfile };
 
@@ -25,16 +25,16 @@ export const useMustacheParams = () => {
 
     const dispatch = useDispatch();
 
-    const { oidcTokens, vaultToken } = useSelector(state => state.buildContract);
+    const { oidcTokens, vaultToken } = useSelector(state => state.tokens);
     const { ip, s3 } = useSelector(state => state.user);
-    const { userProfile } = useUserProfile();
+    const { userProfile } = useUserProfile();
     const userProfileInVault = useSelector(
         state => removeChangeStateFromUserProfileInVaultState(state.userProfileInVault)
     );
     const [{ keycloakConfig, vaultConfig }] = useState(
         () =>
             dispatch(
-                thunks.buildContract
+                thunks.tokens
                     .getParamsNeededToInitializeKeycloakAndVolt()
             )
     );
@@ -51,8 +51,16 @@ export const useMustacheParams = () => {
         vaultToken
     };
 
-    return { mustacheParams };
+    return { mustacheParams };
 
 };
 
+export const useIsUserLoggedIn = () => {
 
+    const dispatch = useDispatch();
+
+    const isUserLoggedIn = dispatch(thunks.app.getIsUserLoggedIn());
+
+    return { isUserLoggedIn };
+
+}

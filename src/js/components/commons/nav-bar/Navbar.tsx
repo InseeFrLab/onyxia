@@ -15,7 +15,7 @@ import type {ScreenType} from "js/model/ScreenType";
 import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
-import { useSelector, useDispatch } from "js/redux/hooks";
+import { useSelector, useDispatch, useIsUserLoggedIn } from "js/redux/hooks";
 
 
 
@@ -24,7 +24,8 @@ export const Navbar: React.FC<{}> = ()=>{
 
 	const [ isOpen, setIsOpen ] = useState(false);
 
-	const authenticated = useSelector(state=> state.app.authenticated);
+	const { isUserLoggedIn } = useIsUserLoggedIn();
+
 	const screenType = useSelector(state=> getScreenTypeFromWidth(state.app.screenWidth));
 	const displayLogin = useSelector(state => state.app.displayLogin);
 	const redirectUri = useSelector(state => state.app.redirectUri);
@@ -60,7 +61,7 @@ export const Navbar: React.FC<{}> = ()=>{
 						Onyxia
 						</Typography>
 
-					{authenticated ? (
+					{isUserLoggedIn ? (
 						<Link to="/mon-compte">
 							<LogoMonCompte screenType={screenType} />
 						</Link>
@@ -73,7 +74,7 @@ export const Navbar: React.FC<{}> = ()=>{
 				</Toolbar>
 				<AppMenu
 					open={isOpen}
-					authenticated={authenticated}
+					authenticated={isUserLoggedIn}
 					login={handleLogin}
 					logout={handleLogout}
 					handleClose={handleClose}

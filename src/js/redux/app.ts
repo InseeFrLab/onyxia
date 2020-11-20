@@ -3,9 +3,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import type { AppThunk } from "lib/setup";
+import { Evt } from "evt";
 
 export type State = {
-	authenticated: boolean;
 	redirectUri: string | null;
 	waiting: boolean;
 	displayLogin: boolean;
@@ -15,6 +15,20 @@ export type State = {
 };
 
 export const name = "app";
+
+export const privateThunk = {
+	"initialize":
+		(): AppThunk<void> => dispatch =>
+			Evt.from(window, "resize")
+				.toStateful()
+				.attach(
+					() => dispatch(
+						slice.actions.applicationResize(
+							{ "width": window.innerWidth }
+						)
+					)
+				)
+};
 
 export const thunk = {
 	"logout":
@@ -26,6 +40,11 @@ export const thunk = {
 
 			return keycloakClient.logout();
 
+		},
+	"getIsUserLoggedIn":
+		(): AppThunk<boolean> => (...args) => {
+			const [, , { keycloakClient }] = args;
+			return keycloakClient.isUserLoggedIn;
 		}
 };
 
@@ -33,7 +52,6 @@ export const thunk = {
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
-		"authenticated": false,
 		"redirectUri": null,
 		"waiting": false,
 		"displayLogin": false,
@@ -108,28 +126,17 @@ const slice = createSlice({
 		},
 		"startVisite": (state) => {
 			state.visite = true;
-		},
-		"setIsAuthenticated": (
-			state,
-			{ payload }: PayloadAction<{ isUserLoggedIn: boolean; }>
-		) => {
-			const { isUserLoggedIn } = payload;
-
-			state.authenticated = isUserLoggedIn;
-
 		}
 	}
 });
 
-const { actions: syncActions } = slice;
+
+export const { reducer } = slice;
 
 
 
-export const actions = {
-	...syncActions
-};
+export const actions = id<Omit<typeof slice.actions, "applicationResize">>(slice.actions);
 
-export const reducer = slice.reducer;
 
 
 

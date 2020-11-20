@@ -1,7 +1,7 @@
 import Mustache from 'mustache';
 import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
-import type { KeycloakConfig, VaultConfig } from "lib/useCases/buildContract";
+import type { KeycloakConfig, VaultConfig } from "lib/useCases/tokens";
 import type { OidcTokens } from "lib/ports/KeycloakClient";
 import type { UserProfile } from "js/redux/user";
 import type { UserProfileInVault } from "lib/useCases/userProfileInVault";

@@ -12,7 +12,7 @@ const createPrivateRoute = (RouterContext: any) => (props: any) => (
 );
 
 //NOTE: Very temporary hack.
-let keycloakClient: UnpackPromise<typeof prKeycloakClient> | undefined = undefined;
+let keycloakClient: UnpackPromise<typeof prKeycloakClient>;
 let oidcAccessToken: string | undefined = undefined;
 prKeycloakClient.then(v => { 
 	keycloakClient = v;
@@ -39,20 +39,19 @@ class PrivateRoute extends React.Component {
 		}
 	}
 	static getDerivedStateFromProps(
-		{ authenticated, location, setRedirectUri, displayLogin }: any,
+		{ location, setRedirectUri, displayLogin }: any,
 	) {
 		const isToken = oidcAccessToken !== undefined;
 
-		if (!authenticated && !isToken) {
+		
+
+		if (!keycloakClient.isUserLoggedIn && !isToken) {
 			setRedirectUri({ "uri": `${window.location.origin}${location.pathname}` });
 			displayLogin({ "doDisplay": true });
 		}
-		if (!authenticated && isToken) {
+		if (!keycloakClient.isUserLoggedIn && isToken) {
 
-			assert(
-				keycloakClient &&
-				!keycloakClient.isUserLoggedIn
-			);
+			assert(!keycloakClient.isUserLoggedIn);
 
 			keycloakClient.login();
 
@@ -82,9 +81,9 @@ class PrivateRoute extends React.Component {
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-	const { authenticated, faviconUrl } = state.app;
+	const { faviconUrl } = state.app;
 
-	return { ...ownProps, authenticated, faviconUrl };
+	return { ...ownProps, faviconUrl };
 };
 
 const dispatchToProps = {

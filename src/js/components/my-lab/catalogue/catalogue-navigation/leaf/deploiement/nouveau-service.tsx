@@ -26,7 +26,7 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useMustacheParams, useUserProfile } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn } from "js/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prKeycloakClient } from "lib/setup";
 
@@ -67,7 +67,7 @@ export const NouveauService: React.FC<Props> = ({
 			}, "hidden">>
 		}[];
 	}[]>([]);
-	const authenticated = useSelector(state => state.app.authenticated);
+	const { isUserLoggedIn } = useIsUserLoggedIn();
 	const dispatch = useDispatch();
 
 
@@ -112,7 +112,7 @@ export const NouveauService: React.FC<Props> = ({
 
 	useEffect(() => {
 
-		if (authenticated) {
+		if (isUserLoggedIn) {
 			return;
 		}
 
@@ -121,23 +121,23 @@ export const NouveauService: React.FC<Props> = ({
 			keycloakClient.login();
 		});
 
-	}, [authenticated]);
+	}, [isUserLoggedIn]);
 
 	useEffect(() => {
-		if (authenticated) {
+		if (isUserLoggedIn) {
 			getService(idCatalogue, idService).then((res) => {
 				setService(res as any);
 				setLoading(false);
 			});
 		}
-	}, [idCatalogue, idService, authenticated]);
+	}, [idCatalogue, idService, isUserLoggedIn]);
 
 	useEffect(() => {
-		if (authenticated && !minioCredentials) {
+		if (isUserLoggedIn && !minioCredentials) {
 			getMinioToken()
 				.then(setMinioCredentials)
 		}
-	}, [minioCredentials, authenticated]);
+	}, [minioCredentials, isUserLoggedIn]);
 
 	useEffect(() => {
 		if (queryParams.auto) {
