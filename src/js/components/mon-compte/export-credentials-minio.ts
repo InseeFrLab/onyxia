@@ -1,5 +1,5 @@
 
-import type { S3 } from "js/redux/user";
+import type { S3 } from "js/redux/user";
 
 
 const exportTypes = [
@@ -51,8 +51,7 @@ minio$list_buckets()`,
 		id: 'python',
 		label: 'Python (s3fs)',
 		fileName: 'credentials.py',
-		text: (c: S3) =>
-			`
+		text: (c: S3) => `
 import s3fs
 fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
 	},
@@ -72,9 +71,8 @@ export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
 		id: 'mc',
 		label: 'MC client',
 		fileName: '.bashrc',
-		text: (c: S3) =>
-			`
-   export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
+		text: (c: S3) => `
+export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
        `,
 	},
 	{

@@ -68,7 +68,10 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"VAULT_TOP_DIR": userProfile.idep,
 		},
 		"kaggleApiToken": userProfileInVault.kaggleApiToken,
-		s3
+		"s3": {
+			...s3,
+			"AWS_BUCKET_NAME": userProfile.idep
+		}
 	};
 
 };
