@@ -14,13 +14,14 @@ import './mon-compte.scss';
 import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
-import useBetaTest from '../hooks/useBetaTest';
 import { thunks } from "lib/setup";
-import { useDispatch, useSelector, useUserProfile } from "js/redux/hooks";
+import { useDispatch, useSelector, useUserProfile, useIsBetaModeEnabled } from "js/redux/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
 export const MonCompte = () => {
-	const [betaTest, setBetaTest] = useBetaTest();
+
+	const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
+
 	const [s3loading, setS3Loading] = useState(false);
 
 	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
@@ -183,10 +184,10 @@ export const MonCompte = () => {
 					<FormControlLabel
 						control={
 							<Switch
-								onChange={event => { setBetaTest(event.target.checked); }}
+								onChange={event => { setIsBetaModeEnabled(event.target.checked); }}
 								name="checkedB"
 								color="primary"
-								checked={betaTest as any}
+								checked={isBetaModeEnabled}
 							/>
 						}
 						label={D.activateBetatest}

@@ -19,14 +19,13 @@ import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic } from "js/utils/axios-config";
 import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
-import useBetaTest from 'js/components/hooks/useBetaTest';
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn, useIsBetaModeEnabled } from "js/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prKeycloakClient } from "lib/setup";
 
@@ -74,7 +73,7 @@ export const NouveauService: React.FC<Props> = ({
 	const [minioCredentials, setMinioCredentials] = useState<MinioCredentials | undefined>(undefined);
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
-	const [betaTester] = useBetaTest();
+	const { isBetaModeEnabled } = useIsBetaModeEnabled();
 	const { userProfile: { idep } } = useUserProfile();
 
 	const queryParams = queryString.decode(getCleanParams());
@@ -241,7 +240,7 @@ export const NouveauService: React.FC<Props> = ({
 								>
 									Créer votre service
 							</Button>
-								{betaTester ? (
+								{isBetaModeEnabled ? (
 									<IconButton
 										id="bouton-preview-nouveau-service"
 										//variant="contained"

@@ -11,21 +11,20 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
 import { useHistory } from 'react-router-dom';
-import useBetaTest from '../hooks/useBetaTest';
-import { useSelector } from "js/redux/hooks";
+import { useSelector, useIsBetaModeEnabled } from "js/redux/hooks";
 
 const RegionBanner = () => {
 	const regions = useSelector(store => store.regions);
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
-	const [betaTest] = useBetaTest();
+	const { isBetaModeEnabled } = useIsBetaModeEnabled();
 	useEffect(() => {
 		if (!regions.selectedRegion) {
 			getConfiguration();
 		}
 	}, [regions.selectedRegion]);
 
-	return regions?.selectedRegion && (regions?.regions?.length ?? 0) > 1 && betaTest ? (
+	return regions?.selectedRegion && (regions?.regions?.length ?? 0) > 1 && isBetaModeEnabled ? (
 		<>
 			<Collapse in={open}>
 				<Alert

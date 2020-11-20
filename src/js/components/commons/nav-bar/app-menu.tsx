@@ -18,9 +18,8 @@ import {
 import { getEnv } from 'js/env';
 import D from 'js/i18n';
 
-import useBetaTest from 'js/components/hooks/useBetaTest';
 import type { RootState } from "lib/setup";
-import { useSelector } from "js/redux/hooks";
+import { useSelector, useIsBetaModeEnabled } from "js/redux/hooks";
 
 const env = getEnv();
 
@@ -42,7 +41,9 @@ export default ({
 	authenticated,
 	login
 }: any) => {
-	const [betaTester] = useBetaTest();
+
+	const { isBetaModeEnabled } = useIsBetaModeEnabled();
+
 	const selectedRegion = useSelector(
 		(state: RootState) => state.regions.selectedRegion
 	);
@@ -110,7 +111,7 @@ export default ({
 						</ListItemIcon>
 						<ListItemText primary={D.myFilesTitle} />
 					</ListItem>
-					{betaTester ? (
+					{isBetaModeEnabled ? (
 						<ListItem button component={Link} to="/mes-secrets">
 							<ListItemIcon>
 								<Icon>vpn_key</Icon>
@@ -118,7 +119,7 @@ export default ({
 							<ListItemText primary={D.mySecretsTitle} />
 						</ListItem>
 					) : null}
-					{betaTester && selectedRegion?.services?.type === 'KUBERNETES' ? (
+					{isBetaModeEnabled && selectedRegion?.services?.type === 'KUBERNETES' ? (
 						<>
 							<ListItem>
 								<ListItemText primary="DevOps" />
@@ -131,7 +132,7 @@ export default ({
 							</ListItem>
 						</>
 					) : null}
-					{betaTester ? (
+					{isBetaModeEnabled ? (
 						<>
 							<ListItem>
 								<ListItemText primary="Informations" />

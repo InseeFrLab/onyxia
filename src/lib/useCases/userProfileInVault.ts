@@ -18,6 +18,7 @@ export type UserProfileInVault = Id<Record<string, string | boolean | number | n
     gitName: string;
     gitEmail: string;
     gitCredentialCacheDuration: number;
+    isBetaModeEnabled: boolean;
 }>;
 
 export type UserProfileInVaultState = {
@@ -117,7 +118,8 @@ export const privateThunks = {
                 "kaggleApiToken": null,
                 "gitName": idep,
                 "gitEmail": email,
-                "gitCredentialCacheDuration": 0
+                "gitCredentialCacheDuration": 0,
+                "isBetaModeEnabled": false
             };
 
             for (const key of objectKeys(userProfileInVault)) {
@@ -148,7 +150,7 @@ export const privateThunks = {
 
             dispatch(actions.initializationCompleted({ userProfile: userProfileInVault }));
 
-        },
+        }
 };
 
 const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");

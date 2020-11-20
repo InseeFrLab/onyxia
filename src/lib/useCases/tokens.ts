@@ -73,7 +73,7 @@ export const privateThunks = {
             assert(keycloakClient.isUserLoggedIn);
 
             keycloakClient.evtOidcTokens.$attach(
-                nonNullable(),
+                oidcTokens => oidcTokens === undefined ? null: [oidcTokens],
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 

@@ -6,7 +6,7 @@ import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient
 import * as translateVaultRequests from "./useCases/translateVaultRequests";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
-import * as buildContract from "./useCases/tokens";
+import * as tokenUseCase from "./useCases/tokens";
 import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
@@ -84,7 +84,7 @@ const reducer = {
     [translateVaultRequests.name]: translateVaultRequests.reducer,
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
     [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.reducer,
-    [buildContract.name]: buildContract.reducer
+    [tokenUseCase.name]: tokenUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -219,22 +219,22 @@ export async function createStore(params: CreateStoreParams) {
             createStoreForNonLoggedUser({ keycloakClient })
     );
 
+    store.dispatch(app.privateThunk.initialize());
+
     if (keycloakClient.isUserLoggedIn) {
 
         store.dispatch(
-            buildContract.privateThunks.initialize(
-                {
-                    "vaultConfig": paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
-                        {
-                            "baseUri": "",
-                            "engine": paramsNeededToInitializeVaultClient.engine,
-                            "role": ""
-                        }
-                        :
-                        paramsNeededToInitializeVaultClient,
-                    "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
-                }
-            )
+            tokenUseCase.privateThunks.initialize({
+                "vaultConfig": paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
+                    {
+                        "baseUri": "",
+                        "engine": paramsNeededToInitializeVaultClient.engine,
+                        "role": ""
+                    }
+                    :
+                    paramsNeededToInitializeVaultClient,
+                "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
+            })
         );
 
     }
@@ -262,7 +262,7 @@ export const thunks = {
     [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
     [translateVaultRequests.name]: translateVaultRequests.thunks,
-    [buildContract.name]: buildContract.thunks,
+    [tokenUseCase.name]: tokenUseCase.thunks,
     [user.name]: user.thunk,
     [app.name]: app.thunk
 };

@@ -64,3 +64,35 @@ export const useIsUserLoggedIn = () => {
     return { isUserLoggedIn };
 
 }
+
+export const useIsBetaModeEnabled = (): {
+    isBetaModeEnabled: boolean;
+    setIsBetaModeEnabled(value: boolean): void;
+} => {
+
+    const dispatch = useDispatch();
+
+    const { isUserLoggedIn } = useIsUserLoggedIn();
+
+    const isBetaModeEnabled = useSelector(
+        state =>
+            !isUserLoggedIn ?
+                false :
+                state.userProfileInVault.isBetaModeEnabled.value
+    );
+
+    return {
+        isBetaModeEnabled,
+        "setIsBetaModeEnabled": value =>
+            dispatch(
+                thunks.userProfileInVault.changeValue({
+                    "key": "isBetaModeEnabled",
+                    value
+                })
+            )
+    };
+
+
+
+
+};
