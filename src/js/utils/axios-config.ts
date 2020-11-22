@@ -12,7 +12,7 @@ export const getStore = memoize(
 );
 
 
-const BASE_URL = getEnv().API.BASE_URL;
+const BASE_URL = getEnv().API.BASE_URL || '/api';
 
 export const refreshToken = async (minValidity = 60) => {
 
