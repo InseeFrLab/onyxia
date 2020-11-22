@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getEnv } from 'js/env';
 import memoize from "memoizee";
 
-const BASE_URL = getEnv().API.BASE_URL;
+const BASE_URL = getEnv().API.BASE_URL || '/api';
 
 const { injectRegion } = (() => {
 
