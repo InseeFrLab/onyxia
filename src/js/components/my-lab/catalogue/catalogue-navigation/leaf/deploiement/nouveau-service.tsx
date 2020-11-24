@@ -17,17 +17,17 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
 import { axiosPublic } from "js/utils/axios-config";
-import { fromUser, filterOnglets } from 'js/utils';
+import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
-import useBetaTest from 'js/components/hooks/useBetaTest';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, actions } from "js/redux/store";
-import type { RootState } from "js/redux/store";
+import { actions } from "js/redux/legacyActions";
+import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn, useIsBetaModeEnabled } from "js/redux/hooks";
+import type { BuildMustacheViewParams } from "js/utils/form-field";
+import { prKeycloakClient } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -66,15 +66,15 @@ export const NouveauService: React.FC<Props> = ({
 			}, "hidden">>
 		}[];
 	}[]>([]);
-	const user = useSelector(state => state.user);
-	const authenticated = useSelector(state => state.app.authenticated);
+	const { isUserLoggedIn } = useIsUserLoggedIn();
 	const dispatch = useDispatch();
 
 
 	const [minioCredentials, setMinioCredentials] = useState<MinioCredentials | undefined>(undefined);
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
-	const [betaTester] = useBetaTest();
+	const { isBetaModeEnabled } = useIsBetaModeEnabled();
+	const { userProfile: { idep } } = useUserProfile();
 
 	const queryParams = queryString.decode(getCleanParams());
 
@@ -110,26 +110,33 @@ export const NouveauService: React.FC<Props> = ({
 	);
 
 	useEffect(() => {
-		if (!authenticated) {
-			getKeycloakInstance().login();
+
+		if (isUserLoggedIn) {
+			return;
 		}
-	}, [authenticated]);
+
+		prKeycloakClient.then(keycloakClient => {
+			assert(!keycloakClient.isUserLoggedIn);
+			keycloakClient.login();
+		});
+
+	}, [isUserLoggedIn]);
 
 	useEffect(() => {
-		if (authenticated) {
+		if (isUserLoggedIn) {
 			getService(idCatalogue, idService).then((res) => {
 				setService(res as any);
 				setLoading(false);
 			});
 		}
-	}, [idCatalogue, idService, authenticated]);
+	}, [idCatalogue, idService, isUserLoggedIn]);
 
 	useEffect(() => {
-		if (authenticated && !minioCredentials) {
+		if (isUserLoggedIn && !minioCredentials) {
 			getMinioToken()
 				.then(setMinioCredentials)
 		}
-	}, [minioCredentials, authenticated]);
+	}, [minioCredentials, isUserLoggedIn]);
 
 	useEffect(() => {
 		if (queryParams.auto) {
@@ -137,24 +144,31 @@ export const NouveauService: React.FC<Props> = ({
 		}
 	}, [queryParams.auto, handleClickCreer]);
 
+
+	const { mustacheParams } = useMustacheParams();
+
 	useEffect(() => {
-		if (
-			hasPwd(user) &&
-			service &&
-			minioCredentials &&
-			ongletFields.length === 0
-		) {
-			const { iFV, fV, oF } = getOptions(
-				user,
-				service,
-				minioCredentials,
-				queryParams
-			);
-			setInitialValues(iFV);
-			setFieldsValues(fV);
-			setOngletFields(oF as any);
+
+		if (!service || ongletFields.length !== 0 || mustacheParams.s3 === undefined) {
+			return;
 		}
-	}, [user, service, minioCredentials, ongletFields, queryParams]);
+
+		const { iFV, fV, oF } = getOptions(
+			//NOTE: we should be able to just write mustacheParams but
+			//TS is not clever enough to figure it out.
+			{ ...mustacheParams, "s3": mustacheParams.s3 }, 
+			service,
+			queryParams
+		);
+		setInitialValues(iFV);
+		setFieldsValues(fV);
+		setOngletFields(oF as any);
+	}, [
+		mustacheParams,
+		service,
+		ongletFields,
+		queryParams
+	]);
 
 	const handlechangeField = (path: string) => (value: string) => {
 		setFieldsValues({ ...fieldsValues, [path]: value });
@@ -210,7 +224,7 @@ export const NouveauService: React.FC<Props> = ({
 								</Typography>
 							</div>
 							<Formulaire
-								user={user}
+								user={{ idep }}
 								name={ongletContent.nom}
 								handleChange={handlechangeField}
 								fields={ongletContent.fields}
@@ -226,7 +240,7 @@ export const NouveauService: React.FC<Props> = ({
 								>
 									Créer votre service
 							</Button>
-								{betaTester ? (
+								{isBetaModeEnabled ? (
 									<IconButton
 										id="bouton-preview-nouveau-service"
 										//variant="contained"
@@ -331,21 +345,21 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 	return fields;
 };
 
+
 const arrayToObject =
-	(minioCredentials: MinioCredentials) =>
-		(queryParams: Record<string, string>) =>
-			(user: RootState["user"]) =>
-				(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
-					const obj: Record<string, any> = {};
-					const fromParams = getFromQueryParams(queryParams);
-					fields.forEach(({ path, field }) =>
-						obj[path] =
-						fromParams(path)(field) ||
-						fromUser({ ...user, minio: { ...minioCredentials } } as any)(field as any) ||
-						getDefaultSingleOption(field)
-					);
-					return obj;
-				};
+	(queryParams: Record<string, string>) =>
+		(buildMustacheViewParams: BuildMustacheViewParams) =>
+			(fields: { path: string; field: { "js-control": string; type: string; }; }[]) => {
+				const obj: Record<string, any> = {};
+				const fromParams = getFromQueryParams(queryParams);
+				fields.forEach(({ path, field }) =>
+					obj[path] =
+					fromParams(path)(field) ||
+					mustacheRender(field as any, buildMustacheViewParams) ||
+					getDefaultSingleOption(field)
+				);
+				return obj;
+			};
 
 const getCleanParams = () =>
 	window.location.search.startsWith('?')
@@ -393,13 +407,9 @@ const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value
 		};
 	};
 
-const hasPwd = (user: RootState["user"]) =>
-	user && user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password;
-
 export const getOptions = (
-	user: RootState["user"],
+	buildMustacheParams: BuildMustacheViewParams,
 	service: Service,
-	minioCredentials: MinioCredentials,
 	queryParams: Record<string, string>
 ) => {
 	const onglets =
@@ -409,19 +419,19 @@ export const getOptions = (
 	const fV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)(queryParams)(user)(curr as any),
+			...arrayToObject(queryParams)(buildMustacheParams)(curr as any),
 		}),
 		{}
 	);
 	const iFV = fields.reduce(
 		(acc, curr) => ({
 			...acc,
-			...arrayToObject(minioCredentials)({})(user)(curr as any),
+			...arrayToObject({})(buildMustacheParams)(curr as any),
 		}),
 		{}
 	);
 	return { fV, iFV, oF };
 };
 
-export const getService = async (idCatalogue: string, idService: string) => 
+export const getService = async (idCatalogue: string, idService: string) =>
 	axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`);

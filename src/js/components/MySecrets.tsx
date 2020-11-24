@@ -1,28 +1,33 @@
 
-import React, { useMemo } from "react";
-import { vaultApi } from "js/vault";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
-import { useAsync } from "react-async-hook";
-import Loader from "js/components/commons/loader";
+import React from "react";
+import { useDispatch, useSelector } from "js/redux/hooks";
+import { thunks } from "lib/setup";
+import { useEvt } from "evt/hooks";
 
 
 export const MySecrets: React.FC = () => {
 
-    const path = useMemo(
-        ()=>`/${locallyStoredOidcAccessToken.getParsed().preferred_username}/.onyxia/profile`, 
-        []
-    );
+    const dispatch = useDispatch();
 
-    const { result: profile }= useAsync(
-        () => vaultApi.getSecret({ path }),
-        [ path ]
-    );
+    const {
+        userProfileInVault,
+        translateVaultRequests: { selectedVaultClientType }
+    } = useSelector(state => state);
 
-    return profile === undefined ? 
-        <Loader em={30} /> :
+    useEvt(ctx => {
+
+        const { evtVaultTranslation } = dispatch(thunks.translateVaultRequests.getSelectedTranslator());
+
+        evtVaultTranslation.attach(ctx, data => {
+            console.log("$ " + data.value);
+        });
+
+    }, [dispatch, selectedVaultClientType]);
+
+    return (
         <>
-            <h1>Here are the secrets currently stored at {path}</h1>
-            {JSON.stringify(profile, null, 2).split('\n').map(str => <p key={str}>{str}</p>)}
-        </>;
+            {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str,i) => <p key={i}>{str}</p>)}
+        </>
+    );
 
 };

@@ -12,7 +12,7 @@ import { MyPolicy } from '../my-policy.component';
 import { getEnv } from 'js/env';
 import './my-file.scss';
 import { id } from "evt/tools/typeSafety/id";
-import type { actions } from "js/redux/store";
+import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 
 const env = getEnv();
