@@ -3,11 +3,11 @@ import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
 import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from 'js/restApiPaths';
-import useBetaTest from 'js/components/hooks/useBetaTest';
+import { useIsBetaModeEnabled } from "js/redux/hooks";
 
 const Catalogues = () => {
 	const [catalogs, setCatalogs] = useState([]);
-	const [betaTester] = useBetaTest();
+	const { isBetaModeEnabled } = useIsBetaModeEnabled();
 
 	useEffect(() => {
 		axiosPublic(restApiPaths.catalogue).then((resp) => {
@@ -19,7 +19,7 @@ const Catalogues = () => {
 		<div className="contenu catalogue">
 			<Grid container spacing={2}>
 				{catalogs
-					.filter((catalogue) => catalogue.status === 'PROD' || betaTester)
+					.filter((catalogue) => catalogue.status === 'PROD' || isBetaModeEnabled)
 					.map((catalogue) => (
 						<Catalogue catalogue={catalogue} key={catalogue.id} />
 					))}

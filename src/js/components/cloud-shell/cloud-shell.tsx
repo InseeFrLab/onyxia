@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from "js/redux/store";
+import { useDispatch, useMustacheParams, useUserProfile } from "js/redux/hooks";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -12,13 +12,12 @@ import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
 import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
-import { actions as myLabActions } from "js/redux/myLab";
+import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from "js/minio-client/minio-client";
 import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-
 interface cloudShellData {
 	status?: string;
 	packageToDeploy?: any;
@@ -27,7 +26,8 @@ interface cloudShellData {
 }
 
 const CloudShell = () => {
-	const user = useSelector(store => store.user);
+
+	const { userProfile: { idep } } = useUserProfile();
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);
@@ -37,7 +37,9 @@ const CloudShell = () => {
 	const dispatch = useDispatch();
 
 
-	const launchCloudShell = (user: any) => {
+	const { mustacheParams } = useMustacheParams();
+
+	const launchCloudShell = () => {
 		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
 			var cloudshell = (response as any) as cloudShellData;
 			const catalogId = { catalogId: cloudshell.catalogId };
@@ -50,7 +52,13 @@ const CloudShell = () => {
 							...service,
 							...catalogId,
 						},
-						"options": getValuesObject(getOptions(user, service, minioCredentials, {}).fV) as any,
+						"options": getValuesObject(
+							getOptions(
+								{ ...mustacheParams, "s3": mustacheParams.s3! },
+								service,
+								{}
+							).fV
+						) as any,
 						"dryRun": false
 					})
 				) as any).then(() => {
@@ -68,7 +76,6 @@ const CloudShell = () => {
 				}
 			}
 		});
-		return launchCloudShell;
 	};
 
 	const deleteCloudShell = () => {
@@ -100,9 +107,8 @@ const CloudShell = () => {
 				<IconButton
 					aria-label="maximize"
 					onClick={() => {
-						if (
-							(!cloudShellStatus || cloudShellStatus === 'DOWN')) {
-							launchCloudShell(user);
+						if ((!cloudShellStatus || cloudShellStatus === 'DOWN')) {
+							launchCloudShell();
 						}
 						setVisibility(true);
 					}}
@@ -121,7 +127,7 @@ const CloudShell = () => {
 				height: height,
 				width: '100%',
 			}}
-			onResizeStop={(...[,,,d]) => {
+			onResizeStop={(...[, , , d]) => {
 				setHeight(height + d.height);
 			}}
 		>
@@ -192,7 +198,7 @@ const CloudShell = () => {
 						aria-label="delete"
 						onClick={() => {
 							setVisibility(false);
-							(deleteCloudShell as any)(user.IDEP);
+							(deleteCloudShell as any)(idep);
 						}}
 						className="close-shell"
 					>

@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
+
 
 
 export type State = {
@@ -197,6 +197,7 @@ const asyncThunks = {
 	})()
 };
 
+
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
@@ -215,26 +216,12 @@ const slice = createSlice({
 
 			assert(typeof idep === "string");
 
-			const { gitlab_group } = locallyStoredOidcAccessToken.getParsed();
-
 			state.userBuckets = [
 				{
 					"id": idep,
 					"description": "bucket personnel", //TODO: Franglish
 					"isPublic": false
-				},
-				...(
-					gitlab_group ?
-						gitlab_group
-							.map(group => group.split(":"))
-							.map(([id, ...rest]) => ({
-								"id": `groupe-${id}`,
-								"description": rest.join(""),
-								"isPublic": true,
-							}))
-						:
-						[]
-				)
+				}
 			];
 
 		},

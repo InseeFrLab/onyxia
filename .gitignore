@@ -26,7 +26,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.zip
-.vscode/
 
 android
 # We ignore package-lock.json as we recommend yarn
