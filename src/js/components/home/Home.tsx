@@ -11,7 +11,7 @@ import createTheme from 'js/components/material-ui-theme';
 import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
 import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
-import { useSelector } from "js/redux/store";
+import { useSelector } from "js/redux/hooks";
 
 const theme = createTheme();
 

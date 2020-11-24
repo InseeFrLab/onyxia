@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
@@ -8,7 +7,6 @@ import { getMinioToken } from "js/minio-client/minio-client";
 import CopyableField from 'js/components/commons/copyable-field';
 import Loader from 'js/components/commons/loader';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
 import ExportCredentialsField from './export-credentials-component';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -16,44 +14,36 @@ import './mon-compte.scss';
 import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
-import GitField from './git';
-import { vaultApi } from "js/vault";
-import { User } from 'js/model/User';
-import useBetaTest from '../hooks/useBetaTest';
-import type { actions as userActions } from "js/redux/user";
-import type { HandleThunkActionCreator } from "react-redux";
+import { thunks } from "lib/setup";
+import { useDispatch, useSelector, useUserProfile, useIsBetaModeEnabled } from "js/redux/hooks";
+import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
-interface Props {
-	user?: User;
-	getUserInfo: () => void;
-	updateVaultSecret: HandleThunkActionCreator<typeof userActions["updateVaultSecret"]>;
-	logout: () => void;
-}
+export const MonCompte = () => {
 
-export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Props) => {
-	const [betaTest, setBetaTest] = useBetaTest();
+	const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
+
 	const [s3loading, setS3Loading] = useState(false);
 
-	useEffect(() => {
-		if (!user) {
-			getUserInfo();
-		}
-	});
+	const userProfileInVaultState = useSelector(state => state.userProfileInVault);
+
+	const { accessToken: oidcAccessToken } = useSelector(state => state.tokens.oidcTokens);
+
+	const dispatch = useDispatch();
+
+	const { userProfile } = useUserProfile();
+	const { s3, ip }= useSelector(state=> state.user);
 
 	useEffect(() => {
-		if (user && !s3loading && (!user.S3 || !user.S3.AWS_EXPIRATION)) {
+		if (!s3loading && (!s3 || !s3.AWS_EXPIRATION)) {
 			setS3Loading(true);
 			getMinioToken().then(() => setS3Loading(false));
 		}
-	}, [user, s3loading]);
+	}, [s3, s3loading]);
 
-	const handleChange = (event: any) => {
-		setBetaTest(event.target.checked);
-	};
 
-	if (!user) return null;
+	if (!s3) return null;
 
-	const credentials = user.S3;
+	const credentials = s3;
 
 	return (
 		<>
@@ -64,7 +54,7 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 					color="textPrimary"
 					gutterBottom
 				>
-					{D.hello} {user.USERNAME}
+					{D.hello} {userProfile.nomComplet}
 				</Typography>
 			</div>
 			<FilDAriane fil={fil.monCompte} />
@@ -74,7 +64,7 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						className="bouton-rouge"
 						color="primary"
 						title="logout"
-						onClick={logout}
+						onClick={() => dispatch(thunks.app.logout())}
 					>
 						<Icon>power_settings_new_icon</Icon>
 					</Fab>
@@ -85,33 +75,71 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						{D.onyxiaProfile}
 					</Typography>
 					<S3Field
-						value={
-							user.VAULT && user.VAULT.DATA ? user.VAULT.DATA.password : ''
-						}
-						handleReset={() => vaultApi.resetVaultPwd()}
+						value={userProfileInVaultState.userServicePassword.value}
+						handleReset={() => dispatch(thunks.userProfileInVault.renewUserServicePassword())}
 					/>
-					<GitField
-						idep={user.IDEP}
-						values={user.VAULT && user.VAULT.DATA}
-						updateVaultSecret={updateVaultSecret}
+
+					<EditableCopyableField
+						copy
+						label={D.gitUserName}
+						value={userProfileInVaultState.gitName.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.userProfileInVault.changeValue(
+								{ "key": "gitName", value })
+						)}
 					/>
+					<EditableCopyableField
+						copy
+						label={D.gitUserEmail}
+						value={userProfileInVaultState.gitEmail.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.userProfileInVault.changeValue(
+								{ "key": "gitEmail", value })
+						)}
+					/>
+					<EditableCopyableField
+						copy
+						label={D.gitCacheDuration}
+						value={"" + userProfileInVaultState.gitCredentialCacheDuration.value}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.userProfileInVault.changeValue(
+								{ "key": "gitCredentialCacheDuration", "value": parseInt(value) || 0 })
+						)}
+					/>
+					<EditableCopyableField
+						copy
+						label={D.kaggleApiToken}
+						value={userProfileInVaultState.kaggleApiToken.value ?? ""}
+						type="string"
+						onValidate={(value: string) => dispatch(
+							thunks.userProfileInVault.changeValue(
+								{ "key": "kaggleApiToken", value })
+						)}
+					/>
+
+
+
+
 				</Paper>
 
 				<Paper className="paragraphe" elevation={1}>
-					{user.IDEP ? (
+					{userProfile.idep ? (
 						<>
 							<Typography variant="h3" align="left">
 								{D.user}
 							</Typography>
-							<CopyableField copy label="Idep" value={user.IDEP} />
-							<CopyableField copy label="Nom complet" value={user.USERNAME} />
-							<CopyableField copy label="Email" value={user.USERMAIL} />
-							<CopyableField copy label="IP" value={user.IP} />
+							<CopyableField copy label="Idep" value={userProfile.idep} />
+							<CopyableField copy label="Nom complet" value={userProfile.nomComplet} />
+							<CopyableField copy label="Email" value={userProfile.email} />
+							<CopyableField copy label="IP" value={ip} />
 						</>
 					) : (
-						<Loader />
-					)}
-					<CopyableField copy label={D.oidcToken} value={getKeycloakInstance().token!} />
+							<Loader />
+						)}
+					<CopyableField copy label={D.oidcToken} value={oidcAccessToken} />
 				</Paper>
 
 				{credentials ? (
@@ -150,16 +178,16 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 						/>
 					</Paper>
 				) : (
-					<Loader />
-				)}
+						<Loader />
+					)}
 				<Paper className="paragraphe" elevation={1}>
 					<FormControlLabel
 						control={
 							<Switch
-								onChange={handleChange}
+								onChange={event => { setIsBetaModeEnabled(event.target.checked); }}
 								name="checkedB"
 								color="primary"
-								checked={betaTest as any}
+								checked={isBetaModeEnabled}
 							/>
 						}
 						label={D.activateBetatest}
@@ -170,18 +198,20 @@ export const MonCompte = ({ user, getUserInfo, updateVaultSecret, logout }: Prop
 	);
 };
 
-MonCompte.propTypes = {
-	user: PropTypes.shape({
-		idep: PropTypes.string,
-		nomComplet: PropTypes.string,
-		email: PropTypes.string,
-		ip: PropTypes.string,
-	}),
-};
-
-MonCompte.defaultProps = {
-	user: { idep: '', nomComplet: '', email: '', ip: '' },
-};
 
 
 const formatageDate = (date: any) => dayjs(date).format('DD/MM/YYYY à HH:mm:ss');
+
+
+//TODO: Double call in strict mode
+const EditableCopyableField = (props: Omit<CopyableFieldProps, "onChange">) => {
+
+	const [value, setValue] = useState(props.value);
+
+	return <CopyableField
+		{...props}
+		value={value}
+		onChange={(value: string) => setValue(value)}
+	/>
+
+};

@@ -4,7 +4,7 @@ import { Navbar } from './Navbar';
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { store } from 'js/redux/store';
+import { store } from 'js/redux/legacyActions';
 
 describe('nav-bar component', () => {
 	it('shoud call the handleClickMenu after clicking to the button', () => {

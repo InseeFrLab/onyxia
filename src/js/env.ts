@@ -70,8 +70,9 @@ export const getEnv = memoizee(() => ({
 
 	})(),
 	"VAULT": {
-		"VAULT_BASE_URI": getEnvVar("VAULT_BASE_URI"),
-		"VAULT_KV_ENGINE": getEnvVar("VAULT_KV_ENGINE")
+		"BASE_URI": getEnvVar("VAULT_BASE_URI"),
+		"ENGINE": getEnvVar("VAULT_KV_ENGINE"),
+		"ROLE": getEnvVar("VAULT_ROLE")
 	},
 	"CHAT": {
 		"CHAT_URL": getEnvVar("CHAT_URL")

@@ -5,14 +5,14 @@ import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteServices } from 'js/api/my-lab';
 import { useSelector } from 'react-redux';
-import type { RootState } from 'js/redux/store';
+import type { RootState } from 'lib/setup';
 
 interface Props {
 	groupId: string;
 }
 
 const extractUserPassword = (state: RootState) => {
-	return state.user.VAULT.DATA.password;
+	return state.userProfileInVault.userServicePassword.value;
 };
 
 const Services = ({ groupId }: Props) => {

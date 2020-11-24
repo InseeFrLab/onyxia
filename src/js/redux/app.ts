@@ -1,14 +1,11 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { getKeycloakInstance } from "js/utils/getKeycloakInstance";
-import { locallyStoredOidcAccessToken } from "js/utils/locallyStoredOidcAccessToken";
-import { assert } from "evt/tools/typeSafety/assert";
-
-import { actions as userActions } from "./user";
+import { assert } from "evt/tools/typeSafety/assert";
+import type { AppThunk } from "lib/setup";
+import { Evt } from "evt";
 
 export type State = {
-	authenticated: boolean;
 	redirectUri: string | null;
 	waiting: boolean;
 	displayLogin: boolean;
@@ -19,35 +16,42 @@ export type State = {
 
 export const name = "app";
 
-const asyncThunks = {
-	//TODO: As is, this has really no business being an redux action.
-	...(() => {
-
-		const typePrefix = "logout";
-
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async () => {
-
-					locallyStoredOidcAccessToken.clear();
-
-					await getKeycloakInstance()
-						.logout({ "redirectUri": `${window.location.origin}/accueil` });
-
-
-				}
-			)
-		};
-
-
-	})()
+export const privateThunk = {
+	"initialize":
+		(): AppThunk<void> => dispatch =>
+			Evt.from(window, "resize")
+				.toStateful()
+				.attach(
+					() => dispatch(
+						slice.actions.applicationResize(
+							{ "width": window.innerWidth }
+						)
+					)
+				)
 };
+
+export const thunk = {
+	"logout":
+		(): AppThunk<Promise<never>> => async (...args) => {
+
+			const [, , { keycloakClient }] = args;
+
+			assert(keycloakClient.isUserLoggedIn);
+
+			return keycloakClient.logout();
+
+		},
+	"getIsUserLoggedIn":
+		(): AppThunk<boolean> => (...args) => {
+			const [, , { keycloakClient }] = args;
+			return keycloakClient.isUserLoggedIn;
+		}
+};
+
 
 const slice = createSlice({
 	name,
 	"initialState": id<State>({
-		"authenticated": false,
 		"redirectUri": null,
 		"waiting": false,
 		"displayLogin": false,
@@ -58,7 +62,7 @@ const slice = createSlice({
 	"reducers": {
 		/*
 		{
-  			type: 'onyxia/app/startWaiting'
+				type: 'onyxia/app/startWaiting'
 		}
 		*/
 		"startWaiting": state => {
@@ -96,14 +100,6 @@ const slice = createSlice({
 			state.displayLogin = doDisplay;
 
 		},
-		/*
-		{
-		  type: 'onyxia/app/appResize',
-		  payload: {
-		    width: 2560
-		  }
-		}
-		*/
 		"applicationResize": (
 			state,
 			{ payload }: PayloadAction<{ width: State["screenWidth"]; }>
@@ -128,36 +124,19 @@ const slice = createSlice({
 			state.faviconUrl = url;
 
 		},
-		/*
-		{
-  			type: 'onyxia/app/startVisite'
-		}
-		*/
-		"startVisite": (
-			state
-		) => {
-
+		"startVisite": (state) => {
 			state.visite = true;
-
-		}
-	},
-	"extraReducers": {
-		[userActions.setAuthenticated.type]: state => {
-			state.authenticated = true;
 		}
 	}
 });
 
-const { actions: syncActions } = slice;
+
+export const { reducer } = slice;
 
 
 
-export const actions = {
-	...syncActions,
-	...asyncThunks
-};
+export const actions = id<Omit<typeof slice.actions, "applicationResize">>(slice.actions);
 
-export const reducer = slice.reducer;
 
 
 

@@ -1,14 +1,18 @@
+import { getEnv } from "js/env";
+
+const env = getEnv();
+
 const exportTypes = [
 	{
 		id: 'commandline',
 		label: 'init-kub.sh',
 		fileName: 'init-kub.sh',
-		text: (c: any) =>
+		text: (params: { oidcAccessToken: string; idep: string; }) =>
 			`#!/bin/sh
-kubectl config set-cluster ${c.KUBERNETES.KUB_SERVER_NAME} --server=${c.KUBERNETES.KUB_SERVER_URL}
-kubectl config set-credentials ${c.IDEP} --token ${c.KEYCLOAK.KC_ACCESS_TOKEN} 
-kubectl config set-context ${c.KUBERNETES.KUB_SERVER_NAME} --user=${c.IDEP} --cluster=${c.KUBERNETES.KUB_SERVER_NAME} --namespace=${c.IDEP}
-kubectl config use-context ${c.KUBERNETES.KUB_SERVER_NAME}`,
+kubectl config set-cluster ${env.KUBERNETES?.KUB_SERVER_NAME} --server=${env.KUBERNETES?.KUB_SERVER_URL}
+kubectl config set-credentials ${params.idep} --token ${params.oidcAccessToken} 
+kubectl config set-context ${env.KUBERNETES?.KUB_SERVER_NAME} --user=${params.idep} --cluster=${env.KUBERNETES?.KUB_SERVER_NAME} --namespace=${params.idep}
+kubectl config use-context ${env.KUBERNETES?.KUB_SERVER_NAME}`,
 	},
 ];
 

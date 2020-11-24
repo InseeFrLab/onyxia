@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import vignettes from './vignettes';
-import { actions } from 'js/redux/store';
+import { actions } from 'js/redux/legacyActions';
 import Visite from './visite-guidee.component';
 import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
@@ -9,7 +9,7 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { store } from "js/redux/store";
+import { prStore } from "lib/setup";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -32,6 +32,8 @@ const mapToDispatchToProps = dispatch => ({
 
 		dServiceCreeId = new Deferred();
 
+		const store = await prStore;
+
 		const orchestratorType = store.getState().regions.selectedRegion.services.type;
 
 		const catalogId = orchestratorType === "KUBERNETES" ?
@@ -43,12 +45,14 @@ const mapToDispatchToProps = dispatch => ({
 			catalogId
 		};
 
+
 		dispatch(
 			creerNouveauService({
 				service,
 				"options": getValuesObject(
 					getOptions(
 						store.getState().user,
+						store.getState().userProfileInVault,
 						service,
 						await getMinioToken(),
 						{}
