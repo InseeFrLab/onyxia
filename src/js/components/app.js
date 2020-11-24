@@ -20,7 +20,7 @@ import Trainings from 'js/components/trainings';
 import Catalogue from './my-lab/catalogue';
 import { MyBuckets } from 'js/components/mes-fichiers/MyBuckets';
 import { NavigationFile } from 'js/components/mes-fichiers/navigation/NavigationFile';
-import MonCompte from 'js/components/mon-compte';
+import { MonCompte } from 'js/components/mon-compte/mon-compte.component';
 import CloudShell from 'js/components/cloud-shell';
 import QuickAccess from './commons/nav-bar/quick-access';
 import Footer from './commons/footer';
@@ -36,10 +36,8 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useSelector } from "js/redux/store";
-import { MySecrets } from "js/components/MySecrets";
-import { Evt } from "evt";
-import { useEvt } from "evt/hooks";
+import { useIsUserLoggedIn } from "js/redux/hooks";
+import { MySecrets } from "js/components/MySecrets";
 
 const env = getEnv();
 
@@ -85,17 +83,7 @@ const App404 = () => (
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
-	const isAuthenticated = useSelector(state => state.app.authenticated);
-
-	useEvt(ctx => {
-
-		const onResize= ()=> applicationResize({ "width": window.innerWidth });
-
-		onResize();
-
-		Evt.from(ctx, window, "resize").attach(onResize);
-
-	}, []);
+	const { isUserLoggedIn } = useIsUserLoggedIn();
 
 	return (
 		<MuiThemeProvider theme={theme}>
@@ -110,7 +98,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						{invalidIdep(idep) && (
 							<Alert
 								severity="error"
-								message={`Votre username ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
+								message={`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
 							/>
 						)}
 						{env.APP.WARNING_MESSAGE && (
@@ -175,9 +163,9 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						</main>
 						<Footer />
 						<Notifications />
-						{isAuthenticated && <QuickAccess />}
+						{isUserLoggedIn && <QuickAccess />}
 					</div>
-					<CloudShell />
+					{isUserLoggedIn && <CloudShell />}
 					<VisiteGuidee />
 					<ToastContainer position="bottom-left" />
 				</>

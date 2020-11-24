@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';
 
-const CopyButton = ({ fileName, content }) => {
+const CopyButton = ({ content }) => {
 	const copy = () => {
 		clipboard.writeText(content);
 		return false;

@@ -36,6 +36,10 @@ const dictionary = {
 			'Durée de préservation de votre mot de passe dans le cache git (en secondes - 0 valant désactivation du cache)',
 		en: 'Git credentials cache duration (in seconds - 0 for no cache)',
 	},
+	kaggleApiToken: {
+		fr: "API token de Kaggle",
+		en: "Kaggle API token"
+	},
 	minioLoginInfo: {
 		fr: 'Identifiants Minio (S3)',
 		en: 'Minio (S3) Login Details',

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useReducer, useCallback } from 'react';
 import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
-import { actions, useSelector, useDispatch } from "js/redux/store";
+import { actions } from "js/redux/legacyActions";
+import { useDispatch, useSelector, useUserProfile } from "js/redux/hooks";
 import { useLocation } from "react-router-dom";
 
 
@@ -17,11 +18,13 @@ export const NavigationFile: React.FC<{
 	// re-render when it's changed.
 	const { pathname: window_location_pathname }= useLocation();
 
+	const { userProfile: { idep } } = useUserProfile();
+
 	const [pathname, setPathname] = useState(decodeURI(window_location_pathname));
 	const [racine] = useState(`/mes-fichiers/${bucketName}`);
 	const [bucketExist, setBucketExist] = useState(false);
 	const userBuckets = useSelector(state => state.myFiles.userBuckets);
-	const idep = useSelector(state => state.user.IDEP);
+
 	const currentObjects = useSelector(state => state.myFiles.currentObjects);
 	const currentDirectories = useSelector(state => state.myFiles.currentDirectories);
 	const [isInitializationCompleted, completeInitialization] = useReducer(() => true, false);
@@ -69,14 +72,6 @@ export const NavigationFile: React.FC<{
 		}
 
 		dispatch(actions.startWaiting());
-
-		if (idep === undefined) {
-
-			dispatch(actions.getUserInfo());
-
-			return;
-
-		}
 
 		if (!userBuckets) {
 

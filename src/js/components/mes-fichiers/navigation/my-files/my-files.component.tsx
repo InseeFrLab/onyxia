@@ -24,7 +24,7 @@ import * as minioTools from "js/minio-client/minio-tools";
 import getMinioApi from 'js/minio-client/minio-api';
 import * as minioPolicy from "js/minio-client/minio-policy";
 import { id } from "evt/tools/typeSafety/id";
-import type { actions } from "js/redux/store";
+import type { actions } from "js/redux/legacyActions";
 import { assert } from "evt/tools/typeSafety/assert";
 import type { HandleThunkActionCreator } from "react-redux";
 

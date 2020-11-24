@@ -1,6 +1,10 @@
 import Mustache from 'mustache';
-import type { RootState } from "js/redux/store";
+import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
+import type { KeycloakConfig, VaultConfig } from "lib/useCases/tokens";
+import type { OidcTokens } from "lib/ports/KeycloakClient";
+import type { UserProfile } from "js/redux/user";
+import type { UserProfileInVault } from "lib/useCases/userProfileInVault";
 
 const env = getEnv();
 
@@ -14,44 +18,80 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 		: { ...field, ...field['x-form'], media };
 };
 
-const formatUser = (user: RootState["user"]) => ({
-	"user": {
-		"idep": user.IDEP,
-		"name": user.USERNAME,
-		"email": user.USERMAIL,
-		"password": (user.VAULT && user.VAULT.DATA && user.VAULT.DATA.password) || '',
-		"key": user.USERKEY,
-		"ip": user.IP,
-	},
-	"git": {
-		"name":
-			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_name) || '',
-		"email":
-			(user.VAULT && user.VAULT.DATA && user.VAULT.DATA.git_user_mail) || '',
-		"credentials_cache_duration":
-			(user.VAULT &&
-				user.VAULT.DATA &&
-				user.VAULT.DATA.git_credentials_cache_duration) ||
-			'0',
-	},
-	"status": user.STATUS,
-	"keycloak": { ...user.KEYCLOAK },
-	"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
-	"vault": { ...user.VAULT },
-	"s3": { ...user.S3 },
-});
- 
+
+export type BuildMustacheViewParams = {
+	s3: NonNullable<RootState["user"]["s3"]>;
+	ip: string;
+	userProfile: UserProfile;
+	userProfileInVault: UserProfileInVault;
+	keycloakConfig: KeycloakConfig;
+	vaultConfig: VaultConfig;
+	oidcTokens: OidcTokens;
+	vaultToken: string;
+};
+
+
+//TODO: Rename
+const buildMustacheView = (params: BuildMustacheViewParams) => {
+
+	const {
+		s3, ip, userProfile,
+		userProfileInVault,
+		vaultConfig, oidcTokens, vaultToken
+	} = params;
+
+	return {
+		"user": {
+			"idep": userProfile.idep,
+			"name": userProfile.nomComplet,
+			"email": userProfile.email,
+			"password": userProfileInVault.userServicePassword,
+			"key": "https://example.com/placeholder.gpg",
+			"ip": ip,
+		},
+		"git": {
+			"name": userProfileInVault.gitName,
+			"email": userProfileInVault.gitEmail,
+			"credentials_cache_duration": userProfileInVault.gitCredentialCacheDuration
+		},
+		"status": "",
+		"keycloak": {
+			"KC_ID_TOKEN": oidcTokens.idToken,
+			"KC_REFRESH_TOKEN": oidcTokens.refreshToken,
+			"KC_ACCESS_TOKEN": oidcTokens.accessToken
+		},
+		"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
+		"vault": {
+			"VAULT_ADDR": vaultConfig.baseUri,
+			"VAULT_TOKEN": vaultToken,
+			"VAULT_MOUNT": vaultConfig.engine,
+			"VAULT_TOP_DIR": userProfile.idep,
+		},
+		"kaggleApiToken": userProfileInVault.kaggleApiToken,
+		"s3": {
+			...s3,
+			"AWS_BUCKET_NAME": userProfile.idep
+		}
+	};
+
+};
 
 
 
-export const fromUser = 
-	(user: RootState["user"]) => 
-		(field: Record<string, Field>) => {
-			if (!field['x-form'] || !field['x-form'].value) return '';
-			const { value } = field['x-form'];
-			const formattedUser = formatUser(user);
-			return Mustache.render(value, formattedUser);
-		};
+
+//TODO: Rename
+export const mustacheRender = (
+	field: { 'x-form'?: { value: string; } },
+	buildMustacheViewParams: BuildMustacheViewParams
+) => {
+
+	const { value: template = "" } = field?.["x-form"] ?? {};
+
+	return Mustache.render(
+		template,
+		buildMustacheView(buildMustacheViewParams)
+	);
+};
 
 export type Field = {
 	value: string;
@@ -59,7 +99,7 @@ export type Field = {
 	type: string;
 };
 
-export const filterOnglets = <T extends { description: string; nom: string; fields: { field: Record<string, Pick<Field, "hidden">> }[]; }[]>( onglets: T): T =>
+export const filterOnglets = <T extends { description: string; nom: string; fields: { field: Record<string, Pick<Field, "hidden">> }[]; }[]>(onglets: T): T =>
 	onglets.filter(
 		({ fields }) =>
 			fields.filter(({ field }) => !field['x-form'] || !field['x-form'].hidden)

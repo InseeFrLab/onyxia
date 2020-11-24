@@ -6,7 +6,6 @@ export const restApiPaths = {
 	"nouveauService": "/my-lab/app",
 	"nouveauGroupe": "/my-lab/group",
 	"changerEtatService": "/my-lab/app",
-	"updateUser": "/user/update",
 	"myLab": {
 		"app": "/my-lab/app"
 	},
@@ -20,4 +19,4 @@ export const restApiPaths = {
 	"deleteService": '/my-lab/app',
 	"getLogs": '/my-lab/app/logs',
 	"configuration": '/public/configuration',
-};
+} as const;
