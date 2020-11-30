@@ -1,11 +1,14 @@
 
+
+
+
 import React from "react";
 import { useDispatch, useSelector } from "js/redux/hooks";
 import { thunks } from "lib/setup";
 import { useEvt } from "evt/hooks";
 
 
-export const MySecrets: React.FC = () => {
+export function MySecrets() {
 
     const dispatch = useDispatch();
 
@@ -26,7 +29,7 @@ export const MySecrets: React.FC = () => {
 
     return (
         <>
-            {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str,i) => <p key={i}>{str}</p>)}
+            {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str, i) => <p key={i}>{str}</p>)}
         </>
     );
 

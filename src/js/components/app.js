@@ -30,14 +30,20 @@ import Favicon from 'js/components/commons/favicon';
 import Notifications from 'js/components/notifications';
 import { Navbar } from 'js/components/commons/nav-bar/Navbar';
 import { About } from 'js/components/about/About';
-import 'typeface-roboto';
+//import 'typeface-roboto';
 import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
 import { useIsUserLoggedIn } from "js/redux/hooks";
-import { MySecrets } from "js/components/MySecrets";
+//import { MySecrets } from "js/components/MySecrets";
+import { AppThemeProviderFactory } from "app/appTheme";
+import { MySecrets } from "app/pages/MySecrets";
+
+const { AppThemeProvider } = AppThemeProviderFactory({ "nodeEnv": process.env.NODE_ENV });
+
+
 
 const env = getEnv();
 
@@ -149,11 +155,24 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									path="/mes-fichiers/:bucketName/*"
 									component={NavigationFile}
 								/>
+								{/*
 								<PrivateRoute
 									exact
 									path="/mes-secrets"
 									component={MySecrets}
 								/>
+								*/}
+								<PrivateRoute
+									exact
+									path="/mes-secrets"
+									component={() => (
+										<AppThemeProvider>
+											<MySecrets />
+										</AppThemeProvider>
+									)}
+								/>
+
+
 								<PrivateRoute
 									path="/visite-guidee"
 									component={VisiteGuideeDebut}
