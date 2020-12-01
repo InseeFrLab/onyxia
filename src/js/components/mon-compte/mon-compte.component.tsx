@@ -15,7 +15,7 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import { thunks } from "lib/setup";
-import { useDispatch, useSelector, useUserProfile, useIsBetaModeEnabled } from "js/redux/hooks";
+import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/redux/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
 export const MonCompte = () => {
@@ -30,7 +30,7 @@ export const MonCompte = () => {
 
 	const dispatch = useDispatch();
 
-	const { userProfile } = useUserProfile();
+	const { userProfile } = useAppConstants({ "assertIsUserLoggedInIs": true });
 	const { s3, ip }= useSelector(state=> state.user);
 
 	useEffect(() => {

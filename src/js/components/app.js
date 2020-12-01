@@ -36,12 +36,14 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useIsUserLoggedIn } from "js/redux/hooks";
-//import { MySecrets } from "js/components/MySecrets";
-import { AppThemeProviderFactory } from "app/appTheme";
+import { useAppConstants } from "app/redux/hooks";
+import { AppThemeProviderFactory } from "app/appTheme";
 import { MySecrets } from "app/pages/MySecrets";
+import { useEvt } from "evt/hooks";
 
-const { AppThemeProvider } = AppThemeProviderFactory({ "nodeEnv": process.env.NODE_ENV });
+
+
+const { AppThemeProvider } = AppThemeProviderFactory({ "nodeEnv": process.env.NODE_ENV });
 
 
 
@@ -89,7 +91,32 @@ const App404 = () => (
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
-	const { isUserLoggedIn } = useIsUserLoggedIn();
+	const appConstants = useAppConstants();
+
+	useEvt(ctx => {
+
+		if (!appConstants.isUserLoggedIn) {
+			return;
+		}
+
+		const { evtVaultCliTranslation } = appConstants;
+
+		evtVaultCliTranslation.attach(
+			({ type }) => type === "cmd",
+			ctx,
+			cmd => evtVaultCliTranslation.attachOnce(
+				({ cmdId }) => cmdId === cmd.cmdId,
+				ctx,
+				resp => console.log(
+					`%c$ ${cmd.value}\n\n${resp.value}`,
+					'background: #222; color: #bada55'
+				)
+			)
+		);
+
+	}, [appConstants]);
+
+	const { isUserLoggedIn } = appConstants;
 
 	return (
 		<MuiThemeProvider theme={theme}>

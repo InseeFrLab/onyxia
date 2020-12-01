@@ -25,7 +25,7 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn, useIsBetaModeEnabled } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prKeycloakClient } from "lib/setup";
 
@@ -66,7 +66,7 @@ export const NouveauService: React.FC<Props> = ({
 			}, "hidden">>
 		}[];
 	}[]>([]);
-	const { isUserLoggedIn } = useIsUserLoggedIn();
+	const { isUserLoggedIn } = useAppConstants();
 	const dispatch = useDispatch();
 
 
@@ -74,7 +74,8 @@ export const NouveauService: React.FC<Props> = ({
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
 	const { isBetaModeEnabled } = useIsBetaModeEnabled();
-	const { userProfile: { idep } } = useUserProfile();
+	//TODO: This should be private
+	const appConstants = useAppConstants();
 
 	const queryParams = queryString.decode(getCleanParams());
 
@@ -224,7 +225,7 @@ export const NouveauService: React.FC<Props> = ({
 								</Typography>
 							</div>
 							<Formulaire
-								user={{ idep }}
+								user={{ "idep": appConstants.isUserLoggedIn ? appConstants.userProfile.idep : "" }}
 								name={ongletContent.nom}
 								handleChange={handlechangeField}
 								fields={ongletContent.fields}

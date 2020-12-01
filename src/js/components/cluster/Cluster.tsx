@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector, useUserProfile } from "js/redux/hooks";
+import { useSelector, useAppConstants } from "app/redux/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
@@ -23,7 +23,7 @@ const Cluster = () => {
 
 
 	const oidcAccessToken = useSelector(state => state.tokens.oidcTokens.accessToken);
-	const { userProfile: { idep }} = useUserProfile();
+	const { userProfile: { idep }} = useAppConstants({ "assertIsUserLoggedInIs": true });
 
 	return (
 		<>

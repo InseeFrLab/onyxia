@@ -7,11 +7,13 @@ import fr from 'javascript-time-ago/locale/fr';
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
-import { getEnv } from "../env";
+import { getEnv } from "../js/env";
+import { Evt,  } from "evt";
 
 import { createStore } from "lib/setup";
 import type { ParamsNeededToInitializeKeycloakClient, ParamsNeededToInitializeVaultClient } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
+//import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import App_ from "js/components/app.container";
 const App: any = App_;
@@ -24,6 +26,10 @@ const Root = () => {
 
     const { result: store, error } = useAsync(
         () => createStore({
+            "isPrefersColorSchemeDark": (
+                window.matchMedia && 
+                window.matchMedia("(prefers-color-scheme: dark)").matches
+            ),
             "paramsNeededToInitializeKeycloakClient":
                 id<ParamsNeededToInitializeKeycloakClient.Real>({
                     "doUseInMemoryClient": false,
@@ -47,7 +53,8 @@ const Root = () => {
                     "baseUri": env.VAULT.BASE_URI,
                     "engine": env.VAULT.ENGINE,
                     "role": env.VAULT.ROLE
-                })
+                }),
+            "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
         }),
         []
     );
@@ -57,7 +64,7 @@ const Root = () => {
     }
 
     return (
-        //<React.StrictMode>
+        <React.StrictMode>
         <>
             {
                 store === undefined ?
@@ -67,7 +74,7 @@ const Root = () => {
                     </Provider>
             }
         </>
-        //</React.StrictMode>
+        </React.StrictMode>
     );
 
 };

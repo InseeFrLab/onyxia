@@ -1,9 +1,8 @@
 import Mustache from 'mustache';
 import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
-import type { KeycloakConfig, VaultConfig } from "lib/useCases/tokens";
+import type { AppConstant } from "lib/useCases/appConstants";
 import type { OidcTokens } from "lib/ports/KeycloakClient";
-import type { UserProfile } from "js/redux/user";
 import type { UserProfileInVault } from "lib/useCases/userProfileInVault";
 
 const env = getEnv();
@@ -22,16 +21,15 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 export type BuildMustacheViewParams = {
 	s3: NonNullable<RootState["user"]["s3"]>;
 	ip: string;
-	userProfile: UserProfile;
+	userProfile: AppConstant.LoggedIn["userProfile"];
 	userProfileInVault: UserProfileInVault;
-	keycloakConfig: KeycloakConfig;
-	vaultConfig: VaultConfig;
+	keycloakConfig: AppConstant["keycloakConfig"];
+	vaultConfig: AppConstant["vaultConfig"];
 	oidcTokens: OidcTokens;
 	vaultToken: string;
 };
 
 
-//TODO: Rename
 const buildMustacheView = (params: BuildMustacheViewParams) => {
 
 	const {

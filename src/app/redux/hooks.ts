@@ -1,44 +1,55 @@
 
-import { useState } from "react";
+import { useMemo } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { thunks } from "lib/setup";
 import { removeChangeStateFromUserProfileInVaultState } from "lib/useCases/userProfileInVault";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
+import type { AppConstant } from "lib/useCases/appConstants";
+import { assert } from "evt/tools/typeSafety/assert";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
 
 export const useSelector: reactRedux.TypedUseSelectorHook<RootState> = reactRedux.useSelector;
 
-export const useUserProfile = () => {
+export function useAppConstants(): AppConstant;
+export function useAppConstants(params: { assertIsUserLoggedInIs: true; }): AppConstant.LoggedIn;
+export function useAppConstants(params: { assertIsUserLoggedInIs: false; }): AppConstant.NotLoggedIn;
+export function useAppConstants(params?: { assertIsUserLoggedInIs: boolean; }): AppConstant {
+
+    const { assertIsUserLoggedInIs } = params ?? {};
 
     const dispatch = useDispatch();
 
-    const [userProfile] = useState(() => dispatch(thunks.user.getUserProfile()));
+    const appConstants = useMemo(
+        () => dispatch(thunks.appConstants.getAppConstants()),
+        [dispatch]
+    );
 
-    return { userProfile };
+    assert(
+        assertIsUserLoggedInIs === undefined ||
+        assertIsUserLoggedInIs === appConstants.isUserLoggedIn
+    );
 
-};
+    return appConstants;
+
+}
 
 export const useMustacheParams = () => {
 
-    const dispatch = useDispatch();
-
     const { oidcTokens, vaultToken } = useSelector(state => state.tokens);
     const { ip, s3 } = useSelector(state => state.user);
-    const { userProfile } = useUserProfile();
+
+    const {
+        userProfile,
+        keycloakConfig,
+        vaultConfig
+    } = useAppConstants({ "assertIsUserLoggedInIs": true });
+
     const userProfileInVault = useSelector(
         state => removeChangeStateFromUserProfileInVaultState(state.userProfileInVault)
     );
-    const [{ keycloakConfig, vaultConfig }] = useState(
-        () =>
-            dispatch(
-                thunks.tokens
-                    .getParamsNeededToInitializeKeycloakAndVolt()
-            )
-    );
-
 
     const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & { s3: BuildMustacheViewParams["s3"] | undefined; } = {
         s3,
@@ -55,16 +66,6 @@ export const useMustacheParams = () => {
 
 };
 
-export const useIsUserLoggedIn = () => {
-
-    const dispatch = useDispatch();
-
-    const isUserLoggedIn = dispatch(thunks.app.getIsUserLoggedIn());
-
-    return { isUserLoggedIn };
-
-}
-
 export const useIsBetaModeEnabled = (): {
     isBetaModeEnabled: boolean;
     setIsBetaModeEnabled(value: boolean): void;
@@ -72,7 +73,7 @@ export const useIsBetaModeEnabled = (): {
 
     const dispatch = useDispatch();
 
-    const { isUserLoggedIn } = useIsUserLoggedIn();
+    const { isUserLoggedIn } = useAppConstants();
 
     const isBetaModeEnabled = useSelector(
         state =>
@@ -92,7 +93,33 @@ export const useIsBetaModeEnabled = (): {
             )
     };
 
+};
 
+export const useIsDarkModeEnabled = (): {
+    isDarkModeEnabled: boolean;
+    setIsDarkModeEnabled(value: boolean): void;
+} => {
 
+    const dispatch = useDispatch();
+
+    const { isUserLoggedIn, isPrefersColorSchemeDark } = useAppConstants();
+
+    const isDarkModeEnabled = useSelector(
+        state =>
+            !isUserLoggedIn ?
+                isPrefersColorSchemeDark :
+                state.userProfileInVault.isDarkModeEnabled.value
+    );
+
+    return {
+        isDarkModeEnabled,
+        "setIsDarkModeEnabled": value =>
+            dispatch(
+                thunks.userProfileInVault.changeValue({
+                    "key": "isDarkModeEnabled",
+                    value
+                })
+            )
+    };
 
 };
