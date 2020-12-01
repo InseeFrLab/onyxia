@@ -104,7 +104,7 @@ export function IconsPreview() {
                 <FilesIcon color="secondary" />
                 <FilesIcon color="action" />
                 <FilesIcon color="disabled" />
-                <FilesIcon style={{ "color": green[500] }} />
+                <FilesIcon style={{ "color": green[600] }} />
             </div>
             <div className={classes.root}>
                 <SecretsIcon />
