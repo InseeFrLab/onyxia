@@ -7,8 +7,8 @@ import { axiosAuth } from "js/utils/axios-config";
 import { getEnv } from "js/env";
 import type { AppThunk } from "lib/setup";
 import { parseOidcAccessToken } from "lib/ports/KeycloakClient";
-import { Evt } from "evt";
-import type { KeycloakClient } from "lib/ports/KeycloakClient";
+import type { AppConstant } from "lib/useCases/appConstants";
+import type { NonPostableEvt } from "evt";
 
 export type S3 = {
     AWS_ACCESS_KEY_ID: string;
@@ -24,41 +24,19 @@ export type UserState = {
     s3: S3 | undefined;
 };
 
-export type UserProfile = {
-    idep: string;
-    email: string;
-    nomComplet: string;
-};
-
-
-const userProfileByVaultClient = new WeakMap<KeycloakClient.LoggedIn, UserProfile>();
-
-
 export const name = "user";
 
-
-export const thunk = {
-    "getUserProfile":
-        (): AppThunk<UserProfile> => (...args) => {
-
-            const [, , { keycloakClient }] = args;
-
-            assert(keycloakClient.isUserLoggedIn);
-
-            return userProfileByVaultClient.get(keycloakClient)!;
-
-        }
-};
-
 export const privateThunks = {
-    "initialize":
-        (): AppThunk => async (...args) => {
+    "initializeAndGetUserProfile":
+        (params: { evtBackOnline: NonPostableEvt<void>; }): AppThunk<Promise<AppConstant.LoggedIn["userProfile"]>> => async (...args) => {
+
+            const { evtBackOnline } = params;
 
             const [dispatch, , { keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
-            const getNomCompletAndSetIp = async ()=> {
+            const getNomCompletAndSetIp = async () => {
 
                 const { ip, nomComplet }: any = await axiosAuth.get(restApiPaths.userInfo);
 
@@ -68,13 +46,13 @@ export const privateThunks = {
 
             };
 
-            Evt.from(window, "online").attach(getNomCompletAndSetIp);
+            evtBackOnline.attach(getNomCompletAndSetIp);
 
-            const { nomComplet } = await getNomCompletAndSetIp();
+            const { nomComplet } = await getNomCompletAndSetIp();
 
             const { email, idep } = await parseOidcAccessToken(keycloakClient);
 
-            userProfileByVaultClient.set(keycloakClient, { email, idep, nomComplet });
+            return { email, idep, nomComplet };
 
         }
 };

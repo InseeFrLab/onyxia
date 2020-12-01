@@ -12,33 +12,44 @@ import React, { useMemo } from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 import { ThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useIsDarkModeEnabled } from "app/redux/hooks";
 
-const createAppTheme = (params: {
-    isDarkModeEnabled: boolean;
-    isReactStrictModeEnabled: boolean;
-}) => {
+function createAppThemeFactory(
+    params: {
+        isReactStrictModeEnabled: boolean;
+    }
+) {
 
-    const {
-        isDarkModeEnabled,
-        isReactStrictModeEnabled
-    } = params;
+    const { isReactStrictModeEnabled } = params;
 
-    const theme =
-        responsiveFontSizes( //https://material-ui.com/customization/theming/#responsivefontsizes-theme-options-theme
-            (isReactStrictModeEnabled ?
-                unstable_createMuiStrictModeTheme :
-                createMuiTheme
-            )({ // https://material-ui.com/customization/palette/#using-a-color-object
-                "palette": {
-                    ...(!isDarkModeEnabled ? {} : { "type": "dark" })
-                }
-            })
-        );
+    function createAppTheme(
+        params: {
+            isDarkModeEnabled: boolean;
+        }
+    ) {
 
-    return { theme };
+        const { isDarkModeEnabled } = params;
 
-};
+        const theme =
+            responsiveFontSizes( //https://material-ui.com/customization/theming/#responsivefontsizes-theme-options-theme
+                (isReactStrictModeEnabled ?
+                    unstable_createMuiStrictModeTheme :
+                    createMuiTheme
+                )({ // https://material-ui.com/customization/palette/#using-a-color-object
+                    "palette": {
+                        ...(!isDarkModeEnabled ? {} : { "type": "dark" })
+                    }
+                })
+            );
+
+        return { theme };
+
+    };
+
+    return { createAppTheme };
+
+}
+
 
 
 export function AppThemeProviderFactory(
@@ -49,6 +60,10 @@ export function AppThemeProviderFactory(
 
     const { nodeEnv } = params;
 
+    const { createAppTheme } = createAppThemeFactory(
+        { "isReactStrictModeEnabled": nodeEnv !== "production" }
+    );
+
     function AppThemeProvider(
         props: {
             children: React.ReactNode;
@@ -58,14 +73,11 @@ export function AppThemeProviderFactory(
 
         const { children } = props;
 
-        const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+        const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
         const { theme } = useMemo(
-            () => createAppTheme({
-                "isDarkModeEnabled": prefersDarkMode,
-                "isReactStrictModeEnabled": nodeEnv !== "production"
-            }),
-            [prefersDarkMode]
+            () => createAppTheme({ isDarkModeEnabled }),
+            [isDarkModeEnabled]
         );
 
         return (

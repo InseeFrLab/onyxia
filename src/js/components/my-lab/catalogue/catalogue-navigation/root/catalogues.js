@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
 import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from 'js/restApiPaths';
-import { useIsBetaModeEnabled } from "js/redux/hooks";
+import { useIsBetaModeEnabled } from "app/redux/hooks";
 
 const Catalogues = () => {
 	const [catalogs, setCatalogs] = useState([]);

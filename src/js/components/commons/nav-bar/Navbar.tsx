@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +15,8 @@ import type {ScreenType} from "js/model/ScreenType";
 import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
-import { useSelector, useDispatch, useIsUserLoggedIn } from "js/redux/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/redux/hooks";
+import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 
 
 
@@ -24,9 +25,12 @@ export const Navbar: React.FC<{}> = ()=>{
 
 	const [ isOpen, setIsOpen ] = useState(false);
 
-	const { isUserLoggedIn } = useIsUserLoggedIn();
+	const { isUserLoggedIn } = useAppConstants();
 
-	const screenType = useSelector(state=> getScreenTypeFromWidth(state.app.screenWidth));
+	const { windowInnerWidth } = useWindowInnerWidth();
+
+	const screenType = useMemo(() => getScreenTypeFromWidth(windowInnerWidth), [windowInnerWidth]);
+
 	const displayLogin = useSelector(state => state.app.displayLogin);
 	const redirectUri = useSelector(state => state.app.redirectUri);
 	const dispatch = useDispatch();

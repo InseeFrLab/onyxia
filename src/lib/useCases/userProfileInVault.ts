@@ -19,6 +19,7 @@ export type UserProfileInVault = Id<Record<string, string | boolean | number | n
     gitEmail: string;
     gitCredentialCacheDuration: number;
     isBetaModeEnabled: boolean;
+    isDarkModeEnabled: boolean;
 }>;
 
 export type UserProfileInVaultState = {
@@ -102,7 +103,9 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (): AppThunk => async (...args) => {
+        (params: { isPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
+
+            const { isPrefersColorSchemeDark } = params;
 
             const [dispatch, , { vaultClient, keycloakClient }] = args;
 
@@ -119,7 +122,8 @@ export const privateThunks = {
                 "gitName": idep,
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
-                "isBetaModeEnabled": false
+                "isBetaModeEnabled": false,
+                "isDarkModeEnabled": isPrefersColorSchemeDark
             };
 
             for (const key of objectKeys(userProfileInVault)) {

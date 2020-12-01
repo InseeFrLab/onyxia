@@ -1,35 +1,32 @@
-
-
-
-
 import React from "react";
-import { useDispatch, useSelector } from "js/redux/hooks";
-import { thunks } from "lib/setup";
-import { useEvt } from "evt/hooks";
 
+import { IconsPreview } from "app/atoms/Icons/IconsPreview";
+import { useIsDarkModeEnabled } from "app/redux/hooks";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import { useTheme } from '@material-ui/core/styles';
 
 export function MySecrets() {
 
-    const dispatch = useDispatch();
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
-    const {
-        userProfileInVault,
-        translateVaultRequests: { selectedVaultClientType }
-    } = useSelector(state => state);
-
-    useEvt(ctx => {
-
-        const { evtVaultTranslation } = dispatch(thunks.translateVaultRequests.getSelectedTranslator());
-
-        evtVaultTranslation.attach(ctx, data => {
-            console.log("$ " + data.value);
-        });
-
-    }, [dispatch, selectedVaultClientType]);
+    const theme = useTheme();
 
     return (
         <>
-            {JSON.stringify(userProfileInVault, null, 2).split('\n').map((str, i) => <p key={i}>{str}</p>)}
+            <FormControlLabel
+                style={{ "margin": theme.spacing(2) }}
+                control={
+                    <Switch
+                        checked={isDarkModeEnabled}
+                        onChange={event => setIsDarkModeEnabled(event.target.checked)}
+                        color="primary"
+                    />
+                }
+                label={`Dark mode is currently ${isDarkModeEnabled ? "enabled" : "disabled"}`}
+            />
+
+            <IconsPreview />
         </>
     );
 

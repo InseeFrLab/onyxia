@@ -3,32 +3,17 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import type { AppThunk } from "lib/setup";
-import { Evt } from "evt";
+
 
 export type State = {
 	redirectUri: string | null;
 	waiting: boolean;
 	displayLogin: boolean;
-	screenWidth: number;
 	visite: boolean;
 	faviconUrl: string;
 };
 
 export const name = "app";
-
-export const privateThunk = {
-	"initialize":
-		(): AppThunk<void> => dispatch =>
-			Evt.from(window, "resize")
-				.toStateful()
-				.attach(
-					() => dispatch(
-						slice.actions.applicationResize(
-							{ "width": window.innerWidth }
-						)
-					)
-				)
-};
 
 export const thunk = {
 	"logout":
@@ -40,11 +25,6 @@ export const thunk = {
 
 			return keycloakClient.logout();
 
-		},
-	"getIsUserLoggedIn":
-		(): AppThunk<boolean> => (...args) => {
-			const [, , { keycloakClient }] = args;
-			return keycloakClient.isUserLoggedIn;
 		}
 };
 
@@ -55,7 +35,6 @@ const slice = createSlice({
 		"redirectUri": null,
 		"waiting": false,
 		"displayLogin": false,
-		"screenWidth": 0,
 		"visite": false,
 		"faviconUrl": "/onyxia.png"
 	}),
@@ -98,18 +77,6 @@ const slice = createSlice({
 			assert(typeof doDisplay === "boolean");
 
 			state.displayLogin = doDisplay;
-
-		},
-		"applicationResize": (
-			state,
-			{ payload }: PayloadAction<{ width: State["screenWidth"]; }>
-		) => {
-
-			const { width } = payload;
-
-			assert(typeof width === "number");
-
-			state.screenWidth = width;
 
 		},
 		"setFavicon": (

@@ -3,10 +3,10 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/inMemoryVaultClient";
 import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient";
-import * as translateVaultRequests from "./useCases/translateVaultRequests";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
 import * as tokenUseCase from "./useCases/tokens";
+import * as appConstantsUseCase from "./useCases/appConstants";
 import type { VaultClient } from "./ports/VaultClient";
 import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
@@ -16,6 +16,8 @@ import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrows
 import { createImplOfKeycloakClientBasedOnOfficialAddapter } from "./secondaryAdapters/basedOnOfficialAdapterKeycloakClient";
 import type { KeycloakClient } from "./ports/KeycloakClient";
 import { parseOidcAccessToken } from "./ports/KeycloakClient";
+import { id } from "evt/tools/typeSafety/id";
+import type { NonPostableEvt } from "evt";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -27,14 +29,15 @@ import * as app from "js/redux/app";
 
 export type Dependencies = {
     vaultClient: VaultClient;
-    evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
     keycloakClient: KeycloakClient;
 };
 
 
 export type CreateStoreParams = {
+    isPrefersColorSchemeDark: boolean;
     paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
     paramsNeededToInitializeKeycloakClient: ParamsNeededToInitializeKeycloakClient;
+    evtBackOnline: NonPostableEvt<void>;
 };
 
 export declare type ParamsNeededToInitializeVaultClient =
@@ -49,7 +52,7 @@ export declare namespace ParamsNeededToInitializeVaultClient {
 
     export type Real = {
         doUseInMemoryClient: false;
-    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0], 
+    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0],
         "evtOidcAccessToken" |
         "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >;
@@ -81,7 +84,6 @@ const reducer = {
     [user.name]: user.reducer,
     [regions.name]: regions.reducer,
 
-    [translateVaultRequests.name]: translateVaultRequests.reducer,
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
     [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.reducer,
     [tokenUseCase.name]: tokenUseCase.reducer
@@ -99,11 +101,15 @@ async function createStoreForLoggedUser(
     params: {
         paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
         keycloakClient: KeycloakClient.LoggedIn;
-    }
+    } & Pick<CreateStoreParams, "isPrefersColorSchemeDark">
 ) {
 
     //const { idep, email, paramsNeededToInitializeVaultClient } = params;
-    const { keycloakClient, paramsNeededToInitializeVaultClient } = params;
+    const {
+        keycloakClient,
+        paramsNeededToInitializeVaultClient,
+        isPrefersColorSchemeDark
+    } = params;
 
     const {
         vaultClientProxy: vaultClient,
@@ -122,28 +128,17 @@ async function createStoreForLoggedUser(
                 }),
     });
 
-
-    evtVaultCliTranslation.attach(
-        ({ type }) => type === "cmd",
-        cmd => evtVaultCliTranslation.attachOnce(
-            ({ cmdId }) => cmdId === cmd.cmdId,
-            resp => console.log(
-                `%c$ ${cmd.value}\n\n${resp.value}`, 
-                'background: #222; color: #bada55'
-            )
-        )
-    );
-
     const store = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
                 vaultClient,
-                evtVaultCliTranslation,
                 keycloakClient
             }
         })
     });
+
+    store.dispatch(tokenUseCase.privateThunks.initialize());
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
@@ -152,33 +147,30 @@ async function createStoreForLoggedUser(
     );
 
     await store.dispatch(
-        userProfileInVaultUseCase.privateThunks.initialize()
+        userProfileInVaultUseCase.privateThunks.initialize({ isPrefersColorSchemeDark })
     );
 
-    return { store };
+    return { store, evtVaultCliTranslation };
 
 }
 
 
 async function createStoreForNonLoggedUser(
     params: { keycloakClient: KeycloakClient.NotLoggedIn; }
-): Promise<AsyncReturnType<typeof createStoreForLoggedUser>> {
+) {
 
     const { keycloakClient } = params;
-    const store = configureStore({
+    const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"]  = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
-                "vaultClient":
-                    createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
-                "evtVaultCliTranslation":
-                    createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
+                "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
                 keycloakClient
             }
         })
     });
 
-    return { store };
+    return { store, "evtVaultCliTranslation": undefined };
 
 
 }
@@ -186,6 +178,7 @@ async function createStoreForNonLoggedUser(
 createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
+
 
     assert(
         createStore.isFirstInvocation,
@@ -198,7 +191,9 @@ export async function createStore(params: CreateStoreParams) {
 
     const {
         paramsNeededToInitializeKeycloakClient,
-        paramsNeededToInitializeVaultClient
+        paramsNeededToInitializeVaultClient,
+        isPrefersColorSchemeDark,
+        evtBackOnline
     } = params;
 
     assert(
@@ -206,64 +201,73 @@ export async function createStore(params: CreateStoreParams) {
         "TODO: We need a mock implementation of KeycloakClient"
     );
 
-
     const keycloakClient =
         await createImplOfKeycloakClientBasedOnOfficialAddapter(
             paramsNeededToInitializeKeycloakClient
         );
 
-
-    const { store } = await (
+    const { store, evtVaultCliTranslation  } = await (
         keycloakClient.isUserLoggedIn ?
-            createStoreForLoggedUser({ keycloakClient, paramsNeededToInitializeVaultClient }) :
+            createStoreForLoggedUser({
+                keycloakClient,
+                paramsNeededToInitializeVaultClient,
+                isPrefersColorSchemeDark
+            }) :
             createStoreForNonLoggedUser({ keycloakClient })
     );
-
-    store.dispatch(app.privateThunk.initialize());
-
-    if (keycloakClient.isUserLoggedIn) {
-
-        store.dispatch(
-            tokenUseCase.privateThunks.initialize({
-                "vaultConfig": paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
-                    {
-                        "baseUri": "",
-                        "engine": paramsNeededToInitializeVaultClient.engine,
-                        "role": ""
-                    }
-                    :
-                    paramsNeededToInitializeVaultClient,
-                "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
-            })
-        );
-
-    }
 
     dKeyCloakClient.resolve(keycloakClient);
 
     dStoreInstance.resolve(store);
 
-    //TODO: Move the rest of the redux slices inside.
-    if (keycloakClient.isUserLoggedIn) {
+    {
 
-        await store.dispatch(user.privateThunks.initialize());
+        const _common: appConstantsUseCase.AppConstant._Common = {
+            isPrefersColorSchemeDark,
+            "vaultConfig": paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
+                {
+                    "baseUri": "",
+                    "engine": paramsNeededToInitializeVaultClient.engine,
+                    "role": ""
+                }
+                :
+                paramsNeededToInitializeVaultClient,
+            "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
+        };
+
+
+        store.dispatch(
+            appConstantsUseCase.privateThunks.initialize({
+                "appConstants": keycloakClient.isUserLoggedIn ?
+                    id<appConstantsUseCase.AppConstant.LoggedIn>({
+                        "isUserLoggedIn": true,
+                        ..._common,
+                        "userProfile": await store.dispatch(
+                            user.privateThunks.initializeAndGetUserProfile(
+                                { evtBackOnline }
+                            )
+                        ),
+                        "evtVaultCliTranslation": evtVaultCliTranslation!
+                    }) :
+                    id<appConstantsUseCase.AppConstant.NotLoggedIn>({
+                        "isUserLoggedIn": false,
+                        ..._common,
+                    })
+            })
+        );
 
     }
+
 
     return store;
 
 }
 
-
-
-
-
 export const thunks = {
     [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
-    [translateVaultRequests.name]: translateVaultRequests.thunks,
+    [appConstantsUseCase.name]: appConstantsUseCase.thunks,
     [tokenUseCase.name]: tokenUseCase.thunks,
-    [user.name]: user.thunk,
     [app.name]: app.thunk
 };
 

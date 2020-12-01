@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useMustacheParams, useUserProfile } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useAppConstants } from "app/redux/hooks";
 import { Resizable } from 're-resizable';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -27,7 +27,7 @@ interface cloudShellData {
 
 const CloudShell = () => {
 
-	const { userProfile: { idep } } = useUserProfile();
+	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
 	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
 	const [url, setUrl] = useState<string | null>();
 	const [height, setHeight] = useState(200);

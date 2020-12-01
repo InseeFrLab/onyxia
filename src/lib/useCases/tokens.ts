@@ -1,24 +1,12 @@
 
-import type {
-    AppThunk,
-    ParamsNeededToInitializeKeycloakClient,
-    ParamsNeededToInitializeVaultClient
-} from "../setup";
+import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { VaultClient } from "../ports/VaultClient";
-import type { KeycloakClient } from "../ports/KeycloakClient";
 import { createSlice } from "@reduxjs/toolkit";
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt, nonNullable } from "evt";
 
 export const name = "tokens";
-
-export type VaultConfig = Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">;
-export type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"];
-
-const vaultConfigByClient = new WeakMap<VaultClient, VaultConfig>();
-const keycloakConfigByClient = new WeakMap<KeycloakClient, KeycloakConfig>();
 
 export type TokenState = {
     areTokensBeingRefreshed: boolean;
@@ -55,20 +43,9 @@ export { reducer };
 export const privateThunks = {
 
     "initialize":
-        (params: {
-            vaultConfig: VaultConfig;
-            keycloakConfig: KeycloakConfig;
-        }): AppThunk<void> => async (...args) => {
-
-            const {
-                vaultConfig,
-                keycloakConfig
-            } = params;
+        (): AppThunk<void> => async (...args) => {
 
             const [dispatch, , { vaultClient, keycloakClient }] = args;
-
-            vaultConfigByClient.set(vaultClient, vaultConfig);
-            keycloakConfigByClient.set(keycloakClient, keycloakConfig);
 
             assert(keycloakClient.isUserLoggedIn);
 
@@ -101,17 +78,6 @@ export const privateThunks = {
 }
 
 export const thunks = {
-    "getParamsNeededToInitializeKeycloakAndVolt":
-        () => (...args: Parameters<AppThunk>) => {
-
-            const [, , { vaultClient, keycloakClient }] = args;
-
-            return {
-                "vaultConfig": vaultConfigByClient.get(vaultClient)!,
-                "keycloakConfig": keycloakConfigByClient.get(keycloakClient)!
-            };
-
-        },
     /** Once this thunk resolves we can assume oidc tokens and Volt token to be valid */
     "refreshTokenIfExpiresInLessThan8Hours":
         (): AppThunk => async (...args) => {
