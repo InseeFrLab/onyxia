@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconsPreview } from "app/atoms/Icons/IconsPreview";
+import { IconsPreview } from "app/atoms/icons/IconsPreview";
 import { useIsDarkModeEnabled } from "app/redux/hooks";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
