@@ -34,7 +34,6 @@ export function AtomsOverview() {
 
     return (
         <>
-
             <FormControlLabel
                 style={{ "margin": theme.spacing(2) }}
                 control={
@@ -47,14 +46,16 @@ export function AtomsOverview() {
                 label={`Dark mode is currently ${isDarkModeEnabled ? "enabled" : "disabled"}`}
             />
 
-            <h1>{"<AppIcon />"}</h1>
             <>
                 {appIconTypes.map(appIconType => (
-                    <div className={classes.root} key={appIconType}>
-                        {(["inherit", "disabled", "primary", "secondary", "action", "error"] as const).map(color =>
-                            <AppIcon type={appIconType} color={color} key={color} />
-                        )}
-                    </div>
+                    <>
+                        <h3><code>{`<AppIcon type="${appIconType}"/>`}</code></h3>
+                        <div className={classes.root} key={appIconType}>
+                            {(["inherit", "disabled", "primary", "secondary", "action", "error"] as const).map(color =>
+                                <AppIcon type={appIconType} color={color} key={color} />
+                            )}
+                        </div>
+                    </>
                 ))}
             </>
         </>
