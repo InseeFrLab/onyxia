@@ -10,8 +10,7 @@ import { createMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/
 import { responsiveFontSizes } from "@material-ui/core/styles";
 import React, { useMemo } from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
-import { ThemeProvider, StylesProvider } from "@material-ui/core/styles";
-import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { ThemeProvider } from "@material-ui/core/styles";
 import { useIsDarkModeEnabled } from "app/redux/hooks";
 
 function createAppThemeFactory(
@@ -50,8 +49,6 @@ function createAppThemeFactory(
 
 }
 
-
-
 export function AppThemeProviderFactory(
     params: {
         nodeEnv: "production" | "development" | "test"
@@ -67,7 +64,6 @@ export function AppThemeProviderFactory(
     function AppThemeProvider(
         props: {
             children: React.ReactNode;
-            nodeEnv: "production" | "development" | "test"
         }
     ) {
 
@@ -82,13 +78,9 @@ export function AppThemeProviderFactory(
 
         return (
             <ThemeProvider theme={theme}>
-                <StyledThemeProvider theme={theme}> {/*https://material-ui.com/guides/interoperability/#theme*/}
-                    <StylesProvider injectFirst> {/*https://material-ui.com/guides/interoperability/#controlling-priority*/}
-                        <ScopedCssBaseline>
-                            {children}
-                        </ScopedCssBaseline>
-                    </StylesProvider>
-                </StyledThemeProvider>
+                    <ScopedCssBaseline>
+                        {children}
+                    </ScopedCssBaseline>
             </ThemeProvider>
         );
 
