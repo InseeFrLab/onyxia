@@ -6,7 +6,9 @@ import { id } from "evt/tools/typeSafety/id";
 
 const serviceBadgesType = id<ServiceBadgeProps["type"][]>(
     [
-        "vscode", "rStudio"
+        "vscode" , "rstudio" , "blazingsql" , "elk" , "gitlab" , "gravitee",
+        "jena" , "jupyter" , "keycloak" , "minio" , "mongodb", "neo4j" , "openrefine",
+        "plutojl" , "postgresql" , "rapidsai" , "tensorflow" , "ubuntu", "vault" , "zeppelin"
     ]
 );
 
