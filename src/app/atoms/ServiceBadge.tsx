@@ -1,8 +1,6 @@
 
-
 import React from "react";
 import Avatar from "@material-ui/core/Avatar";
-import type { AvatarProps } from "@material-ui/core/Avatar";
 import vscodeImg from "app/res/img/vscode.png";
 import rstudioImg from "app/res/img/rstudio.png";
 import blazingsqlImg from "app/res/img/blazingsql.png";
@@ -25,7 +23,8 @@ import vaultImg from "app/res/img/vault.png";
 import zeppelinImg from "app/res/img/zeppelin.png";
 
 
-export type Props = AvatarProps & {
+export type Props = {
+    /** Design which service image should be displayed */
     type: "vscode" | "rstudio" | "blazingsql" | "elk" | "gitlab" | "gravitee"
     | "jena" | "jupyter" | "keycloak" | "minio" | "mongodb"| "neo4j" | "openrefine"
     | "plutojl" | "postgresql" | "rapidsai" | "tensorflow" | "ubuntu"| "vault" | "zeppelin";
@@ -33,9 +32,9 @@ export type Props = AvatarProps & {
 
 export function ServiceBadge(props: Props) {
 
-    const { type, ...avatarProps } = props;
+    const { type } = props;
 
-    return <Avatar  {...avatarProps} alt={type} src={(() => {
+    return <Avatar alt={type} src={(() => {
         switch (type) {
             case "vscode": return vscodeImg;
             case "rstudio": return rstudioImg;

@@ -2,11 +2,15 @@
 import React from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import type { ButtonProps, ButtonClassKey } from "@material-ui/core/Button";
+import type { ButtonClassKey } from "@material-ui/core/Button";
 import type { Id } from "evt/tools/typeSafety";
 
 export type Props = {
+  /** Correspond to the app theme' color palette */
   color?: "primary" | "secondary";
+  /** Usually a plain text that labels the button */
+  children: React.ReactNode;
+  disabled?: boolean;
 };
 
 const useStyles = makeStyles(
@@ -21,21 +25,13 @@ const useStyles = makeStyles(
 );
 
 
-/**
- * 
- * https://user-images.githubusercontent.com/6702424/100876410-a5285a00-34a7-11eb-8bdd-b54592d34697.png
- * 
- * Apps button
- * @param props 
- * @returns  
- */
-export function AppButton(props: Props & Omit<ButtonProps, keyof Props>) {
+export function AppButton(props: Props) {
 
-  const { color, ...other } = props;
+  const { color = "primary", disabled = false, children } = props;
 
   const classes = useStyles();
 
-  return <Button classes={classes} color={color} {...other} />;
+  return <Button classes={classes} color={color} disabled={disabled}>{children}</Button>;
 
 }
 
