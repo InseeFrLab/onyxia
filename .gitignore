@@ -12,9 +12,6 @@
 # bundle analysis
 /bundle-report
 
-# storybook
-/storybook-static
-
 # misc
 .DS_Store
 .env.local

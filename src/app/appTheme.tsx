@@ -11,7 +11,6 @@ import { responsiveFontSizes } from "@material-ui/core/styles";
 import React, { useMemo } from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 import { ThemeProvider } from "@material-ui/core/styles";
-import { useIsDarkModeEnabled } from "app/redux/hooks";
 
 function createAppThemeFactory(
     params: {
@@ -51,25 +50,26 @@ function createAppThemeFactory(
 
 export function AppThemeProviderFactory(
     params: {
-        nodeEnv: "production" | "development" | "test"
+        isReactStrictModeEnabled: boolean;
     }
 ) {
 
-    const { nodeEnv } = params;
+    const { 
+        isReactStrictModeEnabled, 
+    } = params;
 
     const { createAppTheme } = createAppThemeFactory(
-        { "isReactStrictModeEnabled": nodeEnv !== "production" }
+        { isReactStrictModeEnabled }
     );
 
     function AppThemeProvider(
         props: {
+            isDarkModeEnabled: boolean;
             children: React.ReactNode;
         }
     ) {
 
-        const { children } = props;
-
-        const { isDarkModeEnabled } = useIsDarkModeEnabled();
+        const { children, isDarkModeEnabled } = props;
 
         const { theme } = useMemo(
             () => createAppTheme({ isDarkModeEnabled }),
@@ -78,9 +78,9 @@ export function AppThemeProviderFactory(
 
         return (
             <ThemeProvider theme={theme}>
-                    <ScopedCssBaseline>
-                        {children}
-                    </ScopedCssBaseline>
+                <ScopedCssBaseline>
+                    {children}
+                </ScopedCssBaseline>
             </ThemeProvider>
         );
 

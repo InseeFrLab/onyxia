@@ -36,15 +36,14 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useAppConstants } from "app/redux/hooks";
+import { useAppConstants, useIsDarkModeEnabled } from "app/redux/hooks";
 import { AppThemeProviderFactory } from "app/appTheme";
 import { MySecrets } from "app/pages/MySecrets";
 import { useEvt } from "evt/hooks";
 
-
-
-const { AppThemeProvider } = AppThemeProviderFactory({ "nodeEnv": process.env.NODE_ENV });
-
+const { AppThemeProvider } = AppThemeProviderFactory(
+	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
+);
 
 
 const env = getEnv();
@@ -90,6 +89,8 @@ const App404 = () => (
 );
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
+
+	const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
 	const appConstants = useAppConstants();
 
@@ -193,7 +194,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									exact
 									path="/mes-secrets"
 									component={() => (
-										<AppThemeProvider>
+										<AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
 											<MySecrets />
 										</AppThemeProvider>
 									)}
