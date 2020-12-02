@@ -15,7 +15,7 @@ import { ReactComponent as collaborationToolsSvg } from "app/res/svg/Collaborati
 import { ReactComponent as bashSvg } from "app/res/svg/Bash.svg";
 
 export type Props = {
-    /** Select which icon should be displayed */
+    /** Design which icon should be displayed */
     type: "tour" | "services" | "secrets" | "profile" |
     "lab" | "info" | "home" | "trainings" | "files" |
     "collaborationTools" | "bash";
