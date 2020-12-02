@@ -5,6 +5,7 @@ import Switch from "@material-ui/core/Switch";
 import { useTheme } from "@material-ui/core/styles";
 import { AppIconOverview } from "./AppIconOverview";
 import { ServiceBadgeOverview } from "./ServiceBadgesOverview";
+import { AppButtonOverview } from "./AppButtonOverview";
 
 export function AtomsOverview() {
 
@@ -26,6 +27,7 @@ export function AtomsOverview() {
             />
 
             <>
+                <AppButtonOverview />
                 <ServiceBadgeOverview />
                 <AppIconOverview />
             </>
