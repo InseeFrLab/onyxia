@@ -4,8 +4,8 @@ import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { createInMemorySecretManagerClient } from "./secondaryAdapters/inMemorySecretsManagerClient";
 import { createVaultSecretsManagerClient, getVaultClientTranslator } from "./secondaryAdapters/vaultSecretsManagerClient";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
-import * as userProfileInVaultUseCase from "./useCases/userConfigs";
-import * as tokenUseCase from "./useCases/tokens";
+import * as userConfigsUseCase from "./useCases/userConfigs";
+import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslater } from "./ports/SecretsManagerClient";
@@ -88,8 +88,8 @@ const reducer = {
     [regions.name]: regions.reducer,
 
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
-    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.reducer,
-    [tokenUseCase.name]: tokenUseCase.reducer
+    [userConfigsUseCase.name]: userConfigsUseCase.reducer,
+    [tokensUseCase.name]: tokensUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -157,7 +157,7 @@ async function createStoreForLoggedUser(
         })
     });
 
-    store.dispatch(tokenUseCase.privateThunks.initialize());
+    store.dispatch(tokensUseCase.privateThunks.initialize());
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
@@ -166,7 +166,7 @@ async function createStoreForLoggedUser(
     );
 
     await store.dispatch(
-        userProfileInVaultUseCase.privateThunks.initialize(
+        userConfigsUseCase.privateThunks.initialize(
             { isOsPrefersColorSchemeDark }
         )
     );
@@ -284,10 +284,10 @@ export async function createStore(params: CreateStoreParams) {
 }
 
 export const thunks = {
-    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
+    [userConfigsUseCase.name]: userConfigsUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
     [appConstantsUseCase.name]: appConstantsUseCase.thunks,
-    [tokenUseCase.name]: tokenUseCase.thunks,
+    [tokensUseCase.name]: tokensUseCase.thunks,
     [app.name]: app.thunk
 };
 
