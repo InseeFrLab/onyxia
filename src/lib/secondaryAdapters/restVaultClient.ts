@@ -20,7 +20,10 @@ export function createRestImplOfVaultClient(
 		evtOidcAccessToken: StatefulReadonlyEvt<string | undefined>;
 		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
 	}
-): VaultClient {
+): { 
+	vaultClient: VaultClient, 
+	evtVaultToken: StatefulReadonlyEvt<string | undefined>; 
+} {
 
 	const {
 		baseUri,
@@ -92,13 +95,12 @@ export function createRestImplOfVaultClient(
 				ctxPathJoin("data", path)
 			);
 
-		},
-		evtVaultToken
+		}
 	};
 
 	dVaultClient.resolve(vaultClient);
 
-	return vaultClient;
+	return { vaultClient, evtVaultToken };
 
 }
 

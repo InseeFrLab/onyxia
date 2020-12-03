@@ -4,7 +4,6 @@ import { join as pathJoin, relative as pathRelative } from "path";
 import { partition } from "evt/tools/reducers";
 import { SecretWithMetadata, VaultClient } from "../ports/VaultClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { Evt } from "evt";
 
 
 
@@ -71,9 +70,8 @@ export function createInMemoryImplOfVaultClient(): VaultClient {
 
             map.delete(path);
 
-        },
+        }
 
-        "evtVaultToken": Evt.create<string | undefined>(undefined)
 
     };
 
