@@ -109,9 +109,9 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (params: { isPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
+        (params: { isOsPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
 
-            const { isPrefersColorSchemeDark } = params;
+            const { isOsPrefersColorSchemeDark } = params;
 
             const [dispatch, , { vaultClient, keycloakClient }] = args;
 
@@ -121,7 +121,7 @@ export const privateThunks = {
 
             const { getConfigKeyPath } = getConfigKeyPathFactory({ idep });
 
-            //Default value
+            //Default values
             const userConfigs: UserConfigs = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
@@ -129,7 +129,7 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
-                "isDarkModeEnabled": isPrefersColorSchemeDark
+                "isDarkModeEnabled": isOsPrefersColorSchemeDark
             };
 
             for (const key of objectKeys(userConfigs)) {

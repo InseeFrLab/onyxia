@@ -15,7 +15,7 @@ export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 export declare namespace AppConstant {
 
     export type _Common = {
-        isPrefersColorSchemeDark: boolean;
+        isOsPrefersColorSchemeDark: boolean;
         vaultClientConfig: Readonly<Omit<SecretsManagerClientConfig.Vault,
             "doUseInMemoryClient" |
             "evtOidcAccessToken" |
