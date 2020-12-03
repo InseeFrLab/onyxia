@@ -36,7 +36,7 @@ export type Dependencies = {
 export type CreateStoreParams = {
     isPrefersColorSchemeDark: boolean;
     paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
-    paramsNeededToInitializeKeycloakClient: ParamsNeededToInitializeKeycloakClient;
+    keycloakConfig: KeycloakConfig;
     evtBackOnline: NonPostableEvt<void>;
 };
 
@@ -59,11 +59,11 @@ export declare namespace ParamsNeededToInitializeVaultClient {
 
 }
 
-export declare type ParamsNeededToInitializeKeycloakClient =
-    ParamsNeededToInitializeKeycloakClient.InMemory |
-    ParamsNeededToInitializeKeycloakClient.Real;
+export declare type KeycloakConfig =
+    KeycloakConfig.InMemory |
+    KeycloakConfig.Real;
 
-export declare namespace ParamsNeededToInitializeKeycloakClient {
+export declare namespace KeycloakConfig {
 
     export type InMemory = {
         doUseInMemoryClient: true;
@@ -71,7 +71,7 @@ export declare namespace ParamsNeededToInitializeKeycloakClient {
 
     export type Real = {
         doUseInMemoryClient: false;
-    } & Parameters<typeof createImplOfKeycloakClientBasedOnOfficialAddapter>[0];
+    } & Parameters<typeof createImplOfKeycloakClientBasedOnOfficialAddapter>[0]["keycloakConfig"];
 
 }
 
@@ -190,20 +190,20 @@ export async function createStore(params: CreateStoreParams) {
     createStore.isFirstInvocation = false;
 
     const {
-        paramsNeededToInitializeKeycloakClient,
+        keycloakConfig,
         paramsNeededToInitializeVaultClient,
         isPrefersColorSchemeDark,
         evtBackOnline
     } = params;
 
     assert(
-        !paramsNeededToInitializeKeycloakClient.doUseInMemoryClient,
+        !keycloakConfig.doUseInMemoryClient,
         "TODO: We need a mock implementation of KeycloakClient"
     );
 
     const keycloakClient =
         await createImplOfKeycloakClientBasedOnOfficialAddapter(
-            paramsNeededToInitializeKeycloakClient
+            { keycloakConfig }
         );
 
     const { store, evtVaultCliTranslation  } = await (
@@ -232,7 +232,7 @@ export async function createStore(params: CreateStoreParams) {
                 }
                 :
                 paramsNeededToInitializeVaultClient,
-            "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
+            keycloakConfig
         };
 
 

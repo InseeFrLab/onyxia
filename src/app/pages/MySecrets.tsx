@@ -1,6 +1,5 @@
 import React from "react";
-import { AtomsOverview } from "app/atoms/AtomsOverview";
 
 export function MySecrets() {
-    return <AtomsOverview />;
+    return <h1>This page is under construction</h1>;
 };
