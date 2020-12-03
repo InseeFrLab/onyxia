@@ -4,15 +4,21 @@ import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
 import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
-import { parseOidcAccessToken } from "../ports/KeycloakClient";
+import { parseOidcAccessToken } from "../ports/KeycloakClient";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } from "../utils/createObjectThatThrowsIfAccessed";
+
+/*
+ * Values of the user profile that can be changed.
+ * Those value are persisted in the secret manager 
+ * (That is currently vault) 
+ */
 
 const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory(
     { "isPropertyWhitelisted": isPropertyAccessedByRedux }
 );
 
-export type UserProfileInVault = Id<Record<string, string | boolean | number | null>, {
+export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     userServicePassword: string;
     kaggleApiToken: string | null;
     gitName: string;
@@ -22,22 +28,22 @@ export type UserProfileInVault = Id<Record<string, string | boolean | number | n
     isDarkModeEnabled: boolean;
 }>;
 
-export type UserProfileInVaultState = {
-    [K in keyof UserProfileInVault]: {
-        value: UserProfileInVault[K];
+export type UserConfigsState = {
+    [K in keyof UserConfigs]: {
+        value: UserConfigs[K];
         isBeingChanged: boolean;
     };
 };
 
-export const name = "userProfileInVault";
+export const name = "userConfigs";
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<UserProfileInVaultState>({
+    "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage": "The user profile should have been initialized during the store initialization"
     }),
     "reducers": {
-        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserProfileInVault; }>]) => {
+        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserConfigs; }>]) => {
 
             const { userProfile } = payload;
 
@@ -55,7 +61,7 @@ const { reducer, actions } = createSlice({
             wrap.isBeingChanged = true;
 
         },
-        "changeCompleted": (state, { payload }: PayloadAction<{ key: keyof UserProfileInVault; }>) => {
+        "changeCompleted": (state, { payload }: PayloadAction<{ key: keyof UserConfigs; }>) => {
             state[payload.key].isBeingChanged = false;
         }
     }
@@ -64,16 +70,16 @@ const { reducer, actions } = createSlice({
 export { reducer };
 
 
-export type ChangeValueParams<K extends keyof UserProfileInVault = keyof UserProfileInVault> = {
+export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> = {
     key: K;
-    value: UserProfileInVault[K];
+    value: UserConfigs[K];
 };
 
 export const thunks = {
     "changeValue":
-        <K extends keyof UserProfileInVault>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
+        <K extends keyof UserConfigs>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
 
-            const [dispatch,, { vaultClient, keycloakClient }] = args;
+            const [dispatch, , { vaultClient, keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
@@ -81,7 +87,7 @@ export const thunks = {
 
             dispatch(actions.changeStarted(params));
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
+            const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({ idep });
 
             await vaultClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
@@ -105,7 +111,7 @@ export const privateThunks = {
     "initialize":
         (params: { isPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
 
-            const { isPrefersColorSchemeDark } = params;
+            const { isPrefersColorSchemeDark } = params;
 
             const [dispatch, , { vaultClient, keycloakClient }] = args;
 
@@ -113,10 +119,10 @@ export const privateThunks = {
 
             const { idep, email } = await parseOidcAccessToken(keycloakClient);
 
-            const { getProfileKeyPath } = getProfileKeyPathFactory({ idep });
+            const { getConfigKeyPath } = getConfigKeyPathFactory({ idep });
 
             //Default value
-            const userProfileInVault: UserProfileInVault = {
+            const userConfigs: UserConfigs = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
                 "gitName": idep,
@@ -126,9 +132,9 @@ export const privateThunks = {
                 "isDarkModeEnabled": isPrefersColorSchemeDark
             };
 
-            for (const key of objectKeys(userProfileInVault)) {
+            for (const key of objectKeys(userConfigs)) {
 
-                const path = getProfileKeyPath({ key: key });
+                const path = getConfigKeyPath({ key });
 
                 const secretWithMetadata = await vaultClient.get({
                     path
@@ -141,29 +147,29 @@ export const privateThunks = {
 
                     await vaultClient.put({
                         path,
-                        "secret": { "value": userProfileInVault[key] }
+                        "secret": { "value": userConfigs[key] }
                     });
 
                     continue;
 
                 }
 
-                Object.assign(userProfileInVault, { [key]: secretWithMetadata.secret["value"] });
+                Object.assign(userConfigs, { [key]: secretWithMetadata.secret["value"] });
 
             }
 
-            dispatch(actions.initializationCompleted({ userProfile: userProfileInVault }));
+            dispatch(actions.initializationCompleted({ userProfile: userConfigs }));
 
         }
 };
 
 const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
 
-const getProfileKeyPathFactory = (params: { idep: string; }) => {
+const getConfigKeyPathFactory = (params: { idep: string; }) => {
 
     const { idep } = params;
 
-    const getProfileKeyPath = (params: { key: keyof UserProfileInVault; }) => {
+    const getConfigKeyPath = (params: { key: keyof UserConfigs; }) => {
 
         const { key } = params;
 
@@ -171,11 +177,11 @@ const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
     };
 
-    return { getProfileKeyPath };
+    return { getConfigKeyPath };
 
 }
 
-export function removeChangeStateFromUserProfileInVaultState(state: UserProfileInVaultState): UserProfileInVault {
+export function userConfigsStateToUserConfigs(state: UserConfigsState): UserConfigs {
 
     const userProfileInVault: any = {};
 

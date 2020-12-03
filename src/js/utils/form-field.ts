@@ -3,7 +3,7 @@ import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
 import type { AppConstant } from "lib/useCases/appConstants";
 import type { OidcTokens } from "lib/ports/KeycloakClient";
-import type { UserProfileInVault } from "lib/useCases/userProfileInVault";
+import type { UserConfigs } from "lib/useCases/userConfigs";
 
 const env = getEnv();
 
@@ -22,7 +22,7 @@ export type BuildMustacheViewParams = {
 	s3: NonNullable<RootState["user"]["s3"]>;
 	ip: string;
 	userProfile: AppConstant.LoggedIn["userProfile"];
-	userProfileInVault: UserProfileInVault;
+	userConfigs: UserConfigs;
 	keycloakConfig: AppConstant["keycloakConfig"];
 	vaultClientConfig: AppConstant["vaultClientConfig"];
 	oidcTokens: OidcTokens;
@@ -34,7 +34,7 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 
 	const {
 		s3, ip, userProfile,
-		userProfileInVault,
+		userConfigs,
 		vaultClientConfig, oidcTokens, vaultToken
 	} = params;
 
@@ -43,14 +43,14 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"idep": userProfile.idep,
 			"name": userProfile.nomComplet,
 			"email": userProfile.email,
-			"password": userProfileInVault.userServicePassword,
+			"password": userConfigs.userServicePassword,
 			"key": "https://example.com/placeholder.gpg",
 			"ip": ip,
 		},
 		"git": {
-			"name": userProfileInVault.gitName,
-			"email": userProfileInVault.gitEmail,
-			"credentials_cache_duration": userProfileInVault.gitCredentialCacheDuration
+			"name": userConfigs.gitName,
+			"email": userConfigs.gitEmail,
+			"credentials_cache_duration": userConfigs.gitCredentialCacheDuration
 		},
 		"status": "",
 		"keycloak": {
@@ -65,7 +65,7 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"VAULT_MOUNT": vaultClientConfig.engine,
 			"VAULT_TOP_DIR": userProfile.idep,
 		},
-		"kaggleApiToken": userProfileInVault.kaggleApiToken,
+		"kaggleApiToken": userConfigs.kaggleApiToken,
 		"s3": {
 			...s3,
 			"AWS_BUCKET_NAME": userProfile.idep

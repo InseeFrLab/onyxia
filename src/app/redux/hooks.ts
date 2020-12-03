@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { thunks } from "lib/setup";
-import { removeChangeStateFromUserProfileInVaultState } from "lib/useCases/userProfileInVault";
+import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -47,15 +47,15 @@ export const useMustacheParams = () => {
         vaultClientConfig
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
-    const userProfileInVault = useSelector(
-        state => removeChangeStateFromUserProfileInVaultState(state.userProfileInVault)
+    const userConfigs = useSelector(
+        state => userConfigsStateToUserConfigs(state.userConfigs)
     );
 
     const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & { s3: BuildMustacheViewParams["s3"] | undefined; } = {
         s3,
         ip,
         userProfile,
-        userProfileInVault,
+        userConfigs,
         keycloakConfig,
         vaultClientConfig,
         oidcTokens,
@@ -79,14 +79,14 @@ export const useIsBetaModeEnabled = (): {
         state =>
             !isUserLoggedIn ?
                 false :
-                state.userProfileInVault.isBetaModeEnabled.value
+                state.userConfigs.isBetaModeEnabled.value
     );
 
     return {
         isBetaModeEnabled,
         "setIsBetaModeEnabled": value =>
             dispatch(
-                thunks.userProfileInVault.changeValue({
+                thunks.userConfigs.changeValue({
                     "key": "isBetaModeEnabled",
                     value
                 })
@@ -108,14 +108,14 @@ export const useIsDarkModeEnabled = (): {
         state =>
             !isUserLoggedIn ?
                 isPrefersColorSchemeDark :
-                state.userProfileInVault.isDarkModeEnabled.value
+                state.userConfigs.isDarkModeEnabled.value
     );
 
     return {
         isDarkModeEnabled,
         "setIsDarkModeEnabled": value =>
             dispatch(
-                thunks.userProfileInVault.changeValue({
+                thunks.userConfigs.changeValue({
                     "key": "isDarkModeEnabled",
                     value
                 })
