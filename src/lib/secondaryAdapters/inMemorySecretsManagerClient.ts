@@ -11,7 +11,7 @@ function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-export function createInMemoryImplOfVaultClient(): VaultClient {
+export function createInMemorySecretManagerClient(): VaultClient {
 
     const map = new Map<string, SecretWithMetadata>();
 
