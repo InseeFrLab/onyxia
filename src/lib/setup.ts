@@ -192,7 +192,7 @@ async function createStoreForNonLoggedUser(
         })
     });
 
-    return { store, "evtVaultCliTranslation": undefined };
+    return { store };
 
 
 }
@@ -235,7 +235,10 @@ export async function createStore(params: CreateStoreParams) {
                 secretsManagerClientConfig,
                 isPrefersColorSchemeDark
             }) :
-            createStoreForNonLoggedUser({ keycloakClient })
+            {
+                ...await createStoreForNonLoggedUser({ keycloakClient }),
+                "evtVaultCliTranslation": undefined
+            }
     );
 
     dKeyCloakClient.resolve(keycloakClient);
