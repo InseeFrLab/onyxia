@@ -18,6 +18,8 @@ import type { KeycloakClient } from "./ports/KeycloakClient";
 import { parseOidcAccessToken } from "./ports/KeycloakClient";
 import { id } from "evt/tools/typeSafety/id";
 import type { NonPostableEvt } from "evt";
+import type { StatefulReadonlyEvt } from "evt";
+import { Evt } from "evt";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -29,6 +31,7 @@ import * as app from "js/redux/app";
 
 export type Dependencies = {
     vaultClient: VaultClient;
+    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
     keycloakClient: KeycloakClient;
 };
 
@@ -110,9 +113,16 @@ async function createStoreForLoggedUser(
         isPrefersColorSchemeDark
     } = params;
 
-    let vaultClient =
+
+    let { vaultClient, evtVaultToken } =
         secretsManagerClientConfig.doUseInMemoryClient ?
-            createInMemoryImplOfVaultClient() :
+            {
+                "vaultClient": createInMemoryImplOfVaultClient(),
+                "evtVaultToken": Evt.create<string | undefined>([
+                    "We are not currently using Vault as secret manager",
+                    "secrets are stored in RAM. There is no vault token"
+                ].join(" "))
+            } :
             createRestImplOfVaultClient({
                 ...secretsManagerClientConfig,
                 "evtOidcAccessToken":
@@ -141,7 +151,8 @@ async function createStoreForLoggedUser(
         ...getMiddleware({
             "dependencies": {
                 vaultClient,
-                keycloakClient
+                keycloakClient,
+                evtVaultToken
             }
         })
     });
@@ -175,6 +186,7 @@ async function createStoreForNonLoggedUser(
         ...getMiddleware({
             "dependencies": {
                 "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
+                "evtVaultToken": createObjectThatThrowsIfAccessed<Dependencies["evtVaultToken"]>(),
                 keycloakClient
             }
         })

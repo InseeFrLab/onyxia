@@ -45,29 +45,29 @@ export const privateThunks = {
     "initialize":
         (): AppThunk<void> => async (...args) => {
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
+            const [dispatch, , { evtVaultToken, keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
             keycloakClient.evtOidcTokens.$attach(
-                oidcTokens => oidcTokens === undefined ? null: [oidcTokens],
+                oidcTokens => oidcTokens === undefined ? null : [oidcTokens],
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 
-            vaultClient.evtVaultToken.$attach(
+            evtVaultToken.$attach(
                 nonNullable(),
                 vaultToken => dispatch(actions.vaultTokenRenewed({ vaultToken }))
             );
 
             Evt.merge([
-                vaultClient.evtVaultToken,
-                vaultClient.evtVaultToken
+                evtVaultToken,
+                evtVaultToken
             ])
                 .toStateful()
                 .$attach(
                     () => [
-                        vaultClient.evtVaultToken.state === undefined ||
-                        vaultClient.evtVaultToken.state === undefined
+                        evtVaultToken.state === undefined ||
+                        evtVaultToken.state === undefined
                     ],
                     areTokensBeingRefreshed =>
                         dispatch(actions.startedOrStoppedRefreshing({ areTokensBeingRefreshed }))

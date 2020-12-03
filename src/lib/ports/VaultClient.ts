@@ -1,6 +1,6 @@
 
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
-import type { NonPostableEvt, StatefulReadonlyEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 import { Evt } from "evt";
 import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 
@@ -54,9 +54,6 @@ export interface VaultClient {
             path: string;
         }
     ): Promise<void>;
-
-    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
-
 
 }
 
@@ -152,7 +149,6 @@ export function getVaultClientProxyWithTranslator(
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
                 "delete": createMethodProxy("delete"),
-                "evtVaultToken": vaultClient.evtVaultToken
             };
 
         })(),
