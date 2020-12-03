@@ -12,33 +12,22 @@ import memoizee from "memoizee";
 
 const version = "v1";
 
-export function createRestImplOfVaultClient(
-	params: {
-		baseUri: string;
-		engine: string;
-		role: string;
-		evtOidcAccessToken: StatefulReadonlyEvt<string | undefined>;
-		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
-	}
-): { 
-	vaultClient: VaultClient, 
-	evtVaultToken: StatefulReadonlyEvt<string | undefined>; 
+type Params = {
+	baseUri: string;
+	engine: string;
+	role: string;
+	evtOidcAccessToken: StatefulReadonlyEvt<string | undefined>;
+	renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
+};
+
+export function createVaultSecretsManagerClient(params: Params): {
+	vaultClient: VaultClient,
+	evtVaultToken: StatefulReadonlyEvt<string | undefined>;
 } {
 
-	const {
-		baseUri,
-		engine,
-		role,
-		evtOidcAccessToken,
-		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
-	} = params;
+	const { engine } = params;
 
-	const { axiosInstance, evtVaultToken } = getAxiosInstanceAndEvtVaultToken({
-		baseUri,
-		role,
-		evtOidcAccessToken,
-		renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired
-	})
+	const { axiosInstance, evtVaultToken } = getAxiosInstanceAndEvtVaultToken(params);
 
 	const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
 		pathJoin(version, engine, ...args);
@@ -110,11 +99,10 @@ const dVaultClient = new Deferred<VaultClient>();
 export const { pr: prVaultClient } = dVaultClient;
 
 function getAxiosInstanceAndEvtVaultToken(
-	params: {
-		baseUri: string;
-		role: string;
-	} & Pick<
-		Parameters<typeof createRestImplOfVaultClient>[0],
+	params: Pick<
+		Params,
+		"baseUri" |
+		"role" |
 		"evtOidcAccessToken" |
 		"renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
 	>

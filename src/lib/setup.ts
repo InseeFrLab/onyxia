@@ -1,8 +1,8 @@
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/inMemoryVaultClient";
-import { createRestImplOfVaultClient, getVaultClientTranslator } from "./secondaryAdapters/restVaultClient";
+import { createInMemorySecretManagerClient } from "./secondaryAdapters/inMemorySecretsManagerClient";
+import { createVaultSecretsManagerClient, getVaultClientTranslator } from "./secondaryAdapters/vaultSecretsManagerClient";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
 import * as tokenUseCase from "./useCases/tokens";
@@ -55,7 +55,7 @@ export declare namespace SecretsManagerClientConfig {
 
     export type Vault = {
         doUseInMemoryClient: false;
-    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0],
+    } & Omit<Parameters<typeof createVaultSecretsManagerClient>[0],
         "evtOidcAccessToken" |
         "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >;
@@ -117,13 +117,13 @@ async function createStoreForLoggedUser(
     let { vaultClient, evtVaultToken } =
         secretsManagerClientConfig.doUseInMemoryClient ?
             {
-                "vaultClient": createInMemoryImplOfVaultClient(),
+                "vaultClient": createInMemorySecretManagerClient(),
                 "evtVaultToken": Evt.create<string | undefined>([
                     "We are not currently using Vault as secret manager",
                     "secrets are stored in RAM. There is no vault token"
                 ].join(" "))
             } :
-            createRestImplOfVaultClient({
+            createVaultSecretsManagerClient({
                 ...secretsManagerClientConfig,
                 "evtOidcAccessToken":
                     keycloakClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
