@@ -18,7 +18,6 @@ export type SecretWithMetadata = {
         deletion_time: Date | "";
         destroyed: boolean;
         version: number;
-
     };
 };
 
@@ -148,7 +147,7 @@ export function getVaultClientProxyWithTranslator(
                 "list": createMethodProxy("list"),
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
-                "delete": createMethodProxy("delete"),
+                "delete": createMethodProxy("delete")
             };
 
         })(),
