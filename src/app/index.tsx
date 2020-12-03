@@ -8,10 +8,10 @@ import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { assert } from "evt/tools/typeSafety/assert";
 import { getEnv } from "../js/env";
-import { Evt,  } from "evt";
+import { Evt } from "evt";
 
 import { createStore } from "lib/setup";
-import type { KeycloakConfig, ParamsNeededToInitializeVaultClient } from "lib/setup";
+import type { KeycloakConfig, VaultConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 //import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -27,33 +27,31 @@ const Root = () => {
     const { result: store, error } = useAsync(
         () => createStore({
             "isPrefersColorSchemeDark": (
-                window.matchMedia && 
+                window.matchMedia &&
                 window.matchMedia("(prefers-color-scheme: dark)").matches
             ),
-            "keycloakConfig":
-                id<KeycloakConfig.Real>({
-                    "doUseInMemoryClient": false,
-                    ...(() => {
+            "keycloakConfig": id<KeycloakConfig.Real>({
+                "doUseInMemoryClient": false,
+                ...(() => {
 
-                        assert(
-                            env.AUTHENTICATION.TYPE === "oidc",
-                            [
-                                "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
-                                "the only authentication mechanism currently supported"
-                            ].join(" ")
-                        );
+                    assert(
+                        env.AUTHENTICATION.TYPE === "oidc",
+                        [
+                            "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
+                            "the only authentication mechanism currently supported"
+                        ].join(" ")
+                    );
 
-                        return env.AUTHENTICATION.OIDC;
+                    return env.AUTHENTICATION.OIDC;
 
-                    })()
-                }),
-            "paramsNeededToInitializeVaultClient":
-                id<ParamsNeededToInitializeVaultClient.Real>({
-                    "doUseInMemoryClient": false,
-                    "baseUri": env.VAULT.BASE_URI,
-                    "engine": env.VAULT.ENGINE,
-                    "role": env.VAULT.ROLE
-                }),
+                })()
+            }),
+            "vaultConfig": id<VaultConfig.Real>({
+                "doUseInMemoryClient": false,
+                "baseUri": env.VAULT.BASE_URI,
+                "engine": env.VAULT.ENGINE,
+                "role": env.VAULT.ROLE
+            }),
             "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
         }),
         []
@@ -65,15 +63,15 @@ const Root = () => {
 
     return (
         <React.StrictMode>
-        <>
-            {
-                store === undefined ?
-                    <Loader em={30} /> :
-                    <Provider store={store}>
-                        <App />
-                    </Provider>
-            }
-        </>
+            <>
+                {
+                    store === undefined ?
+                        <Loader em={30} /> :
+                        <Provider store={store}>
+                            <App />
+                        </Provider>
+                }
+            </>
         </React.StrictMode>
     );
 
