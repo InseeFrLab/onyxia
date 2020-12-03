@@ -24,7 +24,7 @@ export type BuildMustacheViewParams = {
 	userProfile: AppConstant.LoggedIn["userProfile"];
 	userProfileInVault: UserProfileInVault;
 	keycloakConfig: AppConstant["keycloakConfig"];
-	vaultConfig: AppConstant["vaultConfig"];
+	vaultClientConfig: AppConstant["vaultClientConfig"];
 	oidcTokens: OidcTokens;
 	vaultToken: string;
 };
@@ -35,7 +35,7 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 	const {
 		s3, ip, userProfile,
 		userProfileInVault,
-		vaultConfig, oidcTokens, vaultToken
+		vaultClientConfig, oidcTokens, vaultToken
 	} = params;
 
 	return {
@@ -60,9 +60,9 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 		},
 		"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
 		"vault": {
-			"VAULT_ADDR": vaultConfig.baseUri,
+			"VAULT_ADDR": vaultClientConfig.baseUri,
 			"VAULT_TOKEN": vaultToken,
-			"VAULT_MOUNT": vaultConfig.engine,
+			"VAULT_MOUNT": vaultClientConfig.engine,
 			"VAULT_TOP_DIR": userProfile.idep,
 		},
 		"kaggleApiToken": userProfileInVault.kaggleApiToken,

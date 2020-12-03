@@ -44,7 +44,7 @@ export const useMustacheParams = () => {
     const {
         userProfile,
         keycloakConfig,
-        vaultConfig
+        vaultClientConfig
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
     const userProfileInVault = useSelector(
@@ -57,7 +57,7 @@ export const useMustacheParams = () => {
         userProfile,
         userProfileInVault,
         keycloakConfig,
-        vaultConfig,
+        vaultClientConfig,
         oidcTokens,
         vaultToken
     };

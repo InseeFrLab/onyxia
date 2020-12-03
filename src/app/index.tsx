@@ -11,7 +11,7 @@ import { getEnv } from "../js/env";
 import { Evt } from "evt";
 
 import { createStore } from "lib/setup";
-import type { KeycloakConfig, VaultConfig } from "lib/setup";
+import type { KeycloakConfig, SecretsManagerClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 //import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -46,7 +46,7 @@ const Root = () => {
 
                 })()
             }),
-            "vaultConfig": id<VaultConfig.Real>({
+            "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
                 "doUseInMemoryClient": false,
                 "baseUri": env.VAULT.BASE_URI,
                 "engine": env.VAULT.ENGINE,

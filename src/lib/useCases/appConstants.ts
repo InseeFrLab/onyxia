@@ -3,7 +3,7 @@ import type {
     AppThunk,
     Dependencies,
     KeycloakConfig,
-    VaultConfig
+    SecretsManagerClientConfig
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
 
@@ -15,7 +15,7 @@ export declare namespace AppConstant {
 
     export type _Common = {
         isPrefersColorSchemeDark: boolean;
-        vaultConfig: Readonly<Omit<VaultConfig.Real,
+        vaultClientConfig: Readonly<Omit<SecretsManagerClientConfig.Vault,
             "doUseInMemoryClient" |
             "evtOidcAccessToken" |
             "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
