@@ -2,7 +2,7 @@
 import type {
     AppThunk,
     Dependencies,
-    ParamsNeededToInitializeKeycloakClient,
+    KeycloakConfig,
     ParamsNeededToInitializeVaultClient
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -16,7 +16,8 @@ export declare namespace AppConstant {
     export type _Common = {
         isPrefersColorSchemeDark: boolean;
         vaultConfig: Readonly<Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">>;
-        keycloakConfig: Readonly<ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"]>;
+        /** NOTE: Convoluted way of pointing to type { KeycloakConfig } from "Keycloak-js" */
+        keycloakConfig: Readonly<Omit<KeycloakConfig.Real, "doUseInMemoryClient">>;
     };
 
     export type LoggedIn = _Common & {
@@ -27,7 +28,6 @@ export declare namespace AppConstant {
             nomComplet: string;
         };
         evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
-
     };
 
     export type NotLoggedIn = _Common & {

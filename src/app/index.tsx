@@ -11,7 +11,7 @@ import { getEnv } from "../js/env";
 import { Evt,  } from "evt";
 
 import { createStore } from "lib/setup";
-import type { ParamsNeededToInitializeKeycloakClient, ParamsNeededToInitializeVaultClient } from "lib/setup";
+import type { KeycloakConfig, ParamsNeededToInitializeVaultClient } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 //import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -30,10 +30,10 @@ const Root = () => {
                 window.matchMedia && 
                 window.matchMedia("(prefers-color-scheme: dark)").matches
             ),
-            "paramsNeededToInitializeKeycloakClient":
-                id<ParamsNeededToInitializeKeycloakClient.Real>({
+            "keycloakConfig":
+                id<KeycloakConfig.Real>({
                     "doUseInMemoryClient": false,
-                    "keycloakConfig": (() => {
+                    ...(() => {
 
                         assert(
                             env.AUTHENTICATION.TYPE === "oidc",
