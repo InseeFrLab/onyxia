@@ -37,7 +37,7 @@ export type Dependencies = {
 
 
 export type CreateStoreParams = {
-    isPrefersColorSchemeDark: boolean;
+    isOsPrefersColorSchemeDark: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     keycloakConfig: KeycloakConfig;
     evtBackOnline: NonPostableEvt<void>;
@@ -104,13 +104,13 @@ async function createStoreForLoggedUser(
     params: {
         secretsManagerClientConfig: SecretsManagerClientConfig;
         keycloakClient: KeycloakClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isPrefersColorSchemeDark">
+    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
 ) {
 
     const {
         keycloakClient,
         secretsManagerClientConfig,
-        isPrefersColorSchemeDark
+        isOsPrefersColorSchemeDark
     } = params;
 
 
@@ -167,7 +167,7 @@ async function createStoreForLoggedUser(
 
     await store.dispatch(
         userProfileInVaultUseCase.privateThunks.initialize(
-            { isPrefersColorSchemeDark }
+            { isOsPrefersColorSchemeDark }
         )
     );
 
@@ -214,7 +214,7 @@ export async function createStore(params: CreateStoreParams) {
     const {
         keycloakConfig,
         secretsManagerClientConfig,
-        isPrefersColorSchemeDark,
+        isOsPrefersColorSchemeDark,
         evtBackOnline
     } = params;
 
@@ -233,7 +233,7 @@ export async function createStore(params: CreateStoreParams) {
             createStoreForLoggedUser({
                 keycloakClient,
                 secretsManagerClientConfig,
-                isPrefersColorSchemeDark
+                isOsPrefersColorSchemeDark
             }) :
             {
                 ...await createStoreForNonLoggedUser({ keycloakClient }),
@@ -248,7 +248,7 @@ export async function createStore(params: CreateStoreParams) {
     {
 
         const _common: appConstantsUseCase.AppConstant._Common = {
-            isPrefersColorSchemeDark,
+            isOsPrefersColorSchemeDark,
             "vaultClientConfig": secretsManagerClientConfig.doUseInMemoryClient ?
                 { "baseUri": "", "engine": "", "role": "" } :
                 secretsManagerClientConfig,

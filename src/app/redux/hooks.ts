@@ -102,12 +102,12 @@ export const useIsDarkModeEnabled = (): {
 
     const dispatch = useDispatch();
 
-    const { isUserLoggedIn, isPrefersColorSchemeDark } = useAppConstants();
+    const { isUserLoggedIn, isOsPrefersColorSchemeDark } = useAppConstants();
 
     const isDarkModeEnabled = useSelector(
         state =>
             !isUserLoggedIn ?
-                isPrefersColorSchemeDark :
+                isOsPrefersColorSchemeDark :
                 state.userConfigs.isDarkModeEnabled.value
     );
 

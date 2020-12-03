@@ -26,7 +26,7 @@ const Root = () => {
 
     const { result: store, error } = useAsync(
         () => createStore({
-            "isPrefersColorSchemeDark": (
+            "isOsPrefersColorSchemeDark": (
                 window.matchMedia &&
                 window.matchMedia("(prefers-color-scheme: dark)").matches
             ),
