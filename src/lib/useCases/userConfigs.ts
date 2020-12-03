@@ -79,7 +79,7 @@ export const thunks = {
     "changeValue":
         <K extends keyof UserConfigs>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
+            const [dispatch, , { secretsManagerClient, keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
@@ -89,7 +89,7 @@ export const thunks = {
 
             const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({ idep });
 
-            await vaultClient.put({
+            await secretsManagerClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
                 "secret": { "value": params.value }
             });
@@ -113,7 +113,7 @@ export const privateThunks = {
 
             const { isOsPrefersColorSchemeDark } = params;
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
+            const [dispatch, , { secretsManagerClient, keycloakClient }] = args;
 
             assert(keycloakClient.isUserLoggedIn);
 
@@ -136,7 +136,7 @@ export const privateThunks = {
 
                 const path = getConfigKeyPath({ key });
 
-                const secretWithMetadata = await vaultClient.get({
+                const secretWithMetadata = await secretsManagerClient.get({
                     path
                 }).catch(() => undefined);
 
@@ -145,7 +145,7 @@ export const privateThunks = {
                     !("value" in secretWithMetadata.secret)
                 ) {
 
-                    await vaultClient.put({
+                    await secretsManagerClient.put({
                         path,
                         "secret": { "value": userConfigs[key] }
                     });

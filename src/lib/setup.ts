@@ -7,8 +7,8 @@ import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userProfileInVaultUseCase from "./useCases/userConfigs";
 import * as tokenUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
-import type { VaultClient } from "./ports/VaultClient";
-import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
+import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
+import { getVaultClientProxyWithTranslator } from "./ports/SecretsManagerClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -30,7 +30,7 @@ import * as app from "js/redux/app";
 
 
 export type Dependencies = {
-    vaultClient: VaultClient;
+    secretsManagerClient: SecretsManagerClient;
     evtVaultToken: StatefulReadonlyEvt<string | undefined>;
     keycloakClient: KeycloakClient;
 };
@@ -114,10 +114,10 @@ async function createStoreForLoggedUser(
     } = params;
 
 
-    let { vaultClient, evtVaultToken } =
+    let { secretsManagerClient, evtVaultToken } =
         secretsManagerClientConfig.doUseInMemoryClient ?
             {
-                "vaultClient": createInMemorySecretManagerClient(),
+                "secretsManagerClient": createInMemorySecretManagerClient(),
                 "evtVaultToken": Evt.create<string | undefined>([
                     "We are not currently using Vault as secret manager",
                     "secrets are stored in RAM. There is no vault token"
@@ -132,10 +132,10 @@ async function createStoreForLoggedUser(
             });
 
     const {
-        vaultClientProxy,
+        secretsManagerClientProxy,
         evtTranslation: evtVaultCliTranslation,
     } = getVaultClientProxyWithTranslator({
-        vaultClient,
+        secretsManagerClient,
         "vaultClientTranslator":
             getVaultClientTranslator({
                 "clientType": "CLI",
@@ -144,13 +144,13 @@ async function createStoreForLoggedUser(
             })
     });
 
-    vaultClient = vaultClientProxy;
+    secretsManagerClient = secretsManagerClientProxy;
 
     const store = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
-                vaultClient,
+                secretsManagerClient,
                 keycloakClient,
                 evtVaultToken
             }
@@ -185,7 +185,7 @@ async function createStoreForNonLoggedUser(
         reducer,
         ...getMiddleware({
             "dependencies": {
-                "vaultClient": createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
+                "secretsManagerClient": createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>(),
                 "evtVaultToken": createObjectThatThrowsIfAccessed<Dependencies["evtVaultToken"]>(),
                 keycloakClient
             }

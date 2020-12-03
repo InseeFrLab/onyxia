@@ -23,7 +23,7 @@ export type SecretWithMetadata = {
 
 
 
-export interface VaultClient {
+export interface SecretsManagerClient {
 
 
     list(
@@ -57,12 +57,12 @@ export interface VaultClient {
 }
 
 export type VaultClientTranslator = {
-        [K in MethodNames<VaultClient>]: {
-            buildCmd(...args: Parameters<VaultClient[K]>): string;
+        [K in MethodNames<SecretsManagerClient>]: {
+            buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
             fmtResult(
                 params: {
-                    inputs: Parameters<VaultClient[K]>;
-                    result: AsyncReturnType<VaultClient[K]>;
+                    inputs: Parameters<SecretsManagerClient[K]>;
+                    result: AsyncReturnType<SecretsManagerClient[K]>;
                 }
             ): string;
         }
@@ -77,15 +77,15 @@ export type Translation = {
 
 export function getVaultClientProxyWithTranslator(
     params: {
-        vaultClient: VaultClient;
+        secretsManagerClient: SecretsManagerClient;
         vaultClientTranslator: VaultClientTranslator;
     }
 ): {
-    vaultClientProxy: VaultClient;
+    secretsManagerClientProxy: SecretsManagerClient;
     evtTranslation: NonPostableEvt<Translation>;
 } {
 
-    const { vaultClient, vaultClientTranslator } = params;
+    const { secretsManagerClient, vaultClientTranslator } = params;
 
     const getCounter = (() => {
 
@@ -98,7 +98,7 @@ export function getVaultClientProxyWithTranslator(
     const evtTranslation = Evt.create<Translation>();
 
     return {
-        "vaultClientProxy": (() => {
+        "secretsManagerClientProxy": (() => {
 
 
             evtTranslation.postAsyncOnceHandled({
@@ -107,14 +107,14 @@ export function getVaultClientProxyWithTranslator(
                 "value": "==> TODO client initialization <=="
             })
 
-            const createMethodProxy = <MethodName extends MethodNames<VaultClient>>(
+            const createMethodProxy = <MethodName extends MethodNames<SecretsManagerClient>>(
                 _methodName: MethodName
-            ): VaultClient[MethodName] => {
+            ): SecretsManagerClient[MethodName] => {
 
                 //NOTE: Mitigate type vulnerability.
                 const methodName = _methodName as "get";
 
-                const methodProxy = async (...args: Parameters<VaultClient[typeof methodName]>) => {
+                const methodProxy = async (...args: Parameters<SecretsManagerClient[typeof methodName]>) => {
 
 
                     const cmdId = getCounter();
@@ -127,7 +127,7 @@ export function getVaultClientProxyWithTranslator(
                         "value": buildCmd(...args)
                     });
 
-                    const result = await vaultClient[methodName](...args);
+                    const result = await secretsManagerClient[methodName](...args);
 
                     evtTranslation.post({
                         cmdId,

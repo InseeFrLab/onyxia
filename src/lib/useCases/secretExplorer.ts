@@ -98,11 +98,11 @@ export const thunks = {
 
             const { path } = params;
 
-            const [dispatch, , { vaultClient }] = args;
+            const [dispatch, , { secretsManagerClient }] = args;
 
             dispatch(actions.navigationStarted({ path }));
 
-            const listResult = await vaultClient.list({ path })
+            const listResult = await secretsManagerClient.list({ path })
                 .catch((error: Error) => error);
 
             if (listResult instanceof Error) {
