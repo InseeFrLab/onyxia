@@ -159,7 +159,7 @@ export const privateThunks = {
 
 const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
 
-export const getProfileKeyPathFactory = (params: { idep: string; }) => {
+const getProfileKeyPathFactory = (params: { idep: string; }) => {
 
     const { idep } = params;
 
