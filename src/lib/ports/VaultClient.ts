@@ -1,7 +1,6 @@
 
-import { join as pathJoin } from "path";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
-import type { NonPostableEvt, UnpackEvt, StatefulReadonlyEvt } from "evt";
+import type { NonPostableEvt, StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
 import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 
@@ -56,18 +55,12 @@ export interface VaultClient {
         }
     ): Promise<void>;
 
-    readonly engine: string;
     evtVaultToken: StatefulReadonlyEvt<string | undefined>;
 
 
 }
 
-function getVaultClientTranslator(
-    params: {
-        clientType: "CLI",
-        engine: string;
-    }
-): {
+export type VaultClientTranslator = {
         [K in MethodNames<VaultClient>]: {
             buildCmd(...args: Parameters<VaultClient[K]>): string;
             fmtResult(
@@ -77,95 +70,26 @@ function getVaultClientTranslator(
                 }
             ): string;
         }
-    } {
-
-    const { clientType, engine } = params;
-
-    switch (clientType) {
-        case "CLI":
+};
 
 
-            return {
-                "list": {
-                    "buildCmd": (...[{ path }]) =>
-                        `vault kv list ${pathJoin(engine, path)}`,
-                    "fmtResult": ({ result: { nodes, leafs } }) =>
-                        [
-                            "Keys",
-                            "----",
-                            ...[nodes, leafs]
-                        ].join("\n")
-                },
-                "get": {
-                    "buildCmd": (...[{ path }]) =>
-                        `vault kv get ${pathJoin(engine, path)}`,
-                    "fmtResult": ({ result: secretWithMetadata }) => {
-
-                        const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 2;
-
-                        return [
-                            "==== Data ====",
-                            `${"Key".padEnd(n)}Value`,
-                            `${"---".padEnd(n)}-----`,
-                            ...Object.entries(secretWithMetadata.secret)
-                                .map(
-                                    ([key, value]) =>
-                                            key.padEnd(n) +
-                                            (typeof value === "string" ? value : JSON.stringify(value))
-                                )
-                        ].join("\n");
-
-                    }
-                },
-                "put": {
-                    "buildCmd": (...[{ path, secret }]) =>
-                        [
-                            `vault kv put ${pathJoin(engine, path)}`,
-                            ...Object.entries(secret).map(
-                                ([key, value]) => `${key}=${typeof value === "string" ?
-                                    `"${value.replace(/"/g, '\\"')}"` :
-                                    typeof value === "number" || typeof value === "boolean" ?
-                                        value :
-                                        [
-                                            "-<<EOF",
-                                            `heredoc > ${JSON.stringify(value, null, 2)}`,
-                                            "heredoc> EOF"
-                                        ].join("\n")
-                                    }`
-                            )
-                        ].join(" \\\n"),
-                    "fmtResult": ({ inputs: [{ path }] }) =>
-                        `Success! Data written to: ${pathJoin(engine, path)}`
-                },
-                "delete": {
-                    "buildCmd": (...[{ path }]) =>
-                        `vault kv delete ${pathJoin(engine, path)}`,
-                    "fmtResult": ({ inputs: [{ path }] }) =>
-                        `Success! Data deleted (if it existed) at: ${pathJoin(engine, path)}`
-                },
-            };
-    }
-
-
-}
-
-
+export type Translation = {
+        type: "cmd" | "result";
+        cmdId: number;
+        value: string;
+};
 
 export function getVaultClientProxyWithTranslator(
     params: {
         vaultClient: VaultClient;
-        translateForClientType: Parameters<typeof getVaultClientTranslator>[0]["clientType"]
+        vaultClientTranslator: VaultClientTranslator;
     }
 ): {
     vaultClientProxy: VaultClient;
-    evtTranslation: NonPostableEvt<{
-        type: "cmd" | "result";
-        cmdId: number;
-        value: string;
-    }>;
+    evtTranslation: NonPostableEvt<Translation>;
 } {
 
-    const { vaultClient, translateForClientType } = params;
+    const { vaultClient, vaultClientTranslator } = params;
 
     const getCounter = (() => {
 
@@ -175,20 +99,11 @@ export function getVaultClientProxyWithTranslator(
 
     })();
 
-    const evtTranslation = Evt.create<
-        UnpackEvt<
-            ReturnType<
-                typeof getVaultClientProxyWithTranslator>["evtTranslation"]
-        >
-    >();
+    const evtTranslation = Evt.create<Translation>();
 
     return {
         "vaultClientProxy": (() => {
 
-            const translator = getVaultClientTranslator({
-                "clientType": translateForClientType,
-                "engine": vaultClient.engine
-            });
 
             evtTranslation.postAsyncOnceHandled({
                 "cmdId": getCounter(),
@@ -208,7 +123,7 @@ export function getVaultClientProxyWithTranslator(
 
                     const cmdId = getCounter();
 
-                    const { buildCmd, fmtResult } = translator[methodName];
+                    const { buildCmd, fmtResult } = vaultClientTranslator[methodName];
 
                     evtTranslation.post({
                         cmdId,
@@ -237,7 +152,6 @@ export function getVaultClientProxyWithTranslator(
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
                 "delete": createMethodProxy("delete"),
-                "engine": vaultClient.engine,
                 "evtVaultToken": vaultClient.evtVaultToken
             };
 
@@ -247,8 +161,5 @@ export function getVaultClientProxyWithTranslator(
 
 
 }
-
-
-
 
 

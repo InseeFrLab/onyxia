@@ -12,13 +12,7 @@ function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-export function createInMemoryImplOfVaultClient(
-    params: {
-        engine: string;
-    }
-): VaultClient {
-
-    const { engine } = params;
+export function createInMemoryImplOfVaultClient(): VaultClient {
 
     const map = new Map<string, SecretWithMetadata>();
 
@@ -79,8 +73,6 @@ export function createInMemoryImplOfVaultClient(
 
         },
 
-        engine,
-
         "evtVaultToken": Evt.create<string | undefined>(undefined)
 
     };
@@ -88,4 +80,5 @@ export function createInMemoryImplOfVaultClient(
 
 
 }
+
 
