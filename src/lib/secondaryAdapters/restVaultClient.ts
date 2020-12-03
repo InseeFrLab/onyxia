@@ -3,7 +3,7 @@ import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
-import type { Secret, SecretWithMetadata, VaultClient } from "../ports/VaultClient";
+import type { Secret, SecretWithMetadata, VaultClient, VaultClientTranslator } from "../ports/VaultClient";
 import { Deferred } from "evt/tools/Deferred";
 import { StatefulReadonlyEvt } from "evt";
 import { Evt, nonNullable } from "evt";
@@ -93,7 +93,6 @@ export function createRestImplOfVaultClient(
 			);
 
 		},
-		engine,
 		evtVaultToken
 	};
 
@@ -107,7 +106,6 @@ const dVaultClient = new Deferred<VaultClient>();
 
 /** @deprecated */
 export const { pr: prVaultClient } = dVaultClient;
-
 
 function getAxiosInstanceAndEvtVaultToken(
 	params: {
@@ -153,9 +151,9 @@ function getAxiosInstanceAndEvtVaultToken(
 
 	const evtVaultToken = Evt.asyncPipe(
 		evtOidcAccessToken.evtChange,
-		oidcAccessToken => 
+		oidcAccessToken =>
 			oidcAccessToken === undefined ?
-				[ undefined ]:
+				[undefined] :
 				fetchVaultToken(oidcAccessToken)
 					.then(vaultToken => [vaultToken])
 	);
@@ -179,5 +177,81 @@ function getAxiosInstanceAndEvtVaultToken(
 	);
 
 	return { axiosInstance, evtVaultToken };
+
+}
+
+export function getVaultClientTranslator(
+	params: {
+		clientType: "CLI";
+		engine: string;
+	}
+): VaultClientTranslator {
+
+	const { clientType, engine } = params;
+
+	switch (clientType) {
+		case "CLI":
+
+			return {
+				"list": {
+					"buildCmd": (...[{ path }]) =>
+						`vault kv list ${pathJoin(engine, path)}`,
+					"fmtResult": ({ result: { nodes, leafs } }) =>
+						[
+							"Keys",
+							"----",
+							...[nodes, leafs]
+						].join("\n")
+				},
+				"get": {
+					"buildCmd": (...[{ path }]) =>
+						`vault kv get ${pathJoin(engine, path)}`,
+					"fmtResult": ({ result: secretWithMetadata }) => {
+
+						const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 2;
+
+						return [
+							"==== Data ====",
+							`${"Key".padEnd(n)}Value`,
+							`${"---".padEnd(n)}-----`,
+							...Object.entries(secretWithMetadata.secret)
+								.map(
+									([key, value]) =>
+										key.padEnd(n) +
+										(typeof value === "string" ? value : JSON.stringify(value))
+								)
+						].join("\n");
+
+					}
+				},
+				"put": {
+					"buildCmd": (...[{ path, secret }]) =>
+						[
+							`vault kv put ${pathJoin(engine, path)}`,
+							...Object.entries(secret).map(
+								([key, value]) => `${key}=${typeof value === "string" ?
+									`"${value.replace(/"/g, '\\"')}"` :
+									typeof value === "number" || typeof value === "boolean" ?
+										value :
+										[
+											"-<<EOF",
+											`heredoc > ${JSON.stringify(value, null, 2)}`,
+											"heredoc> EOF"
+										].join("\n")
+									}`
+							)
+						].join(" \\\n"),
+					"fmtResult": ({ inputs: [{ path }] }) =>
+						`Success! Data written to: ${pathJoin(engine, path)}`
+				},
+				"delete": {
+					"buildCmd": (...[{ path }]) =>
+						`vault kv delete ${pathJoin(engine, path)}`,
+					"fmtResult": ({ inputs: [{ path }] }) =>
+						`Success! Data deleted (if it existed) at: ${pathJoin(engine, path)}`
+				},
+			};
+	}
+
 
 }

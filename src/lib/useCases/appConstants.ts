@@ -7,7 +7,8 @@ import type {
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
 
-import type { getVaultClientProxyWithTranslator } from "../ports/VaultClient";
+import type { Translation } from "../ports/VaultClient";
+import type { NonPostableEvt } from "evt";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -31,7 +32,7 @@ export declare namespace AppConstant {
             email: string;
             nomComplet: string;
         };
-        evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
+        evtVaultCliTranslation: NonPostableEvt<Translation>;
     };
 
     export type NotLoggedIn = _Common & {
