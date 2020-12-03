@@ -8,7 +8,7 @@ import * as userProfileInVaultUseCase from "./useCases/userConfigs";
 import * as tokenUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
-import { getVaultClientProxyWithTranslator } from "./ports/SecretsManagerClient";
+import { observeSecretsManagerClientWithTranslater } from "./ports/SecretsManagerClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -133,10 +133,10 @@ async function createStoreForLoggedUser(
 
     const {
         secretsManagerClientProxy,
-        evtTranslation: evtVaultCliTranslation,
-    } = getVaultClientProxyWithTranslator({
+        evtSecretsManagerTranslation,
+    } = observeSecretsManagerClientWithTranslater({
         secretsManagerClient,
-        "vaultClientTranslator":
+        "secretsManagerTranslator":
             getVaultClientTranslator({
                 "clientType": "CLI",
                 "engine": secretsManagerClientConfig.doUseInMemoryClient ?
@@ -171,7 +171,7 @@ async function createStoreForLoggedUser(
         )
     );
 
-    return { store, evtVaultCliTranslation };
+    return { store, evtSecretsManagerTranslation };
 
 }
 
@@ -228,7 +228,7 @@ export async function createStore(params: CreateStoreParams) {
             { keycloakConfig }
         );
 
-    const { store, evtVaultCliTranslation } = await (
+    const { store, evtSecretsManagerTranslation } = await (
         keycloakClient.isUserLoggedIn ?
             createStoreForLoggedUser({
                 keycloakClient,
@@ -267,7 +267,7 @@ export async function createStore(params: CreateStoreParams) {
                                 { evtBackOnline }
                             )
                         ),
-                        "evtVaultCliTranslation": evtVaultCliTranslation!
+                        "evtSecretsManagerTranslation": evtSecretsManagerTranslation!
                     }) :
                     id<appConstantsUseCase.AppConstant.NotLoggedIn>({
                         "isUserLoggedIn": false,

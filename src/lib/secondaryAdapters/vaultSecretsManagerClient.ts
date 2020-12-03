@@ -3,7 +3,7 @@ import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
-import type { Secret, SecretWithMetadata, SecretsManagerClient, VaultClientTranslator } from "../ports/SecretsManagerClient";
+import type { Secret, SecretWithMetadata, SecretsManagerClient, SecretsManagerTranslator } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
 import { StatefulReadonlyEvt } from "evt";
 import { Evt, nonNullable } from "evt";
@@ -175,7 +175,7 @@ export function getVaultClientTranslator(
 		clientType: "CLI";
 		engine: string;
 	}
-): VaultClientTranslator {
+): SecretsManagerTranslator {
 
 	const { clientType, engine } = params;
 
