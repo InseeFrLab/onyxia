@@ -35,22 +35,22 @@ export type Dependencies = {
 
 export type CreateStoreParams = {
     isPrefersColorSchemeDark: boolean;
-    vaultConfig: VaultConfig;
+    secretsManagerClientConfig: SecretsManagerClientConfig;
     keycloakConfig: KeycloakConfig;
     evtBackOnline: NonPostableEvt<void>;
 };
 
-export declare type VaultConfig =
-    VaultConfig.InMemory |
-    VaultConfig.Real;
+export declare type SecretsManagerClientConfig =
+    SecretsManagerClientConfig.InMemory |
+    SecretsManagerClientConfig.Vault;
 
-export declare namespace VaultConfig {
+export declare namespace SecretsManagerClientConfig {
 
     export type InMemory = {
         doUseInMemoryClient: true;
     } & Parameters<typeof createInMemoryImplOfVaultClient>[0];
 
-    export type Real = {
+    export type Vault = {
         doUseInMemoryClient: false;
     } & Omit<Parameters<typeof createRestImplOfVaultClient>[0],
         "evtOidcAccessToken" |
@@ -99,7 +99,7 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
 
 async function createStoreForLoggedUser(
     params: {
-        vaultConfig: VaultConfig;
+        secretsManagerClientConfig: SecretsManagerClientConfig;
         keycloakClient: KeycloakClient.LoggedIn;
     } & Pick<CreateStoreParams, "isPrefersColorSchemeDark">
 ) {
@@ -107,7 +107,7 @@ async function createStoreForLoggedUser(
     //const { idep, email, paramsNeededToInitializeVaultClient } = params;
     const {
         keycloakClient,
-        vaultConfig,
+        secretsManagerClientConfig,
         isPrefersColorSchemeDark
     } = params;
 
@@ -117,10 +117,10 @@ async function createStoreForLoggedUser(
     } = getVaultClientProxyWithTranslator({
         "translateForClientType": "CLI",
         "vaultClient":
-            vaultConfig.doUseInMemoryClient ?
-                createInMemoryImplOfVaultClient(vaultConfig) :
+            secretsManagerClientConfig.doUseInMemoryClient ?
+                createInMemoryImplOfVaultClient(secretsManagerClientConfig) :
                 createRestImplOfVaultClient({
-                    ...vaultConfig,
+                    ...secretsManagerClientConfig,
                     "evtOidcAccessToken": keycloakClient.evtOidcTokens
                         .pipe(oidcTokens => [oidcTokens?.accessToken]),
                     "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
@@ -191,7 +191,7 @@ export async function createStore(params: CreateStoreParams) {
 
     const {
         keycloakConfig,
-        vaultConfig,
+        secretsManagerClientConfig,
         isPrefersColorSchemeDark,
         evtBackOnline
     } = params;
@@ -210,7 +210,7 @@ export async function createStore(params: CreateStoreParams) {
         keycloakClient.isUserLoggedIn ?
             createStoreForLoggedUser({
                 keycloakClient,
-                vaultConfig,
+                secretsManagerClientConfig,
                 isPrefersColorSchemeDark
             }) :
             createStoreForNonLoggedUser({ keycloakClient })
@@ -224,14 +224,14 @@ export async function createStore(params: CreateStoreParams) {
 
         const _common: appConstantsUseCase.AppConstant._Common = {
             isPrefersColorSchemeDark,
-            "vaultConfig": vaultConfig.doUseInMemoryClient ?
+            "vaultClientConfig": secretsManagerClientConfig.doUseInMemoryClient ?
                 {
                     "baseUri": "",
-                    "engine": vaultConfig.engine,
+                    "engine": secretsManagerClientConfig.engine,
                     "role": ""
                 }
                 :
-                vaultConfig,
+                secretsManagerClientConfig,
             keycloakConfig
         };
 
