@@ -56,7 +56,7 @@ export interface SecretsManagerClient {
 
 }
 
-export type VaultClientTranslator = {
+export type SecretsManagerTranslator = {
         [K in MethodNames<SecretsManagerClient>]: {
             buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
             fmtResult(
@@ -69,23 +69,23 @@ export type VaultClientTranslator = {
 };
 
 
-export type Translation = {
+export type SecretsManagerTranslation = {
         type: "cmd" | "result";
         cmdId: number;
-        value: string;
+        translation: string;
 };
 
-export function getVaultClientProxyWithTranslator(
+export function observeSecretsManagerClientWithTranslater(
     params: {
         secretsManagerClient: SecretsManagerClient;
-        vaultClientTranslator: VaultClientTranslator;
+        secretsManagerTranslator: SecretsManagerTranslator;
     }
 ): {
     secretsManagerClientProxy: SecretsManagerClient;
-    evtTranslation: NonPostableEvt<Translation>;
+    evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>;
 } {
 
-    const { secretsManagerClient, vaultClientTranslator } = params;
+    const { secretsManagerClient, secretsManagerTranslator } = params;
 
     const getCounter = (() => {
 
@@ -95,16 +95,16 @@ export function getVaultClientProxyWithTranslator(
 
     })();
 
-    const evtTranslation = Evt.create<Translation>();
+    const evtSecretsManagerTranslation = Evt.create<SecretsManagerTranslation>();
 
     return {
         "secretsManagerClientProxy": (() => {
 
 
-            evtTranslation.postAsyncOnceHandled({
+            evtSecretsManagerTranslation.postAsyncOnceHandled({
                 "cmdId": getCounter(),
                 "type": "cmd",
-                "value": "==> TODO client initialization <=="
+                "translation": "==> TODO client initialization <=="
             })
 
             const createMethodProxy = <MethodName extends MethodNames<SecretsManagerClient>>(
@@ -119,20 +119,20 @@ export function getVaultClientProxyWithTranslator(
 
                     const cmdId = getCounter();
 
-                    const { buildCmd, fmtResult } = vaultClientTranslator[methodName];
+                    const { buildCmd, fmtResult } = secretsManagerTranslator[methodName];
 
-                    evtTranslation.post({
+                    evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "cmd",
-                        "value": buildCmd(...args)
+                        "translation": buildCmd(...args)
                     });
 
                     const result = await secretsManagerClient[methodName](...args);
 
-                    evtTranslation.post({
+                    evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "result",
-                        "value": fmtResult({ "inputs": args, result })
+                        "translation": fmtResult({ "inputs": args, result })
                     });
 
                     return result;
@@ -151,7 +151,7 @@ export function getVaultClientProxyWithTranslator(
             };
 
         })(),
-        evtTranslation
+        evtSecretsManagerTranslation
     };
 
 

@@ -100,16 +100,16 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 			return;
 		}
 
-		const { evtVaultCliTranslation } = appConstants;
+		const { evtSecretsManagerTranslation } = appConstants;
 
-		evtVaultCliTranslation.attach(
+		evtSecretsManagerTranslation.attach(
 			({ type }) => type === "cmd",
 			ctx,
-			cmd => evtVaultCliTranslation.attachOnce(
+			cmd => evtSecretsManagerTranslation.attachOnce(
 				({ cmdId }) => cmdId === cmd.cmdId,
 				ctx,
 				resp => console.log(
-					`%c$ ${cmd.value}\n\n${resp.value}`,
+					`%c$ ${cmd.translation}\n\n${resp.translation}`,
 					'background: #222; color: #bada55'
 				)
 			)
