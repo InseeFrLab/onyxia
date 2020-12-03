@@ -4,7 +4,7 @@ import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { createInMemorySecretManagerClient } from "./secondaryAdapters/inMemorySecretsManagerClient";
 import { createVaultSecretsManagerClient, getVaultClientTranslator } from "./secondaryAdapters/vaultSecretsManagerClient";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
-import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
+import * as userProfileInVaultUseCase from "./useCases/userConfigs";
 import * as tokenUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { VaultClient } from "./ports/VaultClient";
