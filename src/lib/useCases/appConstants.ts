@@ -7,7 +7,7 @@ import type {
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
 
-import type { Translation } from "../ports/VaultClient";
+import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;

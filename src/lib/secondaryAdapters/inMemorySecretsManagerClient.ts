@@ -2,7 +2,7 @@
 
 import { join as pathJoin, relative as pathRelative } from "path";
 import { partition } from "evt/tools/reducers";
-import { SecretWithMetadata, VaultClient } from "../ports/VaultClient";
+import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManagerClient";
 import { assert } from "evt/tools/typeSafety/assert";
 
 
@@ -11,7 +11,7 @@ function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-export function createInMemorySecretManagerClient(): VaultClient {
+export function createInMemorySecretManagerClient(): SecretsManagerClient {
 
     const map = new Map<string, SecretWithMetadata>();
 

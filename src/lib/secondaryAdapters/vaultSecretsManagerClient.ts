@@ -3,7 +3,7 @@ import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
-import type { Secret, SecretWithMetadata, VaultClient, VaultClientTranslator } from "../ports/VaultClient";
+import type { Secret, SecretWithMetadata, SecretsManagerClient, VaultClientTranslator } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
 import { StatefulReadonlyEvt } from "evt";
 import { Evt, nonNullable } from "evt";
@@ -21,7 +21,7 @@ type Params = {
 };
 
 export function createVaultSecretsManagerClient(params: Params): {
-	vaultClient: VaultClient,
+	secretsManagerClient: SecretsManagerClient,
 	evtVaultToken: StatefulReadonlyEvt<string | undefined>;
 } {
 
@@ -32,7 +32,7 @@ export function createVaultSecretsManagerClient(params: Params): {
 	const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
 		pathJoin(version, engine, ...args);
 
-	const vaultClient: VaultClient = {
+	const secretsManagerClient: SecretsManagerClient = {
 		"list": async params => {
 
 			const { path } = params;
@@ -87,13 +87,13 @@ export function createVaultSecretsManagerClient(params: Params): {
 		}
 	};
 
-	dVaultClient.resolve(vaultClient);
+	dVaultClient.resolve(secretsManagerClient);
 
-	return { vaultClient, evtVaultToken };
+	return { secretsManagerClient, evtVaultToken };
 
 }
 
-const dVaultClient = new Deferred<VaultClient>();
+const dVaultClient = new Deferred<SecretsManagerClient>();
 
 /** @deprecated */
 export const { pr: prVaultClient } = dVaultClient;
