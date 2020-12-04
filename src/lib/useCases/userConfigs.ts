@@ -4,7 +4,7 @@ import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
 import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
-import { parseOidcAccessToken } from "../ports/KeycloakClient";
+import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } from "../utils/createObjectThatThrowsIfAccessed";
 
@@ -79,11 +79,11 @@ export const thunks = {
     "changeValue":
         <K extends keyof UserConfigs>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
 
-            const [dispatch, , { secretsManagerClient, keycloakClient }] = args;
+            const [dispatch, , { secretsManagerClient, oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
-            const { idep } = await parseOidcAccessToken(keycloakClient);
+            const { idep } = await parseOidcAccessToken(oidcClient);
 
             dispatch(actions.changeStarted(params));
 
@@ -113,11 +113,11 @@ export const privateThunks = {
 
             const { isOsPrefersColorSchemeDark } = params;
 
-            const [dispatch, , { secretsManagerClient, keycloakClient }] = args;
+            const [dispatch, , { secretsManagerClient, oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
-            const { idep, email } = await parseOidcAccessToken(keycloakClient);
+            const { idep, email } = await parseOidcAccessToken(oidcClient);
 
             const { getConfigKeyPath } = getConfigKeyPathFactory({ idep });
 

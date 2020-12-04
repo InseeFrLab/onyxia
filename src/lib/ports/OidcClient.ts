@@ -10,11 +10,11 @@ export type OidcTokens = Readonly<{
     refreshToken: string;
 }>;
 
-export declare type KeycloakClient =
-    KeycloakClient.LoggedIn |
-    KeycloakClient.NotLoggedIn;
+export declare type OidcClient =
+    OidcClient.LoggedIn |
+    OidcClient.NotLoggedIn;
 
-export declare namespace KeycloakClient {
+export declare namespace OidcClient {
 
     export type NotLoggedIn = {
 
@@ -55,7 +55,7 @@ export type ParsedOidcAccessToken = {
 };
 
 export async function parseOidcAccessToken(
-    keycloakClient: Pick<KeycloakClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
+    oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
 ): Promise<ParsedOidcAccessToken> {
 
     const {
@@ -67,7 +67,7 @@ export async function parseOidcAccessToken(
         name: string;
         email: string;
     }>(
-        (await keycloakClient.evtOidcTokens.waitFor(nonNullable())).accessToken
+        (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken
     );
 
     return {

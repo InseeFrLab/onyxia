@@ -19,11 +19,11 @@ export const thunk = {
 	"logout":
 		(): AppThunk<Promise<never>> => async (...args) => {
 
-			const [, , { keycloakClient }] = args;
+			const [, , { oidcClient }] = args;
 
-			assert(keycloakClient.isUserLoggedIn);
+			assert(oidcClient.isUserLoggedIn);
 
-			return keycloakClient.logout();
+			return oidcClient.logout();
 
 		}
 };

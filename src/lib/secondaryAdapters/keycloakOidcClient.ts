@@ -1,5 +1,5 @@
 
-import type { KeycloakClient } from "../ports/KeycloakClient";
+import type { OidcClient } from "../ports/OidcClient";
 import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
 import { id } from "evt/tools/typeSafety/id";
@@ -9,11 +9,11 @@ import { assert } from "evt/tools/typeSafety/assert";
 
 const fallbackUri = `${window.location.origin}/accueil`;
 
-export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
+export async function createKeycloakOidcClient(
     params: {
         keycloakConfig: KeycloakConfig;
     }
-): Promise<KeycloakClient> {
+): Promise<OidcClient> {
 
     const { keycloakConfig } = params;
 
@@ -34,7 +34,7 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
         throw isAuthenticated;
     }
 
-    const login: KeycloakClient.NotLoggedIn["login"] = async params => {
+    const login: OidcClient.NotLoggedIn["login"] = async params => {
 
         const { redirectUri = fallbackUri } = params ?? {};
 
@@ -48,7 +48,7 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
 
         evtLocallyStoredOidcAccessToken.state = undefined;
 
-        return id<KeycloakClient.NotLoggedIn>({
+        return id<OidcClient.NotLoggedIn>({
             "isUserLoggedIn": false,
             login
         })
@@ -57,7 +57,7 @@ export async function createImplOfKeycloakClientBasedOnOfficialAddapter(
 
     evtLocallyStoredOidcAccessToken.state = keycloakInstance.token!;
 
-    return id<KeycloakClient.LoggedIn>({
+    return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
         "evtOidcTokens": evtLocallyStoredOidcAccessToken.pipe(
             oidcAccessToken => oidcAccessToken === undefined ?

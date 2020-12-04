@@ -6,7 +6,7 @@ import { restApiPaths } from "js/restApiPaths";
 import { axiosAuth } from "js/utils/axios-config";
 import { getEnv } from "js/env";
 import type { AppThunk } from "lib/setup";
-import { parseOidcAccessToken } from "lib/ports/KeycloakClient";
+import { parseOidcAccessToken } from "lib/ports/OidcClient";
 import type { AppConstant } from "lib/useCases/appConstants";
 import type { NonPostableEvt } from "evt";
 
@@ -32,9 +32,9 @@ export const privateThunks = {
 
             const { evtBackOnline } = params;
 
-            const [dispatch, , { keycloakClient }] = args;
+            const [dispatch, , { oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
             const getNomCompletAndSetIp = async () => {
 
@@ -50,7 +50,7 @@ export const privateThunks = {
 
             const { nomComplet } = await getNomCompletAndSetIp();
 
-            const { email, idep } = await parseOidcAccessToken(keycloakClient);
+            const { email, idep } = await parseOidcAccessToken(oidcClient);
 
             return { email, idep, nomComplet };
 

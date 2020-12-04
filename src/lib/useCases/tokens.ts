@@ -45,11 +45,11 @@ export const privateThunks = {
     "initialize":
         (): AppThunk<void> => async (...args) => {
 
-            const [dispatch, , { evtVaultToken, keycloakClient }] = args;
+            const [dispatch, , { evtVaultToken, oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
-            keycloakClient.evtOidcTokens.$attach(
+            oidcClient.evtOidcTokens.$attach(
                 oidcTokens => oidcTokens === undefined ? null : [oidcTokens],
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
@@ -82,11 +82,11 @@ export const thunks = {
     "refreshTokenIfExpiresInLessThan8Hours":
         (): AppThunk => async (...args) => {
 
-            const [, , { keycloakClient }] = args;
+            const [, , { oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
-            keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
+            oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
                 { "minValidity": 3600 * 8 }
             );
 
