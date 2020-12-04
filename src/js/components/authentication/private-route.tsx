@@ -5,23 +5,23 @@ import { actions as appActions } from "js/redux/app";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { assert } from "evt/tools/typeSafety/assert";
 import type { UnpackPromise } from "evt/tools/typeSafety";
-import { prKeycloakClient } from "lib/setup";
+import { prOidcClient } from "lib/setup";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) => (
 	<PrivateRoute {...props} routerContext={RouterContext} />
 );
 
 //NOTE: Very temporary hack.
-let keycloakClient: UnpackPromise<typeof prKeycloakClient>;
+let oidcClient: UnpackPromise<typeof prOidcClient>;
 let oidcAccessToken: string | undefined = undefined;
-prKeycloakClient.then(v => { 
-	keycloakClient = v;
+prOidcClient.then(v => { 
+	oidcClient = v;
 
-	if( !keycloakClient.isUserLoggedIn ){
+	if( !oidcClient.isUserLoggedIn ){
 		return;
 	}
 
-	keycloakClient.evtOidcTokens.attach(
+	oidcClient.evtOidcTokens.attach(
 		oidcTokens => oidcAccessToken = oidcTokens?.accessToken
 	);
 
@@ -45,15 +45,15 @@ class PrivateRoute extends React.Component {
 
 		
 
-		if (!keycloakClient.isUserLoggedIn && !isToken) {
+		if (!oidcClient.isUserLoggedIn && !isToken) {
 			setRedirectUri({ "uri": `${window.location.origin}${location.pathname}` });
 			displayLogin({ "doDisplay": true });
 		}
-		if (!keycloakClient.isUserLoggedIn && isToken) {
+		if (!oidcClient.isUserLoggedIn && isToken) {
 
-			assert(!keycloakClient.isUserLoggedIn);
+			assert(!oidcClient.isUserLoggedIn);
 
-			keycloakClient.login();
+			oidcClient.login();
 
 		}
 		return { isToken };

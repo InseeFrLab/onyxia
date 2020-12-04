@@ -11,7 +11,7 @@ import {
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
-import { prKeycloakClient } from "lib/setup";
+import { prOidcClient } from "lib/setup";
 import { assert } from "evt/tools/typeSafety/assert";
 
 class LogMe extends React.Component {
@@ -21,11 +21,11 @@ class LogMe extends React.Component {
 		const redirectUri =
 			this.props.redirectUri || `${window.location.origin}/accueil`;
 
-		const keycloakClient = await prKeycloakClient;
+		const oidcClient = await prOidcClient;
 
-		assert(!keycloakClient.isUserLoggedIn);
+		assert(!oidcClient.isUserLoggedIn);
 
-		keycloakClient.login({ redirectUri });
+		oidcClient.login({ redirectUri });
 
 	};
 

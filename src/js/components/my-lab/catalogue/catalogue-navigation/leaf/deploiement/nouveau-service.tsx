@@ -27,7 +27,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/redux/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prKeycloakClient } from "lib/setup";
+import { prOidcClient } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -116,9 +116,9 @@ export const NouveauService: React.FC<Props> = ({
 			return;
 		}
 
-		prKeycloakClient.then(keycloakClient => {
-			assert(!keycloakClient.isUserLoggedIn);
-			keycloakClient.login();
+		prOidcClient.then(oidcClient => {
+			assert(!oidcClient.isUserLoggedIn);
+			oidcClient.login();
 		});
 
 	}, [isUserLoggedIn]);

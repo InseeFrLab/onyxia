@@ -48,7 +48,7 @@ export const { axiosAuth } = (() => {
 
 	const getKeycloakClient = memoize(
 		() => import("lib/setup")
-			.then(ns => ns.prKeycloakClient),
+			.then(ns => ns.prOidcClient),
 		{ "promise": true }
 	);
 

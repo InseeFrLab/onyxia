@@ -13,9 +13,9 @@ import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
-import { createImplOfKeycloakClientBasedOnOfficialAddapter } from "./secondaryAdapters/basedOnOfficialAdapterKeycloakClient";
-import type { KeycloakClient } from "./ports/KeycloakClient";
-import { parseOidcAccessToken } from "./ports/KeycloakClient";
+import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
+import type { OidcClient } from "./ports/OidcClient";
+import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
 import type { NonPostableEvt } from "evt";
 import type { StatefulReadonlyEvt } from "evt";
@@ -32,7 +32,7 @@ import * as app from "js/redux/app";
 export type Dependencies = {
     secretsManagerClient: SecretsManagerClient;
     evtVaultToken: StatefulReadonlyEvt<string | undefined>;
-    keycloakClient: KeycloakClient;
+    oidcClient: OidcClient;
 };
 
 
@@ -74,7 +74,7 @@ export declare namespace KeycloakConfig {
 
     export type Real = {
         doUseInMemoryClient: false;
-    } & Parameters<typeof createImplOfKeycloakClientBasedOnOfficialAddapter>[0]["keycloakConfig"];
+    } & Parameters<typeof createKeycloakOidcClient>[0]["keycloakConfig"];
 
 }
 
@@ -103,12 +103,12 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
 async function createStoreForLoggedUser(
     params: {
         secretsManagerClientConfig: SecretsManagerClientConfig;
-        keycloakClient: KeycloakClient.LoggedIn;
+        oidcClient: OidcClient.LoggedIn;
     } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
 ) {
 
     const {
-        keycloakClient,
+        oidcClient,
         secretsManagerClientConfig,
         isOsPrefersColorSchemeDark
     } = params;
@@ -126,9 +126,9 @@ async function createStoreForLoggedUser(
             createVaultSecretsManagerClient({
                 ...secretsManagerClientConfig,
                 "evtOidcAccessToken":
-                    keycloakClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
+                    oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
                 "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-                    keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                    oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
             });
 
     const {
@@ -151,7 +151,7 @@ async function createStoreForLoggedUser(
         ...getMiddleware({
             "dependencies": {
                 secretsManagerClient,
-                keycloakClient,
+                oidcClient,
                 evtVaultToken
             }
         })
@@ -161,7 +161,7 @@ async function createStoreForLoggedUser(
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
-            { "path": (await parseOidcAccessToken(keycloakClient)).idep }
+            { "path": (await parseOidcAccessToken(oidcClient)).idep }
         )
     );
 
@@ -177,17 +177,17 @@ async function createStoreForLoggedUser(
 
 
 async function createStoreForNonLoggedUser(
-    params: { keycloakClient: KeycloakClient.NotLoggedIn; }
+    params: { oidcClient: OidcClient.NotLoggedIn; }
 ) {
 
-    const { keycloakClient } = params;
+    const { oidcClient } = params;
     const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
                 "secretsManagerClient": createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>(),
                 "evtVaultToken": createObjectThatThrowsIfAccessed<Dependencies["evtVaultToken"]>(),
-                keycloakClient
+                oidcClient
             }
         })
     });
@@ -223,25 +223,22 @@ export async function createStore(params: CreateStoreParams) {
         "TODO: We need a mock implementation of KeycloakClient"
     );
 
-    const keycloakClient =
-        await createImplOfKeycloakClientBasedOnOfficialAddapter(
-            { keycloakConfig }
-        );
+    const oidcClient = await createKeycloakOidcClient( { keycloakConfig });
 
     const { store, evtSecretsManagerTranslation } = await (
-        keycloakClient.isUserLoggedIn ?
+        oidcClient.isUserLoggedIn ?
             createStoreForLoggedUser({
-                keycloakClient,
+                oidcClient,
                 secretsManagerClientConfig,
                 isOsPrefersColorSchemeDark
             }) :
             {
-                ...await createStoreForNonLoggedUser({ keycloakClient }),
+                ...await createStoreForNonLoggedUser({ oidcClient }),
                 "evtVaultCliTranslation": undefined
             }
     );
 
-    dKeyCloakClient.resolve(keycloakClient);
+    dOidcClient.resolve(oidcClient);
 
     dStoreInstance.resolve(store);
 
@@ -258,7 +255,7 @@ export async function createStore(params: CreateStoreParams) {
 
         store.dispatch(
             appConstantsUseCase.privateThunks.initialize({
-                "appConstants": keycloakClient.isUserLoggedIn ?
+                "appConstants": oidcClient.isUserLoggedIn ?
                     id<appConstantsUseCase.AppConstant.LoggedIn>({
                         "isUserLoggedIn": true,
                         ..._common,
@@ -315,9 +312,9 @@ const dStoreInstance = new Deferred<Store>();
  */
 export const { pr: prStore } = dStoreInstance;
 
-const dKeyCloakClient = new Deferred<KeycloakClient>();
+const dOidcClient = new Deferred<OidcClient>();
 
 /** @deprecated */
-export const { pr: prKeycloakClient } = dKeyCloakClient;
+export const { pr: prOidcClient } = dOidcClient;
 
 
