@@ -1,26 +1,26 @@
 
 import React from "react";
 import Avatar from "@material-ui/core/Avatar";
-import vscodeImg from "app/res/img/vscode.png";
-import rstudioImg from "app/res/img/rstudio.png";
-import blazingsqlImg from "app/res/img/blazingsql.png";
-import elkImg from "app/res/img/elk.png";
-import gitlabImg from "app/res/img/gitlab.png";
-import graviteeImg from "app/res/img/gravitee.png";
-import jenaImg from "app/res/img/jena.png";
-import jupyterImg from "app/res/img/jupyter.png";
-import keycloakImg from "app/res/img/keycloak.png";
-import minioImg from "app/res/img/minio.png";
-import mongodbImg from "app/res/img/mongodb.png";
-import neo4jImg from "app/res/img/neo4j.png";
-import openrefineImg from "app/res/img/openrefine.png";
-import plutojlImg from "app/res/img/plutojl.png";
-import postgresqlImg from "app/res/img/postgresql.png";
-import rapidsaiImg from "app/res/img/rapidsai.png";
-import tensorflowImg from "app/res/img/tensorflow.png";
-import ubuntuImg from "app/res/img/ubuntu.png";
-import vaultImg from "app/res/img/vault.png";
-import zeppelinImg from "app/res/img/zeppelin.png";
+import vscodeImg from "app/assets/img/vscode.png";
+import rstudioImg from "app/assets/img/rstudio.png";
+import blazingsqlImg from "app/assets/img/blazingsql.png";
+import elkImg from "app/assets/img/elk.png";
+import gitlabImg from "app/assets/img/gitlab.png";
+import graviteeImg from "app/assets/img/gravitee.png";
+import jenaImg from "app/assets/img/jena.png";
+import jupyterImg from "app/assets/img/jupyter.png";
+import keycloakImg from "app/assets/img/keycloak.png";
+import minioImg from "app/assets/img/minio.png";
+import mongodbImg from "app/assets/img/mongodb.png";
+import neo4jImg from "app/assets/img/neo4j.png";
+import openrefineImg from "app/assets/img/openrefine.png";
+import plutojlImg from "app/assets/img/plutojl.png";
+import postgresqlImg from "app/assets/img/postgresql.png";
+import rapidsaiImg from "app/assets/img/rapidsai.png";
+import tensorflowImg from "app/assets/img/tensorflow.png";
+import ubuntuImg from "app/assets/img/ubuntu.png";
+import vaultImg from "app/assets/img/vault.png";
+import zeppelinImg from "app/assets/img/zeppelin.png";
 
 
 export type Props = {
