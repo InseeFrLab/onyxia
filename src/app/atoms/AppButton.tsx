@@ -3,7 +3,8 @@ import React from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import type { ButtonClassKey } from "@material-ui/core/Button";
-import type { Id } from "evt/tools/typeSafety";
+import type { Id, Optional } from "evt/tools/typeSafety";
+import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
   /** Correspond to the app theme' color palette */
@@ -12,6 +13,12 @@ export type Props = {
   children: React.ReactNode;
   disabled?: boolean;
 };
+
+export const defaultProps: Optional<Props> = {
+  "color": "primary",
+  "disabled": false
+};
+
 
 const useStyles = makeStyles(
   () => createStyles<Id<ButtonClassKey, "root" | "label">, {}>({
@@ -27,7 +34,7 @@ const useStyles = makeStyles(
 
 export function AppButton(props: Props) {
 
-  const { color = "primary", disabled = false, children } = props;
+  const { color, disabled, children } = { ...defaultProps, ...noUndefined(props) };
 
   const classes = useStyles();
 
