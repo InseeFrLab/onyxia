@@ -2,17 +2,17 @@
 
 import React from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import { ReactComponent as tourSvg } from "app/assets/svg/AssistedTour.svg";
-import { ReactComponent as servicesSvg } from "app/assets/svg/Services.svg";
-import { ReactComponent as secretsSvg } from "app/assets/svg/Secrets.svg";
-import { ReactComponent as profileSvg } from "app/assets/svg/Profile.svg";
-import { ReactComponent as labSvg } from "app/assets/svg/Lab.svg";
-import { ReactComponent as infoSvg } from "app/assets/svg/Info.svg";
-import { ReactComponent as homeSvg } from "app/assets/svg/Home.svg";
-import { ReactComponent as trainingsSvg } from "app/assets/svg/Trainings.svg";
-import { ReactComponent as filesSvg } from "app/assets/svg/Files.svg";
-import { ReactComponent as collaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
-import { ReactComponent as bashSvg } from "app/assets/svg/Bash.svg";
+import { ReactComponent as TourSvg } from "app/assets/svg/AssistedTour.svg";
+import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
+import { ReactComponent as SecretsSvg } from "app/assets/svg/Secrets.svg";
+import { ReactComponent as ProfileSvg } from "app/assets/svg/Profile.svg";
+import { ReactComponent as LabSvg } from "app/assets/svg/Lab.svg";
+import { ReactComponent as InfoSvg } from "app/assets/svg/Info.svg";
+import { ReactComponent as HomeSvg } from "app/assets/svg/Home.svg";
+import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
+import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
+import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
+import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
@@ -44,17 +44,17 @@ export function AppIcon(props: Props) {
     return <SvgIcon
         component={(() => {
             switch (type) {
-                case "tour": return tourSvg;
-                case "services": return servicesSvg;
-                case "secrets": return secretsSvg;
-                case "profile": return profileSvg;
-                case "lab": return labSvg;
-                case "info": return infoSvg;
-                case "home": return homeSvg;
-                case "trainings": return trainingsSvg;
-                case "files": return filesSvg;
-                case "collaborationTools": return collaborationToolsSvg;
-                case "bash": return bashSvg;
+                case "tour": return TourSvg;
+                case "services": return ServicesSvg;
+                case "secrets": return SecretsSvg;
+                case "profile": return ProfileSvg;
+                case "lab": return LabSvg;
+                case "info": return InfoSvg;
+                case "home": return HomeSvg;
+                case "trainings": return TrainingsSvg;
+                case "files": return FilesSvg;
+                case "collaborationTools": return CollaborationToolsSvg;
+                case "bash": return BashSvg;
             }
         })()}
         color={color}
