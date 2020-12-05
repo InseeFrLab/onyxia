@@ -35,7 +35,17 @@ function createAppThemeFactory(
                     createMuiTheme
                 )({ // https://material-ui.com/customization/palette/#using-a-color-object
                     "palette": {
-                        ...(!isDarkModeEnabled ? {} : { "type": "dark" })
+                        ...(!isDarkModeEnabled ? {} : { "type": "dark" }),
+                        "primary": {
+                            "light": "#FFD6CC",
+                            "main": "#FF562C",
+                            "contrastText": "#F5F5F5"
+                        },
+                        "secondary": {
+                            "light": "#525966",
+                            "main": "#2C323F",
+                            "contrastText": "#F5F5F5"
+                        }
                     }
                 })
             );
@@ -54,8 +64,8 @@ export function AppThemeProviderFactory(
     }
 ) {
 
-    const { 
-        isReactStrictModeEnabled, 
+    const {
+        isReactStrictModeEnabled,
     } = params;
 
     const { createAppTheme } = createAppThemeFactory(
