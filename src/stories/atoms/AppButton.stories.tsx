@@ -1,6 +1,6 @@
 
 import React from "react";
-import { AppButton } from "app/atoms/AppButton";
+import { AppButton, defaultProps } from "app/atoms/AppButton";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
 import { buildMeta } from "stories/utils/buildMeta";
@@ -15,11 +15,11 @@ export default buildMeta({
 const { getThemedStory } = getThemedStoryFactory(AppButton);
 
 export const TextOnly = getThemedStory({
-    "children": "Foo bar",
-    "disabled": false,
-    "color": "primary"
+    ...defaultProps,
+    "children": "Foo bar"
 });
 
 export const TextWithIcon = getThemedStory({
+    ...defaultProps,
     "children": <><AppIcon type="home" /> Home</>
 });

@@ -50,7 +50,7 @@
     "clipboard-polyfill": "^2.8.6",
     "clsx": "^1.1.1",
     "dayjs": "^1.8.26",
-    "evt": "2.0.0-beta.5",
+    "evt": "2.0.0-beta.6",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
     "fontsource-roboto": "^3.0.3",

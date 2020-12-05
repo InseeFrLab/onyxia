@@ -13,6 +13,8 @@ import { ReactComponent as trainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as filesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as collaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as bashSvg } from "app/assets/svg/Bash.svg";
+import type { Optional } from "evt/tools/typeSafety";
+import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
     /** Design which icon should be displayed */
@@ -22,12 +24,23 @@ export type Props = {
     /** Color of the icon based on the theme */
     color?: "inherit" | "disabled" | "primary" |
     "secondary" | "action" | "error";
+    /** Enable to make the icon larger or smaller */
+    fontSize?: "default" | "inherit" | "small" | "large"
+};
+
+export const defaultProps: Optional<Props> = {
+    "color": "inherit",
+    "fontSize": "default"
 };
 
 export function AppIcon(props: Props) {
 
-    const { type, color = "inherit" } = props;
+    const { type, color, fontSize } = {
+        ...defaultProps,
+        ...noUndefined(props)
+    };
 
+    // https://github.com/mui-org/material-ui/blob/4c5fffc342c46466fb5c68759e5ecfbfe3e4a3db/packages/material-ui/src/SvgIcon/SvgIcon.js
     return <SvgIcon
         component={(() => {
             switch (type) {
@@ -45,5 +58,6 @@ export function AppIcon(props: Props) {
             }
         })()}
         color={color}
+        fontSize={fontSize}
     />;
 }

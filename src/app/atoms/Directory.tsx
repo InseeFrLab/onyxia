@@ -1,7 +1,7 @@
 
-
 import React from "react";
-import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
+//import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
+import mySvg from "app/assets/svg/Directory.svg";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
@@ -31,7 +31,7 @@ export function Directory(params: Params) {
     return (
         <div className={classes.root} onClick={onClick}>
             <Box clone mb={1}>
-                <DirectorySvg />
+                <img style={{ "width": "50px", "height": "auto" }} src={mySvg}/> 
             </Box>
             <Typography>{basename}</Typography>
         </div >
