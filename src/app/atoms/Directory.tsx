@@ -1,9 +1,7 @@
 
 import React from "react";
-//import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
-import mySvg from "app/assets/svg/Directory.svg";
+import directorySvg from "app/assets/svg/Directory.svg";
 import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 export type Params = {
@@ -13,12 +11,22 @@ export type Params = {
     onClick: () => void;
 };
 
+
 const useStyles = makeStyles(
-    () => createStyles({
+    theme => createStyles({
         "root": {
             "textAlign": "center",
             "cursor": "pointer"
+        },
+        "img": {
+            "marginBottom": theme.spacing(1),
+            "height": "auto",
+            "width": theme.spacing(5),
+            [theme.breakpoints.up("md")]: {
+                "width": theme.spacing(7)
+            }
         }
+
     })
 );
 
@@ -30,9 +38,7 @@ export function Directory(params: Params) {
 
     return (
         <div className={classes.root} onClick={onClick}>
-            <Box clone mb={1}>
-                <img style={{ "width": "50px", "height": "auto" }} src={mySvg}/> 
-            </Box>
+            <img className={classes.img} src={directorySvg} alt="Directory icon" />
             <Typography>{basename}</Typography>
         </div >
     );
