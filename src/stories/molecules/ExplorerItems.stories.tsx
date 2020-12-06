@@ -31,7 +31,7 @@ const { getThemedStory } = getThemedStoryFactory(
 export const Vue1 = getThemedStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
-    "directories": ["dir1", "dir2", "dir3"],
-    "files": ["file1", "file2", "file3"],
+    "directories": ["My directory 1", "dir2", "another directory"],
+    "files": ["this is a file", "file2", "file3"],
     "onOpen": console.log
 });

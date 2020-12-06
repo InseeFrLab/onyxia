@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExporterItemProps } from "../atoms/ExplorerItem";
 import { explorerItemFactory } from "../atoms/explorerItemFactory";
@@ -15,6 +15,7 @@ export type Props = {
     directories: string[];
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
 };
+
 
 export function ExplorerItems(props: Props) {
 
@@ -34,38 +35,47 @@ export function ExplorerItems(props: Props) {
         [files, directories]
     );
 
+    const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
+
     const onClickFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                () => onOpen({ kind, basename })
+                ({ type }: { type: "simple" | "double" }) => {
+                    switch (type) {
+                        case "simple":
+                            setSelectedItemKey(getKey({ kind, basename }));
+                            break;
+                        case "double":
+                            onOpen({ kind, basename });
+                            break;
+                    }
+                }
         ),
         [onOpen]
     );
 
     return (
         <Grid container spacing={5}>
-            { directories.map(basename =>
-                <Grid item key={"d" + basename}>
-                    <ExplorerItem
-                        kind="directory"
-                        basename={basename}
-                        isSelected={false}
-                        onClick={onClickFactory("directory", basename)}
-                        
-                    />
-                </Grid>
-            )}
-            {files.map(basename =>
-                <Grid item key={"f" + basename}>
-                    <ExplorerItem
-                        kind="file"
-                        basename={basename}
-                        isSelected={false}
-                        onClick={onClickFactory("file", basename)}
-                    />
-                </Grid>
-            )}
+            {(["directory", "file"] as const).map(
+                kind => directories.map(basename =>
+                    <Grid item key={getKey({ kind, basename })}>
+                        <ExplorerItem
+                            kind={kind}
+                            basename={basename}
+                            isSelected={selectedItemKey === getKey({ kind, basename })}
+                            onClick={onClickFactory(kind, basename)}
+                        />
+                    </Grid>
+                ))}
         </Grid>
     );
 
+}
+
+function getKey(params: {
+    kind: "file" | "directory",
+    basename: string
+}): string {
+    const { kind, basename } = params;
+    return `${kind}${basename}`;
 }
