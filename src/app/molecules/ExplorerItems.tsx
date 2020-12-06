@@ -54,7 +54,7 @@ export function ExplorerItems(props: Props) {
         [onOpen]
     );
 
-    return (
+        /*
         <Grid container spacing={5}>
             {(["directory", "file"] as const).map(
                 kind => directories.map(basename =>
@@ -68,6 +68,23 @@ export function ExplorerItems(props: Props) {
                     </Grid>
                 ))}
         </Grid>
+                */
+
+    return (
+        <div style={{ "display": "flex", "flexWrap": "wrap", "justifyContent": "flex-start" }}>
+            {(["directory", "file"] as const).map(
+                kind => (kind === "directory" ? directories : files ).map(basename =>
+                    <Grid item key={getKey({ kind, basename })} style={{ "width": "120px", "border": "1px solid black" }}>
+                        <ExplorerItem
+                            kind={kind}
+                            basename={basename}
+                            isSelected={selectedItemKey === getKey({ kind, basename })}
+                            onClick={onClickFactory(kind, basename)}
+                        />
+                    </Grid>
+                ))}
+
+        </div>
     );
 
 }
