@@ -1,14 +1,15 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
-
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-
+import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     /** What visual asset should be used to represent a file */
@@ -20,13 +21,16 @@ export type Props = {
     /** Name displayed under the folder icon*/
     basename: string;
 
+    /** Represent if the item is currently selected */
+    isSelected: boolean;
+
     /** callback invoked when the button is clicked */
-    onClick: () => void;
+    onClick: (params: { type: "simple" | "double" }) => void;
 };
 
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg", Props>({
+    theme => createStyles<"root" | "svg" | "frame", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer"
@@ -43,8 +47,15 @@ const useStyles = makeStyles(
                         }
                     })()];
                 }
-            }
-        }
+            },
+            // https://stackoverflow.com/a/24626986/3731798
+            "display": "block"
+        },
+        "frame": ({ isSelected }) => ({
+            "borderRadius": "5px",
+            "backgroundColor": isSelected ? "grey" : "white",
+            "display": "inline-block"
+        })
     })
 );
 
@@ -53,7 +64,13 @@ const useStyles = makeStyles(
  */
 export function ExplorerItem(props: Props) {
 
-    const { visualRepresentationOfAFile, kind, basename, onClick } = props;
+    const {
+        visualRepresentationOfAFile,
+        kind,
+        basename,
+        onClick
+    } = props;
+
 
     const theme = useTheme();
 
@@ -79,7 +96,7 @@ export function ExplorerItem(props: Props) {
 
         })();
 
-        return { width, "height": width };
+        return { width, "height": ~~(width * 8 / 10) };
 
     }, [theme, windowInnerWidth]);
 
@@ -97,10 +114,37 @@ export function ExplorerItem(props: Props) {
 
     }, [kind, visualRepresentationOfAFile]);
 
+    const [evtClick] = useState(() => Evt.create())
+
+    useEvt(
+        ctx => {
+
+            evtClick.pipe(
+                ctx,
+                [
+                    (_, prev) => [{ "then": prev.now, "now": Date.now() }],
+                    ({ "then": NaN, "now": 0 })
+                ]
+            ).attach(
+                ({ then, now }) =>
+                    onClick({ "type": now - then < 300 ? "double" : "simple" })
+            );
+
+        },
+        [evtClick, onClick]
+    );
+
+
+    const onClickInternal = useCallback(
+        () => evtClick.post(),
+        [evtClick]
+    );
 
     return (
-        <div className={classes.root} onClick={onClick}>
-            <SvgComponent width={width} height={height} className={classes.svg} />
+        <div className={classes.root} onClick={onClickInternal}>
+            <Box px="3px" py="2px" className={classes.frame}>
+                <SvgComponent width={width} height={height} className={classes.svg} />
+            </Box>
             <Typography>{basename}</Typography>
         </div>
     );
