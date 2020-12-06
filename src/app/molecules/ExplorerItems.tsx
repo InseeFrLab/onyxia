@@ -6,6 +6,7 @@ import { explorerItemFactory } from "../atoms/explorerItemFactory";
 import { assert } from "evt/tools/typeSafety/assert";
 import { allUniq } from "evt/tools/reducers/allUniq";
 import memoize from "memoizee";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 export type Props = {
     visualRepresentationOfAFile: ExporterItemProps["visualRepresentationOfAFile"];
@@ -15,6 +16,17 @@ export type Props = {
     directories: string[];
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
 };
+
+const useStyles = makeStyles(
+    theme => createStyles({
+        "gridItem": {
+            "width": theme.spacing(10),
+            [theme.breakpoints.up("md")]: {
+                "width": theme.spacing(15)
+            }
+        }
+    })
+);
 
 
 export function ExplorerItems(props: Props) {
@@ -54,11 +66,13 @@ export function ExplorerItems(props: Props) {
         [onOpen]
     );
 
+    const classes = useStyles(props);
+
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
             {(["directory", "file"] as const).map(
                 kind => (kind === "directory" ? directories : files ).map(basename =>
-                    <Grid item key={getKey({ kind, basename })} style={{ "width": "120px" }}>
+                    <Grid item key={getKey({ kind, basename })} className={classes.gridItem}>
                         <ExplorerItem
                             kind={kind}
                             basename={basename}
