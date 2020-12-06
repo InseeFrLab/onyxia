@@ -37,12 +37,12 @@ export function ExplorerItems(props: Props) {
 
     const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
 
-    const onClickFactory = useMemo(
+    const onMouseEventFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ type }: { type: "simple" | "double" }) => {
+                ({ type }: { type: "down" | "double" }) => {
                     switch (type) {
-                        case "simple":
+                        case "down":
                             setSelectedItemKey(getKey({ kind, basename }));
                             break;
                         case "double":
@@ -79,7 +79,7 @@ export function ExplorerItems(props: Props) {
                             kind={kind}
                             basename={basename}
                             isSelected={selectedItemKey === getKey({ kind, basename })}
-                            onClick={onClickFactory(kind, basename)}
+                            onMouseEvent={onMouseEventFactory(kind, basename)}
                         />
                     </Grid>
                 ))}

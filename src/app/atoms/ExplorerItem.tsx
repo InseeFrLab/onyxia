@@ -8,7 +8,7 @@ import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { useDoubleClick } from "app/utils/hooks/useDoubleClick";
+import memoize from "memoizee";
 
 export type Props = {
     /** What visual asset should be used to represent a file */
@@ -23,8 +23,13 @@ export type Props = {
     /** Represent if the item is currently selected */
     isSelected: boolean;
 
-    /** callback invoked when the button is clicked */
-    onClick: (params: { type: "simple" | "double" }) => void;
+    /** 
+     * Invoked when the component have been clicked once 
+     * and when it has been double clicked 
+     */
+    onMouseEvent(params: { "type": "down" | "double" }): void;
+
+
 };
 
 
@@ -67,7 +72,7 @@ export function ExplorerItem(props: Props) {
         visualRepresentationOfAFile,
         kind,
         basename,
-        onClick
+        onMouseEvent
     } = props;
 
 
@@ -113,10 +118,20 @@ export function ExplorerItem(props: Props) {
 
     }, [kind, visualRepresentationOfAFile]);
 
-    const { onClickProxy }= useDoubleClick({ onClick });
+    const onMouseEventFactory = useMemo(
+        () => memoize(
+            (type: "down" | "double") => 
+                () => onMouseEvent({ type })
+        ),
+        [onMouseEvent]
+    );
 
     return (
-        <div className={classes.root} onClick={onClickProxy}>
+        <div
+            className={classes.root}
+            onMouseDown={onMouseEventFactory("down")}
+            onDoubleClick={onMouseEventFactory("double")}
+        >
             <Box px="3px" py="2px" className={classes.frame}>
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
