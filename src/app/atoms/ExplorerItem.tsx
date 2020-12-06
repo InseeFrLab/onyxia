@@ -90,7 +90,7 @@ export function ExplorerItem(props: Props) {
 
             if (windowInnerWidth > theme.breakpoints.width("md")) {
 
-                return theme.spacing(7)
+                return theme.spacing(7);
 
             }
 
