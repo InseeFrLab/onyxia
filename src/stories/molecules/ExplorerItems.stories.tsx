@@ -11,6 +11,7 @@ export default {
         sectionName,
         "wrappedComponent": { ExplorerItems }
     }),
+    // https://storybook.js.org/docs/react/essentials/controls
     "argTypes": {
         "containerWidth": {
             "control": "range",
