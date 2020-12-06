@@ -16,6 +16,9 @@ export const Vue1 = getThemedStory({
     "kind": "file",
     "basename": "my-project-envs",
     "isSelected": false,
-    "onMouseEvent": console.log
+    "isBeingEdited": false,
+    "onBasenameChanged": console.log,
+    "onMouseEvent": console.log,
+    "isRenameRequestBeingProcessed": false
 });
 
