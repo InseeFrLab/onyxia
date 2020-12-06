@@ -49,7 +49,9 @@ export function ExplorerItems(props: Props) {
                     <ExplorerItem
                         kind="directory"
                         basename={basename}
+                        isSelected={false}
                         onClick={onClickFactory("directory", basename)}
+                        
                     />
                 </Grid>
             )}
@@ -58,6 +60,7 @@ export function ExplorerItems(props: Props) {
                     <ExplorerItem
                         kind="file"
                         basename={basename}
+                        isSelected={false}
                         onClick={onClickFactory("file", basename)}
                     />
                 </Grid>
