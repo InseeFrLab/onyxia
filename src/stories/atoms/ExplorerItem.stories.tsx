@@ -16,6 +16,6 @@ export const Vue1 = getThemedStory({
     "kind": "file",
     "basename": "my-project-envs",
     "isSelected": false,
-    "onClick": console.log
+    "onMouseEvent": console.log
 });
 
