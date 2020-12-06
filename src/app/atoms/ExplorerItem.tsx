@@ -119,7 +119,12 @@ export function ExplorerItem(props: Props) {
     const onMouseEventFactory = useMemo(
         () => memoize(
             (type: "down" | "double") =>
-                () => onMouseEvent({ type })
+                (mouseEvent: React.MouseEvent<HTMLElement, MouseEvent>) => {
+                    //NOTE: Prevent text selection on double click: 
+                    //https://stackoverflow.com/a/55617595/3731798
+                    mouseEvent.preventDefault();
+                    onMouseEvent({ type });
+                }
         ),
         [onMouseEvent]
     );
@@ -127,10 +132,11 @@ export function ExplorerItem(props: Props) {
     return (
         <div
             className={classes.root}
+        >
+            <Box px="6px" py="4px" className={classes.frame} 
             onMouseDown={onMouseEventFactory("down")}
             onDoubleClick={onMouseEventFactory("double")}
-        >
-            <Box px="6px" py="4px" className={classes.frame}>
+            >
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             <Typography>{basename}</Typography>
