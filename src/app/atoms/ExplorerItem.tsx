@@ -55,7 +55,7 @@ const useStyles = makeStyles(
         },
         "frame": ({ isSelected }) => ({
             "borderRadius": "5px",
-            "backgroundColor": isSelected ? `rgba(0, 0, 0, 0.2)` : "unset",
+            "backgroundColor": isSelected ? `rgba(0, 0, 0, 0.2)` : undefined,
             "display": "inline-block"
         })
     })
