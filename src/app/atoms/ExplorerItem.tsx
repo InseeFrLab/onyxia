@@ -29,9 +29,7 @@ export type Props = {
      */
     onMouseEvent(params: { "type": "down" | "double" }): void;
 
-
 };
-
 
 const useStyles = makeStyles(
     theme => createStyles<"root" | "svg" | "frame", Props>({
@@ -57,7 +55,7 @@ const useStyles = makeStyles(
         },
         "frame": ({ isSelected }) => ({
             "borderRadius": "5px",
-            "backgroundColor": isSelected ? "grey" : "white",
+            "backgroundColor": isSelected ? `rgba(0, 0, 0, 0.2)` : "unset",
             "display": "inline-block"
         })
     })
@@ -120,7 +118,7 @@ export function ExplorerItem(props: Props) {
 
     const onMouseEventFactory = useMemo(
         () => memoize(
-            (type: "down" | "double") => 
+            (type: "down" | "double") =>
                 () => {
                     onMouseEvent({ type });
                     return false;
@@ -135,7 +133,7 @@ export function ExplorerItem(props: Props) {
             onMouseDown={onMouseEventFactory("down")}
             onDoubleClick={onMouseEventFactory("double")}
         >
-            <Box px="3px" py="2px" className={classes.frame}>
+            <Box px="6px" py="4px" className={classes.frame}>
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             <Typography>{basename}</Typography>
