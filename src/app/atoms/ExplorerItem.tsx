@@ -1,6 +1,7 @@
 
 import React, { useMemo } from "react";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
+import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
@@ -10,10 +11,15 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 
 export type Props = {
+    /** What visual asset should be used to represent a file */
+    visualRepresentationOfAFile: "secret" | "file";
+
     /** Tell if we are displaying an directory or a secret */
-    kind: "secret" | "directory";
+    kind: "file" | "directory";
+
     /** Name displayed under the folder icon*/
     basename: string;
+
     /** callback invoked when the button is clicked */
     onClick: () => void;
 };
@@ -30,22 +36,24 @@ const useStyles = makeStyles(
             "color": ({ kind }) => {
                 switch (kind) {
                     case "directory": return theme.palette.primary.main;
-                    case "secret": return theme.palette.secondary[(() => {
+                    case "file": return theme.palette.secondary[(() => {
                         switch (theme.palette.type) {
                             case "light": return "main";
                             case "dark": return "contrastText";
                         }
                     })()];
                 }
-            },
-            "marginBottom": theme.spacing(1),
+            }
         }
     })
 );
 
+/** 
+ * @protected This is exported only for storybook, use the factory instead.
+ */
 export function ExplorerItem(props: Props) {
 
-    const { kind, basename, onClick } = props;
+    const { visualRepresentationOfAFile, kind, basename, onClick } = props;
 
     const theme = useTheme();
 
@@ -78,11 +86,16 @@ export function ExplorerItem(props: Props) {
     const SvgComponent = useMemo(() => {
 
         switch (kind) {
-            case "directory": return DirectorySvg;
-            case "secret": return SecretSvg;
+            case "directory":
+                return DirectorySvg;
+            case "file":
+                switch (visualRepresentationOfAFile) {
+                    case "file": return FileSvg;
+                    case "secret": return SecretSvg;
+                }
         }
 
-    }, [kind]);
+    }, [kind, visualRepresentationOfAFile]);
 
 
     return (
@@ -93,3 +106,5 @@ export function ExplorerItem(props: Props) {
     );
 
 }
+
+
