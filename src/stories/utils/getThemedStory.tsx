@@ -3,7 +3,7 @@ import type { Story } from "@storybook/react";
 import React from "react";
 import { AppThemeProviderFactory } from "app/appTheme";
 import Box from "@material-ui/core/Box";
-import Paper from '@material-ui/core/Paper';
+import Paper from "@material-ui/core/Paper";
 
 export function getThemedStoryFactory<Props>(component: (props: Props) => ReturnType<React.FC>) {
 
