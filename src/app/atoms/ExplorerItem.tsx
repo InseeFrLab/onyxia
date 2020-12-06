@@ -119,10 +119,7 @@ export function ExplorerItem(props: Props) {
     const onMouseEventFactory = useMemo(
         () => memoize(
             (type: "down" | "double") =>
-                () => {
-                    onMouseEvent({ type });
-                    return false;
-                }
+                () => onMouseEvent({ type })
         ),
         [onMouseEvent]
     );
