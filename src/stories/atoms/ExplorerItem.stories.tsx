@@ -19,6 +19,7 @@ export const Vue1 = getThemedStory({
     "isBeingEdited": false,
     "onBasenameChanged": console.log,
     "onMouseEvent": console.log,
-    "isRenameRequestBeingProcessed": false
+    "isRenameRequestBeingProcessed": false,
+    "standardizedWidth": "big"
 });
 

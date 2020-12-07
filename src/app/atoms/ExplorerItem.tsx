@@ -5,16 +5,14 @@ import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
-import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-
 export type Props = {
-    /** What visual asset should be used to represent a file */
+    /** [HIGHER ORDER] What visual asset should be used to represent a file */
     visualRepresentationOfAFile: "secret" | "file";
 
     /** Tell if we are displaying an directory or a secret */
@@ -25,6 +23,9 @@ export type Props = {
 
     /** Represent if the item is currently selected */
     isSelected: boolean;
+
+    /** Big for large screen, normal otherwise */
+    standardizedWidth: "normal" | "big";
 
     /** 
      * Invoked when the component have been clicked once 
@@ -44,7 +45,14 @@ const useStyles = makeStyles(
     theme => createStyles<"root" | "svg" | "frame", Props>({
         "root": {
             "textAlign": "center",
-            "cursor": "pointer"
+            "cursor": "pointer",
+            "width": ({ standardizedWidth }) =>
+                theme.spacing((() => {
+                    switch (standardizedWidth) {
+                        case "big": return 15;
+                        case "normal": return 10;
+                    }
+                })())
         },
         "svg": {
             "fill": "currentColor",
@@ -81,7 +89,8 @@ export function ExplorerItem(props: Props) {
         basename,
         onMouseEvent,
         onBasenameChanged,
-        isRenameRequestBeingProcessed
+        isRenameRequestBeingProcessed,
+        standardizedWidth
     } = props;
 
     const [isBeingEdited, setIsBeingEdited] = useState(props.isBeingEdited);
@@ -96,29 +105,22 @@ export function ExplorerItem(props: Props) {
 
     const classes = useStyles(props);
 
-    const { windowInnerWidth } = useWindowInnerWidth();
-
     /* 
      * NOTE: We can't set the width and height in css ref:
      * https://css-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
      */
     const { width, height } = useMemo(() => {
 
-        const width = (() => {
-
-            if (windowInnerWidth > theme.breakpoints.width("md")) {
-
-                return theme.spacing(7);
-
+        const width = theme.spacing((() => {
+            switch (standardizedWidth) {
+                case "big": return 7;
+                case "normal": return 5;
             }
-
-            return theme.spacing(5);
-
-        })();
+        })());
 
         return { width, "height": ~~(width * 8 / 10) };
 
-    }, [theme, windowInnerWidth]);
+    }, [theme, standardizedWidth]);
 
     const SvgComponent = useMemo(() => {
 
