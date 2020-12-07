@@ -6,7 +6,8 @@ import { explorerItemFactory } from "../atoms/explorerItemFactory";
 import { assert } from "evt/tools/typeSafety/assert";
 import { allUniq } from "evt/tools/reducers/allUniq";
 import memoize from "memoizee";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
+import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 
 export type Props = {
     visualRepresentationOfAFile: ExplorerItemProps["visualRepresentationOfAFile"];
@@ -21,24 +22,14 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles({
-        "gridItem": {
-            "width": theme.spacing(10),
-            [theme.breakpoints.up("md")]: {
-                "width": theme.spacing(15)
-            }
-        }
-    })
-);
 
 
 export function ExplorerItems(props: Props) {
 
-    const { 
-        visualRepresentationOfAFile, 
-        files, 
-        directories, 
+    const {
+        visualRepresentationOfAFile,
+        files,
+        directories,
         onOpen,
         onBasenameChanged,
         renameRequestBeingProcessed
@@ -48,6 +39,13 @@ export function ExplorerItems(props: Props) {
         () => explorerItemFactory({ visualRepresentationOfAFile }),
         [visualRepresentationOfAFile]
     );
+
+
+
+    const theme = useTheme();
+
+    const { windowInnerWidth } = useWindowInnerWidth();
+
 
     useMemo(
         () => assert(
@@ -59,7 +57,7 @@ export function ExplorerItems(props: Props) {
     );
 
     const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
-    const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited]= useState(false);
+    const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
 
     const onMouseEventFactory = useMemo(
         () => memoize(
@@ -77,7 +75,7 @@ export function ExplorerItems(props: Props) {
 
                                 break;
 
-                            }else{
+                            } else {
 
                                 setIsSelectedItemBeingEdited(false);
 
@@ -100,37 +98,57 @@ export function ExplorerItems(props: Props) {
     const onBasenameChangedFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ newBasename }: Parameters<ExplorerItemProps["onBasenameChanged"]>[0]) => 
+                ({ newBasename }: Parameters<ExplorerItemProps["onBasenameChanged"]>[0]) =>
                     onBasenameChanged({ kind, basename, newBasename })
         ),
         [onBasenameChanged]
     );
 
-    const classes = useStyles(props);
+    const standardizedWidth = useMemo(
+        (): ExplorerItemProps["standardizedWidth"] => {
+
+            if (windowInnerWidth > theme.breakpoints.width("md")) {
+
+                return "big";
+
+            }
+
+            return "normal";
+
+        },
+        [windowInnerWidth, theme]
+    );
 
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
             {(["directory", "file"] as const).map(
-                kind => (kind === "directory" ? directories : files).map(basename => {
+                kind => ((() => {
+                    switch (kind) {
+                        case "directory": return directories;
+                        case "file": return files;
+                    }
+                })()).map(
+                    basename => {
 
-                    const key = getKey({ kind, basename });
-                    const isSelected = selectedItemKey === getKey({ kind, basename });
+                        const key = getKey({ kind, basename });
+                        const isSelected = selectedItemKey === getKey({ kind, basename });
 
-                    return (
-                        <Grid item key={key} className={classes.gridItem}>
-                            <ExplorerItem
-                                kind={kind}
-                                basename={basename}
-                                isSelected={isSelected}
-                                onMouseEvent={onMouseEventFactory(kind, basename)}
-                                onBasenameChanged={onBasenameChangedFactory(kind, basename)}
-                                isBeingEdited={isSelected && isSelectedItemBeingEdited}
-                                isRenameRequestBeingProcessed={renameRequestBeingProcessed?.basename === basename}
-                            />
-                        </Grid>
-                    );
+                        return (
+                            <Grid item key={key}>
+                                <ExplorerItem
+                                    kind={kind}
+                                    basename={basename}
+                                    isSelected={isSelected}
+                                    onMouseEvent={onMouseEventFactory(kind, basename)}
+                                    onBasenameChanged={onBasenameChangedFactory(kind, basename)}
+                                    isBeingEdited={isSelected && isSelectedItemBeingEdited}
+                                    isRenameRequestBeingProcessed={renameRequestBeingProcessed?.basename === basename}
+                                    standardizedWidth={standardizedWidth}
+                                />
+                            </Grid>
+                        );
 
-                }
+                    }
                 ))}
 
         </Grid>
