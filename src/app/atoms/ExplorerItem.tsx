@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -42,7 +43,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg" | "frame", Props>({
+    theme => createStyles<"root" | "svg" | "frame" | "input", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -74,7 +75,12 @@ const useStyles = makeStyles(
             "borderRadius": "5px",
             "backgroundColor": isSelected ? `rgba(0, 0, 0, 0.2)` : undefined,
             "display": "inline-block"
-        })
+        }),
+        "input": {
+            "& .MuiInput-input": {
+                "textAlign": "center"
+            }
+        }
     })
 );
 
@@ -157,8 +163,14 @@ export function ExplorerItem(props: Props) {
         [onBasenameChanged]
     );
 
+    const onFocus = useCallback(
+        ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+            target.setSelectionRange(0, target.value.length),
+        []
+    );
+
     return (
-        <div className={classes.root} >
+        <div className={classes.root}>
             <Box px="6px" py="4px" className={classes.frame}
                 onMouseDown={onMouseEventFactory("down", "icon")}
                 onDoubleClick={onMouseEventFactory("double", "icon")}
@@ -174,11 +186,26 @@ export function ExplorerItem(props: Props) {
                         >
                             {basename}
                         </Typography>
-                        {isRenameRequestBeingProcessed && <CircularProgress color="secondary" />}
                     </>
                     :
                     <form className={classes.root} noValidate autoComplete="off">
-                        <Input defaultValue={basename} inputProps={{ "aria-label": "description" }} onChange={onChange} />
+                        <Input
+                            className={classes.input}
+                            defaultValue={basename}
+                            inputProps={{ "aria-label": "description" }}
+                            onChange={onChange}
+                            autoFocus={true}
+                            color="secondary"
+                            disabled={isRenameRequestBeingProcessed}
+                            endAdornment={
+                                !isRenameRequestBeingProcessed ? undefined :
+                                    <InputAdornment position="end">
+                                        <CircularProgress color="secondary" size={10} />
+                                    </InputAdornment>
+                            }
+                            multiline={true}
+                            onFocus={onFocus}
+                        />
                     </form>
             }
         </div>
