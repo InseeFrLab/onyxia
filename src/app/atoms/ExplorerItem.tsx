@@ -28,17 +28,20 @@ export type Props = {
     /** Big for large screen, normal otherwise */
     standardizedWidth: "normal" | "big";
 
+
+    isBeingEdited: boolean;
+
+    isRenameRequestBeingProcessed: boolean;
+
     /** 
      * Invoked when the component have been clicked once 
      * and when it has been double clicked 
      */
     onMouseEvent(params: { type: "down" | "double", target: "icon" | "text" }): void;
 
-    isBeingEdited: boolean;
+    onEditedBasename(params: { editedBasename: string; }): void;
 
-    isRenameRequestBeingProcessed: boolean;
-
-    onBasenameChanged(params: { newBasename: string; }): void;
+    getIsValidBasename(params: { basename: string; }): boolean;
 
 };
 
@@ -93,10 +96,11 @@ export function ExplorerItem(props: Props) {
         visualRepresentationOfAFile,
         kind,
         basename,
-        onMouseEvent,
-        onBasenameChanged,
         isRenameRequestBeingProcessed,
-        standardizedWidth
+        standardizedWidth,
+        onMouseEvent,
+        onEditedBasename,
+        getIsValidBasename
     } = props;
 
     const [isBeingEdited, setIsBeingEdited] = useState(props.isBeingEdited);
@@ -142,6 +146,41 @@ export function ExplorerItem(props: Props) {
 
     }, [kind, visualRepresentationOfAFile]);
 
+    const [editedBasename, setEditedBasename] = useState(basename);
+
+
+    useEffect(
+        ()=>{ setEditedBasename(basename) },
+        [basename]
+    );
+
+    const [isInputError, setIsInputError] = useState(
+        () => !getIsValidBasename({ "basename": editedBasename })
+    );
+
+    useEffect(
+        () => { 
+            setIsInputError(
+                !getIsValidBasename({ "basename": editedBasename })
+            ); 
+        },
+        [editedBasename, getIsValidBasename]
+    );
+
+    const onEditedBasenameProxy = useCallback(
+        () => { 
+
+            if( isInputError ){
+                return;
+            }
+
+
+            onEditedBasename({ editedBasename });
+
+        },
+        [onEditedBasename, editedBasename, isInputError]
+    );
+
     const onMouseEventFactory = useMemo(
         () => memoize(
             (type: "down" | "double", target: "icon" | "text") =>
@@ -151,16 +190,22 @@ export function ExplorerItem(props: Props) {
                     if (type === "down") {
                         mouseEvent.preventDefault();
                     }
+
+                    if( type === "down" && isBeingEdited){
+                        onEditedBasenameProxy();
+                    }
+
                     onMouseEvent({ type, target });
                 }
         ),
-        [onMouseEvent]
+        [onMouseEvent, onEditedBasenameProxy, isBeingEdited]
     );
+
 
     const onChange = useCallback(
         ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            onBasenameChanged({ "newBasename": target.value }),
-        [onBasenameChanged]
+            setEditedBasename(target.value),
+        []
     );
 
     const onFocus = useCallback(
@@ -168,6 +213,23 @@ export function ExplorerItem(props: Props) {
             target.setSelectionRange(0, target.value.length),
         []
     );
+
+
+    const onKeyDown = useCallback(
+        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>)=> {
+
+            if (event.key !== "Enter") {
+                return;
+            }
+
+            event.preventDefault();
+
+            onEditedBasenameProxy();
+
+        },
+        [onEditedBasenameProxy]
+    );
+
 
     return (
         <div className={classes.root}>
@@ -191,9 +253,8 @@ export function ExplorerItem(props: Props) {
                     <form className={classes.root} noValidate autoComplete="off">
                         <Input
                             className={classes.input}
-                            defaultValue={basename}
+                            defaultValue={editedBasename}
                             inputProps={{ "aria-label": "description" }}
-                            onChange={onChange}
                             autoFocus={true}
                             color="secondary"
                             disabled={isRenameRequestBeingProcessed}
@@ -204,7 +265,11 @@ export function ExplorerItem(props: Props) {
                                     </InputAdornment>
                             }
                             multiline={true}
+                            error={isInputError}
+                            onChange={onChange}
                             onFocus={onFocus}
+                            onBlur={onEditedBasenameProxy}
+                            onKeyDown={onKeyDown}
                         />
                     </form>
             }

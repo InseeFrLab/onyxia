@@ -1,5 +1,5 @@
 
-import { ExplorerItem } from "app/atoms/ExplorerItem";
+import { ExplorerItem } from "app/atoms/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
 import { buildMeta } from "stories/utils/buildMeta";
@@ -11,15 +11,16 @@ export default buildMeta({
 
 const { getThemedStory } = getThemedStoryFactory(ExplorerItem);
 
-export const Vue1 = getThemedStory({ 
+export const Vue1 = getThemedStory({
     "visualRepresentationOfAFile": "secret",
     "kind": "file",
     "basename": "my-project-envs",
     "isSelected": false,
     "isBeingEdited": false,
-    "onBasenameChanged": console.log,
-    "onMouseEvent": console.log,
+    "onEditedBasename": console.log.bind("onInputFocusout"),
+    "onMouseEvent": console.log.bind("onMouseEvent"),
     "isRenameRequestBeingProcessed": false,
-    "standardizedWidth": "big"
+    "standardizedWidth": "big",
+    "getIsValidBasename": ({ basename }) => basename.indexOf(" ") < 0
 });
 
