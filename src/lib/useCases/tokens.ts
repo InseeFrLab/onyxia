@@ -50,7 +50,7 @@ export const privateThunks = {
             assert(oidcClient.isUserLoggedIn);
 
             oidcClient.evtOidcTokens.$attach(
-                oidcTokens => oidcTokens === undefined ? null : [oidcTokens],
+                nonNullable(),
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 
