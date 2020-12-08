@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "../atoms/ExplorerItem";
 import { explorerItemFactory } from "../atoms/explorerItemFactory";
@@ -10,16 +10,18 @@ import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 
 export type Props = {
+    /** [HIGHER ORDER] */
     visualRepresentationOfAFile: ExplorerItemProps["visualRepresentationOfAFile"];
+    /** [HIGHER ORDER] */
+    getIsValidBasename(params: { basename: string; }): boolean;
+
     /** Assert all uniq */
     files: string[];
     /** Assert all uniq */
     directories: string[];
-    onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
-    onBasenameChanged(params: { kind: "file" | "directory"; basename: string; newBasename: string; }): void;
-
     renameRequestBeingProcessed: { kind: "file" | "directory", basename: string } | undefined;
-
+    onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
+    onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
 };
 
 
@@ -28,10 +30,11 @@ export function ExplorerItems(props: Props) {
 
     const {
         visualRepresentationOfAFile,
+        getIsValidBasename,
         files,
         directories,
         onOpen,
-        onBasenameChanged,
+        onEditedBasename,
         renameRequestBeingProcessed
     } = props;
 
@@ -49,25 +52,44 @@ export function ExplorerItems(props: Props) {
 
     useMemo(
         () => assert(
-            files.reduce(...allUniq()) &&
-            directories.reduce(...allUniq()),
-            "Can't have two file or directory with the same name"
+            (
+                files.reduce(...allUniq()) &&
+                directories.reduce(...allUniq()) &&
+                [...files, ...directories].every(basename => getIsValidBasename({ basename }))
+            ),
+            "Can't have two file or directory with the same name and all basename must be valid"
         ),
-        [files, directories]
+        [files, directories, getIsValidBasename]
     );
 
     const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
     const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
 
+
+    const standardizedWidth = useMemo(
+        (): ExplorerItemProps["standardizedWidth"] => {
+
+            if (windowInnerWidth > theme.breakpoints.width("md")) {
+
+                return "big";
+
+            }
+
+            return "normal";
+
+        },
+        [windowInnerWidth, theme]
+    );
+
     const onMouseEventFactory = useMemo(
         () => memoize(
-            (kind: "file" | "directory", basename: string) =>
+            (kind: "file" | "directory", basename: string, i: number) =>
                 ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
                     switch (type) {
                         case "down":
 
-                            const key = getKey({ kind, basename });
+                            const key = getKey({ kind, i });
 
                             if (target === "text" && selectedItemKey === key) {
 
@@ -95,29 +117,55 @@ export function ExplorerItems(props: Props) {
         [onOpen, selectedItemKey]
     );
 
-    const onBasenameChangedFactory = useMemo(
+    const onEditedBasenameFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ newBasename }: Parameters<ExplorerItemProps["onBasenameChanged"]>[0]) =>
-                    onBasenameChanged({ kind, basename, newBasename })
+                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) => 
+                    onEditedBasename({ kind, basename, editedBasename }),
         ),
-        [onBasenameChanged]
+        [onEditedBasename]
     );
 
-    const standardizedWidth = useMemo(
-        (): ExplorerItemProps["standardizedWidth"] => {
+    useEffect(
+        () => {
 
-            if (windowInnerWidth > theme.breakpoints.width("md")) {
-
-                return "big";
-
+            if (renameRequestBeingProcessed === undefined) {
+                setIsSelectedItemBeingEdited(false);
             }
 
-            return "normal";
-
         },
-        [windowInnerWidth, theme]
+        [renameRequestBeingProcessed]
     );
+
+
+
+    const getIsValidBasenameFactory = useMemo(
+        () => memoize(
+            (kind: "file" | "directory", basename: string) =>
+                ({ basename: candidateBasename }: Parameters<ExplorerItemProps["getIsValidBasename"]>[0]) => {
+
+                    if (basename === candidateBasename) {
+                        return true;
+                    }
+
+                    if (
+                        (() => {
+                            switch (kind) {
+                                case "directory": return directories;
+                                case "file": return files;
+                            }
+                        })().indexOf(candidateBasename) >= 0
+                    ) {
+                        return false;
+                    }
+
+                    return getIsValidBasename({ "basename": candidateBasename });
+
+                }
+        ),
+        [getIsValidBasename, directories, files]
+    );
+
 
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
@@ -128,10 +176,10 @@ export function ExplorerItems(props: Props) {
                         case "file": return files;
                     }
                 })()).map(
-                    basename => {
+                    (basename, i) => {
 
-                        const key = getKey({ kind, basename });
-                        const isSelected = selectedItemKey === getKey({ kind, basename });
+                        const key = getKey({ kind, i });
+                        const isSelected = selectedItemKey === key;
 
                         return (
                             <Grid item key={key}>
@@ -139,11 +187,16 @@ export function ExplorerItems(props: Props) {
                                     kind={kind}
                                     basename={basename}
                                     isSelected={isSelected}
-                                    onMouseEvent={onMouseEventFactory(kind, basename)}
-                                    onBasenameChanged={onBasenameChangedFactory(kind, basename)}
                                     isBeingEdited={isSelected && isSelectedItemBeingEdited}
-                                    isRenameRequestBeingProcessed={renameRequestBeingProcessed?.basename === basename}
+                                    isRenameRequestBeingProcessed={
+                                        renameRequestBeingProcessed !== undefined &&
+                                        renameRequestBeingProcessed.kind === kind &&
+                                        renameRequestBeingProcessed.basename === basename
+                                    }
                                     standardizedWidth={standardizedWidth}
+                                    onMouseEvent={onMouseEventFactory(kind, basename, i)}
+                                    onEditedBasename={onEditedBasenameFactory(kind, basename)}
+                                    getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
                                 />
                             </Grid>
                         );
@@ -158,8 +211,8 @@ export function ExplorerItems(props: Props) {
 
 function getKey(params: {
     kind: "file" | "directory",
-    basename: string
+    i: number
 }): string {
-    const { kind, basename } = params;
-    return `${kind}${basename}`;
+    const { kind, i } = params;
+    return `${kind}${i}`;
 }

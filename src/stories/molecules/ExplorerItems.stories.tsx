@@ -39,10 +39,8 @@ const { getThemedStory } = getThemedStoryFactory(
 
         const [renameRequestBeingProcessed, setRenameRequestBeingProcessed] = useState<Props["renameRequestBeingProcessed"]>(undefined);
 
-        const onBasenameChanged = useCallback(
-            ({ basename, newBasename, kind }: Parameters<Props["onBasenameChanged"]>[0]) => {
-
-                console.log({ basename, newBasename, kind });
+        const onEditedBasename = useCallback(
+            ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
 
                 {
 
@@ -53,13 +51,15 @@ const { getThemedStory } = getThemedStoryFactory(
                         }
                     })();
 
-                    setItems((items[items.indexOf(basename)!] = newBasename, items));
+                    items[items.indexOf(basename)!] = editedBasename;
+
+                    setItems([...items]);
 
                 }
 
                 (async () => {
 
-                    setRenameRequestBeingProcessed({ kind, "basename": newBasename });
+                    setRenameRequestBeingProcessed({ kind, "basename": editedBasename });
 
                     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -78,7 +78,7 @@ const { getThemedStory } = getThemedStoryFactory(
                     files={files}
                     directories={directories}
                     renameRequestBeingProcessed={renameRequestBeingProcessed}
-                    onBasenameChanged={onBasenameChanged}
+                    onEditedBasename={onEditedBasename}
                 />
             </div>
         )
@@ -86,11 +86,12 @@ const { getThemedStory } = getThemedStoryFactory(
     }
 );
 
-
 export const Vue1 = getThemedStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
-    "directories": ["My directory 1", "dir2", "another directory", "foo"],
-    "files": ["this is a file", "file2", "foo.csv"],
-    "onOpen": console.log
+    "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
+    "files": ["this-is-a-file", "file2", "foo.csv"],
+    "onOpen": console.log,
+    "getIsValidBasename": ({ basename }) => basename.indexOf(" ") < 0,
+    "onEditedBasename": console.log.bind("onEditedBasename")
 });
