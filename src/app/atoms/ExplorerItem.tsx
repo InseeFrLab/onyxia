@@ -11,7 +11,6 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { useClick } from "app/utils/hooks/useClick";
-import { id } from "evt/tools/typeSafety/id";
 import Color from "color";
 
 export type Props = {
