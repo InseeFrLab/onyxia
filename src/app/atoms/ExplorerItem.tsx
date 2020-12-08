@@ -192,6 +192,8 @@ export function ExplorerItem(props: Props) {
                 return;
             }
 
+            console.log({ editedBasename });
+
             onEditedBasename({ editedBasename });
 
         },
@@ -228,16 +230,29 @@ export function ExplorerItem(props: Props) {
     const onKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
-            if (event.key !== "Enter") {
+
+            if (event.key === "Escape") {
+
+                //NOTE: For the onBlur
+                setEditedBasename(basename);
+                onEditedBasename({ "editedBasename": basename });
+
                 return;
             }
 
-            event.preventDefault();
+            if (event.key === "Enter") {
 
-            onEditedBasenameProxy();
+                event.preventDefault();
+
+                onEditedBasenameProxy();
+
+                return;
+            }
+
+
 
         },
-        [onEditedBasenameProxy]
+        [onEditedBasenameProxy, onEditedBasename]
     );
 
     return (
