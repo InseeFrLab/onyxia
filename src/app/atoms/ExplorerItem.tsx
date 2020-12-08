@@ -270,7 +270,7 @@ export function ExplorerItem(props: Props) {
                             endAdornment={
                                 !isRenameRequestBeingProcessed ? undefined :
                                     <InputAdornment position="end">
-                                        <CircularProgress color="secondary" size={10} />
+                                        <CircularProgress style={{ "color": theme.palette.text.primary }} size={10} />
                                     </InputAdornment>
                             }
                             multiline={true}
