@@ -25,7 +25,6 @@ export type Props = {
 };
 
 
-
 export function ExplorerItems(props: Props) {
 
     const {

@@ -8,9 +8,9 @@ import Input from "@material-ui/core/Input";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import memoize from "memoizee";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import { useClick } from "app/utils/hooks/useClick";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -174,32 +174,24 @@ export function ExplorerItem(props: Props) {
                 return;
             }
 
-
             onEditedBasename({ editedBasename });
 
         },
         [onEditedBasename, editedBasename, isInputError]
     );
 
-    const onMouseEventFactory = useMemo(
-        () => memoize(
-            (type: "down" | "double", target: "icon" | "text") =>
-                (mouseEvent: React.MouseEvent<HTMLElement, MouseEvent>) => {
-                    //NOTE: Prevent text selection on double click: 
-                    //https://stackoverflow.com/a/55617595/3731798
-                    if (type === "down") {
-                        mouseEvent.preventDefault();
-                    }
+    const { getOnMouseProps } = useClick<{ target: "icon" | "text" }>({
+        "doubleClickDelayMs": 500,
+        "callback": useCallback(({ type, extraArg: { target } }) => {
 
-                    if( type === "down" && isBeingEdited){
-                        onEditedBasenameProxy();
-                    }
+            if (type === "down" && isBeingEdited) {
+                onEditedBasenameProxy();
+            }
 
-                    onMouseEvent({ type, target });
-                }
-        ),
-        [onMouseEvent, onEditedBasenameProxy, isBeingEdited]
-    );
+            onMouseEvent({ type, target });
+
+        }, [onEditedBasenameProxy, onMouseEvent, isBeingEdited])
+    });
 
 
     const onChange = useCallback(
@@ -216,7 +208,7 @@ export function ExplorerItem(props: Props) {
 
 
     const onKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>)=> {
+        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
             if (event.key !== "Enter") {
                 return;
@@ -231,21 +223,21 @@ export function ExplorerItem(props: Props) {
     );
 
 
+
     return (
         <div className={classes.root}>
-            <Box px="6px" py="4px" className={classes.frame}
-                onMouseDown={onMouseEventFactory("down", "icon")}
-                onDoubleClick={onMouseEventFactory("double", "icon")}
+            <Box
+                className={classes.frame}
+                px="6px"
+                py="4px"
+                {...getOnMouseProps({ "target": "icon" })}
             >
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             {
                 !isBeingEdited ?
                     <>
-                        <Typography
-                            onMouseDown={onMouseEventFactory("down", "text")}
-                            onDoubleClick={onMouseEventFactory("double", "text")}
-                        >
+                        <Typography {...getOnMouseProps({ "target": "text" })} >
                             {basename}
                         </Typography>
                     </>
