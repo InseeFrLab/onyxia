@@ -13,6 +13,7 @@ import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
+import { ReactComponent as LockSvg } from "app/assets/svg/Lock.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
@@ -20,7 +21,7 @@ export type Props = {
     /** Design which icon should be displayed */
     type: "tour" | "services" | "secrets" | "profile" |
     "lab" | "info" | "home" | "trainings" | "files" |
-    "collaborationTools" | "bash";
+    "collaborationTools" | "bash" | "lock";
     /** Color of the icon based on the theme */
     color?: "inherit" | "disabled" | "primary" |
     "secondary" | "action" | "error";
@@ -55,6 +56,7 @@ export function AppIcon(props: Props) {
                 case "files": return FilesSvg;
                 case "collaborationTools": return CollaborationToolsSvg;
                 case "bash": return BashSvg;
+                case "lock": return LockSvg;
             }
         })()}
         color={color}

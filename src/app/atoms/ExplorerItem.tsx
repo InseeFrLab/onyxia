@@ -234,6 +234,7 @@ export function ExplorerItem(props: Props) {
             if (event.key === "Escape") {
 
                 //NOTE: For the onBlur
+                //TODO: Improve
                 setEditedBasename(basename);
                 onEditedBasename({ "editedBasename": basename });
 
@@ -252,7 +253,7 @@ export function ExplorerItem(props: Props) {
 
 
         },
-        [onEditedBasenameProxy, onEditedBasename]
+        [onEditedBasenameProxy, onEditedBasename, basename]
     );
 
     return (
