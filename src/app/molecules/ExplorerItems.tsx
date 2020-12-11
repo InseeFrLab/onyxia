@@ -2,12 +2,13 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "../atoms/ExplorerItem";
-import { explorerItemFactory } from "../atoms/explorerItemFactory";
+import { ExplorerItem as GenericExplorerItem } from "../atoms/ExplorerItem";
 import { assert } from "evt/tools/typeSafety/assert";
 import { allUniq } from "evt/tools/reducers/allUniq";
 import memoize from "memoizee";
 import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
+import { withProps } from "app/utils/withProps";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -37,17 +38,14 @@ export function ExplorerItems(props: Props) {
         renameRequestBeingProcessed
     } = props;
 
-    const { ExplorerItem } = useMemo(
-        () => explorerItemFactory({ visualRepresentationOfAFile }),
+    const ExplorerItem = useMemo(
+        () => withProps(GenericExplorerItem, { visualRepresentationOfAFile }),
         [visualRepresentationOfAFile]
     );
-
-
 
     const theme = useTheme();
 
     const { windowInnerWidth } = useWindowInnerWidth();
-
 
     useMemo(
         () => assert(
@@ -119,7 +117,7 @@ export function ExplorerItems(props: Props) {
     const onEditedBasenameFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) => 
+                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) =>
                     onEditedBasename({ kind, basename, editedBasename }),
         ),
         [onEditedBasename]

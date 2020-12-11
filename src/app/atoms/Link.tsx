@@ -3,7 +3,7 @@
 
 import React from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import Link from "@material-ui/core/Link";
+import MuiLink from "@material-ui/core/Link";
 import { LinkClassKey } from "@material-ui/core/Link";
 import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
@@ -30,13 +30,13 @@ const useStyles = makeStyles(
 // https://material-ui.com/guides/composition/#link
 // https://github.com/typehero/type-route#step-4-navigate-between-routes
 
-export function AppLink(props: Props) {
+export function Link(props: Props) {
 
     const { children, href } = { ...defaultProps, ...noUndefined(props) };
 
     const classes = useStyles();
 
-    return <Link classes={classes} href={href}>{children}</Link>
+    return <MuiLink classes={classes} href={href}>{children}</MuiLink>
 
 }
 

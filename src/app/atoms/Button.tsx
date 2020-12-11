@@ -1,7 +1,7 @@
 
 import React from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
+import MuiButton from "@material-ui/core/Button";
 import type { ButtonClassKey } from "@material-ui/core/Button";
 import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
@@ -32,13 +32,13 @@ const useStyles = makeStyles(
 );
 
 
-export function AppButton(props: Props) {
+export function Button(props: Props) {
 
   const { color, disabled, children } = { ...defaultProps, ...noUndefined(props) };
 
   const classes = useStyles();
 
-  return <Button classes={classes} color={color} disabled={disabled}>{children}</Button>;
+  return <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>;
 
 }
 

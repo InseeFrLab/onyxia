@@ -1,6 +1,6 @@
 
 
 /** symbolAsString({ foo }) === "foo" */
-export function symToStr(wrap: Record<string, unknown>): string {
+export function symToStr<T extends Record<string, unknown>>(wrap: T): keyof T {
     return Object.keys(wrap)[0];
 }

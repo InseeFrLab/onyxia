@@ -1,18 +1,18 @@
 
 import React from "react";
-import { AppButton, defaultProps } from "app/atoms/AppButton";
+import { Button, defaultProps } from "app/atoms/Button";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
 import { buildMeta } from "stories/utils/buildMeta";
 
-import { AppIcon } from "app/atoms/AppIcon";
+import { Icon } from "app/atoms/Icon";
 
 export default buildMeta({
     sectionName,
-    "wrappedComponent": { AppButton }
+    "wrappedComponent": { Button }
 });
 
-const { getThemedStory } = getThemedStoryFactory(AppButton);
+const { getThemedStory } = getThemedStoryFactory(Button);
 
 export const TextOnly = getThemedStory({
     ...defaultProps,
@@ -21,5 +21,5 @@ export const TextOnly = getThemedStory({
 
 export const TextWithIcon = getThemedStory({
     ...defaultProps,
-    "children": <><AppIcon type="home" /> Home</>
+    "children": <><Icon type="home" /> Home</>
 });

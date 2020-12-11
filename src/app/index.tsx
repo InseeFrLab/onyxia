@@ -13,7 +13,7 @@ import { Evt } from "evt";
 import { createStore } from "lib/setup";
 import type { KeycloakConfig, SecretsManagerClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
-//import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { I18nProvider } from "./i18n/I18nProvider";
 
 import App_ from "js/components/app.container";
 const App: any = App_;
@@ -67,9 +67,11 @@ const Root = () => {
                 {
                     store === undefined ?
                         <Loader em={30} /> :
-                        <Provider store={store}>
-                            <App />
-                        </Provider>
+                        <I18nProvider>
+                            <Provider store={store}>
+                                <App />
+                            </Provider>
+                        </I18nProvider>
                 }
             </>
         </React.StrictMode>
