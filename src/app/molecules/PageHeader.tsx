@@ -1,8 +1,8 @@
 
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { Props as AppIconProps }  from "../atoms/AppIcon";
-import { AppIcon } from "../atoms/AppIcon";
+import { Props as AppIconProps }  from "../atoms/Icon";
+import { Icon } from "../atoms/Icon";
 
 export type Props = {
     icon: AppIconProps["type"] | undefined;
@@ -17,7 +17,7 @@ export function PageHeader(props: Props) {
 
     return (
         <>
-            <Typography variant="h3">{icon === undefined ? null : <AppIcon type={icon} />}{text1}</Typography>
+            <Typography variant="h3">{icon === undefined ? null : <Icon type={icon} />}{text1}</Typography>
             <Typography variant="h6">{text2}</Typography>
             <Typography variant="subtitle1">{text3}</Typography>
         </>

@@ -34,7 +34,7 @@ export const defaultProps: Optional<Props> = {
     "fontSize": "default"
 };
 
-export function AppIcon(props: Props) {
+export function Icon(props: Props) {
 
     const { type, color, fontSize } = {
         ...defaultProps,
