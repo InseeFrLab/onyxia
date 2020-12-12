@@ -12,6 +12,7 @@ export type Props = {
   /** Usually a plain text that labels the button */
   children: React.ReactNode;
   disabled?: boolean;
+  onClick: ()=> void;
 };
 
 export const defaultProps: Optional<Props> = {
