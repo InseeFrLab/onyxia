@@ -65,8 +65,5 @@ export function DialogTitle(props: Props) {
 
 }
 
-export function generateIdForLabelledby(): string {
-    return `${Math.random()}`;
-}
 
 
