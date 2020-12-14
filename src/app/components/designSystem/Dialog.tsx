@@ -15,7 +15,7 @@ export type Props = {
     open: DialogProps["open"];
     onClose: NonNullable<DialogProps["onClose"]>;
     'aria-labelledby': string;
-    children: React.ReactNode;
+    children: NonNullable<React.ReactNode>;
 };
 
 export const defaultProps: Optional<Props> = {

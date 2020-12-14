@@ -5,7 +5,7 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import type { Id } from "evt/tools/typeSafety";
 
 export type Props = {
-    children: React.ReactNode;
+    children: NonNullable<React.ReactNode>;
 };
 
 const useStyles = makeStyles(

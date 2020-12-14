@@ -19,7 +19,7 @@ import { getEnv } from 'js/env';
 import D from 'js/i18n';
 
 import type { RootState } from "lib/setup";
-import { useSelector, useIsBetaModeEnabled } from "app/redux/hooks";
+import { useSelector, useIsBetaModeEnabled } from "app/libHooks";
 
 const env = getEnv();
 

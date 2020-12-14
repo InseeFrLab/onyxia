@@ -10,7 +10,7 @@ import { createMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/
 import { responsiveFontSizes } from "@material-ui/core/styles";
 import React, { useMemo } from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
-import { ThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 
 function createAppThemeFactory(
     params: {
@@ -58,7 +58,7 @@ function createAppThemeFactory(
 
 }
 
-export function AppThemeProviderFactory(
+export function ThemeProviderFactory(
     params: {
         isReactStrictModeEnabled: boolean;
     }
@@ -87,11 +87,11 @@ export function AppThemeProviderFactory(
         );
 
         return (
-            <ThemeProvider theme={theme}>
+            <MuiThemeProvider theme={theme}>
                 <ScopedCssBaseline>
                     {children}
                 </ScopedCssBaseline>
-            </ThemeProvider>
+            </MuiThemeProvider>
         );
 
     }

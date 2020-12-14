@@ -1,13 +1,18 @@
 
-import { Link } from "app/components/designSystem/Link";
+
+import { Typography, defaultProps } from "app/components/designSystem/Typography";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
 
 const { meta, getThemedStory } = getThemedStoryFactory({
     sectionName,
-    "wrappedComponent": { Link }
+    "wrappedComponent": { Typography }
 });
 
 export default meta;
 
-export const Home = getThemedStory({ "children": "I am a link", "href": "#" });
+export const Vue1 = getThemedStory({
+    ...defaultProps,
+    "children": "Foo bar"
+});
+

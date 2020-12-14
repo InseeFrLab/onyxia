@@ -4,15 +4,15 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonClassKey } from "@material-ui/core/Button";
 import type { Id, Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
   /** Correspond to the app theme' color palette */
   color?: "primary" | "secondary";
   /** Usually a plain text that labels the button */
-  children: React.ReactNode;
+  children: NonNullable<React.ReactNode>;
   disabled?: boolean;
-  onClick: ()=> void;
+  onClick: () => void;
 };
 
 export const defaultProps: Optional<Props> = {

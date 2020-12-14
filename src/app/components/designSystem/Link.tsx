@@ -10,7 +10,7 @@ import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
     /** Usually a plain text, that represents the text of the link */
-    children: React.ReactNode;
+    children: NonNullable<React.ReactNode>;
     href: string;
 };
 

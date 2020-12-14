@@ -1,15 +1,14 @@
 
-import { ExplorerItem } from "app/atoms/ExplorerItem";
+import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
-import { buildMeta } from "stories/utils/buildMeta";
 
-export default buildMeta({
+const { meta, getThemedStory } = getThemedStoryFactory({
     sectionName,
     "wrappedComponent": { ExplorerItem }
 });
 
-const { getThemedStory } = getThemedStoryFactory(ExplorerItem);
+export default meta;
 
 export const Vue1 = getThemedStory({
     "visualRepresentationOfAFile": "secret",

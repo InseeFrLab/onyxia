@@ -3,7 +3,7 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useAppConstants } from "app/redux/hooks";
+import { useDispatch, useSelector, useAppConstants } from "app/libHooks";
 import { useLocation } from "react-router-dom";
 
 

@@ -1,18 +1,17 @@
 
 import React from "react";
-import { Button, defaultProps } from "app/atoms/Button";
+import { Button, defaultProps } from "app/components/designSystem/Button";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
-import { buildMeta } from "stories/utils/buildMeta";
+import { Icon } from "app/components/designSystem/Icon";
 
-import { Icon } from "app/atoms/Icon";
-
-export default buildMeta({
+const { meta, getThemedStory } = getThemedStoryFactory({
     sectionName,
     "wrappedComponent": { Button }
 });
 
-const { getThemedStory } = getThemedStoryFactory(Button);
+export default meta;
+
 
 export const TextOnly = getThemedStory({
     ...defaultProps,

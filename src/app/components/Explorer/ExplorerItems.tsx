@@ -1,8 +1,8 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import Grid from '@material-ui/core/Grid';
-import type { Props as ExplorerItemProps } from "../atoms/ExplorerItem";
-import { ExplorerItem as GenericExplorerItem } from "../atoms/ExplorerItem";
+import type { Props as ExplorerItemProps } from "./ExplorerItem";
+import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
 import { assert } from "evt/tools/typeSafety/assert";
 import { allUniq } from "evt/tools/reducers/allUniq";
 import memoize from "memoizee";
@@ -20,6 +20,8 @@ export type Props = {
     files: string[];
     /** Assert all uniq */
     directories: string[];
+
+    /** Refers to the new basename */
     renameRequestBeingProcessed: { kind: "file" | "directory", basename: string } | undefined;
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
@@ -39,7 +41,7 @@ export function ExplorerItems(props: Props) {
     } = props;
 
     const ExplorerItem = useMemo(
-        () => withProps(GenericExplorerItem, { visualRepresentationOfAFile }),
+        () => withProps(SecretOrFileExplorerItem, { visualRepresentationOfAFile }),
         [visualRepresentationOfAFile]
     );
 
