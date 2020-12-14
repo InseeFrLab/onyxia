@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "minimal-polyfills/Object.fromEntries";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
