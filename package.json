@@ -80,7 +80,8 @@
     "react-time-ago": "^6.0.0",
     "react-toastify": "^6.0.8",
     "remove-accents": "^0.4.2",
-    "typeface-roboto": "^0.0.75"
+    "typeface-roboto": "^0.0.75",
+    "minimal-polyfills": "^2.1.6"
   },
   "scripts": {
     "start": "react-app-rewired start",
