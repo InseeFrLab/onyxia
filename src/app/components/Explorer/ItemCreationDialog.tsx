@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Dialog } from "app/atoms/Dialog";
-import { DialogTitle } from "../atoms/DialogTitle";
-import { DialogContent } from "app/atoms/DialogContent";
-import { DialogActions } from "app/atoms/DialogActions";
-import { Button } from "app/atoms/Button";
-import { TextField } from "app/atoms/TextField";
+import { Dialog } from "app/components/designSystem/Dialog";
+import { DialogTitle } from "../designSystem/DialogTitle";
+import { DialogContent } from "app/components/designSystem/DialogContent";
+import { DialogActions } from "app/components/designSystem/DialogActions";
+import { Button } from "app/components/designSystem/Button";
+import { TextField } from "app/components/designSystem/TextField";
 import { symToStr } from "app/utils/symToStr";
 import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
@@ -19,7 +19,7 @@ export type Props = {
   getIsValidName(name: string): boolean;
 };
 
-export function CreateFileOrDirectoryDialog(props: Props) {
+export function ItemCreationDialog(props: Props) {
 
   const { wordForFile, createWhat, callback, getIsValidName } = props;
 
@@ -96,7 +96,7 @@ export function CreateFileOrDirectoryDialog(props: Props) {
 
 }
 
-export declare namespace CreateFileOrDirectoryDialog {
+export declare namespace ItemCreationDialog {
 
   export type I18nScheme = {
     file: undefined,
@@ -112,7 +112,7 @@ export declare namespace CreateFileOrDirectoryDialog {
 }
 
 //NOTE: Could be anything, just need to be uniq across the DOM.
-const titleId = symToStr({ CreateFileOrDirectoryDialog });
+const titleId = symToStr({ CreateFileOrDirectoryDialog: ItemCreationDialog });
 
 
 

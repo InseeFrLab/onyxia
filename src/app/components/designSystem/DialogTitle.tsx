@@ -7,14 +7,14 @@ import type { DialogTitleClassKey } from "@material-ui/core/DialogTitle";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { noUndefined } from "app/utils/noUndefined";
 import type { Id } from "evt/tools/typeSafety";
-import Typography from "@material-ui/core/Typography";
+import { Typography } from "./Typography";
 
 // https://material-ui.com/components/dialogs/#form-dialogs
 
 export type Props = {
     id: string;
-    children: React.ReactNode;
-    subtitle: React.ReactNode;
+    children: NonNullable<React.ReactNode>;
+    subtitle: NonNullable<React.ReactNode>;
 };
 
 export const defaultProps: Optional<Props> = {

@@ -1,14 +1,13 @@
 
-import { Icon, defaultProps } from "app/atoms/Icon";
+import { Icon, defaultProps } from "app/components/designSystem/Icon";
 import { sectionName } from "./sectionName";
 import { getThemedStoryFactory } from "stories/utils/getThemedStory";
-import { buildMeta } from "stories/utils/buildMeta";
 
-export default buildMeta({
+const { meta, getThemedStory} = getThemedStoryFactory({
     sectionName,
     "wrappedComponent": { Icon }
 });
 
-const { getThemedStory } = getThemedStoryFactory(Icon);
+export default meta;
 
 export const Home = getThemedStory({ ...defaultProps, "type": "home" });

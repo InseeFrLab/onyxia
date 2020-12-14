@@ -31,8 +31,8 @@ export interface SecretsManagerClient {
             path: string;
         }
     ): Promise<{
-        nodes: string[];
-        leafs: string[];
+        directories: string[];
+        secrets: string[];
     }>;
 
     get(

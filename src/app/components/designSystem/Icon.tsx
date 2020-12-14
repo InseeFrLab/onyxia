@@ -41,7 +41,6 @@ export function Icon(props: Props) {
         ...noUndefined(props)
     };
 
-    // https://github.com/mui-org/material-ui/blob/4c5fffc342c46466fb5c68759e5ecfbfe3e4a3db/packages/material-ui/src/SvgIcon/SvgIcon.js
     return <SvgIcon
         component={(() => {
             switch (type) {

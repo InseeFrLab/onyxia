@@ -36,12 +36,12 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useAppConstants, useIsDarkModeEnabled } from "app/redux/hooks";
-import { AppThemeProviderFactory } from "app/appTheme";
-import { MySecrets } from "app/pages/MySecrets";
+import { useAppConstants, useIsDarkModeEnabled } from "app/libHooks";
+import { ThemeProviderFactory } from "app/ThemeProvider";
+import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { useEvt } from "evt/hooks";
 
-const { AppThemeProvider } = AppThemeProviderFactory(
+const { AppThemeProvider } = ThemeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
 );
 

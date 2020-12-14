@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useIsBetaModeEnabled } from "app/redux/hooks";
+import { useSelector, useIsBetaModeEnabled } from "app/libHooks";
 
 const RegionBanner = () => {
 	const regions = useSelector(store => store.regions);

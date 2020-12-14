@@ -22,15 +22,15 @@ export function createInMemorySecretManagerClient(): SecretsManagerClient {
 
             assert(!map.has(path), `${path} is a secret not a directory`);
 
-            const [nodes, leafs] =
+            const [directories, secrets] =
                 Array.from(map.keys())
                     .map(key => pathRelative(key, path))
                     .filter(path => !path.startsWith(".."))
                     .reduce(...partition<string>(path => path.split("/").length > 1));
 
             return {
-                "nodes": nodes.map(path => path.split("/")[0]),
-                leafs
+                "directories": directories.map(path => path.split("/")[0]),
+                secrets
             };
 
         },

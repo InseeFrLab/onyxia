@@ -15,7 +15,7 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import { thunks } from "lib/setup";
-import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/redux/hooks";
+import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/libHooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 
 export const MonCompte = () => {

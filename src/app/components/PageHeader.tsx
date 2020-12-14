@@ -1,14 +1,14 @@
 
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import { Props as AppIconProps }  from "../atoms/Icon";
-import { Icon } from "../atoms/Icon";
+import { Typography } from "app/components/designSystem/Typography";
+import { Props as AppIconProps }  from "./designSystem/Icon";
+import { Icon } from "./designSystem/Icon";
 
 export type Props = {
     icon: AppIconProps["type"] | undefined;
-    text1: React.ReactNode;
-    text2: React.ReactNode;
-    text3: React.ReactNode;
+    text1: NonNullable<React.ReactNode>;
+    text2: NonNullable<React.ReactNode>;
+    text3: NonNullable<React.ReactNode>;
 };
 
 export function PageHeader(props: Props) {

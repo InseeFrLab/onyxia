@@ -9,7 +9,7 @@ import type { Id } from "evt/tools/typeSafety";
 // https://material-ui.com/components/dialogs/#form-dialogs
 
 export type Props = {
-  children: React.ReactNode;
+  children: NonNullable<React.ReactNode>;
 };
 
 const useStyles = makeStyles(

@@ -15,7 +15,7 @@ import type {ScreenType} from "js/model/ScreenType";
 import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
-import { useSelector, useDispatch, useAppConstants } from "app/redux/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/libHooks";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 
 

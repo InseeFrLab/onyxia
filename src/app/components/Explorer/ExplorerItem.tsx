@@ -6,12 +6,13 @@ import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
 import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
+import { Typography } from "../designSystem/Typography"
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { CircularProgress } from "app/components/designSystem/CircularProgress";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { useClick } from "app/utils/hooks/useClick";
 import Color from "color";
+import { useTranslation } from "app/i18n/useTranslations";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -28,7 +29,6 @@ export type Props = {
 
     /** Big for large screen, normal otherwise */
     standardizedWidth: "normal" | "big";
-
 
     isBeingEdited: boolean;
 
@@ -47,7 +47,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg" | "frame" | "text" | "input", Props>({
+    theme => createStyles<"root" | "svg" | "frame" | "text" | "input" | "circularProgress", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -101,6 +101,8 @@ const useStyles = makeStyles(
             "& .MuiInput-input": {
                 "textAlign": "center"
             }
+        },
+        "circularProgress": {
         }
     })
 );
@@ -120,6 +122,8 @@ export function ExplorerItem(props: Props) {
         onEditedBasename,
         getIsValidBasename
     } = props;
+
+    const { t } = useTranslation("ExplorerItem");
 
     const [isBeingEdited, setIsBeingEdited] = useState(props.isBeingEdited);
 
@@ -268,25 +272,24 @@ export function ExplorerItem(props: Props) {
             </Box>
             {
                 !isBeingEdited ?
-                    <Typography
-                        className={classes.text}
-                        {...getOnMouseProps({ "target": "text" })}
-                    >
-                        {basename}
-                    </Typography>
+                    <Box clone {...getOnMouseProps({ "target": "text" })}>
+                        <Typography className={classes.text} >
+                            {basename}
+                        </Typography>
+                    </Box>
                     :
                     <form className={classes.root} noValidate autoComplete="off">
                         <Input
                             className={classes.input}
                             defaultValue={editedBasename}
-                            inputProps={{ "aria-label": "description" }}
+                            inputProps={{ "aria-label": t("description") }}
                             autoFocus={true}
                             color="secondary"
                             disabled={isRenameRequestBeingProcessed}
                             endAdornment={
                                 !isRenameRequestBeingProcessed ? undefined :
                                     <InputAdornment position="end">
-                                        <CircularProgress style={{ "color": theme.palette.text.primary }} size={10} />
+                                        <CircularProgress color="textPrimary" size={10} />
                                     </InputAdornment>
                             }
                             multiline={true}
@@ -303,4 +306,11 @@ export function ExplorerItem(props: Props) {
 
 }
 
+export declare namespace ExplorerItem {
+
+    export type I18nScheme = {
+        description: undefined;
+    };
+
+}
 

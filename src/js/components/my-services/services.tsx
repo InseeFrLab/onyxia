@@ -4,7 +4,7 @@ import Cards from './cards';
 import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteServices } from 'js/api/my-lab';
-import { useSelector } from "app/redux/hooks";
+import { useSelector } from "app/libHooks";
 
 interface Props {
 	groupId: string;

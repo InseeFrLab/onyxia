@@ -161,7 +161,7 @@ async function createStoreForLoggedUser(
 
     store.dispatch(
         secretExplorerUseCase.thunks.navigateToPath(
-            { "path": (await parseOidcAccessToken(oidcClient)).idep }
+            { "directoryPath": (await parseOidcAccessToken(oidcClient)).idep }
         )
     );
 
@@ -286,6 +286,10 @@ export const thunks = {
     [appConstantsUseCase.name]: appConstantsUseCase.thunks,
     [tokensUseCase.name]: tokensUseCase.thunks,
     [app.name]: app.thunk
+};
+
+export const pure = {
+    [secretExplorerUseCase.name]: secretExplorerUseCase.pure
 };
 
 export type Store = AsyncReturnType<typeof createStore>;
