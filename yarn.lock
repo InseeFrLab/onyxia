@@ -10221,6 +10221,11 @@ minimal-polyfills@^2.1.5:
   resolved "https://registry.yarnpkg.com/minimal-polyfills/-/minimal-polyfills-2.1.5.tgz#19c91384dc56f94fe5f094eceac708eb6380fe0a"
   integrity sha512-VUpTs1DaSA/M90eZ2yhl9WBSsaY0RG5V+Qo+NDd/Z6c0p4JzfHg4Vh5U+9U/8iuGt7S/9m2+LMLBaiaFg5QM5w==
 
+minimal-polyfills@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/minimal-polyfills/-/minimal-polyfills-2.1.6.tgz#eab50832add31afd40a22b38fb76d1fdcd2a51e4"
+  integrity sha512-vqoxj7eMzsqX0M6/dkgoNFPw6Mztgn5qjSl0bWGboQeU7Y4UPLeyoqQw6JI+0qmBcJYdkr3nK7dqY8u/fgRp5g==
+
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
