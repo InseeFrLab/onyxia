@@ -8,6 +8,7 @@ import { basename as pathBasename, join as pathJoin, dirname as pathDirname } fr
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
+import { unwrapWritableDraft } from "app/utils/unwrapWritableDraft";
 
 const getEvtIsCreatingOrRenaming = memoize(
     (...[]: [Dependencies]) => Evt.create(false)
@@ -48,6 +49,7 @@ export declare namespace SecretExplorerState {
         state: "SHOWING SECRET";
         secretWithMetadata: SecretWithMetadata;
         isBeingRenamed: boolean;
+        isBeingEdited: boolean;
     };
 
 
@@ -132,7 +134,8 @@ const { reducer, actions } = createSlice({
                 secretWithMetadata,
                 "isBeingRenamed": false,
                 secrets,
-                directories
+                directories,
+                "isBeingEdited": false
             });
 
         },
@@ -250,6 +253,48 @@ const { reducer, actions } = createSlice({
             })()]
 
             relevantArray.splice(relevantArray.indexOf(basename), 1);
+
+        },
+        "editSecretStarted": (
+            state,
+            { payload }: PayloadAction<{ key: string; } & ({ action: "add"; value: string; } | { action: "remove"; })>
+        ) => {
+
+            assert(state.state === "SHOWING SECRET");
+
+            //NOTE: we use unwrapWritableDraft because otherwise the type
+            //instantiation is too deep. But unwrapWritableDraft is the id function
+
+            const { secret } = unwrapWritableDraft(state).secretWithMetadata;
+
+            switch (payload.action) {
+                case "add": {
+                    const { key, value } = payload;
+                    secret[key] = value;
+                } break;
+                case "remove": {
+                    const { key } = payload;
+                    delete secret[key];
+                } break;
+            }
+
+            state.isBeingEdited = true;
+
+        },
+        "editSecretCompleted": (
+            state,
+            { payload }: PayloadAction<{ metadata: SecretWithMetadata["metadata"]; }>
+        ) => {
+
+            const { metadata } = payload;
+
+            if (state.state !== "SHOWING SECRET") {
+                return;
+            }
+
+            state.secretWithMetadata.metadata = metadata;
+
+            state.isBeingEdited = false;
 
         }
 
@@ -615,7 +660,51 @@ export const thunks = {
 
             }
 
-        }
+        },
+
+    "addKeyValue":
+        (params: {
+            key: string;
+            value: string;
+        }): AppThunk => async (...args) => {
+
+
+            const { key, value } = params;
+
+            const [dispatch, , { secretsManagerClient }] = args;
+
+            dispatch(
+                actions.editSecretStarted(
+                    { "action": "add", key, value }
+                )
+            );
+
+            TODO
+
+            
+
+
+
+        },
+    "removeKeyValue":
+        (params: {
+            key: string;
+        }): AppThunk => async (...args) => {
+
+            const { key } = params;
+
+            const [dispatch, , { secretsManagerClient }] = args;
+
+            dispatch(actions.addOrRemoveKeyValueStarted(
+
+
+
+
+
+
+        },
+
+
 
 
 };
@@ -736,6 +825,42 @@ const getSecretsManagerClientExtension = memoize(
                         .map(filePathRelative => pathJoin(path, filePathRelative))
                         .map(filePath => secretsManagerClient.delete({ "path": filePath }))
                 );
+
+            },
+            "editSecret": async (
+                params: {
+                    path: string;
+                    key: string;
+                } & ({ action: "addOrOverwriteKeyValue"; value: Secret.Value; } | { action: "removeKeyValue"; })
+            ): Promise<{ newMetadata: SecretWithMetadata["metadata"]; }> => {
+
+                const { path } = params;
+
+                const { secret } = await secretsManagerClient.get({ path });
+
+                await secretsManagerClient.delete({ path });
+
+                switch (params.action) {
+                    case "addOrOverwriteKeyValue": {
+                        const { key, value } = params;
+
+                        secret[key] = value;
+
+                    } break;
+                    case "removeKeyValue": {
+
+                        const { key } = params;
+
+                        delete secret[key];
+
+                    } break;
+                }
+
+                await secretsManagerClient.put({ path, secret });
+
+                const { metadata } = await secretsManagerClient.get({ path });
+
+                return { "newMetadata": metadata };
 
             }
         };
