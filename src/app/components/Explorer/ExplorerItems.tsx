@@ -9,6 +9,7 @@ import memoize from "memoizee";
 import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import { withProps } from "app/utils/withProps";
+import { getKeyPropFactory } from "app/utils/getKeyProp";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -80,15 +81,22 @@ export function ExplorerItems(props: Props) {
         [windowInnerWidth, theme]
     );
 
+    const [{ getKeyProp, transfersKeyProp }] = useState(
+        () => getKeyPropFactory<{
+            kind: "directory" | "file";
+            basename: string;
+        }>()
+    );
+
     const onMouseEventFactory = useMemo(
         () => memoize(
-            (kind: "file" | "directory", basename: string, i: number) =>
+            (kind: "file" | "directory", basename: string) =>
                 ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
                     switch (type) {
                         case "down":
 
-                            const key = getKey({ kind, i });
+                            const key = getKeyProp({ kind, basename });
 
                             if (target === "text" && selectedItemKey === key) {
 
@@ -113,16 +121,25 @@ export function ExplorerItems(props: Props) {
                     }
                 }
         ),
-        [onOpen, selectedItemKey]
+        [onOpen, selectedItemKey, getKeyProp]
     );
+
 
     const onEditedBasenameFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) =>
-                    onEditedBasename({ kind, basename, editedBasename }),
+                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) => {
+
+                    onEditedBasename({ kind, basename, editedBasename });
+
+                    transfersKeyProp({
+                        "toValues": { kind, "basename": editedBasename },
+                        "fromValues": { kind, basename }
+                    });
+
+                }
         ),
-        [onEditedBasename]
+        [onEditedBasename, transfersKeyProp]
     );
 
     useEffect(
@@ -174,44 +191,34 @@ export function ExplorerItems(props: Props) {
                         case "directory": return directories;
                         case "file": return files;
                     }
-                })()).map(
-                    (basename, i) => {
+                })()).map(basename => {
 
-                        const key = getKey({ kind, i });
-                        const isSelected = selectedItemKey === key;
+                    const key = getKeyProp({ kind, basename });
+                    const isSelected = selectedItemKey === key;
 
-                        return (
-                            <Grid item key={key}>
-                                <ExplorerItem
-                                    kind={kind}
-                                    basename={basename}
-                                    isSelected={isSelected}
-                                    isBeingEdited={isSelected && isSelectedItemBeingEdited}
-                                    isRenameRequestBeingProcessed={
-                                        renameRequestBeingProcessed !== undefined &&
-                                        renameRequestBeingProcessed.kind === kind &&
-                                        renameRequestBeingProcessed.basename === basename
-                                    }
-                                    standardizedWidth={standardizedWidth}
-                                    onMouseEvent={onMouseEventFactory(kind, basename, i)}
-                                    onEditedBasename={onEditedBasenameFactory(kind, basename)}
-                                    getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
-                                />
-                            </Grid>
-                        );
+                    return (
+                        <Grid item key={key}>
+                            <ExplorerItem
+                                kind={kind}
+                                basename={basename}
+                                isSelected={isSelected}
+                                isBeingEdited={isSelected && isSelectedItemBeingEdited}
+                                isRenameRequestBeingProcessed={
+                                    renameRequestBeingProcessed !== undefined &&
+                                    renameRequestBeingProcessed.kind === kind &&
+                                    renameRequestBeingProcessed.basename === basename
+                                }
+                                standardizedWidth={standardizedWidth}
+                                onMouseEvent={onMouseEventFactory(kind, basename)}
+                                onEditedBasename={onEditedBasenameFactory(kind, basename)}
+                                getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
+                            />
+                        </Grid>
+                    );
 
-                    }
-                ))}
+                }))}
 
         </Grid>
     );
 
-}
-
-function getKey(params: {
-    kind: "file" | "directory",
-    i: number
-}): string {
-    const { kind, i } = params;
-    return `${kind}${i}`;
 }
