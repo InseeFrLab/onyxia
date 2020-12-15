@@ -32,7 +32,7 @@ export type Props = {
 
     isBeingEdited: boolean;
 
-    isRenameRequestBeingProcessed: boolean;
+    isCircularProgressShown: boolean;
 
     /** 
      * Invoked when the component have been clicked once 
@@ -116,7 +116,7 @@ export function ExplorerItem(props: Props) {
         visualRepresentationOfAFile,
         kind,
         basename,
-        isRenameRequestBeingProcessed,
+        isCircularProgressShown,
         standardizedWidth,
         onMouseEvent,
         onEditedBasename,
@@ -128,8 +128,13 @@ export function ExplorerItem(props: Props) {
     const [isBeingEdited, setIsBeingEdited] = useState(props.isBeingEdited);
 
     useEffect(
-        () => { setIsBeingEdited(props.isBeingEdited); },
-        [props.isBeingEdited]
+        () => {
+            setIsBeingEdited(
+                props.isBeingEdited ||
+                isCircularProgressShown
+            );
+        },
+        [props.isBeingEdited, isCircularProgressShown]
     );
 
 
@@ -285,9 +290,9 @@ export function ExplorerItem(props: Props) {
                             inputProps={{ "aria-label": t("description") }}
                             autoFocus={true}
                             color="secondary"
-                            disabled={isRenameRequestBeingProcessed}
+                            disabled={isCircularProgressShown}
                             endAdornment={
-                                !isRenameRequestBeingProcessed ? undefined :
+                                !isCircularProgressShown ? undefined :
                                     <InputAdornment position="end">
                                         <CircularProgress color="textPrimary" size={10} />
                                     </InputAdornment>
