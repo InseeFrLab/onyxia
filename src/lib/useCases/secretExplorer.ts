@@ -8,7 +8,7 @@ import { basename as pathBasename, join as pathJoin, dirname as pathDirname } fr
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
-import { unwrapWritableDraft } from "app/utils/unwrapWritableDraft";
+import { unwrapWritableDraft } from "app/utils/unwrapWritableDraft";
 
 const getEvtIsCreatingOrRenaming = memoize(
     (...[]: [Dependencies]) => Evt.create(false)
@@ -257,7 +257,14 @@ const { reducer, actions } = createSlice({
         },
         "editSecretStarted": (
             state,
-            { payload }: PayloadAction<{ key: string; } & ({ action: "add"; value: string; } | { action: "remove"; })>
+            { payload }: PayloadAction<{
+                key: string;
+            } & ({
+                action: "addOrOverwriteKeyValue";
+                value: string;
+            } | {
+                action: "removeKeyValue";
+            })>
         ) => {
 
             assert(state.state === "SHOWING SECRET");
@@ -268,11 +275,11 @@ const { reducer, actions } = createSlice({
             const { secret } = unwrapWritableDraft(state).secretWithMetadata;
 
             switch (payload.action) {
-                case "add": {
+                case "addOrOverwriteKeyValue": {
                     const { key, value } = payload;
                     secret[key] = value;
                 } break;
-                case "remove": {
+                case "removeKeyValue": {
                     const { key } = payload;
                     delete secret[key];
                 } break;
@@ -283,16 +290,16 @@ const { reducer, actions } = createSlice({
         },
         "editSecretCompleted": (
             state,
-            { payload }: PayloadAction<{ metadata: SecretWithMetadata["metadata"]; }>
+            { payload }: PayloadAction<{ newMetadata: SecretWithMetadata["metadata"]; }>
         ) => {
 
-            const { metadata } = payload;
+            const { newMetadata } = payload;
 
             if (state.state !== "SHOWING SECRET") {
                 return;
             }
 
-            state.secretWithMetadata.metadata = metadata;
+            state.secretWithMetadata.metadata = newMetadata;
 
             state.isBeingEdited = false;
 
@@ -661,51 +668,37 @@ export const thunks = {
             }
 
         },
-
-    "addKeyValue":
+    "editCurrentlyShownSecret":
         (params: {
             key: string;
-            value: string;
-        }): AppThunk => async (...args) => {
 
+        } & ({
+            action: "addOrOverwriteKeyValue";
+            value: string
+        } | {
+            action: "removeKeyValue";
+        })): AppThunk => async (...args) => {
 
-            const { key, value } = params;
+            const [dispatch, getState, { secretsManagerClient }] = args;
 
-            const [dispatch, , { secretsManagerClient }] = args;
+            dispatch(actions.editSecretStarted(params));
+
+            const { secretsManagerClientExtension } =
+                getSecretsManagerClientExtension(secretsManagerClient);
+
+            const { newMetadata } = await secretsManagerClientExtension.editSecret({
+                ...params,
+                "path": getState().secretExplorer.currentPath
+            }).then(id, (error: Error) => ({ "newMetadata": error }));
 
             dispatch(
-                actions.editSecretStarted(
-                    { "action": "add", key, value }
-                )
+                newMetadata instanceof Error ?
+                    actions.errorOcurred({ "errorMessage": newMetadata.message }) :
+                    actions.editSecretCompleted({ newMetadata })
             );
 
-            TODO
 
-            
-
-
-
-        },
-    "removeKeyValue":
-        (params: {
-            key: string;
-        }): AppThunk => async (...args) => {
-
-            const { key } = params;
-
-            const [dispatch, , { secretsManagerClient }] = args;
-
-            dispatch(actions.addOrRemoveKeyValueStarted(
-
-
-
-
-
-
-        },
-
-
-
+        }
 
 };
 
@@ -831,7 +824,12 @@ const getSecretsManagerClientExtension = memoize(
                 params: {
                     path: string;
                     key: string;
-                } & ({ action: "addOrOverwriteKeyValue"; value: Secret.Value; } | { action: "removeKeyValue"; })
+                } & ({
+                    action: "addOrOverwriteKeyValue";
+                    value: Secret.Value;
+                } | {
+                    action: "removeKeyValue";
+                })
             ): Promise<{ newMetadata: SecretWithMetadata["metadata"]; }> => {
 
                 const { path } = params;
