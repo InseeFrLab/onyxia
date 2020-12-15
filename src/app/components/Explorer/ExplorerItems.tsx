@@ -130,12 +130,12 @@ export function ExplorerItems(props: Props) {
             (kind: "file" | "directory", basename: string) =>
                 ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) => {
 
-                    onEditedBasename({ kind, basename, editedBasename });
-
                     transfersKeyProp({
                         "toValues": { kind, "basename": editedBasename },
                         "fromValues": { kind, basename }
                     });
+
+                    onEditedBasename({ kind, basename, editedBasename });
 
                 }
         ),
