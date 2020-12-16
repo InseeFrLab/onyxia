@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { DialogTitle } from "../designSystem/DialogTitle";
 import { DialogContent } from "app/components/designSystem/DialogContent";
@@ -19,11 +19,11 @@ export type Props = {
   getIsValidName(name: string): boolean;
 };
 
-export function ItemCreationDialog(props: Props) {
+export function ExplorerItemCreationDialog(props: Props) {
 
   const { isOpen, wordForFile, createWhat, callback, getIsValidName } = props;
 
-  const { t } = useTranslation("CreateFileOrDirectoryDialog");
+  const { t } = useTranslation("ExplorerItemCreationDialog");
 
   const [name, setName] = useState("");
 
@@ -90,7 +90,7 @@ export function ItemCreationDialog(props: Props) {
 
 }
 
-export declare namespace ItemCreationDialog {
+export declare namespace ExplorerItemCreationDialog {
 
   export type I18nScheme = {
     file: undefined,
@@ -106,7 +106,7 @@ export declare namespace ItemCreationDialog {
 }
 
 //NOTE: Could be anything, just need to be uniq across the DOM.
-const titleId = symToStr({ CreateFileOrDirectoryDialog: ItemCreationDialog });
+const titleId = symToStr({ ExplorerItemCreationDialog });
 
 
 

@@ -14,7 +14,7 @@ import { Typography } from "./Typography";
 export type Props = {
     id: string;
     children: NonNullable<React.ReactNode>;
-    subtitle: NonNullable<React.ReactNode>;
+    subtitle: React.ReactNode;
 };
 
 export const defaultProps: Optional<Props> = {
@@ -56,7 +56,7 @@ export function DialogTitle(props: Props) {
             classes={dialogTitleClasses}
         >
             <Typography variant="h2">{children}</Typography>
-            {subtitle === null ?
+            {!subtitle ?
                 null :
                 <Typography className={classes.subtitle} variant="subtitle1">{subtitle}</Typography>
             }

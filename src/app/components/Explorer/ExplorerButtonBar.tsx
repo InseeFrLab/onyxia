@@ -5,9 +5,11 @@ import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
 
-export type Action = "rename" | "create secret" | "create directory" | "delete" | "copy path"
+export type Action = "rename" | "create item" | "create directory" | "delete" | "copy path"
 
 export type Props = {
+    /** [HIGHER ORDER] */
+    wordForFile: "file" | "secret";
 
     isThereAnItemSelected: boolean;
     callback(params: { action: Action; }): void;
@@ -16,7 +18,7 @@ export type Props = {
 
 export function ExplorerButtonBar(props: Props) {
 
-    const { callback, isThereAnItemSelected } = props;
+    const { wordForFile, callback, isThereAnItemSelected } = props;
 
     const { t } = useTranslation("ExplorerButtonBar");
 
@@ -31,7 +33,7 @@ export function ExplorerButtonBar(props: Props) {
     return (
         <> { ([
             "rename",
-            "create secret",
+            "create item",
             "create directory",
             "delete",
             "copy path"
@@ -41,7 +43,7 @@ export function ExplorerButtonBar(props: Props) {
                     switch (action) {
                         case "copy path": return "info" as const;
                         case "create directory": return "info";
-                        case "create secret": return "info";
+                        case "create item": return "info";
                         case "delete": return "info";
                         case "rename": return "info";
                     }
@@ -50,7 +52,11 @@ export function ExplorerButtonBar(props: Props) {
                 key={action}
                 onClick={onClickFactory(action)}
             >
-                {t(action)}
+                {
+                    action === "create item" ?
+                        t("create what", { "what": t(wordForFile) }) :
+                        t(action)
+                }
             </Button>
         )} </>
     );
@@ -58,5 +64,9 @@ export function ExplorerButtonBar(props: Props) {
 }
 
 export declare namespace ExplorerButtonBar {
-    export type I18nScheme = Record<Action, undefined>;
+    export type I18nScheme = Record<Exclude<Action, "create item">, undefined> & {
+        "create what": { what: string; };
+        secret: undefined;
+        file: undefined;
+    };
 }

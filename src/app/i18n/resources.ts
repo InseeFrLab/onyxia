@@ -2,10 +2,10 @@ import { symToStr } from "app/utils/symToStr";
 import { Reflect } from "app/utils/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { ItemCreationDialog } from "app/components/Explorer/ItemCreationDialog";
-import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
+import { ExplorerItemCreationDialog } from "app/components/Explorer/ExplorerItemCreationDialog";
+import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
-import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
+import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -16,7 +16,7 @@ type ToTranslations<S extends Scheme> = {
 };
 
 const reflectedI18nSchemes = {
-    [symToStr({ ItemCreationDialog })]: Reflect<ItemCreationDialog.I18nScheme>(),
+    [symToStr({ ExplorerItemCreationDialog })]: Reflect<ExplorerItemCreationDialog.I18nScheme>(),
     [symToStr({ MySecretsHeader })]: Reflect<MySecretsHeader.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>()
@@ -28,7 +28,7 @@ export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nScheme
 
 export type SupportedLanguages = "en" | "fr";
 
-const common = id<Record<SupportedLanguages, Record< "file" | "secret" | "create" | "cancel" | "rename" | "delete", string>>>({
+const common = id<Record<SupportedLanguages, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete", string>>>({
     "en": {
         "file": "file",
         "secret": "secret",
@@ -51,13 +51,13 @@ const common = id<Record<SupportedLanguages, Record< "file" | "secret" | "create
 
 export const resources = id<Record<SupportedLanguages, Translations>>({
     "en": {
-        "ItemCreationDialog": {
+        "ExplorerItemCreationDialog": {
             ...common.en,
             "directory": "directory",
             "create new": "Create new {{what}}",
             "sort out your": `Create directories to sort out your {{what}}`,
             "name of the": `Name of the {{what}}`,
-            
+
         },
         "MySecretsHeader": {
             "page title": "My Secrets",
@@ -74,12 +74,12 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             ...common.en,
             "copy path": "Copy path",
             "create directory": "Create directory",
-            "create secret": "Create secret",
+            "create what": "Create {{what}}",
         }
     },
     "fr": {
         /* spell-checker: disable */
-        "ItemCreationDialog": {
+        "ExplorerItemCreationDialog": {
             ...common.fr,
             "directory": "dossier",
             "create new": "Crée nouveau {{what}}",
@@ -99,7 +99,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             ...common.fr,
             "copy path": "Copier le chemin",
             "create directory": "Nouveau dossier",
-            "create secret": "Nouveau secret"
+            "create what": "Nouveau {{what}}"
         }
         /* spell-checker: enable */
     }
