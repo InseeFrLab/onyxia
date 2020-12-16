@@ -5,7 +5,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
 
-export type Action = "rename" | "create item" | "create directory" | "delete" | "copy path"
+export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path"
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -33,7 +33,7 @@ export function ExplorerButtonBar(props: Props) {
     return (
         <> { ([
             "rename",
-            "create item",
+            "create file",
             "create directory",
             "delete",
             "copy path"
@@ -43,7 +43,7 @@ export function ExplorerButtonBar(props: Props) {
                     switch (action) {
                         case "copy path": return "info" as const;
                         case "create directory": return "info";
-                        case "create item": return "info";
+                        case "create file": return "info";
                         case "delete": return "info";
                         case "rename": return "info";
                     }
@@ -53,7 +53,7 @@ export function ExplorerButtonBar(props: Props) {
                 onClick={onClickFactory(action)}
             >
                 {
-                    action === "create item" ?
+                    action === "create file" ?
                         t("create what", { "what": t(wordForFile) }) :
                         t(action)
                 }
@@ -64,7 +64,7 @@ export function ExplorerButtonBar(props: Props) {
 }
 
 export declare namespace ExplorerButtonBar {
-    export type I18nScheme = Record<Exclude<Action, "create item">, undefined> & {
+    export type I18nScheme = Record<Exclude<Action, "create file">, undefined> & {
         "create what": { what: string; };
         secret: undefined;
         file: undefined;

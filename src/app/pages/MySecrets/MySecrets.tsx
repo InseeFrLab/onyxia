@@ -2,6 +2,7 @@ import React, { useMemo, useCallback, useEffect } from "react";
 import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
 import { Container } from "app/components/designSystem/Container";
+import { copyToClipboard } from "app/utils/copyToClipboard";
 import * as lib from "lib/setup";
 
 import { useSelector, useDispatch } from "app/libHooks";
@@ -52,7 +53,7 @@ export function MySecrets() {
     );
 
     const onEditedBasename = useCallback(
-        ({ kind, basename, newBasename }: Parameters<ExplorerProps["onEditedBasename"]>[0]) =>
+        ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditedBasename"]>[0]) =>
             dispatch(
                 thunks.renameDirectoryOrSecretWithinCurrentDirectory({
                     "kind": (() => {
@@ -62,7 +63,7 @@ export function MySecrets() {
                         }
                     })(),
                     basename,
-                    newBasename
+                    "newBasename": editedBasename
                 })
             ),
         [dispatch]
@@ -107,6 +108,11 @@ export function MySecrets() {
         [dispatch]
     );
 
+    const onCopyPath = useCallback(
+        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) =>
+            copyToClipboard(path),
+        []
+    );
 
     return (
         <>
@@ -138,6 +144,7 @@ export function MySecrets() {
                     onEditedBasename={onEditedBasename}
                     onDelete={onDelete}
                     onCreate={onCreate}
+                    onCopyPath={onCopyPath}
                 />
             </Container>
         </>

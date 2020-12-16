@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -9,7 +9,7 @@ import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
 import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
-import { NonPostableEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
 
@@ -24,14 +24,17 @@ export type Props = {
     /** Assert all uniq */
     directories: string[];
 
-    directoriesBeingCreatedOrRenamed: string[];
     filesBeingCreatedOrRenamed: string[];
+    directoriesBeingCreatedOrRenamed: string[];
 
-    onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
+    onNavigate(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
 
     /** Fo signaling click on the button bar */
     evtStartEditing: NonPostableEvt<void>;
+
+    onItemSelected(params: { kind: "file" | "directory"; getBasename(): string; } | undefined): void;
+
 
 };
 
@@ -44,11 +47,12 @@ export function ExplorerItems(props: Props) {
         getIsValidBasename,
         files,
         directories,
-        onOpen,
+        onNavigate,
         onEditedBasename,
         directoriesBeingCreatedOrRenamed,
         filesBeingCreatedOrRenamed,
-        evtStartEditing
+        evtStartEditing,
+        onItemSelected
     } = props;
 
     /*
@@ -71,15 +75,6 @@ export function ExplorerItems(props: Props) {
 
     const { windowInnerWidth } = useWindowInnerWidth();
 
-
-
-    const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
-    const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
-
-    useEvt(ctx => {
-        evtStartEditing.attach(ctx, () => setIsSelectedItemBeingEdited(true));
-    }, [evtStartEditing]);
-
     const standardizedWidth = useMemo(
         (): ExplorerItemProps["standardizedWidth"] => {
 
@@ -95,6 +90,7 @@ export function ExplorerItems(props: Props) {
         [windowInnerWidth, theme]
     );
 
+
     const [{
         getKeyProp,
         transfersKeyProp,
@@ -105,6 +101,32 @@ export function ExplorerItems(props: Props) {
             basename: string;
         }>()
     );
+
+    const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        onItemSelected(
+            selectedItemKey === undefined ?
+                undefined :
+                (() => {
+
+                    const getValues = () => getValuesCurrentlyMappedToKeyProp(selectedItemKey);
+
+                    const { kind } = getValues();
+
+                    return { kind, "getBasename": () => getValues().basename };
+
+                })()
+        );
+    }, [onItemSelected, selectedItemKey, getValuesCurrentlyMappedToKeyProp]);
+
+
+    const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
+
+    useEvt(ctx => {
+        evtStartEditing.attach(ctx, () => setIsSelectedItemBeingEdited(true));
+    }, [evtStartEditing]);
+
 
     const onMouseEventFactory = useMemo(
         () => memoize(
@@ -134,12 +156,12 @@ export function ExplorerItems(props: Props) {
 
                         case "double":
                             setIsSelectedItemBeingEdited(false);
-                            onOpen({ kind, basename });
+                            onNavigate({ kind, basename });
                             break;
                     }
                 }
         ),
-        [onOpen, selectedItemKey, getKeyProp]
+        [onNavigate, selectedItemKey, getKeyProp]
     );
 
 
