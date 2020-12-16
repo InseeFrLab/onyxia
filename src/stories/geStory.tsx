@@ -39,7 +39,7 @@ export function getStoryFactory<Props>(params: {
         </I18nProvider>
 
 
-    function getThemedStory(props: Props): typeof Template {
+    function getStory(props: Props): typeof Template {
 
         const out = Template.bind({});
 
@@ -58,7 +58,7 @@ export function getStoryFactory<Props>(params: {
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
             "component": Component
         }),
-        getThemedStory
+        getStory
     };
 
 }

@@ -4,7 +4,7 @@ import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
 
 
-const { meta, getThemedStory } = getStoryFactory({
+const { meta, getStory: getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MySecretsHeader }
 });

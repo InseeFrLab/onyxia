@@ -5,14 +5,14 @@ import { Link } from "app/components/designSystem/Link";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 
-const { meta, getThemedStory } = getStoryFactory({
+const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { PageHeader }
 });
 
 export default meta;
 
-export const Vue1 = getThemedStory({
+export const Vue1 = getStory({
     "icon": "lock",
     "text1": "foo bar",
     "text2": "bar baz",
