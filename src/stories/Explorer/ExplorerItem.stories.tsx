@@ -1,6 +1,6 @@
 
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
-import { sectionName } from "../designSystem/sectionName";
+import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { pure } from "lib/setup";
 
