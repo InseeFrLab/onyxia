@@ -1,5 +1,5 @@
-
-import { assert } from "evt/tools/typeSafety/assert";
+import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export function getKeyPropFactory<T extends Record<string, string>>() {
 
@@ -13,12 +13,17 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
     })();
 
-    const stringify = (values: T) =>
-         Object
-            .keys(values)
+    const stringify = (values: T) => {
+
+        const out = {} as T;
+
+        objectKeys(values)
             .sort()
-            .map(key => values[key])
-            .join("-");
+            .forEach(key=> out[key]= values[key]);
+
+        return JSON.stringify(out);
+
+    };
 
     function getKeyProp(values: T): string {
 
@@ -48,7 +53,17 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
     }
 
+    function getValuesCurrentlyMappedToKeyProp(keyProp: string): T {
 
-    return { getKeyProp, transfersKeyProp };
+        const key = Array.from(map.keys())
+            .find(key => map.get(key)! === keyProp);
+
+        assert( key !== undefined );
+        
+        return JSON.parse(key);
+
+    }
+
+    return { getKeyProp, transfersKeyProp, getValuesCurrentlyMappedToKeyProp };
 
 }
