@@ -2,7 +2,7 @@
 import React from "react";
 import { PageHeader } from "app/components/PageHeader";
 import { Link } from "app/components/designSystem/Link";
-import { sectionName } from "./sectionName";
+import { sectionName } from "../molecules/sectionName";
 import { getStoryFactory } from "stories/geStory";
 
 const { meta, getStory } = getStoryFactory({
