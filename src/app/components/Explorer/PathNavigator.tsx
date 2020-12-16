@@ -10,7 +10,7 @@ import memoize from "memoizee";
 export type Props = {
     path: string;
     minDepth: number;
-    onNavigate(params: { relativePath: string }): void;
+    callback(params: { relativePath: string }): void;
 };
 
 const useStyles = makeStyles(
@@ -30,16 +30,16 @@ const useStyles = makeStyles(
 
 export function PathNavigator(props: Props) {
 
-    let { path, minDepth, onNavigate } = props;
+    let { path, minDepth, callback } = props;
 
     const classes = useStyles();
 
     const onClickFactory = useMemo(
         () => memoize(
             (partialPath: string) =>
-                () => onNavigate({ "relativePath": pathRelative(path, partialPath) })
+                () => callback({ "relativePath": pathRelative(path, partialPath) })
         ),
-        [onNavigate]
+        [callback]
     );
 
     const partialPaths = useMemo(() => {
