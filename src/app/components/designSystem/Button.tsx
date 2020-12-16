@@ -5,6 +5,8 @@ import MuiButton from "@material-ui/core/Button";
 import type { ButtonClassKey } from "@material-ui/core/Button";
 import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
+import type { Props as IconProps } from "./Icon";
+import { Icon } from "./Icon";
 
 export type Props = {
   /** Correspond to the app theme' color palette */
@@ -13,16 +15,18 @@ export type Props = {
   children: NonNullable<React.ReactNode>;
   disabled?: boolean;
   onClick: () => void;
+  icon?: IconProps["type"] | null;
 };
 
 export const defaultProps: Optional<Props> = {
   "color": "primary",
-  "disabled": false
+  "disabled": false,
+  "icon": null
 };
 
 
 const useStyles = makeStyles(
-  () => createStyles<Id<ButtonClassKey, "root" | "label">, {}>({
+  () => createStyles<Id<ButtonClassKey, "root" | "label">, Required<Props>>({
     "root": {
       "&.Mui-disabled > .MuiButton-label": {
       }
@@ -35,11 +39,18 @@ const useStyles = makeStyles(
 
 export function Button(props: Props) {
 
-  const { color, disabled, children } = { ...defaultProps, ...noUndefined(props) };
+  const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-  const classes = useStyles();
+  const { color, disabled, children, icon } = { ...defaultProps, ...noUndefined(props) };
 
-  return <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>;
+  const classes = useStyles(completedProps);
+
+  return (
+    <>
+      {icon !== null && <Icon type={icon} />}
+      <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>;
+    </>
+  );
 
 }
 
