@@ -15,10 +15,12 @@ export default meta;
 
 export const TextOnly = getThemedStory({
     ...defaultProps,
-    "children": "Foo bar"
+    "children": "Foo bar",
+    "onClick": console.log.bind("click!")
 });
 
 export const TextWithIcon = getThemedStory({
     ...defaultProps,
-    "children": <><Icon type="home" /> Home</>
+    "children": <><Icon type="home" /> Home</>,
+    "onClick": console.log.bind("click!")
 });
