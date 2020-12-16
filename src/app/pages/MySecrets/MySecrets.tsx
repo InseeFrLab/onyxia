@@ -1,64 +1,144 @@
-import React from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
+import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
-import { Typography } from "app/components/designSystem/Typography";
-import { CircularProgress } from "app/components/designSystem/CircularProgress";
-import { pure, thunks } from "lib/setup";
-import { join as pathJoin } from "path";
 import { Container } from "app/components/designSystem/Container";
+import * as lib from "lib/setup";
 
 import { useSelector, useDispatch } from "app/libHooks";
 
+import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
+import { Props as ExplorerProps } from "app/components/Explorer";
 
-
+const { secretExplorer: thunks } = lib.thunks;
+const { secretExplorer: pure } = lib.pure;
 
 export function MySecrets() {
 
     const state = useSelector(state => state.secretExplorer);
     const dispatch = useDispatch();
 
+    const Explorer = useMemo(
+        () => withProps(
+            SecretOrFileExplorer,
+            {
+                "type": "secret",
+                "getIsValidBasename": pure.getIsValidBasename
+            }
+        ),
+        []
+    );
+
+    useEffect(() => {
+
+        if (state.state !== "FAILURE") {
+            return;
+        }
+
+        alert(state.errorMessage);
+
+    }, [state.state]);
+
+    const onNavigate = useCallback(
+        ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) =>
+            dispatch((() => {
+                switch (kind) {
+                    case "directory":
+                        return thunks.navigateToDirectory({ "directoryRelativePath": relativePath });
+                    case "file":
+                        return thunks.navigateToSecret({ "secretRelativePath": relativePath })
+                }
+            })()),
+        [dispatch]
+    );
+
+    const onEditedBasename = useCallback(
+        ({ kind, basename, newBasename }: Parameters<ExplorerProps["onEditedBasename"]>[0]) =>
+            dispatch(
+                thunks.renameDirectoryOrSecretWithinCurrentDirectory({
+                    "kind": (() => {
+                        switch (kind) {
+                            case "file": return "secret";
+                            case "directory": return "directory"
+                        }
+                    })(),
+                    basename,
+                    newBasename
+                })
+            ),
+        [dispatch]
+    );
+
+    const onDelete = useCallback(
+        async ({ kind, basename }: Parameters<ExplorerProps["onDelete"]>[0]) => {
+
+            console.log("TODO: Deletion started");
+
+            await dispatch(
+                thunks.deleteDirectoryOrSecretWithinCurrentDirectory({
+                    "kind": (() => {
+                        switch (kind) {
+                            case "file": return "secret";
+                            case "directory": return "directory"
+                        }
+                    })(),
+                    basename
+                })
+            );
+
+            console.log("TODO: Deletion completed");
+
+        },
+        [dispatch]
+    );
+
+    const onCreate = useCallback(
+        ({ kind, basename }: Parameters<ExplorerProps["onCreate"]>[0]) =>
+            dispatch(
+                thunks.createSecretOrDirectory({
+                    "kind": (() => {
+                        switch (kind) {
+                            case "file": return "secret";
+                            case "directory": return "directory"
+                        }
+                    })(),
+                    basename
+                })
+            ),
+        [dispatch]
+    );
+
 
     return (
         <>
             <MySecretsHeader />
-            <Typography>{state.currentPath}</Typography>
             <Container maxWidth="sm">
-                {(() => {
-                    switch (state.state) {
-                        case "FAILED": throw new Error(state.errorMessage);
-                        case "LOADING": return <CircularProgress />;
-                        case "LOADED": return (
-                            <ExplorerItems
-                                directories={state.directories}
-                                files={state.secrets}
-                                onEditedBasename={({ basename, editedBasename, kind }) =>
-                                    console.log("TODO: Not implemented yet", { basename, editedBasename, kind })}
-                                renameRequestBeingProcessed={undefined}
-                                onOpen={
-                                    ({ basename, kind }) => {
-
-                                        if (kind === "file") {
-
-                                            console.log("TODO: Not implemented yet");
-
-                                            return;
-
-                                        }
-
-
-                                        dispatch(
-                                            thunks.secretExplorer.navigateToPath(
-                                                { "path": pathJoin(state.currentPath, basename) }
-                                            )
-                                        );
-
-                                    }
-                                }
-
-                            />
-                        );
+                <Explorer
+                    currentPath={state.currentPath}
+                    isNavigating={state.state === "NAVIGATION ONGOING"}
+                    file={
+                        state.state !== "SHOWING SECRET" ? null :
+                            <div>
+                                <pre>
+                                    {JSON.stringify(state.secretWithMetadata, null, 4)
+                                        .replace(/["{[,\}\]]/g, "")}
+                                </pre>
+                            </div>
                     }
-
-                })()})
+                    files={state.secrets}
+                    directories={state.directories}
+                    directoriesBeingCreatedOrRenamed={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.directoriesBeingCreatedOrRenamed
+                    }
+                    filesBeingCreatedOrRenamed={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.secretsBeingCreatedOrRenamed
+                    }
+                    onNavigate={onNavigate}
+                    onEditedBasename={onEditedBasename}
+                    onDelete={onDelete}
+                    onCreate={onCreate}
+                />
             </Container>
         </>
     );

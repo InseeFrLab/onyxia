@@ -4,13 +4,13 @@ import { Typography } from "app/components/designSystem/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import clsx from "clsx"
-import { basename as pathBasename } from "path";
+import { basename as pathBasename, relative as pathRelative } from "path";
 import memoize from "memoizee";
 
 export type Props = {
     path: string;
     minDepth: number;
-    onNavigate(params: { partialPath: string }): void;
+    onNavigate(params: { relativePath: string }): void;
 };
 
 const useStyles = makeStyles(
@@ -37,7 +37,7 @@ export function PathNavigator(props: Props) {
     const onClickFactory = useMemo(
         () => memoize(
             (partialPath: string) =>
-                () => onNavigate({ partialPath })
+                () => onNavigate({ "relativePath": pathRelative(path, partialPath) })
         ),
         [onNavigate]
     );

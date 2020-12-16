@@ -13,13 +13,17 @@ export type Props = {
     getIsValidBasename(params: { basename: string; }): boolean;
 
     currentPath: string;
-
+    isNavigating: boolean;
     file: React.ReactNode;
     files: string[];
     directories: string[];
-
-    onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
-    onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
+    directoriesBeingCreatedOrRenamed: string[];
+    filesBeingCreatedOrRenamed: string[];
+    onNavigate(params: { kind: "file" | "directory"; relativePath: string; }): void;
+    onEditedBasename(params: { kind: "file" | "directory"; basename: string; newBasename: string; }): void;
+    onDelete(params: { kind: "file" | "directory"; basename: string; }): void;
+    onCreate(params: { kind: "file" | "directory"; basename: string; }): void;
+    
 };
 
 export function Explorer(props: Props) {
@@ -53,6 +57,7 @@ export function Explorer(props: Props) {
         [type]
     );
 
+    return null;
 
 
 
