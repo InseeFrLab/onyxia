@@ -7,7 +7,9 @@ import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 export declare type Secret = { [key: string]: Secret.Value; };
 
 export declare namespace Secret {
-    export type Value = string | boolean | number | null | Value[] | { [key: string]: Value; };
+    //TODO: Restore the real definition once TS 4.x will be supported by CRA
+    //export type Value = string | boolean | number | null | Value[] | { [key: string]: Value; };
+    export type Value = string | boolean | number | null;
 
 }
 

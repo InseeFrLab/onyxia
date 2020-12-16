@@ -9,5 +9,6 @@
         "postgresql",
         "rapidsai",
         "tensorflow"
-    ]
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
