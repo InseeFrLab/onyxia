@@ -2,8 +2,9 @@
 import React, { useMemo } from "react";
 import { withProps } from "app/utils/withProps";
 import { ExplorerItems as SecretOrFileExplorerItems } from "app/components/Explorer/ExplorerItems";
-import { ItemCreationDialog as SecretOrFileItemCreationDialog } from "app/components/Explorer/ItemCreationDialog";
-import { PathNavigator } from "./PathNavigator";
+import { ExplorerItemCreationDialog as SecretOrFileItemCreationDialog } from "app/components/Explorer/ExplorerItemCreationDialog";
+import { PathNavigator } from "./PathNavigator";
+import { ExplorerButtonBar as SecretOrFileExplorerButtonBar } from "./ExplorerButtonBar";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -17,8 +18,6 @@ export type Props = {
     files: string[];
     directories: string[];
 
-    /** basename refers to the new base name that should have already be updated */
-    renameRequestBeingProcessed: { kind: "file" | "directory", basename: string } | undefined;
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
 };
@@ -27,7 +26,7 @@ export function Explorer(props: Props) {
 
     const { type, getIsValidBasename } = props;
 
-    const ExplorerItems = useMemo(
+    const Items = useMemo(
         () => withProps(
             SecretOrFileExplorerItems,
             {
@@ -45,6 +44,16 @@ export function Explorer(props: Props) {
         ),
         [type]
     );
+
+    const ButtonBar = useMemo(
+        () => withProps(
+            SecretOrFileExplorerButtonBar,
+            { "wordForFile": type }
+        ),
+        [type]
+    );
+
+
 
 
 
