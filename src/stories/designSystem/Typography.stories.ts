@@ -2,9 +2,9 @@
 
 import { Typography, defaultProps } from "app/components/designSystem/Typography";
 import { sectionName } from "./sectionName";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 
-const { meta, getThemedStory } = getThemedStoryFactory({
+const { meta, getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Typography }
 });
