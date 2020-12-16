@@ -6,9 +6,9 @@ export function withProps<P extends object, K extends keyof P>(
     preInjectedProps: { [Key in K]: P[Key];}
 ) {
 
-    const Component_: any= Component;
+    const UntypedComponent: any= Component;
 
-    return (props: { [Key in Exclude<keyof P, K>]: P[Key]; }) => <Component_ {...preInjectedProps} {...props} />;
+    return (props: { [Key in Exclude<keyof P, K>]: P[Key]; }) => <UntypedComponent {...preInjectedProps} {...props} />;
 
 }
 

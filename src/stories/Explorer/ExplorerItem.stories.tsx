@@ -2,7 +2,7 @@
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
-import { pure } from "lib/setup";
+//import { pure } from "lib/setup";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -21,6 +21,7 @@ export const Vue1 = getStory({
     "isCircularProgressShown": false,
     "onMouseEvent": console.log.bind("onMouseEvent"),
     "onEditedBasename": console.log.bind("onEditedBasename"),
-    "getIsValidBasename": pure.secretExplorer.getIsValidBasename
+    //"getIsValidBasename": pure.secretExplorer.getIsValidBasename
+    "getIsValidBasename": ()=> true,
 });
 

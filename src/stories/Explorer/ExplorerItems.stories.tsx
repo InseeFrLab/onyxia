@@ -5,7 +5,7 @@ import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
-import { pure } from "lib/setup";
+//import { pure } from "lib/setup";
 import { Evt } from "evt";
 
 
@@ -58,7 +58,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
             })();
 
         },
-        [files, directories]
+        [files, directories, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
     );
 
     return (
@@ -82,7 +82,7 @@ const { meta, getStory } = getStoryFactory({
 });
 
 export default {
-    meta,
+    ...meta,
     // https://storybook.js.org/docs/react/essentials/controls
     "argTypes": {
         "containerWidth": {
@@ -97,7 +97,8 @@ export default {
 export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
-    "getIsValidBasename": pure.secretExplorer.getIsValidBasename,
+    //"getIsValidBasename": pure.secretExplorer.getIsValidBasename,
+    "getIsValidBasename": ()=> true,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "onNavigate": console.log.bind("onNavigate"),

@@ -27,7 +27,7 @@ export function ExplorerItemCreationDialog(props: Props) {
 
   const [name, setName] = useState("");
 
-  const isValidName = useMemo(() => getIsValidName(name), [name]);
+  const isValidName = useMemo(() => getIsValidName(name), [name, getIsValidName]);
 
   const onCloseFactory = useMemo(
     () => memoize(
@@ -90,6 +90,7 @@ export function ExplorerItemCreationDialog(props: Props) {
 
 }
 
+// eslint-disable-next-line no-redeclare
 export declare namespace ExplorerItemCreationDialog {
 
   export type I18nScheme = {
