@@ -4,14 +4,14 @@ import { sectionName } from "../designSystem/sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { pure } from "lib/setup";
 
-const { meta, getThemedStory } = getStoryFactory({
+const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { ExplorerItem }
 });
 
 export default meta;
 
-export const Vue1 = getThemedStory({
+export const Vue1 = getStory({
     "visualRepresentationOfAFile": "secret",
     "kind": "file",
     "basename": "my-project-envs",

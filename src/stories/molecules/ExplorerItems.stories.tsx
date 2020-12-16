@@ -72,7 +72,7 @@ function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingP
 
 }
 
-const { meta, getThemedStory } = getStoryFactory({
+const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
 });
@@ -90,7 +90,7 @@ export default {
 };
 
 
-export const Vue1 = getThemedStory({
+export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
