@@ -135,7 +135,7 @@ export function Explorer(props: Props) {
             }
 
         },
-        [evtStartEditing, selectedItem]
+        [evtStartEditing, selectedItem, currentPath, onCopyPath, onDelete]
     );
 
 
@@ -176,7 +176,7 @@ export function Explorer(props: Props) {
             setDialogIsOpen(false);
 
         },
-        []
+        [dialogCreateWhat, onCreate]
     );
 
 
@@ -187,7 +187,7 @@ export function Explorer(props: Props) {
                 "relativePath": pathJoin(currentPath, basename)
             }),
 
-        [onNavigate]
+        [onNavigate, currentPath]
     );
 
 
@@ -198,7 +198,7 @@ export function Explorer(props: Props) {
                 relativePath
             })
         },
-        []
+        [onNavigate]
     );
 
     return (

@@ -56,7 +56,16 @@ export function getStoryFactory<Props>(params: {
     return {
         "meta": id<Meta>({
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
-            "component": Component
+            "component": Component,
+            // https://storybook.js.org/docs/react/essentials/controls
+            /*
+            "argTypes": {
+                "lang": {
+                    "control": "inline-radio",
+                    "options": ["en", "fr"]
+                }
+            }
+            */
         }),
         getStory
     };

@@ -11,7 +11,7 @@ import { crawlFactory } from "lib/utils/crawl";
 import { unwrapWritableDraft } from "app/utils/unwrapWritableDraft";
 
 const getEvtIsCreatingOrRenaming = memoize(
-    (...[]: [Dependencies]) => Evt.create(false)
+    (_: Dependencies) => Evt.create(false)
 );
 
 
