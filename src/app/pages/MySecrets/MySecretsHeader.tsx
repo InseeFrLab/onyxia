@@ -17,6 +17,7 @@ export function MySecretsHeader() {
 
 }
 
+// eslint-disable-next-line no-redeclare
 export declare namespace MySecretsHeader {
 
     export type I18nScheme = {

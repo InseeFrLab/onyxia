@@ -89,7 +89,7 @@
     "typeface-roboto": "^0.0.75"
   },
   "scripts": {
-    "postinstall": "cd node_modules && mv react-scripts/node_modules/babel-loader .",
+    "postinstall": "cd node_modules && cp -r react-scripts/node_modules/babel-loader .",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",

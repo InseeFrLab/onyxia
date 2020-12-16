@@ -299,6 +299,7 @@ export function ExplorerItem(props: Props) {
 
 }
 
+// eslint-disable-next-line no-redeclare
 export declare namespace ExplorerItem {
 
     export type I18nScheme = {
