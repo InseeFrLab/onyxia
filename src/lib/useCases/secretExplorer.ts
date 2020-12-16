@@ -312,15 +312,12 @@ export { reducer };
 
 export const thunks = {
     /**
-    * Assert:
-    * The directory we wish to access exist in the currently listed directory.
-    * 
     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
     */
     "navigateToDirectory":
-        (params: { directoryBasename: string; }): AppThunk => async (...args) => {
+        (params: { directoryRelativePath: string; }): AppThunk => async (...args) => {
 
-            const { directoryBasename } = params;
+            const { directoryRelativePath } = params;
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
@@ -328,7 +325,7 @@ export const thunks = {
             await getEvtIsCreatingOrRenaming(dependencies)
                 .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
 
-            const directoryPath = pathJoin(getState().secretExplorer.currentPath, directoryBasename);
+            const directoryPath = pathJoin(getState().secretExplorer.currentPath, directoryRelativePath);
 
             dispatch(actions.navigationStarted({ "path": directoryPath }));
 
@@ -343,16 +340,12 @@ export const thunks = {
 
         },
     /**
-     * Assert:
-     * The secret we wish to access exist in the currently listed directory.
-     * 
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
-     * 
      */
     "navigateToSecret":
-        (params: { secretBasename: string; }): AppThunk => async (...args) => {
+        (params: { secretRelativePath: string; }): AppThunk => async (...args) => {
 
-            const { secretBasename } = params;
+            const { secretRelativePath } = params;
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
@@ -360,7 +353,7 @@ export const thunks = {
             await getEvtIsCreatingOrRenaming(dependencies)
                 .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
 
-            const secretPath = pathJoin(getState().secretExplorer.currentPath, secretBasename);
+            const secretPath = pathJoin(getState().secretExplorer.currentPath, secretRelativePath);
 
             dispatch(actions.navigationStarted({ "path": secretPath }));
 
@@ -603,7 +596,7 @@ export const thunks = {
             assert(state.state === "SHOWING SECRET");
 
             await dispatch(
-                thunks.navigateToDirectory({ "directoryBasename": pathJoin(state.currentPath, "..") })
+                thunks.navigateToDirectory({ "directoryRelativePath": ".." })
             );
 
             await dispatch(
