@@ -1,15 +1,15 @@
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
-import { assert } from "evt/tools/typeSafety/assert";
-import { allUniq } from "evt/tools/reducers/allUniq";
 import memoize from "memoizee";
 import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
+import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
+
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -22,14 +22,16 @@ export type Props = {
     /** Assert all uniq */
     directories: string[];
 
-    /** Refers to the new basename */
-    renameRequestBeingProcessed: { kind: "file" | "directory", basename: string } | undefined;
+    directoriesBeingCreatedOrRenamed: string[];
+    filesBeingCreatedOrRenamed: string[];
+
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
 };
 
 
 export function ExplorerItems(props: Props) {
+
 
     const {
         visualRepresentationOfAFile,
@@ -38,8 +40,20 @@ export function ExplorerItems(props: Props) {
         directories,
         onOpen,
         onEditedBasename,
-        renameRequestBeingProcessed
+        directoriesBeingCreatedOrRenamed,
+        filesBeingCreatedOrRenamed
     } = props;
+
+    /*
+    assert(
+        (
+            files.reduce(...allUniq()) &&
+            directories.reduce(...allUniq()) &&
+            [...files, ...directories].every(basename => getIsValidBasename({ basename }))
+        ),
+        "Can't have two file or directory with the same name and all basename must be valid"
+    );
+    */
 
     const ExplorerItem = useMemo(
         () => withProps(SecretOrFileExplorerItem, { visualRepresentationOfAFile }),
@@ -50,17 +64,7 @@ export function ExplorerItems(props: Props) {
 
     const { windowInnerWidth } = useWindowInnerWidth();
 
-    useMemo(
-        () => assert(
-            (
-                files.reduce(...allUniq()) &&
-                directories.reduce(...allUniq()) &&
-                [...files, ...directories].every(basename => getIsValidBasename({ basename }))
-            ),
-            "Can't have two file or directory with the same name and all basename must be valid"
-        ),
-        [files, directories, getIsValidBasename]
-    );
+
 
     const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
     const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
@@ -81,7 +85,11 @@ export function ExplorerItems(props: Props) {
         [windowInnerWidth, theme]
     );
 
-    const [{ getKeyProp, transfersKeyProp }] = useState(
+    const [{
+        getKeyProp,
+        transfersKeyProp,
+        getValuesCurrentlyMappedToKeyProp
+    }] = useState(
         () => getKeyPropFactory<{
             kind: "directory" | "file";
             basename: string;
@@ -142,17 +150,47 @@ export function ExplorerItems(props: Props) {
         [onEditedBasename, transfersKeyProp]
     );
 
-    useEffect(
-        () => {
+    {
 
-            if (renameRequestBeingProcessed === undefined) {
-                setIsSelectedItemBeingEdited(false);
-            }
+        const useArrayRemovedCallbackFactory = useMemo(
+            () => memoize(
+                (kind: "file" | "directory") =>
+                    (removed: string[]) => {
 
-        },
-        [renameRequestBeingProcessed]
-    );
+                        if (selectedItemKey === undefined) {
+                            return;
+                        }
 
+                        const {
+                            kind: selectedItemKind,
+                            basename
+                        } = getValuesCurrentlyMappedToKeyProp(selectedItemKey);
+
+                        if (
+                            selectedItemKind !== kind ||
+                            !removed.includes(basename)
+                        ) {
+                            return;
+                        }
+
+                        setIsSelectedItemBeingEdited(false);
+
+                    }
+            ),
+            [selectedItemKey, getValuesCurrentlyMappedToKeyProp]
+        );
+
+        useArrayRemoved({
+            "array": directoriesBeingCreatedOrRenamed,
+            "callback": useArrayRemovedCallbackFactory("directory")
+        });
+
+        useArrayRemoved({
+            "array": filesBeingCreatedOrRenamed,
+            "callback": useArrayRemovedCallbackFactory("file")
+        });
+
+    }
 
 
     const getIsValidBasenameFactory = useMemo(
@@ -170,7 +208,7 @@ export function ExplorerItems(props: Props) {
                                 case "directory": return directories;
                                 case "file": return files;
                             }
-                        })().indexOf(candidateBasename) >= 0
+                        })().includes(candidateBasename)
                     ) {
                         return false;
                     }
@@ -203,11 +241,12 @@ export function ExplorerItems(props: Props) {
                                 basename={basename}
                                 isSelected={isSelected}
                                 isBeingEdited={isSelected && isSelectedItemBeingEdited}
-                                isRenameRequestBeingProcessed={
-                                    renameRequestBeingProcessed !== undefined &&
-                                    renameRequestBeingProcessed.kind === kind &&
-                                    renameRequestBeingProcessed.basename === basename
-                                }
+                                isCircularProgressShown={(() => {
+                                    switch (kind) {
+                                        case "directory": return directoriesBeingCreatedOrRenamed;
+                                        case "file": return filesBeingCreatedOrRenamed;
+                                    }
+                                })().includes(basename)}
                                 standardizedWidth={standardizedWidth}
                                 onMouseEvent={onMouseEventFactory(kind, basename)}
                                 onEditedBasename={onEditedBasenameFactory(kind, basename)}
