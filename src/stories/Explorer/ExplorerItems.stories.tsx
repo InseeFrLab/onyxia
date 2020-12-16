@@ -85,6 +85,7 @@ export default {
     ...meta,
     // https://storybook.js.org/docs/react/essentials/controls
     "argTypes": {
+        //...meta.argTypes,
         "containerWidth": {
             "control": "range",
             "min": 10,

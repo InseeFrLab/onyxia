@@ -37,7 +37,7 @@ export function MySecrets() {
 
         alert(state.errorMessage);
 
-    }, [state.state]);
+    }, [state]);
 
     const onNavigate = useCallback(
         ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) =>
@@ -126,7 +126,7 @@ export function MySecrets() {
                             <div>
                                 <pre>
                                     {JSON.stringify(state.secretWithMetadata, null, 4)
-                                        .replace(/["{[,\}\]]/g, "")}
+                                        .replace(/["{[,}\]]/g, "")}
                                 </pre>
                             </div>
                     }

@@ -39,7 +39,7 @@ export function PathNavigator(props: Props) {
             (partialPath: string) =>
                 () => callback({ "relativePath": pathRelative(path, partialPath) })
         ),
-        [callback]
+        [callback, path]
     );
 
     const partialPaths = useMemo(() => {
