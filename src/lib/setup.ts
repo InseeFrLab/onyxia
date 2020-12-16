@@ -160,8 +160,8 @@ async function createStoreForLoggedUser(
     store.dispatch(tokensUseCase.privateThunks.initialize());
 
     store.dispatch(
-        secretExplorerUseCase.thunks.navigateToPath(
-            { "directoryPath": (await parseOidcAccessToken(oidcClient)).idep }
+        secretExplorerUseCase.thunks.navigateToDirectory(
+            { "directoryRelativePath": (await parseOidcAccessToken(oidcClient)).idep }
         )
     );
 

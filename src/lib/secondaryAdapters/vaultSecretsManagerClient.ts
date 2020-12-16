@@ -42,10 +42,10 @@ export function createVaultSecretsManagerClient(params: Params): {
 				{ "params": { "list": "true" } }
 			);
 
-			const [nodes, leafs] = axiosResponse.data.data.keys
+			const [directories, secrets] = axiosResponse.data.data.keys
 				.reduce(...partition<string>(key => key.endsWith("/")));
 
-			return { nodes, leafs };
+			return { directories, secrets };
 
 		},
 		"get": async params => {
@@ -186,11 +186,11 @@ export function getVaultClientTranslator(
 				"list": {
 					"buildCmd": (...[{ path }]) =>
 						`vault kv list ${pathJoin(engine, path)}`,
-					"fmtResult": ({ result: { nodes, leafs } }) =>
+					"fmtResult": ({ result: { directories, secrets } }) =>
 						[
 							"Keys",
 							"----",
-							...[nodes, leafs]
+							...[directories, secrets]
 						].join("\n")
 				},
 				"get": {
