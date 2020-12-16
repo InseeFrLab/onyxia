@@ -5,9 +5,11 @@ import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
+import { pure } from "lib/setup";
+import { Evt } from "evt";
 
 
-function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingProcessed"> & { containerWidth: number; }) {
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed"> & { containerWidth: number; }) {
 
     const { containerWidth } = props;
 
@@ -24,17 +26,18 @@ function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingP
         [props.directories]
     );
 
-    const [renameRequestBeingProcessed, setRenameRequestBeingProcessed] = useState<Props["renameRequestBeingProcessed"]>(undefined);
+    const [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] = useState<string[]>([]);
+
+    const [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] = useState<string[]>([]);
 
     const onEditedBasename = useCallback(
         ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
 
-            {
 
-                const [items, setItems] = (() => {
+                const [items, setItems, renamedItems, setRenamedItems] = (() => {
                     switch (kind) {
-                        case "directory": return [directories, setDirectories] as const;
-                        case "file": return [files, setFiles] as const;
+                        case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
+                        case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
                     }
                 })();
 
@@ -42,15 +45,15 @@ function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingP
 
                 setItems([...items]);
 
-            }
 
             (async () => {
 
-                setRenameRequestBeingProcessed({ kind, "basename": editedBasename });
+                setRenamedItems([...renamedItems, editedBasename ]);
 
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
-                setRenameRequestBeingProcessed(undefined);
+                setRenamedItems(renamedItems.filter(name => name !== editedBasename));
+
 
             })();
 
@@ -64,7 +67,8 @@ function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingP
                 {...props}
                 files={files}
                 directories={directories}
-                renameRequestBeingProcessed={renameRequestBeingProcessed}
+                filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
+                directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
                 onEditedBasename={onEditedBasename}
             />
         </div>
@@ -93,9 +97,10 @@ export default {
 export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
-    "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
+    "getIsValidBasename": pure.secretExplorer.getIsValidBasename,
     "files": ["this-is-a-file", "file2", "foo.csv"],
-    "onOpen": console.log,
-    "getIsValidBasename": ({ basename }) => basename.indexOf(" ") < 0,
-    "onEditedBasename": console.log.bind("onEditedBasename")
+    "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
+    "onNavigate": console.log.bind("onNavigate"),
+    "evtStartEditing": Evt.create(),
+    "onItemSelected": console.log.bind("onItemSelected")
 });
