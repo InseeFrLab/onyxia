@@ -2,10 +2,10 @@
 import React from "react";
 import { Button, defaultProps } from "app/components/designSystem/Button";
 import { sectionName } from "./sectionName";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 import { Icon } from "app/components/designSystem/Icon";
 
-const { meta, getThemedStory } = getThemedStoryFactory({
+const { meta, getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Button }
 });

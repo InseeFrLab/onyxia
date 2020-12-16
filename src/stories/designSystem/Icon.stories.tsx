@@ -1,9 +1,9 @@
 
 import { Icon, defaultProps } from "app/components/designSystem/Icon";
 import { sectionName } from "./sectionName";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 
-const { meta, getThemedStory} = getThemedStoryFactory({
+const { meta, getThemedStory} = getStoryFactory({
     sectionName,
     "wrappedComponent": { Icon }
 });

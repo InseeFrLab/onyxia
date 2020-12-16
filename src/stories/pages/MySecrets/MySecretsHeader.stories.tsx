@@ -1,10 +1,10 @@
 
 import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
 
 
-const { meta, getThemedStory } = getThemedStoryFactory({
+const { meta, getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MySecretsHeader }
 });

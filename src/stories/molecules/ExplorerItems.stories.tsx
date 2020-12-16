@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 
 
@@ -72,7 +72,7 @@ function Component(props: Omit<Props, "onBasenameChanged" | "renameRequestBeingP
 
 }
 
-const { meta, getThemedStory } = getThemedStoryFactory({
+const { meta, getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
 });

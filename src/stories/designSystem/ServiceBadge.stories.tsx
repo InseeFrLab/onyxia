@@ -1,9 +1,9 @@
 
 import { ServiceBadge } from "app/components/designSystem/ServiceBadge";
 import { sectionName } from "./sectionName";
-import { getThemedStoryFactory } from "stories/utils/getThemedStory";
+import { getStoryFactory } from "stories/geStory";
 
-export const { meta, getThemedStory } = getThemedStoryFactory({
+export const { meta, getThemedStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { ServiceBadge }
 });
