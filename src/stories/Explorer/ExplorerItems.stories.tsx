@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
-import { sectionName } from "./sectionName";
+import { sectionName } from "../molecules/sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 
