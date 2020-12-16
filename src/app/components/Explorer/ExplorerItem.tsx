@@ -118,25 +118,13 @@ export function ExplorerItem(props: Props) {
         basename,
         isCircularProgressShown,
         standardizedWidth,
+        isBeingEdited,
         onMouseEvent,
         onEditedBasename,
         getIsValidBasename
     } = props;
 
     const { t } = useTranslation("ExplorerItem");
-
-    const [isBeingEdited, setIsBeingEdited] = useState(props.isBeingEdited);
-
-    useEffect(
-        () => {
-            setIsBeingEdited(
-                props.isBeingEdited ||
-                isCircularProgressShown
-            );
-        },
-        [props.isBeingEdited, isCircularProgressShown]
-    );
-
 
     const theme = useTheme();
 
@@ -276,7 +264,7 @@ export function ExplorerItem(props: Props) {
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             {
-                !isBeingEdited ?
+                !isBeingEdited && !isCircularProgressShown ?
                     <Box clone {...getOnMouseProps({ "target": "text" })}>
                         <Typography className={classes.text} >
                             {basename}
