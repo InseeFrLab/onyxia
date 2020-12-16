@@ -9,6 +9,8 @@ import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
 import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
+import { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 
 export type Props = {
@@ -27,6 +29,10 @@ export type Props = {
 
     onOpen(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
+
+    /** Fo signaling click on the button bar */
+    evtStartEditing: NonPostableEvt<void>;
+
 };
 
 
@@ -41,7 +47,8 @@ export function ExplorerItems(props: Props) {
         onOpen,
         onEditedBasename,
         directoriesBeingCreatedOrRenamed,
-        filesBeingCreatedOrRenamed
+        filesBeingCreatedOrRenamed,
+        evtStartEditing
     } = props;
 
     /*
@@ -69,6 +76,9 @@ export function ExplorerItems(props: Props) {
     const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
     const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
 
+    useEvt(ctx => {
+        evtStartEditing.attach(ctx, () => setIsSelectedItemBeingEdited(true));
+    }, [evtStartEditing]);
 
     const standardizedWidth = useMemo(
         (): ExplorerItemProps["standardizedWidth"] => {
