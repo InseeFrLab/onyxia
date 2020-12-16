@@ -21,13 +21,9 @@ export type Props = {
 
 export function ItemCreationDialog(props: Props) {
 
-  const { wordForFile, createWhat, callback, getIsValidName } = props;
+  const { isOpen, wordForFile, createWhat, callback, getIsValidName } = props;
 
   const { t } = useTranslation("CreateFileOrDirectoryDialog");
-
-  const [isOpen, setIsOpen] = useState(props.isOpen);
-
-  useEffect(() => { setIsOpen(props.isOpen); }, [props.isOpen]);
 
   const [name, setName] = useState("");
 
@@ -39,8 +35,6 @@ export function ItemCreationDialog(props: Props) {
         () => {
 
           setName("");
-
-          setIsOpen(false);
 
           callback(!doCreate ? { doCreate } : { doCreate, name });
 
