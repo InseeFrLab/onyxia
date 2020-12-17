@@ -9,9 +9,9 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
-//import type { SupportedLanguages } from "app/i18n/resources";
+import type { SupportedLanguages } from "app/i18n/resources";
 
-const { AppThemeProvider } = ThemeProviderFactory(
+const { ThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
@@ -24,13 +24,11 @@ export function getStoryFactory<Props>(params: {
 
     const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
 
-    const Template: Story<Props & { isDarkModeEnabled: boolean; isEnglish: boolean; }> =
-        //const Template: Story<Props & { isDarkModeEnabled: boolean; }> =
-        ({ isDarkModeEnabled, isEnglish, ...props }) => {
-            console.log({ isEnglish });
+    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
+        ({ darkMode, lng, ...props }) => {
             return (
-                <I18nProvider lng={isEnglish ? "en" : "fr"}>
-                    <AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+                <I18nProvider lng={lng}>
+                    <ThemeProvider isDarkModeEnabled={darkMode}>
                         <Box p={4}>
                             <Box clone p={4} m={2} display="inline-block">
                                 <Paper>
@@ -38,7 +36,7 @@ export function getStoryFactory<Props>(params: {
                                 </Paper>
                             </Box>
                         </Box>
-                    </AppThemeProvider>
+                    </ThemeProvider>
                 </I18nProvider>
             );
         }
@@ -49,8 +47,8 @@ export function getStoryFactory<Props>(params: {
         const out = Template.bind({});
 
         out.args = {
-            "isDarkModeEnabled": false,
-            "isEnglish": false,
+            "darkMode": false,
+            "lng": id<SupportedLanguages>("fr"),
             ...props
         };
 
@@ -62,15 +60,15 @@ export function getStoryFactory<Props>(params: {
         "meta": id<Meta>({
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
             "component": Component,
-            /*
             // https://storybook.js.org/docs/react/essentials/controls
             "argTypes": {
                 "lng": {
-                    "control": "select",
-                    "options": id<SupportedLanguages[]>(["fr", "en"])
+                    "control": {
+                        "type": "inline-radio",
+                        "options": id<SupportedLanguages[]>(["fr", "en"]),
+                    }
                 }
             }
-            */
         }),
         getStory
     };

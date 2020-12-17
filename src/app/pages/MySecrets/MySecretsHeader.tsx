@@ -8,8 +8,6 @@ export function MySecretsHeader() {
 
     const { t } = useTranslation("MySecretsHeader");
 
-    console.log("ping");
-
     return <PageHeader
         icon="lock"
         text1={t("page title")}

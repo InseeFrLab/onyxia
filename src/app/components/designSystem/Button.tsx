@@ -48,7 +48,7 @@ export function Button(props: Props) {
   return (
     <>
       {icon !== null && <Icon type={icon} />}
-      <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>;
+      <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>
     </>
   );
 
