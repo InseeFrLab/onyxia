@@ -46,9 +46,6 @@ export function useClick<ExtraArg>(
             "getOnMouseProps": memoize((extraArg: ExtraArg) => ({
                 "onMouseDown": id<OnMouseUpOrDown>(
                     mouseEvent => { 
-
-                        console.log(["down", extraArg]);
-
                         evtMouseUpOrDown.post({ "type": "down", mouseEvent, extraArg });
                     }
                 ),
