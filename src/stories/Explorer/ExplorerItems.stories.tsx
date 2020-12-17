@@ -81,6 +81,41 @@ const { meta, getStory } = getStoryFactory({
     "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
 });
 
+
+/*
+const metaOut= {
+    ...meta,
+    // https://storybook.js.org/docs/react/essentials/controls
+    "argTypes": {
+        ...meta.argTypes,
+        "containerWidth": {
+            "control": "range",
+            "min": 10,
+            "max": 100
+        }
+    }
+};
+*/
+
+const metaOut= {
+    ...meta,
+    // https://storybook.js.org/docs/react/essentials/controls
+    "argTypes": {
+        "containerWidth": {
+            "control": "range",
+            "min": 10,
+            "max": 100
+        }
+    }
+};
+
+console.log(JSON.stringify(meta,null,2));
+console.log(JSON.stringify(metaOut,null,2));
+
+export default metaOut;
+
+
+/*
 export default {
     ...meta,
     // https://storybook.js.org/docs/react/essentials/controls
@@ -93,6 +128,7 @@ export default {
         }
     }
 };
+*/
 
 
 export const Vue1 = getStory({

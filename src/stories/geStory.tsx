@@ -24,20 +24,24 @@ export function getStoryFactory<Props>(params: {
 
     const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
 
-    //const Template: Story<Props & { isDarkModeEnabled: boolean; lang: SupportedLanguages; }> =
-    const Template: Story<Props & { isDarkModeEnabled: boolean; }> =
-        ({ isDarkModeEnabled, ...props }) =>
-            <I18nProvider lng="en">
-                <AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
-                    <Box p={4}>
-                        <Box clone p={4} m={2} display="inline-block">
-                            <Paper>
-                                <Component {...props} />
-                            </Paper>
+    const Template: Story<Props & { isDarkModeEnabled: boolean; isEnglish: boolean; }> =
+        //const Template: Story<Props & { isDarkModeEnabled: boolean; }> =
+        ({ isDarkModeEnabled, isEnglish, ...props }) => {
+            console.log({ isEnglish });
+            return (
+                <I18nProvider lng={isEnglish ? "en" : "fr"}>
+                    <AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+                        <Box p={4}>
+                            <Box clone p={4} m={2} display="inline-block">
+                                <Paper>
+                                    <Component {...props} />
+                                </Paper>
+                            </Box>
                         </Box>
-                    </Box>
-                </AppThemeProvider>
-        </I18nProvider>;
+                    </AppThemeProvider>
+                </I18nProvider>
+            );
+        }
 
 
     function getStory(props: Props): typeof Template {
@@ -46,7 +50,7 @@ export function getStoryFactory<Props>(params: {
 
         out.args = {
             "isDarkModeEnabled": false,
-            //"lang": "en",
+            "isEnglish": false,
             ...props
         };
 
@@ -58,12 +62,12 @@ export function getStoryFactory<Props>(params: {
         "meta": id<Meta>({
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
             "component": Component,
-            // https://storybook.js.org/docs/react/essentials/controls
             /*
+            // https://storybook.js.org/docs/react/essentials/controls
             "argTypes": {
-                "lang": {
-                    "control": "inline-radio",
-                    "options": ["en", "fr"]
+                "lng": {
+                    "control": "select",
+                    "options": id<SupportedLanguages[]>(["fr", "en"])
                 }
             }
             */
