@@ -104,7 +104,7 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
-    "onNavigate": console.log.bind("onNavigate"),
+    "onNavigate": console.log.bind(null,"onNavigate"),
     "evtStartEditing": Evt.create(),
-    "onItemSelected": console.log.bind("onItemSelected")
+    "onItemSelected": console.log.bind(null,"onItemSelected")
 });

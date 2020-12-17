@@ -19,8 +19,8 @@ export const Vue1 = getStory({
     "standardizedWidth": "big",
     "isBeingEdited": false,
     "isCircularProgressShown": false,
-    "onMouseEvent": console.log.bind("onMouseEvent"),
-    "onEditedBasename": console.log.bind("onEditedBasename"),
+    "onMouseEvent": console.log.bind(null,"onMouseEvent"),
+    "onEditedBasename": console.log.bind(null,"onEditedBasename"),
     "getIsValidBasename": pure.getIsValidBasename
 });
 

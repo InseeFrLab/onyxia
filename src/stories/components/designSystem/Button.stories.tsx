@@ -16,11 +16,11 @@ export default meta;
 export const TextOnly = getStory({
     ...defaultProps,
     "children": "Foo bar",
-    "onClick": console.log.bind("click!")
+    "onClick": console.log.bind(null,"click!")
 });
 
 export const TextWithIcon = getStory({
     ...defaultProps,
     "children": <><Icon type="home" /> Home</>,
-    "onClick": console.log.bind("click!")
+    "onClick": console.log.bind(null,"click!")
 });
