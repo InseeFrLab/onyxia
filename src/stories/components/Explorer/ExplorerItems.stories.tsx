@@ -5,7 +5,7 @@ import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
-//import { pure } from "lib/setup";
+import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 
 
@@ -101,8 +101,7 @@ export default {
 export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
-    //"getIsValidBasename": pure.secretExplorer.getIsValidBasename,
-    "getIsValidBasename": () => true,
+    "getIsValidBasename": pure.getIsValidBasename,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "onNavigate": console.log.bind("onNavigate"),
