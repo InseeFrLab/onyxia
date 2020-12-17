@@ -195,9 +195,9 @@ export function ExplorerItem(props: Props) {
         [onEditedBasename, editedBasename, isInputError]
     );
 
-    const { getOnMouseProps } = useClick<{ target: "icon" | "text" }>({
+    const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": useCallback(({ type, extraArg: { target } }) => {
+        "callback": useCallback(({ type, extraArg: target }) => {
 
             if (type === "down" && isBeingEdited) {
                 onEditedBasenameProxy();
@@ -257,13 +257,13 @@ export function ExplorerItem(props: Props) {
                 className={classes.frame}
                 px="6px"
                 py="4px"
-                {...getOnMouseProps({ "target": "icon" })}
+                {...getOnMouseProps("icon")}
             >
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             {
                 !isBeingEdited && !isCircularProgressShown ?
-                    <Box clone {...getOnMouseProps({ "target": "text" })}>
+                    <Box {...getOnMouseProps("text")}>
                         <Typography className={classes.text} >
                             {basename}
                         </Typography>
