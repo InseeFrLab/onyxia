@@ -41,7 +41,7 @@ import { ThemeProviderFactory } from "app/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { useEvt } from "evt/hooks";
 
-const { AppThemeProvider } = ThemeProviderFactory(
+const { ThemeProvider } = ThemeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
 );
 
@@ -194,9 +194,9 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									exact
 									path="/mes-secrets"
 									component={() => (
-										<AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+										<ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
 											<MySecrets />
-										</AppThemeProvider>
+										</ThemeProvider>
 									)}
 								/>
 
