@@ -34,21 +34,21 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
         ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
 
 
-                const [items, setItems, renamedItems, setRenamedItems] = (() => {
-                    switch (kind) {
-                        case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
-                        case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
-                    }
-                })();
+            const [items, setItems, renamedItems, setRenamedItems] = (() => {
+                switch (kind) {
+                    case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
+                    case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                }
+            })();
 
-                items[items.indexOf(basename)!] = editedBasename;
+            items[items.indexOf(basename)!] = editedBasename;
 
-                setItems([...items]);
+            setItems([...items]);
 
 
             (async () => {
 
-                setRenamedItems([...renamedItems, editedBasename ]);
+                setRenamedItems([...renamedItems, editedBasename]);
 
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -82,47 +82,27 @@ const { meta, getStory } = getStoryFactory({
 });
 
 
-const metaOut= {
+export default {
     ...meta,
     // https://storybook.js.org/docs/react/essentials/controls
     "argTypes": {
         ...meta.argTypes,
         "containerWidth": {
-            "control": "range",
-            "min": 10,
-            "max": 100
+            "control": {
+                "type": "range",
+                "min": 10,
+                "max": 100
+            }
         }
     }
 };
-
-
-console.log(JSON.stringify(meta,null,2));
-console.log(JSON.stringify(metaOut,null,2));
-
-export default metaOut;
-
-
-/*
-export default {
-    ...meta,
-    // https://storybook.js.org/docs/react/essentials/controls
-    "argTypes": {
-        //...meta.argTypes,
-        "containerWidth": {
-            "control": "range",
-            "min": 10,
-            "max": 100
-        }
-    }
-};
-*/
 
 
 export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
     //"getIsValidBasename": pure.secretExplorer.getIsValidBasename,
-    "getIsValidBasename": ()=> true,
+    "getIsValidBasename": () => true,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "onNavigate": console.log.bind("onNavigate"),
