@@ -5,11 +5,11 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
     const map = new Map<string, string>();
 
-    const getCount = (()=>{
+    const getCount = (() => {
 
         let count = 0;
 
-        return ()=> `${count++}`;
+        return () => `${count++}`;
 
     })();
 
@@ -19,7 +19,7 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
         objectKeys(values)
             .sort()
-            .forEach(key=> out[key]= values[key]);
+            .forEach(key => out[key] = values[key]);
 
         return JSON.stringify(out);
 
@@ -31,7 +31,7 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
         const keyProp = map.get(key)
 
-        if( keyProp === undefined ){
+        if (keyProp === undefined) {
 
             const keyProp = getCount();
             map.set(key, keyProp)
@@ -45,11 +45,18 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
 
     function transfersKeyProp(params: { fromValues: T, toValues: T }): void {
 
-        const { fromValues, toValues }= params;
+        const { fromValues, toValues } = params;
 
-        map.set(stringify(toValues), getKeyProp(fromValues));
+        const fromKey = stringify(fromValues);
+        const toKey = stringify(toValues);
 
-        map.delete(stringify(fromValues));
+        if (fromKey === toKey) {
+            return;
+        }
+
+        map.set(toKey, getKeyProp(fromValues));
+
+        map.delete(fromKey);
 
     }
 
@@ -58,12 +65,16 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
         const key = Array.from(map.keys())
             .find(key => map.get(key)! === keyProp);
 
-        assert( key !== undefined );
-        
+        assert(key !== undefined);
+
         return JSON.parse(key);
 
     }
 
-    return { getKeyProp, transfersKeyProp, getValuesCurrentlyMappedToKeyProp };
+    return {
+        getKeyProp,
+        transfersKeyProp,
+        getValuesCurrentlyMappedToKeyProp
+    };
 
 }
