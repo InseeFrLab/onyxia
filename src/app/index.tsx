@@ -67,7 +67,7 @@ const Root = () => {
                 {
                     store === undefined ?
                         <Loader em={30} /> :
-                        <I18nProvider>
+                        <I18nProvider lng="browser default">
                             <Provider store={store}>
                                 <App />
                             </Provider>

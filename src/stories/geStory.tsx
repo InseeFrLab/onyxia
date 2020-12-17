@@ -9,7 +9,7 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
-import type { SupportedLanguages } from "app/i18n/resources";
+//import type { SupportedLanguages } from "app/i18n/resources";
 
 const { AppThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
@@ -24,9 +24,10 @@ export function getStoryFactory<Props>(params: {
 
     const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
 
-    const Template: Story<Props & { isDarkModeEnabled: boolean; lang: SupportedLanguages; }> =
+    //const Template: Story<Props & { isDarkModeEnabled: boolean; lang: SupportedLanguages; }> =
+    const Template: Story<Props & { isDarkModeEnabled: boolean; }> =
         ({ isDarkModeEnabled, ...props }) =>
-            <I18nProvider>
+            <I18nProvider lng="en">
                 <AppThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
                     <Box p={4}>
                         <Box clone p={4} m={2} display="inline-block">
@@ -35,8 +36,8 @@ export function getStoryFactory<Props>(params: {
                             </Paper>
                         </Box>
                     </Box>
-                </AppThemeProvider>;
-        </I18nProvider>
+                </AppThemeProvider>
+        </I18nProvider>;
 
 
     function getStory(props: Props): typeof Template {
@@ -45,7 +46,7 @@ export function getStoryFactory<Props>(params: {
 
         out.args = {
             "isDarkModeEnabled": false,
-            "lang": "en",
+            //"lang": "en",
             ...props
         };
 
