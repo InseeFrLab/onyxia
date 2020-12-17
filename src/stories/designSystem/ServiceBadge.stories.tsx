@@ -3,7 +3,7 @@ import { ServiceBadge } from "app/components/designSystem/ServiceBadge";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 
-export const { meta, getStory } = getStoryFactory({
+const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { ServiceBadge }
 });
