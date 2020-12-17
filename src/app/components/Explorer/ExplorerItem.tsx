@@ -189,8 +189,6 @@ export function ExplorerItem(props: Props) {
                 return;
             }
 
-            console.log({ editedBasename });
-
             onEditedBasename({ editedBasename });
 
         },
