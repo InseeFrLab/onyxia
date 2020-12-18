@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -8,9 +8,10 @@ import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
 import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
-import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
 
 
 export type Props = {
@@ -126,18 +127,42 @@ export function ExplorerItems(props: Props) {
         );
     }, [onItemSelected, selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]);
 
+    useEvt(
+        ctx =>
+            evtStartEditing.attach(
+                ctx,
+                () => {
+                    if (selectedItemKeyProp === undefined) {
+                        return;
+                    }
+                    getItemEvtAction(selectedItemKeyProp!)
+                        .post({ "action": "enter editing state" });
+                }
+            ),
+        [evtStartEditing]
+    );
 
-    const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
-
-    useEvt(ctx => {
-        evtStartEditing.attach(ctx, () => setIsSelectedItemBeingEdited(true));
-    }, [evtStartEditing]);
-
+    const getItemEvtAction = useMemo(
+        () => memoize(
+            (_keyProp: string) => Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>()
+        ),
+        []
+    );
 
     const onMouseEventFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
                 ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
+
+                    //TODO: Any click should do that, not only a click on an other item
+                    if (selectedItemKeyProp !== undefined) {
+
+                        getItemEvtAction(selectedItemKeyProp).post({
+                            "action": "leave editing state",
+                            "isCancel": false
+                        });
+
+                    }
 
                     switch (type) {
                         case "down":
@@ -146,28 +171,25 @@ export function ExplorerItems(props: Props) {
 
                             if (target === "text" && selectedItemKeyProp === keyProp) {
 
-                                setIsSelectedItemBeingEdited(true);
+                                getItemEvtAction(keyProp).post({
+                                    "action": "enter editing state"
+                                });
 
                                 break;
 
-                            } else {
-
-                                setIsSelectedItemBeingEdited(false);
-
-                            }
+                            } 
 
                             setSelectedItemKeyProp(keyProp);
 
                             break;
 
                         case "double":
-                            setIsSelectedItemBeingEdited(false);
                             onNavigate({ kind, basename });
                             break;
                     }
                 }
         ),
-        [onNavigate, selectedItemKeyProp, getKeyProp]
+        [onNavigate, selectedItemKeyProp, getKeyProp, getItemEvtAction]
     );
 
 
@@ -188,47 +210,6 @@ export function ExplorerItems(props: Props) {
         [onEditedBasename, transfersKeyProp]
     );
 
-    {
-
-        const useArrayRemovedCallbackFactory = useMemo(
-            () => memoize(
-                (kind: "file" | "directory") =>
-                    (removed: string[]) => {
-
-                        if (selectedItemKeyProp === undefined) {
-                            return;
-                        }
-
-                        const {
-                            kind: selectedItemKind,
-                            basename
-                        } = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
-
-                        if (
-                            selectedItemKind !== kind ||
-                            !removed.includes(basename)
-                        ) {
-                            return;
-                        }
-
-                        setIsSelectedItemBeingEdited(false);
-
-                    }
-            ),
-            [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
-        );
-
-        useArrayRemoved({
-            "array": directoriesBeingCreatedOrRenamed,
-            "callback": useArrayRemovedCallbackFactory("directory")
-        });
-
-        useArrayRemoved({
-            "array": filesBeingCreatedOrRenamed,
-            "callback": useArrayRemovedCallbackFactory("file")
-        });
-
-    }
 
 
     const getIsValidBasenameFactory = useMemo(
@@ -259,8 +240,44 @@ export function ExplorerItems(props: Props) {
     );
 
 
+
+    const onKeyDown = useCallback(
+        (event: React.KeyboardEvent<HTMLDivElement>) => {
+
+            if (selectedItemKeyProp === undefined) {
+                return;
+            }
+
+            const key = (() => {
+                switch (event.key) {
+                    case "Escape":
+                    case "Enter":
+                        return event.key;
+                    default: return "irrelevant";
+                }
+            })();
+
+            if (key === "irrelevant") {
+                return;
+            }
+
+            getItemEvtAction(selectedItemKeyProp).post({
+                "action": "leave editing state",
+                "isCancel": (() => {
+                    switch (key) {
+                        case "Escape": return true;
+                        case "Enter": return false;
+                    }
+                })()
+            });
+
+        },
+        [getItemEvtAction, selectedItemKeyProp]
+    );
+
+
     return (
-        <Grid container wrap="wrap" justify="flex-start" spacing={1}>
+        <Grid container wrap="wrap" justify="flex-start" spacing={1} onKeyDown={onKeyDown}>
             {(["directory", "file"] as const).map(
                 kind => ((() => {
                     switch (kind) {
@@ -278,7 +295,7 @@ export function ExplorerItems(props: Props) {
                                 kind={kind}
                                 basename={basename}
                                 isSelected={isSelected}
-                                isBeingEdited={isSelected && isSelectedItemBeingEdited}
+                                evtAction={getItemEvtAction(keyProp)}
                                 isCircularProgressShown={(() => {
                                     switch (kind) {
                                         case "directory": return directoriesBeingCreatedOrRenamed;

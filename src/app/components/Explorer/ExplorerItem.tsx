@@ -13,6 +13,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { useClick } from "app/utils/hooks/useClick";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -30,8 +32,6 @@ export type Props = {
     /** Big for large screen, normal otherwise */
     standardizedWidth: "normal" | "big";
 
-    isBeingEdited: boolean;
-
     isCircularProgressShown: boolean;
 
     /** 
@@ -43,6 +43,11 @@ export type Props = {
     onEditedBasename(params: { editedBasename: string; }): void;
 
     getIsValidBasename(params: { basename: string; }): boolean;
+
+    evtAction: NonPostableEvt<
+        { action: "enter editing state" } |
+        { action: "leave editing state", isCancel: boolean; }
+    >;
 
 };
 
@@ -118,7 +123,7 @@ export function ExplorerItem(props: Props) {
         basename,
         isCircularProgressShown,
         standardizedWidth,
-        isBeingEdited,
+        evtAction,
         onMouseEvent,
         onEditedBasename,
         getIsValidBasename
@@ -163,16 +168,6 @@ export function ExplorerItem(props: Props) {
 
     const [editedBasename, setEditedBasename] = useState(basename);
 
-
-    useEffect(
-        () => { setEditedBasename(basename) },
-        [basename]
-    );
-
-    const [isInputError, setIsInputError] = useState(
-        () => !getIsValidBasename({ "basename": editedBasename })
-    );
-
     useEffect(
         () => {
             setIsInputError(
@@ -182,32 +177,10 @@ export function ExplorerItem(props: Props) {
         [editedBasename, getIsValidBasename]
     );
 
-    const onEditedBasenameProxy = useCallback(
-        () => {
 
-            if (isInputError) {
-                return;
-            }
-
-            onEditedBasename({ editedBasename });
-
-        },
-        [onEditedBasename, editedBasename, isInputError]
+    const [isInputError, setIsInputError] = useState(
+        () => !getIsValidBasename({ "basename": editedBasename })
     );
-
-    const { getOnMouseProps } = useClick<"icon" | "text">({
-        "doubleClickDelayMs": 500,
-        "callback": useCallback(({ type, extraArg: target }) => {
-
-            if (type === "down" && isBeingEdited) {
-                console.log("down");
-                onEditedBasenameProxy();
-            }
-
-            onMouseEvent({ type, target });
-
-        }, [onEditedBasenameProxy, onMouseEvent, isBeingEdited])
-    });
 
 
     const onChange = useCallback(
@@ -216,42 +189,57 @@ export function ExplorerItem(props: Props) {
         []
     );
 
+    const [isBeingEdited, setIsBeingEdited] = useState(false);
+
+    const { getOnMouseProps } = useClick<"icon" | "text">({
+        "doubleClickDelayMs": 500,
+        "callback": useCallback(({ type, extraArg: target }) =>
+            onMouseEvent({ type, target }),
+            [onMouseEvent])
+    });
+
     const onFocus = useCallback(
         ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
             target.setSelectionRange(0, target.value.length),
         []
     );
 
+    useEvt(
+        ctx => {
 
-    const onKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            evtAction
+                .pipe(ctx)
+                .attach(
+                    ({ action }) => action === "enter editing state",
+                    () => setIsBeingEdited(true)
+                )
+                .$attach(
+                    data => data.action !== "leave editing state" ? null : [data],
+                    ({ isCancel }) => {
 
+                        setIsBeingEdited(false);
 
-            if (event.key === "Escape") {
+                        if (isCancel) {
+                            setEditedBasename(basename);
+                            return;
+                        }
 
-                //NOTE: For the onBlur
-                //TODO: Improve
-                setEditedBasename(basename);
+                        if (editedBasename === basename) {
+                            return;
+                        }
 
-                console.log("escape");
-                onEditedBasename({ "editedBasename": basename });
+                        if (isInputError) {
+                            return;
+                        }
 
-                return;
-            }
+                        onEditedBasename({ editedBasename });
 
-            if (event.key === "Enter") {
-
-                event.preventDefault();
-
-                onEditedBasenameProxy();
-
-                return;
-            }
-
+                    }
+                )
 
 
         },
-        [onEditedBasenameProxy, onEditedBasename, basename]
+        [evtAction, editedBasename, isInputError]
     );
 
     return (
@@ -290,8 +278,6 @@ export function ExplorerItem(props: Props) {
                             error={isInputError}
                             onChange={onChange}
                             onFocus={onFocus}
-                            //onBlur={()=> {  console.log("blur"); onEditedBasenameProxy(); }}
-                            onKeyDown={onKeyDown}
                         />
                     </form>
             }
