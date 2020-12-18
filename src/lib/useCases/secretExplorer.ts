@@ -4,7 +4,7 @@ import { id } from "evt/tools/typeSafety/id";
 import type { AppThunk, Dependencies } from "../setup";
 import type { SecretWithMetadata, SecretsManagerClient, Secret } from "lib/ports/SecretsManagerClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { basename as pathBasename, join as pathJoin, dirname as pathDirname } from "path";
+import { basename as pathBasename, join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
@@ -724,9 +724,18 @@ const getSecretsManagerClientExtension = memoize(
 
             const {
                 srcPath,
-                dstPath,
+                dstPath
+            } = params;
+
+            if (pathRelative(srcPath, dstPath) === "") {
+                return;
+            }
+
+            const {
                 secret = (await secretsManagerClient.get({ "path": srcPath })).secret,
             } = params;
+
+
 
             await secretsManagerClient.delete({ "path": srcPath });
 

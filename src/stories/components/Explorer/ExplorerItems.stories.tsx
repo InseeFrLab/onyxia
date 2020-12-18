@@ -30,11 +30,43 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
     const [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] = useState<string[]>([]);
 
+
+    const [toRemove, setToRemove] = useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
+
+    useEffect(
+        () => {
+
+            if (toRemove === undefined) {
+                return;
+            }
+
+            const { kind, basename } = toRemove;
+
+            const [beingRenamedItems, setBeingRenamedItems] = (() => {
+                switch (kind) {
+                    case "directory": return [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
+                    case "file": return [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                }
+            })();
+
+
+            setBeingRenamedItems(beingRenamedItems.filter(basename_i => basename_i !== basename));
+
+            setToRemove(undefined);
+
+
+
+        },
+        [toRemove, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+    );
+
+
+
     const onEditedBasename = useCallback(
         ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
 
 
-            const [items, setItems, renamedItems, setRenamedItems] = (() => {
+            const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
                     case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
                     case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
@@ -48,12 +80,15 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             (async () => {
 
-                setRenamedItems([...renamedItems, editedBasename]);
+                setBeingRenamedItems([...beingRenamedItems, editedBasename]);
 
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                if (basename !== editedBasename) {
 
-                setRenamedItems(renamedItems.filter(name => name !== editedBasename));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
 
+                }
+
+                setToRemove({ kind, "basename": editedBasename });
 
             })();
 
@@ -104,7 +139,7 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
-    "onNavigate": console.log.bind(null,"onNavigate"),
+    "onNavigate": console.log.bind(null, "onNavigate"),
     "evtStartEditing": Evt.create(),
-    "onItemSelected": console.log.bind(null,"onItemSelected")
+    "onItemSelected": console.log.bind(null, "onItemSelected")
 });
