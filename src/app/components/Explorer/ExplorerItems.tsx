@@ -102,23 +102,29 @@ export function ExplorerItems(props: Props) {
         }>()
     );
 
-    const [selectedItemKey, setSelectedItemKey] = useState<string | undefined>(undefined);
+    const [
+        selectedItemKeyProp, 
+        setSelectedItemKeyProp
+    ] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         onItemSelected(
-            selectedItemKey === undefined ?
+            selectedItemKeyProp === undefined ?
                 undefined :
                 (() => {
 
-                    const getValues = () => getValuesCurrentlyMappedToKeyProp(selectedItemKey);
+                    const getValues = () => getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
 
                     const { kind } = getValues();
-
+                    
+                    //NOTE: The kind of the selected item is not susceptible to
+                    //change, (a directory will always de a directory and a file
+                    //will always be a file) but the item can be renamed.
                     return { kind, "getBasename": () => getValues().basename };
 
                 })()
         );
-    }, [onItemSelected, selectedItemKey, getValuesCurrentlyMappedToKeyProp]);
+    }, [onItemSelected, selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]);
 
 
     const [isSelectedItemBeingEdited, setIsSelectedItemBeingEdited] = useState(false);
@@ -138,7 +144,7 @@ export function ExplorerItems(props: Props) {
 
                             const key = getKeyProp({ kind, basename });
 
-                            if (target === "text" && selectedItemKey === key) {
+                            if (target === "text" && selectedItemKeyProp === key) {
 
                                 setIsSelectedItemBeingEdited(true);
 
@@ -150,7 +156,7 @@ export function ExplorerItems(props: Props) {
 
                             }
 
-                            setSelectedItemKey(key);
+                            setSelectedItemKeyProp(key);
 
                             break;
 
@@ -161,7 +167,7 @@ export function ExplorerItems(props: Props) {
                     }
                 }
         ),
-        [onNavigate, selectedItemKey, getKeyProp]
+        [onNavigate, selectedItemKeyProp, getKeyProp]
     );
 
 
@@ -189,14 +195,14 @@ export function ExplorerItems(props: Props) {
                 (kind: "file" | "directory") =>
                     (removed: string[]) => {
 
-                        if (selectedItemKey === undefined) {
+                        if (selectedItemKeyProp === undefined) {
                             return;
                         }
 
                         const {
                             kind: selectedItemKind,
                             basename
-                        } = getValuesCurrentlyMappedToKeyProp(selectedItemKey);
+                        } = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
 
                         if (
                             selectedItemKind !== kind ||
@@ -209,7 +215,7 @@ export function ExplorerItems(props: Props) {
 
                     }
             ),
-            [selectedItemKey, getValuesCurrentlyMappedToKeyProp]
+            [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
         );
 
         useArrayRemoved({
@@ -263,11 +269,11 @@ export function ExplorerItems(props: Props) {
                     }
                 })()).map(basename => {
 
-                    const key = getKeyProp({ kind, basename });
-                    const isSelected = selectedItemKey === key;
+                    const keyProp = getKeyProp({ kind, basename });
+                    const isSelected = selectedItemKeyProp === keyProp;
 
                     return (
-                        <Grid item key={key}>
+                        <Grid item key={keyProp}>
                             <ExplorerItem
                                 kind={kind}
                                 basename={basename}

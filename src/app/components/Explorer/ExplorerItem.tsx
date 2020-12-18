@@ -200,6 +200,7 @@ export function ExplorerItem(props: Props) {
         "callback": useCallback(({ type, extraArg: target }) => {
 
             if (type === "down" && isBeingEdited) {
+                console.log("down");
                 onEditedBasenameProxy();
             }
 
@@ -231,6 +232,8 @@ export function ExplorerItem(props: Props) {
                 //NOTE: For the onBlur
                 //TODO: Improve
                 setEditedBasename(basename);
+
+                console.log("escape");
                 onEditedBasename({ "editedBasename": basename });
 
                 return;
@@ -287,7 +290,7 @@ export function ExplorerItem(props: Props) {
                             error={isInputError}
                             onChange={onChange}
                             onFocus={onFocus}
-                            onBlur={onEditedBasenameProxy}
+                            //onBlur={()=> {  console.log("blur"); onEditedBasenameProxy(); }}
                             onKeyDown={onKeyDown}
                         />
                     </form>
