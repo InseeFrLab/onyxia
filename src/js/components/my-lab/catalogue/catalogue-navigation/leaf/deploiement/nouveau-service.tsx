@@ -354,9 +354,10 @@ const arrayToObject =
 				const fromParams = getFromQueryParams(queryParams);
 				fields.forEach(({ path, field }) =>
 					obj[path] =
-					fromParams(path)(field) ||
-					mustacheRender(field as any, buildMustacheViewParams) ||
-					getDefaultSingleOption(field)
+					fromParams(path)(field) ?? (
+						mustacheRender(field as any, buildMustacheViewParams) ||
+						getDefaultSingleOption(field)
+					)
 				);
 				return obj;
 			};
