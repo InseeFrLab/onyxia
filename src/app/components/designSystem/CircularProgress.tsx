@@ -33,7 +33,7 @@ export function CircularProgress(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { color } = completedProps;
+    const { color, size } = completedProps;
 
     const classes = useStyles(completedProps);
 
@@ -41,6 +41,7 @@ export function CircularProgress(props: Props) {
         <MuiCircularProgress
             color={color === "textPrimary" ? undefined : color}
             classes={classes}
+            size={size}
         />
     );
 

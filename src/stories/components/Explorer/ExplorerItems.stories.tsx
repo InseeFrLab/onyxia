@@ -7,6 +7,7 @@ import { getStoryFactory } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
+import { id } from "evt/tools/typeSafety/id";
 
 
 function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed"> & { containerWidth: number; }) {
@@ -117,9 +118,9 @@ const { meta, getStory } = getStoryFactory({
 });
 
 
+
 export default {
     ...meta,
-    // https://storybook.js.org/docs/react/essentials/controls
     "argTypes": {
         ...meta.argTypes,
         "containerWidth": {
@@ -127,6 +128,12 @@ export default {
                 "type": "range",
                 "min": 10,
                 "max": 100
+            }
+        },
+        "visualRepresentationOfAFile": {
+            "control": {
+                "type": "inline-radio",
+                "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
             }
         }
     }
