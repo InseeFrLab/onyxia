@@ -142,9 +142,9 @@ export function ExplorerItems(props: Props) {
                     switch (type) {
                         case "down":
 
-                            const key = getKeyProp({ kind, basename });
+                            const keyProp = getKeyProp({ kind, basename });
 
-                            if (target === "text" && selectedItemKeyProp === key) {
+                            if (target === "text" && selectedItemKeyProp === keyProp) {
 
                                 setIsSelectedItemBeingEdited(true);
 
@@ -156,7 +156,7 @@ export function ExplorerItems(props: Props) {
 
                             }
 
-                            setSelectedItemKeyProp(key);
+                            setSelectedItemKeyProp(keyProp);
 
                             break;
 
