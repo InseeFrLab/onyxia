@@ -3,6 +3,7 @@ import { TextField } from '@material-ui/core';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 
+/* eslint-disable import/no-anonymous-default-export */
 export default ({
 	handleChange,
 	path,

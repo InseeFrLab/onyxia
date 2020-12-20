@@ -35,6 +35,7 @@ const ItemLogin = ({ login }: any) => (
 	</ListItem>
 );
 
+/* eslint-disable import/no-anonymous-default-export */
 export default ({
 	open,
 	handleClose,

@@ -1,7 +1,7 @@
 
 
 
-import type { WritableDraft } from "immer/dist/types/types-external";
+import type { WritableDraft } from "@reduxjs/toolkit/node_modules/immer/dist/types/types-external";
 
 export type UnwrapWritableDraft<T> = T extends WritableDraft<infer U> ? U : never;
 

@@ -1,5 +1,6 @@
 import React from 'react';
 
+/* eslint-disable import/no-anonymous-default-export */
 export default ({ height = 40, width = 40 }) => (
 	<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 11.614491 11.287086" id="svg8">
 		<g id="layer1" transform="translate(43.454 -231.608)">

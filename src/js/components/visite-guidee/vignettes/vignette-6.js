@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core';
 import { Arrow } from './../vignette-commons';
 import D from 'js/i18n';
 
+/* eslint-disable import/no-anonymous-default-export */
 export default {
 	description: class Diapo extends React.Component {
 		state = { dom: null, ready: false };
