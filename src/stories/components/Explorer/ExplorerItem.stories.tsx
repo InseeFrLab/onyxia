@@ -34,6 +34,7 @@ const { meta, getStory } = getStoryFactory({
     "wrappedComponent": { [symToStr({ ExplorerItem })]: Component }
 });
 
+/* eslint-disable import/no-anonymous-default-export */
 export default {
     ...meta,
     "argTypes": {
@@ -71,4 +72,5 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "isBeingEdited": false,
 });
+
 
