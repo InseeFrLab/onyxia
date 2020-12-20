@@ -82,7 +82,7 @@
     "typeface-roboto": "^0.0.75"
   },
   "scripts": {
-    "postinstall": "cd node_modules && mv babel-loader \\@storybook/core/node_modules/",
+    "postinstall": "cd node_modules/\\@storybook && mkdir -p node_modules && (mv ../babel-loader node_modules/ 2>/dev/null || true)",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
