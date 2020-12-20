@@ -6,7 +6,6 @@ import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 
 
-
 export type State = {
 	currentObjects: (Blob & { name: string; })[];
 	currentDirectories: { prefix: string; }[];
@@ -15,6 +14,7 @@ export type State = {
 	userBuckets: State.Bucket[] | undefined;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace State {
 
 

@@ -9,6 +9,7 @@ import D from 'js/i18n';
 
 const env = getEnv();
 
+/* eslint-disable import/no-anonymous-default-export */
 export default {
 	description: class Vignette1 extends React.Component {
 		state = { dom: null };

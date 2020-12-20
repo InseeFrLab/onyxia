@@ -4,6 +4,7 @@ import { FormControl, InputLabel } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+/* eslint-disable import/no-anonymous-default-export */
 export default ({
 	handleChange,
 	nom,

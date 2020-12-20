@@ -7,6 +7,7 @@ import D from 'js/i18n';
 const getDetailButtonElement = serviceCreeId =>
 	document.querySelector(`a[href$="${serviceCreeId}"] > button`);
 
+/* eslint-disable import/no-anonymous-default-export */
 export default {
 	"description": class Vignette extends React.Component {
 		state = { dom: null, "serviceCreeId": undefined };

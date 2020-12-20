@@ -8,7 +8,7 @@ import { basename as pathBasename, join as pathJoin, dirname as pathDirname, rel
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
-import { unwrapWritableDraft } from "app/utils/unwrapWritableDraft";
+import { unwrapWritableDraft } from "lib/utils/unwrapWritableDraft";
 
 const getEvtIsCreatingOrRenaming = memoize(
     (_: Dependencies) => Evt.create(false)
@@ -22,6 +22,7 @@ export declare type SecretExplorerState =
     SecretExplorerState.ShowingSecret
     ;
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace SecretExplorerState {
 
     export type _Common = {
