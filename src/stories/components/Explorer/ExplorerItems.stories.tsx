@@ -119,6 +119,7 @@ const { meta, getStory } = getStoryFactory({
 
 
 
+/* eslint-disable import/no-anonymous-default-export */
 export default {
     ...meta,
     "argTypes": {
