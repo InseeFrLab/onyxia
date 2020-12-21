@@ -69,7 +69,7 @@ export function I18nProvider(props: Props) {
             i18nInstance as any,
             "languagechange"
         ).attach(() => forceUpdate()),
-        []
+        [i18nInstance]
     );
 
     return (

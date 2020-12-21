@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import * as reactDom from "react-dom";
 import { Provider } from "react-redux";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
@@ -20,40 +20,44 @@ const App: any = App_;
 
 JavascriptTimeAgo.locale(fr);
 
-const Root = () => {
-
-    const [env] = useState(() => getEnv());
+function Root() {
 
     const { result: store, error } = useAsync(
-        () => createStore({
-            "isOsPrefersColorSchemeDark": (
-                window.matchMedia &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches
-            ),
-            "keycloakConfig": id<KeycloakConfig.Real>({
-                "doUseInMemoryClient": false,
-                ...(() => {
+        () => {
 
-                    assert(
-                        env.AUTHENTICATION.TYPE === "oidc",
-                        [
-                            "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
-                            "the only authentication mechanism currently supported"
-                        ].join(" ")
-                    );
+            const env = getEnv();
 
-                    return env.AUTHENTICATION.OIDC;
+            return createStore({
+                "isOsPrefersColorSchemeDark": (
+                    window.matchMedia &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                ),
+                "keycloakConfig": id<KeycloakConfig.Real>({
+                    "doUseInMemoryClient": false,
+                    ...(() => {
 
-                })()
-            }),
-            "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
-                "doUseInMemoryClient": false,
-                "baseUri": env.VAULT.BASE_URI,
-                "engine": env.VAULT.ENGINE,
-                "role": env.VAULT.ROLE
-            }),
-            "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
-        }),
+                        assert(
+                            env.AUTHENTICATION.TYPE === "oidc",
+                            [
+                                "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
+                                "the only authentication mechanism currently supported"
+                            ].join(" ")
+                        );
+
+                        return env.AUTHENTICATION.OIDC;
+
+                    })()
+                }),
+                "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
+                    "doUseInMemoryClient": false,
+                    "baseUri": env.VAULT.BASE_URI,
+                    "engine": env.VAULT.ENGINE,
+                    "role": env.VAULT.ROLE
+                }),
+                "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
+            });
+
+        },
         []
     );
 
@@ -78,8 +82,6 @@ const Root = () => {
     );
 
 };
-
-
 
 reactDom.render(
     <Root />,

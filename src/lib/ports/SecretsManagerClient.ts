@@ -6,7 +6,6 @@ import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
 
 export declare type Secret = { [key: string]: Secret.Value; };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace Secret {
     //TODO: Restore the real definition once TS 4.x will be supported by CRA
     export type Value = string | boolean | number | null | Value[] | { [key: string]: Value; };

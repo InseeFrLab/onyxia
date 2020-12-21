@@ -47,7 +47,6 @@ export declare type SecretsManagerClientConfig =
     SecretsManagerClientConfig.InMemory |
     SecretsManagerClientConfig.Vault;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace SecretsManagerClientConfig {
 
     export type InMemory = {
@@ -67,7 +66,6 @@ export declare type KeycloakConfig =
     KeycloakConfig.InMemory |
     KeycloakConfig.Real;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace KeycloakConfig {
 
     export type InMemory = {

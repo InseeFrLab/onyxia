@@ -14,7 +14,6 @@ export type State = {
 	userBuckets: State.Bucket[] | undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace State {
 
 

@@ -15,6 +15,7 @@ import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import memoize from "memoizee";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -44,10 +45,7 @@ export type Props = {
 
     getIsValidBasename(params: { basename: string; }): boolean;
 
-    evtAction: NonPostableEvt<
-        { action: "enter editing state" } |
-        { action: "leave editing state", isCancel: boolean; }
-    >;
+    evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 
 };
 
@@ -205,41 +203,71 @@ export function ExplorerItem(props: Props) {
     );
 
     useEvt(
-        ctx => {
+        ctx => evtAction
+            .pipe(ctx)
+            .attach(
+                action => action === "ENTER EDITING STATE",
+                () => setIsBeingEdited(true)
+            ),
+        [evtAction]
+    );
 
-            evtAction
-                .pipe(ctx)
-                .attach(
-                    ({ action }) => action === "enter editing state",
-                    () => setIsBeingEdited(true)
-                )
-                .$attach(
-                    data => data.action !== "leave editing state" ? null : [data],
-                    ({ isCancel }) => {
+    const leaveEditingStateFactory = useMemo(
+        () => memoize((isCancel: boolean) =>
+            () => {
 
-                        setIsBeingEdited(false);
+                setIsBeingEdited(false);
 
-                        if (isCancel) {
-                            setEditedBasename(basename);
-                            return;
-                        }
+                if (isCancel) {
+                    setEditedBasename(basename);
+                    return;
+                }
 
-                        if (editedBasename === basename) {
-                            return;
-                        }
+                if (editedBasename === basename) {
+                    return;
+                }
 
-                        if (isInputError) {
-                            return;
-                        }
+                if (isInputError) {
+                    return;
+                }
 
-                        onEditedBasename({ editedBasename });
+                onEditedBasename({ editedBasename });
 
-                    }
-                )
+            }
+        ),
+        [editedBasename, isInputError, basename, onEditedBasename]
+    );
+
+    const onKeyDown = useCallback(
+        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+            const key = (() => {
+                switch (event.key) {
+                    case "Escape":
+                    case "Enter":
+                        return event.key;
+                    default: return "irrelevant";
+                }
+            })();
+
+            if (key === "irrelevant") {
+                return;
+            }
+
+            event.preventDefault();
+
+            const isCancel = (() => {
+                switch (key) {
+                    case "Escape": return true;
+                    case "Enter": return false;
+                }
+            })();
+
+            leaveEditingStateFactory(isCancel)();
 
 
         },
-        [evtAction, editedBasename, isInputError]
+        [leaveEditingStateFactory]
     );
 
     return (
@@ -278,6 +306,8 @@ export function ExplorerItem(props: Props) {
                             error={isInputError}
                             onChange={onChange}
                             onFocus={onFocus}
+                            onKeyDown={onKeyDown}
+                            onBlur={leaveEditingStateFactory(false)}
                         />
                     </form>
             }
@@ -286,7 +316,6 @@ export function ExplorerItem(props: Props) {
 
 }
 
-// eslint-disable-next-line no-redeclare
 export declare namespace ExplorerItem {
 
     export type I18nScheme = {

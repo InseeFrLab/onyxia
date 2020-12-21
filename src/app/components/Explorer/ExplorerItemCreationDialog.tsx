@@ -90,7 +90,6 @@ export function ExplorerItemCreationDialog(props: Props) {
 
 }
 
-// eslint-disable-next-line no-redeclare
 export declare namespace ExplorerItemCreationDialog {
 
   export type I18nScheme = {

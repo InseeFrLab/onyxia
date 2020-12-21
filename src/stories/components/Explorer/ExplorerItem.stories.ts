@@ -1,38 +1,20 @@
 
-import React, { useEffect, useState } from "react";
 import { ExplorerItem, Props } from "app/components/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { symToStr } from "app/utils/symToStr";
 import { id } from "evt/tools/typeSafety/id";
-
-function Component(props: Omit<Props, "evtAction"> & { isBeingEdited: boolean; }) {
-
-    const { isBeingEdited } = props;
-
-    const [evtAction] = useState(() => Evt.create<UnpackEvt<Props["evtAction"]>>());
-
-    useEffect(() => {
-
-        evtAction.post(
-            isBeingEdited ?
-                { "action": "enter editing state" } :
-                { "action": "leave editing state", "isCancel": true }
-        );
-
-    }, [isBeingEdited, evtAction]);
-
-    return <ExplorerItem evtAction={evtAction} {...props} />;
-
-}
+import withEvents from "@storybook/addon-events";
+import { EventEmitter } from "events";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ ExplorerItem })]: Component }
+    "wrappedComponent": { ExplorerItem }
 });
+
+const eventEmitter = new EventEmitter();
 
 /* eslint-disable import/no-anonymous-default-export */
 export default {
@@ -57,10 +39,26 @@ export default {
                 "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
             }
         }
-    }
+    },
+    "decorators": [
+        ...(meta.decorators ? meta.decorators : []),
+        withEvents({
+            "emit": eventEmitter.emit.bind(eventEmitter),
+            "events": [
+                {
+                    "title": "Enter editing state",
+                    "name": "default",
+                    "payload": id<UnpackEvt<Props["evtAction"]>>({ "actions": "ENTER EDITING STATE" } as any),
+                }
+            ]
+        }),
+    ],
+
 };
 
-export const Vue1 = getStory({
+eventEmitter.on("default", ()=> console.log("here"));
+
+export const defaultView = getStory({
     "visualRepresentationOfAFile": "secret",
     "kind": "file",
     "basename": "my-project-envs",
@@ -70,7 +68,5 @@ export const Vue1 = getStory({
     "onMouseEvent": console.log.bind(null, "onMouseEvent"),
     "onEditedBasename": console.log.bind(null, "onEditedBasename"),
     "getIsValidBasename": pure.getIsValidBasename,
-    "isBeingEdited": false,
+    "evtAction": Evt.from(eventEmitter, "default")
 });
-
-

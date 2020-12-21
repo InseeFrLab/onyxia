@@ -14,7 +14,6 @@ export declare type OidcClient =
     OidcClient.LoggedIn |
     OidcClient.NotLoggedIn;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace OidcClient {
 
     export type NotLoggedIn = {
