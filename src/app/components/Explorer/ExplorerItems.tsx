@@ -166,7 +166,7 @@ export function ExplorerItems(props: Props) {
     const onMouseEventFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
+                async ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
                     switch (type) {
                         case "down":
@@ -174,6 +174,8 @@ export function ExplorerItems(props: Props) {
                             const keyProp = getKeyProp({ kind, basename });
 
                             if (target === "text" && selectedItemKeyProp === keyProp) {
+
+                                await Evt.from(window, "mouseup").waitFor();
 
                                 getEvtItemAction(keyProp).post("ENTER EDITING STATE");
 
