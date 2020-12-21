@@ -53,7 +53,7 @@ export function MySecrets() {
     );
 
     const onEditedBasename = useCallback(
-        ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditedBasename"]>[0]) =>
+        ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
             dispatch(
                 thunks.renameDirectoryOrSecretWithinCurrentDirectory({
                     "kind": (() => {

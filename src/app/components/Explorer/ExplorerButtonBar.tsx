@@ -4,6 +4,7 @@ import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
+import Box from "@material-ui/core/Box";
 
 export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path"
 
@@ -31,35 +32,37 @@ export function ExplorerButtonBar(props: Props) {
     );
 
     return (
-        <> { ([
-            "rename",
-            "create file",
-            "create directory",
-            "delete",
-            "copy path"
-        ] as const).map(action =>
-            <Button
-                icon={(() => {
-                    switch (action) {
-                        case "copy path": return "info" as const;
-                        case "create directory": return "info";
-                        case "create file": return "info";
-                        case "delete": return "info";
-                        case "rename": return "info";
+        <Box>
+            { ([
+                "rename",
+                "create file",
+                "create directory",
+                "delete",
+                "copy path"
+            ] as const).map(action =>
+                <Button
+                    icon={(() => {
+                        switch (action) {
+                            case "copy path": return "info" as const;
+                            case "create directory": return "info";
+                            case "create file": return "info";
+                            case "delete": return "info";
+                            case "rename": return "info";
+                        }
+                    })()}
+                    disabled={!isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action)}
+                    key={action}
+                    onClick={onClickFactory(action)}
+
+                >
+                    {
+                        action === "create file" ?
+                            t("create what", { "what": t(wordForFile) }) :
+                            t(action)
                     }
-                })()}
-                disabled={!isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action)}
-                key={action}
-                onClick={onClickFactory(action)}
-                
-            >
-                {
-                    action === "create file" ?
-                        t("create what", { "what": t(wordForFile) }) :
-                        t(action)
-                }
-            </Button>
-        )} </>
+                </Button>
+            )}
+        </Box>
     );
 
 }
