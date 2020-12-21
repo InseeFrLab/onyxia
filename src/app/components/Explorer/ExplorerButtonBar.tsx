@@ -51,6 +51,7 @@ export function ExplorerButtonBar(props: Props) {
                 disabled={!isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action)}
                 key={action}
                 onClick={onClickFactory(action)}
+                
             >
                 {
                     action === "create file" ?

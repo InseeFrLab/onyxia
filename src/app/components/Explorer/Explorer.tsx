@@ -79,15 +79,10 @@ export function Explorer(props: Props) {
         [type]
     );
 
-
-    const [dialogIsOpen, setDialogIsOpen] = useState(false);
-
-    const [dialogCreateWhat, setDialogCreateWhat] = useState<"directory" | "file">("file");
-
-    const [evtItemsAction] = useState(() => Evt.create<UnpackEvt<ItemsProps["evtAction"]>>());
-
-    const [isThereAnItemSelected, setIsThereAnItemSelected] = useState(false);
-
+    const [{ evtItemsAction, evtDialogAction }] = useState(() => ({
+        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
+        "evtDialogAction": Evt.create<UnpackEvt<DialogProps["evtAction"]>>()
+    }));
 
     const buttonBarCallback = useCallback(
         ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
@@ -105,53 +100,40 @@ export function Explorer(props: Props) {
                 case "create directory":
                 case "create file":
 
-                    setDialogCreateWhat((() => {
-                        switch (action) {
-                            case "create file": return "file";
-                            case "create directory": return "directory"
-                        }
-                    })());
-                    setDialogIsOpen(true);
+                    evtDialogAction.post({
+                        "action": "OPEN",
+                        "kind": (() => {
+                            switch (action) {
+                                case "create file": return "file";
+                                case "create directory": return "directory"
+                            }
+
+                        })()
+                    });
+
                     break;
 
             }
 
         },
-        [evtItemsAction]
+        [evtItemsAction, evtDialogAction]
     );
 
-    const dialogGetIsValidName = useCallback(
-        (name: string) => (
-            getIsValidBasename({ "basename": name }) &&
+    const dialogGetIsValidBasename = useCallback(
+        ({ kind, basename }: Parameters<DialogProps["getIsValidBasename"]>[0]) => (
+            getIsValidBasename({ basename }) &&
             !(() => {
-                switch (dialogCreateWhat) {
+                switch (kind) {
                     case "directory": return directories;
                     case "file": return files;
                 }
-            })().includes(name)
+            })().includes(basename)
         ),
-        [dialogCreateWhat, directories, files, getIsValidBasename]
+        [directories, files, getIsValidBasename]
     );
 
-    const dialogCallback = useCallback(
-        (params: Parameters<DialogProps["callback"]>[0]) => {
 
-            if (params.doCreate) {
-
-                onCreateItem({
-                    "kind": dialogCreateWhat,
-                    "basename": params.name
-
-                });
-
-            }
-
-            setDialogIsOpen(false);
-
-        },
-        [dialogCreateWhat, onCreateItem]
-    );
-
+    const [isThereAnItemSelected, setIsThereAnItemSelected] = useState(false);
 
     const onIsThereAnItemSelectedValueChange = useCallback(
         ({ isThereAnItemSelected }: Parameters<ItemsProps["onIsThereAnItemSelectedValueChange"]>[0]) =>
@@ -197,16 +179,12 @@ export function Explorer(props: Props) {
         [onDeleteItem]
     );
 
-
-
-
     return (
         <>
             <ItemCreationDialog
-                isOpen={dialogIsOpen}
-                createWhat={dialogCreateWhat}
-                getIsValidName={dialogGetIsValidName}
-                callback={dialogCallback}
+                evtAction={evtDialogAction}
+                getIsValidBasename={dialogGetIsValidBasename}
+                successCallback={onCreateItem}
             />
             <ButtonBar
                 isThereAnItemSelected={isThereAnItemSelected}
