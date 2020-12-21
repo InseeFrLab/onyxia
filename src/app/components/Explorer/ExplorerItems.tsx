@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -10,7 +10,7 @@ import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { Evt } from "evt";
+import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
 
@@ -31,10 +31,10 @@ export type Props = {
     onNavigate(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
 
+    onItemSelected(params: { kind: "file" | "directory"; getBasename(): string; } | undefined): void;
+
     /** Fo signaling click on the button bar */
     evtStartEditing: NonPostableEvt<void>;
-
-    onItemSelected(params: { kind: "file" | "directory"; getBasename(): string; } | undefined): void;
 
 
 };
@@ -104,7 +104,7 @@ export function ExplorerItems(props: Props) {
     );
 
     const [
-        selectedItemKeyProp, 
+        selectedItemKeyProp,
         setSelectedItemKeyProp
     ] = useState<string | undefined>(undefined);
 
@@ -117,7 +117,7 @@ export function ExplorerItems(props: Props) {
                     const getValues = () => getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
 
                     const { kind } = getValues();
-                    
+
                     //NOTE: The kind of the selected item is not susceptible to
                     //change, (a directory will always de a directory and a file
                     //will always be a file) but the item can be renamed.
@@ -126,6 +126,13 @@ export function ExplorerItems(props: Props) {
                 })()
         );
     }, [onItemSelected, selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]);
+
+    const getItemEvtAction = useMemo(
+        () => memoize(
+            (_keyProp: string) => Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>()
+        ),
+        []
+    );
 
     useEvt(
         ctx =>
@@ -136,33 +143,17 @@ export function ExplorerItems(props: Props) {
                         return;
                     }
                     getItemEvtAction(selectedItemKeyProp!)
-                        .post({ "action": "enter editing state" });
+                        .post("ENTER EDITING STATE");
                 }
             ),
-        [evtStartEditing]
+        [evtStartEditing, getItemEvtAction, selectedItemKeyProp]
     );
 
-    const getItemEvtAction = useMemo(
-        () => memoize(
-            (_keyProp: string) => Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>()
-        ),
-        []
-    );
 
     const onMouseEventFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
                 ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
-
-                    //TODO: Any click should do that, not only a click on an other item
-                    if (selectedItemKeyProp !== undefined) {
-
-                        getItemEvtAction(selectedItemKeyProp).post({
-                            "action": "leave editing state",
-                            "isCancel": false
-                        });
-
-                    }
 
                     switch (type) {
                         case "down":
@@ -171,13 +162,11 @@ export function ExplorerItems(props: Props) {
 
                             if (target === "text" && selectedItemKeyProp === keyProp) {
 
-                                getItemEvtAction(keyProp).post({
-                                    "action": "enter editing state"
-                                });
+                                getItemEvtAction(keyProp).post("ENTER EDITING STATE");
 
                                 break;
 
-                            } 
+                            }
 
                             setSelectedItemKeyProp(keyProp);
 
@@ -241,43 +230,10 @@ export function ExplorerItems(props: Props) {
 
 
 
-    const onKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLDivElement>) => {
-
-            if (selectedItemKeyProp === undefined) {
-                return;
-            }
-
-            const key = (() => {
-                switch (event.key) {
-                    case "Escape":
-                    case "Enter":
-                        return event.key;
-                    default: return "irrelevant";
-                }
-            })();
-
-            if (key === "irrelevant") {
-                return;
-            }
-
-            getItemEvtAction(selectedItemKeyProp).post({
-                "action": "leave editing state",
-                "isCancel": (() => {
-                    switch (key) {
-                        case "Escape": return true;
-                        case "Enter": return false;
-                    }
-                })()
-            });
-
-        },
-        [getItemEvtAction, selectedItemKeyProp]
-    );
 
 
     return (
-        <Grid container wrap="wrap" justify="flex-start" spacing={1} onKeyDown={onKeyDown}>
+        <Grid container wrap="wrap" justify="flex-start" spacing={1}>
             {(["directory", "file"] as const).map(
                 kind => ((() => {
                     switch (kind) {

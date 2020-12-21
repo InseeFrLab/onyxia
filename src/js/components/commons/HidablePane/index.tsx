@@ -114,7 +114,7 @@ export const HidablePane: React.FC<{
 
 
 
-	}, [anchor]);
+	}, [anchor, display, hide ]);
 
 
 	useEffect(() => {

@@ -21,7 +21,6 @@ export type State = {
 	mesServicesWaiting: string[]; //Array of ids
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace State {
 
 	export type Service = {

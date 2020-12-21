@@ -131,7 +131,7 @@ export function useClick<ExtraArg>(
             ({ type, mouseEvent, extraArg }) =>
                 callback({ type, mouseEvent, extraArg })
         ),
-        [callback]
+        [callback, evtDownOrDouble]
     );
 
     return { getOnMouseProps };

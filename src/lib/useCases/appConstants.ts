@@ -12,7 +12,6 @@ import type { NonPostableEvt } from "evt";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace AppConstant {
 
     export type _Common = {

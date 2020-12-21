@@ -62,8 +62,6 @@ export function ExplorerButtonBar(props: Props) {
     );
 
 }
-
-// eslint-disable-next-line no-redeclare
 export declare namespace ExplorerButtonBar {
     export type I18nScheme = Record<Exclude<Action, "create file">, undefined> & {
         "create what": { what: string; };

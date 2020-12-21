@@ -22,7 +22,6 @@ export declare type SecretExplorerState =
     SecretExplorerState.ShowingSecret
     ;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export declare namespace SecretExplorerState {
 
     export type _Common = {
