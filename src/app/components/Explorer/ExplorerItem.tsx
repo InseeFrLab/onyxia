@@ -35,15 +35,16 @@ export type Props = {
 
     isCircularProgressShown: boolean;
 
+    getIsValidBasename(params: { basename: string; }): boolean;
+
     /** 
      * Invoked when the component have been clicked once 
      * and when it has been double clicked 
      */
     onMouseEvent(params: { type: "down" | "double", target: "icon" | "text" }): void;
 
-    onEditedBasename(params: { editedBasename: string; }): void;
+    onEditBasename(params: { editedBasename: string; }): void;
 
-    getIsValidBasename(params: { basename: string; }): boolean;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 
@@ -123,7 +124,7 @@ export function ExplorerItem(props: Props) {
         standardizedWidth,
         evtAction,
         onMouseEvent,
-        onEditedBasename,
+        onEditBasename,
         getIsValidBasename
     } = props;
 
@@ -231,11 +232,11 @@ export function ExplorerItem(props: Props) {
                     return;
                 }
 
-                onEditedBasename({ editedBasename });
+                onEditBasename({ editedBasename });
 
             }
         ),
-        [editedBasename, isInputError, basename, onEditedBasename]
+        [editedBasename, isInputError, basename, onEditBasename]
     );
 
     const onKeyDown = useCallback(

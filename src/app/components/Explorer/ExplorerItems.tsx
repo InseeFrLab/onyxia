@@ -12,6 +12,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { assert } from "evt/tools/typeSafety/assert";
 
 
 export type Props = {
@@ -29,13 +30,16 @@ export type Props = {
     directoriesBeingCreatedOrRenamed: string[];
 
     onNavigate(params: { kind: "file" | "directory"; basename: string; }): void;
-    onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
+    onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
+    onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
+    onCopyPath(params: { basename: string }): void;
+    onIsThereAnItemSelectedValueChange(params: { isThereAnItemSelected: boolean; }): void;
 
-    onItemSelected(params: { kind: "file" | "directory"; getBasename(): string; } | undefined): void;
-
-    /** Fo signaling click on the button bar */
-    evtStartEditing: NonPostableEvt<void>;
-
+    evtAction: NonPostableEvt<
+        "START EDITING SELECTED ITEM BASENAME" |
+        "DELETE SELECTED ITEM" |
+        "COPY SELECTED ITEM PATH"
+    >;
 
 };
 
@@ -49,11 +53,13 @@ export function ExplorerItems(props: Props) {
         files,
         directories,
         onNavigate,
-        onEditedBasename,
+        onEditBasename,
+        onDeleteItem,
+        onCopyPath,
         directoriesBeingCreatedOrRenamed,
         filesBeingCreatedOrRenamed,
-        evtStartEditing,
-        onItemSelected
+        evtAction,
+        onIsThereAnItemSelectedValueChange
     } = props;
 
     /*
@@ -108,26 +114,17 @@ export function ExplorerItems(props: Props) {
         setSelectedItemKeyProp
     ] = useState<string | undefined>(undefined);
 
-    useEffect(() => {
-        onItemSelected(
-            selectedItemKeyProp === undefined ?
-                undefined :
-                (() => {
+    {
 
-                    const getValues = () => getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
+        const isThereAnItemSelected = selectedItemKeyProp !== undefined;
 
-                    const { kind } = getValues();
+        useEffect(() => {
+            onIsThereAnItemSelectedValueChange({ isThereAnItemSelected });
+        }, [onIsThereAnItemSelectedValueChange, isThereAnItemSelected]);
 
-                    //NOTE: The kind of the selected item is not susceptible to
-                    //change, (a directory will always de a directory and a file
-                    //will always be a file) but the item can be renamed.
-                    return { kind, "getBasename": () => getValues().basename };
+    }
 
-                })()
-        );
-    }, [onItemSelected, selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]);
-
-    const getItemEvtAction = useMemo(
+    const getEvtItemAction = useMemo(
         () => memoize(
             (_keyProp: string) => Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>()
         ),
@@ -135,18 +132,34 @@ export function ExplorerItems(props: Props) {
     );
 
     useEvt(
-        ctx =>
-            evtStartEditing.attach(
-                ctx,
-                () => {
-                    if (selectedItemKeyProp === undefined) {
-                        return;
-                    }
-                    getItemEvtAction(selectedItemKeyProp!)
-                        .post("ENTER EDITING STATE");
+        ctx => evtAction.attach(
+            ctx,
+            action => {
+                switch (action) {
+                    case "DELETE SELECTED ITEM":
+                        assert(selectedItemKeyProp !== undefined);
+                        setSelectedItemKeyProp(undefined);
+                        onDeleteItem(getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp));
+                        break;
+                    case "START EDITING SELECTED ITEM BASENAME":
+                        assert(selectedItemKeyProp !== undefined);
+                        getEvtItemAction(selectedItemKeyProp).post("ENTER EDITING STATE");
+                        break;
+                    case "COPY SELECTED ITEM PATH":
+                        assert(selectedItemKeyProp !== undefined);
+                        onCopyPath(getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp));
+                        break;
                 }
-            ),
-        [evtStartEditing, getItemEvtAction, selectedItemKeyProp]
+            }
+        ),
+        [
+            evtAction,
+            onDeleteItem,
+            onCopyPath,
+            getEvtItemAction,
+            selectedItemKeyProp,
+            getValuesCurrentlyMappedToKeyProp
+        ]
     );
 
 
@@ -162,7 +175,7 @@ export function ExplorerItems(props: Props) {
 
                             if (target === "text" && selectedItemKeyProp === keyProp) {
 
-                                getItemEvtAction(keyProp).post("ENTER EDITING STATE");
+                                getEvtItemAction(keyProp).post("ENTER EDITING STATE");
 
                                 break;
 
@@ -178,25 +191,25 @@ export function ExplorerItems(props: Props) {
                     }
                 }
         ),
-        [onNavigate, selectedItemKeyProp, getKeyProp, getItemEvtAction]
+        [onNavigate, selectedItemKeyProp, getKeyProp, getEvtItemAction]
     );
 
 
-    const onEditedBasenameFactory = useMemo(
+    const onEditBasenameFactory = useMemo(
         () => memoize(
             (kind: "file" | "directory", basename: string) =>
-                ({ editedBasename }: Parameters<ExplorerItemProps["onEditedBasename"]>[0]) => {
+                ({ editedBasename }: Parameters<ExplorerItemProps["onEditBasename"]>[0]) => {
 
                     transfersKeyProp({
                         "toValues": { kind, "basename": editedBasename },
                         "fromValues": { kind, basename }
                     });
 
-                    onEditedBasename({ kind, basename, editedBasename });
+                    onEditBasename({ kind, basename, editedBasename });
 
                 }
         ),
-        [onEditedBasename, transfersKeyProp]
+        [onEditBasename, transfersKeyProp]
     );
 
 
@@ -229,9 +242,6 @@ export function ExplorerItems(props: Props) {
     );
 
 
-
-
-
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
             {(["directory", "file"] as const).map(
@@ -251,7 +261,7 @@ export function ExplorerItems(props: Props) {
                                 kind={kind}
                                 basename={basename}
                                 isSelected={isSelected}
-                                evtAction={getItemEvtAction(keyProp)}
+                                evtAction={getEvtItemAction(keyProp)}
                                 isCircularProgressShown={(() => {
                                     switch (kind) {
                                         case "directory": return directoriesBeingCreatedOrRenamed;
@@ -260,7 +270,7 @@ export function ExplorerItems(props: Props) {
                                 })().includes(basename)}
                                 standardizedWidth={standardizedWidth}
                                 onMouseEvent={onMouseEventFactory(kind, basename)}
-                                onEditedBasename={onEditedBasenameFactory(kind, basename)}
+                                onEditBasename={onEditBasenameFactory(kind, basename)}
                                 getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
                             />
                         </Grid>

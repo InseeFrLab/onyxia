@@ -69,8 +69,8 @@ export function MySecrets() {
         [dispatch]
     );
 
-    const onDelete = useCallback(
-        async ({ kind, basename }: Parameters<ExplorerProps["onDelete"]>[0]) => {
+    const onDeleteItem = useCallback(
+        async ({ kind, basename }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
 
             console.log("TODO: Deletion started");
 
@@ -92,8 +92,8 @@ export function MySecrets() {
         [dispatch]
     );
 
-    const onCreate = useCallback(
-        ({ kind, basename }: Parameters<ExplorerProps["onCreate"]>[0]) =>
+    const onCreateItem = useCallback(
+        ({ kind, basename }: Parameters<ExplorerProps["onCreateItem"]>[0]) =>
             dispatch(
                 thunks.createSecretOrDirectory({
                     "kind": (() => {
@@ -142,8 +142,8 @@ export function MySecrets() {
                     }
                     onNavigate={onNavigate}
                     onEditedBasename={onEditedBasename}
-                    onDelete={onDelete}
-                    onCreate={onCreate}
+                    onDeleteItem={onDeleteItem}
+                    onCreateItem={onCreateItem}
                     onCopyPath={onCopyPath}
                 />
             </Container>

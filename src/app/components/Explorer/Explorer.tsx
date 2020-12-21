@@ -10,8 +10,8 @@ import type { Props as PathNavigatorProps } from "./PathNavigator";
 import { ExplorerButtonBar as SecretOrFileExplorerButtonBar } from "./ExplorerButtonBar";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { assert } from "evt/tools/typeSafety/assert";
 import { join as pathJoin } from "path";
+import type { UnpackEvt } from "evt";
 
 
 export type Props = {
@@ -29,8 +29,8 @@ export type Props = {
     filesBeingCreatedOrRenamed: string[];
     onNavigate(params: { kind: "file" | "directory"; relativePath: string; }): void;
     onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
-    onDelete(params: { kind: "file" | "directory"; basename: string; }): void;
-    onCreate(params: { kind: "file" | "directory"; basename: string; }): void;
+    onDeleteItem(params: { kind: "file" | "directory"; basename: string; }): void;
+    onCreateItem(params: { kind: "file" | "directory"; basename: string; }): void;
     onCopyPath(params: { path: string; }): void;
 
 };
@@ -46,10 +46,10 @@ export function Explorer(props: Props) {
         filesBeingCreatedOrRenamed,
         directoriesBeingCreatedOrRenamed,
         onNavigate,
-        onEditedBasename,
-        onDelete,
+        onEditedBasename: onEditBasename,
         onCopyPath,
-        onCreate
+        onDeleteItem,
+        onCreateItem
     } = props;
 
     const Items = useMemo(
@@ -84,41 +84,23 @@ export function Explorer(props: Props) {
 
     const [dialogCreateWhat, setDialogCreateWhat] = useState<"directory" | "file">("file");
 
-    const [evtStartEditing] = useState(() => Evt.create());
+    const [evtItemsAction] = useState(() => Evt.create<UnpackEvt<ItemsProps["evtAction"]>>());
 
-    const [
-        selectedItem,
-        setSelectedItem
-    ] = useState<Parameters<ItemsProps["onItemSelected"]>[0]>(undefined);
+    const [isThereAnItemSelected, setIsThereAnItemSelected] = useState(false);
+
 
     const buttonBarCallback = useCallback(
         ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
 
             switch (action) {
                 case "rename":
-                    evtStartEditing.post();
+                    evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
                     break;
-                case "delete": {
-
-                    assert(selectedItem !== undefined);
-
-                    const { kind, getBasename } = selectedItem;
-
-                    onDelete({
-                        kind,
-                        "basename": getBasename()
-                    });
-
-                } break;
+                case "delete":
+                    evtItemsAction.post("DELETE SELECTED ITEM");
+                    break;
                 case "copy path":
-
-                    onCopyPath({
-                        "path":
-                            selectedItem === undefined ?
-                                currentPath :
-                                pathJoin(currentPath, selectedItem.getBasename())
-                    });
-
+                    evtItemsAction.post("COPY SELECTED ITEM PATH");
                     break;
                 case "create directory":
                 case "create file":
@@ -135,17 +117,8 @@ export function Explorer(props: Props) {
             }
 
         },
-        [evtStartEditing, selectedItem, currentPath, onCopyPath, onDelete]
+        [evtItemsAction]
     );
-
-
-
-    const onItemSelected = useCallback(
-        (params: Parameters<ItemsProps["onItemSelected"]>[0]) =>
-            setSelectedItem(params),
-        []
-    );
-
 
     const dialogGetIsValidName = useCallback(
         (name: string) => (
@@ -165,7 +138,7 @@ export function Explorer(props: Props) {
 
             if (params.doCreate) {
 
-                onCreate({
+                onCreateItem({
                     "kind": dialogCreateWhat,
                     "basename": params.name
 
@@ -176,18 +149,14 @@ export function Explorer(props: Props) {
             setDialogIsOpen(false);
 
         },
-        [dialogCreateWhat, onCreate]
+        [dialogCreateWhat, onCreateItem]
     );
 
 
-    const itemsOnNavigate = useCallback(
-        ({ kind, basename }: Parameters<ItemsProps["onNavigate"]>[0]) =>
-            onNavigate({
-                kind,
-                "relativePath": pathJoin(currentPath, basename)
-            }),
-
-        [onNavigate, currentPath]
+    const onIsThereAnItemSelectedValueChange = useCallback(
+        ({ isThereAnItemSelected }: Parameters<ItemsProps["onIsThereAnItemSelectedValueChange"]>[0]) =>
+            setIsThereAnItemSelected(isThereAnItemSelected),
+        []
     );
 
 
@@ -201,6 +170,36 @@ export function Explorer(props: Props) {
         [onNavigate]
     );
 
+
+    const itemsOnNavigate = useCallback(
+        ({ kind, basename }: Parameters<ItemsProps["onNavigate"]>[0]) =>
+            onNavigate({
+                kind,
+                "relativePath": pathJoin(currentPath, basename)
+            }),
+
+        [onNavigate, currentPath]
+    );
+
+    const itemsOnCopyPath = useCallback(
+        ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) =>
+            onCopyPath({
+                "path": pathJoin(currentPath, basename)
+            }),
+
+        [onCopyPath, currentPath]
+
+    );
+
+    const itemsOnDeleteItem = useCallback(
+        ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) =>
+            onDeleteItem({ kind, basename }),
+        [onDeleteItem]
+    );
+
+
+
+
     return (
         <>
             <ItemCreationDialog
@@ -210,7 +209,7 @@ export function Explorer(props: Props) {
                 callback={dialogCallback}
             />
             <ButtonBar
-                isThereAnItemSelected={selectedItem !== undefined}
+                isThereAnItemSelected={isThereAnItemSelected}
                 callback={buttonBarCallback}
             />
             <PathNavigator
@@ -224,9 +223,11 @@ export function Explorer(props: Props) {
                 filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
                 directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
                 onNavigate={itemsOnNavigate}
-                onEditedBasename={onEditedBasename}
-                evtStartEditing={evtStartEditing}
-                onItemSelected={onItemSelected}
+                onEditBasename={onEditBasename}
+                evtAction={evtItemsAction}
+                onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                onCopyPath={itemsOnCopyPath}
+                onDeleteItem={itemsOnDeleteItem}
             />
         </>
     );
