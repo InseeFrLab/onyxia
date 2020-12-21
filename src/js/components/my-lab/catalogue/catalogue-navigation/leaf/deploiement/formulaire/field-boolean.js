@@ -4,7 +4,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default ({
 	handleChange,
 	path,

@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default () =>
 	createMuiTheme({
 		typography: {

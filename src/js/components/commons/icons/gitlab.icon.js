@@ -1,6 +1,6 @@
 import React from 'react';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default ({ height = 40, width = 40 }) => (
 	<svg
 		width={width}

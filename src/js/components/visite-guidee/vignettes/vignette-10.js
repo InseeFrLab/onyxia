@@ -4,7 +4,7 @@ import { Both, Arrow } from './../vignette-commons';
 import { Icon, Fab } from '@material-ui/core';
 import D from 'js/i18n';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default {
 	description: () => {
 		const elmts = document.getElementsByClassName('onyxia-toolbar');
