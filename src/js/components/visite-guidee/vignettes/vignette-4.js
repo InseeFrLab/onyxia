@@ -4,7 +4,7 @@ import { Next } from './../vignette-commons';
 import { WarnIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default {
 	description: () => (
 		<>

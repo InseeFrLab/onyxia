@@ -7,7 +7,7 @@ import SelectField from './field-select';
 import SelectWarField from './field-media-war';
 import { getFieldSafeAttr } from 'js/utils/form-field';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default ({ fields, user, handleChange, name, values }) => {
 	if (!fields) {
 		return <div></div>;

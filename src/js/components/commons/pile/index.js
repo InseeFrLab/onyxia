@@ -1,7 +1,7 @@
 import React from 'react';
 import './pile.scss';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default ({
 	size,
 	sizeMax,

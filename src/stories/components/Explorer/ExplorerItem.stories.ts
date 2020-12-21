@@ -16,30 +16,8 @@ const { meta, getStory } = getStoryFactory({
 
 const eventEmitter = new EventEmitter();
 
-/* eslint-disable import/no-anonymous-default-export */
 export default {
     ...meta,
-    "argTypes": {
-        ...meta.argTypes,
-        "standardizedWidth": {
-            "control": {
-                "type": "inline-radio",
-                "options": id<Props["standardizedWidth"][]>(["big", "normal"]),
-            }
-        },
-        "kind": {
-            "control": {
-                "type": "inline-radio",
-                "options": id<Props["kind"][]>(["file", "directory"]),
-            }
-        },
-        "visualRepresentationOfAFile": {
-            "control": {
-                "type": "inline-radio",
-                "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
-            }
-        }
-    },
     "decorators": [
         ...(meta.decorators ? meta.decorators : []),
         withEvents({
@@ -48,7 +26,7 @@ export default {
                 {
                     "title": "Enter editing state",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>({ "actions": "ENTER EDITING STATE" } as any),
+                    "payload": id<UnpackEvt<Props["evtAction"]>>("ENTER EDITING STATE"),
                 }
             ]
         }),
@@ -56,7 +34,7 @@ export default {
 
 };
 
-eventEmitter.on("default", ()=> console.log("here"));
+eventEmitter.on("default", () => console.log("here"));
 
 export const defaultView = getStory({
     "visualRepresentationOfAFile": "secret",

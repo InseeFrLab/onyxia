@@ -92,6 +92,6 @@ const dispatchToProps = {
 	"setFavicon": appActions.setFavicon,
 };
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default (RouterContext: any) =>
 	connect(mapStateToProps, dispatchToProps)(createPrivateRoute(RouterContext)); 

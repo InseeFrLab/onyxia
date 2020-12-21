@@ -6,9 +6,6 @@ import "./style.scss";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 
-
-
-
 export const HidablePane: React.FC<{
 	post?: () => boolean;
 	anchor?: HTMLElement;

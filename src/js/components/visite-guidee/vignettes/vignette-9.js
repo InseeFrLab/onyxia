@@ -4,7 +4,7 @@ import { Both } from './../vignette-commons';
 import { Icon, IconButton } from '@material-ui/core';
 import D from 'js/i18n';
 
-/* eslint-disable import/no-anonymous-default-export */
+ 
 export default {
 	description: () => {
 		return (
