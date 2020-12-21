@@ -46,10 +46,10 @@ export function Button(props: Props) {
   const classes = useStyles(completedProps);
 
   return (
-    <>
+    <MuiButton classes={classes} color={color} disabled={disabled}>
       {icon !== null && <Icon type={icon} />}
-      <MuiButton classes={classes} color={color} disabled={disabled}>{children}</MuiButton>
-    </>
+      {children}
+    </MuiButton>
   );
 
 }
