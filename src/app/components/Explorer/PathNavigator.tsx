@@ -61,7 +61,7 @@ export function PathNavigator(props: Props) {
     }, [path, minDepth]);
 
     return (
-        <>{
+        <Box>{
             partialPaths.map(({ partialPath, isLast, isClickable }) =>
                 <Box
                     key={partialPath}
@@ -80,7 +80,7 @@ export function PathNavigator(props: Props) {
                     </Box>
                 </Box>
             )
-        }</>
+        }</Box>
     );
 
 }

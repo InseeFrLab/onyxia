@@ -28,7 +28,7 @@ export type Props = {
     directoriesBeingCreatedOrRenamed: string[];
     filesBeingCreatedOrRenamed: string[];
     onNavigate(params: { kind: "file" | "directory"; relativePath: string; }): void;
-    onEditedBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
+    onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
     onDeleteItem(params: { kind: "file" | "directory"; basename: string; }): void;
     onCreateItem(params: { kind: "file" | "directory"; basename: string; }): void;
     onCopyPath(params: { path: string; }): void;
@@ -46,7 +46,7 @@ export function Explorer(props: Props) {
         filesBeingCreatedOrRenamed,
         directoriesBeingCreatedOrRenamed,
         onNavigate,
-        onEditedBasename: onEditBasename,
+        onEditBasename,
         onCopyPath,
         onDeleteItem,
         onCreateItem
