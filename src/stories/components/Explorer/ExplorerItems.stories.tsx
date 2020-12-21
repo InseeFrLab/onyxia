@@ -8,7 +8,11 @@ import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import { id } from "evt/tools/typeSafety/id";
+import { EventEmitter } from "events";
+import withEvents from "@storybook/addon-events";
+import type { UnpackEvt } from "evt";
 
+const eventEmitter = new EventEmitter();
 
 function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed"> & { containerWidth: number; }) {
 
@@ -60,8 +64,6 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
         },
         [toRemove, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
     );
-
-
 
     const onEditedBasename = useCallback(
         ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
@@ -117,9 +119,6 @@ const { meta, getStory } = getStoryFactory({
     "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
 });
 
-
-
-/* eslint-disable import/no-anonymous-default-export */
 export default {
     ...meta,
     "argTypes": {
@@ -137,9 +136,21 @@ export default {
                 "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
             }
         }
-    }
+    },
+    "decorators": [
+        ...(meta.decorators ? meta.decorators : []),
+        withEvents({
+            "emit": eventEmitter.emit.bind(eventEmitter),
+            "events": [
+                {
+                    "title": "Enter editing state",
+                    "name": "default",
+                    "payload": id<UnpackEvt<Props["evtStartEditing"]>>(undefined),
+                }
+            ]
+        }),
+    ],
 };
-
 
 export const Vue1 = getStory({
     "containerWidth": 50,
@@ -148,6 +159,6 @@ export const Vue1 = getStory({
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "onNavigate": console.log.bind(null, "onNavigate"),
-    "evtStartEditing": Evt.create(),
+    "evtStartEditing": Evt.from(eventEmitter, "default"),
     "onItemSelected": console.log.bind(null, "onItemSelected")
 });

@@ -34,8 +34,6 @@ export default {
 
 };
 
-eventEmitter.on("default", () => console.log("here"));
-
 export const defaultView = getStory({
     "visualRepresentationOfAFile": "secret",
     "kind": "file",
