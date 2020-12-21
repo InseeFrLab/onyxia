@@ -66,7 +66,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
     );
 
     const onEditedBasename = useCallback(
-        ({ basename, editedBasename, kind }: Parameters<Props["onEditedBasename"]>[0]) => {
+        ({ basename, editedBasename, kind }: Parameters<Props["onEditBasename"]>[0]) => {
 
 
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
@@ -107,7 +107,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
                 directories={directories}
                 filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
                 directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
-                onEditedBasename={onEditedBasename}
+                onEditBasename={onEditedBasename}
             />
         </div>
     )
@@ -143,9 +143,19 @@ export default {
             "emit": eventEmitter.emit.bind(eventEmitter),
             "events": [
                 {
-                    "title": "Enter editing state",
+                    "title": "Start editing selected item",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtStartEditing"]>>(undefined),
+                    "payload": id<UnpackEvt<Props["evtAction"]>>("START EDITING SELECTED ITEM BASENAME"),
+                },
+                {
+                    "title": "Delete selected item",
+                    "name": "default",
+                    "payload": id<UnpackEvt<Props["evtAction"]>>("DELETE SELECTED ITEM"),
+                },
+                {
+                    "title": "Copy selected item path",
+                    "name": "default",
+                    "payload": id<UnpackEvt<Props["evtAction"]>>("COPY SELECTED ITEM PATH"),
                 }
             ]
         }),
@@ -158,7 +168,10 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
+    "evtAction": Evt.from(eventEmitter, "default"),
     "onNavigate": console.log.bind(null, "onNavigate"),
-    "evtStartEditing": Evt.from(eventEmitter, "default"),
-    "onItemSelected": console.log.bind(null, "onItemSelected")
+    "onCopyPath": console.log.bind(null, "onCopyPath"),
+    "onDeleteItem": console.log.bind(null, "onDeleteItem"),
+    "onEditBasename": console.log.bind(null, "onEditBasename"),
+    "onIsThereAnItemSelectedValueChange": console.log.bind(null, "onIsThereAnItemSelectedValueChange")
 });
