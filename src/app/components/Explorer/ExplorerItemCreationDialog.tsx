@@ -8,75 +8,102 @@ import { TextField } from "app/components/designSystem/TextField";
 import { symToStr } from "app/utils/symToStr";
 import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
   /** [HIGHER ORDER] */
   wordForFile: "file" | "secret";
 
-  isOpen: boolean;
-  createWhat: "directory" | "file";
-  callback(params: { doCreate: false; } | { doCreate: true; name: string; }): void;
-  getIsValidName(name: string): boolean;
+  successCallback(params: { kind: "file" | "directory", basename: string; }): void;
+  getIsValidBasename(params: { kind: "file" | "directory", basename: string; }): boolean;
+
+  evtAction: NonPostableEvt<{ action: "OPEN"; kind: "file" | "directory"; }>;
+
 };
 
 export function ExplorerItemCreationDialog(props: Props) {
 
-  const { isOpen, wordForFile, createWhat, callback, getIsValidName } = props;
+  const { wordForFile, successCallback, getIsValidBasename, evtAction } = props;
 
   const { t } = useTranslation("ExplorerItemCreationDialog");
 
-  const [name, setName] = useState("");
+  const [basename, setBasename] = useState("");
 
-  const isValidName = useMemo(() => getIsValidName(name), [name, getIsValidName]);
+  const [kind, setKind] = useState<"file" | "directory">("file");
+
+  const isValidBasename = useMemo(() => getIsValidBasename({ kind, basename }), [basename, kind, getIsValidBasename]);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const onCloseFactory = useMemo(
     () => memoize(
       (doCreate: boolean) =>
         () => {
 
-          setName("");
+          setBasename("");
 
-          callback(!doCreate ? { doCreate } : { doCreate, name });
+          setIsOpen(false);
+
+          if (!doCreate) {
+            return;
+          }
+
+          successCallback({ kind, basename });
+
 
         }
     ),
-    [callback, name]
+    [successCallback, kind, basename]
   );
+
+  useEvt(
+    ctx => evtAction.$attach(
+      data => data.action !== "OPEN" ? null : [data],
+      ctx,
+      ({ kind }) => {
+        setKind(kind);
+        setIsOpen(true);
+      }
+    ),
+    [evtAction]
+  );
+
 
   return (
     <Dialog open={isOpen} onClose={onCloseFactory(false)} aria-labelledby={titleId}>
       <DialogTitle
         id={titleId}
         subtitle={(() => {
-          switch (createWhat) {
+          switch (kind) {
             case "directory": return t("sort out your", { "what": t(wordForFile) })
             case "file": return null;
           }
         })()}
       >
-        {t("create new", { "what": t(createWhat) })}
+        {t("create new", { "what": t(kind) })}
       </DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           label={t("name of the", {
             "what": t((() => {
-              switch (createWhat) {
+              switch (kind) {
                 case "directory": return "directory";
                 case "file": return wordForFile;
               }
             })())
           })}
           fullWidth
-          error={!isValidName}
-          onChange={setName}
+          error={!isValidBasename}
+          onChange={setBasename}
         />
       </DialogContent>
       <DialogActions>
         <Button
           onClick={onCloseFactory(false)}
           color="secondary"
-          disabled={!isValidName}
+          disabled={!isValidBasename}
         >
           Cancel
           </Button>
