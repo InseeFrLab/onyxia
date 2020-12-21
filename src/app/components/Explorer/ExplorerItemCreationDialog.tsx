@@ -103,13 +103,16 @@ export function ExplorerItemCreationDialog(props: Props) {
         <Button
           onClick={onCloseFactory(false)}
           color="secondary"
+        >
+          {t("cancel")}
+        </Button>
+        <Button
+          onClick={onCloseFactory(true)}
+          color="primary"
           disabled={!isValidBasename}
         >
-          Cancel
-          </Button>
-        <Button onClick={onCloseFactory(true)} color="primary">
-          Subscribe
-          </Button>
+          {t("create")}
+        </Button>
       </DialogActions>
     </Dialog>
   );
