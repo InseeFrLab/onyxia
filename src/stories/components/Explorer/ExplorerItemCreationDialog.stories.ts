@@ -2,7 +2,7 @@
 
 import { ExplorerItemCreationDialog, Props } from "app/components/Explorer/ExplorerItemCreationDialog";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -19,7 +19,7 @@ const evtAction = Evt.create<UnpackEvt<Props["evtAction"]>>();
 export const defaultView = getStory({
     "wordForFile": "secret",
     "getIsValidBasename": pure.getIsValidBasename,
-    "successCallback": console.log.bind(console, "successCallback"),
+    ...logCallbacks(["successCallback"]),
     evtAction
 });
 

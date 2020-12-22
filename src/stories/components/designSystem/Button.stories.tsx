@@ -2,7 +2,7 @@
 import React from "react";
 import { Button, defaultProps } from "app/components/designSystem/Button";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { Icon } from "app/components/designSystem/Icon";
 
 const { meta, getStory } = getStoryFactory({
@@ -22,5 +22,5 @@ export const TextOnly = getStory({
 export const TextWithIcon = getStory({
     ...defaultProps,
     "children": <><Icon type="home" /> Home</>,
-    "onClick": console.log.bind(null,"click!")
+    ...logCallbacks(["onClick"])
 });
