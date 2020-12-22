@@ -9,7 +9,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useEffectButSkipFirstRender } from "app/utils/hooks/useEffectButSkipFirstRender";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 
 export type Props = {
     lng: SupportedLanguages | "browser default";
@@ -41,15 +41,14 @@ export function I18nProvider(props: Props) {
 
     });
 
-    useEffectButSkipFirstRender(() => {
-
-        i18nInstance.changeLanguage(
+    useValueChangeEffect(
+        () => i18nInstance.changeLanguage(
             lng === "browser default" ?
                 browserDefaultLng :
                 lng
-        );
-
-    }, [lng, i18nInstance, browserDefaultLng]);
+        ),
+        [lng]
+    );
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
