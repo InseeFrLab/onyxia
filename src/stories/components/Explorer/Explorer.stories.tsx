@@ -115,7 +115,7 @@ export default {
     ...meta,
     "argTypes": {
         ...meta.argTypes,
-        "visualRepresentationOfAFile": {
+        "type": {
             "control": {
                 "type": "inline-radio",
                 "options": id<Props["type"][]>(["file", "secret"]),
