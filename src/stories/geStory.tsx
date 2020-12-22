@@ -75,5 +75,13 @@ export function getStoryFactory<Props>(params: {
 
 }
 
+export function logCallbacks<T extends string>(propertyNames: readonly T[]): Record<T,()=>void> {
 
+    const out: Record<T, () => void> = {} as any;
+
+    propertyNames.forEach(propertyName => out[propertyName]= console.log.bind(console, propertyName));
+
+    return out;
+
+}
 
