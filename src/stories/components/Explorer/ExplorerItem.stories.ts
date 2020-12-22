@@ -42,7 +42,8 @@ export const defaultView = getStory({
     "standardizedWidth": "big",
     "isCircularProgressShown": false,
     "onMouseEvent": console.log.bind(null, "onMouseEvent"),
-    "onEditBasename": console.log.bind(null, "onEditedBasename"),
+    "onEditBasename": console.log.bind(null, "onEditBasename"),
+    "onIsInEditingStateValueChange": console.log.bind(console, "onIsInEditingStateValueChange"),
     "getIsValidBasename": pure.getIsValidBasename,
     "evtAction": Evt.from(eventEmitter, "default")
 });

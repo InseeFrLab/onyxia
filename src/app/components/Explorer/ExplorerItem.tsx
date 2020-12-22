@@ -16,6 +16,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import memoize from "memoizee";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -44,6 +45,9 @@ export type Props = {
     onMouseEvent(params: { type: "down" | "double", target: "icon" | "text" }): void;
 
     onEditBasename(params: { editedBasename: string; }): void;
+
+    /** Assert initial value is false */
+    onIsInEditingStateValueChange(params: { isInEditingState: boolean; }): void;
 
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
@@ -125,6 +129,7 @@ export function ExplorerItem(props: Props) {
         evtAction,
         onMouseEvent,
         onEditBasename,
+        onIsInEditingStateValueChange,
         getIsValidBasename
     } = props;
 
@@ -188,7 +193,12 @@ export function ExplorerItem(props: Props) {
         []
     );
 
-    const [isBeingEdited, setIsBeingEdited] = useState(false);
+    const [isInEditingState, setIsInEditingState] = useState(false);
+
+    useValueChangeEffect(
+        () => onIsInEditingStateValueChange({ isInEditingState }), 
+        [isInEditingState]
+    );
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
@@ -208,7 +218,7 @@ export function ExplorerItem(props: Props) {
             .pipe(ctx)
             .attach(
                 action => action === "ENTER EDITING STATE",
-                () => setIsBeingEdited(true)
+                () => setIsInEditingState(true)
             ),
         [evtAction]
     );
@@ -217,7 +227,7 @@ export function ExplorerItem(props: Props) {
         () => memoize((isCancel: boolean) =>
             () => {
 
-                setIsBeingEdited(false);
+                setIsInEditingState(false);
 
                 if (isCancel) {
                     setEditedBasename(basename);
@@ -282,7 +292,7 @@ export function ExplorerItem(props: Props) {
                 <SvgComponent width={width} height={height} className={classes.svg} />
             </Box>
             {
-                !isBeingEdited && !isCircularProgressShown ?
+                !isInEditingState && !isCircularProgressShown ?
                     <Box {...getOnMouseProps("text")}>
                         <Typography className={classes.text} >
                             {basename}

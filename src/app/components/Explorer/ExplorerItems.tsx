@@ -13,7 +13,7 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { useEffectButSkipFirstRender } from "app/utils/hooks/useEffectButSkipFirstRender";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 
 
 export type Props = {
@@ -116,17 +116,10 @@ export function ExplorerItems(props: Props) {
         setSelectedItemKeyProp
     ] = useState<string | undefined>(undefined);
 
-    {
-
-        const isThereAnItemSelected = selectedItemKeyProp !== undefined;
-
-        useEffectButSkipFirstRender(() => {
-
-            onIsThereAnItemSelectedValueChange({ isThereAnItemSelected });
-
-        }, [onIsThereAnItemSelectedValueChange, isThereAnItemSelected]);
-
-    }
+    useValueChangeEffect(
+        isThereAnItemSelected => onIsThereAnItemSelectedValueChange({ isThereAnItemSelected }),
+        [selectedItemKeyProp !== undefined]
+    );
 
     const getEvtItemAction = useMemo(
         () => memoize(
