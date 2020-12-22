@@ -1,7 +1,7 @@
 
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -13,5 +13,5 @@ export default meta;
 export const defaultView = getStory({
     "isThereAnItemSelected": false,
     "wordForFile": "file",
-    "callback": console.log.bind(null, "callback")
+    ...logCallbacks(["callback"])
 });

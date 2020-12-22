@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
@@ -169,9 +169,11 @@ export const Vue1 = getStory({
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "evtAction": Evt.from(eventEmitter, "default"),
-    "onNavigate": console.log.bind(null, "onNavigate"),
-    "onCopyPath": console.log.bind(null, "onCopyPath"),
-    "onDeleteItem": console.log.bind(null, "onDeleteItem"),
-    "onEditBasename": console.log.bind(null, "onEditBasename"),
-    "onIsThereAnItemSelectedValueChange": console.log.bind(null, "onIsThereAnItemSelectedValueChange")
+    ...logCallbacks([
+        "onNavigate",
+        "onCopyPath",
+        "onDeleteItem",
+        "onEditBasename",
+        "onIsThereAnItemSelectedValueChange"
+    ])
 });

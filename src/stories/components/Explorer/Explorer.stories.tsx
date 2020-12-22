@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Explorer, Props } from "app/components/Explorer/Explorer";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
@@ -132,9 +132,11 @@ export const Vue1 = getStory({
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "getIsValidBasename": pure.getIsValidBasename,
-    "onNavigate": console.log.bind(console, "onNavigate"),
-    "onCopyPath": console.log.bind(console, "onCopyPath"),
-    "onDeleteItem": console.log.bind(console, "onDeleteItem"),
-    "onCreateItem": console.log.bind(console, "onCreateItem"),
-    "onEditBasename": console.log.bind(console, "onEditBasename"),
+    ...logCallbacks([
+        "onNavigate",
+        "onCopyPath",
+        "onDeleteItem",
+        "onCreateItem",
+        "onEditBasename"
+    ])
 });
