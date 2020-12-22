@@ -17,13 +17,13 @@ const useStyles = makeStyles(
     theme => createStyles({
         "clickablePortion": {
             "cursor": "pointer",
-            "color": theme.palette.text.secondary,
+            "color": theme.palette.text.primary,
             "&:hover": {
-                "color": theme.palette.primary
+                "color": theme.palette.primary.main
             }
         },
         "lastPortion": {
-            "color": theme.palette.text.primary,
+            "color": theme.palette.text.secondary,
         }
     })
 );
@@ -51,9 +51,9 @@ export function PathNavigator(props: Props) {
             const isLast = i === split.length - 1;
 
             return {
-                "partialPath": split.splice(0, i + 1).join("/") || "/",
+                "partialPath": [...split].splice(0, i + 1).join("/") || "/",
                 isLast,
-                "isClickable": !isLast && (i > minDepth)
+                "isClickable": !isLast && (i >= minDepth)
             };
 
         });
@@ -75,9 +75,11 @@ export function PathNavigator(props: Props) {
                     <Box clone display="inline">
                         <Typography color="inherit">{pathBasename(partialPath)}</Typography>
                     </Box>
-                    <Box clone display="inline">
-                        <Typography color="inherit"> / </Typography>
-                    </Box>
+                    {!isLast &&
+                        <Box clone display="inline">
+                            <Typography color="inherit"> / </Typography>
+                        </Box>
+                    }
                 </Box>
             )
         }</Box>
