@@ -108,7 +108,7 @@
       "react-hooks/exhaustive-deps": [
         "error",
         {
-          "additionalHooks": "(useEvt|useAsync|useAsyncCallback)"
+          "additionalHooks": "(useEvt|useAsync|useAsyncCallback|useEffectButSkipFirstRender)"
         }
       ]
     }

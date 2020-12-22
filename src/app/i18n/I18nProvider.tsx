@@ -1,5 +1,5 @@
 
-import React, { useState, useReducer, useRef, useEffect } from "react";
+import React, { useState, useReducer } from "react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -9,6 +9,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
+import { useEffectButSkipFirstRender } from "app/utils/hooks/useEffectButSkipFirstRender";
 
 export type Props = {
     lng: SupportedLanguages | "browser default";
@@ -40,26 +41,15 @@ export function I18nProvider(props: Props) {
 
     });
 
-    {
+    useEffectButSkipFirstRender(() => {
 
-        const refIsFistRender = useRef(true);
+        i18nInstance.changeLanguage(
+            lng === "browser default" ?
+                browserDefaultLng :
+                lng
+        );
 
-        useEffect(() => {
-
-            if (refIsFistRender.current) {
-                refIsFistRender.current = false;
-                return;
-            }
-
-            i18nInstance.changeLanguage(
-                lng === "browser default" ?
-                    browserDefaultLng :
-                    lng
-            );
-
-        }, [lng, i18nInstance, browserDefaultLng]);
-
-    }
+    }, [lng, i18nInstance, browserDefaultLng]);
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 

@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -13,6 +13,7 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
+import { useEffectButSkipFirstRender } from "app/utils/hooks/useEffectButSkipFirstRender";
 
 
 export type Props = {
@@ -33,6 +34,7 @@ export type Props = {
     onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
     onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
     onCopyPath(params: { basename: string }): void;
+    /** Assert initial value is false */
     onIsThereAnItemSelectedValueChange(params: { isThereAnItemSelected: boolean; }): void;
 
     evtAction: NonPostableEvt<
@@ -118,8 +120,10 @@ export function ExplorerItems(props: Props) {
 
         const isThereAnItemSelected = selectedItemKeyProp !== undefined;
 
-        useEffect(() => {
+        useEffectButSkipFirstRender(() => {
+
             onIsThereAnItemSelectedValueChange({ isThereAnItemSelected });
+
         }, [onIsThereAnItemSelectedValueChange, isThereAnItemSelected]);
 
     }
