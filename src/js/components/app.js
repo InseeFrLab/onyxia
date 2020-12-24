@@ -36,7 +36,7 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useAppConstants, useIsDarkModeEnabled } from "app/libHooks";
+import { useAppConstants, useIsDarkModeEnabled } from "app/lib/hooks";
 import { ThemeProviderFactory } from "app/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { useEvt } from "evt/hooks";

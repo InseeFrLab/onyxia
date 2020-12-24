@@ -3,13 +3,13 @@ import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
 import { Container } from "app/components/designSystem/Container";
 import { copyToClipboard } from "app/utils/copyToClipboard";
-import * as lib from "lib/setup";
 
-import { useSelector, useDispatch } from "app/libHooks";
+import { useSelector, useDispatch } from "app/lib/hooks";
 
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
 
+import * as lib from "lib/setup";
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
 
@@ -141,7 +141,7 @@ export function MySecrets() {
                             state.secretsBeingCreatedOrRenamed
                     }
                     onNavigate={onNavigate}
-                    onEditedBasename={onEditedBasename}
+                    onEditBasename={onEditedBasename}
                     onDeleteItem={onDeleteItem}
                     onCreateItem={onCreateItem}
                     onCopyPath={onCopyPath}
