@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -13,7 +13,8 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
+import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
 
 
 export type Props = {
@@ -36,6 +37,7 @@ export type Props = {
     onCopyPath(params: { basename: string }): void;
     /** Assert initial value is false */
     onIsThereAnItemSelectedValueChange(params: { isThereAnItemSelected: boolean; }): void;
+    onIsSelectedItemInEditingStateValueChange(params: { isSelectedItemInEditingState: boolean; }): void;
 
     evtAction: NonPostableEvt<
         "START EDITING SELECTED ITEM BASENAME" |
@@ -61,7 +63,8 @@ export function ExplorerItems(props: Props) {
         directoriesBeingCreatedOrRenamed,
         filesBeingCreatedOrRenamed,
         evtAction,
-        onIsThereAnItemSelectedValueChange
+        onIsThereAnItemSelectedValueChange,
+        onIsSelectedItemInEditingStateValueChange
     } = props;
 
     /*
@@ -135,7 +138,6 @@ export function ExplorerItems(props: Props) {
                 switch (action) {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItemKeyProp !== undefined);
-                        setSelectedItemKeyProp(undefined);
                         onDeleteItem(getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp));
                         break;
                     case "START EDITING SELECTED ITEM BASENAME":
@@ -159,6 +161,41 @@ export function ExplorerItems(props: Props) {
         ]
     );
 
+    // If selected item is removed, unselect it.
+    {
+
+        const callbackFactory = useMemo(
+            () => memoize(
+                (kind: "file" | "directory") =>
+                    (removed: string[]) => {
+
+                        if (selectedItemKeyProp === undefined) {
+                            return;
+                        }
+
+                        const selectedItem = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
+
+                        if (selectedItem.kind === kind && removed.includes(selectedItem.basename)) {
+                            setIsSelectedItemInEditingState(false);
+                            setSelectedItemKeyProp(undefined);
+                        }
+
+                    }
+            ),
+            [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
+        );
+
+        useArrayRemoved({
+            "array": files,
+            "callback": callbackFactory("file")
+        });
+
+        useArrayRemoved({
+            "array": directories,
+            "callback": callbackFactory("directory")
+        });
+
+    }
 
     const onMouseEventFactory = useMemo(
         () => memoize(
@@ -192,6 +229,14 @@ export function ExplorerItems(props: Props) {
         ),
         [onNavigate, selectedItemKeyProp, getKeyProp, getEvtItemAction]
     );
+
+    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
+
+    useValueChangeEffect(
+        () => onIsSelectedItemInEditingStateValueChange({ isSelectedItemInEditingState }),
+        [isSelectedItemInEditingState]
+    );
+
 
 
     const onEditBasenameFactory = useMemo(
@@ -240,6 +285,12 @@ export function ExplorerItems(props: Props) {
         [getIsValidBasename, directories, files]
     );
 
+    const onIsInEditingStateValueChange = useCallback(
+        ({ isInEditingState }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
+            setIsSelectedItemInEditingState(isInEditingState),
+        []
+    );
+
 
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
@@ -271,6 +322,7 @@ export function ExplorerItems(props: Props) {
                                 onMouseEvent={onMouseEventFactory(kind, basename)}
                                 onEditBasename={onEditBasenameFactory(kind, basename)}
                                 getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
+                                onIsInEditingStateValueChange={onIsInEditingStateValueChange}
                             />
                         </Grid>
                     );

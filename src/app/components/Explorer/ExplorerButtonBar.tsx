@@ -13,13 +13,20 @@ export type Props = {
     wordForFile: "file" | "secret";
 
     isThereAnItemSelected: boolean;
+    isSelectedItemInEditingState: boolean;
+
     callback(params: { action: Action; }): void;
 
 };
 
 export function ExplorerButtonBar(props: Props) {
 
-    const { wordForFile, callback, isThereAnItemSelected } = props;
+    const { 
+        wordForFile, 
+        callback, 
+        isThereAnItemSelected, 
+        isSelectedItemInEditingState 
+    } = props;
 
     const { t } = useTranslation("ExplorerButtonBar");
 
@@ -50,7 +57,10 @@ export function ExplorerButtonBar(props: Props) {
                             case "rename": return "info";
                         }
                     })()}
-                    disabled={!isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action)}
+                    disabled={
+                        !isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action) ||
+                        isSelectedItemInEditingState && action === "rename"
+                    }
                     key={action}
                     onClick={onClickFactory(action)}
 

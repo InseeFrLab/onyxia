@@ -174,6 +174,7 @@ export const Vue1 = getStory({
         "onCopyPath",
         "onDeleteItem",
         "onEditBasename",
-        "onIsThereAnItemSelectedValueChange"
+        "onIsThereAnItemSelectedValueChange",
+        "onIsSelectedItemInEditingStateValueChange"
     ])
 });
