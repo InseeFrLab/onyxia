@@ -10,11 +10,11 @@
  */
 export function noUndefined<T extends object>(obj: T): T{
 
-    const out: typeof obj = obj;
+    const out: typeof obj = {} as any;
 
     for( const key in obj ){
 
-        if( obj[key] !== undefined ){
+        if( obj[key] === undefined ){
             continue;
         }
 

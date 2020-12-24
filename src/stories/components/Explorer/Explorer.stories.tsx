@@ -9,8 +9,7 @@ import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
 
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed">) {
-
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed" | "onDeleteItem">) {
 
     const [files, setFiles] = useState(props.files);
     const [directories, setDirectories] = useState(props.directories);
@@ -30,16 +29,17 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
     const [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] = useState<string[]>([]);
 
 
-    const [toRemove, setToRemove] = useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
+    const [toRemoveFromBeingEdited, setToRemoveFromBeingEdited] = 
+        useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
 
     useEffect(
         () => {
 
-            if (toRemove === undefined) {
+            if (toRemoveFromBeingEdited === undefined) {
                 return;
             }
 
-            const { kind, basename } = toRemove;
+            const { kind, basename } = toRemoveFromBeingEdited;
 
             const [beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
@@ -51,12 +51,12 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             setBeingRenamedItems(beingRenamedItems.filter(basename_i => basename_i !== basename));
 
-            setToRemove(undefined);
+            setToRemoveFromBeingEdited(undefined);
 
 
 
         },
-        [toRemove, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+        [toRemoveFromBeingEdited, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
     );
 
     const onEditedBasename = useCallback(
@@ -85,12 +85,28 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
                 }
 
-                setToRemove({ kind, "basename": editedBasename });
+                setToRemoveFromBeingEdited({ kind, "basename": editedBasename });
 
             })();
 
         },
         [files, directories, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+    );
+
+    const onDeleteItem = useCallback(
+        ({ kind, basename }: Parameters<Props["onDeleteItem"]>[0]) => {
+
+            const [items, setItems] = (() => {
+                switch (kind) {
+                    case "directory": return [directories, setDirectories] as const;
+                    case "file": return [files, setFiles] as const;
+                }
+            })();
+
+            setItems(items.filter(str => str !== basename));
+
+        },
+        [directories, files]
     );
 
     return (
@@ -101,6 +117,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
             filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
             directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
             onEditBasename={onEditedBasename}
+            onDeleteItem={onDeleteItem}
         />
     );
 
@@ -135,7 +152,6 @@ export const Vue1 = getStory({
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",
-        "onDeleteItem",
         "onCreateItem",
         "onEditBasename"
     ])

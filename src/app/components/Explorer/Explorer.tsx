@@ -141,6 +141,13 @@ export function Explorer(props: Props) {
         []
     );
 
+    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
+
+    const onIsSelectedItemInEditingStateValueChange = useCallback(
+        ({ isSelectedItemInEditingState }: Parameters<ItemsProps["onIsSelectedItemInEditingStateValueChange"]>[0]) =>
+            setIsSelectedItemInEditingState(isSelectedItemInEditingState),
+        []
+    );
 
     const pathNavigatorCallback = useCallback(
         ({ relativePath }: Parameters<PathNavigatorProps["callback"]>[0]) => {
@@ -188,6 +195,7 @@ export function Explorer(props: Props) {
             />
             <ButtonBar
                 isThereAnItemSelected={isThereAnItemSelected}
+                isSelectedItemInEditingState={isSelectedItemInEditingState}
                 callback={buttonBarCallback}
             />
             <PathNavigator
@@ -204,6 +212,7 @@ export function Explorer(props: Props) {
                 onEditBasename={onEditBasename}
                 evtAction={evtItemsAction}
                 onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
                 onCopyPath={itemsOnCopyPath}
                 onDeleteItem={itemsOnDeleteItem}
             />

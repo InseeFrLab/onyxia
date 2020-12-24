@@ -24,7 +24,7 @@ export function useArrayRemoved<ArrOf>(
             .pipe(ctx, ({ prevState, newState }) => [arrDiff(prevState, newState).removed])
             .pipe(removed => removed.length !== 0)
             .attach(removed => callback([...removed])),
-        [callback]
+        [callback, evtArray]
     );
 
 
