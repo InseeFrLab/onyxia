@@ -12,6 +12,7 @@ export default meta;
 
 export const defaultView = getStory({
     "isThereAnItemSelected": false,
+    "isSelectedItemInEditingState": false,
     "wordForFile": "file",
     ...logCallbacks(["callback"])
 });

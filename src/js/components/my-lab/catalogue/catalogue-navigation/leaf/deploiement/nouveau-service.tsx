@@ -25,7 +25,7 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/libHooks";
+import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prOidcClient } from "lib/setup";
 

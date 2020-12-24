@@ -4,7 +4,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch, useAppConstants } from "app/libHooks";
+import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 
 
