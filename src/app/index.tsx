@@ -11,9 +11,10 @@ import { getEnv } from "../js/env";
 import { Evt } from "evt";
 
 import { createStore } from "lib/setup";
-import type { KeycloakConfig, SecretsManagerClientConfig } from "lib/setup";
+import type { OidcClientConfig, SecretsManagerClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
+import { getIsOsPreferredColorSchemeDark } from "app/utils/getIsOsPreferredColorSchemeDark";
 
 import App_ from "js/components/app.container";
 const App: any = App_;
@@ -28,13 +29,10 @@ function Root() {
             const env = getEnv();
 
             return createStore({
-                "isOsPrefersColorSchemeDark": (
-                    window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                ),
-                "keycloakConfig": id<KeycloakConfig.Real>({
+                "isOsPrefersColorSchemeDark": getIsOsPreferredColorSchemeDark(),
+                "oidcClientConfig": id<OidcClientConfig.Keycloak>({
                     "doUseInMemoryClient": false,
-                    ...(() => {
+                    "keycloakConfig": (() => {
 
                         assert(
                             env.AUTHENTICATION.TYPE === "oidc",
