@@ -14,6 +14,7 @@ import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
+import { createInMemoryOidcClient } from "./secondaryAdapters/inMemoryOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
@@ -39,7 +40,7 @@ export type Dependencies = {
 export type CreateStoreParams = {
     isOsPrefersColorSchemeDark: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
-    keycloakConfig: KeycloakConfig;
+    oidcClientConfig: OidcClientConfig;
     evtBackOnline: NonPostableEvt<void>;
 };
 
@@ -62,19 +63,19 @@ export declare namespace SecretsManagerClientConfig {
 
 }
 
-export declare type KeycloakConfig =
-    KeycloakConfig.InMemory |
-    KeycloakConfig.Real;
+export declare type OidcClientConfig =
+    OidcClientConfig.InMemory |
+    OidcClientConfig.Keycloak;
 
-export declare namespace KeycloakConfig {
+export declare namespace OidcClientConfig {
 
     export type InMemory = {
         doUseInMemoryClient: true;
-    };
+    } & Parameters<typeof createInMemoryOidcClient>[0];
 
-    export type Real = {
+    export type Keycloak = {
         doUseInMemoryClient: false;
-    } & Parameters<typeof createKeycloakOidcClient>[0]["keycloakConfig"];
+    } & Parameters<typeof createKeycloakOidcClient>[0];
 
 }
 
@@ -212,18 +213,16 @@ export async function createStore(params: CreateStoreParams) {
     createStore.isFirstInvocation = false;
 
     const {
-        keycloakConfig,
+        oidcClientConfig,
         secretsManagerClientConfig,
         isOsPrefersColorSchemeDark,
         evtBackOnline
     } = params;
 
-    assert(
-        !keycloakConfig.doUseInMemoryClient,
-        "TODO: We need a mock implementation of KeycloakClient"
-    );
 
-    const oidcClient = await createKeycloakOidcClient( { keycloakConfig });
+    const oidcClient = await (oidcClientConfig.doUseInMemoryClient ?
+        createInMemoryOidcClient(oidcClientConfig) :
+        createKeycloakOidcClient(oidcClientConfig));
 
     const { store, evtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
@@ -249,7 +248,9 @@ export async function createStore(params: CreateStoreParams) {
             "vaultClientConfig": secretsManagerClientConfig.doUseInMemoryClient ?
                 { "baseUri": "", "engine": "", "role": "" } :
                 secretsManagerClientConfig,
-            keycloakConfig
+            "keycloakConfig": oidcClientConfig.doUseInMemoryClient ? 
+                { "clientId": "fake client id", "realm": "fake realm" } :
+                oidcClientConfig.keycloakConfig
         };
 
 

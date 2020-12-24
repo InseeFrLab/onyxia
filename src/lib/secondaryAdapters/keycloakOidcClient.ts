@@ -7,6 +7,7 @@ import { Evt } from "evt";
 import { getLocalStorage } from "../utils/safeLocalStorage";
 import { assert } from "evt/tools/typeSafety/assert";
 
+//TODO: We shouldn't have to specify /acceuil
 const fallbackUri = `${window.location.origin}/accueil`;
 
 export async function createKeycloakOidcClient(
@@ -72,6 +73,10 @@ export async function createKeycloakOidcClient(
             async params => {
 
                 const { minValidity = 10 } = params ?? {};
+
+                if( evtLocallyStoredOidcAccessToken.state === undefined ){
+                    return;
+                }
 
                 if (!keycloakInstance.isTokenExpired(minValidity)) {
                     return;

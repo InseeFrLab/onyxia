@@ -2,7 +2,7 @@
 import type {
     AppThunk,
     Dependencies,
-    KeycloakConfig,
+    OidcClientConfig,
     SecretsManagerClientConfig
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -22,7 +22,7 @@ export declare namespace AppConstant {
             "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
         >>;
         /** NOTE: Convoluted way of pointing to type { KeycloakConfig } from "Keycloak-js" */
-        keycloakConfig: Readonly<Omit<KeycloakConfig.Real, "doUseInMemoryClient">>;
+        keycloakConfig: Readonly<OidcClientConfig.Keycloak["keycloakConfig"]>;
     };
 
     export type LoggedIn = _Common & {
