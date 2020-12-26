@@ -26,6 +26,7 @@ export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     gitCredentialCacheDuration: number;
     isBetaModeEnabled: boolean;
     isDarkModeEnabled: boolean;
+    deploymentRegionId: string | null;
 }>;
 
 export type UserConfigsState = {
@@ -129,7 +130,8 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
-                "isDarkModeEnabled": isOsPrefersColorSchemeDark
+                "isDarkModeEnabled": isOsPrefersColorSchemeDark,
+                "deploymentRegionId": null
             };
 
             for (const key of objectKeys(userConfigs)) {
