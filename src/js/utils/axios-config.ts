@@ -15,20 +15,19 @@ const { injectRegion } = (() => {
 
 	async function injectRegion(config: any) {
 
-		const store = await getStore();
-
-		const selectedRegion = store.getState().regions.selectedRegion;
+		const deploymentRegionId= (await getStore())
+			.getState().userConfigs.deploymentRegionId.value;
 
 		return {
 			...config,
 			...(
-				!selectedRegion ?
+				deploymentRegionId === null ?
 					{}
 					:
 					{
 						"headers": {
 							...config?.headers,
-							"ONYXIA-REGION": selectedRegion.id
+							"ONYXIA-REGION": deploymentRegionId
 						}
 					}
 			)
