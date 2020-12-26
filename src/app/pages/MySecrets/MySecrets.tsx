@@ -9,9 +9,13 @@ import { useSelector, useDispatch } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
 
-import * as lib from "lib/setup";
+import * as lib_ from "lib/setup";
+/*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
+*/
+const thunks = lib_.thunks.secretExplorer;
+const pure = lib_.pure.secretExplorer;
 
 export function MySecrets() {
 

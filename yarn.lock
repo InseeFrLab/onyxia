@@ -3021,9 +3021,9 @@
     "@types/react" "*"
 
 "@types/react-redux@^7.1.12":
-  version "7.1.13"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.13.tgz#8766a0078433621957cd78a6096d316bccbcb3ca"
-  integrity sha512-+Z8C22kL/fkEWFETc+duRyJT6P23G1GbowdLgRsjPyimJdpBv52Uqg4p3vCW6qagBj4EUi5jKhe+by+Uv3+QTQ==
+  version "7.1.14"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.14.tgz#694609eb906ffc2da4b01f0a1e4f27c1937ac33a"
+  integrity sha512-WItBNJRC8N/HsgKFXxX8t9NjUY1vv3YTzj9m8HvmaaYRTgy3hgZMIs5ZWAJHQ58nISSakIvS6T91nhJV4iBuaA==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.0"
     "@types/react" "*"
@@ -6318,9 +6318,9 @@ dotenv@^6.2.0:
   integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
 
 downshift@^6.0.6:
-  version "6.0.7"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-6.0.7.tgz#05ef58b991e4467cdb8cd36e7a87a011d0bada5c"
-  integrity sha512-+rqgx3JTSs8b4V9q++hsLvaP8mhMOdX7u+jy5S2etg7+Y7uFLVzZaI0S7Xo2yEnNDmTcNnYZZ/vFjdWuJ2kZdg==
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-6.0.8.tgz#429c9af6876088079582737c5ab22968486e8f87"
+  integrity sha512-1luGVlu2HhzgHasCQtQfrr412UPChu7ArrJMfhQI17Z3L/jNDJZStYboQFeWbuhtuJUAGntsgrlENuo0J2/7Uw==
   dependencies:
     "@babel/runtime" "^7.12.5"
     compute-scroll-into-view "^1.0.16"
@@ -7547,6 +7547,9 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
+
+"fs@file:./.storybook/.compatibility/fs":
+  version "1.0.0"
 
 fsevents@^1.2.7:
   version "1.2.13"
