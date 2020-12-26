@@ -10,6 +10,8 @@ import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguages } from "app/i18n/resources";
+import { StoreProvider } from "app/lib/StoreProvider";
+import type { OidcClientConfig, SecretsManagerClientConfig } from "lib/setup";
 
 const { ThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
@@ -18,11 +20,29 @@ const { ThemeProvider } = ThemeProviderFactory(
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
+    doProvideMockStore?: boolean;
 }) {
 
-    const { sectionName, wrappedComponent } = params;
+    const { 
+        sectionName, 
+        wrappedComponent, 
+        doProvideMockStore = false 
+    } = params;
 
     const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
+
+    const StoreProviderOrFragment: React.FC = !doProvideMockStore ? 
+        ({ children }) => <>{children}</> :
+        ({ children }) => <StoreProvider createStoreParams={{
+            "isOsPrefersColorSchemeDark": false,
+            "oidcClientConfig": id<OidcClientConfig.InMemory>({
+                "doUseInMemoryClient": true,
+                "tokenValidityDurationMs": 60*60*1000
+            }),
+            "secretsManagerClientConfig": id<SecretsManagerClientConfig.InMemory>({
+                "doUseInMemoryClient": true
+            })
+        }}>{children}</StoreProvider>
 
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
         ({ darkMode, lng, ...props }) => {
@@ -32,7 +52,9 @@ export function getStoryFactory<Props>(params: {
                         <Box p={4}>
                             <Box clone p={4} m={2} display="inline-block">
                                 <Paper>
-                                    <Component {...props} />
+                                    <StoreProviderOrFragment>
+                                        <Component {...props} />
+                                    </StoreProviderOrFragment>
                                 </Paper>
                             </Box>
                         </Box>

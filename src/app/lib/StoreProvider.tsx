@@ -4,21 +4,25 @@ import { Provider as ReactReduxProvider } from "react-redux";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
-
 import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
+import { id } from "evt/tools/typeSafety/id";
+import { Evt } from "evt";
 
 export type Props = {
-    createStoreParams: CreateStoreParams;
+    createStoreParams: Omit<CreateStoreParams, "evtBackOnline">;
     children: React.ReactNode;
 };
 
-export function StoreProvider(props: Props) {
+export function StoreProvider(props: Omit<Props, "evtBackOnline">) {
 
     const { createStoreParams, children } = props;
 
     const { result: store, error } = useAsync(
-        () => createStore(createStoreParams),
+        () => createStore({
+            ...createStoreParams,
+            "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
+        }),
         [createStoreParams]
     );
 
