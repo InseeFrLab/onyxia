@@ -54,7 +54,13 @@ export function getStoryFactory<Props>(params: {
 
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
-        ({ children }) => <StoreProvider createStoreParams={createStoreParams}>{children}</StoreProvider>;
+        ({ children }) =>
+            <StoreProvider
+                createStoreParams={createStoreParams}
+                doLogSecretManager={true}
+            >
+                {children}
+            </StoreProvider>;
 
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
         ({ darkMode, lng, ...props }) => {

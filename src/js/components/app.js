@@ -94,29 +94,6 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const appConstants = useAppConstants();
 
-	useEvt(ctx => {
-
-		if (!appConstants.isUserLoggedIn) {
-			return;
-		}
-
-		const { evtSecretsManagerTranslation } = appConstants;
-
-		evtSecretsManagerTranslation.attach(
-			({ type }) => type === "cmd",
-			ctx,
-			cmd => evtSecretsManagerTranslation.attachOnce(
-				({ cmdId }) => cmdId === cmd.cmdId,
-				ctx,
-				resp => console.log(
-					`%c$ ${cmd.translation}\n\n${resp.translation}`,
-					'background: #222; color: #bada55'
-				)
-			)
-		);
-
-	}, [appConstants]);
-
 	const { isUserLoggedIn } = appConstants;
 
 	return (
