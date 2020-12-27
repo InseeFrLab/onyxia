@@ -16,7 +16,6 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
-import { axiosPublic } from "js/utils/axios-config";
 import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
 import { id } from "evt/tools/typeSafety/id";
@@ -27,7 +26,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prOidcClient } from "lib/setup";
+import { prOidcClient, prAxiosInstance } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -157,7 +156,7 @@ export const NouveauService: React.FC<Props> = ({
 		const { iFV, fV, oF } = getOptions(
 			//NOTE: we should be able to just write mustacheParams but
 			//TS is not clever enough to figure it out.
-			{ ...mustacheParams, "s3": mustacheParams.s3 }, 
+			{ ...mustacheParams, "s3": mustacheParams.s3 },
 			service,
 			queryParams
 		);
@@ -435,4 +434,5 @@ export const getOptions = (
 };
 
 export const getService = async (idCatalogue: string, idService: string) =>
-	axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`);
+	(await prAxiosInstance)(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`)
+		.then(({ data }) => data);

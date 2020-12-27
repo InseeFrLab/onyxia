@@ -6,7 +6,7 @@ import fr from 'javascript-time-ago/locale/fr';
 import { assert } from "evt/tools/typeSafety/assert";
 import { getEnv } from "../js/env";
 
-import type { OidcClientConfig, SecretsManagerClientConfig } from "lib/setup";
+import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { getIsOsPreferredColorSchemeDark } from "app/utils/getIsOsPreferredColorSchemeDark";
@@ -47,6 +47,10 @@ function Root() {
                 "baseUri": env.VAULT.BASE_URI,
                 "engine": env.VAULT.ENGINE,
                 "role": env.VAULT.ROLE
+            }),
+            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Remote>({
+                "doUseInMemoryClient": false,
+                "baseUrl": env.API.BASE_URL
             })
         });
 

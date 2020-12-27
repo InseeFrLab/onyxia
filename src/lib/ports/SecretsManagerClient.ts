@@ -21,10 +21,7 @@ export type SecretWithMetadata = {
     };
 };
 
-
-
-export interface SecretsManagerClient {
-
+export type SecretsManagerClient = {
 
     list(
         params: {
@@ -54,25 +51,25 @@ export interface SecretsManagerClient {
         }
     ): Promise<void>;
 
-}
+};
 
 export type SecretsManagerTranslator = {
-        [K in MethodNames<SecretsManagerClient>]: {
-            buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
-            fmtResult(
-                params: {
-                    inputs: Parameters<SecretsManagerClient[K]>;
-                    result: AsyncReturnType<SecretsManagerClient[K]>;
-                }
-            ): string;
-        }
+    [K in MethodNames<SecretsManagerClient>]: {
+        buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
+        fmtResult(
+            params: {
+                inputs: Parameters<SecretsManagerClient[K]>;
+                result: AsyncReturnType<SecretsManagerClient[K]>;
+            }
+        ): string;
+    }
 };
 
 
 export type SecretsManagerTranslation = {
-        type: "cmd" | "result";
-        cmdId: number;
-        translation: string;
+    type: "cmd" | "result";
+    cmdId: number;
+    translation: string;
 };
 
 export function observeSecretsManagerClientWithTranslater(

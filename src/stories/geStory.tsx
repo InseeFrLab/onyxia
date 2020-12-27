@@ -11,7 +11,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguages } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
-import type { OidcClientConfig, SecretsManagerClientConfig } from "lib/setup";
+import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 
 const { ThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
@@ -37,10 +37,19 @@ export function getStoryFactory<Props>(params: {
             "isOsPrefersColorSchemeDark": false,
             "oidcClientConfig": id<OidcClientConfig.InMemory>({
                 "doUseInMemoryClient": true,
-                "tokenValidityDurationMs": 60*60*1000
+                "tokenValidityDurationMs": 60*60*1000,
+                "parsedJwt": {
+                    "email": "john.doe@insee.fr",
+                    "preferred_username": "doej"
+                }
             }),
             "secretsManagerClientConfig": id<SecretsManagerClientConfig.InMemory>({
                 "doUseInMemoryClient": true
+            }),
+            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.InMemory>({
+                "doUseInMemoryClient": true,
+                "ip": "185.24.1.1",
+                "nomComplet": "John Doe"
             })
         }}>{children}</StoreProvider>
 

@@ -1,7 +1,9 @@
 
 import type { StatefulReadonlyEvt } from "evt";
 import { nonNullable } from "evt";
-import decodeJwt from "jwt-decode";
+import * as jwtSimple from "jwt-simple";
+
+
 
 
 export type OidcTokens = Readonly<{
@@ -54,6 +56,13 @@ export type ParsedOidcAccessToken = {
     email: string;
 };
 
+export type ParsedJwt = {
+    gitlab_group: string[] | null;
+    preferred_username: string;
+    name: string;
+    email: string;
+};
+
 export async function parseOidcAccessToken(
     oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
 ): Promise<ParsedOidcAccessToken> {
@@ -61,17 +70,15 @@ export async function parseOidcAccessToken(
     const {
         email,
         preferred_username,
-    } = decodeJwt<{
-        gitlab_group: string[] | null;
-        preferred_username: string;
-        name: string;
-        email: string;
-    }>(
-        (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken
-    );
+    } = jwtSimple.decode(
+        (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
+        "",
+        true
+    ) as ParsedJwt;
 
     return {
         "idep": preferred_username,
         email
     };
+
 }

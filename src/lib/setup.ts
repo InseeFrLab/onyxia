@@ -14,13 +14,17 @@ import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
-import { createInMemoryOidcClient } from "./secondaryAdapters/inMemoryOidcClient";
+import { createInMemoryOidcClient } from "./secondaryAdapters/inMemoryOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
 import type { NonPostableEvt } from "evt";
-import type { StatefulReadonlyEvt } from "evt";
-import { Evt } from "evt";
+import type { StatefulReadonlyEvt } from "evt";
+import { Evt } from "evt";
+import type { AxiosInstance } from "axios";
+import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
+import { createInMemoryOnyxiaApiClient } from "./secondaryAdapters/inMemoryOnyxiaApiClient";
+import { createRemoteOnyxiaApiClient } from "./secondaryAdapters/remoteOnyxiaApiClient";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -34,6 +38,7 @@ export type Dependencies = {
     secretsManagerClient: SecretsManagerClient;
     evtVaultToken: StatefulReadonlyEvt<string | undefined>;
     oidcClient: OidcClient;
+    onyxiaApiClient: OnyxiaApiClient;
 };
 
 
@@ -41,6 +46,7 @@ export type CreateStoreParams = {
     isOsPrefersColorSchemeDark: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
+    onyxiaApiClientConfig: OnyxiaApiClientConfig;
     evtBackOnline: NonPostableEvt<void>;
 };
 
@@ -75,7 +81,30 @@ export declare namespace OidcClientConfig {
 
     export type Keycloak = {
         doUseInMemoryClient: false;
-    } & Parameters<typeof createKeycloakOidcClient>[0];
+    } & Omit<
+        Parameters<typeof createKeycloakOidcClient>[0],
+        "evtOidcAccessToken" |
+        "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
+    >;
+
+}
+
+export type OnyxiaApiClientConfig =
+    OnyxiaApiClientConfig.InMemory |
+    OnyxiaApiClientConfig.Remote;
+
+export declare namespace OnyxiaApiClientConfig {
+
+    export type InMemory = {
+        doUseInMemoryClient: true;
+    } & Parameters<typeof createInMemoryOnyxiaApiClient>[0];
+
+    export type Remote = {
+        doUseInMemoryClient: false;
+    } & Omit<
+        Parameters<typeof createRemoteOnyxiaApiClient>[0],
+        "getCurrentlySelectedDeployRegionId" | "oidcClient"
+    >;
 
 }
 
@@ -104,6 +133,7 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
 async function createStoreForLoggedUser(
     params: {
         secretsManagerClientConfig: SecretsManagerClientConfig;
+        onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
     } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
 ) {
@@ -111,6 +141,7 @@ async function createStoreForLoggedUser(
     const {
         oidcClient,
         secretsManagerClientConfig,
+        onyxiaApiClientConfig,
         isOsPrefersColorSchemeDark
     } = params;
 
@@ -147,16 +178,45 @@ async function createStoreForLoggedUser(
 
     secretsManagerClient = secretsManagerClientProxy;
 
+    let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
+
+    const { onyxiaApiClient, axiosInstance } =
+        onyxiaApiClientConfig.doUseInMemoryClient ?
+            {
+                ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
+                "axiosInstance": undefined
+            } :
+            createRemoteOnyxiaApiClient({
+                ...onyxiaApiClientConfig,
+                oidcClient,
+                "getCurrentlySelectedDeployRegionId": () => {
+
+                    assert(getCurrentlySelectedDeployRegionId !== undefined);
+
+                    return getCurrentlySelectedDeployRegionId();
+
+                }
+            });
+
+    if (axiosInstance !== undefined) {
+        dAxiosInstance.resolve(axiosInstance);
+    }
+
     const store = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
                 secretsManagerClient,
                 oidcClient,
-                evtVaultToken
+                evtVaultToken,
+                onyxiaApiClient
             }
         })
     });
+
+    getCurrentlySelectedDeployRegionId = () =>
+        store.getState().userConfigs.deploymentRegionId.value ?? undefined;
+
 
     store.dispatch(tokensUseCase.privateThunks.initialize());
 
@@ -178,17 +238,39 @@ async function createStoreForLoggedUser(
 
 
 async function createStoreForNonLoggedUser(
-    params: { oidcClient: OidcClient.NotLoggedIn; }
+    params: {
+        oidcClient: OidcClient.NotLoggedIn;
+        onyxiaApiClientConfig: OnyxiaApiClientConfig;
+    }
 ) {
 
-    const { oidcClient } = params;
+    const { oidcClient, onyxiaApiClientConfig } = params;
+
+
+    const { onyxiaApiClient, axiosInstance } =
+        onyxiaApiClientConfig.doUseInMemoryClient ?
+            {
+                ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
+                "axiosInstance": undefined
+            } :
+            createRemoteOnyxiaApiClient({
+                ...onyxiaApiClientConfig,
+                "oidcClient": null,
+                "getCurrentlySelectedDeployRegionId": null
+            });
+
+    if (axiosInstance !== undefined) {
+        dAxiosInstance.resolve(axiosInstance);
+    }
+
     const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
                 "secretsManagerClient": createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>(),
                 "evtVaultToken": createObjectThatThrowsIfAccessed<Dependencies["evtVaultToken"]>(),
-                oidcClient
+                oidcClient,
+                onyxiaApiClient
             }
         })
     });
@@ -216,6 +298,7 @@ export async function createStore(params: CreateStoreParams) {
         oidcClientConfig,
         secretsManagerClientConfig,
         isOsPrefersColorSchemeDark,
+        onyxiaApiClientConfig,
         evtBackOnline
     } = params;
 
@@ -224,18 +307,26 @@ export async function createStore(params: CreateStoreParams) {
         createInMemoryOidcClient(oidcClientConfig) :
         createKeycloakOidcClient(oidcClientConfig));
 
+
+
+
     const { store, evtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
             createStoreForLoggedUser({
                 oidcClient,
                 secretsManagerClientConfig,
+                onyxiaApiClientConfig,
                 isOsPrefersColorSchemeDark
             }) :
             {
-                ...await createStoreForNonLoggedUser({ oidcClient }),
+                ...await createStoreForNonLoggedUser({
+                    oidcClient,
+                    onyxiaApiClientConfig
+                }),
                 "evtVaultCliTranslation": undefined
             }
     );
+
 
     dOidcClient.resolve(oidcClient);
 
@@ -248,7 +339,7 @@ export async function createStore(params: CreateStoreParams) {
             "vaultClientConfig": secretsManagerClientConfig.doUseInMemoryClient ?
                 { "baseUri": "", "engine": "", "role": "" } :
                 secretsManagerClientConfig,
-            "keycloakConfig": oidcClientConfig.doUseInMemoryClient ? 
+            "keycloakConfig": oidcClientConfig.doUseInMemoryClient ?
                 { "clientId": "fake client id", "realm": "fake realm" } :
                 oidcClientConfig.keycloakConfig
         };
@@ -305,7 +396,10 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
 >;
 
 
+const dAxiosInstance = new Deferred<AxiosInstance>();
 
+/** @deprecated */
+export const { pr: prAxiosInstance } = dAxiosInstance;
 
 const dStoreInstance = new Deferred<Store>();
 

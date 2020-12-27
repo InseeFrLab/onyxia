@@ -10,7 +10,6 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
 import { withStyles } from '@material-ui/core';
-import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from "js/minio-client/minio-client";
@@ -18,7 +17,8 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-interface cloudShellData {
+import { prAxiosInstance } from "lib/setup";
+interface CloudShellData {
 	status?: string;
 	packageToDeploy?: any;
 	catalogId?: string;
@@ -39,43 +39,47 @@ const CloudShell = () => {
 
 	const { mustacheParams } = useMustacheParams();
 
-	const launchCloudShell = () => {
-		axiosAuth.get<cloudShellData>(`${restApiPaths.cloudShell}`).then((response) => {
-			var cloudshell = (response as any) as cloudShellData;
-			const catalogId = { catalogId: cloudshell.catalogId };
-			const service = cloudshell.packageToDeploy;
-			setCloudShellStatus(cloudshell.status);
-			if (cloudshell.status === 'DOWN') {
-				(dispatch(
-					myLabActions.creerNouveauService({
-						"service": {
-							...service,
-							...catalogId,
-						},
-						"options": getValuesObject(
-							getOptions(
-								{ ...mustacheParams, "s3": mustacheParams.s3! },
-								service,
-								{}
-							).fV
-						) as any,
-						"dryRun": false
-					})
-				) as any).then(() => {
-					axiosAuth
-						.get<cloudShellData>(restApiPaths.cloudShell)
-						.then((response: any) => {
-							cloudshell = (response as any) as cloudShellData;
-							setUrl(cloudshell.url);
-							setCloudShellStatus(cloudshell.status);
-						});
-				});
-			} else {
-				if (cloudshell.status === 'UP') {
-					setUrl(cloudshell.url);
+	const launchCloudShell = async () => {
+
+		const axiosAuth = await prAxiosInstance;
+
+		axiosAuth.get<CloudShellData>(`${restApiPaths.cloudShell}`)
+			.then(({ data }) => data)
+			.then(cloudShell => {
+				const catalogId = { catalogId: cloudShell.catalogId };
+				const service = cloudShell.packageToDeploy;
+				setCloudShellStatus(cloudShell.status);
+				if (cloudShell.status === 'DOWN') {
+					(dispatch(
+						myLabActions.creerNouveauService({
+							"service": {
+								...service,
+								...catalogId,
+							},
+							"options": getValuesObject(
+								getOptions(
+									{ ...mustacheParams, "s3": mustacheParams.s3! },
+									service,
+									{}
+								).fV
+							) as any,
+							"dryRun": false
+						})
+					) as any).then(() => {
+						axiosAuth
+							.get<CloudShellData>(restApiPaths.cloudShell)
+							.then(({data})=> data)
+							.then(cloudShell => {
+								setUrl(cloudShell.url);
+								setCloudShellStatus(cloudShell.status);
+							});
+					});
+				} else {
+					if (cloudShell.status === 'UP') {
+						setUrl(cloudShell.url);
+					}
 				}
-			}
-		});
+			});
 	};
 
 	const deleteCloudShell = () => {
