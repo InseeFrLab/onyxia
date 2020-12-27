@@ -60,7 +60,11 @@ function Root() {
     return (
         <React.StrictMode>
             <I18nProvider lng="browser default">
-                <StoreProvider createStoreParams={createStoreParams}>
+                <StoreProvider
+                    createStoreParams={createStoreParams}
+                    //TODO: False once we will actually log things
+                    doLogSecretManager={true}
+                >
                     <App />
                 </StoreProvider>
             </I18nProvider>

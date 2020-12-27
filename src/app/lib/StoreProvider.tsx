@@ -8,17 +8,20 @@ import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
+import { useAppConstants } from "./hooks";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline">;
+    doLogSecretManager: boolean;
     children: React.ReactNode;
 };
 
 export function StoreProvider(props: Omit<Props, "evtBackOnline">) {
 
-    const { createStoreParams, children } = props;
+    const { createStoreParams, doLogSecretManager, children } = props;
 
-    const { result: store, error } = useAsync(
+    const asyncCreateStore = useAsync(
         () => createStore({
             ...createStoreParams,
             "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
@@ -26,17 +29,55 @@ export function StoreProvider(props: Omit<Props, "evtBackOnline">) {
         [createStoreParams]
     );
 
-    if (error) {
-        throw error;
+    if (asyncCreateStore.error) {
+        throw asyncCreateStore.error;
     }
+
+    const { result: store } = asyncCreateStore;
+
+
 
     return (
         store === undefined ?
             <Loader em={30} /> :
             <ReactReduxProvider store={store}>
+                {doLogSecretManager && <SecretManagerLogger />}
                 {children}
             </ReactReduxProvider>
     );
 
 };
+
+function SecretManagerLogger() {
+
+    const appConstants = useAppConstants();
+
+    useEvt(ctx => {
+
+        if (!appConstants.isUserLoggedIn) {
+            return;
+        }
+
+        const { evtSecretsManagerTranslation } = appConstants;
+
+        evtSecretsManagerTranslation.attach(
+            ({ type }) => type === "cmd",
+            ctx,
+            cmd => evtSecretsManagerTranslation.attachOnce(
+                ({ cmdId }) => cmdId === cmd.cmdId,
+                ctx,
+                resp => console.log(
+                    `%c$ ${cmd.translation}\n\n${resp.translation}`,
+                    'background: #222; color: #bada55'
+                )
+            )
+        );
+
+    }, [appConstants]);
+
+    return null;
+
+}
+
+
 
