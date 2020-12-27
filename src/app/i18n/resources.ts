@@ -6,6 +6,7 @@ import { ExplorerItemCreationDialog } from "app/components/Explorer/ExplorerItem
 import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
+import { Explorer } from "app/components/Explorer/Explorer";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -19,7 +20,8 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItemCreationDialog })]: Reflect<ExplorerItemCreationDialog.I18nScheme>(),
     [symToStr({ MySecretsHeader })]: Reflect<MySecretsHeader.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
-    [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>()
+    [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
+    [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -75,6 +77,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "copy path": "Copy path",
             "create directory": "Create directory",
             "create what": "Create {{what}}",
+        },
+        "Explorer": {
+            "empty directory": "This directory is empty"
         }
     },
     "fr": {
@@ -100,6 +105,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "copy path": "Copier le chemin",
             "create directory": "Nouveau dossier",
             "create what": "Nouveau {{what}}"
+        },
+        "Explorer": {
+            "empty directory": "Ce répertoire est vide"
         }
         /* spell-checker: enable */
     }

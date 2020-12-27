@@ -12,6 +12,8 @@ import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin } from "path";
 import type { UnpackEvt } from "evt";
+import { Typography } from "app/components/designSystem/Typography";
+import { useTranslation } from "app/i18n/useTranslations";
 
 
 export type Props = {
@@ -78,6 +80,8 @@ export function Explorer(props: Props) {
         ),
         [type]
     );
+
+    const { t } = useTranslation("Explorer");
 
     const [{ evtItemsAction, evtDialogAction }] = useState(() => ({
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
@@ -203,20 +207,32 @@ export function Explorer(props: Props) {
                 path={currentPath}
                 callback={pathNavigatorCallback}
             />
-            <Items
-                files={files}
-                directories={directories}
-                filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
-                directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
-                onNavigate={itemsOnNavigate}
-                onEditBasename={onEditBasename}
-                evtAction={evtItemsAction}
-                onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
-                onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                onCopyPath={itemsOnCopyPath}
-                onDeleteItem={itemsOnDeleteItem}
-            />
+            {
+                files.length === 0 && directories.length === 0 ?
+                    <Typography>{t("empty directory")}</Typography> :
+                    <Items
+                        files={files}
+                        directories={directories}
+                        filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
+                        directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
+                        onNavigate={itemsOnNavigate}
+                        onEditBasename={onEditBasename}
+                        evtAction={evtItemsAction}
+                        onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                        onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                        onCopyPath={itemsOnCopyPath}
+                        onDeleteItem={itemsOnDeleteItem}
+                    />
+            }
+
+
         </>
     );
 
+}
+
+export declare namespace Explorer {
+    export type I18nScheme = {
+        'empty directory': undefined;
+    };
 }
