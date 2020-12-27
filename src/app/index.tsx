@@ -11,7 +11,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { getIsOsPreferredColorSchemeDark } from "app/utils/getIsOsPreferredColorSchemeDark";
 
-import { StoreProvider, Props as StoreProviderProps } from "app/lib/StoreProvider";
+import { StoreProvider } from "app/lib/StoreProvider";
+import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
 
 import App_ from "js/components/app.container";
 const App: any = App_;

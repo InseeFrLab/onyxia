@@ -12,10 +12,31 @@ import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguages } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
+import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
 
 const { ThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
+
+const createStoreParams: StoreProviderProps["createStoreParams"] = {
+    "isOsPrefersColorSchemeDark": false,
+    "oidcClientConfig": id<OidcClientConfig.InMemory>({
+        "doUseInMemoryClient": true,
+        "tokenValidityDurationMs": 60 * 60 * 1000,
+        "parsedJwt": {
+            "email": "john.doe@insee.fr",
+            "preferred_username": "doej"
+        }
+    }),
+    "secretsManagerClientConfig": id<SecretsManagerClientConfig.InMemory>({
+        "doUseInMemoryClient": true
+    }),
+    "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.InMemory>({
+        "doUseInMemoryClient": true,
+        "ip": "185.24.1.1",
+        "nomComplet": "John Doe"
+    })
+};
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;
@@ -23,35 +44,17 @@ export function getStoryFactory<Props>(params: {
     doProvideMockStore?: boolean;
 }) {
 
-    const { 
-        sectionName, 
-        wrappedComponent, 
-        doProvideMockStore = false 
+    const {
+        sectionName,
+        wrappedComponent,
+        doProvideMockStore = false
     } = params;
 
     const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
 
-    const StoreProviderOrFragment: React.FC = !doProvideMockStore ? 
+    const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
-        ({ children }) => <StoreProvider createStoreParams={{
-            "isOsPrefersColorSchemeDark": false,
-            "oidcClientConfig": id<OidcClientConfig.InMemory>({
-                "doUseInMemoryClient": true,
-                "tokenValidityDurationMs": 60*60*1000,
-                "parsedJwt": {
-                    "email": "john.doe@insee.fr",
-                    "preferred_username": "doej"
-                }
-            }),
-            "secretsManagerClientConfig": id<SecretsManagerClientConfig.InMemory>({
-                "doUseInMemoryClient": true
-            }),
-            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.InMemory>({
-                "doUseInMemoryClient": true,
-                "ip": "185.24.1.1",
-                "nomComplet": "John Doe"
-            })
-        }}>{children}</StoreProvider>
+        ({ children }) => <StoreProvider createStoreParams={createStoreParams}>{children}</StoreProvider>;
 
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
         ({ darkMode, lng, ...props }) => {
@@ -106,11 +109,11 @@ export function getStoryFactory<Props>(params: {
 
 }
 
-export function logCallbacks<T extends string>(propertyNames: readonly T[]): Record<T,()=>void> {
+export function logCallbacks<T extends string>(propertyNames: readonly T[]): Record<T, () => void> {
 
     const out: Record<T, () => void> = {} as any;
 
-    propertyNames.forEach(propertyName => out[propertyName]= console.log.bind(console, propertyName));
+    propertyNames.forEach(propertyName => out[propertyName] = console.log.bind(console, propertyName));
 
     return out;
 
