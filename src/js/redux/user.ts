@@ -2,8 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
-import { restApiPaths } from "js/restApiPaths";
-import { axiosAuth } from "js/utils/axios-config";
 import { getEnv } from "js/env";
 import type { AppThunk } from "lib/setup";
 import { parseOidcAccessToken } from "lib/ports/OidcClient";
@@ -32,13 +30,13 @@ export const privateThunks = {
 
             const { evtBackOnline } = params;
 
-            const [dispatch, , { oidcClient }] = args;
+            const [dispatch, , { oidcClient, onyxiaApiClient }] = args;
 
             assert(oidcClient.isUserLoggedIn);
 
             const getNomCompletAndSetIp = async () => {
 
-                const { ip, nomComplet }: any = await axiosAuth.get(restApiPaths.userInfo);
+                const { ip, nomComplet } = await onyxiaApiClient.getUserInfo();
 
                 dispatch(slice.actions.setIp(ip));
 

@@ -5,19 +5,29 @@ import { Typography, Fab, Icon } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
-import { axiosPublic } from "js/utils/axios-config";
 import { getAvatar } from 'js/utils/service-utils';
 import { restApiPaths } from 'js/restApiPaths';
+import { prAxiosInstance } from "lib/setup";
 
 export const Service = ({ idCatalogue, idService }) => {
 	const [service, setService] = useState({});
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`).then((res) => {
-			setService(res);
-			setLoading(false);
-		});
+
+		(async () => {
+
+			(await prAxiosInstance)(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`)
+				.then(({ data }) => data)
+				.then((res) => {
+					setService(res);
+					setLoading(false);
+				});
+
+
+		})();
+
+
 	}, [idCatalogue, idService]);
 
 	return (
@@ -26,28 +36,28 @@ export const Service = ({ idCatalogue, idService }) => {
 				{loading ? (
 					<Loader />
 				) : (
-					<Typography
-						variant="h2"
-						align="center"
-						color="textPrimary"
-						gutterBottom
-					>
-						{service.name}
-					</Typography>
-				)}
+						<Typography
+							variant="h2"
+							align="center"
+							color="textPrimary"
+							gutterBottom
+						>
+							{service.name}
+						</Typography>
+					)}
 			</div>
 			<FilDAriane fil={fil.serviceCatalogue(idCatalogue, idService)} />
 			<div className="contenu service">
 				{loading ? (
 					<Loader em={18} />
 				) : (
-					<>
-						{getAvatar(service)}
-						{getDescription(service)}
-						{getPreinstallNotes(service)}
-						{getAjouter(idCatalogue)(idService)}
-					</>
-				)}
+						<>
+							{getAvatar(service)}
+							{getDescription(service)}
+							{getPreinstallNotes(service)}
+							{getAjouter(idCatalogue)(idService)}
+						</>
+					)}
 			</div>
 		</>
 	);

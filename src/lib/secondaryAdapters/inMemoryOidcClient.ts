@@ -1,21 +1,21 @@
 
 
-import type { OidcClient, OidcTokens } from "../ports/OidcClient";
+import type { OidcClient, OidcTokens, ParsedJwt } from "../ports/OidcClient";
 import { Evt } from "evt";
 import { id } from "evt/tools/typeSafety/id";
+import * as jwtSimple from "jwt-simple";
 
 export async function createInMemoryOidcClient(
     params: {
         tokenValidityDurationMs: number;
+        parsedJwt: Pick<ParsedJwt, "email" | "preferred_username">;
     }
 ): Promise<OidcClient.LoggedIn> {
 
-    const { tokenValidityDurationMs } = params;
-
-    const { 
-        generateFakeTokens, 
-        getDelayBeforeTokensExpiration 
-    } = createFakeTokenApi({ tokenValidityDurationMs });
+    const {
+        generateFakeTokens,
+        getDelayBeforeTokensExpiration
+    } = createFakeTokenApi(params);
 
     const evtOidcTokens =
         Evt.create<OidcTokens | undefined>(generateFakeTokens());
@@ -28,15 +28,15 @@ export async function createInMemoryOidcClient(
 
                 const { minValidity = 10 } = params ?? {};
 
-                const oidcTokens= evtOidcTokens.state;
+                const oidcTokens = evtOidcTokens.state;
 
-                if( oidcTokens === undefined ){
+                if (oidcTokens === undefined) {
                     return;
                 }
 
                 const tokenStatus = getDelayBeforeTokensExpiration({ oidcTokens });
 
-                if( !tokenStatus.isExpired && tokenStatus.expiresInMs * 1000 > minValidity ){
+                if (!tokenStatus.isExpired && tokenStatus.expiresInMs * 1000 > minValidity) {
                     return;
                 }
 
@@ -63,12 +63,10 @@ export async function createInMemoryOidcClient(
 
 
 function createFakeTokenApi(
-    params: {
-        tokenValidityDurationMs: number;
-    }
+    params: Parameters<typeof createInMemoryOidcClient>[0]
 ) {
 
-    const { tokenValidityDurationMs } = params;
+    const { tokenValidityDurationMs, parsedJwt } = params;
 
     const creationTimeByOidcToken = new WeakMap<OidcTokens, number>();
 
@@ -85,7 +83,11 @@ function createFakeTokenApi(
         const count = getCount();
 
         const oidcTokens: OidcTokens = {
-            "accessToken": `fake access token n°${count}`,
+            "accessToken": jwtSimple.encode(id<ParsedJwt>({
+                ...parsedJwt,
+                "gitlab_group": null,
+                "name": ""
+            }), ""),
             "idToken": `fake id token n°${count}`,
             "refreshToken": `fake refresh token n°${count}`
         };
@@ -115,9 +117,9 @@ function createFakeTokenApi(
 
     }
 
-    return { 
-        generateFakeTokens, 
-        getDelayBeforeTokensExpiration 
+    return {
+        generateFakeTokens,
+        getDelayBeforeTokensExpiration
     };
 
 }

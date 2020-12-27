@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from 'js/restApiPaths';
 import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';
 import Loader from 'js/components/commons/loader';
+import { prAxiosInstance } from "lib/setup";
 
 const Node = ({ location }) => {
 	const [idCatalogue] = useState(() =>
@@ -18,26 +18,37 @@ const Node = ({ location }) => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}`).then((res) => {
-			setCatalogue(res);
-			setChips(
-				res.catalog.packages.reduce(
-					(a, { name, tags = [] }) =>
-						mergeTab(
-							a,
-							[{ value: name, style: 'app-name', title: 'application' }],
-							tags.map((t) => ({
-								value: t,
-								style: 'tag-token',
-								title: 'tag',
-							})),
+
+		(async () => {
+
+			(await prAxiosInstance)(`${restApiPaths.catalogue}/${idCatalogue}`)
+				.then(({ data }) => data)
+				.then((res) => {
+					setCatalogue(res);
+					setChips(
+						res.catalog.packages.reduce(
+							(a, { name, tags = [] }) =>
+								mergeTab(
+									a,
+									[{ value: name, style: 'app-name', title: 'application' }],
+									tags.map((t) => ({
+										value: t,
+										style: 'tag-token',
+										title: 'tag',
+									})),
+									[]
+								),
 							[]
-						),
-					[]
-				)
-			);
-			setLoading(false);
-		});
+						)
+					);
+					setLoading(false);
+				});
+
+
+		})();
+
+
+
 	}, [idCatalogue]);
 
 	const addChip = (chip) => {
@@ -56,66 +67,66 @@ const Node = ({ location }) => {
 				{loading ? (
 					<Loader />
 				) : (
-					<Typography
-						variant="h2"
-						align="center"
-						color="textPrimary"
-						gutterBottom
-					>
-						{catalogue.name}
-					</Typography>
-				)}
+						<Typography
+							variant="h2"
+							align="center"
+							color="textPrimary"
+							gutterBottom
+						>
+							{catalogue.name}
+						</Typography>
+					)}
 			</div>
 			<FilDAriane fil={fil.catalogue(idCatalogue)} />
 			<div className="contenu catalogue">
 				{loading ? (
 					<Loader em={18} />
 				) : (
-					<>
-						<Paper className="paper" elevation={1}>
-							<Typography
-								variant="h3"
-								align="center"
-								color="textPrimary"
-								gutterBottom
-							>
-								Description
+						<>
+							<Paper className="paper" elevation={1}>
+								<Typography
+									variant="h3"
+									align="center"
+									color="textPrimary"
+									gutterBottom
+								>
+									Description
 							</Typography>
-							<Typography variant="body1" color="textPrimary" gutterBottom>
-								{catalogue.description}
-							</Typography>
-							<Typography variant="body1" color="textPrimary" gutterBottom>
-								Le package est mis à disposition par&nbsp;
+								<Typography variant="body1" color="textPrimary" gutterBottom>
+									{catalogue.description}
+								</Typography>
+								<Typography variant="body1" color="textPrimary" gutterBottom>
+									Le package est mis à disposition par&nbsp;
 								<strong>{catalogue.maintainer}</strong>
+								</Typography>
+							</Paper>
+							<Paper className="paper" elevation={1}>
+								<Typography
+									variant="h3"
+									align="center"
+									color="textPrimary"
+									gutterBottom
+								>
+									Vos Services
 							</Typography>
-						</Paper>
-						<Paper className="paper" elevation={1}>
-							<Typography
-								variant="h3"
-								align="center"
-								color="textPrimary"
-								gutterBottom
-							>
-								Vos Services
-							</Typography>
-							<Typography variant="subtitle1">
-								Rechercher un service{' '}
-							</Typography>
-							<ChipsSelector
-								chips={chips}
-								addChip={addChip}
-								removeChip={removeChip}
-							/>
-							<Grid container spacing={2} alignItems="flex-end">
-								{catalogue && catalogue.catalog.packages
-									? mapCatalogueToCards(catalogue)(chipsSelected)(
+								<Typography variant="subtitle1">
+									Rechercher un service{' '}
+								</Typography>
+								<ChipsSelector
+									chips={chips}
+									addChip={addChip}
+									removeChip={removeChip}
+								/>
+								<Grid container spacing={2} alignItems="flex-end">
+									{catalogue && catalogue.catalog.packages
+										? mapCatalogueToCards(catalogue)(chipsSelected)(
 											setServiceSelected
-									  )
-									: null}
-							</Grid>
-						</Paper>
-					</>
-				)}
+										)
+										: null}
+								</Grid>
+							</Paper>
+						</>
+					)}
 			</div>
 		</>
 	);
@@ -171,8 +182,8 @@ const isInTag = (service) => (token) =>
 const mapCatalogueToCards = (catalogue) => (chips) => (setServiceSelected) =>
 	chips.length > 0
 		? mapFilteringCatalogueToCards(catalogue)(displayServiceWithChips(chips))(
-				setServiceSelected
-		  )
+			setServiceSelected
+		)
 		: mapFilteringCatalogueToCards(catalogue)(() => true)(setServiceSelected);
 
 const mapFilteringCatalogueToCards = (catalogue) => (filtering) => (
