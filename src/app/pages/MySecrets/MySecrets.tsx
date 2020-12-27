@@ -121,7 +121,7 @@ export function MySecrets() {
     return (
         <>
             <MySecretsHeader />
-            <Container maxWidth="sm">
+            <Container maxWidth="lg">
                 <Explorer
                     currentPath={state.currentPath}
                     isNavigating={state.state === "NAVIGATION ONGOING"}
