@@ -9,7 +9,16 @@ import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
 import { assert } from "evt/tools/typeSafety/assert";
 import { actions as appActions } from "./app";
-import { prAxiosInstance } from "lib/setup";
+import memoize from "memoizee";
+
+
+/** We avoid importing app right away to prevent require cycles */
+const getAxiosInstance = memoize(
+	() => import("lib/setup")
+		.then(ns => ns.prAxiosInstance),
+	{ "promise": true }
+);
+
 
 //TODO: Rename franglish, all theses states can be deleted, they are never used.
 export type State = {
@@ -97,7 +106,7 @@ const asyncThunks = {
 
 					
 
-					const services = await (await prAxiosInstance).put<State.Service[]>(
+					const services = await (await getAxiosInstance()).put<State.Service[]>(
 						service.category === "group" ?
 							restApiPaths.nouveauGroupe :
 							restApiPaths.nouveauService,
