@@ -83,11 +83,14 @@ function createFakeTokenApi(
         const count = getCount();
 
         const oidcTokens: OidcTokens = {
-            "accessToken": jwtSimple.encode(id<ParsedJwt>({
-                ...parsedJwt,
-                "gitlab_group": null,
-                "name": ""
-            }), ""),
+            "accessToken": jwtSimple.encode(
+                id<ParsedJwt>({
+                    ...parsedJwt,
+                    "gitlab_group": null,
+                    "name": ""
+                }),
+                "xxx"
+            ),
             "idToken": `fake id token n°${count}`,
             "refreshToken": `fake refresh token n°${count}`
         };
