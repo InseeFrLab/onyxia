@@ -96,7 +96,8 @@
     "test-coverage": "react-scripts test --coverage --watchAll=false --env=jsdom",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "xxx": "cd node_modules/\\@storybook && mkdir -p node_modules && (mv ../babel-loader node_modules/ 2>/dev/null || true)"
   },
   "eslintConfig": {
     "extends": [

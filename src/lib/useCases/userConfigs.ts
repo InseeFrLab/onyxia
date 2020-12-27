@@ -41,7 +41,7 @@ export const name = "userConfigs";
 const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
-        "debugMessage": "The user profile should have been initialized during the store initialization"
+        "debugMessage": "The userConfigState should have been initialized during the store initialization"
     }),
     "reducers": {
         "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserConfigs; }>]) => {
