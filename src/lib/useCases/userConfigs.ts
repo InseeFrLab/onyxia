@@ -6,7 +6,7 @@ import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } from "../utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../utils/createObjectThatThrowsIfAccessed";
 
 /*
  * Values of the user profile that can be changed.
@@ -15,7 +15,7 @@ import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByRedux } fr
  */
 
 const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory(
-    { "isPropertyWhitelisted": isPropertyAccessedByRedux }
+    { "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook }
 );
 
 export type UserConfigs = Id<Record<string, string | boolean | number | null>, {

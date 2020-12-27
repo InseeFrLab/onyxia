@@ -63,10 +63,13 @@ export function createObjectThatThrowsIfAccessedFactory(
 
 }
 
-export function isPropertyAccessedByRedux(prop: string | number | symbol) {
+export function isPropertyAccessedByReduxOrStorybook(prop: string | number | symbol) {
     switch (typeof prop) {
-        case "symbol": return String(prop) === "Symbol(immer-state)";
-        case "string": return ["window", "toJSON"].includes(prop)
+        case "symbol": return [
+            "Symbol.toStringTag",
+            "immer-state"
+        ].map(s => `Symbol(${s})`).includes(String(prop));
+        case "string": return ["window", "toJSON"].includes(prop);
         case "number": return false;
     }
 }
