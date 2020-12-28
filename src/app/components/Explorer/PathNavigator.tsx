@@ -15,15 +15,15 @@ export type Props = {
 
 const useStyles = makeStyles(
     theme => createStyles({
+        "defaultPortion": {
+            "color": theme.palette.text.secondary,
+        },
         "clickablePortion": {
             "cursor": "pointer",
             "color": theme.palette.text.primary,
             "&:hover": {
                 "color": theme.palette.primary.main
             }
-        },
-        "lastPortion": {
-            "color": theme.palette.text.secondary,
         }
     })
 );
@@ -68,8 +68,8 @@ export function PathNavigator(props: Props) {
                     onClick={!isClickable ? undefined : onClickFactory(partialPath)}
                     display="inline"
                     className={clsx({
-                        [classes.clickablePortion]: isClickable,
-                        [classes.lastPortion]: isLast
+                        [classes.defaultPortion]: true,
+                        [classes.clickablePortion]: isClickable
                     })}
                 >
                     <Box clone display="inline">
