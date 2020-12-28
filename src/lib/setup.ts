@@ -1,7 +1,7 @@
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { createInMemorySecretManagerClient } from "./secondaryAdapters/inMemorySecretsManagerClient";
+import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient, getVaultClientTranslator } from "./secondaryAdapters/vaultSecretsManagerClient";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userConfigsUseCase from "./useCases/userConfigs";
@@ -51,17 +51,17 @@ export type CreateStoreParams = {
 };
 
 export declare type SecretsManagerClientConfig =
-    SecretsManagerClientConfig.InMemory |
+    SecretsManagerClientConfig.LocalStorage |
     SecretsManagerClientConfig.Vault;
 
 export declare namespace SecretsManagerClientConfig {
 
-    export type InMemory = {
-        doUseInMemoryClient: true;
-    };
+    export type LocalStorage = {
+        implementation: "LOCAL STORAGE";
+    } & Parameters<typeof createLocalStorageSecretManagerClient>[0];
 
     export type Vault = {
-        doUseInMemoryClient: false;
+        implementation: "VAULT";
     } & Omit<Parameters<typeof createVaultSecretsManagerClient>[0],
         "evtOidcAccessToken" |
         "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
@@ -76,11 +76,11 @@ export declare type OidcClientConfig =
 export declare namespace OidcClientConfig {
 
     export type InMemory = {
-        doUseInMemoryClient: true;
+        implementation: "IN MEMORY";
     } & Parameters<typeof createInMemoryOidcClient>[0];
 
     export type Keycloak = {
-        doUseInMemoryClient: false;
+        implementation: "KEYCLOAK";
     } & Omit<
         Parameters<typeof createKeycloakOidcClient>[0],
         "evtOidcAccessToken" |
@@ -96,11 +96,11 @@ export type OnyxiaApiClientConfig =
 export declare namespace OnyxiaApiClientConfig {
 
     export type InMemory = {
-        doUseInMemoryClient: true;
+        implementation: "IN MEMORY";
     } & Parameters<typeof createInMemoryOnyxiaApiClient>[0];
 
     export type Remote = {
-        doUseInMemoryClient: false;
+        implementation: "REMOTE";
     } & Omit<
         Parameters<typeof createRemoteOnyxiaApiClient>[0],
         "getCurrentlySelectedDeployRegionId" | "oidcClient"
@@ -145,23 +145,27 @@ async function createStoreForLoggedUser(
         isOsPrefersColorSchemeDark
     } = params;
 
-
-    let { secretsManagerClient, evtVaultToken } =
-        secretsManagerClientConfig.doUseInMemoryClient ?
-            {
-                "secretsManagerClient": createInMemorySecretManagerClient(),
+    let { secretsManagerClient, evtVaultToken } = (() => {
+        switch (secretsManagerClientConfig.implementation) {
+            case "LOCAL STORAGE": return {
+                "secretsManagerClient": createLocalStorageSecretManagerClient(
+                    secretsManagerClientConfig,
+                ),
                 "evtVaultToken": Evt.create<string | undefined>([
                     "We are not currently using Vault as secret manager",
                     "secrets are stored in RAM. There is no vault token"
                 ].join(" "))
-            } :
-            createVaultSecretsManagerClient({
-                ...secretsManagerClientConfig,
-                "evtOidcAccessToken":
-                    oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
-                "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-                    oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
-            });
+            };
+            case "VAULT":
+                return createVaultSecretsManagerClient({
+                    ...secretsManagerClientConfig,
+                    "evtOidcAccessToken":
+                        oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
+                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
+                        oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                });
+        }
+    })();
 
     const {
         secretsManagerClientProxy,
@@ -171,8 +175,12 @@ async function createStoreForLoggedUser(
         "secretsManagerTranslator":
             getVaultClientTranslator({
                 "clientType": "CLI",
-                "engine": secretsManagerClientConfig.doUseInMemoryClient ?
-                    "kv" : secretsManagerClientConfig.engine
+                "engine": (()=>{
+                    switch(secretsManagerClientConfig.implementation){
+                        case "LOCAL STORAGE": return "kv";
+                        case "VAULT": return secretsManagerClientConfig.engine;
+                    }
+                })()
             })
     });
 
@@ -180,13 +188,13 @@ async function createStoreForLoggedUser(
 
     let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
 
-    const { onyxiaApiClient, axiosInstance } =
-        onyxiaApiClientConfig.doUseInMemoryClient ?
-            {
+    const { onyxiaApiClient, axiosInstance } = (()=>{
+        switch(onyxiaApiClientConfig.implementation){
+            case "IN MEMORY": return {
                 ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
-            } :
-            createRemoteOnyxiaApiClient({
+            };
+            case "REMOTE": return createRemoteOnyxiaApiClient({
                 ...onyxiaApiClientConfig,
                 oidcClient,
                 "getCurrentlySelectedDeployRegionId": () => {
@@ -197,6 +205,8 @@ async function createStoreForLoggedUser(
 
                 }
             });
+        }
+    })();
 
     if (axiosInstance !== undefined) {
         dAxiosInstance.resolve(axiosInstance);
@@ -246,18 +256,19 @@ async function createStoreForNonLoggedUser(
 
     const { oidcClient, onyxiaApiClientConfig } = params;
 
-
-    const { onyxiaApiClient, axiosInstance } =
-        onyxiaApiClientConfig.doUseInMemoryClient ?
-            {
+    const { onyxiaApiClient, axiosInstance } = (()=>{
+        switch(onyxiaApiClientConfig.implementation){
+            case "IN MEMORY": return {
                 ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
-            } :
-            createRemoteOnyxiaApiClient({
+            };
+            case "REMOTE": return createRemoteOnyxiaApiClient({
                 ...onyxiaApiClientConfig,
                 "oidcClient": null,
                 "getCurrentlySelectedDeployRegionId": null
             });
+        }
+    })();
 
     if (axiosInstance !== undefined) {
         dAxiosInstance.resolve(axiosInstance);
@@ -302,13 +313,12 @@ export async function createStore(params: CreateStoreParams) {
         evtBackOnline
     } = params;
 
-
-    const oidcClient = await (oidcClientConfig.doUseInMemoryClient ?
-        createInMemoryOidcClient(oidcClientConfig) :
-        createKeycloakOidcClient(oidcClientConfig));
-
-
-
+    const oidcClient = await (()=>{
+        switch(oidcClientConfig.implementation){
+            case "IN MEMORY": return createInMemoryOidcClient(oidcClientConfig);
+            case "KEYCLOAK": return createKeycloakOidcClient(oidcClientConfig);
+        }
+    })();
 
     const { store, evtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
@@ -327,7 +337,6 @@ export async function createStore(params: CreateStoreParams) {
             }
     );
 
-
     dOidcClient.resolve(oidcClient);
 
     dStoreInstance.resolve(store);
@@ -336,12 +345,19 @@ export async function createStore(params: CreateStoreParams) {
 
         const _common: appConstantsUseCase.AppConstant._Common = {
             isOsPrefersColorSchemeDark,
-            "vaultClientConfig": secretsManagerClientConfig.doUseInMemoryClient ?
-                { "baseUri": "", "engine": "", "role": "" } :
-                secretsManagerClientConfig,
-            "keycloakConfig": oidcClientConfig.doUseInMemoryClient ?
-                { "clientId": "fake client id", "realm": "fake realm" } :
-                oidcClientConfig.keycloakConfig
+            "vaultClientConfig": (()=>{
+                switch(secretsManagerClientConfig.implementation){
+                    case "VAULT": return secretsManagerClientConfig;
+                    case "LOCAL STORAGE": return { "baseUri": "", "engine": "", "role": "" };
+                }
+            })(),
+            "keycloakConfig": (()=>{
+                switch(oidcClientConfig.implementation){
+                    case "IN MEMORY": return { "clientId": "fake client id", "realm": "fake realm" };
+                    case "KEYCLOAK": return oidcClientConfig.keycloakConfig;
+                }
+            })()
+            
         };
 
 
