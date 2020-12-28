@@ -46,8 +46,8 @@ function Root() {
                 "engine": env.VAULT.ENGINE,
                 "role": env.VAULT.ROLE
             }),
-            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Remote>({
-                "implementation": "REMOTE",
+            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Official>({
+                "implementation": "OFFICIAL",
                 "baseUrl": env.API.BASE_URL
             })
         });

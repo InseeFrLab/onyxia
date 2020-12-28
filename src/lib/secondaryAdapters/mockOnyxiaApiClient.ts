@@ -2,7 +2,7 @@
 
 import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
 
-export function createInMemoryOnyxiaApiClient(
+export function createMockOnyxiaApiClient(
     params: {
         ip: string;
         nomComplet: string;

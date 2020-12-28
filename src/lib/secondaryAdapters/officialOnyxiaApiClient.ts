@@ -31,7 +31,7 @@ const restApiPaths: typeof import("js/restApiPaths")["restApiPaths"] = {
 
 
 
-export function createRemoteOnyxiaApiClient(
+export function createOfficialOnyxiaApiClient(
     params: {
         baseUrl: string;
 
@@ -62,7 +62,7 @@ export function createRemoteOnyxiaApiClient(
 }
 
 function createAxiosInstance(
-    params: Parameters<typeof createRemoteOnyxiaApiClient>[0]
+    params: Parameters<typeof createOfficialOnyxiaApiClient>[0]
 ) {
 
     const {
