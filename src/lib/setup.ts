@@ -14,7 +14,7 @@ import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
-import { createInMemoryOidcClient } from "./secondaryAdapters/inMemoryOidcClient";
+import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
@@ -76,8 +76,8 @@ export declare type OidcClientConfig =
 export declare namespace OidcClientConfig {
 
     export type InMemory = {
-        implementation: "IN MEMORY";
-    } & Parameters<typeof createInMemoryOidcClient>[0];
+        implementation: "PHONY";
+    } & Parameters<typeof createPhonyOidcClient>[0];
 
     export type Keycloak = {
         implementation: "KEYCLOAK";
@@ -315,7 +315,7 @@ export async function createStore(params: CreateStoreParams) {
 
     const oidcClient = await (()=>{
         switch(oidcClientConfig.implementation){
-            case "IN MEMORY": return createInMemoryOidcClient(oidcClientConfig);
+            case "PHONY": return createPhonyOidcClient(oidcClientConfig);
             case "KEYCLOAK": return createKeycloakOidcClient(oidcClientConfig);
         }
     })();
@@ -341,29 +341,32 @@ export async function createStore(params: CreateStoreParams) {
 
     dStoreInstance.resolve(store);
 
-    {
+    store.dispatch(
+        appConstantsUseCase.privateThunks.initialize({
+            "appConstants": await (async () => {
 
-        const _common: appConstantsUseCase.AppConstant._Common = {
-            isOsPrefersColorSchemeDark,
-            "vaultClientConfig": (()=>{
-                switch(secretsManagerClientConfig.implementation){
-                    case "VAULT": return secretsManagerClientConfig;
-                    case "LOCAL STORAGE": return { "baseUri": "", "engine": "", "role": "" };
-                }
-            })(),
-            "keycloakConfig": (()=>{
-                switch(oidcClientConfig.implementation){
-                    case "IN MEMORY": return { "clientId": "fake client id", "realm": "fake realm" };
-                    case "KEYCLOAK": return oidcClientConfig.keycloakConfig;
-                }
-            })()
-            
-        };
+                const _common: appConstantsUseCase.AppConstant._Common = {
+                    isOsPrefersColorSchemeDark,
+                    "vaultClientConfig": (() => {
+                        switch (secretsManagerClientConfig.implementation) {
+                            case "VAULT": return secretsManagerClientConfig;
+                            case "LOCAL STORAGE": return { "baseUri": "", "engine": "", "role": "" };
+                        }
+                    })(),
+                    "keycloakConfig": (() => {
+                        switch (oidcClientConfig.implementation) {
+                            case "PHONY":
+                                const message = [
+                                    "N.A. This instance is not configured to use Keycloak but",
+                                    "a phony implementation of the OIDC client"
+                                ].join(" ");
+                                return { "clientId": message, "realm": message };
+                            case "KEYCLOAK": return oidcClientConfig.keycloakConfig;
+                        }
+                    })()
+                };
 
-
-        store.dispatch(
-            appConstantsUseCase.privateThunks.initialize({
-                "appConstants": oidcClient.isUserLoggedIn ?
+                return oidcClient.isUserLoggedIn ?
                     id<appConstantsUseCase.AppConstant.LoggedIn>({
                         "isUserLoggedIn": true,
                         ..._common,
@@ -378,10 +381,12 @@ export async function createStore(params: CreateStoreParams) {
                         "isUserLoggedIn": false,
                         ..._common,
                     })
-            })
-        );
 
-    }
+            })()
+
+        })
+    );
+
 
 
     return store;

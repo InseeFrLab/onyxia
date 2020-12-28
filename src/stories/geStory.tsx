@@ -21,7 +21,7 @@ const { ThemeProvider } = ThemeProviderFactory(
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
     "isOsPrefersColorSchemeDark": false,
     "oidcClientConfig": id<OidcClientConfig.InMemory>({
-        "implementation": "IN MEMORY",
+        "implementation": "PHONY",
         "tokenValidityDurationMs": 60 * 60 * 1000,
         "parsedJwt": {
             "email": "john.doe@insee.fr",
