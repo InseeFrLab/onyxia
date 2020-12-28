@@ -1,7 +1,8 @@
 
 
 import { join as pathJoin, relative as pathRelative } from "path";
-import { partition } from "evt/tools/reducers";
+import { partition } from "evt/tools/reducers/partition";
+import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManagerClient";
 import { assert } from "evt/tools/typeSafety/assert";
 import { symToStr } from "app/utils/symToStr";
@@ -28,6 +29,7 @@ export function createLocalStorageSecretManagerClient(
 
         const serializedRecord = localStorage.getItem(storageKey);
 
+
         return serializedRecord === null ? {} : JSON.parse(serializedRecord);
 
     })();
@@ -45,11 +47,15 @@ export function createLocalStorageSecretManagerClient(
 
             assert(!(path in record), `${path} is a secret not a directory`);
 
-            const [directories, secrets] =
+            let [directories, secrets] =
                 Object.keys(record)
-                    .map(key => pathRelative(key, path))
+                    .map(key => pathRelative(path, key))
                     .filter(path => !path.startsWith(".."))
                     .reduce(...partition<string>(path => path.split("/").length > 1));
+
+            directories = directories
+                .map(path => path.split("/")[0])
+                .reduce(...removeDuplicates<string>());
 
             await sleep();
 
