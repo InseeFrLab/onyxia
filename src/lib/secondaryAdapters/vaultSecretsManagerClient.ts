@@ -170,76 +170,109 @@ function getAxiosInstanceAndEvtVaultToken(
 
 }
 
+
 export function getVaultClientTranslator(
 	params: {
 		clientType: "CLI";
-		engine: string;
-	}
+		oidcAccessToken: string;
+	} & Omit<Parameters<typeof createVaultSecretsManagerClient>[0],
+		"evtOidcAccessToken" |
+		"renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
+	>
 ): SecretsManagerTranslator {
 
-	const { clientType, engine } = params;
+	const { clientType, engine, baseUri, oidcAccessToken, role } = params;
+
 
 	switch (clientType) {
 		case "CLI":
 
 			return {
-				"list": {
-					"buildCmd": (...[{ path }]) =>
-						`vault kv list ${pathJoin(engine, path)}`,
-					"fmtResult": ({ result: { directories, secrets } }) =>
-						[
-							"Keys",
-							"----",
-							...[directories, secrets]
-						].join("\n")
-				},
-				"get": {
-					"buildCmd": (...[{ path }]) =>
-						`vault kv get ${pathJoin(engine, path)}`,
-					"fmtResult": ({ result: secretWithMetadata }) => {
-
-						const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 2;
-
-						return [
-							"==== Data ====",
-							`${"Key".padEnd(n)}Value`,
-							`${"---".padEnd(n)}-----`,
-							...Object.entries(secretWithMetadata.secret)
-								.map(
-									([key, value]) =>
-										key.padEnd(n) +
-										(typeof value === "string" ? value : JSON.stringify(value))
-								)
-						].join("\n");
-
+				"initialization": [
+					{
+						"cmd": `export VAULT_ADDR='${baseUri}'`,
+						"result": ""
+					},
+					{
+						"cmd": [
+							`vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
+							"# https://www.vaultproject.io/docs/auth/jwt#jwt-authentication"
+						].join(" "),
+						"result": [
+							"Success! You are now authenticated!\n",
+							"Notes from the Onyxia team:\n",
+							"-You do not have to run this command nor define the VAULT_ADDR environnement variable",
+							"to use vault in Jupyter or RStudio's terminal, you're pre-logged in.\n",
+							"-The jwt is your OIDC access token, you can find it in the 'my account' page.\n",
+							"-You may notice a VAULT_TOKEN environnement variable defined in your containers",
+							"however your don't need to define this env on your machine if you use your OIDC",
+							"access token to login\n",
+							"\n",
+							"Relevant doc:\n",
+							"https://www.vaultproject.io/docs/auth/jwt#jwt-authentication\n",
+							"https://learn.hashicorp.com/tutorials/vault/getting-started-dev-server?in=vault/getting-started"
+						].join(" ")
 					}
-				},
-				"put": {
-					"buildCmd": (...[{ path, secret }]) =>
-						[
-							`vault kv put ${pathJoin(engine, path)}`,
-							...Object.entries(secret).map(
-								([key, value]) => `${key}=${typeof value === "string" ?
-									`"${value.replace(/"/g, '\\"')}"` :
-									typeof value === "number" || typeof value === "boolean" ?
-										value :
-										[
-											"-<<EOF",
-											`heredoc > ${JSON.stringify(value, null, 2)}`,
-											"heredoc> EOF"
-										].join("\n")
-									}`
-							)
-						].join(" \\\n"),
-					"fmtResult": ({ inputs: [{ path }] }) =>
-						`Success! Data written to: ${pathJoin(engine, path)}`
-				},
-				"delete": {
-					"buildCmd": (...[{ path }]) =>
-						`vault kv delete ${pathJoin(engine, path)}`,
-					"fmtResult": ({ inputs: [{ path }] }) =>
-						`Success! Data deleted (if it existed) at: ${pathJoin(engine, path)}`
-				},
+				],
+				"methods": {
+					"list": {
+						"buildCmd": (...[{ path }]) =>
+							`vault kv list ${pathJoin(engine, path)}`,
+						"fmtResult": ({ result: { directories, secrets } }) =>
+							[
+								"Keys",
+								"----",
+								...[directories, secrets]
+							].join("\n")
+					},
+					"get": {
+						"buildCmd": (...[{ path }]) =>
+							`vault kv get ${pathJoin(engine, path)}`,
+						"fmtResult": ({ result: secretWithMetadata }) => {
+
+							const n = Math.max(...Object.keys(secretWithMetadata.secret).map(key => key.length)) + 2;
+
+							return [
+								"==== Data ====",
+								`${"Key".padEnd(n)}Value`,
+								`${"---".padEnd(n)}-----`,
+								...Object.entries(secretWithMetadata.secret)
+									.map(
+										([key, value]) =>
+											key.padEnd(n) +
+											(typeof value === "string" ? value : JSON.stringify(value))
+									)
+							].join("\n");
+
+						}
+					},
+					"put": {
+						"buildCmd": (...[{ path, secret }]) =>
+							[
+								`vault kv put ${pathJoin(engine, path)}`,
+								...Object.entries(secret).map(
+									([key, value]) => `${key}=${typeof value === "string" ?
+										`"${value.replace(/"/g, '\\"')}"` :
+										typeof value === "number" || typeof value === "boolean" ?
+											value :
+											[
+												"-<<EOF",
+												`heredoc > ${JSON.stringify(value, null, 2)}`,
+												"heredoc> EOF"
+											].join("\n")
+										}`
+								)
+							].join(" \\\n"),
+						"fmtResult": ({ inputs: [{ path }] }) =>
+							`Success! Data written to: ${pathJoin(engine, path)}`
+					},
+					"delete": {
+						"buildCmd": (...[{ path }]) =>
+							`vault kv delete ${pathJoin(engine, path)}`,
+						"fmtResult": ({ inputs: [{ path }] }) =>
+							`Success! Data deleted (if it existed) at: ${pathJoin(engine, path)}`
+					}
+				}
 			};
 	}
 
