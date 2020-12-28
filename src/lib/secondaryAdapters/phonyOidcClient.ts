@@ -5,7 +5,7 @@ import { Evt } from "evt";
 import { id } from "evt/tools/typeSafety/id";
 import * as jwtSimple from "jwt-simple";
 
-export async function createInMemoryOidcClient(
+export async function createPhonyOidcClient(
     params: {
         tokenValidityDurationMs: number;
         parsedJwt: Pick<ParsedJwt, "email" | "preferred_username">;
@@ -63,7 +63,7 @@ export async function createInMemoryOidcClient(
 
 
 function createFakeTokenApi(
-    params: Parameters<typeof createInMemoryOidcClient>[0]
+    params: Parameters<typeof createPhonyOidcClient>[0]
 ) {
 
     const { tokenValidityDurationMs, parsedJwt } = params;
