@@ -194,10 +194,7 @@ export function getVaultClientTranslator(
 						"result": ""
 					},
 					{
-						"cmd": [
-							`vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
-							"# https://www.vaultproject.io/docs/auth/jwt#jwt-authentication"
-						].join(" "),
+						"cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
 						"result": [
 							"Success! You are now authenticated!\n",
 							"Notes from the Onyxia team:\n",

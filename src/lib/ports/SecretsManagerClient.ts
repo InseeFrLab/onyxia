@@ -72,21 +72,23 @@ export type SecretsManagerTranslator = {
 };
 
 
+
+
+
 export type SecretsManagerTranslation = {
     type: "cmd" | "result";
     cmdId: number;
     translation: string;
-    isForInitialization: boolean;
 };
 
-export function observeSecretsManagerClientWithTranslater(
+export function observeSecretsManagerClientWithTranslator(
     params: {
         secretsManagerClient: SecretsManagerClient;
         secretsManagerTranslator: SecretsManagerTranslator;
     }
 ): {
     secretsManagerClientProxy: SecretsManagerClient;
-    evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>;
+    getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>; };
 } {
 
     const {
@@ -105,50 +107,53 @@ export function observeSecretsManagerClientWithTranslater(
     const evtSecretsManagerTranslation = Evt.create<SecretsManagerTranslation>();
 
     return {
+        "getEvtSecretsManagerTranslation": (() => {
+
+            const initializationCommands = secretsManagerTranslator.initialization
+                .reduce<SecretsManagerTranslation[]>((prev, { cmd, result }) => {
+
+                    const cmdId = getCounter();
+
+                    return [
+                        ...prev,
+                        {
+                            cmdId,
+                            "type": "cmd",
+                            "translation": cmd
+                        },
+                        {
+                            cmdId,
+                            "type": "result",
+                            "translation": result
+                        },
+                    ];
+
+                }, []);
+
+            return () => {
+
+                const out = evtSecretsManagerTranslation.pipe();
+
+                const [first, ...rest] = initializationCommands;
+
+                (async () => {
+
+                    await out.postAsyncOnceHandled(first);
+
+                    rest.forEach(translation => out.post(translation));
+
+                })();
+
+                return { "evtSecretsManagerTranslation": out };
+
+            };
+
+        })(),
         "secretsManagerClientProxy": (() => {
-
-            {
-                const isForInitialization = true;
-
-                const translations = secretsManagerTranslator.initialization
-                    .reduce<SecretsManagerTranslation[]>((prev, { cmd, result }) => {
-
-                        const cmdId = getCounter();
-
-                        return [
-                            ...prev,
-                            {
-                                cmdId,
-                                "type": "cmd",
-                                "translation": cmd,
-                                isForInitialization
-                            },
-                            {
-                                cmdId,
-                                "type": "result",
-                                "translation": result,
-                                isForInitialization
-                            },
-                        ];
-
-                    }, []);
-
-                evtSecretsManagerTranslation.evtAttach.attach(
-                    () => Promise.resolve().then(() =>
-                        translations.forEach(
-                            translation => evtSecretsManagerTranslation.post(translation)
-                        )
-                    )
-
-                );
-
-            }
 
             const createMethodProxy = <MethodName extends MethodNames<SecretsManagerClient>>(
                 _methodName: MethodName
             ): SecretsManagerClient[MethodName] => {
-
-                const isForInitialization = false;
 
                 //NOTE: Mitigate type vulnerability.
                 const methodName = _methodName as "get";
@@ -162,8 +167,7 @@ export function observeSecretsManagerClientWithTranslater(
                     evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "cmd",
-                        "translation": buildCmd(...args),
-                        isForInitialization
+                        "translation": buildCmd(...args)
                     });
 
                     const result = await secretsManagerClient[methodName](...args);
@@ -171,8 +175,7 @@ export function observeSecretsManagerClientWithTranslater(
                     evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "result",
-                        "translation": fmtResult({ "inputs": args, result }),
-                        isForInitialization
+                        "translation": fmtResult({ "inputs": args, result })
                     });
 
                     return result;
@@ -190,8 +193,7 @@ export function observeSecretsManagerClientWithTranslater(
                 "delete": createMethodProxy("delete")
             };
 
-        })(),
-        evtSecretsManagerTranslation
+        })()
     };
 
 
