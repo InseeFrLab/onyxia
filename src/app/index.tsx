@@ -3,7 +3,6 @@ import * as reactDom from "react-dom";
 //TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
-import { assert } from "evt/tools/typeSafety/assert";
 import { getEnv } from "../js/env";
 
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
@@ -27,30 +26,28 @@ function Root() {
 
         return id<StoreProviderProps["createStoreParams"]>({
             "isOsPrefersColorSchemeDark": getIsOsPreferredColorSchemeDark(),
-            "oidcClientConfig": id<OidcClientConfig.Keycloak>({
-                "doUseInMemoryClient": false,
-                "keycloakConfig": (() => {
-
-                    assert(
-                        env.AUTHENTICATION.TYPE === "oidc",
-                        [
-                            "REACT_APP_AUTH_TYPE must be set to \"oidc\" as it's",
-                            "the only authentication mechanism currently supported"
-                        ].join(" ")
-                    );
-
-                    return env.AUTHENTICATION.OIDC;
-
-                })()
-            }),
+            "oidcClientConfig":
+                env.AUTHENTICATION.TYPE === "oidc" ?
+                    id<OidcClientConfig.Keycloak>({
+                        "implementation": "KEYCLOAK",
+                        "keycloakConfig": env.AUTHENTICATION.OIDC
+                    }) :
+                    id<OidcClientConfig.InMemory>({
+                        "implementation": "IN MEMORY",
+                        "tokenValidityDurationMs": Infinity,
+                        "parsedJwt": {
+                            "email": "john.doe@insee.fr",
+                            "preferred_username": "doej"
+                        }
+                    }),
             "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
-                "doUseInMemoryClient": false,
+                "implementation": "VAULT",
                 "baseUri": env.VAULT.BASE_URI,
                 "engine": env.VAULT.ENGINE,
                 "role": env.VAULT.ROLE
             }),
             "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Remote>({
-                "doUseInMemoryClient": false,
+                "implementation": "REMOTE",
                 "baseUrl": env.API.BASE_URL
             })
         });

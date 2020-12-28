@@ -17,7 +17,7 @@ export declare namespace AppConstant {
     export type _Common = {
         isOsPrefersColorSchemeDark: boolean;
         vaultClientConfig: Readonly<Omit<SecretsManagerClientConfig.Vault,
-            "doUseInMemoryClient" |
+            "implementation" |
             "evtOidcAccessToken" |
             "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
         >>;

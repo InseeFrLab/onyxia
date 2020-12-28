@@ -21,18 +21,20 @@ const { ThemeProvider } = ThemeProviderFactory(
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
     "isOsPrefersColorSchemeDark": false,
     "oidcClientConfig": id<OidcClientConfig.InMemory>({
-        "doUseInMemoryClient": true,
+        "implementation": "IN MEMORY",
         "tokenValidityDurationMs": 60 * 60 * 1000,
         "parsedJwt": {
             "email": "john.doe@insee.fr",
             "preferred_username": "doej"
         }
     }),
-    "secretsManagerClientConfig": id<SecretsManagerClientConfig.InMemory>({
-        "doUseInMemoryClient": true
+    "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
+        "implementation": "LOCAL STORAGE",
+        "artificialDelayMs": 300,
+        "doReset": false
     }),
     "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.InMemory>({
-        "doUseInMemoryClient": true,
+        "implementation": "IN MEMORY",
         "ip": "185.24.1.1",
         "nomComplet": "John Doe"
     })
