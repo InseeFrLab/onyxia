@@ -8,7 +8,7 @@ import type {
 import { assert } from "evt/tools/typeSafety/assert";
 
 import type { SecretsManagerTranslation } from "../ports/SecretsManagerClient";
-import type { NonPostableEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -32,7 +32,7 @@ export declare namespace AppConstant {
             email: string;
             nomComplet: string;
         };
-        evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>;
+        getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation> };
     };
 
     export type NotLoggedIn = _Common & {

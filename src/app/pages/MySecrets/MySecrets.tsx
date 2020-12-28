@@ -3,7 +3,7 @@ import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
 import { Container } from "app/components/designSystem/Container";
 import { copyToClipboard } from "app/utils/copyToClipboard";
-import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
+import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
 import { useEvt } from "evt/hooks";
@@ -120,40 +120,20 @@ export function MySecrets() {
 
     const [lastCmdResp, setLastCmdResp] = useState("");
 
-    const appConstants = useAppConstants();
+    const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
 
-    useEvt(ctx => {
-
-        if (!appConstants.isUserLoggedIn) {
-            return;
-        }
-
-        const { evtSecretsManagerTranslation } = appConstants;
-
-        evtSecretsManagerTranslation.attach(
+    useEvt(
+        ctx => evtSecretsManagerTranslation.attach(
             ({ type }) => type === "cmd",
             ctx,
             cmd => evtSecretsManagerTranslation.attachOnce(
                 ({ cmdId }) => cmdId === cmd.cmdId,
                 ctx,
-                resp => {
-
-                    const str = `${cmd.translation}\n\n${resp.translation}`;
-
-                    if (cmd.isForInitialization) {
-
-                        console.log(str);
-
-                    }
-
-                    setLastCmdResp(str);
-
-                }
+                resp => setLastCmdResp(`${cmd.translation}${resp.translation === "" ? "" : `\n\n${resp.translation}`}`)
             )
-        );
-
-    }, [appConstants]);
-
+        ),
+        [evtSecretsManagerTranslation]
+    );
 
     return (
         <>

@@ -1,5 +1,5 @@
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { thunks } from "lib/setup";
@@ -36,7 +36,7 @@ export function useAppConstants(params?: { assertIsUserLoggedInIs: boolean; }): 
 
 }
 
-export const useMustacheParams = () => {
+export function useMustacheParams() {
 
     const { oidcTokens, vaultToken } = useSelector(state => state.tokens);
     const { ip, s3 } = useSelector(state => state.user);
@@ -64,12 +64,12 @@ export const useMustacheParams = () => {
 
     return { mustacheParams };
 
-};
+}
 
-export const useIsBetaModeEnabled = (): {
+export function useIsBetaModeEnabled(): {
     isBetaModeEnabled: boolean;
     setIsBetaModeEnabled(value: boolean): void;
-} => {
+} {
 
     const dispatch = useDispatch();
 
@@ -95,10 +95,10 @@ export const useIsBetaModeEnabled = (): {
 
 };
 
-export const useIsDarkModeEnabled = (): {
+export function useIsDarkModeEnabled(): {
     isDarkModeEnabled: boolean;
     setIsDarkModeEnabled(value: boolean): void;
-} => {
+} {
 
     const dispatch = useDispatch();
 
@@ -123,6 +123,16 @@ export const useIsDarkModeEnabled = (): {
     };
 
 };
+
+export function useEvtSecretsManagerTranslation() {
+
+    const { getEvtSecretsManagerTranslation } = useAppConstants({ "assertIsUserLoggedInIs": true });
+
+    const [{ evtSecretsManagerTranslation }] = useState(() => getEvtSecretsManagerTranslation());
+
+    return { evtSecretsManagerTranslation };
+
+}
 
 
 

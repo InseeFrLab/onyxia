@@ -8,7 +8,7 @@ import * as userConfigsUseCase from "./useCases/userConfigs";
 import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
-import { observeSecretsManagerClientWithTranslater } from "./ports/SecretsManagerClient";
+import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -151,12 +151,12 @@ async function createStoreForLoggedUser(
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
 
-        const clientType= "CLI";
+        const clientType = "CLI";
 
         switch (secretsManagerClientConfig.implementation) {
             case "LOCAL STORAGE": {
 
-                const { paramsForTranslator, ...params} = secretsManagerClientConfig;
+                const { paramsForTranslator, ...params } = secretsManagerClientConfig;
 
                 return {
                     ...createLocalStorageSecretManagerClient(params),
@@ -173,17 +173,17 @@ async function createStoreForLoggedUser(
             }
             case "VAULT": {
 
-                const params: Parameters<typeof createVaultSecretsManagerClient>[0]= {
-                        ...secretsManagerClientConfig,
-                        "evtOidcAccessToken":
-                            oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
-                        "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-                            oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                const params: Parameters<typeof createVaultSecretsManagerClient>[0] = {
+                    ...secretsManagerClientConfig,
+                    "evtOidcAccessToken":
+                        oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
+                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
+                        oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
                 };
 
-                const { 
-                    evtOidcAccessToken: { state: oidcAccessToken }, 
-                    ...translatorParams 
+                const {
+                    evtOidcAccessToken: { state: oidcAccessToken },
+                    ...translatorParams
                 } = params;
 
                 assert(oidcAccessToken !== undefined);
@@ -202,22 +202,28 @@ async function createStoreForLoggedUser(
 
     const {
         secretsManagerClientProxy,
-        evtSecretsManagerTranslation,
-    } = observeSecretsManagerClientWithTranslater({
+        getEvtSecretsManagerTranslation
+    } = observeSecretsManagerClientWithTranslator({
         secretsManagerClient,
         secretsManagerTranslator
     });
 
-    evtSecretsManagerTranslation.attach(
-        ({ type }) => type === "cmd",
-        cmd => evtSecretsManagerTranslation.attachOnce(
-            ({ cmdId }) => cmdId === cmd.cmdId,
-            resp => vaultCmdTranslationLogger(
-                `%c$ ${cmd.translation}\n\n${resp.translation}`,
-                'background: #222; color: #bada55'
+    {
+
+        const { evtSecretsManagerTranslation } = getEvtSecretsManagerTranslation();
+
+        evtSecretsManagerTranslation.attach(
+            ({ type }) => type === "cmd",
+            cmd => evtSecretsManagerTranslation.attachOnce(
+                ({ cmdId }) => cmdId === cmd.cmdId,
+                resp => vaultCmdTranslationLogger(
+                    `%c$ ${cmd.translation}${resp.translation === "" ? "" : `\n\n${resp.translation}`}`,
+                    'background: #222; color: #bada55'
+                )
             )
-        )
-    );
+        );
+
+    }
 
     secretsManagerClient = secretsManagerClientProxy;
 
@@ -277,7 +283,7 @@ async function createStoreForLoggedUser(
         )
     );
 
-    return { store, evtSecretsManagerTranslation };
+    return { store, getEvtSecretsManagerTranslation };
 
 }
 
@@ -356,7 +362,7 @@ export async function createStore(params: CreateStoreParams) {
         }
     })();
 
-    const { store, evtSecretsManagerTranslation } = await (
+    const { store, getEvtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
             createStoreForLoggedUser({
                 oidcClient,
@@ -370,7 +376,7 @@ export async function createStore(params: CreateStoreParams) {
                     oidcClient,
                     onyxiaApiClientConfig
                 }),
-                "evtVaultCliTranslation": undefined
+                "getEvtSecretsManagerTranslation": undefined
             }
     );
 
@@ -412,7 +418,7 @@ export async function createStore(params: CreateStoreParams) {
                                 { evtBackOnline }
                             )
                         ),
-                        "evtSecretsManagerTranslation": evtSecretsManagerTranslation!
+                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!
                     }) :
                     id<appConstantsUseCase.AppConstant.NotLoggedIn>({
                         "isUserLoggedIn": false,
