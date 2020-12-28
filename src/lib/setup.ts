@@ -23,8 +23,8 @@ import type { StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
 import type { AxiosInstance } from "axios";
 import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
-import { createInMemoryOnyxiaApiClient } from "./secondaryAdapters/inMemoryOnyxiaApiClient";
-import { createRemoteOnyxiaApiClient } from "./secondaryAdapters/remoteOnyxiaApiClient";
+import { createMockOnyxiaApiClient } from "./secondaryAdapters/mockOnyxiaApiClient";
+import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxiaApiClient";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -90,19 +90,19 @@ export declare namespace OidcClientConfig {
 }
 
 export type OnyxiaApiClientConfig =
-    OnyxiaApiClientConfig.InMemory |
-    OnyxiaApiClientConfig.Remote;
+    OnyxiaApiClientConfig.Mock |
+    OnyxiaApiClientConfig.Official;
 
 export declare namespace OnyxiaApiClientConfig {
 
-    export type InMemory = {
-        implementation: "IN MEMORY";
-    } & Parameters<typeof createInMemoryOnyxiaApiClient>[0];
+    export type Mock = {
+        implementation: "MOCK";
+    } & Parameters<typeof createMockOnyxiaApiClient>[0];
 
-    export type Remote = {
-        implementation: "REMOTE";
+    export type Official = {
+        implementation: "OFFICIAL";
     } & Omit<
-        Parameters<typeof createRemoteOnyxiaApiClient>[0],
+        Parameters<typeof createOfficialOnyxiaApiClient>[0],
         "getCurrentlySelectedDeployRegionId" | "oidcClient"
     >;
 
@@ -190,11 +190,11 @@ async function createStoreForLoggedUser(
 
     const { onyxiaApiClient, axiosInstance } = (()=>{
         switch(onyxiaApiClientConfig.implementation){
-            case "IN MEMORY": return {
-                ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
+            case "MOCK": return {
+                ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
             };
-            case "REMOTE": return createRemoteOnyxiaApiClient({
+            case "OFFICIAL": return createOfficialOnyxiaApiClient({
                 ...onyxiaApiClientConfig,
                 oidcClient,
                 "getCurrentlySelectedDeployRegionId": () => {
@@ -258,11 +258,11 @@ async function createStoreForNonLoggedUser(
 
     const { onyxiaApiClient, axiosInstance } = (()=>{
         switch(onyxiaApiClientConfig.implementation){
-            case "IN MEMORY": return {
-                ...createInMemoryOnyxiaApiClient(onyxiaApiClientConfig),
+            case "MOCK": return {
+                ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
             };
-            case "REMOTE": return createRemoteOnyxiaApiClient({
+            case "OFFICIAL": return createOfficialOnyxiaApiClient({
                 ...onyxiaApiClientConfig,
                 "oidcClient": null,
                 "getCurrentlySelectedDeployRegionId": null

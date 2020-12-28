@@ -33,8 +33,8 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
         "artificialDelayMs": 300,
         "doReset": false
     }),
-    "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.InMemory>({
-        "implementation": "IN MEMORY",
+    "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Mock>({
+        "implementation": "MOCK",
         "ip": "185.24.1.1",
         "nomComplet": "John Doe"
     })
