@@ -8,6 +8,7 @@ import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
+import memoize from "memoizee";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "vaultCmdTranslationLogger">;
@@ -15,16 +16,31 @@ export type Props = {
     children: React.ReactNode;
 };
 
+const memoizedCreateStore = (() => {
+
+    const evtBackOnline= Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
+    const vaultCmdTranslationLogger= console.log.bind(console);
+
+    const f = memoize(
+        (createStoreParamsStr: string) => 
+            createStore({
+                ...JSON.parse(createStoreParamsStr) as Props["createStoreParams"],
+                evtBackOnline,
+                vaultCmdTranslationLogger
+            })
+    )
+
+    return (params: { createStoreParams: Props["createStoreParams"]; }) => 
+        f(JSON.stringify(params.createStoreParams));
+
+})();
+
 export function StoreProvider(props: Props) {
 
     const { createStoreParams, children } = props;
 
     const asyncCreateStore = useAsync(
-        () => createStore({
-            ...createStoreParams,
-            "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
-            "vaultCmdTranslationLogger": console.log.bind(console)
-        }),
+        () => memoizedCreateStore({ createStoreParams }),
         [createStoreParams]
     );
 
