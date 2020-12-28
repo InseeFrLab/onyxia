@@ -184,6 +184,18 @@ async function createStoreForLoggedUser(
             })
     });
 
+    //TODO: Remove
+        evtSecretsManagerTranslation.attach(
+            ({ type }) => type === "cmd",
+            cmd => evtSecretsManagerTranslation.attachOnce(
+                ({ cmdId }) => cmdId === cmd.cmdId,
+                resp => console.log(
+                    `%c$ ${cmd.translation}\n\n${resp.translation}`,
+                    'background: #222; color: #f542d1'
+                )
+            )
+        );
+
     secretsManagerClient = secretsManagerClientProxy;
 
     let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;

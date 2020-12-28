@@ -97,12 +97,23 @@ export function observeSecretsManagerClientWithTranslater(
     return {
         "secretsManagerClientProxy": (() => {
 
+            (async () => {
 
-            evtSecretsManagerTranslation.postAsyncOnceHandled({
-                "cmdId": getCounter(),
-                "type": "cmd",
-                "translation": "==> TODO client initialization <=="
-            })
+                const cmdId= getCounter();
+
+                await evtSecretsManagerTranslation.postAsyncOnceHandled({
+                    cmdId,
+                    "type": "cmd",
+                    "translation": "==> TODO client initialization <=="
+                });
+
+                evtSecretsManagerTranslation.post({
+                    cmdId,
+                    "type": "result",
+                    "translation": "==> TODO client initialization cmd output<=="
+                });
+
+            })();
 
             const createMethodProxy = <MethodName extends MethodNames<SecretsManagerClient>>(
                 _methodName: MethodName
