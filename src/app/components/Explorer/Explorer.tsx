@@ -43,6 +43,7 @@ export function Explorer(props: Props) {
         type,
         getIsValidBasename,
         currentPath,
+        file,
         files,
         directories,
         filesBeingCreatedOrRenamed,
@@ -207,24 +208,27 @@ export function Explorer(props: Props) {
                 callback={pathNavigatorCallback}
             />
             {
-                files.length === 0 && directories.length === 0 ?
-                    <Typography>{t("empty directory")}</Typography> :
-                    <Items
-                        files={files}
-                        directories={directories}
-                        filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
-                        directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
-                        onNavigate={itemsOnNavigate}
-                        onEditBasename={onEditBasename}
-                        evtAction={evtItemsAction}
-                        onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
-                        onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
-                    />
+                file ?
+                    file
+                    :
+                    (
+                        files.length === 0 && directories.length === 0 ?
+                            <Typography>{t("empty directory")}</Typography> :
+                            <Items
+                                files={files}
+                                directories={directories}
+                                filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
+                                directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
+                                onNavigate={itemsOnNavigate}
+                                onEditBasename={onEditBasename}
+                                evtAction={evtItemsAction}
+                                onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                                onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                                onCopyPath={itemsOnCopyPath}
+                                onDeleteItem={itemsOnDeleteItem}
+                            />
+                    )
             }
-
-
         </>
     );
 

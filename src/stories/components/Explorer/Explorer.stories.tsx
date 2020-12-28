@@ -145,7 +145,7 @@ export const Vue1 = getStory({
     "type": "secret",
     "currentPath": ".onyxia/this/is/a/path",
     "isNavigating": false,
-    "file": <h1>Representation of a file</h1>,
+    "file": null,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "getIsValidBasename": pure.getIsValidBasename,
