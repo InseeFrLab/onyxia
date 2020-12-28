@@ -209,10 +209,7 @@ async function createStoreForLoggedUser(
     });
 
     evtSecretsManagerTranslation.attach(
-        ({ type, isForInitialization }) => (
-            type === "cmd" &&
-            !isForInitialization
-        ),
+        ({ type }) => type === "cmd",
         cmd => evtSecretsManagerTranslation.attachOnce(
             ({ cmdId }) => cmdId === cmd.cmdId,
             resp => vaultCmdTranslationLogger(
