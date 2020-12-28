@@ -33,7 +33,7 @@ function Root() {
                         "keycloakConfig": env.AUTHENTICATION.OIDC
                     }) :
                     id<OidcClientConfig.InMemory>({
-                        "implementation": "IN MEMORY",
+                        "implementation": "PHONY",
                         "tokenValidityDurationMs": Infinity,
                         "parsedJwt": {
                             "email": "john.doe@insee.fr",
