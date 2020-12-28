@@ -1,21 +1,21 @@
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
 import { Container } from "app/components/designSystem/Container";
 import { copyToClipboard } from "app/utils/copyToClipboard";
-
-import { useSelector, useDispatch } from "app/lib/hooks";
-
+import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
+import { useEvt } from "evt/hooks";
+import { Typography } from "app/components/designSystem/Typography";
 
-import * as lib_ from "lib/setup";
+import * as lib from "lib/setup";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
 */
-const thunks = lib_.thunks.secretExplorer;
-const pure = lib_.pure.secretExplorer;
+const thunks = lib.thunks.secretExplorer;
+const pure = lib.pure.secretExplorer;
 
 export function MySecrets() {
 
@@ -118,6 +118,43 @@ export function MySecrets() {
         []
     );
 
+    const [lastCmdResp, setLastCmdResp] = useState("");
+
+    const appConstants = useAppConstants();
+
+    useEvt(ctx => {
+
+        if (!appConstants.isUserLoggedIn) {
+            return;
+        }
+
+        const { evtSecretsManagerTranslation } = appConstants;
+
+        evtSecretsManagerTranslation.attach(
+            ({ type }) => type === "cmd",
+            ctx,
+            cmd => evtSecretsManagerTranslation.attachOnce(
+                ({ cmdId }) => cmdId === cmd.cmdId,
+                ctx,
+                resp => {
+
+                    const str = `${cmd.translation}\n\n${resp.translation}`;
+
+                    if (cmd.isForInitialization) {
+
+                        console.log(str);
+
+                    }
+
+                    setLastCmdResp(str);
+
+                }
+            )
+        );
+
+    }, [appConstants]);
+
+
     return (
         <>
             <MySecretsHeader />
@@ -150,6 +187,7 @@ export function MySecrets() {
                     onCreateItem={onCreateItem}
                     onCopyPath={onCopyPath}
                 />
+                <Typography>{lastCmdResp}</Typography>
             </Container>
         </>
     );

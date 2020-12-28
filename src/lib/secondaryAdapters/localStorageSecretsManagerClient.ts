@@ -17,7 +17,7 @@ export function createLocalStorageSecretManagerClient(
         artificialDelayMs: number;
         doReset: boolean;
     }
-): SecretsManagerClient {
+): { secretsManagerClient: SecretsManagerClient } {
 
     const { artificialDelayMs, doReset } = params;
 
@@ -39,7 +39,7 @@ export function createLocalStorageSecretManagerClient(
 
     const sleep = () => new Promise(resolve => setTimeout(resolve, artificialDelayMs));
 
-    return {
+    const secretsManagerClient: SecretsManagerClient= {
         "list": async params => {
 
 
@@ -110,6 +110,8 @@ export function createLocalStorageSecretManagerClient(
         }
 
     };
+
+    return { secretsManagerClient };
 
 
 

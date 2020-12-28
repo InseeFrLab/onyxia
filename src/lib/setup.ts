@@ -48,6 +48,7 @@ export type CreateStoreParams = {
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     evtBackOnline: NonPostableEvt<void>;
+    vaultCmdTranslationLogger: typeof console.log;
 };
 
 export declare type SecretsManagerClientConfig =
@@ -56,10 +57,6 @@ export declare type SecretsManagerClientConfig =
 
 export declare namespace SecretsManagerClientConfig {
 
-    export type LocalStorage = {
-        implementation: "LOCAL STORAGE";
-    } & Parameters<typeof createLocalStorageSecretManagerClient>[0];
-
     export type Vault = {
         implementation: "VAULT";
     } & Omit<Parameters<typeof createVaultSecretsManagerClient>[0],
@@ -67,15 +64,21 @@ export declare namespace SecretsManagerClientConfig {
         "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >;
 
+    export type LocalStorage = {
+        implementation: "LOCAL STORAGE";
+        paramsForTranslator: Pick<Vault, "role" | "baseUri" | "engine">;
+    } & Parameters<typeof createLocalStorageSecretManagerClient>[0];
+
+
 }
 
 export declare type OidcClientConfig =
-    OidcClientConfig.InMemory |
+    OidcClientConfig.Phony |
     OidcClientConfig.Keycloak;
 
 export declare namespace OidcClientConfig {
 
-    export type InMemory = {
+    export type Phony = {
         implementation: "PHONY";
     } & Parameters<typeof createPhonyOidcClient>[0];
 
@@ -135,35 +138,65 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
+    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark" | "vaultCmdTranslationLogger">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isOsPrefersColorSchemeDark
+        isOsPrefersColorSchemeDark,
+        vaultCmdTranslationLogger
     } = params;
 
-    let { secretsManagerClient, evtVaultToken } = (() => {
+    let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
+
+        const clientType= "CLI";
+
         switch (secretsManagerClientConfig.implementation) {
-            case "LOCAL STORAGE": return {
-                "secretsManagerClient": createLocalStorageSecretManagerClient(
-                    secretsManagerClientConfig,
-                ),
-                "evtVaultToken": Evt.create<string | undefined>([
-                    "We are not currently using Vault as secret manager",
-                    "secrets are stored in RAM. There is no vault token"
-                ].join(" "))
-            };
-            case "VAULT":
-                return createVaultSecretsManagerClient({
-                    ...secretsManagerClientConfig,
-                    "evtOidcAccessToken":
-                        oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
-                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-                        oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
-                });
+            case "LOCAL STORAGE": {
+
+                const { paramsForTranslator, ...params} = secretsManagerClientConfig;
+
+                return {
+                    ...createLocalStorageSecretManagerClient(params),
+                    "evtVaultToken": Evt.create<string | undefined>(
+                        "We are not currently using Vault for secret management"
+                    ),
+                    "secretsManagerTranslator": getVaultClientTranslator({
+                        clientType,
+                        "oidcAccessToken": oidcClient.evtOidcTokens.state!.accessToken,
+                        ...paramsForTranslator
+                    })
+                };
+
+            }
+            case "VAULT": {
+
+                const params: Parameters<typeof createVaultSecretsManagerClient>[0]= {
+                        ...secretsManagerClientConfig,
+                        "evtOidcAccessToken":
+                            oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
+                        "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
+                            oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                };
+
+                const { 
+                    evtOidcAccessToken: { state: oidcAccessToken }, 
+                    ...translatorParams 
+                } = params;
+
+                assert(oidcAccessToken !== undefined);
+
+                return {
+                    ...createVaultSecretsManagerClient(params),
+                    "secretsManagerTranslator": getVaultClientTranslator({
+                        clientType,
+                        oidcAccessToken,
+                        ...translatorParams
+                    })
+                };
+            }
         }
     })();
 
@@ -172,36 +205,29 @@ async function createStoreForLoggedUser(
         evtSecretsManagerTranslation,
     } = observeSecretsManagerClientWithTranslater({
         secretsManagerClient,
-        "secretsManagerTranslator":
-            getVaultClientTranslator({
-                "clientType": "CLI",
-                "engine": (()=>{
-                    switch(secretsManagerClientConfig.implementation){
-                        case "LOCAL STORAGE": return "kv";
-                        case "VAULT": return secretsManagerClientConfig.engine;
-                    }
-                })()
-            })
+        secretsManagerTranslator
     });
 
-    //TODO: Remove
-        evtSecretsManagerTranslation.attach(
-            ({ type }) => type === "cmd",
-            cmd => evtSecretsManagerTranslation.attachOnce(
-                ({ cmdId }) => cmdId === cmd.cmdId,
-                resp => console.log(
-                    `%c$ ${cmd.translation}\n\n${resp.translation}`,
-                    'background: #222; color: #f542d1'
-                )
+    evtSecretsManagerTranslation.attach(
+        ({ type, isForInitialization }) => (
+            type === "cmd" &&
+            !isForInitialization
+        ),
+        cmd => evtSecretsManagerTranslation.attachOnce(
+            ({ cmdId }) => cmdId === cmd.cmdId,
+            resp => vaultCmdTranslationLogger(
+                `%c$ ${cmd.translation}\n\n${resp.translation}`,
+                'background: #222; color: #bada55'
             )
-        );
+        )
+    );
 
     secretsManagerClient = secretsManagerClientProxy;
 
     let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
 
-    const { onyxiaApiClient, axiosInstance } = (()=>{
-        switch(onyxiaApiClientConfig.implementation){
+    const { onyxiaApiClient, axiosInstance } = (() => {
+        switch (onyxiaApiClientConfig.implementation) {
             case "MOCK": return {
                 ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
@@ -268,8 +294,8 @@ async function createStoreForNonLoggedUser(
 
     const { oidcClient, onyxiaApiClientConfig } = params;
 
-    const { onyxiaApiClient, axiosInstance } = (()=>{
-        switch(onyxiaApiClientConfig.implementation){
+    const { onyxiaApiClient, axiosInstance } = (() => {
+        switch (onyxiaApiClientConfig.implementation) {
             case "MOCK": return {
                 ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
                 "axiosInstance": undefined
@@ -322,11 +348,12 @@ export async function createStore(params: CreateStoreParams) {
         secretsManagerClientConfig,
         isOsPrefersColorSchemeDark,
         onyxiaApiClientConfig,
-        evtBackOnline
+        evtBackOnline,
+        vaultCmdTranslationLogger
     } = params;
 
-    const oidcClient = await (()=>{
-        switch(oidcClientConfig.implementation){
+    const oidcClient = await (() => {
+        switch (oidcClientConfig.implementation) {
             case "PHONY": return createPhonyOidcClient(oidcClientConfig);
             case "KEYCLOAK": return createKeycloakOidcClient(oidcClientConfig);
         }
@@ -338,7 +365,8 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isOsPrefersColorSchemeDark
+                isOsPrefersColorSchemeDark,
+                vaultCmdTranslationLogger
             }) :
             {
                 ...await createStoreForNonLoggedUser({

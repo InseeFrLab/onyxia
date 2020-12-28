@@ -54,14 +54,20 @@ export type SecretsManagerClient = {
 };
 
 export type SecretsManagerTranslator = {
-    [K in MethodNames<SecretsManagerClient>]: {
-        buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
-        fmtResult(
-            params: {
-                inputs: Parameters<SecretsManagerClient[K]>;
-                result: AsyncReturnType<SecretsManagerClient[K]>;
-            }
-        ): string;
+    initialization: {
+        cmd: string;
+        result: string;
+    }[];
+    methods: {
+        [K in MethodNames<SecretsManagerClient>]: {
+            buildCmd(...args: Parameters<SecretsManagerClient[K]>): string;
+            fmtResult(
+                params: {
+                    inputs: Parameters<SecretsManagerClient[K]>;
+                    result: AsyncReturnType<SecretsManagerClient[K]>;
+                }
+            ): string;
+        };
     }
 };
 
@@ -70,6 +76,7 @@ export type SecretsManagerTranslation = {
     type: "cmd" | "result";
     cmdId: number;
     translation: string;
+    isForInitialization: boolean;
 };
 
 export function observeSecretsManagerClientWithTranslater(
@@ -82,7 +89,10 @@ export function observeSecretsManagerClientWithTranslater(
     evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>;
 } {
 
-    const { secretsManagerClient, secretsManagerTranslator } = params;
+    const {
+        secretsManagerClient,
+        secretsManagerTranslator
+    } = params;
 
     const getCounter = (() => {
 
@@ -99,19 +109,34 @@ export function observeSecretsManagerClientWithTranslater(
 
             (async () => {
 
-                const cmdId= getCounter();
+                const isForInitialization = true;
 
-                await evtSecretsManagerTranslation.postAsyncOnceHandled({
-                    cmdId,
-                    "type": "cmd",
-                    "translation": "==> TODO client initialization <=="
-                });
+                const [first, ...rest] = secretsManagerTranslator.initialization
+                    .reduce<SecretsManagerTranslation[]>((prev, { cmd, result }) => {
 
-                evtSecretsManagerTranslation.post({
-                    cmdId,
-                    "type": "result",
-                    "translation": "==> TODO client initialization cmd output<=="
-                });
+                        const cmdId = getCounter();
+
+                        return [
+                            ...prev,
+                            {
+                                cmdId,
+                                "type": "cmd",
+                                "translation": cmd,
+                                isForInitialization
+                            },
+                            {
+                                cmdId,
+                                "type": "result",
+                                "translation": result,
+                                isForInitialization
+                            },
+                        ];
+
+                    }, []);
+
+                await evtSecretsManagerTranslation.postAsyncOnceHandled(first);
+
+                rest.forEach(data => evtSecretsManagerTranslation.post(data));
 
             })();
 
@@ -119,20 +144,22 @@ export function observeSecretsManagerClientWithTranslater(
                 _methodName: MethodName
             ): SecretsManagerClient[MethodName] => {
 
+                const isForInitialization = false;
+
                 //NOTE: Mitigate type vulnerability.
                 const methodName = _methodName as "get";
 
                 const methodProxy = async (...args: Parameters<SecretsManagerClient[typeof methodName]>) => {
 
-
                     const cmdId = getCounter();
 
-                    const { buildCmd, fmtResult } = secretsManagerTranslator[methodName];
+                    const { buildCmd, fmtResult } = secretsManagerTranslator.methods[methodName];
 
                     evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "cmd",
-                        "translation": buildCmd(...args)
+                        "translation": buildCmd(...args),
+                        isForInitialization
                     });
 
                     const result = await secretsManagerClient[methodName](...args);
@@ -140,7 +167,8 @@ export function observeSecretsManagerClientWithTranslater(
                     evtSecretsManagerTranslation.post({
                         cmdId,
                         "type": "result",
-                        "translation": fmtResult({ "inputs": args, result })
+                        "translation": fmtResult({ "inputs": args, result }),
+                        isForInitialization
                     });
 
                     return result;

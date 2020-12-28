@@ -32,7 +32,7 @@ function Root() {
                         "implementation": "KEYCLOAK",
                         "keycloakConfig": env.AUTHENTICATION.OIDC
                     }) :
-                    id<OidcClientConfig.InMemory>({
+                    id<OidcClientConfig.Phony>({
                         "implementation": "PHONY",
                         "tokenValidityDurationMs": Infinity,
                         "parsedJwt": {

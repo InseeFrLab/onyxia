@@ -20,7 +20,7 @@ const { ThemeProvider } = ThemeProviderFactory(
 
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
     "isOsPrefersColorSchemeDark": false,
-    "oidcClientConfig": id<OidcClientConfig.InMemory>({
+    "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": 60 * 60 * 1000,
         "parsedJwt": {
@@ -31,7 +31,12 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
     "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
         "implementation": "LOCAL STORAGE",
         "artificialDelayMs": 300,
-        "doReset": false
+        "doReset": false,
+        "paramsForTranslator": {
+            "baseUri": "https://vault.lab.sspcloud.fr",
+            "engine": "onyxia-kv",
+            "role": "onyxia-user"
+        }
     }),
     "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Mock>({
         "implementation": "MOCK",
