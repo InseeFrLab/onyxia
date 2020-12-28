@@ -168,10 +168,9 @@ export function Explorer(props: Props) {
         ({ kind, basename }: Parameters<ItemsProps["onNavigate"]>[0]) =>
             onNavigate({
                 kind,
-                "relativePath": pathJoin(currentPath, basename)
+                "relativePath": basename
             }),
-
-        [onNavigate, currentPath]
+        [onNavigate]
     );
 
     const itemsOnCopyPath = useCallback(
