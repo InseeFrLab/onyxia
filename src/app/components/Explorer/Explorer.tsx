@@ -43,6 +43,7 @@ export function Explorer(props: Props) {
         type,
         getIsValidBasename,
         currentPath,
+        isNavigating,
         file,
         files,
         directories,
@@ -203,7 +204,7 @@ export function Explorer(props: Props) {
                 callback={buttonBarCallback}
             />
             <PathNavigator
-                minDepth={0}
+                minDepth={!isNavigating ? 0 : Infinity}
                 path={currentPath}
                 callback={pathNavigatorCallback}
             />
