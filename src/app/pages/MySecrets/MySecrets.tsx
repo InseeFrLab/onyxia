@@ -141,7 +141,7 @@ export function MySecrets() {
             <Container maxWidth="lg">
                 <Explorer
                     currentPath={state.currentPath}
-                    isNavigating={state.state === "NAVIGATION ONGOING"}
+                    isNavigating={state.isNavigationOngoing}
                     file={
                         state.state !== "SHOWING SECRET" ? null :
                             <div>

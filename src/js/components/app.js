@@ -39,7 +39,6 @@ import { getEnv } from "js/env";
 import { useAppConstants, useIsDarkModeEnabled } from "app/lib/hooks";
 import { ThemeProviderFactory } from "app/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
-import { useEvt } from "evt/hooks";
 
 const { ThemeProvider } = ThemeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }

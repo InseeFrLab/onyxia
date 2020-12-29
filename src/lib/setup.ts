@@ -214,13 +214,22 @@ async function createStoreForLoggedUser(
 
         evtSecretsManagerTranslation.attach(
             ({ type }) => type === "cmd",
-            cmd => evtSecretsManagerTranslation.attachOnce(
-                ({ cmdId }) => cmdId === cmd.cmdId,
-                resp => vaultCmdTranslationLogger(
-                    `%c$ ${cmd.translation}${resp.translation === "" ? "" : `\n\n${resp.translation}`}`,
+            cmd => {
+
+                vaultCmdTranslationLogger(
+                    `%c$ ${cmd.translation}`,
                     'background: #222; color: #bada55'
-                )
-            )
+                );
+
+                evtSecretsManagerTranslation.attachOnce(
+                    ({ cmdId }) => cmdId === cmd.cmdId,
+                    resp => vaultCmdTranslationLogger(
+                        `%c${resp.translation}`,
+                        'background: #222; color: #bada55'
+                    )
+                );
+
+            }
         );
 
     }

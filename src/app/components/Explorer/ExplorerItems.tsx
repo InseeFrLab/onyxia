@@ -23,6 +23,8 @@ export type Props = {
     /** [HIGHER ORDER] */
     getIsValidBasename(params: { basename: string; }): boolean;
 
+    isNavigating: boolean;
+
     /** Assert all uniq */
     files: string[];
     /** Assert all uniq */
@@ -54,6 +56,7 @@ export function ExplorerItems(props: Props) {
     const {
         visualRepresentationOfAFile,
         getIsValidBasename,
+        isNavigating,
         files,
         directories,
         onNavigate,
@@ -161,6 +164,12 @@ export function ExplorerItems(props: Props) {
         ]
     );
 
+    
+    useValueChangeEffect(
+        () => setSelectedItemKeyProp(undefined),
+        [isNavigating]
+    );
+
     // If selected item is removed, unselect it.
     {
 
@@ -202,6 +211,10 @@ export function ExplorerItems(props: Props) {
             (kind: "file" | "directory", basename: string) =>
                 async ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
+                    if( isNavigating ){
+                        return;
+                    }
+
                     switch (type) {
                         case "down":
 
@@ -227,7 +240,7 @@ export function ExplorerItems(props: Props) {
                     }
                 }
         ),
-        [onNavigate, selectedItemKeyProp, getKeyProp, getEvtItemAction]
+        [onNavigate, selectedItemKeyProp, getKeyProp, getEvtItemAction, isNavigating]
     );
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
