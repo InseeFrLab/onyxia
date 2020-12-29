@@ -14,13 +14,16 @@ import { join as pathJoin } from "path";
 import type { UnpackEvt } from "evt";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
-
+import type { Props as CmdTranslationProps } from "./CmdTranslation";
+import { CmdTranslation } from "./CmdTranslation";
 
 export type Props = {
     /** [HIGHER ORDER] */
     type: "secret" | "file";
     /** [HIGHER ORDER] */
     getIsValidBasename(params: { basename: string; }): boolean;
+
+    evtTranslation: CmdTranslationProps["evtTranslation"];
 
     currentPath: string;
     isNavigating: boolean;
@@ -42,6 +45,7 @@ export function Explorer(props: Props) {
     const {
         type,
         getIsValidBasename,
+        evtTranslation,
         currentPath,
         isNavigating,
         file,
@@ -231,6 +235,7 @@ export function Explorer(props: Props) {
                             />
                     )
             }
+            <CmdTranslation evtTranslation={evtTranslation}/>
         </>
     );
 

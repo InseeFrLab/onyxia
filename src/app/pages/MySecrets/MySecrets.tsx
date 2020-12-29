@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 import { withProps } from "app/utils/withProps";
 import { MySecretsHeader } from "./MySecretsHeader";
 import { Container } from "app/components/designSystem/Container";
@@ -6,9 +6,6 @@ import { copyToClipboard } from "app/utils/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
-import { useEvt } from "evt/hooks";
-import { Typography } from "app/components/designSystem/Typography";
-
 import * as lib from "lib/setup";
 /*
 const { secretExplorer: thunks } = lib.thunks;
@@ -118,22 +115,7 @@ export function MySecrets() {
         []
     );
 
-    const [lastCmdResp, setLastCmdResp] = useState("");
-
     const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
-
-    useEvt(
-        ctx => evtSecretsManagerTranslation.attach(
-            ({ type }) => type === "cmd",
-            ctx,
-            cmd => evtSecretsManagerTranslation.attachOnce(
-                ({ cmdId }) => cmdId === cmd.cmdId,
-                ctx,
-                resp => setLastCmdResp(`${cmd.translation}${resp.translation === "" ? "" : `\n\n${resp.translation}`}`)
-            )
-        ),
-        [evtSecretsManagerTranslation]
-    );
 
     return (
         <>
@@ -142,6 +124,7 @@ export function MySecrets() {
                 <Explorer
                     currentPath={state.currentPath}
                     isNavigating={state.isNavigationOngoing}
+                    evtTranslation={evtSecretsManagerTranslation}
                     file={
                         state.state !== "SHOWING SECRET" ? null :
                             <div>
@@ -167,7 +150,6 @@ export function MySecrets() {
                     onCreateItem={onCreateItem}
                     onCopyPath={onCopyPath}
                 />
-                <Typography>{lastCmdResp}</Typography>
             </Container>
         </>
     );
