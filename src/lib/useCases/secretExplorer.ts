@@ -8,7 +8,7 @@ import { basename as pathBasename, join as pathJoin, dirname as pathDirname, rel
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
-import { unwrapWritableDraft } from "lib/utils/unwrapWritableDraft";
+import { unwrapWritableDraft } from "lib/utils/unwrapWritableDraft";
 
 const getEvtIsCreatingOrRenaming = memoize(
     (_: Dependencies) => Evt.create(false)
@@ -16,7 +16,6 @@ const getEvtIsCreatingOrRenaming = memoize(
 
 
 export declare type SecretExplorerState =
-    SecretExplorerState.NavigationOngoing |
     SecretExplorerState.Failure |
     SecretExplorerState.ShowingDirectory |
     SecretExplorerState.ShowingSecret
@@ -28,10 +27,7 @@ export declare namespace SecretExplorerState {
         currentPath: string;
         directories: string[];
         secrets: string[];
-    };
-
-    export type NavigationOngoing = _Common & {
-        state: "NAVIGATION ONGOING";
+        isNavigationOngoing: boolean;
     };
 
     export type Failure = _Common & {
@@ -61,11 +57,14 @@ export const name = "secretExplorer";
 const { reducer, actions } = createSlice({
     name,
     "initialState": id<SecretExplorerState>(
-        id<SecretExplorerState.NavigationOngoing>({
-            "state": "NAVIGATION ONGOING",
+        id<SecretExplorerState.ShowingDirectory>({
+            "state": "SHOWING DIRECTORY",
             "currentPath": "",
             "directories": [],
-            "secrets": []
+            "secrets": [],
+            "directoriesBeingCreatedOrRenamed": [],
+            "secretsBeingCreatedOrRenamed": [],
+            "isNavigationOngoing": true
         })
     ),
     "reducers": {
@@ -76,66 +75,61 @@ const { reducer, actions } = createSlice({
 
             const { errorMessage } = payload;
 
-            const { directories, secrets } = state;
+            const { directories, secrets, isNavigationOngoing } = state;
 
             return id<SecretExplorerState.Failure>({
                 "state": "FAILURE",
                 "currentPath": state.currentPath,
                 errorMessage,
-                directories, secrets
+                directories, 
+                secrets,
+                isNavigationOngoing
             });
 
         },
         "navigationStarted": (
-            state,
-            { payload }: PayloadAction<{ path: string; }>
+            state
         ) => {
 
-            const { path } = payload;
-
-            const { directories, secrets } = state;
-
-            return id<SecretExplorerState.NavigationOngoing>({
-                "state": "NAVIGATION ONGOING",
-                "currentPath": path,
-                directories, secrets
-            });
+            state.isNavigationOngoing=true;
 
         },
         "navigationTowardDirectorySuccess": (
-            state,
-            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingDirectory, "directories" | "secrets">>
+            _state,
+            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingDirectory, "directories" | "secrets" | "currentPath">>
         ) => {
 
-            const { directories, secrets } = payload;
+            const { directories, secrets, currentPath } = payload;
 
             return id<SecretExplorerState.ShowingDirectory>({
                 "state": "SHOWING DIRECTORY",
-                "currentPath": state.currentPath,
+                currentPath,
                 directories,
                 secrets,
                 "directoriesBeingCreatedOrRenamed": [],
-                "secretsBeingCreatedOrRenamed": []
+                "secretsBeingCreatedOrRenamed": [],
+                "isNavigationOngoing": false
             });
 
         },
         "navigationTowardSecretSuccess": (
             state,
-            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingSecret, "secretWithMetadata">>
+            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingSecret, "secretWithMetadata" | "currentPath">>
         ) => {
 
-            const { secretWithMetadata } = payload;
+            const { secretWithMetadata, currentPath } = payload;
 
             const { directories, secrets } = state;
 
             return id<SecretExplorerState.ShowingSecret>({
                 "state": "SHOWING SECRET",
-                "currentPath": state.currentPath,
+                currentPath,
                 secretWithMetadata,
                 "isBeingRenamed": false,
                 secrets,
                 directories,
-                "isBeingEdited": false
+                "isBeingEdited": false,
+                "isNavigationOngoing": false
             });
 
         },
@@ -322,12 +316,12 @@ export const thunks = {
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
+            dispatch(actions.navigationStarted());
+
             await getEvtIsCreatingOrRenaming(dependencies)
                 .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
 
             const directoryPath = pathJoin(getState().secretExplorer.currentPath, directoryRelativePath);
-
-            dispatch(actions.navigationStarted({ "path": directoryPath }));
 
             const listResult = await secretsManagerClient.list({ "path": directoryPath })
                 .catch((error: Error) => error);
@@ -335,7 +329,7 @@ export const thunks = {
             dispatch(
                 listResult instanceof Error ?
                     actions.errorOcurred({ "errorMessage": listResult.message }) :
-                    actions.navigationTowardDirectorySuccess(listResult)
+                    actions.navigationTowardDirectorySuccess({ ...listResult, "currentPath": directoryPath })
             );
 
         },
@@ -350,12 +344,12 @@ export const thunks = {
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
+            dispatch(actions.navigationStarted());
+
             await getEvtIsCreatingOrRenaming(dependencies)
                 .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
 
             const secretPath = pathJoin(getState().secretExplorer.currentPath, secretRelativePath);
-
-            dispatch(actions.navigationStarted({ "path": secretPath }));
 
             const secretWithMetadata = await secretsManagerClient.get({ "path": secretPath })
                 .catch((error: Error) => error);
@@ -363,7 +357,7 @@ export const thunks = {
             dispatch(
                 secretWithMetadata instanceof Error ?
                     actions.errorOcurred({ "errorMessage": secretWithMetadata.message }) :
-                    actions.navigationTowardSecretSuccess({ secretWithMetadata })
+                    actions.navigationTowardSecretSuccess({ secretWithMetadata, "currentPath": secretPath })
             );
 
         },
@@ -547,7 +541,7 @@ export const thunks = {
             ).then(
                 () => undefined,
                 (error: Error) => error
-            )
+            );
 
             dispatch(
                 error !== undefined ?

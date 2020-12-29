@@ -169,6 +169,7 @@ export const Vue1 = getStory({
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "evtAction": Evt.from(eventEmitter, "default"),
+    "isNavigating": false,
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",

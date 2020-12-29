@@ -22,7 +22,7 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
     "isOsPrefersColorSchemeDark": false,
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
-        "tokenValidityDurationMs": 60 * 60 * 1000,
+        "tokenValidityDurationMs": Infinity,
         "parsedJwt": {
             "email": "john.doe@insee.fr",
             "preferred_username": "doej"
@@ -30,7 +30,7 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
     }),
     "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
         "implementation": "LOCAL STORAGE",
-        "artificialDelayMs": 300,
+        "artificialDelayMs": 2000,
         "doReset": false,
         "paramsForTranslator": {
             "baseUri": "https://vault.lab.sspcloud.fr",

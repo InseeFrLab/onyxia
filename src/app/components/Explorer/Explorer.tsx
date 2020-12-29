@@ -217,6 +217,7 @@ export function Explorer(props: Props) {
                             <Typography>{t("empty directory")}</Typography> :
                             <Items
                                 files={files}
+                                isNavigating={isNavigating}
                                 directories={directories}
                                 filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
                                 directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}

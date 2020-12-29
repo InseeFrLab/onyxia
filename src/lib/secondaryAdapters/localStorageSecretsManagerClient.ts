@@ -85,7 +85,7 @@ export function createLocalStorageSecretManagerClient(
             record[path] = {
                 secret,
                 "metadata": {
-                    "created_time": new Date(),
+                    "created_time": new Date().toISOString(),
                     "deletion_time": "",
                     "destroyed": false,
                     "version": !(path in record) ? 0 : (record[path]!.metadata.version + 1)

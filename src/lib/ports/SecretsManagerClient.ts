@@ -14,8 +14,8 @@ export declare namespace Secret {
 export type SecretWithMetadata = {
     secret: Secret;
     metadata: {
-        created_time: Date;
-        deletion_time: Date | "";
+        created_time: string;
+        deletion_time: string | "";
         destroyed: boolean;
         version: number;
     };
