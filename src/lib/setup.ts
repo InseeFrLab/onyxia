@@ -212,21 +212,20 @@ async function createStoreForLoggedUser(
 
         const { evtSecretsManagerTranslation } = getEvtSecretsManagerTranslation();
 
+        const log = (str: string) => vaultCmdTranslationLogger(
+            `%c$ ${str}`,
+            'background: #222; color: #bada55'
+        );
+
         evtSecretsManagerTranslation.attach(
             ({ type }) => type === "cmd",
             cmd => {
 
-                vaultCmdTranslationLogger(
-                    `%c$ ${cmd.translation}`,
-                    'background: #222; color: #bada55'
-                );
+                log(cmd.translation);
 
                 evtSecretsManagerTranslation.attachOnce(
                     ({ cmdId }) => cmdId === cmd.cmdId,
-                    resp => vaultCmdTranslationLogger(
-                        `%c${resp.translation}`,
-                        'background: #222; color: #bada55'
-                    )
+                    resp => log(resp.translation)
                 );
 
             }

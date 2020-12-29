@@ -1,5 +1,3 @@
-
-
 import { useState, useCallback, useEffect } from "react";
 import { Explorer, Props } from "app/components/Explorer/Explorer";
 import { sectionName } from "./sectionName";
@@ -7,7 +5,7 @@ import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
-
+import { Evt } from "evt";
 
 function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed" | "onDeleteItem">) {
 
@@ -144,6 +142,7 @@ export default {
 export const Vue1 = getStory({
     "type": "secret",
     "currentPath": ".onyxia/this/is/a/path",
+    "evtTranslation": new Evt(),
     "isNavigating": false,
     "file": null,
     "files": ["this-is-a-file", "file2", "foo.csv"],
