@@ -142,7 +142,7 @@ export const NavigationFile: React.FC<{
 
 	return file ? (
 		<MyFile
-			fileName={decodeURI(here).substr(1)}
+			fileName={decodeURI(here)}
 			bucketName={bucketName}
 			file={file}
 			path={decodeURI(pathname.replace(racine, ''))}
