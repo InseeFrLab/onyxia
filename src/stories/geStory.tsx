@@ -30,7 +30,7 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
     }),
     "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
         "implementation": "LOCAL STORAGE",
-        "artificialDelayMs": 2000,
+        "artificialDelayMs": 1000,
         "doReset": false,
         "paramsForTranslator": {
             "baseUri": "https://vault.lab.sspcloud.fr",
