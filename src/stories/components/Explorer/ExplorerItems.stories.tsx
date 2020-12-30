@@ -166,7 +166,7 @@ export const Vue1 = getStory({
     "containerWidth": 50,
     "visualRepresentationOfAFile": "secret",
     "getIsValidBasename": pure.getIsValidBasename,
-    "files": ["this-is-a-file", "file2", "foo.csv"],
+    "files": ["this-is-a-file", "aFileWithAveryLongNameThatShouldNotOverlap.txt", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,

@@ -11,12 +11,14 @@ export type Props = {
     variant?: "h2" | "subtitle1" | "body1" | "h3" | "h6";
     children: NonNullable<React.ReactNode>;
     color?: "initial" | "inherit" | "textPrimary" | "textSecondary"
+    style?: React.CSSProperties | null;
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
     "variant": "body1",
-    "color": "initial"
+    "color": "initial",
+    "style": null
 };
 
 
@@ -32,7 +34,7 @@ export function Typography(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children, variant, className, color } = completedProps;
+    const { children, variant, className, color, style } = completedProps;
 
     const classes = useStyles(completedProps);
 
@@ -42,6 +44,7 @@ export function Typography(props: Props) {
             classes={classes}
             variant={variant}
             color={color}
+            style={style ?? undefined}
         >
             {children}
         </MuiTypography>
