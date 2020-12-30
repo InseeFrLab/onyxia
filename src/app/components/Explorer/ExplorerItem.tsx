@@ -55,7 +55,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg" | "frame" | "text" | "input" | "circularProgress", Props>({
+    theme => createStyles<"root" | "svg" | "frame" | "text" | "input", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -100,7 +100,8 @@ const useStyles = makeStyles(
                     .string();
 
 
-            })()
+            })(),
+            //"wordBreak": "break-all"
         }),
         "input": {
             //NOTE: So that the text does not move when editing start.
@@ -109,8 +110,6 @@ const useStyles = makeStyles(
             "& .MuiInput-input": {
                 "textAlign": "center"
             }
-        },
-        "circularProgress": {
         }
     })
 );
@@ -294,8 +293,30 @@ export function ExplorerItem(props: Props) {
             {
                 !isInEditingState && !isCircularProgressShown ?
                     <Box {...getOnMouseProps("text")}>
-                        <Typography className={classes.text} >
-                            {basename}
+                        {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
+                        <Typography
+                            className={classes.text}
+                            style={{
+                                "wordBreak": /[_\- ]/.test(basename) ?
+                                    undefined :
+                                    "break-all"
+                            }}
+                        >
+                            {smartTrim({
+                                "text": basename,
+                                ...(() => {
+                                    switch (standardizedWidth) {
+                                        case "big": return {
+                                            "maxLength": 25,
+                                            "minCharAtTheEnd": 7
+                                        };
+                                        case "normal": return {
+                                            "maxLength": 21,
+                                            "minCharAtTheEnd": 5
+                                        };
+                                    }
+                                })()
+                            })}
                         </Typography>
                     </Box>
                     :
@@ -332,6 +353,30 @@ export declare namespace ExplorerItem {
     export type I18nScheme = {
         description: undefined;
     };
+
+}
+
+function smartTrim(params: {
+    text: string;
+    maxLength: number;
+    minCharAtTheEnd: number;
+}): string {
+
+    const { text, maxLength, minCharAtTheEnd } = params;
+    if (!text) return text;
+    if (maxLength < 1) return text;
+    if (text.length <= maxLength) return text;
+    if (maxLength === 1) return text.substring(0, 1) + '...';
+
+    const left = text.substr(0, text.length - minCharAtTheEnd);
+
+    const right = text.substr(-minCharAtTheEnd);
+
+    const maxLeft = maxLength - minCharAtTheEnd - 3;
+
+    const croppedLeft = left.substr(0, maxLeft);
+
+    return croppedLeft + "..." + right;
 
 }
 

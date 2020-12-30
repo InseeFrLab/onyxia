@@ -37,7 +37,7 @@ export default {
 export const defaultView = getStory({
     "visualRepresentationOfAFile": "secret",
     "kind": "file",
-    "basename": "my-project-envs",
+    "basename": "aVeryLongNameThatShouldBreak.txt",
     "isSelected": false,
     "standardizedWidth": "big",
     "isCircularProgressShown": false,
