@@ -3,8 +3,6 @@ import React, { useMemo, useState, useCallback } from "react";
 import { withProps } from "app/utils/withProps";
 import { ExplorerItems as SecretOrFileExplorerItems } from "./ExplorerItems";
 import type { Props as ItemsProps } from "./ExplorerItems";
-import { ExplorerItemCreationDialog as SecretOrFileItemCreationDialog } from "app/components/Explorer/ExplorerItemCreationDialog";
-import type { Props as DialogProps } from "./ExplorerItemCreationDialog";
 import { PathNavigator } from "./PathNavigator";
 import type { Props as PathNavigatorProps } from "./PathNavigator";
 import { ExplorerButtonBar as SecretOrFileExplorerButtonBar } from "./ExplorerButtonBar";
@@ -14,7 +12,7 @@ import { join as pathJoin } from "path";
 import type { UnpackEvt } from "evt";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
-import type { Props as CmdTranslationProps } from "./CmdTranslation";
+import type { Props as CmdTranslationProps } from "./CmdTranslation";
 import { CmdTranslation } from "./CmdTranslation";
 
 export type Props = {
@@ -43,7 +41,7 @@ export type Props = {
 export function Explorer(props: Props) {
 
     const {
-        type,
+        type: wordForFile,
         getIsValidBasename,
         evtTranslation,
         currentPath,
@@ -64,34 +62,26 @@ export function Explorer(props: Props) {
         () => withProps(
             SecretOrFileExplorerItems,
             {
-                "visualRepresentationOfAFile": type,
+                "visualRepresentationOfAFile": wordForFile,
                 getIsValidBasename
             }
         ),
-        [type, getIsValidBasename]
+        [wordForFile, getIsValidBasename]
     );
 
-    const ItemCreationDialog = useMemo(
-        () => withProps(
-            SecretOrFileItemCreationDialog,
-            { "wordForFile": type }
-        ),
-        [type]
-    );
 
     const ButtonBar = useMemo(
         () => withProps(
             SecretOrFileExplorerButtonBar,
-            { "wordForFile": type }
+            { wordForFile }
         ),
-        [type]
+        [wordForFile]
     );
 
     const { t } = useTranslation("Explorer");
 
-    const [{ evtItemsAction, evtDialogAction }] = useState(() => ({
+    const [{ evtItemsAction }] = useState(() => ({
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
-        "evtDialogAction": Evt.create<UnpackEvt<DialogProps["evtAction"]>>()
     }));
 
     const buttonBarCallback = useCallback(
@@ -110,37 +100,49 @@ export function Explorer(props: Props) {
                 case "create directory":
                 case "create file":
 
-                    evtDialogAction.post({
-                        "action": "OPEN",
-                        "kind": (() => {
+                    const { appendNumberIfNecessary } = appendNumberIfNecessaryFactory(
+                        { files, directories }
+                    );
+
+                    onCreateItem(
+                        (() => {
                             switch (action) {
-                                case "create file": return "file";
-                                case "create directory": return "directory"
+                                case "create directory": {
+
+                                    const kind = "directory" as const;
+
+                                    return {
+                                        kind,
+                                        "basename": appendNumberIfNecessary({
+                                            kind,
+                                            "basename": t("untitled what", { "what": t("folder") })
+                                        })
+                                    };
+                                }
+                                case "create file": {
+
+                                    const kind = "file" as const;
+
+                                    return {
+                                        kind,
+                                        "basename": appendNumberIfNecessary({
+                                            kind,
+                                            "basename": t("untitled what", { "what": t(wordForFile) })
+                                        })
+                                    };
+
+                                }
                             }
-
                         })()
-                    });
-
+                    );
                     break;
 
             }
 
         },
-        [evtItemsAction, evtDialogAction]
+        [evtItemsAction, onCreateItem, t, wordForFile, files, directories]
     );
 
-    const dialogGetIsValidBasename = useCallback(
-        ({ kind, basename }: Parameters<DialogProps["getIsValidBasename"]>[0]) => (
-            getIsValidBasename({ basename }) &&
-            !(() => {
-                switch (kind) {
-                    case "directory": return directories;
-                    case "file": return files;
-                }
-            })().includes(basename)
-        ),
-        [directories, files, getIsValidBasename]
-    );
 
 
     const [isThereAnItemSelected, setIsThereAnItemSelected] = useState(false);
@@ -197,11 +199,6 @@ export function Explorer(props: Props) {
 
     return (
         <>
-            <ItemCreationDialog
-                evtAction={evtDialogAction}
-                getIsValidBasename={dialogGetIsValidBasename}
-                successCallback={onCreateItem}
-            />
             <ButtonBar
                 isThereAnItemSelected={isThereAnItemSelected}
                 isSelectedItemInEditingState={isSelectedItemInEditingState}
@@ -235,7 +232,7 @@ export function Explorer(props: Props) {
                             />
                     )
             }
-            <CmdTranslation evtTranslation={evtTranslation}/>
+            <CmdTranslation evtTranslation={evtTranslation} />
         </>
     );
 
@@ -244,5 +241,79 @@ export function Explorer(props: Props) {
 export declare namespace Explorer {
     export type I18nScheme = {
         'empty directory': undefined;
+        'untitled what': { what: string; };
+        folder: undefined;
+        file: undefined;
+        secret: undefined;
     };
+}
+
+function appendNumberIfNecessaryFactory(
+    params: {
+        directories: string[];
+        files: string[];
+    }
+) {
+
+    const {
+        directories,
+        files
+    } = params;
+
+    function isBasenameAvailable(
+        params: {
+            kind: "file" | "directory";
+            basename: string;
+        }
+    ): boolean {
+        const { kind, basename } = params;
+        return !(() => {
+            switch (kind) {
+                case "directory": return directories;
+                case "file": return files;
+            }
+        })().includes(basename);
+    }
+
+    function appendNumberIfNecessaryRec(
+        params: {
+            kind: "file" | "directory";
+            basename: string;
+            n: number;
+        }
+    ): string {
+
+        const { kind, basename, n } = params;
+
+        const fixedBasename = `${basename}${n === 1 ? "" : n - 1}`;
+
+        if (isBasenameAvailable({ kind, "basename": fixedBasename })) {
+            return fixedBasename;
+        }
+
+        return appendNumberIfNecessaryRec({
+            kind,
+            basename,
+            "n": n + 1
+        });
+
+    }
+
+    function appendNumberIfNecessary(
+        params: {
+            kind: "file" | "directory";
+            basename: string;
+        }
+
+    ) {
+
+        return appendNumberIfNecessaryRec({
+            ...params,
+            "n": 1
+        });
+
+    }
+
+    return { appendNumberIfNecessary };
+
 }

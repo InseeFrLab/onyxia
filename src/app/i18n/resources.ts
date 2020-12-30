@@ -2,7 +2,6 @@ import { symToStr } from "app/utils/symToStr";
 import { Reflect } from "app/utils/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { ExplorerItemCreationDialog } from "app/components/Explorer/ExplorerItemCreationDialog";
 import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
@@ -17,7 +16,6 @@ type ToTranslations<S extends Scheme> = {
 };
 
 const reflectedI18nSchemes = {
-    [symToStr({ ExplorerItemCreationDialog })]: Reflect<ExplorerItemCreationDialog.I18nScheme>(),
     [symToStr({ MySecretsHeader })]: Reflect<MySecretsHeader.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
@@ -53,14 +51,6 @@ const common = id<Record<SupportedLanguages, Record<"file" | "secret" | "create"
 
 export const resources = id<Record<SupportedLanguages, Translations>>({
     "en": {
-        "ExplorerItemCreationDialog": {
-            ...common.en,
-            "directory": "directory",
-            "create new": "Create new {{what}}",
-            "sort out your": `Create directories to sort out your {{what}}`,
-            "name of the": `Name of the {{what}}`,
-
-        },
         "MySecretsHeader": {
             "page title": "My Secrets",
             "what this page is used for": `
@@ -79,18 +69,15 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "create what": "Create {{what}}",
         },
         "Explorer": {
-            "empty directory": "This directory is empty"
+            ...common.en,
+            "untitled what": "untitled {{what}}",
+            "empty directory": "This directory is empty",
+            "folder": "folder"
+
         }
     },
     "fr": {
         /* spell-checker: disable */
-        "ExplorerItemCreationDialog": {
-            ...common.fr,
-            "directory": "dossier",
-            "create new": "Crée nouveau {{what}}",
-            "sort out your": "Cree des répértoires pour hierarchiser vos {{what}}",
-            "name of the": `Nom du {{what}}`,
-        },
         "MySecretsHeader": {
             "page title": "Mes secrets",
             "what this page is used for": "Stoker ici les mots de passes, tokens et autres secrets qui ne doivent pas apparaitre dans votre code source. Ses secrets seront accessibles depuis vos services sous forme de variable d'environnement.",
@@ -107,7 +94,10 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "create what": "Nouveau {{what}}"
         },
         "Explorer": {
-            "empty directory": "Ce répertoire est vide"
+            ...common.fr,
+            "empty directory": "Ce répertoire est vide",
+            "untitled what": "{{what}} sans nom",
+            "folder": "dossier"
         }
         /* spell-checker: enable */
     }
