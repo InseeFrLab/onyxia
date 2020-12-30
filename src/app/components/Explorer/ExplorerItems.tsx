@@ -14,7 +14,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
-import { useArrayRemoved } from "app/utils/hooks/useArrayRemoved";
+import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 
 
 export type Props = {
@@ -176,7 +176,9 @@ export function ExplorerItems(props: Props) {
         const callbackFactory = useMemo(
             () => memoize(
                 (kind: "file" | "directory") =>
-                    (removed: string[]) => {
+                    (params: { removed: string[]; }) => {
+
+                        const { removed } = params;
 
                         if (selectedItemKeyProp === undefined) {
                             return;
@@ -194,12 +196,67 @@ export function ExplorerItems(props: Props) {
             [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
         );
 
-        useArrayRemoved({
+        useArrayDiff({
+            "watchFor": "deletion",
             "array": files,
             "callback": callbackFactory("file")
         });
 
-        useArrayRemoved({
+        useArrayDiff({
+            "watchFor": "deletion",
+            "array": directories,
+            "callback": callbackFactory("directory")
+        });
+
+    }
+
+    // When an item is created automatically enter editing mode.
+    {
+
+        const callbackFactory = useMemo(
+            () => memoize(
+                (kind: "file" | "directory") =>
+                    (params: { added: string[]; }) => {
+
+                        const { added } = params;
+
+                        if (added.length > 1) {
+                            return;
+                        }
+
+                        const [basename] = added;
+
+                        if (!(() => {
+                            switch (kind) {
+                                case "directory": return directoriesBeingCreatedOrRenamed;
+                                case "file": return filesBeingCreatedOrRenamed;
+                            }
+                        })().includes(basename)) {
+                            return;
+                        }
+
+                        const evtItemAction = getEvtItemAction(
+                            getKeyProp({ kind, basename })
+                        );
+
+                        evtItemAction.post("ENTER EDITING STATE");
+
+                    }
+            ),
+            [
+                getEvtItemAction, getKeyProp, 
+                directoriesBeingCreatedOrRenamed, filesBeingCreatedOrRenamed
+            ]
+        );
+
+        useArrayDiff({
+            "watchFor": "addition",
+            "array": files,
+            "callback": callbackFactory("file")
+        });
+
+        useArrayDiff({
+            "watchFor": "addition",
             "array": directories,
             "callback": callbackFactory("directory")
         });
@@ -211,7 +268,7 @@ export function ExplorerItems(props: Props) {
             (kind: "file" | "directory", basename: string) =>
                 async ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
-                    if( isNavigating ){
+                    if (isNavigating) {
                         return;
                     }
 
@@ -268,8 +325,6 @@ export function ExplorerItems(props: Props) {
         ),
         [onEditBasename, transfersKeyProp]
     );
-
-
 
     const getIsValidBasenameFactory = useMemo(
         () => memoize(
