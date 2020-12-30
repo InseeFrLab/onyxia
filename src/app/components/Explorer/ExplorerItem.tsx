@@ -17,6 +17,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import memoize from "memoizee";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
+import { Evt } from "evt";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -185,7 +186,6 @@ export function ExplorerItem(props: Props) {
         () => !getIsValidBasename({ "basename": editedBasename })
     );
 
-
     const onChange = useCallback(
         ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
             setEditedBasename(target.value),
@@ -212,14 +212,21 @@ export function ExplorerItem(props: Props) {
         []
     );
 
+    const [evtIsCircularProgressShown] = useState(() => Evt.create(isCircularProgressShown));
+    useEffect(()=>{ evtIsCircularProgressShown.state = isCircularProgressShown });
+
     useEvt(
         ctx => evtAction
             .pipe(ctx)
             .attach(
                 action => action === "ENTER EDITING STATE",
-                () => setIsInEditingState(true)
+                () => evtIsCircularProgressShown.attachOnce(
+                    isCircularProgressShown => !isCircularProgressShown,
+                    ctx,
+                    () => setIsInEditingState(true)
+                )
             ),
-        [evtAction]
+        [evtAction, evtIsCircularProgressShown]
     );
 
     const leaveEditingStateFactory = useMemo(

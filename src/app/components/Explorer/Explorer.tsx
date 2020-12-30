@@ -285,7 +285,7 @@ function appendNumberIfNecessaryFactory(
 
         const { kind, basename, n } = params;
 
-        const fixedBasename = `${basename}${n === 1 ? "" : n - 1}`;
+        const fixedBasename = `${basename}${n === 1 ? "" : ` ${n - 1}`}`;
 
         if (isBasenameAvailable({ kind, "basename": fixedBasename })) {
             return fixedBasename;
