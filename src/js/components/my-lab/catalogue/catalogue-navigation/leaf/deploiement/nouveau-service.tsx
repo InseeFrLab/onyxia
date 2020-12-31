@@ -52,7 +52,7 @@ export const NouveauService: React.FC<Props> = ({
 	const [redirect, setRedirect] = useState(false);
 	const [service, setService] = useState<Service | undefined>(undefined);
 	const [onglet, setOnglet] = useState(0);
-	const [fieldsValues, setFieldsValues] = useState<Record<string, string>>({});
+	const [fieldsValues, setFieldsValues] = useState<Record<string, string | boolean | number>>({});
 	const [initialValues, setInitialValues] = useState<Record<string, string>>({});
 	const [ongletFields, setOngletFields] = useState<{
 		description: string; nom: string; fields: {
@@ -171,7 +171,16 @@ export const NouveauService: React.FC<Props> = ({
 	]);
 
 	const handlechangeField = (path: string) => (value: string) => {
-		setFieldsValues({ ...fieldsValues, [path]: value });
+		setFieldsValues({ 
+			...fieldsValues, 
+			[path]: (()=>{
+				switch(typeof fieldsValues[path]){
+					case "boolean": return value === "true";
+					case "number": return Number.parseFloat(value);
+					default: return value;
+				}
+			})()
+		});
 		setContract(undefined);
 	};
 	if (redirect) return <Redirect to="/my-services" />;
@@ -377,11 +386,19 @@ const getFromQueryParams =
 				if (jsControl === 'ro') {
 					return undefined;
 				}
-				return path in queryParams
-					? type === 'boolean'
-						? queryParams[path] === 'true'
-						: queryParams[path]
-					: undefined;
+
+				if( !(path in queryParams) ){
+					return undefined;
+				}
+
+				const value = queryParams[path];
+
+				switch(type){
+					case "boolean": return value === "true";
+					case "number": return Number.parseFloat(value);
+					default: return value;
+				}
+
 			};
 
 const mapServiceToOnglets = (
@@ -392,16 +409,21 @@ const mapServiceToOnglets = (
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-export const getValuesObject = (fieldsValues: Record<string, string>) => 
-	Object.entries(fieldsValues)
+export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) => {
+
+	const out = Object.entries(fieldsValues)
 		.map(([key, value]) => ({
-			"path": key.split(/(?<!\\)\./).map(s=> s.replace(/\\\./g,".")),
+		    "path": key.split(/(?<!\\)\./).map(s=> s.replace(/\\\./g,".")),
 			value,
 		}))
-		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string>>({}));
+		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string | boolean | number>>({}));
 
-const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value: string; }) =>
-	(other = id<Record<string, string>>({})): Record<string, string> => {
+		console.log("finit", JSON.stringify(out, null, 2));
+		return out;
+	}
+
+const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value: string | boolean | number; }) =>
+	(other = id<Record<string, string | boolean | number>>({})): Record<string, string | boolean | number> => {
 		if (rest.length === 0) {
 			return { [first]: value, ...other };
 		}
