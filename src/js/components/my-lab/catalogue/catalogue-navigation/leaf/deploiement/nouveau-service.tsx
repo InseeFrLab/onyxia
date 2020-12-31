@@ -298,11 +298,13 @@ const getOnglets = (onglets: Record<string, Onglet>) =>
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
 		.filter((o) => o.fields && o.fields.length > 0);
 
+const escapeDots = (str: string) => str.replace(/\./g, "\\.");
+
 const mapOngletToFields = (nom: string) => (onglet: Onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
-	fields: getFields(nom)(onglet.properties),
+	fields: getFields(escapeDots(nom))(onglet.properties),
 });
 
 const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
@@ -313,13 +315,14 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 
 	Object.entries(ongletProperties).forEach(([key, entry]) => {
 		const { type, properties, enum: options, title } = entry;
+		const path = `${nom}.${escapeDots(key)}`;
 
 		switch (type) {
 			case 'boolean':
 			case 'number':
 			case 'string':
 				fields.push({
-					path: `${nom}.${key}`,
+					path,
 					field: {
 						...entry,
 						type: options && options.length > 0 ? 'select' : type,
@@ -330,7 +333,7 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 				break;
 			case 'object':
 
-				const fieldsToAdd = getFields(`${nom}.${key}`)(properties as any);
+				const fieldsToAdd = getFields(path)(properties as any);
 
 				assert(fieldsToAdd !== undefined);
 
@@ -389,10 +392,10 @@ const mapServiceToOnglets = (
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-export const getValuesObject = (fieldsValues: Record<string, string>) =>
+export const getValuesObject = (fieldsValues: Record<string, string>) => 
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
-			path: key.split('.'),
+			"path": key.split(/(?<!\\)\./).map(s=> s.replace(/\\\./g,".")),
 			value,
 		}))
 		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string>>({}));
