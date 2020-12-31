@@ -257,6 +257,9 @@ const { reducer, actions } = createSlice({
                 action: "addOrOverwriteKeyValue";
                 value: string;
             } | {
+                action: "renameKey";
+                newKey: string;
+            } | {
                 action: "removeKeyValue";
             })>
         ) => {
@@ -276,6 +279,19 @@ const { reducer, actions } = createSlice({
                 case "removeKeyValue": {
                     const { key } = payload;
                     delete secret[key];
+                } break;
+                case "renameKey": {
+                    const { key: oldKey, newKey } = payload;
+
+                    //We do that for preserving the ordering. 
+                    const secretClone = { ...secret };
+
+                    Object.keys(secretClone).forEach(key=> { delete secret[key] });
+
+                    Object.keys(secretClone).forEach(key=> 
+                        secret[key === oldKey ? newKey : key] = secretClone[key]
+                    );
+
                 } break;
             }
 
@@ -658,15 +674,50 @@ export const thunks = {
     "editCurrentlyShownSecret":
         (params: {
             key: string;
-
         } & ({
             action: "addOrOverwriteKeyValue";
             value: string
+        } | {
+            action: "renameKey";
+            newKey: string;
         } | {
             action: "removeKeyValue";
         })): AppThunk => async (...args) => {
 
             const [dispatch, getState, { secretsManagerClient }] = args;
+
+            const state = getState().secretExplorer;
+
+            assert(state.state === "SHOWING SECRET");
+
+            //Optimizations
+            {
+
+                const { secret } = state.secretWithMetadata;
+
+                switch (params.action) {
+                    case "addOrOverwriteKeyValue": {
+                        const { key, value } = params;
+                        if (secret[key] === value) {
+                            return;
+                        }
+                    } break;
+                    case "renameKey": {
+                        const { key, newKey } = params;
+                        if (key === newKey) {
+                            return;
+                        }
+                    } break;
+                    case "removeKeyValue": {
+                        const { key } = params;
+                        if (!(key in secret)) {
+                            return;
+                        }
+                    } break;
+
+                }
+
+            }
 
             dispatch(actions.editSecretStarted(params));
 
@@ -675,7 +726,7 @@ export const thunks = {
 
             const { newMetadata } = await secretsManagerClientExtension.editSecret({
                 ...params,
-                "path": getState().secretExplorer.currentPath
+                "path": state.currentPath
             }).then(id, (error: Error) => ({ "newMetadata": error }));
 
             dispatch(
@@ -824,6 +875,9 @@ const getSecretsManagerClientExtension = memoize(
                     action: "addOrOverwriteKeyValue";
                     value: Secret.Value;
                 } | {
+                    action: "renameKey";
+                    newKey: string;
+                } | {
                     action: "removeKeyValue";
                 })
             ): Promise<{ newMetadata: SecretWithMetadata["metadata"]; }> => {
@@ -844,6 +898,15 @@ const getSecretsManagerClientExtension = memoize(
                     case "removeKeyValue": {
 
                         const { key } = params;
+
+                        delete secret[key];
+
+                    } break;
+                    case "renameKey": {
+
+                        const { key, newKey } = params;
+
+                        secret[newKey] = secret[key];
 
                         delete secret[key];
 
