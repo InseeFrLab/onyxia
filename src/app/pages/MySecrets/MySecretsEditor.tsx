@@ -69,7 +69,7 @@ const Row = withProps(
 
 export function MySecretsEditor(props: Props) {
 
-    const { secretWithMetadata, onEdit, onDelete } = props;
+    const { secretWithMetadata, onEdit, onDelete, isBeingEdited } = props;
 
     const { secret } = secretWithMetadata;
 
@@ -197,6 +197,7 @@ export function MySecretsEditor(props: Props) {
         return (
             <Row
                 key={keyProp}
+                isLocked={isBeingEdited}
                 secretKey={secretKey}
                 secretStringifiedValue={secretStringifiedValue}
                 onEdit={onEditFactory(secretKey, secretStringifiedValue)}
@@ -226,9 +227,10 @@ type MySecretsEditorRowProps = {
     /** [HIGHER ORDER] */
     getIsValidSecretStringifiedValue(params: { secretStringifiedValue: string; }): boolean;
 
+    isLocked: boolean;
+
     secretKey: string;
     secretStringifiedValue: string;
-    isCircularProgressShown: boolean;
     onEdit(params: {
         editedSecretKey: string | undefined;
         editedSecretStringifiedValue: string | undefined;
