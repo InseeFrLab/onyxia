@@ -5,7 +5,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
-import { Explorer } from "app/components/Explorer/Explorer";
+import { Explorer } from "app/components/Explorer/Explorer";
+import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -19,7 +20,8 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsHeader })]: Reflect<MySecretsHeader.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
-    [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>()
+    [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
+    [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -74,6 +76,12 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "empty directory": "This directory is empty",
             "folder": "folder"
 
+        },
+        "MySecretsEditor": {
+            "invalid value": `
+            Not a valid value for an environnement variable, un even number of double quote (")
+            `,
+            "invalid key": `Invalid key, must be all caps and start with an alphabetical character`
         }
     },
     "fr": {
@@ -98,6 +106,15 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "empty directory": "Ce répertoire est vide",
             "untitled what": "{{what}} sans nom",
             "folder": "dossier"
+        },
+        "MySecretsEditor": {
+            "invalid value": `
+            Cette valeur ne peut pas être utiliser comme varible d'environement car elle posède un nombre impaire de guillemet (")
+            `,
+            "invalid key": `
+            Clef invalid, pour être utiliser en tant que variable d'environement dans vos services une clef doit ête tout en majuscule
+            et commencer par une lettre.
+            `
         }
         /* spell-checker: enable */
     }
