@@ -870,7 +870,7 @@ export const pure = {
         const { basename } = params;
         return basename !== "" && !basename.includes(" ")
     }
-}
+};
 
 
 
