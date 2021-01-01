@@ -409,18 +409,13 @@ const mapServiceToOnglets = (
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) => {
-
-	const out = Object.entries(fieldsValues)
+export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) => 
+	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
 		    "path": key.split(/(?<!\\)\./).map(s=> s.replace(/\\\./g,".")),
 			value,
 		}))
 		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string | boolean | number>>({}));
-
-		console.log("finit", JSON.stringify(out, null, 2));
-		return out;
-	}
 
 const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value: string | boolean | number; }) =>
 	(other = id<Record<string, string | boolean | number>>({})): Record<string, string | boolean | number> => {
