@@ -52,6 +52,24 @@ export declare namespace SecretExplorerState {
 
 }
 
+
+export type EditSecretParams = {
+    key: string;
+} & ({
+    action: "addOrOverwriteKeyValue";
+    value: string
+} | {
+    action: "renameKey";
+    newKey: string;
+} | {
+    action: "renameKeyAndUpdateValue";
+    newKey: string;
+    newValue: string;
+} | {
+    action: "removeKeyValue";
+});
+
+
 export const name = "secretExplorer";
 
 const { reducer, actions } = createSlice({
@@ -81,7 +99,7 @@ const { reducer, actions } = createSlice({
                 "state": "FAILURE",
                 "currentPath": state.currentPath,
                 errorMessage,
-                directories, 
+                directories,
                 secrets,
                 isNavigationOngoing
             });
@@ -91,7 +109,7 @@ const { reducer, actions } = createSlice({
             state
         ) => {
 
-            state.isNavigationOngoing=true;
+            state.isNavigationOngoing = true;
 
         },
         "navigationTowardDirectorySuccess": (
@@ -251,17 +269,7 @@ const { reducer, actions } = createSlice({
         },
         "editSecretStarted": (
             state,
-            { payload }: PayloadAction<{
-                key: string;
-            } & ({
-                action: "addOrOverwriteKeyValue";
-                value: string;
-            } | {
-                action: "renameKey";
-                newKey: string;
-            } | {
-                action: "removeKeyValue";
-            })>
+            { payload }: PayloadAction<EditSecretParams>
         ) => {
 
             assert(state.state === "SHOWING SECRET");
@@ -271,45 +279,60 @@ const { reducer, actions } = createSlice({
 
             const { secret } = unwrapWritableDraft(state).secretWithMetadata;
 
-            switch (payload.action) {
-                case "addOrOverwriteKeyValue": {
-                    const { key, value } = payload;
-                    secret[key] = value;
-                } break;
-                case "removeKeyValue": {
-                    const { key } = payload;
-                    delete secret[key];
-                } break;
-                case "renameKey": {
-                    const { key: oldKey, newKey } = payload;
+            const { key } = payload;
 
-                    //We do that for preserving the ordering. 
-                    const secretClone = { ...secret };
+            //By doing that we preserve the ordering of the 
+            //properties in the record. 
+            const renameKey = (params: { newKey: string; }) => {
 
-                    Object.keys(secretClone).forEach(key=> { delete secret[key] });
+                const { newKey } = params;
 
-                    Object.keys(secretClone).forEach(key=> 
-                        secret[key === oldKey ? newKey : key] = secretClone[key]
+                const secretClone = { ...secret };
+
+                Object.keys(secretClone).forEach(key => { delete secret[key] });
+
+                Object.keys(secretClone)
+                    .forEach(key_i =>
+                        secret[key_i === key ? newKey : key_i] =
+                        secretClone[key_i]
                     );
 
+            };
+
+            switch (payload.action) {
+                case "addOrOverwriteKeyValue": {
+                    const { value } = payload;
+                    secret[key] = value;
+                } break;
+                case "removeKeyValue":
+                    delete secret[key];
+                    break;
+                case "renameKeyAndUpdateValue": {
+                    const { newKey, newValue } = payload;
+
+                    renameKey({ newKey });
+                    secret[newKey] = newValue;
+
+                } break;
+                case "renameKey": {
+                    const { newKey } = payload;
+                    renameKey({ newKey });
                 } break;
             }
 
             state.isBeingEdited = true;
 
         },
-        "editSecretCompleted": (
-            state,
-            { payload }: PayloadAction<{ newMetadata: SecretWithMetadata["metadata"]; }>
-        ) => {
-
-            const { newMetadata } = payload;
+        "editSecretCompleted": state => {
 
             if (state.state !== "SHOWING SECRET") {
                 return;
             }
 
-            state.secretWithMetadata.metadata = newMetadata;
+            const { metadata } = state.secretWithMetadata;
+
+            metadata.created_time = new Date().toISOString();
+            metadata.version++;
 
             state.isBeingEdited = false;
 
@@ -672,69 +695,79 @@ export const thunks = {
 
         },
     "editCurrentlyShownSecret":
-        (params: {
-            key: string;
-        } & ({
-            action: "addOrOverwriteKeyValue";
-            value: string
-        } | {
-            action: "renameKey";
-            newKey: string;
-        } | {
-            action: "removeKeyValue";
-        })): AppThunk => async (...args) => {
+        (params: EditSecretParams & { path: string; }): AppThunk => async (...args) => {
 
-            const [dispatch, getState, { secretsManagerClient }] = args;
+            const [dispatch, , { secretsManagerClient }] = args;
 
-            const state = getState().secretExplorer;
+            const getSecret = () => {
 
-            assert(state.state === "SHOWING SECRET");
+                const [, getState] = args;
+
+                const state = getState().secretExplorer;
+
+                assert(state.state === "SHOWING SECRET");
+
+                return state.secretWithMetadata.secret;
+
+            };
 
             //Optimizations
             {
 
-                const { secret } = state.secretWithMetadata;
+
+                const { key } = params;
+                const secret = getSecret();
 
                 switch (params.action) {
                     case "addOrOverwriteKeyValue": {
-                        const { key, value } = params;
+                        const { value } = params;
                         if (secret[key] === value) {
                             return;
                         }
                     } break;
                     case "renameKey": {
-                        const { key, newKey } = params;
+                        const { newKey } = params;
                         if (key === newKey) {
                             return;
                         }
                     } break;
-                    case "removeKeyValue": {
-                        const { key } = params;
-                        if (!(key in secret)) {
+                    case "renameKeyAndUpdateValue": {
+                        const { newKey, newValue } = params;
+                        if (
+                            key === newKey &&
+                            secret[key] === newValue
+                        ) {
                             return;
                         }
                     } break;
+                    case "removeKeyValue":
+                        if (!(key in secret)) {
+                            return;
+                        }
+                        break;
 
                 }
 
             }
 
+            const { path } = params;
+
             dispatch(actions.editSecretStarted(params));
 
-            const { secretsManagerClientExtension } =
-                getSecretsManagerClientExtension(secretsManagerClient);
-
-            const { newMetadata } = await secretsManagerClientExtension.editSecret({
-                ...params,
-                "path": state.currentPath
-            }).then(id, (error: Error) => ({ "newMetadata": error }));
+            const error = await secretsManagerClient.put({
+                path,
+                "secret": getSecret()
+            })
+                .then(
+                    () => undefined,
+                    (error: Error) => error
+                );
 
             dispatch(
-                newMetadata instanceof Error ?
-                    actions.errorOcurred({ "errorMessage": newMetadata.message }) :
-                    actions.editSecretCompleted({ newMetadata })
+                error !== undefined ?
+                    actions.errorOcurred({ "errorMessage": error.message }) :
+                    actions.editSecretCompleted()
             );
-
 
         }
 
@@ -867,59 +900,6 @@ const getSecretsManagerClientExtension = memoize(
                 );
 
             },
-            "editSecret": async (
-                params: {
-                    path: string;
-                    key: string;
-                } & ({
-                    action: "addOrOverwriteKeyValue";
-                    value: Secret.Value;
-                } | {
-                    action: "renameKey";
-                    newKey: string;
-                } | {
-                    action: "removeKeyValue";
-                })
-            ): Promise<{ newMetadata: SecretWithMetadata["metadata"]; }> => {
-
-                const { path } = params;
-
-                const { secret } = await secretsManagerClient.get({ path });
-
-                await secretsManagerClient.delete({ path });
-
-                switch (params.action) {
-                    case "addOrOverwriteKeyValue": {
-                        const { key, value } = params;
-
-                        secret[key] = value;
-
-                    } break;
-                    case "removeKeyValue": {
-
-                        const { key } = params;
-
-                        delete secret[key];
-
-                    } break;
-                    case "renameKey": {
-
-                        const { key, newKey } = params;
-
-                        secret[newKey] = secret[key];
-
-                        delete secret[key];
-
-                    } break;
-                }
-
-                await secretsManagerClient.put({ path, secret });
-
-                const { metadata } = await secretsManagerClient.get({ path });
-
-                return { "newMetadata": metadata };
-
-            }
         };
 
         return { secretsManagerClientExtension };
