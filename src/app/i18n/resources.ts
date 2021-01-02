@@ -81,7 +81,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "invalid value": `
             Not a valid value for an environnement variable, un even number of double quote (")
             `,
-            "invalid key": `Invalid key, must be all caps and start with an alphabetical character`
+            "invalid key": `Invalid key, must be all caps and start with an alphabetical character`,
+            "add an entry": "New ENV",
+            "environnement variable default name": "NEW_VAR"
         }
     },
     "fr": {
@@ -114,7 +116,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "invalid key": `
             Clef invalid, pour être utiliser en tant que variable d'environement dans vos services une clef doit ête tout en majuscule
             et commencer par une lettre.
-            `
+            `,
+            "add an entry": "Nouvelle ENV",
+            "environnement variable default name": "NOUVELLE_VARENV"
         }
         /* spell-checker: enable */
     }

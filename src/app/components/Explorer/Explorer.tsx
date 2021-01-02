@@ -14,6 +14,7 @@ import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { Props as CmdTranslationProps } from "./CmdTranslation";
 import { CmdTranslation } from "./CmdTranslation";
+import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -69,7 +70,6 @@ export function Explorer(props: Props) {
         [wordForFile, getIsValidBasename]
     );
 
-
     const ButtonBar = useMemo(
         () => withProps(
             SecretOrFileExplorerButtonBar,
@@ -98,45 +98,36 @@ export function Explorer(props: Props) {
                     evtItemsAction.post("COPY SELECTED ITEM PATH");
                     break;
                 case "create directory":
-                case "create file":
+                    onCreateItem({
+                        "kind": "directory" as const,
+                        "basename": generateUniqDefaultName({
+                            "names": directories,
+                            "buildName": buildNameFactory({
+                                "defaultName": t(
+                                    "untitled what",
+                                    { "what": t("folder") }
+                                ),
+                                "separator": "_"
+                            })
+                        })
 
-                    const { appendNumberIfNecessary } = appendNumberIfNecessaryFactory(
-                        { files, directories }
-                    );
-
-                    onCreateItem(
-                        (() => {
-                            switch (action) {
-                                case "create directory": {
-
-                                    const kind = "directory" as const;
-
-                                    return {
-                                        kind,
-                                        "basename": appendNumberIfNecessary({
-                                            kind,
-                                            "basename": t("untitled what", { "what": t("folder") })
-                                        })
-                                    };
-                                }
-                                case "create file": {
-
-                                    const kind = "file" as const;
-
-                                    return {
-                                        kind,
-                                        "basename": appendNumberIfNecessary({
-                                            kind,
-                                            "basename": t("untitled what", { "what": t(wordForFile) })
-                                        })
-                                    };
-
-                                }
-                            }
-                        })()
-                    );
+                    });
                     break;
-
+                case "create file":
+                    onCreateItem({
+                        "kind": "file" as const,
+                        "basename": generateUniqDefaultName({
+                            "names": files,
+                            "buildName": buildNameFactory({
+                                "defaultName": t(
+                                    "untitled what",
+                                    { "what": t(wordForFile) }
+                                ),
+                                "separator": "_"
+                            })
+                        })
+                    });
+                    break;
             }
 
         },
@@ -246,74 +237,4 @@ export declare namespace Explorer {
         file: undefined;
         secret: undefined;
     };
-}
-
-function appendNumberIfNecessaryFactory(
-    params: {
-        directories: string[];
-        files: string[];
-    }
-) {
-
-    const {
-        directories,
-        files
-    } = params;
-
-    function isBasenameAvailable(
-        params: {
-            kind: "file" | "directory";
-            basename: string;
-        }
-    ): boolean {
-        const { kind, basename } = params;
-        return !(() => {
-            switch (kind) {
-                case "directory": return directories;
-                case "file": return files;
-            }
-        })().includes(basename);
-    }
-
-    function appendNumberIfNecessaryRec(
-        params: {
-            kind: "file" | "directory";
-            basename: string;
-            n: number;
-        }
-    ): string {
-
-        const { kind, basename, n } = params;
-
-        const fixedBasename = `${basename}${n === 1 ? "" : ` ${n - 1}`}`;
-
-        if (isBasenameAvailable({ kind, "basename": fixedBasename })) {
-            return fixedBasename;
-        }
-
-        return appendNumberIfNecessaryRec({
-            kind,
-            basename,
-            "n": n + 1
-        });
-
-    }
-
-    function appendNumberIfNecessary(
-        params: {
-            kind: "file" | "directory";
-            basename: string;
-        }
-
-    ) {
-
-        return appendNumberIfNecessaryRec({
-            ...params,
-            "n": 1
-        });
-
-    }
-
-    return { appendNumberIfNecessary };
-
 }
