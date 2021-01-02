@@ -1,60 +1,51 @@
 
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
+import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import type { NonPostableEvt } from "evt";
-import { getKeyPropFactory } from "app/utils/getKeyProp";
 import { withProps } from "app/utils/withProps";
 import memoize from "memoizee";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
-
     isBeingEdited: boolean;
     secretWithMetadata: SecretWithMetadata;
-    onEdit(params: {
-        secretKey: string;
-        secretStringifiedValue: string;
-        editedSecretKey: string | undefined;
-        editedSecretStringifiedValue: string | undefined;
-    }): void;
-    onDelete(params: {
-        secretKey: string;
-    }): void;
+    onEdit(params: EditSecretParams): void;
 };
 
-function stringifySecretValue(secretValue: Secret.Value) {
-    return typeof secretValue === "object" ?
-        JSON.stringify(secretValue) :
-        `${secretValue}`
+
+function stringifyValue(value: Secret.Value) {
+    return typeof value === "object" ?
+        JSON.stringify(value) :
+        `${value}`
         ;
 }
 
-const getIsValidSecretStringifiedValue: MySecretsEditorRowProps["getIsValidSecretStringifiedValue"] =
-    ({ secretStringifiedValue }) => {
+const getIsValidStrValue: MySecretsEditorRowProps["getIsValidStrValue"] =
+    ({ strValue }) => {
 
         // We want an even number of unescaped double quote (")
-        if (
-            (secretStringifiedValue.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1
-        ) {
+        if ((strValue.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1) {
             return false;
         }
 
         return true;
 
-    }
+    };
 
-function getIsValidSecretKey(params: { secretKey: string; }): boolean {
+function getIsValidKey(params: { key: string; }): boolean {
 
-    const { secretKey } = params;
+    const { key } = params;
 
-    if (secretKey !== secretKey.toLowerCase()) {
+    if (key !== key.toLowerCase()) {
         return false;
     }
 
-    if (!/^[a-z_]/.test(secretKey)) {
+    if (!/^[a-z_]/.test(key)) {
         return false;
     }
 
@@ -64,78 +55,83 @@ function getIsValidSecretKey(params: { secretKey: string; }): boolean {
 
 const Row = withProps(
     MySecretEditorRow,
-    { getIsValidSecretStringifiedValue }
+    { getIsValidStrValue }
 )
 
 export function MySecretsEditor(props: Props) {
 
-    const { secretWithMetadata, onEdit, onDelete, isBeingEdited } = props;
+    const { secretWithMetadata, onEdit, isBeingEdited } = props;
 
     const { secret } = secretWithMetadata;
 
     const { t } = useTranslation("MySecretsEditor");
 
-    const [{
-        getKeyProp,
-        transfersKeyProp
-    }] = useState(
-        () => getKeyPropFactory<{
-            secretKey: string;
-            secretStringifiedValue: string;
-        }>()
-    );
-
-
-
     const onEditFactory = useMemo(
         () => memoize(
-            (secretKey: string, secretStringifiedValue: string) =>
-                ({ editedSecretKey, editedSecretStringifiedValue }: Parameters<MySecretsEditorRowProps["onEdit"]>[0]) => {
+            (key: string) =>
+                ({ editedKey, editedStrValue }: Parameters<MySecretsEditorRowProps["onEdit"]>[0]) =>
+                    onEdit((() => {
 
-                    transfersKeyProp({
-                        "toValues": {
-                            "secretKey":
-                                editedSecretKey ?? secretKey,
-                            "secretStringifiedValue":
-                                secretStringifiedValue ?? editedSecretStringifiedValue
-                        },
-                        "fromValues": {
-                            secretKey,
-                            secretStringifiedValue,
+                        if (
+                            editedKey !== undefined &&
+                            editedStrValue !== undefined
+                        ) {
+                            return {
+                                "action": "renameKeyAndUpdateValue" as const,
+                                key,
+                                "newKey": editedKey,
+                                "newValue": editedStrValue
+                            };
                         }
-                    });
 
-                    onEdit({
-                        secretKey,
-                        secretStringifiedValue,
-                        editedSecretKey,
-                        editedSecretStringifiedValue
-                    });
+                        if (editedStrValue !== undefined) {
 
-                }
+                            return {
+                                "action": "addOrOverwriteKeyValue" as const,
+                                key,
+                                "value": editedStrValue
+                            };
+
+                        }
+
+                        if (editedKey !== undefined) {
+
+                            return {
+                                "action": "renameKey" as const,
+                                key,
+                                "newKey": editedKey
+                            };
+
+                        }
+
+                        assert(false);
+
+                    })())
         ),
-        [onEdit, transfersKeyProp]
+        [onEdit]
     );
 
     const onDeleteFactory = useMemo(
         () => memoize(
-            (secretKey: string) =>
-                () =>
-                    onDelete({ secretKey })
+            (key: string) =>
+                () => onEdit({
+                    "action": "removeKeyValue",
+                    key
+                })
         ),
-        [onDelete]
+        [onEdit]
     );
 
-    const getIsValidAndAvailableSecretKeyFactory = useMemo(
+    const getIsValidAndAvailableKeyFactory = useMemo(
         () => memoize(
-            (secretKey: string) =>
-                ({ editedSecretKey }: Parameters<MySecretsEditorRowProps["getIsValidAndAvailableSecretKey"]>[0]) => {
+            (key: string) =>
+                ({ key: candidateKey }: Parameters<MySecretsEditorRowProps["getIsValidAndAvailableKey"]>[0]) => {
 
-                    if( !getIsValidSecretKey({ "secretKey": editedSecretKey }) ){
+                    if (!getIsValidKey({ "key": candidateKey })) {
                         return false;
                     }
 
-                    if (Object.keys(secret).filter(k => k !== secretKey).includes(editedSecretKey)) {
+                    if (Object.keys(secret).filter(k => k !== key).includes(candidateKey)) {
                         return false;
                     }
 
@@ -148,33 +144,29 @@ export function MySecretsEditor(props: Props) {
 
     const getResolvedValueFactory = useMemo(
         () => memoize(
-            (secretKey: string) =>
-                ({ secretStringifiedValue }: Parameters<MySecretsEditorRowProps["getResolvedValue"]>[0]) => {
+            (key: string) =>
+                ({ strValue }: Parameters<MySecretsEditorRowProps["getResolvedValue"]>[0]) => {
 
-                    if (!getIsValidSecretKey({ secretKey })) {
+                    if (!getIsValidKey({ key })) {
                         return t("invalid key");
                     }
 
-                    if (!getIsValidSecretStringifiedValue({ secretStringifiedValue })) {
+                    if (!getIsValidStrValue({ strValue })) {
                         return t("invalid value");
                     }
 
-                    let resolvedValue = secretStringifiedValue;
+                    let resolvedValue = strValue;
 
                     Object.keys(secret)
-                        .filter(k => k !== secretKey)
-                        .filter(secretKey => getIsValidSecretKey({ secretKey }))
-                        .filter(secretKey => getIsValidSecretStringifiedValue(
-                            { "secretStringifiedValue": stringifySecretValue(secret[secretKey]) }
-                        ))
-                        .forEach(secretKey =>
-                            resolvedValue = resolvedValue.replace(
-                                new RegExp(`\\$${secretKey}(?=[". $])`, "g"),
-                                stringifySecretValue(secret[secretKey])
-                            )
-                        );
+                        .filter(k => k !== key)
+                        .filter(key => getIsValidKey({ key }))
+                        .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
+                        .forEach(key => resolvedValue = resolvedValue.replace(
+                            new RegExp(`\\$${key}(?=[". $])`, "g"),
+                            stringifyValue(secret[key])
+                        ));
 
-                    return resolvedValue.replace(/"/g, "")
+                    return resolvedValue.replace(/"/g, "");
 
                 }
         ),
@@ -183,28 +175,26 @@ export function MySecretsEditor(props: Props) {
 
     const getEvtAction = useMemo(
         () => memoize(
-            (_keyProp: string) => Evt.create<UnpackEvt<MySecretsEditorRowProps["evtAction"]>>()
+            (_key: string) => Evt.create<UnpackEvt<MySecretsEditorRowProps["evtAction"]>>()
         ),
         []
     );
 
-    return Object.keys(secret).map(secretKey => {
+    return Object.keys(secret).map(key => {
 
-        const secretStringifiedValue = stringifySecretValue(secret[secretKey]);
-
-        const keyProp = getKeyProp({ secretKey, secretStringifiedValue });
+        const strValue = stringifyValue(secret[key]);
 
         return (
             <Row
-                key={keyProp}
+                key={key}
+                keyOfSecret={key}
+                value={strValue}
                 isLocked={isBeingEdited}
-                secretKey={secretKey}
-                secretStringifiedValue={secretStringifiedValue}
-                onEdit={onEditFactory(secretKey, secretStringifiedValue)}
-                onDelete={onDeleteFactory(secretKey)}
-                getResolvedValue={getResolvedValueFactory(secretKey)}
-                getIsValidAndAvailableSecretKey={getIsValidAndAvailableSecretKeyFactory(secretKey)}
-                evtAction={getEvtAction(keyProp)}
+                onEdit={onEditFactory(key)}
+                onDelete={onDeleteFactory(key)}
+                getResolvedValue={getResolvedValueFactory(key)}
+                getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
+                evtAction={getEvtAction(key)}
             />
         );
 
@@ -225,20 +215,19 @@ export declare namespace MySecretsEditor {
 type MySecretsEditorRowProps = {
 
     /** [HIGHER ORDER] */
-    getIsValidSecretStringifiedValue(params: { secretStringifiedValue: string; }): boolean;
+    getIsValidStrValue(params: { strValue: string; }): boolean;
 
     isLocked: boolean;
 
-    secretKey: string;
-    secretStringifiedValue: string;
+    keyOfSecret: string;
+    value: string;
     onEdit(params: {
-        editedSecretKey: string | undefined;
-        editedSecretStringifiedValue: string | undefined;
+        editedKey: string | undefined;
+        editedStrValue: string | undefined;
     }): void;
     onDelete(): void;
-    getResolvedValue(params: { secretStringifiedValue: string; }): string;
-    getIsValidAndAvailableSecretKey(params: { editedSecretKey: string; }): boolean;
-
+    getResolvedValue(params: { strValue: string; }): string;
+    getIsValidAndAvailableKey(params: { key: string; }): boolean;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 };
