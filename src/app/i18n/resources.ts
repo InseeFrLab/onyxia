@@ -6,7 +6,7 @@ import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/Explorer/Explorer";
-import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor";
+import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
