@@ -3,13 +3,13 @@
 import { useMemo } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
-import type { NonPostableEvt } from "evt";
 import { withProps } from "app/utils/withProps";
 import memoize from "memoizee";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
+import { MySecretEditorRow, Props as RowProps } from "./MySecretsEditorRows";
 
 export type Props = {
     isBeingEdited: boolean;
@@ -25,7 +25,7 @@ function stringifyValue(value: Secret.Value) {
         ;
 }
 
-const getIsValidStrValue: MySecretsEditorRowProps["getIsValidStrValue"] =
+const getIsValidStrValue: RowProps["getIsValidStrValue"] =
     ({ strValue }) => {
 
         // We want an even number of unescaped double quote (")
@@ -69,7 +69,7 @@ export function MySecretsEditor(props: Props) {
     const onEditFactory = useMemo(
         () => memoize(
             (key: string) =>
-                ({ editedKey, editedStrValue }: Parameters<MySecretsEditorRowProps["onEdit"]>[0]) =>
+                ({ editedKey, editedStrValue }: Parameters<RowProps["onEdit"]>[0]) =>
                     onEdit((() => {
 
                         if (
@@ -125,7 +125,7 @@ export function MySecretsEditor(props: Props) {
     const getIsValidAndAvailableKeyFactory = useMemo(
         () => memoize(
             (key: string) =>
-                ({ key: candidateKey }: Parameters<MySecretsEditorRowProps["getIsValidAndAvailableKey"]>[0]) => {
+                ({ key: candidateKey }: Parameters<RowProps["getIsValidAndAvailableKey"]>[0]) => {
 
                     if (!getIsValidKey({ "key": candidateKey })) {
                         return false;
@@ -145,7 +145,7 @@ export function MySecretsEditor(props: Props) {
     const getResolvedValueFactory = useMemo(
         () => memoize(
             (key: string) =>
-                ({ strValue }: Parameters<MySecretsEditorRowProps["getResolvedValue"]>[0]) => {
+                ({ strValue }: Parameters<RowProps["getResolvedValue"]>[0]) => {
 
                     if (!getIsValidKey({ key })) {
                         return t("invalid key");
@@ -175,7 +175,7 @@ export function MySecretsEditor(props: Props) {
 
     const getEvtAction = useMemo(
         () => memoize(
-            (_key: string) => Evt.create<UnpackEvt<MySecretsEditorRowProps["evtAction"]>>()
+            (_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()
         ),
         []
     );
@@ -211,28 +211,3 @@ export declare namespace MySecretsEditor {
 
 }
 
-
-type MySecretsEditorRowProps = {
-
-    /** [HIGHER ORDER] */
-    getIsValidStrValue(params: { strValue: string; }): boolean;
-
-    isLocked: boolean;
-
-    keyOfSecret: string;
-    value: string;
-    onEdit(params: {
-        editedKey: string | undefined;
-        editedStrValue: string | undefined;
-    }): void;
-    onDelete(): void;
-    getResolvedValue(params: { strValue: string; }): string;
-    getIsValidAndAvailableKey(params: { key: string; }): boolean;
-
-    evtAction: NonPostableEvt<"ENTER EDITING STATE">;
-};
-
-function MySecretEditorRow(props: MySecretsEditorRowProps) {
-
-    return null;
-}
