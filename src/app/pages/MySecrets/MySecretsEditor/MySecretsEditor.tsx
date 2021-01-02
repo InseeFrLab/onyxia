@@ -1,6 +1,6 @@
 
 
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { withProps } from "app/utils/withProps";
@@ -9,10 +9,14 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { MySecretEditorRow, Props as RowProps } from "./MySecretsEditorRows";
+import { MySecretEditorRow, Props as RowProps } from "./MySecretsEditorRows";
+import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
+import { Button } from "app/components/designSystem/Button";
+import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
+import { Paper } from "app/components/designSystem/Paper";
 
 export type Props = {
-    isBeingEdited: boolean;
+    isBeingUpdated: boolean;
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
 };
@@ -60,11 +64,41 @@ const Row = withProps(
 
 export function MySecretsEditor(props: Props) {
 
-    const { secretWithMetadata, onEdit, isBeingEdited } = props;
+    const { secretWithMetadata, onEdit, isBeingUpdated } = props;
 
     const { secret } = secretWithMetadata;
 
     const { t } = useTranslation("MySecretsEditor");
+
+    const getEvtAction = useMemo(
+        () => memoize(
+            (_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()
+        ),
+        []
+    );
+
+    // When an row is created automatically enter editing mode.
+    useArrayDiff({
+        "watchFor": "addition",
+        "array": Object.keys(secret),
+        "callback": useCallback(
+            ({ added }: { added: string[]; }) => {
+
+                if (added.length > 1) {
+                    return;
+                }
+
+                if (!isBeingUpdated) {
+                    return;
+                }
+                const [key] = added;
+
+                getEvtAction(key).post("ENTER EDITING STATE");
+
+            },
+            [isBeingUpdated, getEvtAction]
+        )
+    });
 
     const onEditFactory = useMemo(
         () => memoize(
@@ -173,32 +207,51 @@ export function MySecretsEditor(props: Props) {
         [secret, t]
     );
 
-    const getEvtAction = useMemo(
-        () => memoize(
-            (_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()
-        ),
-        []
+    const onClick = useCallback(() =>
+        onEdit({
+            "action": "addOrOverwriteKeyValue",
+            "key": generateUniqDefaultName({
+                "names": Object.keys(secret),
+                "buildName": buildNameFactory({
+                    "defaultName": t("environnement variable default name"),
+                    "separator": "_"
+                })
+            }),
+            "value": ""
+        }),
+        [secret, onEdit, t]
     );
 
-    return Object.keys(secret).map(key => {
+    return (
+        <Paper>
+            {
+                Object.keys(secret).map(key => {
 
-        const strValue = stringifyValue(secret[key]);
+                    const strValue = stringifyValue(secret[key]);
 
-        return (
-            <Row
-                key={key}
-                keyOfSecret={key}
-                value={strValue}
-                isLocked={isBeingEdited}
-                onEdit={onEditFactory(key)}
-                onDelete={onDeleteFactory(key)}
-                getResolvedValue={getResolvedValueFactory(key)}
-                getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
-                evtAction={getEvtAction(key)}
-            />
-        );
+                    return (
+                        <Row
+                            key={key}
+                            keyOfSecret={key}
+                            value={strValue}
+                            isLocked={isBeingUpdated}
+                            onEdit={onEditFactory(key)}
+                            onDelete={onDeleteFactory(key)}
+                            getResolvedValue={getResolvedValueFactory(key)}
+                            getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
+                            evtAction={getEvtAction(key)}
+                        />
+                    );
 
-    });
+                })
+            }
+            <Button
+                icon="lab"
+                onClick={onClick}
+            >{t("add an entry")}
+            </Button>
+        </Paper>
+    );
 
 }
 
@@ -207,6 +260,8 @@ export declare namespace MySecretsEditor {
     export type I18nScheme = {
         'invalid value': undefined;
         'invalid key': undefined;
+        'add an entry': undefined;
+        'environnement variable default name': undefined;
     };
 
 }

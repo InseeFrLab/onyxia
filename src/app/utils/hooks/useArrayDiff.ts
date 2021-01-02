@@ -4,6 +4,8 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import { arrDiff } from "evt/tools/reducers/diff";
 
+/** NOTE: It is best for performance that the ref of the callback
+ * be updated as few as possible ( use useCallback() ) */
 export function useArrayDiff<ArrOf, WatchFor extends "addition" | "deletion">(
     params: {
         watchFor: WatchFor;

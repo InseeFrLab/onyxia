@@ -45,7 +45,7 @@ export declare namespace SecretExplorerState {
         state: "SHOWING SECRET";
         secretWithMetadata: SecretWithMetadata;
         isBeingRenamed: boolean;
-        isBeingEdited: boolean;
+        isBeingUpdated: boolean;
     };
 
 
@@ -146,7 +146,7 @@ const { reducer, actions } = createSlice({
                 "isBeingRenamed": false,
                 secrets,
                 directories,
-                "isBeingEdited": false,
+                "isBeingUpdated": false,
                 "isNavigationOngoing": false
             });
 
@@ -320,7 +320,7 @@ const { reducer, actions } = createSlice({
                 } break;
             }
 
-            state.isBeingEdited = true;
+            state.isBeingUpdated = true;
 
         },
         "editSecretCompleted": state => {
@@ -334,7 +334,7 @@ const { reducer, actions } = createSlice({
             metadata.created_time = new Date().toISOString();
             metadata.version++;
 
-            state.isBeingEdited = false;
+            state.isBeingUpdated = false;
 
         }
 
