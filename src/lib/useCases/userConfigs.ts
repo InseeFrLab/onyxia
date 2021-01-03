@@ -134,31 +134,38 @@ export const privateThunks = {
                 "deploymentRegionId": null
             };
 
-            for (const key of objectKeys(userConfigs)) {
+            await Promise.all(
+                objectKeys(userConfigs).map(
+                    async key => {
 
-                const path = getConfigKeyPath({ key });
+                        const path = getConfigKeyPath({ key });
 
-                const secretWithMetadata = await secretsManagerClient.get({
-                    path
-                }).catch(() => undefined);
+                        const secretWithMetadata = await secretsManagerClient.get({
+                            path
+                        }).catch(() => undefined);
 
-                if (
-                    !secretWithMetadata ||
-                    !("value" in secretWithMetadata.secret)
-                ) {
+                        if (
+                            !secretWithMetadata ||
+                            !("value" in secretWithMetadata.secret)
+                        ) {
 
-                    await secretsManagerClient.put({
-                        path,
-                        "secret": { "value": userConfigs[key] }
-                    });
+                            await secretsManagerClient.put({
+                                path,
+                                "secret": { "value": userConfigs[key] }
+                            });
 
-                    continue;
+                            return;
 
-                }
+                        }
 
-                Object.assign(userConfigs, { [key]: secretWithMetadata.secret["value"] });
+                        Object.assign(
+                            userConfigs, 
+                            { [key]: secretWithMetadata.secret["value"] }
+                        );
 
-            }
+                    }
+                )
+            );
 
             dispatch(actions.initializationCompleted({ userProfile: userConfigs }));
 
