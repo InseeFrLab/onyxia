@@ -9,58 +9,27 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { MySecretEditorRow, Props as RowProps } from "./MySecretsEditorRows";
+import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 import { Paper } from "app/components/designSystem/Paper";
+import {
+    Table,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TableBody,
+    TableFooter
+} from "app/components/designSystem/Table";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 
 export type Props = {
     isBeingUpdated: boolean;
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
 };
-
-
-function stringifyValue(value: Secret.Value) {
-    return typeof value === "object" ?
-        JSON.stringify(value) :
-        `${value}`
-        ;
-}
-
-const getIsValidStrValue: RowProps["getIsValidStrValue"] =
-    ({ strValue }) => {
-
-        // We want an even number of unescaped double quote (")
-        if ((strValue.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1) {
-            return false;
-        }
-
-        return true;
-
-    };
-
-function getIsValidKey(params: { key: string; }): boolean {
-
-    const { key } = params;
-
-    if (key !== key.toLowerCase()) {
-        return false;
-    }
-
-    if (!/^[a-z_]/.test(key)) {
-        return false;
-    }
-
-    return true;
-
-}
-
-const Row = withProps(
-    MySecretEditorRow,
-    { getIsValidStrValue }
-)
 
 export function MySecretsEditor(props: Props) {
 
@@ -223,17 +192,26 @@ export function MySecretsEditor(props: Props) {
     );
 
     return (
-        <Paper>
-            {
-                Object.keys(secret).map(key => {
-
-                    const strValue = stringifyValue(secret[key]);
-
-                    return (
+        <TableContainer component={withProps(Paper, { "elevation": 3 })}>
+            <Table aria-label={t("table of secret")}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>$</TableCell>
+                        <TableCell>{t("key label")}</TableCell>
+                        <TableCell>{t("value label")}</TableCell>
+                        <TableCell>
+                            <Tooltip title={t("what's a resolved value")} >
+                                <>{t("resolved value label")}</>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {Object.keys(secret).map(key =>
                         <Row
                             key={key}
                             keyOfSecret={key}
-                            value={strValue}
+                            strValue={stringifyValue(secret[key])}
                             isLocked={isBeingUpdated}
                             onEdit={onEditFactory(key)}
                             onDelete={onDeleteFactory(key)}
@@ -241,16 +219,22 @@ export function MySecretsEditor(props: Props) {
                             getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
                             evtAction={getEvtAction(key)}
                         />
-                    );
-
-                })
-            }
-            <Button
-                icon="lab"
-                onClick={onClick}
-            >{t("add an entry")}
-            </Button>
-        </Paper>
+                    )}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell align="left">
+                            <Button
+                                icon="lab"
+                                onClick={onClick}
+                            >
+                                {t("add an entry")}
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </TableContainer>
     );
 
 }
@@ -262,7 +246,52 @@ export declare namespace MySecretsEditor {
         'invalid key': undefined;
         'add an entry': undefined;
         'environnement variable default name': undefined;
+        'table of secret': undefined;
+        'key label': undefined;
+        'value label': undefined;
+        'resolved value label': undefined;
+        'what\'s a resolved value': undefined;
     };
 
 }
 
+
+function stringifyValue(value: Secret.Value) {
+    return typeof value === "object" ?
+        JSON.stringify(value) :
+        `${value}`
+        ;
+}
+
+const getIsValidStrValue: RowProps["getIsValidStrValue"] =
+    ({ strValue }) => {
+
+        // We want an even number of unescaped double quote (")
+        if ((strValue.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1) {
+            return false;
+        }
+
+        return true;
+
+    };
+
+function getIsValidKey(params: { key: string; }): boolean {
+
+    const { key } = params;
+
+    if (key !== key.toLowerCase()) {
+        return false;
+    }
+
+    if (!/^[a-z_]/.test(key)) {
+        return false;
+    }
+
+    return true;
+
+}
+
+const Row = withProps(
+    MySecretsEditorRow,
+    { getIsValidStrValue }
+);

@@ -12,7 +12,7 @@ export type Props = {
   /** Correspond to the app theme' color palette */
   color?: "primary" | "secondary";
   /** Usually a plain text that labels the button */
-  children: NonNullable<React.ReactNode>;
+  children?: React.ReactNode;
   disabled?: boolean;
   onClick: () => void;
   icon?: IconProps["type"] | null;
@@ -21,7 +21,8 @@ export type Props = {
 export const defaultProps: Optional<Props> = {
   "color": "primary",
   "disabled": false,
-  "icon": null
+  "icon": null,
+  "children": null
 };
 
 

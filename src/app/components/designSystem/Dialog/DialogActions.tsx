@@ -4,7 +4,7 @@ import type { DialogActionsClassKey } from "@material-ui/core/DialogActions";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import type { Id } from "evt/tools/typeSafety";
 
-export type Props = {
+export type DialogActionsProps = {
     children: NonNullable<React.ReactNode>;
 };
 
@@ -15,7 +15,7 @@ const useStyles = makeStyles(
     })
 );
 
-export function DialogActions(props: Props) {
+export function DialogActions(props: DialogActionsProps) {
 
     const { children } = props;
 

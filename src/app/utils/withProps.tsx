@@ -1,5 +1,5 @@
 
-import React from "react";
+import type React from "react";
 
 export function withProps<P extends object, K extends keyof P>(
     Component: (props: P)=> ReturnType<React.FC>, 
@@ -8,7 +8,8 @@ export function withProps<P extends object, K extends keyof P>(
 
     const UntypedComponent: any= Component;
 
-    return (props: { [Key in Exclude<keyof P, K>]: P[Key]; }) => <UntypedComponent {...preInjectedProps} {...props} />;
+    return (props: { [Key in Exclude<keyof P, K>]: P[Key]; }) => 
+        <UntypedComponent {...preInjectedProps} {...props} />;
 
 }
 

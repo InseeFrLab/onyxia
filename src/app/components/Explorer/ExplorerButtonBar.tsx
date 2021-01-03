@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import memoize from "memoizee";
@@ -21,11 +21,11 @@ export type Props = {
 
 export function ExplorerButtonBar(props: Props) {
 
-    const { 
-        wordForFile, 
-        callback, 
-        isThereAnItemSelected, 
-        isSelectedItemInEditingState 
+    const {
+        wordForFile,
+        callback,
+        isThereAnItemSelected,
+        isSelectedItemInEditingState
     } = props;
 
     const { t } = useTranslation("ExplorerButtonBar");
@@ -58,8 +58,13 @@ export function ExplorerButtonBar(props: Props) {
                         }
                     })()}
                     disabled={
-                        !isThereAnItemSelected && id<Action[]>(["copy path", "delete", "rename"]).includes(action) ||
-                        isSelectedItemInEditingState && action === "rename"
+                        (
+                            !isThereAnItemSelected &&
+                            id<Action[]>(["copy path", "delete", "rename"]).includes(action)
+                        ) || (
+                            isSelectedItemInEditingState &&
+                            action === "rename"
+                        )
                     }
                     key={action}
                     onClick={onClickFactory(action)}
