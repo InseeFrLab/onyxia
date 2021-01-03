@@ -695,11 +695,11 @@ export const thunks = {
 
         },
     "editCurrentlyShownSecret":
-        (params: EditSecretParams & { path: string; }): AppThunk => async (...args) => {
+        (params: EditSecretParams): AppThunk => async (...args) => {
 
             const [dispatch, , { secretsManagerClient }] = args;
 
-            const getSecret = () => {
+            const getSecretAndCurrentPath = () => {
 
                 const [, getState] = args;
 
@@ -707,7 +707,12 @@ export const thunks = {
 
                 assert(state.state === "SHOWING SECRET");
 
-                return state.secretWithMetadata.secret;
+                const { secret } = state.secretWithMetadata;
+
+                return { 
+                    "path": state.currentPath, 
+                    secret 
+                };
 
             };
 
@@ -716,7 +721,7 @@ export const thunks = {
 
 
                 const { key } = params;
-                const secret = getSecret();
+                const { secret } = getSecretAndCurrentPath();
 
                 switch (params.action) {
                     case "addOrOverwriteKeyValue": {
@@ -750,14 +755,9 @@ export const thunks = {
 
             }
 
-            const { path } = params;
-
             dispatch(actions.editSecretStarted(params));
 
-            const error = await secretsManagerClient.put({
-                path,
-                "secret": getSecret()
-            })
+            const error = await secretsManagerClient.put(getSecretAndCurrentPath())
                 .then(
                     () => undefined,
                     (error: Error) => error
