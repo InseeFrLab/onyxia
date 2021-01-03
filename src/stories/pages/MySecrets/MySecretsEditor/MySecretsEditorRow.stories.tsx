@@ -1,7 +1,7 @@
 
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
-import { sectionName } from "./sectionsName";
+import { sectionName } from "./sectionName";
 import { getIsValidStrValue, getIsValidKey } from "app/pages/MySecrets/MySecretsEditor";
 import { Evt } from "evt";
 

@@ -160,8 +160,16 @@ export function MySecretsEditor(props: Props) {
 
                     let resolvedValue = strValue;
 
-                    Object.keys(secret)
-                        .filter(k => k !== key)
+                    const keys= Object.keys(secret);
+
+                    keys
+                        .filter((()=>{
+
+                            const iOfKey= keys.indexOf(key);
+
+                            return (...[, i]: [any, number]) => i < iOfKey;
+
+                        })())
                         .filter(key => getIsValidKey({ key }))
                         .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
                         .forEach(key => resolvedValue = resolvedValue.replace(
