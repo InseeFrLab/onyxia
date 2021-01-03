@@ -4,20 +4,20 @@ import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
-import Input from "@material-ui/core/Input";
+import { Input } from "app/components/designSystem/Input";
+import type { InputProps } from "app/components/designSystem/Input";
 import Box from "@material-ui/core/Box";
 import { Typography } from "../designSystem/Typography"
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { CircularProgress } from "app/components/designSystem/CircularProgress";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import { useClick } from "app/utils/hooks/useClick";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import memoize from "memoizee";
-import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
-import { Evt } from "evt";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
+
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -170,32 +170,10 @@ export function ExplorerItem(props: Props) {
 
     }, [kind, visualRepresentationOfAFile]);
 
-    const [editedBasename, setEditedBasename] = useState(basename);
-
-    useEffect(
-        () => {
-            setIsInputError(
-                !getIsValidBasename({ "basename": editedBasename })
-            );
-        },
-        [editedBasename, getIsValidBasename]
-    );
-
-
-    const [isInputError, setIsInputError] = useState(
-        () => !getIsValidBasename({ "basename": editedBasename })
-    );
-
-    const onChange = useCallback(
-        ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            setEditedBasename(target.value),
-        []
-    );
-
     const [isInEditingState, setIsInEditingState] = useState(false);
 
     useValueChangeEffect(
-        () => onIsInEditingStateValueChange({ isInEditingState }), 
+        () => onIsInEditingStateValueChange({ isInEditingState }),
         [isInEditingState]
     );
 
@@ -206,14 +184,9 @@ export function ExplorerItem(props: Props) {
             [onMouseEvent])
     });
 
-    const onFocus = useCallback(
-        ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            target.setSelectionRange(0, target.value.length),
-        []
-    );
-
+    //TODO: We need a custom hook for this.
     const [evtIsCircularProgressShown] = useState(() => Evt.create(isCircularProgressShown));
-    useEffect(()=>{ evtIsCircularProgressShown.state = isCircularProgressShown });
+    useEffect(() => { evtIsCircularProgressShown.state = isCircularProgressShown });
 
     useEvt(
         ctx => evtAction
@@ -229,62 +202,40 @@ export function ExplorerItem(props: Props) {
         [evtAction, evtIsCircularProgressShown]
     );
 
-    const leaveEditingStateFactory = useMemo(
-        () => memoize((isCancel: boolean) =>
-            () => {
 
-                setIsInEditingState(false);
-
-                if (isCancel) {
-                    setEditedBasename(basename);
-                    return;
-                }
-
-                if (editedBasename === basename) {
-                    return;
-                }
-
-                if (isInputError) {
-                    return;
-                }
-
-                onEditBasename({ editedBasename });
-
-            }
-        ),
-        [editedBasename, isInputError, basename, onEditBasename]
+    const getIsValidValue = useCallback(
+        (value: string) => getIsValidBasename({ "basename": value }),
+        [getIsValidBasename]
     );
 
-    const onKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<InputProps["evtAction"]>>());
 
-            const key = (() => {
-                switch (event.key) {
-                    case "Escape":
-                    case "Enter":
-                        return event.key;
-                    default: return "irrelevant";
-                }
-            })();
+    const onInputSubmit = useCallback(
+        ({ value, isValidValue }: Parameters<InputProps["onSubmit"]>[0]) => {
 
-            if (key === "irrelevant") {
+            if (!isValidValue) {
                 return;
             }
 
-            event.preventDefault();
+            setIsInEditingState(false);
 
-            const isCancel = (() => {
-                switch (key) {
-                    case "Escape": return true;
-                    case "Enter": return false;
-                }
-            })();
+            if (value === basename) {
+                return;
+            }
 
-            leaveEditingStateFactory(isCancel)();
-
-
+            onEditBasename({ "editedBasename": value });
         },
-        [leaveEditingStateFactory]
+        [basename, onEditBasename]
+    );
+
+    const onEscapeKeyDown = useCallback(
+        () => setIsInEditingState(false),
+        []
+    );
+
+    const onEnterKeyDown = useCallback(
+        () => evtInputAction.post("TRIGGER SUBMIT"),
+        [evtInputAction]
     );
 
     return (
@@ -330,23 +281,19 @@ export function ExplorerItem(props: Props) {
                     <form className={classes.root} noValidate autoComplete="off">
                         <Input
                             className={classes.input}
-                            defaultValue={editedBasename}
+                            defaultValue={basename}
                             inputProps={{ "aria-label": t("description") }}
                             autoFocus={true}
                             color="secondary"
                             disabled={isCircularProgressShown}
-                            endAdornment={
-                                !isCircularProgressShown ? undefined :
-                                    <InputAdornment position="end">
-                                        <CircularProgress color="textPrimary" size={10} />
-                                    </InputAdornment>
-                            }
+                            isCircularProgressShown={isCircularProgressShown}
                             multiline={true}
-                            error={isInputError}
-                            onChange={onChange}
-                            onFocus={onFocus}
-                            onKeyDown={onKeyDown}
-                            onBlur={leaveEditingStateFactory(false)}
+                            onEscapeKeyDown={onEscapeKeyDown}
+                            onEnterKeyDown={onEnterKeyDown}
+                            onBlur={onEnterKeyDown}
+                            evtAction={evtInputAction}
+                            onSubmit={onInputSubmit}
+                            getIsValidValue={getIsValidValue}
                         />
                     </form>
             }
@@ -370,10 +317,18 @@ function smartTrim(params: {
 }): string {
 
     const { text, maxLength, minCharAtTheEnd } = params;
-    if (!text) return text;
-    if (maxLength < 1) return text;
-    if (text.length <= maxLength) return text;
-    if (maxLength === 1) return text.substring(0, 1) + '...';
+
+    if (
+        !text ||
+        maxLength < 1 ||
+        text.length <= maxLength
+    ) {
+        return text;
+    }
+
+    if (maxLength === 1) {
+        return text.substring(0, 1) + '...';
+    }
 
     const left = text.substr(0, text.length - minCharAtTheEnd);
 

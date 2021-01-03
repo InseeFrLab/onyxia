@@ -7,21 +7,21 @@ import type { DialogTitleClassKey } from "@material-ui/core/DialogTitle";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { noUndefined } from "app/utils/noUndefined";
 import type { Id } from "evt/tools/typeSafety";
-import { Typography } from "./Typography";
+import { Typography } from "../Typography";
 
 // https://material-ui.com/components/dialogs/#form-dialogs
 
-export type Props = {
+export type DialogTitleProps = {
     id: string;
     children: NonNullable<React.ReactNode>;
     subtitle: React.ReactNode;
 };
 
-export const defaultProps: Optional<Props> = {
+const defaultProps: Optional<DialogTitleProps> = {
 };
 
 const useDialogTitleStyles = makeStyles(
-    () => createStyles<Id<DialogTitleClassKey, "root">, Required<Props>>({
+    () => createStyles<Id<DialogTitleClassKey, "root">, Required<DialogTitleProps>>({
         "root": {
         }
     })
@@ -29,14 +29,14 @@ const useDialogTitleStyles = makeStyles(
 
 
 const useStyles = makeStyles(
-    () => createStyles<"subtitle", Required<Props>>({
+    () => createStyles<"subtitle", Required<DialogTitleProps>>({
         "subtitle": {
         }
     })
 );
 
 
-export function DialogTitle(props: Props) {
+export function DialogTitle(props: DialogTitleProps) {
 
     const completedProps = {
         ...defaultProps,

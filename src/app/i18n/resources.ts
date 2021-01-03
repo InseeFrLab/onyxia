@@ -7,6 +7,7 @@ import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/Explorer/Explorer";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
+import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -21,7 +22,8 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
     [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
-    [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>()
+    [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
+    [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -83,7 +85,20 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             `,
             "invalid key": `Invalid key, must be all caps and start with an alphabetical character`,
             "add an entry": "New ENV",
-            "environnement variable default name": "NEW_VAR"
+            "environnement variable default name": "NEW_VAR",
+            "table of secret": "table of secret",
+            "key label": "Variable name",
+            "value label": "Value",
+            "resolved value label": "Resolved value",
+            "what's a resolved value": `
+            An environnement variable can reference another one. If for example you have defined 
+            FIRST_NAME=John you can set FULL_NAME="$FIRST_NAME"-Doe, the resolved value of 
+            FILL_NAME will be «John-Doe»
+            `
+        },
+        "MySecretsEditorRow": {
+            "key input desc": "Environnement variable name",
+            "value input desc": "Environnement variable value"
         }
     },
     "fr": {
@@ -118,7 +133,20 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             et commencer par une lettre.
             `,
             "add an entry": "Nouvelle ENV",
-            "environnement variable default name": "NOUVELLE_VARENV"
+            "environnement variable default name": "NOUVELLE_VARENV",
+            "table of secret": "table de secret",
+            "key label": "Nom de la variable",
+            "value label": "Valeur",
+            "resolved value label": "Valeur résolue",
+            "what's a resolved value": `
+            Une variable d'environement peut en référencer une autre, si par example vous avez
+            definit la varialbe PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
+            qui aura comme valeur résolue «Louis-Dupon»
+            `
+        },
+        "MySecretsEditorRow": {
+            "key input desc": "Nom de la variable d'environnement",
+            "value input desc": "Valeur de la variable d'environnement"
         }
         /* spell-checker: enable */
     }

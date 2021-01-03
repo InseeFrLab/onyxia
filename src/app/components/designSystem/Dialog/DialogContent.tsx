@@ -8,7 +8,7 @@ import type { Id } from "evt/tools/typeSafety";
 
 // https://material-ui.com/components/dialogs/#form-dialogs
 
-export type Props = {
+export type DialogContentProps = {
   children: NonNullable<React.ReactNode>;
 };
 
@@ -20,7 +20,7 @@ const useStyles = makeStyles(
   })
 );
 
-export function DialogContent(props: Props) {
+export function DialogContent(props: DialogContentProps) {
 
   const { children } = props;
 
