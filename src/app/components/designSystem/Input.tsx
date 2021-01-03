@@ -175,7 +175,6 @@ export function Input(props: InputProps) {
         <MuiInput
             className={className ?? undefined}
             classes={classes}
-            defaultValue={defaultValue}
             inputProps={inputProps}
             autoFocus={autoFocus}
             color={color ?? undefined}
