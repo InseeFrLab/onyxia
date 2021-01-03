@@ -27,7 +27,8 @@ export type InputProps = {
     evtAction: NonPostableEvt<"TRIGGER SUBMIT" | "RESTORE DEFAULT VALUE">;
     onSubmit(params: { value: string; isValidValue: boolean; }): void;
     getIsValidValue(value: string): boolean;
-    onIsValidValueChange?: ((isValidValue: boolean)=>void) | null;
+    /** Invoked on first render */
+    onValueBeingTypedChange?: ((params: { value: string; isValidValue: boolean; })=> void) | null;
 };
 
 const defaultProps: Optional<InputProps> = {
@@ -40,8 +41,7 @@ const defaultProps: Optional<InputProps> = {
     "onEscapeKeyDown": null,
     "onEnterKeyDown": null,
     "onBlur": null,
-    "onIsValidValueChange": null
-
+    "onValueBeingTypedChange": null,
 };
 
 const useStyles = makeStyles(
@@ -72,7 +72,7 @@ export function Input(props: InputProps) {
         evtAction,
         onSubmit,
         getIsValidValue,
-        onIsValidValueChange
+        onValueBeingTypedChange
     } = completedProps;
 
     const [value, setValue] = useState(defaultValue);
@@ -86,10 +86,6 @@ export function Input(props: InputProps) {
         () => getIsValidValue(value)
     );
 
-    useValueChangeEffect(
-        ()=> onIsValidValueChange?.(isValidValue),
-        [isValidValue, onIsValidValueChange]
-    );
 
     useEvt(
         ctx => evtAction.attach(
@@ -109,8 +105,12 @@ export function Input(props: InputProps) {
     );
 
     useEffect(
-        () => { setIsValidValue(getIsValidValue(value)); },
-        [value, getIsValidValue]
+        ()=> { 
+            const isValidValue= getIsValidValue(value);
+            setIsValidValue(isValidValue);
+            onValueBeingTypedChange?.({ value, isValidValue });
+        },
+        [value, getIsValidValue, onValueBeingTypedChange]
     );
 
     const onChange = useCallback(

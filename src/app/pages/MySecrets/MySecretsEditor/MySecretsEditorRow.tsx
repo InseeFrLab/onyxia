@@ -65,12 +65,12 @@ export function MySecretsEditorRow(props: Props) {
         () => Evt.create<UnpackEvt<InputProps["evtAction"]>>()
     );
 
-    const getIsValidKeyInputValue = useCallback(
+    const getIsValidValue_key = useCallback(
         (value: string) => getIsValidAndAvailableKey({ "key": value }),
         [getIsValidAndAvailableKey]
     );
 
-    const getIsValidStrValueInputValue = useCallback(
+    const getIsValidValue_strValue = useCallback(
         (value: string) => getIsValidStrValue({ "strValue": value }),
         [getIsValidStrValue]
     );
@@ -120,10 +120,8 @@ export function MySecretsEditorRow(props: Props) {
         [evtEdited, onEdit, key, strValue]
     );
 
-
-
-    const [isValidKey, setIsValidKey] = useState(() => getIsValidAndAvailableKey({ key }));
-    const [isValidStrValue, setIsValidStrValue] = useState(() => getIsValidStrValue({ strValue }));
+    const [isValidKey, setIsValidKey] = useState(false);
+    const [isValidStrValue, setIsValidStrValue] = useState(false);
 
     const isSubmitButtonDisabled = isLocked || !isValidKey || !isValidStrValue;
 
@@ -139,6 +137,25 @@ export function MySecretsEditorRow(props: Props) {
 
     const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
 
+    const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
+
+    const onValueBeingTypedChange_key = useCallback(
+        ({ isValidValue }: Parameters<NonNullable<InputProps["onValueBeingTypedChange"]>>[0]) =>
+            setIsValidKey(isValidValue),
+        []
+    );
+
+    const onValueBeingTypedChange_strValue = useCallback(
+        ({ isValidValue, value }: Parameters<NonNullable<InputProps["onValueBeingTypedChange"]>>[0]) => {
+
+            setIsValidStrValue(isValidValue);
+
+            setStrValueBeingTyped(value);
+
+        },
+        []
+    );
+
     return (
         <TableRow>
             <TableCell>{
@@ -153,8 +170,8 @@ export function MySecretsEditorRow(props: Props) {
                         onEnterKeyDown={onEnterKeyDown}
                         evtAction={evtInputAction}
                         onSubmit={onSubmitFactory("editedKey")}
-                        getIsValidValue={getIsValidKeyInputValue}
-                        onIsValidValueChange={setIsValidKey}
+                        getIsValidValue={getIsValidValue_key}
+                        onValueBeingTypedChange={onValueBeingTypedChange_key}
                     />
             }</TableCell>
             <TableCell>{
@@ -168,11 +185,15 @@ export function MySecretsEditorRow(props: Props) {
                         onEnterKeyDown={onEnterKeyDown}
                         evtAction={evtInputAction}
                         onSubmit={onSubmitFactory("editedStrValue")}
-                        getIsValidValue={getIsValidStrValueInputValue}
-                        onIsValidValueChange={setIsValidStrValue}
+                        getIsValidValue={getIsValidValue_strValue}
+                        onValueBeingTypedChange={onValueBeingTypedChange_strValue}
                     />
             }</TableCell>
-            <TableCell>{getResolvedValue({ strValue })}</TableCell>
+            <TableCell>{
+                getResolvedValue(
+                    { "strValue": isInEditingState ? strValueBeingTyped : strValue }
+                )
+            }</TableCell>
             <TableCell>
                 <Button
                     disabled={isSubmitButtonDisabled}
