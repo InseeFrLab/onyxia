@@ -7,6 +7,8 @@ import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/l
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
 import * as lib from "lib/setup";
+import { MySecretsEditor } from "./MySecretsEditor";
+import type { EditSecretParams } from "lib/useCases/secretExplorer";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -117,6 +119,12 @@ export function MySecrets() {
 
     const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
 
+    const onEdit = useCallback(
+        (params: EditSecretParams) =>
+            dispatch(thunks.editCurrentlyShownSecret(params)),
+        [dispatch]
+    );
+
     return (
         <>
             <MySecretsHeader />
@@ -127,12 +135,11 @@ export function MySecrets() {
                     evtTranslation={evtSecretsManagerTranslation}
                     file={
                         state.state !== "SHOWING SECRET" ? null :
-                            <div>
-                                <pre>
-                                    {JSON.stringify(state.secretWithMetadata, null, 4)
-                                        .replace(/["{[,}\]]/g, "")}
-                                </pre>
-                            </div>
+                            <MySecretsEditor
+                                isBeingUpdated={state.isBeingUpdated}
+                                secretWithMetadata={state.secretWithMetadata}
+                                onEdit={onEdit}
+                            />
                     }
                     files={state.secrets}
                     directories={state.directories}
