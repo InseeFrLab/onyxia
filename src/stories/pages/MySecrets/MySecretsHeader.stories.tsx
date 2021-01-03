@@ -4,12 +4,12 @@ import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
 
 
-const { meta, getStory: getThemedStory } = getStoryFactory({
+const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MySecretsHeader }
 });
 
 export default meta;
 
-export const Vue1 = getThemedStory({});
+export const Vue1 = getStory({});
 

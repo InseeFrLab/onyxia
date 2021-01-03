@@ -156,6 +156,7 @@ export function MySecretsEditorRow(props: Props) {
         []
     );
 
+
     return (
         <TableRow>
             <TableCell>{
@@ -172,6 +173,7 @@ export function MySecretsEditorRow(props: Props) {
                         onSubmit={onSubmitFactory("editedKey")}
                         getIsValidValue={getIsValidValue_key}
                         onValueBeingTypedChange={onValueBeingTypedChange_key}
+                        transformValueBeingTyped={toUpperCase}
                     />
             }</TableCell>
             <TableCell>{
@@ -218,4 +220,8 @@ export declare namespace MySecretsEditorRow {
         'value input desc': undefined;
     };
 
+}
+
+function toUpperCase(value: string){
+    return value.toUpperCase();
 }

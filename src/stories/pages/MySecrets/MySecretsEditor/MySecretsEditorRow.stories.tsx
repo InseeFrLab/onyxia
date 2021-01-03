@@ -1,13 +1,12 @@
 
-
-import { MySecrets } from "app/pages/MySecrets";
+import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { getStoryFactory } from "stories/geStory";
-import { sectionName } from "./sectionName";
+import { sectionName } from "./sectionsName";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "doProvideMockStore": true,
-    "wrappedComponent": { MySecrets }
+    "wrappedComponent": { MySecretsEditorRow }
 });
 
 export default meta;
