@@ -263,7 +263,8 @@ function stringifyValue(value: Secret.Value) {
         ;
 }
 
-const getIsValidStrValue: RowProps["getIsValidStrValue"] =
+/** Exported for storybook */
+export const getIsValidStrValue: RowProps["getIsValidStrValue"] =
     ({ strValue }) => {
 
         // We want an even number of unescaped double quote (")
@@ -275,7 +276,8 @@ const getIsValidStrValue: RowProps["getIsValidStrValue"] =
 
     };
 
-function getIsValidKey(params: { key: string; }): boolean {
+/** Exported for storybook */
+export function getIsValidKey(params: { key: string; }): boolean {
 
     const { key } = params;
 
