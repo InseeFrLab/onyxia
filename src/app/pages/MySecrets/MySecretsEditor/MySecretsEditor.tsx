@@ -198,53 +198,6 @@ export function MySecretsEditor(props: Props) {
         [secret, t]
     );
 
-    /*
-    const getResolvedValueFactory = useMemo(
-        () => memoize(
-            (key: string) =>
-                ({ strValue }: Parameters<RowProps["getResolvedValue"]>[0]) => {
-
-                    if (!getIsValidKey({ key })) {
-                        throw new Error(t("invalid key"));
-                    }
-
-                    if (!getIsValidStrValue({ strValue })) {
-                        throw new Error(t("invalid value"));
-                    }
-
-                    let resolvedValue = strValue;
-
-                    const keys= Object.keys(secret);
-
-                    keys
-                        .filter((()=>{
-
-                            const iOfKey= keys.indexOf(key);
-
-                            return (...[, i]: [any, number]) => i < iOfKey;
-
-                        })())
-                        .filter(key => getIsValidKey({ key }))
-                        .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
-                        .forEach(key => resolvedValue = resolvedValue.replace(
-                            new RegExp(`\\$${key}(?=[". $])`, "g"),
-                            stringifyValue(secret[key])
-                        ));
-
-                    resolvedValue = resolvedValue.replace(/"/g, "");
-
-                    if( resolvedValue === strValue ){
-                        return "";
-                    }
-
-                    return resolvedValue;
-
-                }
-        ),
-        [secret, t]
-    );
-    */
-
     const onClick = useCallback(() =>
         onEdit({
             "action": "addOrOverwriteKeyValue",

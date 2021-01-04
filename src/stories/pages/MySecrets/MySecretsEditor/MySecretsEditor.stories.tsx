@@ -21,7 +21,7 @@ export const Vue1 = getStory({
             "BEFORE_DEFINED": '"$URL"hello world',
             "URL": '"$PROTOCOL"://"$DOMAIN":"$PORT"',
             "notAValidEnv": "foo bar",
-            "GITHUB_PAT": [...Array(30)].map(() => Math.random().toString(36)[2]).join(''),
+            "GITHUB_PAT": [...Array(255)].map(() => Math.random().toString(36)[2]).join(''),
             "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " '
         }
     },
