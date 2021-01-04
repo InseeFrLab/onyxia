@@ -159,6 +159,7 @@ export function MySecretsEditorRow(props: Props) {
 
     return (
         <TableRow>
+            <TableCell>$</TableCell>
             <TableCell>{
                 !isInEditingState ?
                     key

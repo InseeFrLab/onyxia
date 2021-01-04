@@ -5,7 +5,6 @@ import { sectionName } from "./sectionName";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "doProvideMockStore": true,
     "wrappedComponent": { MySecretsEditor }
 });
 
@@ -20,7 +19,7 @@ export const Vue1 = getStory({
             "PROTOCOL": "https",
             "PORT": "8081",
             "BEFORE_DEFINED": '"$URL" hello world',
-            "URL": '"PROTOCOL"://"$DOMAIN":"$PORT"',
+            "URL": '"$PROTOCOL"://"$DOMAIN":"$PORT"',
             "notAValidEnv": "foo bar",
             "GITHUB_PAT": [...Array(30)].map(() => Math.random().toString(36)[2]).join(''),
             "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " '
