@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
-import clsx from "clsx"
+import clsx from "clsx";
 import { basename as pathBasename, relative as pathRelative } from "path";
 import memoize from "memoizee";
 
