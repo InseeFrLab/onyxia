@@ -10,6 +10,9 @@ import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
+import { smartTrim } from "app/utils/smartTrim";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 
 export type Props = {
 
@@ -39,7 +42,20 @@ export type Props = {
 
 };
 
+const useStyles = makeStyles(
+    theme => createStyles<"resolveError" | "breakAll" , Props>({
+        "resolveError": {
+            "color": theme.palette.error.main
+        },
+        "breakAll": {
+            "wordBreak": "break-all"
+        }
+    })
+);
+
 export function MySecretsEditorRow(props: Props) {
+
+    const classes = useStyles(props);
 
     const { t } = useTranslation("MySecretsEditorRow");
 
@@ -185,7 +201,14 @@ export function MySecretsEditorRow(props: Props) {
             }</TableCell>
             <TableCell>{
                 !isInEditingState ?
-                    strValue
+                    <span className={clsx(classes.breakAll)}>{
+                    smartTrim({
+                        "maxLength": 70,
+                        "minCharAtTheEnd": 10,
+                        "text": strValue
+                    })
+
+                    }</span>
                     :
                     <Input
                         defaultValue={strValue}
@@ -205,15 +228,20 @@ export function MySecretsEditorRow(props: Props) {
                         { "strValue": isInEditingState ? strValueBeingTyped : strValue }
                     );
 
-                    if (resolveValueResult.isError) {
-                        return (
-                            <span style={{ "color": "red" }}>
+                    return resolveValueResult.isError ?
+                        (
+                            <span className={classes.resolveError}>
                                 {resolveValueResult.errorMessage}
                             </span>
+                        ) : (
+                            <span className={clsx(classes.breakAll)}>{
+                                smartTrim({
+                                    "maxLength": 70,
+                                    "minCharAtTheEnd": 10,
+                                    "text": resolveValueResult.resolvedValue
+                                })
+                            }</span>
                         );
-                    }
-
-                    return resolveValueResult.resolvedValue
 
                 })()
             }</TableCell>
