@@ -74,7 +74,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         },
         "Explorer": {
             ...common.en,
-            "untitled what": "untitled {{what}}",
+            "untitled what": "untitled_{{what}}",
             "empty directory": "This directory is empty",
             "folder": "folder"
 
@@ -121,7 +121,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         "Explorer": {
             ...common.fr,
             "empty directory": "Ce répertoire est vide",
-            "untitled what": "{{what}} sans nom",
+            "untitled what": "{{what}}_sans_nom",
             "folder": "dossier"
         },
         "MySecretsEditor": {
