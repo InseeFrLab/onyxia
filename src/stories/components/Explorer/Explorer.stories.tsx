@@ -7,7 +7,7 @@ import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed" | "onDeleteItem">) {
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem">) {
 
     const [files, setFiles] = useState(props.files);
     const [directories, setDirectories] = useState(props.directories);
@@ -22,9 +22,9 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
         [props.directories]
     );
 
-    const [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] = useState<string[]>([]);
+    const [filesBeingRenamed, setFilesBeingRenamed] = useState<string[]>([]);
 
-    const [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] = useState<string[]>([]);
+    const [directoriesBeingRenamed, setDirectoriesBeingRenamed] = useState<string[]>([]);
 
 
     const [toRemoveFromBeingEdited, setToRemoveFromBeingEdited] = 
@@ -41,8 +41,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             const [beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
-                    case "directory": return [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
-                    case "file": return [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                    case "directory": return [directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
+                    case "file": return [filesBeingRenamed, setFilesBeingRenamed] as const;
                 }
             })();
 
@@ -54,7 +54,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
 
         },
-        [toRemoveFromBeingEdited, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+        [toRemoveFromBeingEdited, filesBeingRenamed, directoriesBeingRenamed]
     );
 
     const onEditedBasename = useCallback(
@@ -63,8 +63,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
-                    case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
-                    case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                    case "directory": return [directories, setDirectories, directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
+                    case "file": return [files, setFiles, filesBeingRenamed, setFilesBeingRenamed] as const;
                 }
             })();
 
@@ -88,7 +88,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
             })();
 
         },
-        [files, directories, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+        [files, directories, filesBeingRenamed, directoriesBeingRenamed]
     );
 
     const onDeleteItem = useCallback(
@@ -112,8 +112,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
             {...props}
             files={files}
             directories={directories}
-            filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
-            directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
+            filesBeingRenamed={filesBeingRenamed}
+            directoriesBeingRenamed={directoriesBeingRenamed}
             onEditBasename={onEditedBasename}
             onDeleteItem={onDeleteItem}
         />
@@ -148,6 +148,8 @@ export const Vue1 = getStory({
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "getIsValidBasename": pure.getIsValidBasename,
+    "filesBeingCreated": [],
+    "directoriesBeingCreated": [],
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",

@@ -143,13 +143,22 @@ export function MySecrets() {
                     }
                     files={state.secrets}
                     directories={state.directories}
-                    directoriesBeingCreatedOrRenamed={
+                    directoriesBeingCreated={
                         state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.directoriesBeingCreatedOrRenamed
+                            state.directoriesBeingCreated
                     }
-                    filesBeingCreatedOrRenamed={
+                    directoriesBeingRenamed={
                         state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.secretsBeingCreatedOrRenamed
+                            state.directoriesBeingRenamed
+
+                    }
+                    filesBeingCreated={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.secretsBeingCreated
+                    }
+                    filesBeingRenamed={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.secretsBeingRenamed
                     }
                     onNavigate={onNavigate}
                     onEditBasename={onEditedBasename}

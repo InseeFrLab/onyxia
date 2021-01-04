@@ -29,8 +29,10 @@ export type Props = {
     file: React.ReactNode;
     files: string[];
     directories: string[];
-    directoriesBeingCreatedOrRenamed: string[];
-    filesBeingCreatedOrRenamed: string[];
+    directoriesBeingCreated: string[];
+    directoriesBeingRenamed: string[];
+    filesBeingCreated: string[];
+    filesBeingRenamed: string[];
     onNavigate(params: { kind: "file" | "directory"; relativePath: string; }): void;
     onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
     onDeleteItem(params: { kind: "file" | "directory"; basename: string; }): void;
@@ -50,8 +52,10 @@ export function Explorer(props: Props) {
         file,
         files,
         directories,
-        filesBeingCreatedOrRenamed,
-        directoriesBeingCreatedOrRenamed,
+        directoriesBeingCreated,
+        directoriesBeingRenamed,
+        filesBeingCreated,
+        filesBeingRenamed,
         onNavigate,
         onEditBasename,
         onCopyPath,
@@ -211,8 +215,10 @@ export function Explorer(props: Props) {
                                 files={files}
                                 isNavigating={isNavigating}
                                 directories={directories}
-                                filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
-                                directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
+                                directoriesBeingCreated={directoriesBeingCreated}
+                                directoriesBeingRenamed={directoriesBeingRenamed}
+                                filesBeingCreated={filesBeingCreated}
+                                filesBeingRenamed={filesBeingRenamed}
                                 onNavigate={itemsOnNavigate}
                                 onEditBasename={onEditBasename}
                                 evtAction={evtItemsAction}
