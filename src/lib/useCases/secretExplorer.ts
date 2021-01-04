@@ -37,8 +37,10 @@ export declare namespace SecretExplorerState {
 
     export type ShowingDirectory = _Common & {
         state: "SHOWING DIRECTORY";
-        directoriesBeingCreatedOrRenamed: string[];
-        secretsBeingCreatedOrRenamed: string[];
+        directoriesBeingCreated: string[];
+        directoriesBeingRenamed: string[];
+        secretsBeingCreated: string[];
+        secretsBeingRenamed: string[];
     };
 
     export type ShowingSecret = _Common & {
@@ -80,8 +82,10 @@ const { reducer, actions } = createSlice({
             "currentPath": "",
             "directories": [],
             "secrets": [],
-            "directoriesBeingCreatedOrRenamed": [],
-            "secretsBeingCreatedOrRenamed": [],
+            "directoriesBeingCreated": [],
+            "directoriesBeingRenamed": [],
+            "secretsBeingCreated": [],
+            "secretsBeingRenamed": [],
             "isNavigationOngoing": true
         })
     ),
@@ -124,8 +128,10 @@ const { reducer, actions } = createSlice({
                 currentPath,
                 directories,
                 secrets,
-                "directoriesBeingCreatedOrRenamed": [],
-                "secretsBeingCreatedOrRenamed": [],
+                "directoriesBeingCreated": [],
+                "directoriesBeingRenamed": [],
+                "secretsBeingCreated": [],
+                "secretsBeingRenamed": [],
                 "isNavigationOngoing": false
             });
 
@@ -196,8 +202,8 @@ const { reducer, actions } = createSlice({
 
             state[(() => {
                 switch (kind) {
-                    case "secret": return "secretsBeingCreatedOrRenamed";
-                    case "directory": return "directoriesBeingCreatedOrRenamed";
+                    case "secret": return "secretsBeingRenamed";
+                    case "directory": return "directoriesBeingRenamed";
                 }
             })()].push(newBasename);
 
@@ -205,17 +211,27 @@ const { reducer, actions } = createSlice({
         },
         "renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted": (
             state,
-            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory" }>
+            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory"; action: "rename" | "create" }>
         ) => {
 
-            const { basename, kind } = payload;
+            const { basename, kind, action } = payload;
 
             assert(state.state === "SHOWING DIRECTORY");
 
             const relevantArray = state[(() => {
                 switch (kind) {
-                    case "secret": return "secretsBeingCreatedOrRenamed";
-                    case "directory": return "directoriesBeingCreatedOrRenamed";
+                    case "secret": 
+                    switch(action){
+                        case "create": return "secretsBeingCreated";
+                        case "rename": return "secretsBeingRenamed";
+                    }
+                    break;
+                    case "directory": 
+                    switch(action){
+                        case "create": return "directoriesBeingCreated";
+                        case "rename": return "directoriesBeingRenamed";
+                    }
+                    break;
                 }
             })()];
 
@@ -224,7 +240,7 @@ const { reducer, actions } = createSlice({
         },
         "createSecretOrDirectoryStarted": (
             state,
-            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory" }>
+            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory"; }>
         ) => {
 
             const { kind, basename } = payload;
@@ -240,8 +256,8 @@ const { reducer, actions } = createSlice({
 
             state[(() => {
                 switch (kind) {
-                    case "secret": return "secretsBeingCreatedOrRenamed";
-                    case "directory": return "directoriesBeingCreatedOrRenamed";
+                    case "secret": return "secretsBeingCreated";
+                    case "directory": return "directoriesBeingCreated";
                 }
             })()].push(basename);
 
@@ -512,7 +528,7 @@ export const thunks = {
                 error !== undefined ?
                     actions.errorOcurred({ "errorMessage": error.message }) :
                     actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
-                        { "basename": newBasename, kind }
+                        { "basename": newBasename, kind, "action": "rename" }
                     )
             );
 
@@ -523,12 +539,20 @@ export const thunks = {
                 assert(state.state === "SHOWING DIRECTORY");
 
                 if (
-                    state[(() => {
+                    [
+                    ...state[(() => {
                         switch (kind) {
-                            case "directory": return "directoriesBeingCreatedOrRenamed";
-                            case "secret": return "secretsBeingCreatedOrRenamed";
+                            case "directory": return "directoriesBeingCreated";
+                            case "secret": return "secretsBeingCreated";
                         }
-                    })()].length !== 0
+                    })()],
+                    ...state[(() => {
+                        switch (kind) {
+                            case "directory": return "directoriesBeingRenamed";
+                            case "secret": return "secretsBeingRenamed";
+                        }
+                    })()]
+                    ].length !== 0
                 ) {
                     return;
                 }
@@ -586,7 +610,7 @@ export const thunks = {
                 error !== undefined ?
                     actions.errorOcurred({ "errorMessage": error.message }) :
                     actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
-                        { basename, kind }
+                        { basename, kind, "action": "create" }
                     )
             );
 
@@ -597,12 +621,20 @@ export const thunks = {
                 assert(state.state === "SHOWING DIRECTORY");
 
                 if (
-                    state[(() => {
+                    [
+                    ...state[(() => {
                         switch (kind) {
-                            case "directory": return "directoriesBeingCreatedOrRenamed";
-                            case "secret": return "secretsBeingCreatedOrRenamed";
+                            case "directory": return "directoriesBeingCreated";
+                            case "secret": return "secretsBeingCreated";
                         }
-                    })()].length !== 0
+                    })()],
+                    ...state[(() => {
+                        switch (kind) {
+                            case "directory": return "directoriesBeingRenamed";
+                            case "secret": return "secretsBeingRenamed";
+                        }
+                    })()]
+                    ].length !== 0
                 ) {
                     return;
                 }
@@ -709,9 +741,9 @@ export const thunks = {
 
                 const { secret } = state.secretWithMetadata;
 
-                return { 
-                    "path": state.currentPath, 
-                    secret 
+                return {
+                    "path": state.currentPath,
+                    secret
                 };
 
             };

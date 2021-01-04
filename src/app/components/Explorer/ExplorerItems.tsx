@@ -30,8 +30,10 @@ export type Props = {
     /** Assert all uniq */
     directories: string[];
 
-    filesBeingCreatedOrRenamed: string[];
-    directoriesBeingCreatedOrRenamed: string[];
+    directoriesBeingCreated: string[];
+    directoriesBeingRenamed: string[];
+    filesBeingCreated: string[];
+    filesBeingRenamed: string[];
 
     onNavigate(params: { kind: "file" | "directory"; basename: string; }): void;
     onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
@@ -52,7 +54,6 @@ export type Props = {
 
 export function ExplorerItems(props: Props) {
 
-
     const {
         visualRepresentationOfAFile,
         getIsValidBasename,
@@ -63,23 +64,14 @@ export function ExplorerItems(props: Props) {
         onEditBasename,
         onDeleteItem,
         onCopyPath,
-        directoriesBeingCreatedOrRenamed,
-        filesBeingCreatedOrRenamed,
+        directoriesBeingCreated,
+        directoriesBeingRenamed,
+        filesBeingCreated,
+        filesBeingRenamed,
         evtAction,
         onIsThereAnItemSelectedValueChange,
         onIsSelectedItemInEditingStateValueChange
     } = props;
-
-    /*
-    assert(
-        (
-            files.reduce(...allUniq()) &&
-            directories.reduce(...allUniq()) &&
-            [...files, ...directories].every(basename => getIsValidBasename({ basename }))
-        ),
-        "Can't have two file or directory with the same name and all basename must be valid"
-    );
-    */
 
     const ExplorerItem = useMemo(
         () => withProps(SecretOrFileExplorerItem, { visualRepresentationOfAFile }),
@@ -164,7 +156,7 @@ export function ExplorerItems(props: Props) {
         ]
     );
 
-    
+
     useValueChangeEffect(
         () => setSelectedItemKeyProp(undefined),
         [isNavigating]
@@ -228,8 +220,8 @@ export function ExplorerItems(props: Props) {
 
                         if (!(() => {
                             switch (kind) {
-                                case "directory": return directoriesBeingCreatedOrRenamed;
-                                case "file": return filesBeingCreatedOrRenamed;
+                                case "directory": return directoriesBeingCreated;
+                                case "file": return filesBeingCreated;
                             }
                         })().includes(basename)) {
                             return;
@@ -239,13 +231,15 @@ export function ExplorerItems(props: Props) {
                             getKeyProp({ kind, basename })
                         );
 
+                        console.log("Enter editing state");
+
                         evtItemAction.post("ENTER EDITING STATE");
 
                     }
             ),
             [
-                getEvtItemAction, getKeyProp, 
-                directoriesBeingCreatedOrRenamed, filesBeingCreatedOrRenamed
+                getEvtItemAction, getKeyProp,
+                directoriesBeingCreated, filesBeingCreated
             ]
         );
 
@@ -359,7 +353,6 @@ export function ExplorerItems(props: Props) {
         []
     );
 
-
     return (
         <Grid container wrap="wrap" justify="flex-start" spacing={1}>
             {(["directory", "file"] as const).map(
@@ -380,12 +373,20 @@ export function ExplorerItems(props: Props) {
                                 basename={basename}
                                 isSelected={isSelected}
                                 evtAction={getEvtItemAction(keyProp)}
-                                isCircularProgressShown={(() => {
-                                    switch (kind) {
-                                        case "directory": return directoriesBeingCreatedOrRenamed;
-                                        case "file": return filesBeingCreatedOrRenamed;
-                                    }
-                                })().includes(basename)}
+                                isCircularProgressShown={
+                                    (() => {
+                                        switch (kind) {
+                                            case "directory": return [
+                                                ...directoriesBeingCreated,
+                                                ...directoriesBeingRenamed
+                                            ];
+                                            case "file": return [
+                                                ...filesBeingCreated,
+                                                ...filesBeingRenamed
+                                            ];
+                                        }
+                                    })().includes(basename)
+                                }
                                 standardizedWidth={standardizedWidth}
                                 onMouseEvent={onMouseEventFactory(kind, basename)}
                                 onEditBasename={onEditBasenameFactory(kind, basename)}

@@ -14,7 +14,7 @@ import type { UnpackEvt } from "evt";
 
 const eventEmitter = new EventEmitter();
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrRenamed" | "directoriesBeingCreatedOrRenamed"> & { containerWidth: number; }) {
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed"> & { containerWidth: number; }) {
 
     const { containerWidth } = props;
 
@@ -31,9 +31,9 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
         [props.directories]
     );
 
-    const [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] = useState<string[]>([]);
+    const [filesBeingRenamed, setFilesBeingRenamed] = useState<string[]>([]);
 
-    const [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] = useState<string[]>([]);
+    const [directoriesBeingRenamed, setDirectoriesBeingRenamed] = useState<string[]>([]);
 
 
     const [toRemove, setToRemove] = useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
@@ -49,8 +49,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             const [beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
-                    case "directory": return [directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
-                    case "file": return [filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                    case "directory": return [directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
+                    case "file": return [filesBeingRenamed, setFilesBeingRenamed] as const;
                 }
             })();
 
@@ -62,7 +62,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
 
         },
-        [toRemove, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+        [toRemove, filesBeingRenamed, directoriesBeingRenamed]
     );
 
     const onEditedBasename = useCallback(
@@ -71,8 +71,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
 
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
-                    case "directory": return [directories, setDirectories, directoriesBeingCreatedOrRenamed, setDirectoriesBeingCreatedOrRenamed] as const;
-                    case "file": return [files, setFiles, filesBeingCreatedOrRenamed, setFilesBeingCreatedOrRenamed] as const;
+                    case "directory": return [directories, setDirectories, directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
+                    case "file": return [files, setFiles, filesBeingRenamed, setFilesBeingRenamed] as const;
                 }
             })();
 
@@ -96,7 +96,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
             })();
 
         },
-        [files, directories, filesBeingCreatedOrRenamed, directoriesBeingCreatedOrRenamed]
+        [files, directories, filesBeingRenamed, directoriesBeingRenamed]
     );
 
     return (
@@ -105,8 +105,8 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingCreatedOrR
                 {...props}
                 files={files}
                 directories={directories}
-                filesBeingCreatedOrRenamed={filesBeingCreatedOrRenamed}
-                directoriesBeingCreatedOrRenamed={directoriesBeingCreatedOrRenamed}
+                filesBeingRenamed={filesBeingRenamed}
+                directoriesBeingRenamed={directoriesBeingRenamed}
                 onEditBasename={onEditedBasename}
             />
         </div>
@@ -170,6 +170,8 @@ export const Vue1 = getStory({
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,
+    "filesBeingCreated": [],
+    "directoriesBeingCreated": [],
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",
