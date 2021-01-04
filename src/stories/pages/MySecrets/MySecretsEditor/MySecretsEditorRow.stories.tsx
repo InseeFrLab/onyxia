@@ -7,7 +7,6 @@ import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "doProvideMockStore": true,
     "wrappedComponent": { MySecretsEditorRow }
 });
 
@@ -18,7 +17,13 @@ const baseParams: Parameters<typeof getStory>[0] = {
     "isLocked": false,
     "keyOfSecret": "FOO_BAR",
     "strValue": "hello world",
-    "getResolvedValue": ({ strValue }) => strValue.replace(/"/g, ""),
+    "getResolvedValue": ({ strValue }) => {
+        const resolvedValue = strValue.replace(/"/g, "");
+        return ({
+            "isError": false,
+            "resolvedValue": resolvedValue === strValue ? "" : resolvedValue
+        });
+    },
     "getIsValidAndAvailableKey": getIsValidKey,
     "evtAction": new Evt(),
     ...logCallbacks([
