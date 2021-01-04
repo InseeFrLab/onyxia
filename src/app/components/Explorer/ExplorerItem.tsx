@@ -56,7 +56,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg" | "frame" | "text" | "input", Props>({
+    theme => createStyles<"root" | "svg" | "frame" | "text" | "hiddenSpan" | "input", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -101,9 +101,13 @@ const useStyles = makeStyles(
                     .string();
 
 
-            })(),
-            //"wordBreak": "break-all"
+            })()
         }),
+        "hiddenSpan": {
+            "width": 0,
+            "overflow": "hidden",
+            "display": "inline-block"
+        },
         "input": {
             //NOTE: So that the text does not move when editing start.
             "marginTop": "2px",
@@ -254,28 +258,39 @@ export function ExplorerItem(props: Props) {
                         {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
                         <Typography
                             className={classes.text}
-                            style={{
-                                "wordBreak": /[_\- ]/.test(basename) ?
-                                    undefined :
-                                    "break-all"
-                            }}
-                        >
-                            {smartTrim({
-                                "text": basename,
-                                ...(() => {
-                                    switch (standardizedWidth) {
-                                        case "big": return {
-                                            "maxLength": 25,
-                                            "minCharAtTheEnd": 7
-                                        };
-                                        case "normal": return {
-                                            "maxLength": 21,
-                                            "minCharAtTheEnd": 5
-                                        };
-                                    }
-                                })()
-                            })}
-                        </Typography>
+                            style={{ "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all" }}
+                        >{
+                                smartTrim({
+                                    "text": basename,
+                                    ...(() => {
+                                        switch (standardizedWidth) {
+                                            case "big": return {
+                                                "maxLength": 25,
+                                                "minCharAtTheEnd": 7
+                                            };
+                                            case "normal": return {
+                                                "maxLength": 21,
+                                                "minCharAtTheEnd": 5
+                                            };
+                                        }
+                                    })()
+                                })
+                                    //NOTE: Word break with - or space but not _, 
+                                    //see: https://stackoverflow.com/a/29541502/3731798
+                                    .split("_")
+                                    .reduce<React.ReactNode[]>(
+                                        (prev, curr, i) => [
+                                            ...prev,
+                                            ...(
+                                                prev.length === 0 ?
+                                                    [] :
+                                                    ["_", <span key={i} className={classes.hiddenSpan}> </span>]
+                                            ),
+                                            curr
+                                        ],
+                                        []
+                                    )
+                            }</Typography>
                     </Box>
                     :
                     <form className={classes.root} noValidate autoComplete="off">
