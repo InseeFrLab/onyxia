@@ -26,7 +26,13 @@ export type Props = {
         editedStrValue: string | undefined;
     }): void;
     onDelete(): void;
-    getResolvedValue(params: { strValue: string; }): string;
+    getResolvedValue(params: { strValue: string; }): {
+        isError: true;
+        errorMessage: string;
+    } | {
+        isError: false;
+        resolvedValue: string;
+    };
     getIsValidAndAvailableKey(params: { key: string; }): boolean;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
@@ -193,9 +199,23 @@ export function MySecretsEditorRow(props: Props) {
                     />
             }</TableCell>
             <TableCell>{
-                getResolvedValue(
-                    { "strValue": isInEditingState ? strValueBeingTyped : strValue }
-                )
+                (() => {
+
+                    const resolveValueResult = getResolvedValue(
+                        { "strValue": isInEditingState ? strValueBeingTyped : strValue }
+                    );
+
+                    if (resolveValueResult.isError) {
+                        return (
+                            <span style={{ "color": "red" }}>
+                                {resolveValueResult.errorMessage}
+                            </span>
+                        );
+                    }
+
+                    return resolveValueResult.resolvedValue
+
+                })()
             }</TableCell>
             <TableCell>
                 <Button
@@ -223,6 +243,6 @@ export declare namespace MySecretsEditorRow {
 
 }
 
-function toUpperCase(value: string){
+function toUpperCase(value: string) {
     return value.toUpperCase();
 }

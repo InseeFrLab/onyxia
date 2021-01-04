@@ -24,6 +24,7 @@ import {
     TableFooter
 } from "app/components/designSystem/Table";
 import { Tooltip } from "app/components/designSystem/Tooltip";
+import { id } from "evt/tools/typeSafety/id";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -148,14 +149,22 @@ export function MySecretsEditor(props: Props) {
     const getResolvedValueFactory = useMemo(
         () => memoize(
             (key: string) =>
-                ({ strValue }: Parameters<RowProps["getResolvedValue"]>[0]) => {
+                id<RowProps["getResolvedValue"]>(({ strValue })=>{
 
                     if (!getIsValidKey({ key })) {
-                        return t("invalid key");
+                        return { 
+                            "isError": true, 
+                            "errorMessage": t("invalid key")
+                        };
                     }
 
                     if (!getIsValidStrValue({ strValue })) {
-                        return t("invalid value");
+
+                        return { 
+                            "isError": true, 
+                            "errorMessage": t("invalid value")
+                        };
+
                     }
 
                     let resolvedValue = strValue;
@@ -177,12 +186,64 @@ export function MySecretsEditor(props: Props) {
                             stringifyValue(secret[key])
                         ));
 
-                    return resolvedValue.replace(/"/g, "");
+                    resolvedValue = resolvedValue.replace(/"/g, "");
+
+                    return { 
+                        "isError": false, 
+                        "resolvedValue": resolvedValue === strValue ? "" : resolvedValue  
+                    };
+
+                })
+        ),
+        [secret, t]
+    );
+
+    /*
+    const getResolvedValueFactory = useMemo(
+        () => memoize(
+            (key: string) =>
+                ({ strValue }: Parameters<RowProps["getResolvedValue"]>[0]) => {
+
+                    if (!getIsValidKey({ key })) {
+                        throw new Error(t("invalid key"));
+                    }
+
+                    if (!getIsValidStrValue({ strValue })) {
+                        throw new Error(t("invalid value"));
+                    }
+
+                    let resolvedValue = strValue;
+
+                    const keys= Object.keys(secret);
+
+                    keys
+                        .filter((()=>{
+
+                            const iOfKey= keys.indexOf(key);
+
+                            return (...[, i]: [any, number]) => i < iOfKey;
+
+                        })())
+                        .filter(key => getIsValidKey({ key }))
+                        .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
+                        .forEach(key => resolvedValue = resolvedValue.replace(
+                            new RegExp(`\\$${key}(?=[". $])`, "g"),
+                            stringifyValue(secret[key])
+                        ));
+
+                    resolvedValue = resolvedValue.replace(/"/g, "");
+
+                    if( resolvedValue === strValue ){
+                        return "";
+                    }
+
+                    return resolvedValue;
 
                 }
         ),
         [secret, t]
     );
+    */
 
     const onClick = useCallback(() =>
         onEdit({
@@ -289,11 +350,11 @@ export function getIsValidKey(params: { key: string; }): boolean {
 
     const { key } = params;
 
-    if (key !== key.toLowerCase()) {
+    if (key !== key.toUpperCase()) {
         return false;
     }
 
-    if (!/^[a-z_]/.test(key)) {
+    if (!/^[a-z_]/.test(key.toLowerCase())) {
         return false;
     }
 
