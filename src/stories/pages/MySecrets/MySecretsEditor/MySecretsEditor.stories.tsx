@@ -18,7 +18,7 @@ export const Vue1 = getStory({
             "DOMAIN": "example.com",
             "PROTOCOL": "https",
             "PORT": "8081",
-            "BEFORE_DEFINED": '"$URL" hello world',
+            "BEFORE_DEFINED": '"$URL"hello world',
             "URL": '"$PROTOCOL"://"$DOMAIN":"$PORT"',
             "notAValidEnv": "foo bar",
             "GITHUB_PAT": [...Array(30)].map(() => Math.random().toString(36)[2]).join(''),
