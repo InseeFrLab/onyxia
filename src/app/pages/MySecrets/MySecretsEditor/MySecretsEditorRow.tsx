@@ -148,7 +148,10 @@ export function MySecretsEditorRow(props: Props) {
     const isSubmitButtonDisabled = isLocked || !isValidKey || !isValidStrValue;
 
     const onSubmitButtonClick = useCallback(
-        () => evtInputAction.post("TRIGGER SUBMIT"),
+        () => {
+            evtInputAction.post("TRIGGER SUBMIT");
+            setIsInEditingState(false);
+        },
         [evtInputAction]
     );
 
@@ -158,6 +161,8 @@ export function MySecretsEditorRow(props: Props) {
     );
 
     const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
+
+
 
     const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
 
@@ -178,6 +183,10 @@ export function MySecretsEditorRow(props: Props) {
         []
     );
 
+    const onEditButtonClick = useCallback(
+        () => setIsInEditingState(true),
+        []
+    );
 
     return (
         <TableRow>
@@ -202,11 +211,11 @@ export function MySecretsEditorRow(props: Props) {
             <TableCell>{
                 !isInEditingState ?
                     <span className={clsx(classes.breakAll)}>{
-                    smartTrim({
-                        "maxLength": 70,
-                        "minCharAtTheEnd": 10,
-                        "text": strValue
-                    })
+                        smartTrim({
+                            "maxLength": 70,
+                            "minCharAtTheEnd": 10,
+                            "text": strValue
+                        })
 
                     }</span>
                     :
@@ -247,9 +256,9 @@ export function MySecretsEditorRow(props: Props) {
             }</TableCell>
             <TableCell>
                 <Button
-                    disabled={isSubmitButtonDisabled}
-                    icon="check"
-                    onClick={onSubmitButtonClick}
+                    disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
+                    icon={isInEditingState ? "check" : "edit"}
+                    onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick }
                 />
                 <Button
                     disabled={isLocked}
