@@ -1,5 +1,4 @@
 
-
 import React from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import { ReactComponent as TourSvg } from "app/assets/svg/AssistedTour.svg";
@@ -17,11 +16,18 @@ import { ReactComponent as LockSvg } from "app/assets/svg/Lock.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
-export type Props = {
-    /** Design which icon should be displayed */
-    type: "tour" | "services" | "secrets" | "profile" |
+import DeleteIcon from "@material-ui/icons/Delete";
+
+export type SvgTypes =
+    "tour" | "services" | "secrets" | "profile" |
     "lab" | "info" | "home" | "trainings" | "files" |
     "collaborationTools" | "bash" | "lock";
+
+export type MaterialType = "delete";
+
+export type Props = {
+    /** Design which icon should be displayed */
+    type: SvgTypes | MaterialType;
     /** Color of the icon based on the theme */
     color?: "inherit" | "disabled" | "primary" |
     "secondary" | "action" | "error";
@@ -41,9 +47,25 @@ export function Icon(props: Props) {
         ...noUndefined(props)
     };
 
+    const svgTypeOrMuiIcon = (()=>{
+        switch(type){
+            case "delete": return DeleteIcon;
+            default: return type;
+        }
+    })();
+    
+    if (typeof svgTypeOrMuiIcon !== "string") {
+
+        const MuiIcon = svgTypeOrMuiIcon;
+
+        return <MuiIcon {...{ color, fontSize }}/>;
+    }
+
+    const svgType = svgTypeOrMuiIcon;
+
     return <SvgIcon
         component={(() => {
-            switch (type) {
+            switch (svgType) {
                 case "tour": return TourSvg;
                 case "services": return ServicesSvg;
                 case "secrets": return SecretsSvg;
@@ -58,7 +80,6 @@ export function Icon(props: Props) {
                 case "lock": return LockSvg;
             }
         })()}
-        color={color}
-        fontSize={fontSize}
+        {...{ color, fontSize }}
     />;
 }
