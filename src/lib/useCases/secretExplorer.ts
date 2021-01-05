@@ -290,12 +290,11 @@ const { reducer, actions } = createSlice({
 
             assert(state.state === "SHOWING SECRET");
 
+            const { key } = payload;
+
             //NOTE: we use unwrapWritableDraft because otherwise the type
             //instantiation is too deep. But unwrapWritableDraft is the id function
-
             const { secret } = unwrapWritableDraft(state).secretWithMetadata;
-
-            const { key } = payload;
 
             //By doing that we preserve the ordering of the 
             //properties in the record. 
