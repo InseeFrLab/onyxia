@@ -247,7 +247,7 @@ export function MySecretsEditor(props: Props) {
                     <TableRow>
                         <TableCell align="left">
                             <Button
-                                icon="lab"
+                                icon="add"
                                 onClick={onClick}
                             >
                                 {t("add an entry")}

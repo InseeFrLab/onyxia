@@ -12,18 +12,28 @@ import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
-import { ReactComponent as LockSvg } from "app/assets/svg/Lock.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 import DeleteIcon from "@material-ui/icons/Delete";
+import LockIcon from "@material-ui/icons/Lock";
+import EditIcon from "@material-ui/icons/Edit";
+import AddIcon from "@material-ui/icons/Add";
+import FilterNoneIcon from "@material-ui/icons/FilterNone";
+import CheckIcon from "@material-ui/icons/Check";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "profile" |
     "lab" | "info" | "home" | "trainings" | "files" |
-    "collaborationTools" | "bash" | "lock";
+    "collaborationTools" | "bash";
 
-export type MaterialType = "delete";
+export type MaterialType = 
+    "delete" | "lock" | "edit" | "add" | "filterNone" |
+    "check";
+
+//NOTE: Ensure there is not overlap between the types
+(function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
+
 
 export type Props = {
     /** Design which icon should be displayed */
@@ -47,18 +57,23 @@ export function Icon(props: Props) {
         ...noUndefined(props)
     };
 
-    const svgTypeOrMuiIcon = (()=>{
-        switch(type){
+    const svgTypeOrMuiIcon = (() => {
+        switch (type) {
             case "delete": return DeleteIcon;
+            case "lock": return LockIcon;
+            case "edit": return EditIcon;
+            case "add": return AddIcon;
+            case "filterNone": return FilterNoneIcon;
+            case "check": return CheckIcon;
             default: return type;
         }
     })();
-    
+
     if (typeof svgTypeOrMuiIcon !== "string") {
 
         const MuiIcon = svgTypeOrMuiIcon;
 
-        return <MuiIcon {...{ color, fontSize }}/>;
+        return <MuiIcon {...{ color, fontSize }} />;
     }
 
     const svgType = svgTypeOrMuiIcon;
@@ -77,7 +92,6 @@ export function Icon(props: Props) {
                 case "files": return FilesSvg;
                 case "collaborationTools": return CollaborationToolsSvg;
                 case "bash": return BashSvg;
-                case "lock": return LockSvg;
             }
         })()}
         {...{ color, fontSize }}
