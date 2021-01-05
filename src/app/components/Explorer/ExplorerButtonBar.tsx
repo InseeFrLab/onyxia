@@ -50,11 +50,11 @@ export function ExplorerButtonBar(props: Props) {
                 <Button
                     icon={(() => {
                         switch (action) {
-                            case "copy path": return "info" as const;
-                            case "create directory": return "info";
-                            case "create file": return "info";
-                            case "delete": return "info";
-                            case "rename": return "info";
+                            case "copy path": return "filterNone" as const;
+                            case "create directory": return "add";
+                            case "create file": return "add";
+                            case "delete": return "delete";
+                            case "rename": return "edit";
                         }
                     })()}
                     disabled={

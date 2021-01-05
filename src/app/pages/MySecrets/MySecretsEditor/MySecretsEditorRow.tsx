@@ -248,12 +248,12 @@ export function MySecretsEditorRow(props: Props) {
             <TableCell>
                 <Button
                     disabled={isSubmitButtonDisabled}
-                    icon="info" //TODO: Validate
+                    icon="check"
                     onClick={onSubmitButtonClick}
                 />
                 <Button
                     disabled={isLocked}
-                    icon="info" //TODO: Trash
+                    icon="delete"
                     onClick={onDelete}
                 />
             </TableCell>
