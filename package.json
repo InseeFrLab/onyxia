@@ -46,7 +46,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@rehooks/local-storage": "^2.4.0",
     "animejs": "^3.2.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
     "dayjs": "^1.8.26",
