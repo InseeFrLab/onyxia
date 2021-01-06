@@ -48,6 +48,7 @@ export function MySecretsEditor(props: Props) {
     );
 
     // When an row is created automatically enter editing mode.
+    /*
     useArrayDiff({
         "watchFor": "addition",
         "array": Object.keys(secret),
@@ -58,17 +59,15 @@ export function MySecretsEditor(props: Props) {
                     return;
                 }
 
-                if (!isBeingUpdated) {
-                    return;
-                }
                 const [key] = added;
 
                 getEvtAction(key).post("ENTER EDITING STATE");
 
             },
-            [isBeingUpdated, getEvtAction]
+            [getEvtAction, secret]
         )
     });
+    */
 
     const onEditFactory = useMemo(
         () => memoize(
@@ -214,6 +213,7 @@ export function MySecretsEditor(props: Props) {
     );
 
     return (
+        <>
         <TableContainer component={withProps(Paper, { "elevation": 3 })}>
             <Table aria-label={t("table of secret")}>
                 <TableHead>
@@ -243,20 +243,15 @@ export function MySecretsEditor(props: Props) {
                         />
                     )}
                 </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell align="left">
+            </Table>
+        </TableContainer>
                             <Button
                                 icon="add"
                                 onClick={onClick}
                             >
                                 {t("add an entry")}
                             </Button>
-                        </TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
-        </TableContainer>
+                            </>
     );
 
 }

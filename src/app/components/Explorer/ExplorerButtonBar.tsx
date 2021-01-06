@@ -6,7 +6,7 @@ import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
 import Box from "@material-ui/core/Box";
 
-export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path"
+export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path";
 
 export type Props = {
     /** [HIGHER ORDER] */

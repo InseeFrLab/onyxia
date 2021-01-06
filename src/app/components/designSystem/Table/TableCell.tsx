@@ -8,10 +8,12 @@ import { noUndefined } from "app/utils/noUndefined";
 export type TableCellProps = {
     children: NonNullable<React.ReactNode>;
     align?: "center" | "inherit" | "justify" | "left" | "right";
+    size?: "medium" | "small";
 };
 
 const defaultProps: Optional<TableCellProps> = {
-    "align": "inherit"
+    "align": "inherit",
+    "size": "medium"
 };
 
 
@@ -26,12 +28,12 @@ export function TableCell(props: TableCellProps) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children } = completedProps;
+    const { children, align, size } = completedProps;
 
     const classes = useStyles();
 
     return (
-        <MuiTableCell classes={classes} >
+        <MuiTableCell classes={classes} {...{ align, size }} >
             {children}
         </MuiTableCell>
     );
