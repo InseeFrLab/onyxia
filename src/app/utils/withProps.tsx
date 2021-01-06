@@ -1,6 +1,7 @@
 
 import type React from "react";
 
+//TODO: Memoize
 export function withProps<P extends object, K extends keyof P>(
     Component: (props: P)=> ReturnType<React.FC>, 
     preInjectedProps: { [Key in K]: P[Key];}
