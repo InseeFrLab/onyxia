@@ -20,7 +20,9 @@ const preloadedSecretWitMetadata: Props["secretWithMetadata"] = {
         "PROTOCOL": "https",
         "PORT": "8081",
         "BEFORE_DEFINED": '"$URL"hello world',
-        "URL": '"$PROTOCOL"://"$DOMAIN":"$PORT"',
+        "URL": '$PROTOCOL://$DOMAIN:$PORT',
+        "API_URL": '$URL/api',
+        "FOO": '__"$URL"__',
         "notAValidEnv": "foo bar",
         "GITHUB_PAT": [...Array(255)].map(() => Math.random().toString(36)[2]).join(''),
         "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " '
