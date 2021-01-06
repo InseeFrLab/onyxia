@@ -11,6 +11,7 @@ import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
+import type { UseArrayDiffCallbackParams } from "app/utils/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 import { Paper } from "app/components/designSystem/Paper";
@@ -21,10 +22,10 @@ import {
     TableHead,
     TableRow,
     TableBody,
-    TableFooter
+    //TableFooter
 } from "app/components/designSystem/Table";
 import { Tooltip } from "app/components/designSystem/Tooltip";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "evt/tools/typeSafety/id";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -48,26 +49,24 @@ export function MySecretsEditor(props: Props) {
     );
 
     // When an row is created automatically enter editing mode.
-    /*
     useArrayDiff({
-        "watchFor": "addition",
+        "watchFor": "addition or deletion",
         "array": Object.keys(secret),
-        "callback": useCallback(
-            ({ added }: { added: string[]; }) => {
+        "callback": useCallback(({ added, removed }: UseArrayDiffCallbackParams<string>) => {
 
-                if (added.length > 1) {
-                    return;
-                }
+            if (!(
+                added.length === 1 &&
+                removed.length === 0
+            )) {
+                return;
+            }
 
-                const [key] = added;
+            const [key] = added;
 
-                getEvtAction(key).post("ENTER EDITING STATE");
+            getEvtAction(key).post("ENTER EDITING STATE");
 
-            },
-            [getEvtAction, secret]
-        )
+        }, [getEvtAction])
     });
-    */
 
     const onEditFactory = useMemo(
         () => memoize(
@@ -148,19 +147,19 @@ export function MySecretsEditor(props: Props) {
     const getResolvedValueFactory = useMemo(
         () => memoize(
             (key: string) =>
-                id<RowProps["getResolvedValue"]>(({ strValue })=>{
+                id<RowProps["getResolvedValue"]>(({ strValue }) => {
 
                     if (!getIsValidKey({ key })) {
-                        return { 
-                            "isError": true, 
+                        return {
+                            "isError": true,
                             "errorMessage": t("invalid key")
                         };
                     }
 
                     if (!getIsValidStrValue({ strValue })) {
 
-                        return { 
-                            "isError": true, 
+                        return {
+                            "isError": true,
                             "errorMessage": t("invalid value")
                         };
 
@@ -168,12 +167,12 @@ export function MySecretsEditor(props: Props) {
 
                     let resolvedValue = strValue;
 
-                    const keys= Object.keys(secret);
+                    const keys = Object.keys(secret);
 
                     keys
-                        .filter((()=>{
+                        .filter((() => {
 
-                            const iOfKey= keys.indexOf(key);
+                            const iOfKey = keys.indexOf(key);
 
                             return (...[, i]: [any, number]) => i < iOfKey;
 
@@ -187,9 +186,9 @@ export function MySecretsEditor(props: Props) {
 
                     resolvedValue = resolvedValue.replace(/"/g, "");
 
-                    return { 
-                        "isError": false, 
-                        "resolvedValue": resolvedValue === strValue ? "" : resolvedValue  
+                    return {
+                        "isError": false,
+                        "resolvedValue": resolvedValue === strValue ? "" : resolvedValue
                     };
 
                 })
@@ -214,44 +213,44 @@ export function MySecretsEditor(props: Props) {
 
     return (
         <>
-        <TableContainer component={withProps(Paper, { "elevation": 3 })}>
-            <Table aria-label={t("table of secret")}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>$</TableCell>
-                        <TableCell>{t("key label")}</TableCell>
-                        <TableCell>{t("value label")}</TableCell>
-                        <TableCell>
-                            <Tooltip title={t("what's a resolved value")} >
-                                <>{t("resolved value label")}</>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {Object.keys(secret).map(key =>
-                        <Row
-                            key={key}
-                            keyOfSecret={key}
-                            strValue={stringifyValue(secret[key])}
-                            isLocked={isBeingUpdated}
-                            onEdit={onEditFactory(key)}
-                            onDelete={onDeleteFactory(key)}
-                            getResolvedValue={getResolvedValueFactory(key)}
-                            getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
-                            evtAction={getEvtAction(key)}
-                        />
-                    )}
-                </TableBody>
-            </Table>
-        </TableContainer>
-                            <Button
-                                icon="add"
-                                onClick={onClick}
-                            >
-                                {t("add an entry")}
-                            </Button>
-                            </>
+            <TableContainer component={withProps(Paper, { "elevation": 3 })}>
+                <Table aria-label={t("table of secret")}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>$</TableCell>
+                            <TableCell>{t("key label")}</TableCell>
+                            <TableCell>{t("value label")}</TableCell>
+                            <TableCell>
+                                <Tooltip title={t("what's a resolved value")} >
+                                    <>{t("resolved value label")}</>
+                                </Tooltip>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.keys(secret).map(key =>
+                            <Row
+                                key={key}
+                                keyOfSecret={key}
+                                strValue={stringifyValue(secret[key])}
+                                isLocked={isBeingUpdated}
+                                onEdit={onEditFactory(key)}
+                                onDelete={onDeleteFactory(key)}
+                                getResolvedValue={getResolvedValueFactory(key)}
+                                getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
+                                evtAction={getEvtAction(key)}
+                            />
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Button
+                icon="add"
+                onClick={onClick}
+            >
+                {t("add an entry")}
+            </Button>
+        </>
     );
 
 }
