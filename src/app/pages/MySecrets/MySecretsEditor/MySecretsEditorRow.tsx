@@ -254,7 +254,7 @@ export function MySecretsEditorRow(props: Props) {
 
                 })()
             }</TableCell>
-            <TableCell>
+            <TableCell align="right">
                 <Button
                     disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                     icon={isInEditingState ? "check" : "edit"}
