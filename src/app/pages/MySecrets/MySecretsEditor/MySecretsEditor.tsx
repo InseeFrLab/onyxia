@@ -213,7 +213,7 @@ export function MySecretsEditor(props: Props) {
 
     return (
         <>
-            <TableContainer component={withProps(Paper, { "elevation": 3 })}>
+            <TableContainer component={TableContainerComponent}>
                 <Table aria-label={t("table of secret")}>
                     <TableHead>
                         <TableRow>
@@ -313,3 +313,5 @@ const Row = withProps(
     MySecretsEditorRow,
     { getIsValidStrValue }
 );
+
+const TableContainerComponent = withProps(Paper, { "elevation": 3 });
