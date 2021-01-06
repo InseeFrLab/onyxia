@@ -1,5 +1,3 @@
-
-
 import { useMemo, useCallback } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
@@ -180,8 +178,21 @@ export function MySecretsEditor(props: Props) {
                         .filter(key => getIsValidKey({ key }))
                         .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
                         .forEach(key => resolvedValue = resolvedValue.replace(
-                            new RegExp(`\\$${key}(?=[". $])`, "g"),
-                            stringifyValue(secret[key])
+                            new RegExp(`\\$${key}(?=(?:[". $/:;-])?)`, "g"),
+                            (() => {
+
+                                const strValue = stringifyValue(secret[key]);
+
+                                const resolveResult = getResolvedValueFactory(key)({ strValue });
+
+                                return resolveResult.isError ?
+                                    strValue :
+                                    (
+                                        resolveResult.resolvedValue === "" ?
+                                            strValue : resolveResult.resolvedValue
+                                    );
+
+                            })()
                         ));
 
                     resolvedValue = resolvedValue.replace(/"/g, "");
