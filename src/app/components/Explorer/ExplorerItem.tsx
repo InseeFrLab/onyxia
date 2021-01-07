@@ -4,8 +4,8 @@ import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
 import { useTheme } from "@material-ui/core/styles";
-import { Input } from "app/components/designSystem/Input";
-import type { InputProps } from "app/components/designSystem/Input";
+import { Input } from "app/components/designSystem/textField/Input";
+import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
 import { Typography } from "../designSystem/Typography"
 import { makeStyles, createStyles } from "@material-ui/core/styles";
@@ -209,7 +209,10 @@ export function ExplorerItem(props: Props) {
 
 
     const getIsValidValue = useCallback(
-        (value: string) => getIsValidBasename({ "basename": value }),
+        (value: string) => 
+            getIsValidBasename({ "basename": value }) ? 
+                { "isValidValue": true } as const : 
+                { "isValidValue": false, "message": "" } as const,
         [getIsValidBasename]
     );
 
