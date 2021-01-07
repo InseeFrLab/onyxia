@@ -28,6 +28,7 @@
     "@types/react-leaflet": "^2.5.2",
     "@types/react-redux": "^7.1.12",
     "@types/react-router-dom": "^5.1.5",
+    "@types/shell-quote": "^1.7.0",
     "circular-dependency-plugin": "^5.2.0",
     "clean-webpack-plugin": "^3.0.0",
     "coveralls": "^3.1.0",
@@ -83,6 +84,7 @@
     "react-time-ago": "^6.0.0",
     "react-toastify": "^6.0.8",
     "remove-accents": "^0.4.2",
+    "shell-quote": "^1.7.2",
     "typeface-roboto": "^0.0.75"
   },
   "scripts": {
@@ -97,7 +99,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "xxx": "cd node_modules/\\@storybook && mkdir -p node_modules && (mv ../babel-loader node_modules/ 2>/dev/null || true)"
+    "postinstall": "cd node_modules/\\@storybook && mkdir -p node_modules && (mv ../babel-loader node_modules/ 2>/dev/null || true)"
   },
   "eslintConfig": {
     "extends": [

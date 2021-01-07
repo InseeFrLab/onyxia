@@ -7,7 +7,7 @@ import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/Explorer/Explorer";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
-import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -80,21 +80,24 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
 
         },
         "MySecretsEditor": {
-            "invalid value": `
-            Not a valid value for an environnement variable, un even number of double quote (")
-            `,
-            "invalid key": `Invalid key, must be all caps and start with an alphabetical character`,
             "add an entry": "New ENV",
             "environnement variable default name": "NEW_VAR",
             "table of secret": "table of secret",
-            "key label": "Variable name",
-            "value label": "Value",
-            "resolved value label": "Resolved value",
+
+            "key column name": "Variable name",
+            "value column name": "Value",
+            "resolved value column name": "Resolved Value",
             "what's a resolved value": `
             An environnement variable can reference another one. If for example you have defined 
             FIRST_NAME=John you can set FULL_NAME="$FIRST_NAME"-Doe, the resolved value of 
             FILL_NAME will be «John-Doe»
-            `
+            `,
+            "unavailable key": "Already used",
+            "invalid key empty string": "Name required",
+            "invalid key _ not valid": "Can't be just _",
+            "invalid key start with digit": "Can't start with a digit",
+            "invalid key invalid character": "Only letter digits or _",
+            "invalid value cannot eval": "Not a valid shell expression"
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -125,24 +128,26 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "folder": "dossier"
         },
         "MySecretsEditor": {
-            "invalid value": `
-            Cette valeur ne peut pas être utiliser comme varible d'environement car elle posède un nombre impaire de guillemet (")
-            `,
-            "invalid key": `
-            Clef invalid, pour être utiliser en tant que variable d'environement dans vos services une clef doit ête tout en majuscule
-            et commencer par une lettre.
-            `,
+
             "add an entry": "Nouvelle ENV",
             "environnement variable default name": "NOUVELLE_VARENV",
             "table of secret": "table de secret",
-            "key label": "Nom de la variable",
-            "value label": "Valeur",
-            "resolved value label": "Valeur résolue",
+
+            "key column name": "Nom de l'ENV",
+            "value column name": "Valeur",
+            "resolved value column name": "Valeur résolue",
             "what's a resolved value": `
             Une variable d'environement peut en référencer une autre, si par example vous avez
             definit la varialbe PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
             qui aura comme valeur résolue «Louis-Dupon»
-            `
+            `,
+            "unavailable key": "Déjà utilisé",
+            "invalid key empty string": "Un nom est requis",
+            "invalid key _ not valid": "Ne peut pas être juste _",
+            "invalid key start with digit": "Ne doit pas commencer par un chifre",
+            "invalid key invalid character": "Caractère non valid",
+            "invalid value cannot eval": "Pas une expression shell valid"
+
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",

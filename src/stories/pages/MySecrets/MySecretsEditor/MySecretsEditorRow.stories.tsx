@@ -2,7 +2,7 @@
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
-import { getIsValidStrValue, getIsValidKey } from "app/pages/MySecrets/MySecretsEditor";
+import { getIsValidKey } from "app/pages/MySecrets/MySecretsEditor";
 import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
@@ -13,18 +13,22 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 const baseParams: Parameters<typeof getStory>[0] = {
-    getIsValidStrValue,
     "isLocked": false,
     "keyOfSecret": "FOO_BAR",
     "strValue": "hello world",
-    "getResolvedValue": ({ strValue }) => {
-        const resolvedValue = strValue.replace(/"/g, "");
-        return ({
-            "isError": false,
-            "resolvedValue": resolvedValue === strValue ? "" : resolvedValue
-        });
+    "getResolvedValue": ({ strValue }) => ({
+        "isResolvedSuccessfully": true,
+        "resolvedValue": `$(${strValue})`
+    }),
+    "getIsValidAndAvailableKey": ({ key })=> { 
+
+        const r= getIsValidKey({ key });
+
+        return r.isValidKey ? 
+            { "isValidAndAvailableKey": true } : 
+            { "isValidAndAvailableKey": false, "message": r.message };
+
     },
-    "getIsValidAndAvailableKey": getIsValidKey,
     "evtAction": new Evt(),
     ...logCallbacks([
         "onEdit",

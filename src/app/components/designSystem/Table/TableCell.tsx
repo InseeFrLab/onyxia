@@ -6,7 +6,7 @@ import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 export type TableCellProps = {
-    children: NonNullable<React.ReactNode>;
+    children: React.ReactNode;
     align?: "center" | "inherit" | "justify" | "left" | "right";
     size?: "medium" | "small";
 };

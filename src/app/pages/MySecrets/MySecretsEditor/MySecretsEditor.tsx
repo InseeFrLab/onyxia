@@ -24,6 +24,8 @@ import {
 } from "app/components/designSystem/Table";
 import { Tooltip } from "app/components/designSystem/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
+import type { Id } from "evt/tools/typeSafety/id";
+import { evaluateShellExpression } from "app/utils/evaluateShellExpression";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -127,85 +129,93 @@ export function MySecretsEditor(props: Props) {
             (key: string) =>
                 ({ key: candidateKey }: Parameters<RowProps["getIsValidAndAvailableKey"]>[0]) => {
 
-                    if (!getIsValidKey({ "key": candidateKey })) {
-                        return false;
+                    {
+
+                        const getIsValidKeyResult = getIsValidKey({ "key": candidateKey });
+
+                        if (!getIsValidKeyResult.isValidKey) {
+                            return {
+                                "isValidAndAvailableKey": false,
+                                "message": t(getIsValidKeyResult.message)
+                            } as const;
+                        }
+
                     }
 
                     if (Object.keys(secret).filter(k => k !== key).includes(candidateKey)) {
-                        return false;
+
+                        return {
+                            "isValidAndAvailableKey": false,
+                            "message": t("unavailable key")
+                        } as const;
                     }
 
-                    return true;
+                    return { "isValidAndAvailableKey": true } as const;
 
                 }
         ),
-        [secret]
+        [secret, t]
     );
 
     const getResolvedValueFactory = useMemo(
-        () => memoize(
-            (key: string) =>
-                id<RowProps["getResolvedValue"]>(({ strValue }) => {
+        () => {
 
-                    if (!getIsValidKey({ key })) {
-                        return {
-                            "isError": true,
-                            "errorMessage": t("invalid key")
-                        };
-                    }
+            const secretKeys = Object.keys(secret);
 
-                    if (!getIsValidStrValue({ strValue })) {
+            /** Can throw */
+            const getResolvedValue = memoize(
+                (key: string, strValue: string): undefined | string => {
 
-                        return {
-                            "isError": true,
-                            "errorMessage": t("invalid value")
-                        };
+                    const indexOfKey = secretKeys.indexOf(key);
 
-                    }
+                    return evaluateShellExpression({
+                        "expression": strValue,
+                        "getEnvValue": ({ envName: keyBis }) => {
 
-                    let resolvedValue = strValue;
+                            const indexOfKeyBis = secretKeys.indexOf(keyBis);
 
-                    const keys = Object.keys(secret);
+                            if ( indexOfKeyBis === -1 || !(indexOfKeyBis < indexOfKey)) {
+                                return undefined;
+                            }
 
-                    keys
-                        .filter((() => {
+                            return getResolvedValue(
+                                keyBis,
+                                stringifyValue(secret[keyBis])
+                            );
 
-                            const iOfKey = keys.indexOf(key);
+                        }
+                    });
 
-                            return (...[, i]: [any, number]) => i < iOfKey;
+                }
+            );
 
-                        })())
-                        .filter(key => getIsValidKey({ key }))
-                        .filter(key => getIsValidStrValue({ "strValue": stringifyValue(secret[key]) }))
-                        .forEach(key => resolvedValue = resolvedValue.replace(
-                            new RegExp(`\\$${key}(?=(?:[". $/:;-])?)`, "g"),
-                            (() => {
+            return memoize(
+                (key: string) =>
+                    id<RowProps["getResolvedValue"]>(
+                        ({ strValue }) => {
 
-                                const strValue = stringifyValue(secret[key]);
+                            const resolvedValue = getResolvedValue(key, strValue);
 
-                                const resolveResult = getResolvedValueFactory(key)({ strValue });
+                            return resolvedValue === undefined ?
+                                {
+                                    "isResolvedSuccessfully": false,
+                                    "message": t("invalid value cannot eval")
+                                } as const :
+                                {
+                                    "isResolvedSuccessfully": true,
+                                    "resolvedValue": resolvedValue === strValue.replace(/ +$/,"") ?
+                                        "" : resolvedValue
+                                } as const;
 
-                                return resolveResult.isError ?
-                                    strValue :
-                                    (
-                                        resolveResult.resolvedValue === "" ?
-                                            strValue : resolveResult.resolvedValue
-                                    );
+                        }
+                    )
+            );
 
-                            })()
-                        ));
-
-                    resolvedValue = resolvedValue.replace(/"/g, "");
-
-                    return {
-                        "isError": false,
-                        "resolvedValue": resolvedValue === strValue ? "" : resolvedValue
-                    };
-
-                })
-        ),
+        },
         [secret, t]
     );
+
+
 
     const onClick = useCallback(() =>
         onEdit({
@@ -229,18 +239,18 @@ export function MySecretsEditor(props: Props) {
                     <TableHead>
                         <TableRow>
                             <TableCell>$</TableCell>
-                            <TableCell>{t("key label")}</TableCell>
-                            <TableCell>{t("value label")}</TableCell>
+                            <TableCell>{t("key column name")}</TableCell>
+                            <TableCell>{t("value column name")}</TableCell>
                             <TableCell>
                                 <Tooltip title={t("what's a resolved value")} >
-                                    <>{t("resolved value label")}</>
+                                    <>{t("resolved value column name")}</>
                                 </Tooltip>
                             </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {Object.keys(secret).map(key =>
-                            <Row
+                            <MySecretsEditorRow
                                 key={key}
                                 keyOfSecret={key}
                                 strValue={stringifyValue(secret[key])}
@@ -269,15 +279,23 @@ export function MySecretsEditor(props: Props) {
 export declare namespace MySecretsEditor {
 
     export type I18nScheme = {
-        'invalid value': undefined;
-        'invalid key': undefined;
         'add an entry': undefined;
         'environnement variable default name': undefined;
         'table of secret': undefined;
-        'key label': undefined;
-        'value label': undefined;
-        'resolved value label': undefined;
+        'key column name': undefined;
+        'value column name': undefined;
+        'resolved value column name': undefined;
         'what\'s a resolved value': undefined;
+
+        'unavailable key': undefined;
+        'invalid key empty string': undefined;
+        'invalid key _ not valid': undefined;
+        'invalid key start with digit': undefined;
+        'invalid key invalid character': undefined;
+
+        'invalid value cannot eval': undefined;
+
+
     };
 
 }
@@ -290,39 +308,56 @@ function stringifyValue(value: Secret.Value) {
         ;
 }
 
-/** Exported for storybook */
-export const getIsValidStrValue: RowProps["getIsValidStrValue"] =
-    ({ strValue }) => {
-
-        // We want an even number of unescaped double quote (")
-        if ((strValue.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1) {
-            return false;
-        }
-
-        return true;
-
-    };
+const TableContainerComponent = withProps(Paper, { "elevation": 3 });
 
 /** Exported for storybook */
-export function getIsValidKey(params: { key: string; }): boolean {
+export function getIsValidKey(params: { key: string; }): {
+    isValidKey: true;
+} | {
+    isValidKey: false;
+    message: Id<
+        keyof MySecretsEditor.I18nScheme,
+        'invalid key _ not valid' |
+        'invalid key start with digit' |
+        'invalid key invalid character' |
+        'invalid key empty string'
+    >;
+} {
 
     const { key } = params;
 
-    if (key !== key.toUpperCase()) {
-        return false;
+    if( key === "" ){
+        return {
+            "isValidKey": false,
+            "message": "invalid key empty string"
+        };
     }
 
-    if (!/^[a-z_]/.test(key.toLowerCase())) {
-        return false;
+    if (key === "_") {
+        return {
+            "isValidKey": false,
+            "message": "invalid key _ not valid"
+        };
     }
 
-    return true;
+    if (/^[0-9]/.test(key)) {
+        return {
+            "isValidKey": false,
+            "message": "invalid key start with digit"
+        };
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(key)) {
+        return {
+            "isValidKey": false,
+            "message": "invalid key invalid character"
+        };
+    }
+
+    return { "isValidKey": true };
 
 }
 
-const Row = withProps(
-    MySecretsEditorRow,
-    { getIsValidStrValue }
-);
 
-const TableContainerComponent = withProps(Paper, { "elevation": 3 });
+
+

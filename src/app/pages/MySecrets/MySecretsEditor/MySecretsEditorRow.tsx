@@ -3,8 +3,8 @@ import { useMemo, useState, useCallback } from "react";
 import { TableCell, TableRow } from "app/components/designSystem/Table";
 import type { NonPostableEvt } from "evt";
 import memoize from "memoizee";
-import { Input } from "app/components/designSystem/Input";
-import type { InputProps } from "app/components/designSystem/Input";
+import { TextField } from "app/components/designSystem/textField/TextField";
+import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
@@ -13,11 +13,9 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/utils/smartTrim";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+import { Typography } from "app/components/designSystem/Typography";
 
 export type Props = {
-
-    /** [HIGHER ORDER] */
-    getIsValidStrValue(params: { strValue: string; }): boolean;
 
     isLocked: boolean;
 
@@ -29,14 +27,19 @@ export type Props = {
         editedStrValue: string | undefined;
     }): void;
     onDelete(): void;
-    getResolvedValue(params: { strValue: string; }): {
-        isError: true;
-        errorMessage: string;
-    } | {
-        isError: false;
-        resolvedValue: string;
+    getResolvedValue(params: { strValue: string; }): { 
+        isResolvedSuccessfully: true; 
+        resolvedValue: string; 
+    } | { 
+        isResolvedSuccessfully: false; 
+        message: string; 
     };
-    getIsValidAndAvailableKey(params: { key: string; }): boolean;
+    getIsValidAndAvailableKey(params: { key: string; }): { 
+        isValidAndAvailableKey: true; 
+    } | { 
+        isValidAndAvailableKey: false; 
+        message: string; 
+    };
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 
@@ -60,7 +63,6 @@ export function MySecretsEditorRow(props: Props) {
     const { t } = useTranslation("MySecretsEditorRow");
 
     const {
-        getIsValidStrValue,
         isLocked,
         keyOfSecret: key,
         strValue,
@@ -84,26 +86,15 @@ export function MySecretsEditorRow(props: Props) {
     );
 
     const [evtInputAction] = useState(
-        () => Evt.create<UnpackEvt<InputProps["evtAction"]>>()
+        () => Evt.create<UnpackEvt<TextFieldProps["evtAction"]>>()
     );
-
-    const getIsValidValue_key = useCallback(
-        (value: string) => getIsValidAndAvailableKey({ "key": value }),
-        [getIsValidAndAvailableKey]
-    );
-
-    const getIsValidValue_strValue = useCallback(
-        (value: string) => getIsValidStrValue({ "strValue": value }),
-        [getIsValidStrValue]
-    );
-
 
     const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
 
     const onSubmitFactory = useMemo(
         () => memoize(
             (inputTarget: keyof UnpackEvt<typeof evtEdited>) =>
-                ({ value }: Parameters<InputProps["onSubmit"]>[0]) =>
+                ({ value }: Parameters<TextFieldProps["onSubmit"]>[0]) =>
                     evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
         ),
         [evtEdited]
@@ -167,13 +158,13 @@ export function MySecretsEditorRow(props: Props) {
     const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
 
     const onValueBeingTypedChange_key = useCallback(
-        ({ isValidValue }: Parameters<NonNullable<InputProps["onValueBeingTypedChange"]>>[0]) =>
+        ({ isValidValue }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
             setIsValidKey(isValidValue),
         []
     );
 
     const onValueBeingTypedChange_strValue = useCallback(
-        ({ isValidValue, value }: Parameters<NonNullable<InputProps["onValueBeingTypedChange"]>>[0]) => {
+        ({ isValidValue, value }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
 
             setIsValidStrValue(isValidValue);
 
@@ -188,6 +179,50 @@ export function MySecretsEditorRow(props: Props) {
         []
     );
 
+    //NOTE: We don't want to use useMemo here because the resolved values depends on other keys.
+    const resolveValueResult = getResolvedValue(
+        { "strValue": isInEditingState ? strValueBeingTyped : strValue }
+    );
+
+    const getIsValidValue_key= useCallback(
+        (value: Parameters<TextFieldProps["getIsValidValue"]>[0])=> {
+
+            const result = getIsValidAndAvailableKey({ "key": value });
+
+            return result.isValidAndAvailableKey ? 
+                { "isValidValue": true } as const : 
+                { "isValidValue": false, "message": result.message } as const;
+
+        },
+        [getIsValidAndAvailableKey]
+    );
+
+    const getIsValidValue_strValue = useCallback(
+        (value: Parameters<TextFieldProps["getIsValidValue"]>[0])=> {
+
+            const resolveValueResult = getResolvedValue({ "strValue": value });
+
+            return resolveValueResult.isResolvedSuccessfully ? 
+                { "isValidValue": true } as const : 
+                { "isValidValue": false, "message": resolveValueResult.message } as const;
+
+        },
+        [getResolvedValue]
+    );
+
+    const SmartTrim = useMemo(
+        () =>
+            (props: { children: string }) =>
+                <Typography className={clsx(classes.breakAll)}>{
+                    smartTrim({
+                        "maxLength": 70,
+                        "minCharAtTheEnd": 10,
+                        "text": props.children
+                    })
+                }</Typography>,
+        [classes]
+    );
+
     return (
         <TableRow>
             <TableCell>$</TableCell>
@@ -195,7 +230,7 @@ export function MySecretsEditorRow(props: Props) {
                 !isInEditingState ?
                     key
                     :
-                    <Input
+                    <TextField
                         defaultValue={key}
                         inputProps={{ "aria-label": t("key input desc") }}
                         autoFocus={true}
@@ -210,16 +245,9 @@ export function MySecretsEditorRow(props: Props) {
             }</TableCell>
             <TableCell>{
                 !isInEditingState ?
-                    <span className={clsx(classes.breakAll)}>{
-                        smartTrim({
-                            "maxLength": 70,
-                            "minCharAtTheEnd": 10,
-                            "text": strValue
-                        })
-
-                    }</span>
+                    <SmartTrim>{strValue}</SmartTrim>
                     :
-                    <Input
+                    <TextField
                         defaultValue={strValue}
                         inputProps={{ "aria-label": t("value input desc") }}
                         onEscapeKeyDown={onEscapeKeyDown}
@@ -231,34 +259,16 @@ export function MySecretsEditorRow(props: Props) {
                     />
             }</TableCell>
             <TableCell>{
-                (() => {
+                !resolveValueResult.isResolvedSuccessfully ?
+                    null :
+                    <SmartTrim>{resolveValueResult.resolvedValue}</SmartTrim>
 
-                    const resolveValueResult = getResolvedValue(
-                        { "strValue": isInEditingState ? strValueBeingTyped : strValue }
-                    );
-
-                    return resolveValueResult.isError ?
-                        (
-                            <span className={classes.resolveError}>
-                                {resolveValueResult.errorMessage}
-                            </span>
-                        ) : (
-                            <span className={clsx(classes.breakAll)}>{
-                                smartTrim({
-                                    "maxLength": 70,
-                                    "minCharAtTheEnd": 10,
-                                    "text": resolveValueResult.resolvedValue
-                                })
-                            }</span>
-                        );
-
-                })()
             }</TableCell>
             <TableCell align="right">
                 <Button
                     disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                     icon={isInEditingState ? "check" : "edit"}
-                    onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick }
+                    onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
                 />
                 <Button
                     disabled={isLocked}
