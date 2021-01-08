@@ -1,12 +1,12 @@
 
 
-import { PathNavigator } from "app/components/Explorer/PathNavigator";
+import { Breadcrump } from "app/components/Explorer/Breadcrump";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { PathNavigator }
+    "wrappedComponent": { PathNavigator: Breadcrump }
 });
 
 export default meta;

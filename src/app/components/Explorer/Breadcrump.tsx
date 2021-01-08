@@ -28,7 +28,7 @@ const useStyles = makeStyles(
     })
 );
 
-export function PathNavigator(props: Props) {
+export function Breadcrump(props: Props) {
 
     let { path, minDepth, callback } = props;
 
