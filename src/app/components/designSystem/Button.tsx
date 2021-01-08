@@ -9,54 +9,92 @@ import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
 
 export type Props = {
-  /** Correspond to the app theme' color palette */
-  color?: "primary" | "secondary";
-  /** Usually a plain text that labels the button */
-  children?: React.ReactNode;
-  disabled?: boolean;
-  onClick: () => void;
-  icon?: IconProps["type"] | null;
+    color?: "primary" | "secondary";
+    /** can be optional with an icon */
+    children?: React.ReactNode;
+    disabled?: boolean;
+    onClick: () => void;
+
+    startIcon?: IconProps["type"] | null;
+    endIcon?: IconProps["type"] | null;
+
+    isRounded?: boolean;
+
 };
 
 export const defaultProps: Optional<Props> = {
-  "color": "primary",
-  "disabled": false,
-  "icon": null,
-  "children": null
+    "color": "primary",
+    "disabled": false,
+    "children": null,
+    "isRounded": true,
+    "startIcon": null,
+    "endIcon": null
 };
 
 
 const useStyles = makeStyles(
-  () => createStyles<Id<ButtonClassKey, "root" | "label">, Required<Props>>({
-    "root": {
-      "&.Mui-disabled > .MuiButton-label": {
-      }
-    },
-    "label": {
-    }
-  })
+    theme => createStyles<Id<ButtonClassKey, "root" | "text">, Required<Props>>({
+        "root": ({ isRounded, color }) => {
+
+            const backgroundColor = theme.custom.colors.useCases.buttons[
+                (() => {
+                    switch (color) {
+                        case "primary": return "actionHoverPrimary";
+                        case "secondary": return "actionHoverSecondary";
+                    }
+                })()
+            ];
+
+            return {
+                "borderRadius": isRounded ? 20 : undefined,
+                "border": !isRounded ? undefined :
+                    `2px solid ${backgroundColor}`,
+                "padding": theme.spacing(1, 2),
+                "&:hover": { backgroundColor }
+            };
+
+        },
+        "text": ({ color }) => ({
+            "&:hover": {
+                "color": (() => {
+                    switch (theme.palette.type) {
+                        case "dark":
+                            return theme.custom.colors.palette[(() => {
+                                switch (color) {
+                                    case "primary": return "whiteSnow";
+                                    case "secondary": return "midnightBlue";
+                                }
+                            })()].main;
+                        case "light": return theme.custom.colors.palette.whiteSnow.main;
+                    }
+                })()
+            }
+
+        })
+    })
 );
 
 
 export function Button(props: Props) {
 
-  const completedProps = { ...defaultProps, ...noUndefined(props) };
+    const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-  const { color, disabled, children, icon, onClick } = { ...defaultProps, ...noUndefined(props) };
+    const { color, disabled, children, onClick, startIcon, endIcon } = completedProps;
 
-  const classes = useStyles(completedProps);
+    const classes = useStyles(completedProps);
 
-  return (
-    <MuiButton 
-      classes={classes} 
-      color={color} 
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {icon !== null && <Icon type={icon} />}
-      {children}
-    </MuiButton>
-  );
+    return (
+        <MuiButton
+            classes={classes}
+            color={color}
+            disabled={disabled}
+            onClick={onClick}
+            startIcon={startIcon === null ? undefined : <Icon type={startIcon} />}
+            endIcon={endIcon === null ? undefined : <Icon type={endIcon} />}
+        >
+            {children}
+        </MuiButton>
+    );
 
 }
 
