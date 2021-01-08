@@ -108,22 +108,6 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
             "light": palette.success.light,
             "main": palette.success.main,
         },
-        "grey": {
-            "50": "#fafafa",
-            "100": "#f5f5f5",
-            "200": "#eeeeee",
-            "300": "#e0e0e0",
-            "400": "#bdbdbd",
-            "500": "#9e9e9e",
-            "600": "#757575",
-            "700": "#616161",
-            "800": "#424242",
-            "900": "#212121",
-            "A100": "#d5d5d5",
-            "A200": "#aaaaaa",
-            "A400": "#303030",
-            "A700": "#616161"
-        },
         "text": {
             "primary": useCases.typography.textPrimary,
             "secondary": useCases.typography.textSecondary,
@@ -140,17 +124,8 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
             "hover": useCases.buttons.actionHoverPrimary,
             "selected": useCases.buttons.actionSelected,
             "disabled": useCases.buttons.actionDisabled,
-            "disabledBackground": useCases.buttons.actionDisabledBackground
-            /*
-            "focus": "rgba(0, 0, 0, 0.12)",
-
-            //TODO: See how those values are filled.
-            "selectedOpacity": 0.08,
-            "hoverOpacity": 0.04,
-            "disabledOpacity": 0.38,
-            "focusOpacity": 0.12,
-            "activatedOpacity": 0.12
-            */
+            "disabledBackground": useCases.buttons.actionDisabledBackground,
+            "focus": useCases.typography.textFocus
         }
     };
 

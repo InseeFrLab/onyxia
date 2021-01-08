@@ -3,8 +3,8 @@ import React, { useMemo, useState, useCallback } from "react";
 import { withProps } from "app/utils/withProps";
 import { ExplorerItems as SecretOrFileExplorerItems } from "./ExplorerItems";
 import type { Props as ItemsProps } from "./ExplorerItems";
-import { PathNavigator } from "./PathNavigator";
-import type { Props as PathNavigatorProps } from "./PathNavigator";
+import { Breadcrump } from "./Breadcrump";
+import type { Props as BreadcrumpProps } from "./Breadcrump";
 import { ExplorerButtonBar as SecretOrFileExplorerButtonBar } from "./ExplorerButtonBar";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
@@ -157,7 +157,7 @@ export function Explorer(props: Props) {
     );
 
     const pathNavigatorCallback = useCallback(
-        ({ relativePath }: Parameters<PathNavigatorProps["callback"]>[0]) => {
+        ({ relativePath }: Parameters<BreadcrumpProps["callback"]>[0]) => {
             onNavigate({
                 "kind": "directory",
                 relativePath
@@ -199,7 +199,7 @@ export function Explorer(props: Props) {
                 isSelectedItemInEditingState={isSelectedItemInEditingState}
                 callback={buttonBarCallback}
             />
-            <PathNavigator
+            <Breadcrump
                 minDepth={!isNavigating ? 0 : Infinity}
                 path={currentPath}
                 callback={pathNavigatorCallback}
