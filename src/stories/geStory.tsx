@@ -4,7 +4,7 @@ import type { Meta } from "@storybook/react";
 import { symToStr } from "app/utils/symToStr";
 import type { Story } from "@storybook/react";
 import React from "react";
-import { ThemeProviderFactory } from "app/ThemeProvider";
+import { ThemeProviderFactory } from "app/theme/ThemeProvider";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
@@ -75,7 +75,7 @@ export function getStoryFactory<Props>(params: {
                 <I18nProvider lng={lng}>
                     <ThemeProvider isDarkModeEnabled={darkMode}>
                         <Box p={4}>
-                            <Box clone p={4} m={2} display="inline-block" style={{ "maxWidth": "900px" }}>
+                            <Box clone p={4} m={2} display="inline-block" style={{ "maxWidth": "1100px" }}>
                                 <Paper>
                                     <StoreProviderOrFragment>
                                         <Component {...props} />
