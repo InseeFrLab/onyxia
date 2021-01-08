@@ -13,9 +13,11 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const Vue1 = getStory({
-    "icon": "lock",
-    "text1": "foo bar",
-    "text2": "bar baz",
-    "text3": <> yadi yada a <Link href="#">a link</Link></>
+    "icon": "secrets",
+    /* spell-checker: disable */
+    "text1": "Catalogue de services",
+    "text2": "Explorez, lancez et configurez des services en quelques clics seulement.",
+    "text3": <> Le catalogue vous propose de déployer facilement des services  <Link href="#">a link</Link></>
+    /* spell-checker: enable */
 });
 

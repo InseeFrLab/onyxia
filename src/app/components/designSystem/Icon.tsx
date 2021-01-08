@@ -16,7 +16,6 @@ import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import LockIcon from "@material-ui/icons/Lock";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
@@ -28,7 +27,7 @@ export type SvgTypes =
     "collaborationTools" | "bash";
 
 export type MaterialType = 
-    "delete" | "lock" | "edit" | "add" | "filterNone" |
+    "delete" | "edit" | "add" | "filterNone" |
     "check";
 
 //NOTE: Ensure there is not overlap between the types
@@ -42,17 +41,21 @@ export type Props = {
     color?: "inherit" | "disabled" | "primary" |
     "secondary" | "action" | "error";
     /** Enable to make the icon larger or smaller */
-    fontSize?: "default" | "inherit" | "small" | "large"
+    fontSize?: "default" | "inherit" | "small" | "large";
+
+    className?: string | null;
+
 };
 
 export const defaultProps: Optional<Props> = {
+    "className": null,
     "color": "inherit",
     "fontSize": "default"
 };
 
 export function Icon(props: Props) {
 
-    const { type, color, fontSize } = {
+    const { type, color, fontSize, className } = {
         ...defaultProps,
         ...noUndefined(props)
     };
@@ -60,7 +63,6 @@ export function Icon(props: Props) {
     const svgTypeOrMuiIcon = (() => {
         switch (type) {
             case "delete": return DeleteIcon;
-            case "lock": return LockIcon;
             case "edit": return EditIcon;
             case "add": return AddIcon;
             case "filterNone": return FilterNoneIcon;
@@ -73,12 +75,13 @@ export function Icon(props: Props) {
 
         const MuiIcon = svgTypeOrMuiIcon;
 
-        return <MuiIcon {...{ color, fontSize }} />;
+        return <MuiIcon className={className ?? undefined} {...{ color, fontSize }} />;
     }
 
     const svgType = svgTypeOrMuiIcon;
 
     return <SvgIcon
+        className={className ?? undefined}
         component={(() => {
             switch (svgType) {
                 case "tour": return TourSvg;
