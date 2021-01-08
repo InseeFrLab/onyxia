@@ -35,7 +35,7 @@ const useStyles = makeStyles(
         "icon": {
             "marginRight": theme.spacing(2),
             "position": "relative",
-            "top": "5px",
+            "top": "3px",
         },
         "text2": {
             "marginBottom": theme.spacing(1)
