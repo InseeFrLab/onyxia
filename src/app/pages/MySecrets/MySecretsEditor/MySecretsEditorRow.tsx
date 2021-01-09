@@ -266,14 +266,18 @@ export function MySecretsEditorRow(props: Props) {
             }</TableCell>
             <TableCell align="right">
                 <Button
+                    color="secondary"
                     disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
-                    icon={isInEditingState ? "check" : "edit"}
+                    startIcon={isInEditingState ? "check" : "edit"}
                     onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
+                    isRounded={false}
                 />
                 <Button
+                    color="secondary"
                     disabled={isLocked}
-                    icon="delete"
+                    startIcon="delete"
                     onClick={onDelete}
+                    isRounded={false}
                 />
             </TableCell>
         </TableRow>

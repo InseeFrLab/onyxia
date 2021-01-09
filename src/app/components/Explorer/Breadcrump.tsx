@@ -73,11 +73,11 @@ export function Breadcrump(props: Props) {
                     })}
                 >
                     <Box clone display="inline">
-                        <Typography color="inherit">{pathBasename(partialPath)}</Typography>
+                        <Typography color="primary">{pathBasename(partialPath)}</Typography>
                     </Box>
                     {!isLast &&
                         <Box clone display="inline">
-                            <Typography color="inherit"> / </Typography>
+                            <Typography color="primary"> / </Typography>
                         </Box>
                     }
                 </Box>

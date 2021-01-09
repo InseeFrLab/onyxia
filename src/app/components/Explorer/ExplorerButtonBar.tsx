@@ -48,7 +48,8 @@ export function ExplorerButtonBar(props: Props) {
                 "copy path"
             ] as const).map(action =>
                 <Button
-                    icon={(() => {
+                    color="secondary"
+                    startIcon={(() => {
                         switch (action) {
                             case "copy path": return "filterNone" as const;
                             case "create directory": return "add";
@@ -57,6 +58,7 @@ export function ExplorerButtonBar(props: Props) {
                             case "rename": return "edit";
                         }
                     })()}
+                    isRounded={false}
                     disabled={
                         (
                             !isThereAnItemSelected &&
