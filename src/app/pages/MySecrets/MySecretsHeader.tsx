@@ -9,7 +9,7 @@ export function MySecretsHeader() {
     const { t } = useTranslation("MySecretsHeader");
 
     return <PageHeader
-        icon="lock"
+        icon="secrets"
         text1={t("page title")}
         text2={t("what this page is used for")}
         text3={(t as any)("to learn more read", { "what": <Link href="#">{t("tfm")}</Link> })}

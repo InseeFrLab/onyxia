@@ -266,7 +266,7 @@ export function MySecretsEditor(props: Props) {
                 </Table>
             </TableContainer>
             <Button
-                icon="add"
+                startIcon="add"
                 onClick={onClick}
             >
                 {t("add an entry")}
