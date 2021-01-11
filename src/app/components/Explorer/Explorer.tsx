@@ -58,6 +58,8 @@ export type Props = {
     onCreateItem(params: { kind: "file" | "directory"; basename: string; }): void;
     onCopyPath(params: { path: string; }): void;
 
+    paddingLeftSpacing: number;
+
 };
 
 type CmdTranslationVerticalPositioning = Id<React.CSSProperties, {
@@ -66,15 +68,18 @@ type CmdTranslationVerticalPositioning = Id<React.CSSProperties, {
 }>;
 
 const useStyles = makeStyles(
-    () => createStyles<
+    theme => createStyles<
         "root" | "cmdTranslation" | "scrollable" | "buttonBarWrapper",
         Props & { cmdTranslationVerticalPositioning: CmdTranslationVerticalPositioning; }
     >({
-        "root": {
+        "root": ({ paddingLeftSpacing })=>({
             "display": "flex",
             "flexDirection": "column",
-            "position": "relative"
-        },
+            "position": "relative",
+            "& > *:not(:first-child)": {
+                "paddingLeft": theme.spacing(paddingLeftSpacing)
+            }
+        }),
         "buttonBarWrapper": {
             "zIndex": 0,
         },
@@ -114,7 +119,8 @@ export function Explorer(props: Props) {
         onEditBasename,
         onCopyPath,
         onDeleteItem,
-        onCreateItem
+        onCreateItem,
+        paddingLeftSpacing
     } = props;
 
 
@@ -314,6 +320,7 @@ export function Explorer(props: Props) {
                 className={classes.buttonBarWrapper}
             >
                 <ButtonBar
+                    paddingLeftSpacing={paddingLeftSpacing}
                     isThereAnItemSelected={isThereAnItemSelected}
                     isSelectedItemInEditingState={isSelectedItemInEditingState}
                     callback={buttonBarCallback}

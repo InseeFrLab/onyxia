@@ -1,7 +1,5 @@
 import React, { useMemo, useCallback, useEffect } from "react";
 import { withProps } from "app/utils/withProps";
-import { MySecretsHeader } from "./MySecretsHeader";
-import { Container } from "app/components/designSystem/Container";
 import { copyToClipboard } from "app/utils/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
@@ -10,6 +8,9 @@ import * as lib from "lib/setup";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { PageHeader } from "app/components/PageHeader";
+import { useTranslation } from "app/i18n/useTranslations";
+import { Link } from "app/components/designSystem/Link";
 import clsx from "clsx";
 /*
 const { secretExplorer: thunks } = lib.thunks;
@@ -18,8 +19,13 @@ const { secretExplorer: pure } = lib.pure;
 const thunks = lib.thunks.secretExplorer;
 const pure = lib.pure.secretExplorer;
 
+const paddingLeftSpacing = 10;
+
 const useStyles = makeStyles(
-    () => createStyles({
+    theme => createStyles({
+        "header": {
+            "paddingLeft": theme.spacing(paddingLeftSpacing)
+        },
         "root": {
             "display": "flex",
             "flexDirection": "column"
@@ -37,7 +43,9 @@ export type Props = {
 
 export function MySecrets(props: Props) {
 
-    const { className } = props;
+    const { className } = props;
+
+    const { t } = useTranslation("MySecrets");
 
     const state = useSelector(state => state.secretExplorer);
     const dispatch = useDispatch();
@@ -146,56 +154,73 @@ export function MySecrets(props: Props) {
         [dispatch]
     );
 
-    const classes= useStyles();
+    const classes = useStyles();
 
     return (
         <div className={clsx(classes.root, className)}>
-            <MySecretsHeader />
-            <Container maxWidth="lg">
-                <Explorer
-                    className={classes.explorer}
-                    currentPath={state.currentPath}
-                    isNavigating={state.isNavigationOngoing}
-                    evtTranslation={evtSecretsManagerTranslation}
-                    file={
-                        state.state !== "SHOWING SECRET" ? null :
-                            <MySecretsEditor
-                                isBeingUpdated={state.isBeingUpdated}
-                                secretWithMetadata={state.secretWithMetadata}
-                                onEdit={onEdit}
-                            />
-                    }
-                    fileDate={
-                        state.state !== "SHOWING SECRET" ?
-                            undefined :
-                            new Date(state.secretWithMetadata.metadata.created_time)
-                    }
-                    files={state.secrets}
-                    directories={state.directories}
-                    directoriesBeingCreated={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.directoriesBeingCreated
-                    }
-                    directoriesBeingRenamed={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.directoriesBeingRenamed
 
-                    }
-                    filesBeingCreated={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.secretsBeingCreated
-                    }
-                    filesBeingRenamed={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.secretsBeingRenamed
-                    }
-                    onNavigate={onNavigate}
-                    onEditBasename={onEditedBasename}
-                    onDeleteItem={onDeleteItem}
-                    onCreateItem={onCreateItem}
-                    onCopyPath={onCopyPath}
-                />
-            </Container>
+            <PageHeader
+                className={classes.header}
+                icon="secrets"
+                text1={t("page title")}
+                text2={t("what this page is used for")}
+                text3={(t as any)("to learn more read", { "what": <Link href="#">{t("tfm")}</Link> })}
+            />
+            <Explorer
+                paddingLeftSpacing={paddingLeftSpacing}
+                className={classes.explorer}
+                currentPath={state.currentPath}
+                isNavigating={state.isNavigationOngoing}
+                evtTranslation={evtSecretsManagerTranslation}
+                file={
+                    state.state !== "SHOWING SECRET" ? null :
+                        <MySecretsEditor
+                            isBeingUpdated={state.isBeingUpdated}
+                            secretWithMetadata={state.secretWithMetadata}
+                            onEdit={onEdit}
+                        />
+                }
+                fileDate={
+                    state.state !== "SHOWING SECRET" ?
+                        undefined :
+                        new Date(state.secretWithMetadata.metadata.created_time)
+                }
+                files={state.secrets}
+                directories={state.directories}
+                directoriesBeingCreated={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.directoriesBeingCreated
+                }
+                directoriesBeingRenamed={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.directoriesBeingRenamed
+
+                }
+                filesBeingCreated={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.secretsBeingCreated
+                }
+                filesBeingRenamed={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.secretsBeingRenamed
+                }
+                onNavigate={onNavigate}
+                onEditBasename={onEditedBasename}
+                onDeleteItem={onDeleteItem}
+                onCreateItem={onCreateItem}
+                onCopyPath={onCopyPath}
+            />
         </div>
     );
 };
+
+export declare namespace MySecrets {
+
+    export type I18nScheme = {
+        'page title': undefined;
+        'what this page is used for': undefined;
+        'to learn more read': { what: string; }
+        tfm: undefined;
+    };
+
+}

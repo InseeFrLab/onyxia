@@ -10,6 +10,7 @@ import type { Theme, ThemeOptions } from "@material-ui/core/styles/createMuiThem
 
 import { typography, muiTypographyOptions } from "./typography";
 import { getColors, getMuiPaletteOption } from "./colors";
+import { shadows } from "./shadows";
 
 declare module "@material-ui/core/styles/createMuiTheme" {
 
@@ -18,6 +19,7 @@ declare module "@material-ui/core/styles/createMuiTheme" {
         custom: {
             typography: typeof typography;
             colors: ReturnType<typeof getColors>;
+            shadows: typeof shadows;
         }
     }
     // allow configuration using `createMuiTheme`
@@ -48,11 +50,11 @@ export function createTheme(
                 "spacing": factor => 8 * factor,
                 "custom": {
                     typography,
-                    "colors": getColors(paletteType)
+                    "colors": getColors(paletteType),
+                    shadows
                 },
             })
         );
-
 
     return { theme };
 

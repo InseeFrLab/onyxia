@@ -14,12 +14,13 @@ import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/Collabor
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
-
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import CheckIcon from "@material-ui/icons/Check";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "profile" |
@@ -38,8 +39,7 @@ export type Props = {
     /** Design which icon should be displayed */
     type: SvgTypes | MaterialType;
     /** Color of the icon based on the theme */
-    color?: "inherit" | "disabled" | "primary" |
-    "secondary" | "action" | "error";
+    color?: "textPrimary" | "textSecondary" | "textDisabled" | "textFocus";
     /** Enable to make the icon larger or smaller */
     fontSize?: "default" | "inherit" | "small" | "large";
 
@@ -49,16 +49,25 @@ export type Props = {
 
 export const defaultProps: Optional<Props> = {
     "className": null,
-    "color": "inherit",
+    "color": "textPrimary",
     "fontSize": "default"
 };
 
+const useStyles = makeStyles(
+    theme => createStyles<"root", Required<Props>>({
+        "root": ({ color })=> ({
+            "color": theme.custom.colors.useCases.typography[color]
+        })
+    })
+);
+
 export function Icon(props: Props) {
 
-    const { type, color, fontSize, className } = {
-        ...defaultProps,
-        ...noUndefined(props)
-    };
+    const completedProps = { ...defaultProps, ...noUndefined(props) };
+
+    const { type, fontSize, className } = completedProps;
+
+    const classes = useStyles(completedProps);
 
     const svgTypeOrMuiIcon = (() => {
         switch (type) {
@@ -75,13 +84,16 @@ export function Icon(props: Props) {
 
         const MuiIcon = svgTypeOrMuiIcon;
 
-        return <MuiIcon className={className ?? undefined} {...{ color, fontSize }} />;
+        return <MuiIcon 
+            className={clsx(className, classes.root)} 
+            fontSize={fontSize}
+        />;
     }
 
     const svgType = svgTypeOrMuiIcon;
 
     return <SvgIcon
-        className={className ?? undefined}
+        className={clsx(className ?? undefined, classes.root)}
         component={(() => {
             switch (svgType) {
                 case "tour": return TourSvg;
@@ -97,6 +109,6 @@ export function Icon(props: Props) {
                 case "bash": return BashSvg;
             }
         })()}
-        {...{ color, fontSize }}
+        fontSize={fontSize}
     />;
 }

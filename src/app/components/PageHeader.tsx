@@ -7,19 +7,19 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import type { Optional } from "evt/tools/typeSafety";
 import Box from "@material-ui/core/Box";
 import { noUndefined } from "app/utils/noUndefined";
+import clsx from "clsx";
 
 export type Props = {
     icon: AppIconProps["type"];
     text1: NonNullable<React.ReactNode>;
     text2: NonNullable<React.ReactNode>;
     text3: NonNullable<React.ReactNode>;
+    className?: string | null;
+
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
-    "variant": "body1",
-    "color": "primary",
-    "style": null
 };
 
 const useStyles = makeStyles(
@@ -47,12 +47,12 @@ export function PageHeader(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { icon, text1, text2, text3  } = completedProps;
+    const { icon, text1, text2, text3, className  } = completedProps;
 
     const classes = useStyles(completedProps);
 
     return (
-        <Box className={classes.root}>
+        <Box className={clsx(classes.root, className)}>
             <Typography variant="h2" className={classes.text1}>
                 <Icon type={icon} fontSize="large" className={classes.icon} />
                 {text1}

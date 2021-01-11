@@ -184,7 +184,8 @@ export const Vue1 = getStory({
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
     "height": 400,
-    "width": 1024,
+    "width": 1100,
+    "paddingLeftSpacing": 5,
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",
