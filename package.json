@@ -84,6 +84,7 @@
     "react-time-ago": "^6.0.0",
     "react-toastify": "^6.0.8",
     "remove-accents": "^0.4.2",
+    "resize-observer-polyfill": "^1.5.1",
     "shell-quote": "^1.7.2",
     "typeface-roboto": "^0.0.75"
   },
@@ -113,7 +114,7 @@
       "react-hooks/exhaustive-deps": [
         "error",
         {
-          "additionalHooks": "(useEvt|useAsync|useAsyncCallback|useEffectButSkipFirstRender)"
+          "additionalHooks": "(useEvt|useAsync|useAsyncCallback|useEffectButSkipFirstRender|useSemanticGuaranteeMemo)"
         }
       ]
     }

@@ -6,8 +6,24 @@ import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem">) {
+type StoryProps = {
+    width: number;
+    height: number;
+};
+
+const useStyles = makeStyles(
+    () => createStyles<"root", StoryProps>({
+        "root": ({ width, height }) => ({
+            "border": "1px solid black",
+            width,
+            height
+        })
+    })
+);
+
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem" | "className"> & StoryProps) {
 
     const [files, setFiles] = useState(props.files);
     const [directories, setDirectories] = useState(props.directories);
@@ -107,9 +123,12 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
         [directories, files]
     );
 
+    const classes = useStyles(props);
+
     return (
         <Explorer
             {...props}
+            className={classes.root}
             files={files}
             directories={directories}
             filesBeingRenamed={filesBeingRenamed}
@@ -135,7 +154,21 @@ export default {
                 "type": "inline-radio",
                 "options": id<Props["type"][]>(["file", "secret"]),
             }
-        }
+        },
+        "width": {
+            "control": {
+                "type": "range",
+                "min": 300,
+                "max": 1920
+            }
+        },
+        "height": {
+            "control": {
+                "type": "range",
+                "min": 100,
+                "max": 1080
+            }
+        },
     }
 };
 
@@ -150,6 +183,8 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
+    "height": 800,
+    "width": 1024,
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",

@@ -15,6 +15,7 @@ import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
+import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 
 
 export type Props = {
@@ -73,7 +74,7 @@ export function ExplorerItems(props: Props) {
         onIsSelectedItemInEditingStateValueChange
     } = props;
 
-    const ExplorerItem = useMemo(
+    const ExplorerItem = useSemanticGuaranteeMemo(
         () => withProps(SecretOrFileExplorerItem, { visualRepresentationOfAFile }),
         [visualRepresentationOfAFile]
     );

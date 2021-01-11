@@ -6,7 +6,7 @@ import { getStoryFactory, logCallbacks } from "stories/geStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { PathNavigator: Breadcrump }
+    "wrappedComponent": { Breadcrump }
 });
 
 export default meta;

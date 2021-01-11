@@ -67,10 +67,12 @@ export function Breadcrump(props: Props) {
                     key={partialPath}
                     onClick={!isClickable ? undefined : onClickFactory(partialPath)}
                     display="inline"
-                    className={clsx({
-                        [classes.defaultPortion]: true,
-                        [classes.clickablePortion]: isClickable
-                    })}
+                    className={clsx(
+                        classes.defaultPortion,
+                        {
+                            [classes.clickablePortion]: isClickable
+                        }
+                    )}
                 >
                     <Box clone display="inline">
                         <Typography color="primary">{pathBasename(partialPath)}</Typography>

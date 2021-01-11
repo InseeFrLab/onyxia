@@ -23,7 +23,7 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
     [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
-    [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>()
+    [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -147,7 +147,6 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "invalid key start with digit": "Ne doit pas commencer par un chifre",
             "invalid key invalid character": "Caractère non valid",
             "invalid value cannot eval": "Pas une expression shell valid"
-
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",

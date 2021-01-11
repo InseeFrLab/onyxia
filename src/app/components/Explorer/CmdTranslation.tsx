@@ -1,100 +1,197 @@
-
 import { useState, useReducer } from "react";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+//TODO: Refactor this: find a more meaningfully name and detach from SecretManager
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
-import Box from "@material-ui/core/Box";
+import memoize from "memoizee";
+import { useDOMRect } from "app/utils/hooks/useDOMRect";
+import clsx from "clsx";
+import MuiCircularProgress from "@material-ui/core/CircularProgress";
 
 export type Props = {
-    evtTranslation: NonPostableEvt<{
-        type: "cmd" | "result";
-        cmdId: number;
-        translation: string;
-    }>;
+	className: string;
+	evtTranslation: NonPostableEvt<{
+		type: "cmd" | "result";
+		cmdId: number;
+		translation: string;
+	}>;
 };
 
+
+
+const useStyles = makeStyles(
+	theme => {
+
+		const limeGreen = theme.custom.colors.palette.limeGreen.main;
+
+		return createStyles<
+			"root" | 
+			"lastCmdCode" | "accordionSummary" | "accordionExpanded" |
+			"limeGreen" | "white" | "accordionDetails" | "circularLoading",
+			Props & { detailsHeight: number; }
+		>({
+			"root": {
+				// To prevent command to be displayed outside
+				// during the transition
+				"overflow": "hidden"
+			},
+			"accordionExpanded": ({ detailsHeight }) => ({
+				"& .MuiAccordionDetails-root": {
+					"height": detailsHeight,
+					"& > *": {
+						"position": "absolute", 
+						"bottom": 20
+					}
+				}
+			}),
+			"accordionSummary": {
+				"backgroundColor": theme.custom.colors.palette.midnightBlue.main,
+				"zIndex": 1000
+			},
+			"lastCmdCode": {
+				"whiteSpace": "nowrap",
+				"overflow": "hidden",
+				"textOverflow": "ellipsis",
+				"color": limeGreen
+			},
+			"limeGreen": {
+				"color": limeGreen
+			},
+			"white": {
+				"color": theme.custom.colors.palette.whiteSnow.white
+			},
+			"accordionDetails": {
+				"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
+				"overflow": "auto"
+			},
+			"circularLoading": {
+				"color": theme.custom.colors.palette.whiteSnow.main
+			}
+		});
+	}
+);
 export function CmdTranslation(props: Props) {
 
-    const { evtTranslation } = props;
+	const { className, evtTranslation } = props;
 
-    const [getEntries] = useState(
-        () => memoize(
-            (_evtTranslation: Props["evtTranslation"]) => ({
-                "entries": id<{
-                    cmdId: number;
-                    cmd: string;
-                    resp: string | undefined;
-                }[]>([])
-            })
-        )
-    );
+	const [lastTranslatedCmd, setLastTranslatedCmd] = useState("");
 
-    const { entries } = getEntries(evtTranslation);
+	const [getTranslationHistory] = useState(
+		() => memoize(
+			(_evtTranslation: Props["evtTranslation"]) =>
+				id<{
+					cmdId: number;
+					cmd: string;
+					resp: string | undefined;
+				}[]>([])
+		)
+	);
 
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
+	const translationHistory = getTranslationHistory(evtTranslation);
 
-    useEvt(
-        ctx => {
+	const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-            evtTranslation.attach(
-                ({ type }) => type === "cmd",
-                ctx,
-                ({ cmdId, translation }) => {
+	useEvt(
+		ctx => {
 
-                    entries.push({
-                        cmdId,
-                        "cmd": translation,
-                        "resp": undefined
-                    });
+			evtTranslation.attach(
+				({ type }) => type === "cmd",
+				ctx,
+				({ cmdId, translation }) => {
 
-                    forceUpdate();
+					setLastTranslatedCmd(
+						translation
+							.replace("/ \n/g", " ")
+					);
 
-                    evtTranslation.attach(
-                        translation => translation.cmdId === cmdId,
-                        ctx,
-                        ({ translation }) => {
+					translationHistory.push({
+						cmdId,
+						"cmd": translation,
+						"resp": undefined
+					});
 
-                            entries
-                                .find(entry => entry.cmdId === cmdId)!
-                                .resp = translation;
+					forceUpdate();
 
-                            forceUpdate();
+					evtTranslation.attach(
+						translation => translation.cmdId === cmdId,
+						ctx,
+						({ translation }) => {
 
-                        }
-                    );
+							translationHistory
+								.find(entry => entry.cmdId === cmdId)!
+								.resp = translation;
 
-                }
-            );
+							forceUpdate();
 
-        },
-        [entries, evtTranslation]
-    );
+						}
+					);
 
-    return (
-        <>
-            {entries.map(
-                ({ cmdId, cmd, resp }) =>
-                    <Box key={cmdId}>
-                        <Code code={cmd} isGreen={true} />
-                        <Code
-                            code={resp === undefined ? "Pending result..." : resp}
-                            isGreen={false}
-                        />
-                    </Box>
-            )}
-        </>
-    );
+				}
+			);
+
+		},
+		[evtTranslation, translationHistory]
+	);
+
+	const { domRect: { height: totalHeight }, ref: rootRef } = useDOMRect();
+	const { domRect: { height: accordionSummaryHeight }, ref: accordionSummaryRef } = useDOMRect();
+
+	const classes = useStyles({ ...props, "detailsHeight": totalHeight - accordionSummaryHeight });
+
+	return (
+		<div ref={rootRef} className={clsx(classes.root, className)}>
+			<Accordion
+				square={true}
+				classes={{
+					"expanded": classes.accordionExpanded
+				}}
+			>
+				<AccordionSummary
+					ref={accordionSummaryRef}
+					classes={{
+						"root": classes.accordionSummary,
+						"expandIcon": classes.limeGreen
+					}}
+					expandIcon={<ExpandMoreIcon />}
+				>
+					<code className={classes.lastCmdCode}>
+						$ {lastTranslatedCmd}
+					</code>
+
+				</AccordionSummary>
+				<AccordionDetails
+					classes={{ "root": classes.accordionDetails }}
+				>
+					<div> {/* div positioned at the bottom*/}
+						{translationHistory.map(
+							({ cmdId, cmd, resp }) =>
+								<div key={cmdId}>
+									<pre className={classes.limeGreen}>
+										$ {cmd}
+									</pre>
+									<pre className={classes.white}>
+										{"  "}{resp === undefined ?
+											<MuiCircularProgress 
+												classes={{ "root": classes.circularLoading }} 
+												size={10} 
+											/>
+											: resp}
+									</pre>
+								</div>
+						)}
+					</div>
+				</AccordionDetails>
+			</Accordion>
+		</div>
+	);
 
 }
 
-function Code(props: { code: string; isGreen: boolean; }) {
-    const { code, isGreen } = props;
-    return (
-        <Box>
-            <pre style={{ "color": isGreen ? "#95c206" : undefined }}>
-                {code.replace(/["{[,}\]]/g, "")}
-            </pre>
-        </Box>
-    );
-}
+
+
+
