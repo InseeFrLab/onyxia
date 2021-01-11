@@ -9,6 +9,8 @@ import { Props as ExplorerProps } from "app/components/Explorer";
 import * as lib from "lib/setup";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -16,7 +18,26 @@ const { secretExplorer: pure } = lib.pure;
 const thunks = lib.thunks.secretExplorer;
 const pure = lib.pure.secretExplorer;
 
-export function MySecrets() {
+const useStyles = makeStyles(
+    () => createStyles({
+        "root": {
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "explorer": {
+            "flex": 1,
+            "width": "100%"
+        }
+    })
+);
+
+export type Props = {
+    className: string;
+};
+
+export function MySecrets(props: Props) {
+
+    const { className } = props;
 
     const state = useSelector(state => state.secretExplorer);
     const dispatch = useDispatch();
@@ -125,11 +146,14 @@ export function MySecrets() {
         [dispatch]
     );
 
+    const classes= useStyles();
+
     return (
-        <>
+        <div className={clsx(classes.root, className)}>
             <MySecretsHeader />
             <Container maxWidth="lg">
                 <Explorer
+                    className={classes.explorer}
                     currentPath={state.currentPath}
                     isNavigating={state.isNavigationOngoing}
                     evtTranslation={evtSecretsManagerTranslation}
@@ -140,6 +164,11 @@ export function MySecrets() {
                                 secretWithMetadata={state.secretWithMetadata}
                                 onEdit={onEdit}
                             />
+                    }
+                    fileDate={
+                        state.state !== "SHOWING SECRET" ?
+                            undefined :
+                            new Date(state.secretWithMetadata.metadata.created_time)
                     }
                     files={state.secrets}
                     directories={state.directories}
@@ -167,6 +196,6 @@ export function MySecrets() {
                     onCopyPath={onCopyPath}
                 />
             </Container>
-        </>
+        </div>
     );
 };

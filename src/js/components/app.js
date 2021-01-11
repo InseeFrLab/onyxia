@@ -171,7 +171,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									path="/mes-secrets"
 									component={() => (
 										<ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
-											<MySecrets />
+											<MySecrets className="mySecrets"/>
 										</ThemeProvider>
 									)}
 								/>

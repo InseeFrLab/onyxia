@@ -1,9 +1,5 @@
 
-import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
-import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
-import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
-import { useTheme } from "@material-ui/core/styles";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
@@ -17,7 +13,10 @@ import { useEvt } from "evt/hooks";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { smartTrim } from "app/utils/smartTrim";
+import { smartTrim } from "app/utils/smartTrim";
+import { withProps } from "app/utils/withProps";
+import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
+import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 
 
 export type Props = {
@@ -57,7 +56,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "svg" | "frame" | "text" | "hiddenSpan" | "input", Props>({
+    theme => createStyles<"root" | "frame" | "text" | "hiddenSpan" | "input", Props>({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -68,22 +67,6 @@ const useStyles = makeStyles(
                         case "normal": return 10;
                     }
                 })())
-        },
-        "svg": {
-            "fill": "currentColor",
-            "color": ({ kind }) => {
-                switch (kind) {
-                    case "directory": return theme.palette.primary.main;
-                    case "file": return theme.palette.secondary[(() => {
-                        switch (theme.palette.type) {
-                            case "light": return "main";
-                            case "dark": return "contrastText";
-                        }
-                    })()];
-                }
-            },
-            // https://stackoverflow.com/a/24626986/3731798
-            "display": "block"
         },
         "frame": ({ isSelected }) => ({
             "borderRadius": "5px",
@@ -138,42 +121,17 @@ export function ExplorerItem(props: Props) {
         getIsValidBasename
     } = props;
 
+    const Icon = useSemanticGuaranteeMemo(
+        () => withProps(
+            FileOrDirectoryIcon,
+            { visualRepresentationOfAFile }
+        ),
+        [visualRepresentationOfAFile]
+    );
+
     const { t } = useTranslation("ExplorerItem");
 
-    const theme = useTheme();
-
     const classes = useStyles(props);
-
-    /* 
-     * NOTE: We can't set the width and height in css ref:
-     * https://css-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
-     */
-    const { width, height } = useMemo(() => {
-
-        const width = theme.spacing((() => {
-            switch (standardizedWidth) {
-                case "big": return 7;
-                case "normal": return 5;
-            }
-        })());
-
-        return { width, "height": ~~(width * 8 / 10) };
-
-    }, [theme, standardizedWidth]);
-
-    const SvgComponent = useMemo(() => {
-
-        switch (kind) {
-            case "directory":
-                return DirectorySvg;
-            case "file":
-                switch (visualRepresentationOfAFile) {
-                    case "file": return FileSvg;
-                    case "secret": return SecretSvg;
-                }
-        }
-
-    }, [kind, visualRepresentationOfAFile]);
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
@@ -209,9 +167,9 @@ export function ExplorerItem(props: Props) {
 
 
     const getIsValidValue = useCallback(
-        (value: string) => 
-            getIsValidBasename({ "basename": value }) ? 
-                { "isValidValue": true } as const : 
+        (value: string) =>
+            getIsValidBasename({ "basename": value }) ?
+                { "isValidValue": true } as const :
                 { "isValidValue": false, "message": "" } as const,
         [getIsValidBasename]
     );
@@ -254,7 +212,12 @@ export function ExplorerItem(props: Props) {
                 py="4px"
                 {...getOnMouseProps("icon")}
             >
-                <SvgComponent width={width} height={height} className={classes.svg} />
+                <Icon
+                    {...{
+                        standardizedWidth,
+                        kind
+                    }}
+                />
             </Box>
             {
                 !isInEditingState && !isCircularProgressShown ?

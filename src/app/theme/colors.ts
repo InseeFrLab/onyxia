@@ -19,6 +19,10 @@ const palette = {
         "greyVariant2": "#9E9E9E",
         "greyVariant3": "#747474"
     },
+    "limeGreen": {
+        "main": "#BAFF29",
+        "light": "#E2FFA6"
+    },
     "error": {
         "main": "#CC0B0B",
         "light": "#F88078",

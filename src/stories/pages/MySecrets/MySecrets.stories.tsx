@@ -1,16 +1,69 @@
 
-
-import { MySecrets } from "app/pages/MySecrets";
 import { getStoryFactory } from "stories/geStory";
-import { sectionName } from "./sectionName";
+import { sectionName } from "../sectionName";
+import { MySecrets } from "app/pages/MySecrets";
+import type { Props } from "app/pages/MySecrets";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { symToStr } from "app/utils/symToStr";
+
+type StoryProps = {
+    width: number;
+    height: number;
+};
+
+const useStyles = makeStyles(
+    () => createStyles<"root", StoryProps>({
+        "root": ({ width, height }) => ({
+            "border": "1px solid black",
+            width,
+            height
+        })
+    })
+);
+
+
+function Component(props: Omit<Props, "className"> & StoryProps) {
+
+    const classes = useStyles(props);
+
+    return <MySecrets className={classes.root} />;
+
+}
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "doProvideMockStore": true,
-    "wrappedComponent": { MySecrets }
+    "wrappedComponent": { [symToStr({ MySecrets })]: Component }
 });
 
-export default meta;
 
-export const Vue1 = getStory({});
+export default {
+    ...meta,
+    "argTypes": {
+        ...meta.argTypes,
+        "width": {
+            "control": {
+                "type": "range",
+                "min": 10,
+                "max": 100
+            }
+        },
+        "height": {
+            "control": {
+                "type": "range",
+                "min": 10,
+                "max": 100
+            }
+        }
+
+    }
+};
+
+export const Vue1 = getStory({
+    "width": 1024,
+    "height": 900
+});
+
+
+
+
 

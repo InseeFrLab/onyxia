@@ -75,7 +75,7 @@ export type SecretsManagerTranslator = {
 
 
 
-export type SecretsManagerTranslation = {
+export type Translation = {
     type: "cmd" | "result";
     cmdId: number;
     translation: string;
@@ -88,7 +88,7 @@ export function observeSecretsManagerClientWithTranslator(
     }
 ): {
     secretsManagerClientProxy: SecretsManagerClient;
-    getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<SecretsManagerTranslation>; };
+    getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation>; };
 } {
 
     const {
@@ -104,13 +104,13 @@ export function observeSecretsManagerClientWithTranslator(
 
     })();
 
-    const evtSecretsManagerTranslation = Evt.create<SecretsManagerTranslation>();
+    const evtSecretsManagerTranslation = Evt.create<Translation>();
 
     return {
         "getEvtSecretsManagerTranslation": (() => {
 
             const initializationCommands = secretsManagerTranslator.initialization
-                .reduce<SecretsManagerTranslation[]>((prev, { cmd, result }) => {
+                .reduce<Translation[]>((prev, { cmd, result }) => {
 
                     const cmdId = getCounter();
 
