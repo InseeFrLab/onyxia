@@ -44,15 +44,15 @@ export default {
         "width": {
             "control": {
                 "type": "range",
-                "min": 10,
-                "max": 100
+                "min": 200,
+                "max": 1920
             }
         },
         "height": {
             "control": {
                 "type": "range",
-                "min": 10,
-                "max": 100
+                "min": 200,
+                "max": 1080
             }
         }
 
@@ -60,7 +60,7 @@ export default {
 };
 
 export const Vue1 = getStory({
-    "width": 1024,
+    "width": 1200,
     "height": 900
 });
 
