@@ -1,5 +1,5 @@
 
-import React from "react";
+import { useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonClassKey } from "@material-ui/core/Button";
@@ -7,6 +7,8 @@ import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
+import { withProps } from "app/utils/withProps";
+
 
 export type Props = {
 
@@ -55,6 +57,9 @@ const useStyles = makeStyles(
                     `2px solid ${backgroundColor}`,
                 "padding": theme.spacing(1, 2),
                 "&:hover": { backgroundColor },
+                "&:active .MuiSvgIcon-root": {
+                    "color": theme.custom.colors.useCases.typography.textFocus
+                },
             };
 
         },
@@ -74,7 +79,8 @@ const useStyles = makeStyles(
                 })()
             }
 
-        })
+        }),
+        
     })
 );
 
@@ -87,6 +93,18 @@ export function Button(props: Props) {
 
     const classes = useStyles(completedProps);
 
+    const ColoredIcon = useMemo(
+        () => withProps(
+            Icon,
+            {
+                "color": disabled ? "textDisabled" : "textPrimary",
+                "fontSize": "inherit",
+                "className": undefined
+            }
+        ),
+        [disabled]
+    );
+
     return (
         <MuiButton
             className={className ?? undefined}
@@ -94,8 +112,15 @@ export function Button(props: Props) {
             color={color}
             disabled={disabled}
             onClick={onClick}
-            startIcon={startIcon === null ? undefined : <Icon type={startIcon} />}
-            endIcon={endIcon === null ? undefined : <Icon type={endIcon} />}
+            startIcon={startIcon === null ? undefined :
+
+                <ColoredIcon
+                    type={startIcon}
+                />
+            }
+            endIcon={endIcon === null ? undefined :
+                <ColoredIcon type={endIcon} />
+            }
         >
             {children}
         </MuiButton>
