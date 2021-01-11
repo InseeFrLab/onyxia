@@ -75,7 +75,7 @@ export function getStoryFactory<Props>(params: {
                 <I18nProvider lng={lng}>
                     <ThemeProvider isDarkModeEnabled={darkMode}>
                         <Box p={4}>
-                            <Box clone p={4} m={2} display="inline-block" style={{ "maxWidth": "1100px" }}>
+                            <Box clone p={4} m={2} display="inline-block">
                                 <Paper>
                                     <StoreProviderOrFragment>
                                         <Component {...props} />
