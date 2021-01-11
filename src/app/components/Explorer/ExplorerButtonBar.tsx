@@ -19,15 +19,20 @@ export type Props = {
 
     callback(params: { action: Action; }): void;
 
+    paddingLeftSpacing: number;
+
 };
 
 const useStyles = makeStyles(
-    () => createStyles<
+    theme => createStyles<
     "root" ,
         Props 
     >({
-        "root": {
-        },
+        "root": ({ paddingLeftSpacing })=>({
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "boxShadow": theme.custom.shadows[1],
+            "paddingLeft": theme.spacing(paddingLeftSpacing)
+        })
     })
 );
 

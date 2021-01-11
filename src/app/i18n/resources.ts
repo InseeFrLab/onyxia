@@ -2,10 +2,10 @@ import { symToStr } from "app/utils/symToStr";
 import { Reflect } from "app/utils/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { MySecretsHeader } from "app/pages/MySecrets/MySecretsHeader";
 import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/Explorer/Explorer";
+import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 
@@ -18,7 +18,7 @@ type ToTranslations<S extends Scheme> = {
 };
 
 const reflectedI18nSchemes = {
-    [symToStr({ MySecretsHeader })]: Reflect<MySecretsHeader.I18nScheme>(),
+    [symToStr({ MySecrets })]: Reflect<MySecrets.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
     [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
@@ -55,7 +55,7 @@ const common = id<Record<SupportedLanguages, Record<"file" | "secret" | "create"
 
 export const resources = id<Record<SupportedLanguages, Translations>>({
     "en": {
-        "MySecretsHeader": {
+        "MySecrets": {
             "page title": "My Secrets",
             "what this page is used for": `
             Store here the passwords, tokens and other secrets that should note appear in your source code.
@@ -106,7 +106,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
     },
     "fr": {
         /* spell-checker: disable */
-        "MySecretsHeader": {
+        "MySecrets": {
             "page title": "Mes secrets",
             "what this page is used for": "Stoker ici les mots de passes, tokens et autres secrets qui ne doivent pas apparaitre dans votre code source. Ses secrets seront accessibles depuis vos services sous forme de variable d'environnement.",
             "to learn more read": "Pour en apprendre plus vous pouvez consulter {{what}}",
