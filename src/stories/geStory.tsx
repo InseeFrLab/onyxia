@@ -78,7 +78,7 @@ export function getStoryFactory<Props>(params: {
                             <Box clone p={4} m={2} display="inline-block">
                                 <Paper>
                                     <StoreProviderOrFragment>
-                                        <Component {...props} />
+                                            <Component {...props} />
                                     </StoreProviderOrFragment>
                                 </Paper>
                             </Box>
