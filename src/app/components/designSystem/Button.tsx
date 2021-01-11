@@ -9,6 +9,9 @@ import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
 
 export type Props = {
+
+    className?: string | null;
+
     color?: "primary" | "secondary";
     /** can be optional with an icon */
     children?: React.ReactNode;
@@ -23,6 +26,7 @@ export type Props = {
 };
 
 export const defaultProps: Optional<Props> = {
+    "className": null,
     "color": "primary",
     "disabled": false,
     "children": null,
@@ -50,7 +54,7 @@ const useStyles = makeStyles(
                 "border": !isRounded ? undefined :
                     `2px solid ${backgroundColor}`,
                 "padding": theme.spacing(1, 2),
-                "&:hover": { backgroundColor }
+                "&:hover": { backgroundColor },
             };
 
         },
@@ -79,12 +83,13 @@ export function Button(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { color, disabled, children, onClick, startIcon, endIcon } = completedProps;
+    const { color, disabled, children, onClick, startIcon, endIcon, className } = completedProps;
 
     const classes = useStyles(completedProps);
 
     return (
         <MuiButton
+            className={className ?? undefined}
             classes={classes}
             color={color}
             disabled={disabled}
