@@ -72,7 +72,8 @@ const useStyles = makeStyles(
     >({
         "root": {
             "display": "flex",
-            "flexDirection": "column"
+            "flexDirection": "column",
+            "position": "relative"
         },
         "buttonBarWrapper": {
             "zIndex": 0,
@@ -83,7 +84,7 @@ const useStyles = makeStyles(
         },
         "cmdTranslation": ({ cmdTranslationVerticalPositioning }) => ({
             "zIndex": 1,
-            "position": "relative",
+            "position": "absolute",
             "right": 0,
             "width": "40%",
             ...cmdTranslationVerticalPositioning
