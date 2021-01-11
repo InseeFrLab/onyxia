@@ -32,6 +32,7 @@ function Component(props: Omit<Props, "className"> & StoryProps) {
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
+    "doProvideMockStore": true,
     "wrappedComponent": { [symToStr({ MySecrets })]: Component }
 });
 

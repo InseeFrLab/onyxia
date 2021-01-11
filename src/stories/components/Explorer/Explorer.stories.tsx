@@ -183,7 +183,7 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
-    "height": 800,
+    "height": 400,
     "width": 1024,
     ...logCallbacks([
         "onNavigate",
