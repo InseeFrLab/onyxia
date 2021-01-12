@@ -25,6 +25,8 @@ export type Props = {
 
     isRounded?: boolean;
 
+    style?: React.CSSProperties | null;
+
 };
 
 export const defaultProps: Optional<Props> = {
@@ -34,7 +36,8 @@ export const defaultProps: Optional<Props> = {
     "children": null,
     "isRounded": true,
     "startIcon": null,
-    "endIcon": null
+    "endIcon": null,
+    "style": null
 };
 
 
@@ -116,7 +119,7 @@ export function Button(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { color, disabled, children, onClick, startIcon, endIcon, className } = completedProps;
+    const { color, disabled, children, onClick, startIcon, endIcon, className, style } = completedProps;
 
     const classes = useStyles(completedProps);
 
@@ -134,6 +137,7 @@ export function Button(props: Props) {
 
     return (
         <MuiButton
+            style={style ?? undefined}
             className={className ?? undefined}
             classes={classes}
             color={color}
