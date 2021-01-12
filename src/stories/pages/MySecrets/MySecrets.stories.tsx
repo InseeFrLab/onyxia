@@ -60,7 +60,7 @@ export default {
 
 export const Vue1 = getStory({
     "width": 1400,
-    "height": 1500
+    "height": 1100
 });
 
 

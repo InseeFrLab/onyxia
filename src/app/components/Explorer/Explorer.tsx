@@ -302,7 +302,7 @@ export function Explorer(props: Props) {
 
             setCmdTranslationBox({
                 "top": buttonBarHeight,
-                "height": rootBottom - buttonBarBottom - 30
+                "height": rootBottom - buttonBarBottom - 200
             });
 
         },

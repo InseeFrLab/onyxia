@@ -108,9 +108,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         /* spell-checker: disable */
         "MySecrets": {
             "page title": "Mes secrets",
-            "what this page is used for": "Stoker ici les mots de passes, tokens et autres secrets qui ne doivent pas apparaitre dans votre code source. Ses secrets seront accessibles depuis vos services sous forme de variable d'environnement.",
+            "what this page is used for": `Stocker ici les mots de passe et jetons sous forme de variables d'environnement`,
             "to learn more read": "Pour en apprendre plus vous pouvez consulter {{what}}",
-            "tfm": "la documentation"
+            "tfm": "notre documentation"
         },
         "ExplorerItem": {
             "description": "déscription"
