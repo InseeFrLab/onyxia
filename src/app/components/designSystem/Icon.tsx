@@ -21,6 +21,7 @@ import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import CheckIcon from "@material-ui/icons/Check";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import AttachMoney from "@material-ui/icons/AttachMoney";
+import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 
@@ -31,7 +32,7 @@ export type SvgTypes =
 
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
-    "check" | "expandMore" | "attachMoney";
+    "check" | "expandMore" | "attachMoney" | "chevronLeft";
 
 //NOTE: Ensure there is not overlap between the types
 (function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
@@ -117,6 +118,7 @@ export function Icon(props: Props) {
                 case "bash": return BashSvg;
                 case "expandMore": return ExpandMore;
                 case "attachMoney": return AttachMoney;
+                case "chevronLeft": return ChevronLeft;
             }
         })()}
         fontSize={fontSize}

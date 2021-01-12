@@ -1,13 +1,13 @@
 
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
-import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 import { withProps } from "app/utils/withProps";
-import Box from "@material-ui/core/Box";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { IconButton } from "app/components/designSystem/IconButton"
+import { useFormattedDate } from "app/i18n/useFormattedDate";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -24,11 +24,20 @@ export const defaultProps: Optional<Props> = {
 };
 
 const useStyles = makeStyles(
-    () => createStyles({
+    theme => createStyles({
         "root": {
-            "& > *": {
-                "display": "inline-block"
-            }
+            "display": "flex",
+            "alignItems": "center",
+            "gap": `0 ${theme.spacing(2)}px`,
+            "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`,
+            "padding": theme.spacing(3, 0)
+        },
+        "basename": {
+            "marginBottom": theme.spacing(1)
+        },
+        "date": {
+            "color": theme.custom.colors.useCases.typography.textSecondary,
+            "textTransform": "capitalize"
         }
     })
 );
@@ -48,25 +57,55 @@ export function ExplorerFileHeader(props: Props) {
             FileOrDirectoryIcon,
             {
                 visualRepresentationOfAFile,
-                "standardizedWidth": "forHeader",
+                "standardizedWidth": "big",
                 "kind": "file"
             }
         ),
         [visualRepresentationOfAFile]
     );
 
+    const isSameYear = date.getFullYear() === new Date().getFullYear();
+
+    const formattedDate = useFormattedDate({
+        date,
+        "formatByLng": {
+            /* spell-checker: disable */
+            "fr": `dddd Do MMMM${isSameYear?"":" YYYY"} à H[h]mm`,
+            "en": `dddd, MMMM Do${isSameYear?"":" YYYY"}, h:mm a`
+            /* spell-checker: enable */
+        }
+    });
+
     return (
-        <Box className={classes.root}>
-            <Button onClick={onBack}>Back</Button>
-            <Icon />
-            <Box>
-                <Typography variant="h5">{fileBasename}</Typography>
+        <div className={classes.root}>
+            <div>
+                <IconButton
+                    fontSize="large"
+                    type="chevronLeft"
+                    onClick={onBack}
+                />
+            </div>
+            <div>
+                <Icon />
+            </div>
+            <div>
+                <Typography
+                    variant="h5"
+                    className={classes.basename}
+                >
+                    {fileBasename}
+                </Typography>
                 {
                     date.getTime() === 0 ? null :
-                        <Typography variant="caption">{date.toISOString()}</Typography>
+                        <Typography
+                            variant="caption"
+                            className={classes.date}
+                        >
+                            {formattedDate}
+                        </Typography>
                 }
-            </Box>
-        </Box>
+            </div>
+        </div>
 
     );
 
