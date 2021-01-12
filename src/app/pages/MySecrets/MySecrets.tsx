@@ -10,7 +10,6 @@ import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { PageHeader } from "app/components/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
-import { Link } from "app/components/designSystem/Link";
 import clsx from "clsx";
 /*
 const { secretExplorer: thunks } = lib.thunks;
@@ -164,7 +163,7 @@ export function MySecrets(props: Props) {
                 icon="secrets"
                 text1={t("page title")}
                 text2={t("what this page is used for")}
-                text3={(t as any)("to learn more read", { "what": <Link href="#">{t("tfm")}</Link> })}
+                text3={t("to learn more read", { "what": t("tfm") })}
             />
             <Explorer
                 paddingLeftSpacing={paddingLeftSpacing}
