@@ -13,7 +13,10 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/utils/smartTrim";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "app/components/designSystem/Typography";
+import { useTheme } from "@material-ui/core/styles";
+import { IconButton } from "app/components/designSystem/IconButton";
+
 
 export type Props = {
 
@@ -27,30 +30,40 @@ export type Props = {
         editedStrValue: string | undefined;
     }): void;
     onDelete(): void;
-    getResolvedValue(params: { strValue: string; }): { 
-        isResolvedSuccessfully: true; 
-        resolvedValue: string; 
-    } | { 
-        isResolvedSuccessfully: false; 
-        message: string; 
+    getResolvedValue(params: { strValue: string; }): {
+        isResolvedSuccessfully: true;
+        resolvedValue: string;
+    } | {
+        isResolvedSuccessfully: false;
+        message: string;
     };
-    getIsValidAndAvailableKey(params: { key: string; }): { 
-        isValidAndAvailableKey: true; 
-    } | { 
-        isValidAndAvailableKey: false; 
-        message: string; 
+    getIsValidAndAvailableKey(params: { key: string; }): {
+        isValidAndAvailableKey: true;
+    } | {
+        isValidAndAvailableKey: false;
+        message: string;
     };
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 
+    isDarker: boolean;
+
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"resolveError" | "breakAll" , Props>({
-        "resolveError": {
-            "color": theme.palette.error.main
-        },
-        "breakAll": {
+    theme => createStyles<"root" | "dollarSign" | "valueAndResolvedValue", Props & { isInEditingState: boolean; }>({
+        "dollarSign": ({ isInEditingState }) => ({
+            "color": isInEditingState ?
+                theme.custom.colors.useCases.typography.textDisabled :
+                theme.custom.colors.useCases.typography.textFocus
+        }),
+        "root": ({ isDarker }) => ({
+            "backgroundColor": isDarker ?
+                theme.custom.colors.useCases.surfaces.background :
+                "transparent"
+        }),
+        "valueAndResolvedValue": {
+            "padding": theme.spacing(2, 1),
             "wordBreak": "break-all"
         }
     })
@@ -58,7 +71,6 @@ const useStyles = makeStyles(
 
 export function MySecretsEditorRow(props: Props) {
 
-    const classes = useStyles(props);
 
     const { t } = useTranslation("MySecretsEditorRow");
 
@@ -184,13 +196,13 @@ export function MySecretsEditorRow(props: Props) {
         { "strValue": isInEditingState ? strValueBeingTyped : strValue }
     );
 
-    const getIsValidValue_key= useCallback(
-        (value: Parameters<TextFieldProps["getIsValidValue"]>[0])=> {
+    const getIsValidValue_key = useCallback(
+        (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
 
             const result = getIsValidAndAvailableKey({ "key": value });
 
-            return result.isValidAndAvailableKey ? 
-                { "isValidValue": true } as const : 
+            return result.isValidAndAvailableKey ?
+                { "isValidValue": true } as const :
                 { "isValidValue": false, "message": result.message } as const;
 
         },
@@ -198,22 +210,24 @@ export function MySecretsEditorRow(props: Props) {
     );
 
     const getIsValidValue_strValue = useCallback(
-        (value: Parameters<TextFieldProps["getIsValidValue"]>[0])=> {
+        (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
 
             const resolveValueResult = getResolvedValue({ "strValue": value });
 
-            return resolveValueResult.isResolvedSuccessfully ? 
-                { "isValidValue": true } as const : 
+            return resolveValueResult.isResolvedSuccessfully ?
+                { "isValidValue": true } as const :
                 { "isValidValue": false, "message": resolveValueResult.message } as const;
 
         },
         [getResolvedValue]
     );
 
+    const classes = useStyles({ ...props, isInEditingState });
+
     const SmartTrim = useMemo(
         () =>
             (props: { children: string }) =>
-                <Typography className={clsx(classes.breakAll)}>{
+                <Typography className={clsx(classes.valueAndResolvedValue)}>{
                     smartTrim({
                         "maxLength": 70,
                         "minCharAtTheEnd": 10,
@@ -223,12 +237,27 @@ export function MySecretsEditorRow(props: Props) {
         [classes]
     );
 
+    const theme = useTheme();
+
     return (
-        <TableRow>
-            <TableCell>$</TableCell>
+        <TableRow className={classes.root}>
+            <TableCell>
+                <Typography 
+                    style={{ "padding": theme.spacing(2, 1) }}
+                    variant="body1" 
+                    className={classes.dollarSign}
+                >
+                    $
+                </Typography>
+            </TableCell>
             <TableCell>{
                 !isInEditingState ?
-                    key
+                    <Typography 
+                    variant="body1"
+                    style={{ "padding": theme.spacing(2, 1) }}
+                    >
+                        {key}
+                    </Typography>
                     :
                     <TextField
                         defaultValue={key}
@@ -265,20 +294,20 @@ export function MySecretsEditorRow(props: Props) {
 
             }</TableCell>
             <TableCell align="right">
-                <Button
-                    color="secondary"
+                <div style={{ "display": "flex" }}>
+                <IconButton
+                    type={isInEditingState ? "check" : "edit"}
                     disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
-                    startIcon={isInEditingState ? "check" : "edit"}
                     onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
-                    isRounded={false}
+                    fontSize="small"
                 />
-                <Button
-                    color="secondary"
+                <IconButton
                     disabled={isLocked}
-                    startIcon="delete"
+                    type="delete"
                     onClick={onDelete}
-                    isRounded={false}
+                    fontSize="small"
                 />
+                </div>
             </TableCell>
         </TableRow>
     );

@@ -19,17 +19,19 @@ const defaultProps: Optional<TextFieldProps> = {
 };
 
 const useStyles = makeStyles(
-    () => createStyles<Id<TextFieldClassKey, "root">, Required<TextFieldProps>>({
-        "root": {
-        }
+    () => createStyles<Id<TextFieldClassKey, "root">, Required<TextFieldProps> & { error: boolean; }>({
+        "root": ({ error })=>({
+            ...(error? {
+                "position": "relative",
+                "top": "8px"
+            }:{})
+        })
     })
 );
 
 export function TextField(props: TextFieldProps) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
-
-    const classes = useStyles(completedProps);
 
     const { label, onValueBeingTypedChange, ...completedCommonProps } = completedProps;
 
@@ -50,6 +52,11 @@ export function TextField(props: TextFieldProps) {
             },
             [onValueBeingTypedChange]
         )
+    });
+
+    const classes = useStyles({ 
+        ...completedProps, 
+        "error": commonMuiProps.error 
     });
 
     return (

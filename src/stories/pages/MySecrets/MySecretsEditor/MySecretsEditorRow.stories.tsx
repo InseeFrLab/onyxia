@@ -33,7 +33,8 @@ const baseParams: Parameters<typeof getStory>[0] = {
     ...logCallbacks([
         "onEdit",
         "onDelete"
-    ])
+    ]),
+    "isDarker": true
 };
 
 export const VueDefault = getStory(baseParams);
