@@ -13,6 +13,7 @@ import type { SupportedLanguages } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
+import { useTheme } from "@material-ui/core/styles";
 
 const { ThemeProvider } = ThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
@@ -45,6 +46,35 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
     })
 };
 
+function Container(props: { children: React.ReactNode; }) {
+
+    const { children } = props;
+
+    const theme = useTheme();
+
+    return (
+        <Box p={4} style={{ "backgroundColor": "white" }}>
+            <Box clone p={4} m={2} display="inline-block">
+                <Paper
+                    style={{
+                        "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                    }}
+                >
+                    <div
+                        style={{
+                            "outline": `1px solid ${theme.custom.colors.palette.whiteSnow.greyVariant2}`
+                        }}
+                    >
+                        {children}
+                    </div>
+                </Paper>
+            </Box>
+        </Box>
+    );
+
+
+}
+
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
@@ -69,24 +99,19 @@ export function getStoryFactory<Props>(params: {
                 {children}
             </StoreProvider>;
 
+
+
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
-        ({ darkMode, lng, ...props }) => {
-            return (
-                <I18nProvider lng={lng}>
-                    <ThemeProvider isDarkModeEnabled={darkMode}>
-                        <Box p={4}>
-                            <Box clone p={4} m={2} display="inline-block">
-                                <Paper>
-                                    <StoreProviderOrFragment>
-                                            <Component {...props} />
-                                    </StoreProviderOrFragment>
-                                </Paper>
-                            </Box>
-                        </Box>
-                    </ThemeProvider>
-                </I18nProvider>
-            );
-        }
+        ({ darkMode, lng, ...props }) =>
+            <I18nProvider lng={lng}>
+                <ThemeProvider isDarkModeEnabled={darkMode}>
+                    <StoreProviderOrFragment>
+                        <Container>
+                            <Component {...props} />
+                        </Container>
+                    </StoreProviderOrFragment>
+                </ThemeProvider>
+            </I18nProvider>;
 
 
     function getStory(props: Props): typeof Template {

@@ -14,7 +14,6 @@ type StoryProps = {
 const useStyles = makeStyles(
     () => createStyles<"root", StoryProps>({
         "root": ({ width, height }) => ({
-            "border": "1px solid black",
             width,
             height
         })
@@ -60,8 +59,8 @@ export default {
 };
 
 export const Vue1 = getStory({
-    "width": 1200,
-    "height": 900
+    "width": 1400,
+    "height": 1500
 });
 
 
