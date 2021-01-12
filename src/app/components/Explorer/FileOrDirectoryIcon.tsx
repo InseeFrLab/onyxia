@@ -1,6 +1,6 @@
 
 import { useMemo } from "react";
-import { makeStyles, createStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
@@ -10,7 +10,7 @@ export type Props = {
     visualRepresentationOfAFile: "secret" | "file";
 
     /** Big for large screen, normal otherwise */
-    standardizedWidth: "normal" | "big";
+    standardizedWidth: "normal" | "big" | "forHeader";
 
     /** Tell if we are displaying an directory or a secret */
     kind: "file" | "directory";
@@ -45,8 +45,6 @@ export function FileOrDirectoryIcon(props: Props) {
 
     const classes = useStyles(props);
 
-    const theme = useTheme();
-
     /* 
      * NOTE: We can't set the width and height in css ref:
      * https://css-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
@@ -54,17 +52,19 @@ export function FileOrDirectoryIcon(props: Props) {
     const { width, height } = useMemo(
         () => {
 
-            const width = theme.spacing((() => {
+            const width = (() => {
                 switch (standardizedWidth) {
-                    case "big": return 7;
-                    case "normal": return 5;
+                    case "forHeader": return 120;
+                    case "big": return 100;
+                    case "normal": return 60;
+
                 }
-            })());
+            })();
 
             return { width, "height": ~~(width * 8 / 10) };
 
         },
-        [theme, standardizedWidth]
+        [standardizedWidth]
     );
 
     const SvgComponent = useMemo(() => {
@@ -88,7 +88,5 @@ export function FileOrDirectoryIcon(props: Props) {
             height={height}
         />
     );
-
-
 
 }
