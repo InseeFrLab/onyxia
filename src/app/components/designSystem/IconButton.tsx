@@ -30,6 +30,7 @@ export const defaultProps: Optional<Props> = {
 const useIconButtonStyles = makeStyles(
     theme => createStyles<Id<IconButtonClassKey, "root">, Required<Props>>({
         "root": {
+            "padding": theme.spacing(1),
             "&:hover": {
                 "backgroundColor": "unset",
                 "& svg": {
