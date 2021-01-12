@@ -14,8 +14,9 @@ const defaultProps: Optional<TableHeadProps> = {
 
 
 const useStyles = makeStyles(
-    () => createStyles<Id<TableHeadClassKey, "root">, {}>({
+    theme => createStyles<Id<TableHeadClassKey, "root">, {}>({
         "root": {
+            "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`
         }
     })
 );
