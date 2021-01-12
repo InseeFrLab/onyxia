@@ -20,6 +20,7 @@ const defaultProps: Optional<TableCellProps> = {
 const useStyles = makeStyles(
     () => createStyles<Id<TableCellClassKey, "root">, {}>({
         "root": {
+            "padding": 0
         }
     })
 );
