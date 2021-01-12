@@ -94,7 +94,9 @@ const useStyles = makeStyles(
         },
         "input": {
             //NOTE: So that the text does not move when editing start.
-            "marginTop": "2px",
+            //"marginTop": "2px",
+            "marginTop": "-1px",
+
             "paddingTop": 0,
             "& .MuiInput-input": {
                 "textAlign": "center"

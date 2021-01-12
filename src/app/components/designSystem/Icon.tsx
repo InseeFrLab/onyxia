@@ -19,6 +19,8 @@ import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import CheckIcon from "@material-ui/icons/Check";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import AttachMoney from "@material-ui/icons/AttachMoney";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 
@@ -29,7 +31,7 @@ export type SvgTypes =
 
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
-    "check";
+    "check" | "expandMore" | "attachMoney";
 
 //NOTE: Ensure there is not overlap between the types
 (function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
@@ -39,7 +41,7 @@ export type Props = {
     /** Design which icon should be displayed */
     type: SvgTypes | MaterialType;
     /** Color of the icon based on the theme */
-    color?: "textPrimary" | "textSecondary" | "textDisabled" | "textFocus";
+    color?: "textPrimary" | "textSecondary" | "textDisabled" | "textFocus" | "limeGreen";
     /** Enable to make the icon larger or smaller */
     fontSize?: "default" | "inherit" | "small" | "large";
 
@@ -55,8 +57,14 @@ export const defaultProps: Optional<Props> = {
 
 const useStyles = makeStyles(
     theme => createStyles<"root", Required<Props>>({
-        "root": ({ color })=> ({
-            "color": theme.custom.colors.useCases.typography[color]
+        "root": ({ color }) => ({
+            "color": color === "limeGreen" ? 
+                theme.custom.colors.palette.limeGreen.main : 
+                theme.custom.colors.useCases.typography[color],
+            // https://stackoverflow.com/a/24626986/3731798
+            //"verticalAlign": "top",
+            //"display": "inline-block"
+			"verticalAlign": "top"
         })
     })
 );
@@ -107,6 +115,8 @@ export function Icon(props: Props) {
                 case "files": return FilesSvg;
                 case "collaborationTools": return CollaborationToolsSvg;
                 case "bash": return BashSvg;
+                case "expandMore": return ExpandMore;
+                case "attachMoney": return AttachMoney;
             }
         })()}
         fontSize={fontSize}
