@@ -8,11 +8,9 @@ import type { TextFieldProps } from "app/components/designSystem/textField/TextF
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
-import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/utils/smartTrim";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTheme } from "@material-ui/core/styles";
 import { IconButton } from "app/components/designSystem/IconButton";
@@ -51,7 +49,7 @@ export type Props = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles<"root" | "dollarSign" | "valueAndResolvedValue", Props & { isInEditingState: boolean; }>({
+    theme => createStyles<"root" | "dollarSign" | "valueAndResolvedValue" | "keyAndValueTableCells", Props & { isInEditingState: boolean; }>({
         "dollarSign": ({ isInEditingState }) => ({
             "color": isInEditingState ?
                 theme.custom.colors.useCases.typography.textDisabled :
@@ -65,7 +63,10 @@ const useStyles = makeStyles(
         "valueAndResolvedValue": {
             "padding": theme.spacing(2, 1),
             "wordBreak": "break-all"
-        }
+        },
+        "keyAndValueTableCells": ({ isInEditingState })=>({
+            "padding": isInEditingState ? theme.spacing(0, 2) : undefined
+        })
     })
 );
 
@@ -226,15 +227,16 @@ export function MySecretsEditorRow(props: Props) {
 
     const SmartTrim = useMemo(
         () =>
-            (props: { children: string }) =>
-                <Typography className={clsx(classes.valueAndResolvedValue)}>{
+            (props: { children: string; className: string; style?: React.CSSProperties | null; }) =>
+                <Typography className={props.className} style={props.style}>{
                     smartTrim({
                         "maxLength": 70,
                         "minCharAtTheEnd": 10,
-                        "text": props.children
+                        "text": props.children,
+                        
                     })
                 }</Typography>,
-        [classes]
+        []
     );
 
     const theme = useTheme();
@@ -250,7 +252,8 @@ export function MySecretsEditorRow(props: Props) {
                     $
                 </Typography>
             </TableCell>
-            <TableCell>{
+            <TableCell className={classes.keyAndValueTableCells}>
+                {
                 !isInEditingState ?
                     <Typography 
                     variant="body1"
@@ -272,9 +275,9 @@ export function MySecretsEditorRow(props: Props) {
                         transformValueBeingTyped={toUpperCase}
                     />
             }</TableCell>
-            <TableCell>{
+            <TableCell className={classes.keyAndValueTableCells}>{
                 !isInEditingState ?
-                    <SmartTrim>{strValue}</SmartTrim>
+                    <SmartTrim className={classes.valueAndResolvedValue}>{strValue}</SmartTrim>
                     :
                     <TextField
                         defaultValue={strValue}
@@ -290,23 +293,30 @@ export function MySecretsEditorRow(props: Props) {
             <TableCell>{
                 !resolveValueResult.isResolvedSuccessfully ?
                     null :
-                    <SmartTrim>{resolveValueResult.resolvedValue}</SmartTrim>
+                    <SmartTrim
+                        className={classes.valueAndResolvedValue}
+                        style={{
+                            "color": theme.custom.colors.palette.whiteSnow.greyVariant3
+                        }}
+                    >
+                        {resolveValueResult.resolvedValue}
+                    </SmartTrim>
 
             }</TableCell>
             <TableCell align="right">
                 <div style={{ "display": "flex" }}>
-                <IconButton
-                    type={isInEditingState ? "check" : "edit"}
-                    disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
-                    onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
-                    fontSize="small"
-                />
-                <IconButton
-                    disabled={isLocked}
-                    type="delete"
-                    onClick={onDelete}
-                    fontSize="small"
-                />
+                    <IconButton
+                        type={isInEditingState ? "check" : "edit"}
+                        disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
+                        onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
+                        fontSize="small"
+                    />
+                    <IconButton
+                        disabled={isLocked}
+                        type="delete"
+                        onClick={onDelete}
+                        fontSize="small"
+                    />
                 </div>
             </TableCell>
         </TableRow>

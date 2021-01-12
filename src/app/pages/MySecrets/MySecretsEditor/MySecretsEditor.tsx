@@ -249,7 +249,7 @@ export function MySecretsEditor(props: Props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Object.keys(secret).map(key =>
+                        {Object.keys(secret).map((key,i) =>
                             <MySecretsEditorRow
                                 key={key}
                                 keyOfSecret={key}
@@ -260,6 +260,7 @@ export function MySecretsEditor(props: Props) {
                                 getResolvedValue={getResolvedValueFactory(key)}
                                 getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
                                 evtAction={getEvtAction(key)}
+                                isDarker={i % 2 === 0}
                             />
                         )}
                     </TableBody>
