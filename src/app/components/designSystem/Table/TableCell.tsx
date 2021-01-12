@@ -6,12 +6,14 @@ import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 export type TableCellProps = {
+    className?: string | null;
     children: React.ReactNode;
     align?: "center" | "inherit" | "justify" | "left" | "right";
     size?: "medium" | "small";
 };
 
 const defaultProps: Optional<TableCellProps> = {
+    "className": null,
     "align": "inherit",
     "size": "medium"
 };
@@ -29,12 +31,12 @@ export function TableCell(props: TableCellProps) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children, align, size } = completedProps;
+    const { className, children, align, size } = completedProps;
 
     const classes = useStyles();
 
     return (
-        <MuiTableCell classes={classes} {...{ align, size }} >
+        <MuiTableCell className={className ?? undefined} classes={classes} {...{ align, size }} >
             {children}
         </MuiTableCell>
     );
