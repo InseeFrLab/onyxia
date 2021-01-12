@@ -31,11 +31,15 @@ const useStyles = makeStyles(
         },
         "text1": {
             "marginBottom": theme.spacing(3),
+            //"border": "1px solid black",
+            "display": "flex",
+            "alignItems": "center"
         },
         "icon": {
             "marginRight": theme.spacing(2),
             "position": "relative",
-            "top": "3px",
+            //"border": "1px solid black",
+            "fontSize": 46
         },
         "text2": {
             "marginBottom": theme.spacing(1)
@@ -55,7 +59,8 @@ export function PageHeader(props: Props) {
         <Box className={clsx(classes.root, className)}>
             <Typography variant="h2" className={classes.text1}>
                 <Icon type={icon} fontSize="large" className={classes.icon} />
-                {text1}
+                {/* //TODO: Address the fact that our font does not have the same box size*/}
+                <span style={{ "paddingTop": "6px", /*"border": "1px solid black"*/ }}>{text1}</span>
             </Typography>
             <Typography variant="h5" className={classes.text2}>{text2}</Typography>
             <Typography variant="body1">{text3}</Typography>

@@ -32,7 +32,6 @@ const useStyles = makeStyles(
                     })()];
                 }
             },
-            // https://stackoverflow.com/a/24626986/3731798
             "display": "block"
         }
     })

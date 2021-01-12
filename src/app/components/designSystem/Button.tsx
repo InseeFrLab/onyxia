@@ -39,49 +39,76 @@ export const defaultProps: Optional<Props> = {
 
 
 const useStyles = makeStyles(
-    theme => createStyles<Id<ButtonClassKey, "root" | "text">, Required<Props>>({
-        "root": ({ isRounded, color }) => {
+    theme => {
 
-            const backgroundColor = theme.custom.colors.useCases.buttons[
-                (() => {
+        const textColor = ({ color, disabled }: Pick<Required<Props>, "color" | "disabled">) =>
+            disabled ?
+                theme.custom.colors.useCases.typography.textDisabled :
+                theme.custom.colors.useCases.typography[(() => {
                     switch (color) {
-                        case "primary": return "actionHoverPrimary";
-                        case "secondary": return "actionHoverSecondary";
+                        case "primary": return "textFocus";
+                        case "secondary": return "textPrimary";
                     }
-                })()
-            ];
+                })()];
 
-            return {
-                "borderRadius": isRounded ? 20 : undefined,
-                "border": !isRounded ? undefined :
-                    `2px solid ${backgroundColor}`,
-                "padding": theme.spacing(1, 2),
-                "&:hover": { backgroundColor },
-                "&:active .MuiSvgIcon-root": {
-                    "color": theme.custom.colors.useCases.typography.textFocus
-                },
-            };
-
-        },
-        "text": ({ color }) => ({
-            "&:hover": {
-                "color": (() => {
-                    switch (theme.palette.type) {
-                        case "dark":
-                            return theme.custom.colors.palette[(() => {
-                                switch (color) {
-                                    case "primary": return "whiteSnow";
-                                    case "secondary": return "midnightBlue";
-                                }
-                            })()].main;
-                        case "light": return theme.custom.colors.palette.whiteSnow.main;
-                    }
-                })()
+        const hoverTextColor = ({ color }: Pick<Required<Props>, "color" | "disabled">) => {
+            switch (theme.palette.type) {
+                case "dark":
+                    return theme.custom.colors.palette[(() => {
+                        switch (color) {
+                            case "primary": return "whiteSnow";
+                            case "secondary": return "midnightBlue";
+                        }
+                    })()].main;
+                case "light": return theme.custom.colors.palette.whiteSnow.main;
             }
+        };
 
-        }),
-        
-    })
+
+        return createStyles<Id<ButtonClassKey | "icon", "root" | "text" | "icon">, Required<Props>>({
+            "root": ({ isRounded, color, disabled }) => {
+
+                const hoverBackgroundColor = theme.custom.colors.useCases.buttons[
+                    (() => {
+                        switch (color) {
+                            case "primary": return "actionHoverPrimary";
+                            case "secondary": return "actionHoverSecondary";
+                        }
+                    })()
+                ];
+
+                return {
+                    "backgroundColor": isRounded && disabled ? 
+                        theme.custom.colors.useCases.buttons.actionDisabledBackground : 
+                        "transparent",
+                    "borderRadius": isRounded ? 20 : undefined,
+                    "border": `2px solid ${!isRounded || disabled ? "transparent" : hoverBackgroundColor}`,
+                    "padding": theme.spacing(1, 2),
+                    "&:hover": { backgroundColor: hoverBackgroundColor },
+                    /*
+                    "&:active .MuiSvgIcon-root": {
+                        "color": theme.custom.colors.useCases.typography.textFocus
+                    },
+                    */
+                    "&:hover .MuiSvgIcon-root": {
+                        "color": hoverTextColor({ color, disabled }),
+                    }
+                };
+
+
+            },
+            "text": ({ color, disabled }) => ({
+                "color": textColor({ color, disabled }),
+                "&:hover": {
+                    "color": hoverTextColor({ color, disabled }),
+                }
+            }),
+            "icon": ({ color, disabled }) => ({
+                "color": textColor({ color, disabled })
+            })
+        });
+
+    }
 );
 
 
@@ -99,10 +126,10 @@ export function Button(props: Props) {
             {
                 "color": disabled ? "textDisabled" : "textPrimary",
                 "fontSize": "inherit",
-                "className": undefined
+                "className": classes.icon
             }
         ),
-        [disabled]
+        [disabled, classes]
     );
 
     return (
@@ -122,7 +149,10 @@ export function Button(props: Props) {
                 <ColoredIcon type={endIcon} />
             }
         >
-            {children}
+            {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
+            <span style={{ "paddingTop": "2px" }}>
+                {children}
+            </span>
         </MuiButton>
     );
 

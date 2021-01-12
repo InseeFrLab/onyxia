@@ -130,7 +130,10 @@ const useCustomButtonStyles = makeStyles(
                 "color": theme.custom.colors.useCases.typography.textPrimary
             },
             "&:active .MuiButton-label": {
-                "color": theme.custom.colors.useCases.typography.textFocus
+                "color": theme.custom.colors.useCases.typography.textFocus,
+                "& .MuiSvgIcon-root": {
+                    "color": theme.custom.colors.useCases.typography.textFocus
+                }
             },
             "& .MuiTouchRipple-root": {
                 "display": "none"
@@ -142,9 +145,11 @@ const useCustomButtonStyles = makeStyles(
             "borderRadius": "unset",
             "&:hover": {
                 "borderBottom": `2px solid ${theme.custom.colors.useCases.buttons.actionActive}`,
-                "marginBottom": "-2px",
                 "boxSizing": "border-box",
                 "backgroundColor": "unset",
+                "& .MuiSvgIcon-root": {
+                    "color": theme.custom.colors.useCases.typography.textPrimary
+                }
             },
         },
     })
