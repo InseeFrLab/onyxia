@@ -19,7 +19,7 @@ const { secretExplorer: pure } = lib.pure;
 const thunks = lib.thunks.secretExplorer;
 const pure = lib.pure.secretExplorer;
 
-const paddingLeftSpacing = 10;
+const paddingLeftSpacing = 5;
 
 const useStyles = makeStyles(
     theme => createStyles({

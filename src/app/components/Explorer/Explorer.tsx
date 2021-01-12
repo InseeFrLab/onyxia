@@ -77,7 +77,7 @@ const useStyles = makeStyles(
             "flexDirection": "column",
             "position": "relative",
             "& > *:not(:first-child)": {
-                "paddingLeft": theme.spacing(paddingLeftSpacing)
+                "marginLeft": theme.spacing(paddingLeftSpacing)
             }
         }),
         "buttonBarWrapper": {

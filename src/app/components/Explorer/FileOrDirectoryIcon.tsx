@@ -10,7 +10,7 @@ export type Props = {
     visualRepresentationOfAFile: "secret" | "file";
 
     /** Big for large screen, normal otherwise */
-    standardizedWidth: "normal" | "big" | "forHeader";
+    standardizedWidth: "normal" | "big";
 
     /** Tell if we are displaying an directory or a secret */
     kind: "file" | "directory";
@@ -53,7 +53,6 @@ export function FileOrDirectoryIcon(props: Props) {
 
             const width = (() => {
                 switch (standardizedWidth) {
-                    case "forHeader": return 120;
                     case "big": return 100;
                     case "normal": return 60;
 
