@@ -1,7 +1,6 @@
 import { useMemo, useCallback } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
-import { withProps } from "app/utils/withProps";
 import memoize from "memoizee";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Evt } from "evt";
@@ -237,8 +236,8 @@ export function MySecretsEditor(props: Props) {
     const theme = useTheme();
 
     return (
-        <>
-            <TableContainer component={TableContainerComponent}>
+        <Paper style={{ "padding": theme.spacing(2) }}>
+            <TableContainer>
                 <Table aria-label={t("table of secret")}>
                     <TableHead>
                         <TableRow>
@@ -261,11 +260,25 @@ export function MySecretsEditor(props: Props) {
 
                             </TableCell>
 
+                            <TableCell>
+                                <Typography
+                                    variant="body1"
+                                    style={{ "padding": theme.spacing(2, 1) }}
+                                >
+                                    {t("value column name")}
+                                </Typography>
 
-                            <TableCell>{t("value column name")}</TableCell>
+                            </TableCell>
+
+
                             <TableCell>
                                 <Tooltip title={t("what's a resolved value")} >
-                                    <>{t("resolved value column name")}</>
+                                    <Typography
+                                        variant="body1"
+                                        style={{ "padding": theme.spacing(2, 1) }}
+                                    >
+                                        {t("resolved value column name")}
+                                    </Typography>
                                 </Tooltip>
                             </TableCell>
                         </TableRow>
@@ -291,10 +304,11 @@ export function MySecretsEditor(props: Props) {
             <Button
                 startIcon="add"
                 onClick={onClick}
+                style={{ "marginTop": theme.spacing(3) }}
             >
                 {t("add an entry")}
             </Button>
-        </>
+        </Paper>
     );
 
 }
@@ -331,7 +345,7 @@ function stringifyValue(value: Secret.Value) {
         ;
 }
 
-const TableContainerComponent = withProps(Paper, { "elevation": 3 });
+//const TableContainerComponent = withProps(Paper, { "elevation": 3 });
 
 /** Exported for storybook */
 export function getIsValidKey(params: { key: string; }): {

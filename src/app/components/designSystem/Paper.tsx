@@ -6,13 +6,16 @@ import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
-    /** Usually a plain text, that represents the text of the link */
     children: NonNullable<React.ReactNode>;
     elevation?: number;
+    className?: string | null;
+    style?: React.CSSProperties | null;
 };
 
 const defaultProps: Optional<Props> = {
-    "elevation": 1
+    "elevation": 1,
+    "className": null,
+    "style": null
 };
 
 const useStyles = makeStyles(
@@ -24,10 +27,10 @@ const useStyles = makeStyles(
 
 export function Paper(props: Props) {
 
-    const { children, elevation } = { ...defaultProps, ...noUndefined(props) };
+    const { children, elevation, className, style } = { ...defaultProps, ...noUndefined(props) };
 
     const classes = useStyles();
 
-    return <MuiPaper elevation={elevation} classes={classes}>{children}</MuiPaper>
+    return <MuiPaper style={style ?? undefined} className={className ?? undefined} elevation={elevation} classes={classes}>{children}</MuiPaper>
 
 }

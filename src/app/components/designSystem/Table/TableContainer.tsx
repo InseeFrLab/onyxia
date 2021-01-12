@@ -8,10 +8,11 @@ import { noUndefined } from "app/utils/noUndefined";
 
 export type TableContainerProps = {
     children: NonNullable<React.ReactNode>;
-    component: React.ElementType;
+    component?: React.ElementType;
 };
 
 const defaultProps: Optional<TableContainerProps> = {
+    "component": "div"
 };
 
 

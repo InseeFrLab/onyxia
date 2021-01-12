@@ -80,7 +80,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
 
         },
         "MySecretsEditor": {
-            "add an entry": "New ENV",
+            "add an entry": "Add a new variable",
             "environnement variable default name": "NEW_VAR",
             "table of secret": "table of secret",
 
@@ -129,11 +129,11 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         },
         "MySecretsEditor": {
 
-            "add an entry": "Nouvelle ENV",
+            "add an entry": "Ajouter une variable",
             "environnement variable default name": "NOUVELLE_VARENV",
             "table of secret": "table de secret",
 
-            "key column name": "Nom de l'ENV",
+            "key column name": "Nom de la variable",
             "value column name": "Valeur",
             "resolved value column name": "Valeur résolue",
             "what's a resolved value": `
