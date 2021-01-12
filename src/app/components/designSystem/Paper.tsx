@@ -19,18 +19,29 @@ const defaultProps: Optional<Props> = {
 };
 
 const useStyles = makeStyles(
-    () => createStyles<Id<PaperClassKey, "root">, {}>({
-        "root": {
-        }
+    theme => createStyles<Id<PaperClassKey, "root">, Required<Props>>({
+        "root": ({ elevation }) => ({
+            "boxShadow": theme.custom.shadows[elevation]
+        })
     })
 );
 
 export function Paper(props: Props) {
+    
+    const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children, elevation, className, style } = { ...defaultProps, ...noUndefined(props) };
+    const { children, className, style } = completedProps;
 
-    const classes = useStyles();
+    const classes = useStyles(completedProps);
 
-    return <MuiPaper style={style ?? undefined} className={className ?? undefined} elevation={elevation} classes={classes}>{children}</MuiPaper>
+    return (
+    <MuiPaper 
+        style={style ?? undefined} 
+        className={className ?? undefined} 
+        classes={classes}>
+            {children}
+        
+    </MuiPaper>
+    );
 
 }

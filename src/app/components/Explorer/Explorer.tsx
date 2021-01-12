@@ -346,7 +346,10 @@ export function Explorer(props: Props) {
             <Box className={classes.scrollable}>
                 {
                     file ?
-                        file
+                        /* TODO: This is a temporary hack!! */
+                        <div style={{ "paddingLeft": 8, "paddingRight": 20 }}>
+                            {file}
+                        </div>
                         :
                         (
                             files.length === 0 && directories.length === 0 ?
