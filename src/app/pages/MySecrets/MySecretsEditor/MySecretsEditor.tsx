@@ -11,6 +11,8 @@ import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 import type { UseArrayDiffCallbackParams } from "app/utils/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
+import { Typography } from "app/components/designSystem/Typography";
+import { useTheme } from "@material-ui/core/styles";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 import { Paper } from "app/components/designSystem/Paper";
 import {
@@ -232,14 +234,34 @@ export function MySecretsEditor(props: Props) {
         [secret, onEdit, t]
     );
 
+    const theme = useTheme();
+
     return (
         <>
             <TableContainer component={TableContainerComponent}>
                 <Table aria-label={t("table of secret")}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>$</TableCell>
-                            <TableCell>{t("key column name")}</TableCell>
+                            <TableCell>
+                                <Typography
+                                    style={{ "padding": theme.spacing(2, 1) }}
+                                    variant="body1"
+                                >
+                                    $
+                                </Typography>
+
+                            </TableCell>
+                            <TableCell>
+                                <Typography
+                                    variant="body1"
+                                    style={{ "padding": theme.spacing(2, 1) }}
+                                >
+                                    {t("key column name")}
+                                </Typography>
+
+                            </TableCell>
+
+
                             <TableCell>{t("value column name")}</TableCell>
                             <TableCell>
                                 <Tooltip title={t("what's a resolved value")} >
@@ -249,7 +271,7 @@ export function MySecretsEditor(props: Props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Object.keys(secret).map((key,i) =>
+                        {Object.keys(secret).map((key, i) =>
                             <MySecretsEditorRow
                                 key={key}
                                 keyOfSecret={key}
@@ -260,7 +282,7 @@ export function MySecretsEditor(props: Props) {
                                 getResolvedValue={getResolvedValueFactory(key)}
                                 getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
                                 evtAction={getEvtAction(key)}
-                                isDarker={i % 2 === 0}
+                                isDarker={i % 2 === 1}
                             />
                         )}
                     </TableBody>
@@ -327,7 +349,7 @@ export function getIsValidKey(params: { key: string; }): {
 
     const { key } = params;
 
-    if( key === "" ){
+    if (key === "") {
         return {
             "isValidKey": false,
             "message": "invalid key empty string"
