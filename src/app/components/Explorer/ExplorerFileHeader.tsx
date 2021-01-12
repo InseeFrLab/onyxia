@@ -48,7 +48,7 @@ export function ExplorerFileHeader(props: Props) {
             FileOrDirectoryIcon,
             {
                 visualRepresentationOfAFile,
-                "standardizedWidth": "big",
+                "standardizedWidth": "forHeader",
                 "kind": "file"
             }
         ),
