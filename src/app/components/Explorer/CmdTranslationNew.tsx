@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, useRef, useEffect } from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 //TODO: Refactor this: find a more meaningfully name and detach from SecretManager
 import type { NonPostableEvt } from "evt";
@@ -28,7 +28,7 @@ export type Props = {
 const useStyles = makeStyles(
 	theme => createStyles<
 		"root" | "iconButton" | "limeGreen" |
-		"white" | "circularLoading" | "expandedPanel" | "header" | "dollar",
+		"white" | "circularLoading" | "collapsedPanel" | "expandedPanel" | "header" | "dollar",
 		Props & { headerHeight: number; isExpended: boolean; }
 	>({
 		"root": {
@@ -42,7 +42,12 @@ const useStyles = makeStyles(
 				),
 				"transform": isExpended ?
 					"rotate(-180deg)" :
-					"rotate(0)"
+					"rotate(0)",
+			},
+			"&:hover": {
+				"& svg": {
+					"color": theme.custom.colors.palette.whiteSnow.white,
+				}
 			}
 		}),
 		"limeGreen": {
@@ -54,8 +59,26 @@ const useStyles = makeStyles(
 		"circularLoading": {
 			"color": theme.custom.colors.palette.whiteSnow.main
 		},
+		"collapsedPanel": {
+			"maxHeight": 0,
+			"overflow": "hidden",
+			"transform": "scaleY(0)",
+			"transition": [
+				"all 150ms cubic-bezier(0.4, 0, 0.2, 1)", 
+				"all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			].join(", "),
+		},
 		"expandedPanel": ({ maxHeight, headerHeight }) => ({
-			"maxHeight": maxHeight - headerHeight
+			"maxHeight": maxHeight - headerHeight,
+			"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
+			"overflow": "scroll",
+			"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+			"& pre": {
+				"whiteSpace": "pre-wrap",
+				"wordBreak": "break-all"
+			},
+			"transform": "scaleY(1)",
+			"transformOrigin":"top"
 		}),
 		"header": {
 			"backgroundColor": theme.custom.colors.palette.midnightBlue.main
@@ -131,17 +154,34 @@ export function CmdTranslation(props: Props) {
 
 	const { domRect: { height: headerHeight }, ref: headerRef } = useDOMRect();
 
-	const [isExpended, toggleIsExpended] = useReducer(isExpended => !isExpended, false);
+	const bottomRef = useRef<HTMLDivElement>(null);
+
+	const [isExpended, toggleIsExpended] = useReducer(
+		isExpended => !isExpended,
+		false
+	);
+
+	useEffect(
+		() => {
+
+			if (!isExpended) {
+				return;
+			}
+
+			bottomRef.current?.scrollIntoView();
+
+		},
+		[isExpended, evtTranslation.postCount]
+	);
 
 	const classes = useStyles({ ...props, headerHeight, isExpended });
-
 
 	return (
 		<div className={className}>
 			<div style={{ "display": "flex", "alignItems": "center", "border": "1px solid white" }} ref={headerRef} className={classes.header}>
 
-				<div style={{ "width": 40, "textAlign": "center", "border": "1px solid white",   }} className={classes.limeGreen}>
-					<Icon type="attachMoney" color="limeGreen" className={classes.dollar} />
+				<div style={{ "width": 50, /*"textAlign": "center",*/ "border": "1px solid white", "textAlign": "end", "paddingRight": 10 }} className={classes.limeGreen}>
+					<Icon type="attachMoney" color="limeGreen" className={classes.dollar} fontSize="small" />
 
 
 					{/*<code className={classes.limeGreen}>$</code>*/}
@@ -168,17 +208,27 @@ export function CmdTranslation(props: Props) {
 
 			</div>
 
-			{ isExpended &&
-				<div className={classes.expandedPanel}>
+			<div className={
+				isExpended ?
+					classes.expandedPanel :
+					classes.collapsedPanel
+			} >
 
-					{translationHistory.map(
-						({ cmdId, cmd, resp }) =>
-							<div key={cmdId}>
-								<pre className={classes.limeGreen}>
-									$ {cmd}
+				{translationHistory.map(
+					({ cmdId, cmd, resp }) =>
+						<div key={cmdId} style={{ "display": "flex", "border": "1px solid white" }}>
+
+							<div style={{ "width": 50, "border": "1px solid white", "textAlign": "end", "paddingRight": 10 }}>
+
+								<Icon type="attachMoney" color="limeGreen" className={classes.dollar} fontSize="small" />
+
+							</div>
+							<div style={{ "flex": 1 }}>
+								<pre className={classes.limeGreen} style={{ "marginTop": 4 }}>
+									{cmd}
 								</pre>
 								<pre className={classes.white}>
-									{"  "}{resp === undefined ?
+									{resp === undefined ?
 										<MuiCircularProgress
 											classes={{ "root": classes.circularLoading }}
 											size={10}
@@ -186,10 +236,12 @@ export function CmdTranslation(props: Props) {
 										: resp}
 								</pre>
 							</div>
-					)}
 
-				</div>
-			}
+						</div>
+				)}
+				<div style={{ "float": "left", "clear": "both" }} ref={bottomRef} />
+
+			</div>
 
 
 

@@ -195,20 +195,7 @@ export function getVaultClientTranslator(
 					},
 					{
 						"cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
-						"result": [
-							"Success! You are now authenticated!\n",
-							"Notes from the Onyxia team:\n",
-							"-You do not have to run this command nor define the VAULT_ADDR environnement variable",
-							"to use vault in Jupyter or RStudio's terminal, you're pre-logged in.\n",
-							"-The jwt is your OIDC access token, you can find it in the 'my account' page.\n",
-							"-You may notice a VAULT_TOKEN environnement variable defined in your containers",
-							"however your don't need to define this env on your machine if you use your OIDC",
-							"access token to login\n",
-							"\n",
-							"Relevant doc:\n",
-							"https://www.vaultproject.io/docs/auth/jwt#jwt-authentication\n",
-							"https://learn.hashicorp.com/tutorials/vault/getting-started-dev-server?in=vault/getting-started"
-						].join(" ")
+						"result": "Success! You are now authenticated!"
 					}
 				],
 				"methods": {
