@@ -34,13 +34,7 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
     {
         "cmdId": 0,
         "type": "result",
-        "translation": `Success! You are now authenticated! Notes from the Onyxia team: 
-        -You do not have to run this command nor define the VAULT_ADDR environnement variable to use vault in Jupyter or RStudio's terminal, you're pre-logged in. 
-        -The jwt is your OIDC access token, you can find it in the 'my account' page. 
-        -You may notice a VAULT_TOKEN environnement variable defined in your containers however your don't need to define this env on your machine if you use your OIDC access token to login.
-        
-        Relevant doc: https://www.vaultproject.io/docs/auth/jwt#jwt-authentication https://learn.hashicorp.com/tutorials/vault/getting-started-dev-server?in=vault/getting-started
-        `
+        "translation": `Success! You are now authenticated!`
     },
     {
         "cmdId": 1,
@@ -50,14 +44,14 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
     {
         "cmdId": 1,
         "type": "result",
-        "translation": `
-        Keys
-        ----
-        .onyxia/
-        dossier_test/
-        secret_sans_nom
-        untitled_secret
-        `
+        "translation": [
+            "Keys",
+            "----",
+            ".onyxia/",
+            "dossier_test/",
+            "secret_sans_nom",
+            "untitled_secret"
+        ].join("\n")
     },
     {
         "cmdId": 2,
@@ -67,12 +61,12 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
     {
         "cmdId": 2,
         "type": "result",
-        "translation": `
-        ==== Data ====
-        Key    Value
-        ---    -----
-        value  01xlcu1hg4wxzib08xe4
-        `
+        "translation": [
+            "==== Data ====",
+            "Key    Value",
+            "---    -----",
+            "value  01xlcu1hg4wxzib08xe4",
+        ].join("\n")
     },
     {
         "cmdId": 3,
@@ -121,10 +115,10 @@ function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryPro
     const { tick, maxHeight } = props;
 
     const [index, incrementIndex] = useReducer(
-        (index: number) => 
+        (index: number) =>
             (index === translations.length - 1) ?
-            index :
-            index + 1,
+                index :
+                index + 1,
         0
     );
 
