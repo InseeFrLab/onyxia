@@ -1,4 +1,5 @@
 
+
 import React from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import MuiTypography from "@material-ui/core/Typography";
@@ -37,27 +38,33 @@ const useStyles = makeStyles(
     })
 );
 
-
-export function Typography(props: Props) {
+export const Typography = React.forwardRef<any, Props>((props, ref) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children, variant, className, style } = completedProps;
+    const { 
+        children, variant, className, style, 
+        //For the forwarding, rest should be empty (typewise)
+        color,
+        ...rest 
+    } = completedProps;
 
     const classes = useStyles(completedProps);
 
     return (
         <MuiTypography
+            ref={ref}
             className={className ?? undefined}
             classes={classes}
             variant={variant}
             style={style ?? undefined}
+            {...rest}
         >
             {children}
         </MuiTypography>
     );
 
-}
+});
 
 
 

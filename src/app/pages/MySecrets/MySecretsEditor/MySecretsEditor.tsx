@@ -1,3 +1,4 @@
+import React from "react";
 import { useMemo, useCallback } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
@@ -275,7 +276,11 @@ export function MySecretsEditor(props: Props) {
                                 <Tooltip title={t("what's a resolved value")} >
                                     <Typography
                                         variant="body1"
-                                        style={{ "padding": theme.spacing(2, 1) }}
+                                        style={{ 
+                                            "padding": theme.spacing(2, 1), 
+                                            //So that the tooltip is well positioned
+                                            "display": "inline-block" 
+                                        }}
                                     >
                                         {t("resolved value column name")}
                                     </Typography>
@@ -336,7 +341,6 @@ export declare namespace MySecretsEditor {
     };
 
 }
-
 
 function stringifyValue(value: Secret.Value) {
     return typeof value === "object" ?
