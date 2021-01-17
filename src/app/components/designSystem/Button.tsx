@@ -121,7 +121,7 @@ export function Button(props: Props) {
 
     const { color, disabled, children, onClick, startIcon, endIcon, className, style } = completedProps;
 
-    const classes = useStyles(completedProps);
+    const { icon: iconClassName, ...classes} = useStyles(completedProps);
 
     const ColoredIcon = useMemo(
         () => withProps(
@@ -129,10 +129,10 @@ export function Button(props: Props) {
             {
                 "color": disabled ? "textDisabled" : "textPrimary",
                 "fontSize": "inherit",
-                "className": classes.icon
+                "className": iconClassName
             }
         ),
-        [disabled, classes]
+        [disabled, iconClassName]
     );
 
     return (
@@ -144,7 +144,6 @@ export function Button(props: Props) {
             disabled={disabled}
             onClick={onClick}
             startIcon={startIcon === null ? undefined :
-
                 <ColoredIcon
                     type={startIcon}
                 />
