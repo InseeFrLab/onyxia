@@ -70,7 +70,8 @@ const useStyles = makeStyles(
 					},
 					"transform": "scaleY(1)",
 					"transformOrigin": "top",
-					borderRadius
+					borderRadius,
+					"paddingTop": theme.spacing(1)
 				}),
 				"header": ({ isExpended }) => ({
 					"backgroundColor": theme.custom.colors.palette.midnightBlue.main,
