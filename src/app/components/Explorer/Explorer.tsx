@@ -21,7 +21,6 @@ import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMe
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 import { ExplorerFileHeader as PolymorphExplorerFileHeader } from "./ExplorerFileHeader";
-import type { Id } from "evt/tools/typeSafety";
 import { useDOMRect } from "app/utils/hooks/useDOMRect";
 import clsx from "clsx";
 
@@ -62,15 +61,10 @@ export type Props = {
 
 };
 
-type CmdTranslationVerticalPositioning = Id<React.CSSProperties, {
-    top: number;
-    height: number;
-}>;
-
 const useStyles = makeStyles(
     theme => createStyles<
-        "root" | "cmdTranslation" | "scrollable" | "buttonBarWrapper",
-        Props & { cmdTranslationVerticalPositioning: CmdTranslationVerticalPositioning; }
+        "root" | "cmdTranslation" | "scrollable",
+        Props & { cmdTranslationTop: number; }
     >({
         "root": ({ paddingLeftSpacing })=>({
             "display": "flex",
@@ -80,19 +74,15 @@ const useStyles = makeStyles(
                 "marginLeft": theme.spacing(paddingLeftSpacing)
             }
         }),
-        "buttonBarWrapper": {
-            "zIndex": 0,
-        },
         "scrollable": {
             "overflow": "auto",
             "flex": 1
         },
-        "cmdTranslation": ({ cmdTranslationVerticalPositioning }) => ({
-            "zIndex": 1,
+        "cmdTranslation": ({ cmdTranslationTop }) => ({
             "position": "absolute",
             "right": 0,
             "width": "40%",
-            ...cmdTranslationVerticalPositioning
+            "top": cmdTranslationTop
         })
     })
 );
@@ -283,27 +273,27 @@ export function Explorer(props: Props) {
 
     // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
     const {
-        domRect: { height: buttonBarHeight, bottom: buttonBarBottom },
+        domRect: { 
+            height: buttonBarHeight, 
+            bottom: buttonBarBottom 
+        },
         ref: buttonBarRef
     } = useDOMRect();
 
-    const [
-        cmdTranslationVerticalPositioning,
-        setCmdTranslationBox
-    ] = useState<CmdTranslationVerticalPositioning>(() => ({
-        "top": 0,
-        "height": 0
-    }));
+    const [ cmdTranslationTop, setCmdTranslationTop ]= 
+        useState<number>(0);
 
-    const classes = useStyles({ ...props, cmdTranslationVerticalPositioning });
+    const [ cmdTranslationMaxHeight,setCmdTranslationMaxHeight ]=
+        useState<number>(0);
+    
+    const classes = useStyles({ ...props, cmdTranslationTop });
 
     useEffect(
         () => {
 
-            setCmdTranslationBox({
-                "top": buttonBarHeight,
-                "height": rootBottom - buttonBarBottom - 200
-            });
+            setCmdTranslationTop(buttonBarHeight);
+
+            setCmdTranslationMaxHeight(rootBottom - buttonBarBottom - 200);
 
         },
         [
@@ -315,10 +305,7 @@ export function Explorer(props: Props) {
 
     return (
         <div ref={rootRef} className={clsx(className, classes.root)}>
-            <div
-                ref={buttonBarRef}
-                className={classes.buttonBarWrapper}
-            >
+            <div ref={buttonBarRef} >
                 <ButtonBar
                     paddingLeftSpacing={paddingLeftSpacing}
                     isThereAnItemSelected={isThereAnItemSelected}
@@ -329,6 +316,7 @@ export function Explorer(props: Props) {
             <CmdTranslation
                 className={classes.cmdTranslation}
                 evtTranslation={evtTranslation}
+                maxHeight={cmdTranslationMaxHeight}
             />
             {
                 file &&
