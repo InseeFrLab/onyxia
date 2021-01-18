@@ -206,7 +206,7 @@ export function getVaultClientTranslator(
 							[
 								"Keys",
 								"----",
-								...[directories, secrets]
+								...[...directories, ...secrets]
 							].join("\n")
 					},
 					"get": {
