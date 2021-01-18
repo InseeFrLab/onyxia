@@ -70,7 +70,7 @@ const useStyles = makeStyles(
             "display": "flex",
             "flexDirection": "column",
             "position": "relative",
-            "& > *:not(:first-child)": {
+            "& > *:nth-child(n+3)": {
                 "marginLeft": theme.spacing(paddingLeftSpacing)
             }
         }),
