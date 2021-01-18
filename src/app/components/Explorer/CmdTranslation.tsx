@@ -163,7 +163,7 @@ export function CmdTranslation(props: Props) {
 
 					forceUpdate();
 
-					evtTranslation.attach(
+					evtTranslation.attachOnce(
 						translation => translation.cmdId === cmdId,
 						ctx,
 						({ translation }) => {

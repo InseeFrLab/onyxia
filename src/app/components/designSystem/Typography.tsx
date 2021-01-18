@@ -13,19 +13,23 @@ export type Props = {
     color?: "primary" | "secondary" | "disabled" | "focus"
     style?: React.CSSProperties | null;
     children: NonNullable<React.ReactNode>;
+    onClick?: (() => void) | null;
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
     "variant": "body1",
     "color": "primary",
-    "style": null
+    "style": null,
+    "onClick": null
 };
+
+
 
 
 const useStyles = makeStyles(
     theme => createStyles<Id<TypographyClassKey, "root">, Required<Props>>({
-        "root": ({ color }) => ({
+        "root": ({ color, onClick }) => ({
             "color": theme.custom.colors.useCases.typography[(()=>{
                 switch(color){
                     case "primary": return "textPrimary";
@@ -33,7 +37,8 @@ const useStyles = makeStyles(
                     case "disabled": return "textDisabled";
                     case "focus": return "textFocus";
                 }
-            })()]
+            })()],
+            "cursor": onClick !== null ?  "pointer" : undefined
         })
     })
 );
@@ -46,6 +51,7 @@ export const Typography = React.forwardRef<any, Props>((props, ref) => {
         children, variant, className, style, 
         //For the forwarding, rest should be empty (typewise)
         color,
+        onClick,
         ...rest 
     } = completedProps;
 
@@ -58,6 +64,7 @@ export const Typography = React.forwardRef<any, Props>((props, ref) => {
             classes={classes}
             variant={variant}
             style={style ?? undefined}
+            onClick={onClick ?? undefined}
             {...rest}
         >
             {children}

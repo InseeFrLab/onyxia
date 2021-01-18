@@ -12,7 +12,7 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const defaultView = getStory({
-    "path": "a/b/c/d/foo.csv",
+    "path": "aaa/bbb/cccc/dddd/foo.csv",
     "minDepth": 0,
     ...logCallbacks(["callback"])
 });
