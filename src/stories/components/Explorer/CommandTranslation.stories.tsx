@@ -11,17 +11,16 @@ import type { UnpackEvt } from "evt";
 
 type StoryProps = {
     width: number;
-    height: number;
+    maxHeight: number;
     /** Toggle to fire a translation event */ 
     tick: boolean;
 };
 
 const useStyles = makeStyles(
     () => createStyles<"root", StoryProps>({
-        "root": ({ width, height }) => ({
+        "root": ({ width }) => ({
             "border": "1px solid black",
-            width,
-            height
+            width
         })
     })
 );
@@ -30,32 +29,44 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
-        "translation": "cmd 0 yadi yada yadi yada yadi yada yadi yada yadi yada yadi yada yadi yada yadi yada yadi yada yadi yada"
+        "translation": "vault write auth/jwt/login role=onyxia-user jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvaG4uZG9lQGluc2VlLmZyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZG9laiIsImdpdGxhYl9ncm91cCI6bnVsbCwibmFtZSI6IiJ9.eAs8RQ_lfvjh_qYZtRYO9qp7VI6TLwWrRLd3Xr3Yt8g"
     },
     {
         "cmdId": 0,
         "type": "result",
-        "translation": "result of cmd 0"
+        "translation": `Success! You are now authenticated!`
     },
     {
         "cmdId": 1,
         "type": "cmd",
-        "translation": "cmd 1"
-    },
-    {
-        "cmdId": 2,
-        "type": "cmd",
-        "translation": "cmd 2"
+        "translation": "vault kv list onyxia-kv/doej"
     },
     {
         "cmdId": 1,
         "type": "result",
-        "translation": "result of cmd 1"
+        "translation": [
+            "Keys",
+            "----",
+            ".onyxia/",
+            "dossier_test/",
+            "secret_sans_nom",
+            "untitled_secret"
+        ].join("\n")
+    },
+    {
+        "cmdId": 2,
+        "type": "cmd",
+        "translation": "vault kv get onyxia-kv/doej/.onyxia/userServicePassword"
     },
     {
         "cmdId": 2,
         "type": "result",
-        "translation": "result of cmd 2"
+        "translation": [
+            "==== Data ====",
+            "Key    Value",
+            "---    -----",
+            "value  01xlcu1hg4wxzib08xe4",
+        ].join("\n")
     },
     {
         "cmdId": 3,
@@ -63,14 +74,14 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
         "translation": "cmd 3"
     },
     {
-        "cmdId": 3,
-        "type": "result",
-        "translation": "result of cmd 3"
-    },
-    {
         "cmdId": 4,
         "type": "cmd",
         "translation": "cmd 4"
+    },
+    {
+        "cmdId": 3,
+        "type": "result",
+        "translation": "result of cmd 3"
     },
     {
         "cmdId": 4,
@@ -101,13 +112,13 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
 
 function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryProps) {
 
-    const { tick } = props;
+    const { tick, maxHeight } = props;
 
     const [index, incrementIndex] = useReducer(
-        (index: number) => 
+        (index: number) =>
             (index === translations.length - 1) ?
-            index :
-            index + 1,
+                index :
+                index + 1,
         0
     );
 
@@ -131,6 +142,7 @@ function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryPro
         <CmdTranslation
             className={classes.root}
             evtTranslation={evtTranslation}
+            maxHeight={maxHeight}
         />
     );
 
@@ -154,7 +166,7 @@ export default {
                 "step": 10
             }
         },
-        "height": {
+        "maxHeight": {
             "control": {
                 "type": "range",
                 "min": 100,
@@ -172,8 +184,8 @@ export default {
 };
 
 export const Vue1 = getStory({
-    "width": 250,
-    "height": 350,
+    "width": 800,
+    "maxHeight": 350,
     "tick": true
 });
 
