@@ -63,7 +63,7 @@ export type Props = {
 
 const useStyles = makeStyles(
     theme => createStyles<
-        "root" | "cmdTranslation" | "scrollable",
+        "root" | "breadcrump" | "cmdTranslation" | "scrollable",
         Props & { cmdTranslationTop: number; }
     >({
         "root": ({ paddingLeftSpacing })=>({
@@ -74,6 +74,10 @@ const useStyles = makeStyles(
                 "marginLeft": theme.spacing(paddingLeftSpacing)
             }
         }),
+        "breadcrump": {
+            "marginTop": theme.spacing(2),
+            "marginBottom": theme.spacing(3),
+        },
         "scrollable": {
             "overflow": "auto",
             "flex": 1
@@ -328,6 +332,7 @@ export function Explorer(props: Props) {
                 />
             }
             <Breadcrump
+                className={classes.breadcrump}
                 minDepth={!isNavigating ? 0 : Infinity}
                 path={currentPath}
                 callback={breadcrumbCallback}
