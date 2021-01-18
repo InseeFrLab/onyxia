@@ -1,6 +1,5 @@
 import { useState, useReducer, useRef, useEffect } from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-//TODO: Refactor this: find a more meaningfully name and detach from SecretManager
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { id } from "evt/tools/typeSafety/id";

@@ -8,11 +8,13 @@ import { noUndefined } from "app/utils/noUndefined";
 
 export type TableContainerProps = {
     children: NonNullable<React.ReactNode>;
+    className?: string | null;
     component?: React.ElementType;
 };
 
 const defaultProps: Optional<TableContainerProps> = {
-    "component": "div"
+    "component": "div",
+    "className": null
 };
 
 
@@ -25,11 +27,11 @@ const useStyles = makeStyles(
 
 export function TableContainer(props: TableContainerProps) {
 
-    const { children, component } = { ...defaultProps, ...noUndefined(props) };
+    const { children, component, className } = { ...defaultProps, ...noUndefined(props) };
 
     const classes = useStyles();
 
-    return <MuiTableContainer component={component} classes={classes} >
+    return <MuiTableContainer component={component} classes={classes} className={className ?? undefined}>
         {children}</MuiTableContainer>
 
 }
