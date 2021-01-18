@@ -82,7 +82,8 @@ const useStyles = makeStyles(
             "position": "absolute",
             "right": 0,
             "width": "40%",
-            "top": cmdTranslationTop
+            "top": cmdTranslationTop,
+            "zIndex": 1
         })
     })
 );
