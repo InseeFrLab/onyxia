@@ -6,10 +6,12 @@ import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 export type TableHeadProps = {
+    className?: string | null,
     children: NonNullable<React.ReactNode>;
 };
 
 const defaultProps: Optional<TableHeadProps> = {
+    "className": null
 };
 
 
@@ -25,12 +27,12 @@ export function TableHead(props: TableHeadProps) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children } = completedProps;
+    const { children, className } = completedProps;
 
     const classes = useStyles();
 
     return (
-        <MuiTableHead classes={classes} >
+        <MuiTableHead className={className ?? undefined} classes={classes} >
             {children}
         </MuiTableHead>
     );

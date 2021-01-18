@@ -28,12 +28,30 @@ import { Tooltip } from "app/components/designSystem/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
 import type { Id } from "evt/tools/typeSafety/id";
 import { evaluateShellExpression } from "app/utils/evaluateShellExpression";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 export type Props = {
     isBeingUpdated: boolean;
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
 };
+
+const useStyles = makeStyles(
+    theme => createStyles<"root" | "tableContainer" | "tableHead", Props>({
+        "root": {
+            "padding": theme.spacing(2), 
+        },
+        "tableContainer": {
+            //So the error on the input of the last row is not cropped.
+            "overflow": "visible"
+        },
+        "tableHead": {
+            "& .MuiTypography-root": {
+                "padding": theme.spacing(2, 1)
+            }
+        }
+    })
+);
 
 export function MySecretsEditor(props: Props) {
 
@@ -236,15 +254,16 @@ export function MySecretsEditor(props: Props) {
 
     const theme = useTheme();
 
+    const classes = useStyles(props);
+
     return (
-        <Paper style={{ "padding": theme.spacing(2) }}>
-            <TableContainer>
+        <Paper className={classes.root}>
+            <TableContainer className={classes.tableContainer}>
                 <Table aria-label={t("table of secret")}>
-                    <TableHead>
+                    <TableHead className={classes.tableHead}>
                         <TableRow>
                             <TableCell>
                                 <Typography
-                                    style={{ "padding": theme.spacing(2, 1) }}
                                     variant="body1"
                                 >
                                     $
@@ -254,7 +273,6 @@ export function MySecretsEditor(props: Props) {
                             <TableCell>
                                 <Typography
                                     variant="body1"
-                                    style={{ "padding": theme.spacing(2, 1) }}
                                 >
                                     {t("key column name")}
                                 </Typography>
@@ -264,7 +282,6 @@ export function MySecretsEditor(props: Props) {
                             <TableCell>
                                 <Typography
                                     variant="body1"
-                                    style={{ "padding": theme.spacing(2, 1) }}
                                 >
                                     {t("value column name")}
                                 </Typography>
@@ -277,7 +294,6 @@ export function MySecretsEditor(props: Props) {
                                     <Typography
                                         variant="body1"
                                         style={{ 
-                                            "padding": theme.spacing(2, 1), 
                                             //So that the tooltip is well positioned
                                             "display": "inline-block" 
                                         }}
