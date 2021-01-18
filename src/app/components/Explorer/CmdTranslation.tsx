@@ -9,6 +9,7 @@ import { useDOMRect } from "app/utils/hooks/useDOMRect";
 import MuiCircularProgress from "@material-ui/core/CircularProgress";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Icon } from "app/components/designSystem/Icon";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
 	className: string;
@@ -27,7 +28,8 @@ const useStyles = makeStyles(
 		const borderRadius = `0 0 0 30px`;
 
 		return createStyles<
-			"iconButton" | "circularLoading" | "collapsedPanel" | "expandedPanel" | "header" | "lastTranslatedCmd" | "dollarContainer" | "entryRoot" | "preWrapper" | "bottomRef",
+			"iconButton" | "circularLoading" | "collapsedPanel" | "expandedPanel" | 
+			"header" | "lastTranslatedCmd" | "dollarContainer" | "entryRoot" | "preWrapper",
 			Props & { headerHeight: number; isExpended: boolean; }>({
 				"iconButton": ({ isExpended }) => ({
 					"& svg": {
@@ -114,15 +116,7 @@ const useStyles = makeStyles(
 						"color": theme.custom.colors.palette.whiteSnow.white
 					}
 
-				},
-				"bottomRef": {
-					"float": "left",
-					"clear": "both"
 				}
-
-
-
-
 			});
 
 	}
@@ -192,7 +186,7 @@ export function CmdTranslation(props: Props) {
 
 	const { domRect: { height: headerHeight }, ref: headerRef } = useDOMRect();
 
-	const bottomRef = useRef<HTMLDivElement>(null);
+	const panelRef = useRef<HTMLDivElement>(null);
 
 	const [isExpended, toggleIsExpended] = useReducer(
 		isExpended => !isExpended,
@@ -206,7 +200,14 @@ export function CmdTranslation(props: Props) {
 				return;
 			}
 
-			bottomRef.current?.scrollIntoView();
+			const { current: element }= panelRef!;
+
+			assert(element !== null );
+
+			element.scroll({ 
+				"top": element.scrollHeight, 
+				"behavior": "smooth" 
+			});
 
 		},
 		[isExpended, evtTranslation.postCount]
@@ -234,11 +235,14 @@ export function CmdTranslation(props: Props) {
 				/>
 
 			</div>
-			<div className={
+			<div 
+			ref={panelRef}
+			className={
 				isExpended ?
 					classes.expandedPanel :
 					classes.collapsedPanel
-			} >
+			} 
+			>
 				{translationHistory.map(
 					({ cmdId, cmd, resp }) =>
 						<div key={cmdId} className={classes.entryRoot}>
@@ -262,7 +266,6 @@ export function CmdTranslation(props: Props) {
 
 						</div>
 				)}
-				<div className={classes.bottomRef} ref={bottomRef} />
 
 			</div>
 
