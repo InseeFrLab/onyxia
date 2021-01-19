@@ -46,6 +46,7 @@ export declare namespace SecretExplorerState {
     export type ShowingSecret = _Common & {
         state: "SHOWING SECRET";
         secretWithMetadata: SecretWithMetadata;
+        hiddenKeys: string[];
         isBeingRenamed: boolean;
         isBeingUpdated: boolean;
     };
@@ -69,8 +70,14 @@ export type EditSecretParams = {
     newValue: string;
 } | {
     action: "removeKeyValue";
+} | {
+    action: "hideOrRevealKey";
+    type: "hide" | "reveal";
+    key: string;
 });
 
+const extraKey = ".onyxia";
+type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[]; };
 
 export const name = "secretExplorer";
 
@@ -138,10 +145,10 @@ const { reducer, actions } = createSlice({
         },
         "navigationTowardSecretSuccess": (
             state,
-            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingSecret, "secretWithMetadata" | "currentPath">>
+            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingSecret, "secretWithMetadata" | "currentPath" | "hiddenKeys">>
         ) => {
 
-            const { secretWithMetadata, currentPath } = payload;
+            const { secretWithMetadata, currentPath, hiddenKeys } = payload;
 
             const { directories, secrets } = state;
 
@@ -149,6 +156,7 @@ const { reducer, actions } = createSlice({
                 "state": "SHOWING SECRET",
                 currentPath,
                 secretWithMetadata,
+                hiddenKeys,
                 "isBeingRenamed": false,
                 secrets,
                 directories,
@@ -220,18 +228,18 @@ const { reducer, actions } = createSlice({
 
             const relevantArray = state[(() => {
                 switch (kind) {
-                    case "secret": 
-                    switch(action){
-                        case "create": return "secretsBeingCreated";
-                        case "rename": return "secretsBeingRenamed";
-                    }
-                    break;
-                    case "directory": 
-                    switch(action){
-                        case "create": return "directoriesBeingCreated";
-                        case "rename": return "directoriesBeingRenamed";
-                    }
-                    break;
+                    case "secret":
+                        switch (action) {
+                            case "create": return "secretsBeingCreated";
+                            case "rename": return "secretsBeingRenamed";
+                        }
+                        break;
+                    case "directory":
+                        switch (action) {
+                            case "create": return "directoriesBeingCreated";
+                            case "rename": return "directoriesBeingRenamed";
+                        }
+                        break;
                 }
             })()];
 
@@ -333,6 +341,20 @@ const { reducer, actions } = createSlice({
                     const { newKey } = payload;
                     renameKey({ newKey });
                 } break;
+                case "hideOrRevealKey": {
+                    const { key, type } = payload;
+
+                    switch (type) {
+                        case "hide":
+                            state.hiddenKeys.push(key);
+                            break;
+                        case "reveal":
+                            state.hiddenKeys = state.hiddenKeys
+                                .filter(key_i => key_i !== key);
+                            break;
+                    }
+
+                } break;
             }
 
             state.isBeingUpdated = true;
@@ -408,10 +430,60 @@ export const thunks = {
             const secretWithMetadata = await secretsManagerClient.get({ "path": secretPath })
                 .catch((error: Error) => error);
 
+            if (secretWithMetadata instanceof Error) {
+
+                dispatch(actions.errorOcurred({ "errorMessage": secretWithMetadata.message }));
+
+                return;
+
+            }
+
+            const { secret } = secretWithMetadata;
+
+
+            const { hiddenKeys, keysOrdering } = (() => {
+
+                try {
+
+                    const { hiddenKeys, keysOrdering } = secret[extraKey] as ExtraValue;
+
+                    for (const arr of [hiddenKeys, keysOrdering]) {
+                        assert(arr instanceof Array && arr.every(key => typeof key === "string"));
+                    }
+
+                    return {
+                        hiddenKeys,
+                        "keysOrdering": keysOrdering.filter(key => key in secret)
+                    };
+
+                } catch {
+
+                    return {
+                        "hiddenKeys": id<string[]>([]),
+                        "keysOrdering": Object.keys(secret)
+                    };
+
+                }
+
+            })();
+
+            const orderedSecret = { ...secret };
+
+            delete orderedSecret[extraKey];
+
+            keysOrdering.forEach(key => delete orderedSecret[key]);
+
+            keysOrdering.forEach(key => orderedSecret[key] = secret[key]);
+
             dispatch(
-                secretWithMetadata instanceof Error ?
-                    actions.errorOcurred({ "errorMessage": secretWithMetadata.message }) :
-                    actions.navigationTowardSecretSuccess({ secretWithMetadata, "currentPath": secretPath })
+                actions.navigationTowardSecretSuccess({
+                    "secretWithMetadata": {
+                        "metadata": secretWithMetadata.metadata,
+                        "secret": orderedSecret
+                    },
+                    "currentPath": secretPath,
+                    hiddenKeys
+                })
             );
 
         },
@@ -539,18 +611,18 @@ export const thunks = {
 
                 if (
                     [
-                    ...state[(() => {
-                        switch (kind) {
-                            case "directory": return "directoriesBeingCreated";
-                            case "secret": return "secretsBeingCreated";
-                        }
-                    })()],
-                    ...state[(() => {
-                        switch (kind) {
-                            case "directory": return "directoriesBeingRenamed";
-                            case "secret": return "secretsBeingRenamed";
-                        }
-                    })()]
+                        ...state[(() => {
+                            switch (kind) {
+                                case "directory": return "directoriesBeingCreated";
+                                case "secret": return "secretsBeingCreated";
+                            }
+                        })()],
+                        ...state[(() => {
+                            switch (kind) {
+                                case "directory": return "directoriesBeingRenamed";
+                                case "secret": return "secretsBeingRenamed";
+                            }
+                        })()]
                     ].length !== 0
                 ) {
                     return;
@@ -621,18 +693,18 @@ export const thunks = {
 
                 if (
                     [
-                    ...state[(() => {
-                        switch (kind) {
-                            case "directory": return "directoriesBeingCreated";
-                            case "secret": return "secretsBeingCreated";
-                        }
-                    })()],
-                    ...state[(() => {
-                        switch (kind) {
-                            case "directory": return "directoriesBeingRenamed";
-                            case "secret": return "secretsBeingRenamed";
-                        }
-                    })()]
+                        ...state[(() => {
+                            switch (kind) {
+                                case "directory": return "directoriesBeingCreated";
+                                case "secret": return "secretsBeingCreated";
+                            }
+                        })()],
+                        ...state[(() => {
+                            switch (kind) {
+                                case "directory": return "directoriesBeingRenamed";
+                                case "secret": return "secretsBeingRenamed";
+                            }
+                        })()]
                     ].length !== 0
                 ) {
                     return;
@@ -730,7 +802,7 @@ export const thunks = {
 
             const [dispatch, , { secretsManagerClient }] = args;
 
-            const getSecretAndCurrentPath = () => {
+            const getSecretCurrentPathAndHiddenKeys = () => {
 
                 const [, getState] = args;
 
@@ -738,11 +810,12 @@ export const thunks = {
 
                 assert(state.state === "SHOWING SECRET");
 
-                const { secret } = state.secretWithMetadata;
+                const { secretWithMetadata: { secret }, hiddenKeys } = state;
 
                 return {
                     "path": state.currentPath,
-                    secret
+                    hiddenKeys,
+                    secret,
                 };
 
             };
@@ -752,7 +825,7 @@ export const thunks = {
 
 
                 const { key } = params;
-                const { secret } = getSecretAndCurrentPath();
+                const { secret } = getSecretCurrentPathAndHiddenKeys();
 
                 switch (params.action) {
                     case "addOrOverwriteKeyValue": {
@@ -788,7 +861,22 @@ export const thunks = {
 
             dispatch(actions.editSecretStarted(params));
 
-            const error = await secretsManagerClient.put(getSecretAndCurrentPath())
+            const error = await secretsManagerClient.put((() => {
+
+                const { path, secret, hiddenKeys } = getSecretCurrentPathAndHiddenKeys();
+
+                return {
+                    path,
+                    "secret": {
+                        ...secret,
+                        [extraKey]: id<ExtraValue>({
+                            hiddenKeys,
+                            "keysOrdering": Object.keys(secret)
+                        })
+                    }
+                };
+
+            })())
                 .then(
                     () => undefined,
                     (error: Error) => error
