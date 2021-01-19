@@ -11,10 +11,19 @@ import { id } from "evt/tools/typeSafety/id";
 import { EventEmitter } from "events";
 import withEvents from "@storybook/addon-events";
 import type { UnpackEvt } from "evt";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 const eventEmitter = new EventEmitter();
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed"> & { containerWidth: number; }) {
+const useStyles = makeStyles(
+    () => createStyles<"root", { containerWidth: number; }>({
+        "root": ({ containerWidth }) => ({
+            "width": `${containerWidth}vw`
+        })
+    })
+);
+
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"> & { containerWidth: number; }) {
 
     const { containerWidth } = props;
 
@@ -99,18 +108,19 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
         [files, directories, filesBeingRenamed, directoriesBeingRenamed]
     );
 
+    const classes = useStyles({ containerWidth });
+
     return (
-        <div style={{ "width": `${containerWidth}vw` }}>
-            <ExplorerItems
-                {...props}
-                files={files}
-                directories={directories}
-                filesBeingRenamed={filesBeingRenamed}
-                directoriesBeingRenamed={directoriesBeingRenamed}
-                onEditBasename={onEditedBasename}
-            />
-        </div>
-    )
+        <ExplorerItems
+            {...props}
+            className={classes.root}
+            files={files}
+            directories={directories}
+            filesBeingRenamed={filesBeingRenamed}
+            directoriesBeingRenamed={directoriesBeingRenamed}
+            onEditBasename={onEditedBasename}
+        />
+    );
 
 }
 

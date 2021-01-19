@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useRef } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -15,10 +15,13 @@ import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
-import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
+import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 
 
 export type Props = {
+
+    className: string;
+
     /** [HIGHER ORDER] */
     visualRepresentationOfAFile: ExplorerItemProps["visualRepresentationOfAFile"];
     /** [HIGHER ORDER] */
@@ -56,6 +59,7 @@ export type Props = {
 export function ExplorerItems(props: Props) {
 
     const {
+        className,
         visualRepresentationOfAFile,
         getIsValidBasename,
         isNavigating,
@@ -159,7 +163,10 @@ export function ExplorerItems(props: Props) {
 
 
     useValueChangeEffect(
-        () => setSelectedItemKeyProp(undefined),
+        () => {
+            setIsSelectedItemInEditingState(false);
+            setSelectedItemKeyProp(undefined);
+        },
         [isNavigating]
     );
 
@@ -232,7 +239,6 @@ export function ExplorerItems(props: Props) {
                             getKeyProp({ kind, basename })
                         );
 
-                        console.log("Enter editing state");
 
                         evtItemAction.post("ENTER EDITING STATE");
 
@@ -354,52 +360,83 @@ export function ExplorerItems(props: Props) {
         []
     );
 
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const onGridMouseDown = useCallback(
+        ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+
+            if (
+                containerRef.current !== target &&
+                !Array.from(containerRef.current!.children).includes(target as any)
+            ) {
+                return;
+            }
+
+            setIsSelectedItemInEditingState(false);
+            setSelectedItemKeyProp(undefined);
+
+        },
+        []
+    );
+
     return (
-        <Grid container wrap="wrap" justify="flex-start" spacing={1}>
-            {(["directory", "file"] as const).map(
-                kind => ((() => {
-                    switch (kind) {
-                        case "directory": return directories;
-                        case "file": return files;
-                    }
-                })()).map(basename => {
+        <div
+            className={className}
+            ref={containerRef}
+            onMouseDown={onGridMouseDown}
+        >
+            <Grid
+                container
+                wrap="wrap"
+                justify="flex-start"
+                spacing={1}
+            >
+                {(["directory", "file"] as const).map(
+                    kind => ((() => {
+                        switch (kind) {
+                            case "directory": return directories;
+                            case "file": return files;
+                        }
+                    })()).map(basename => {
 
-                    const keyProp = getKeyProp({ kind, basename });
-                    const isSelected = selectedItemKeyProp === keyProp;
+                        const keyProp = getKeyProp({ kind, basename });
+                        const isSelected = selectedItemKeyProp === keyProp;
 
-                    return (
-                        <Grid item key={keyProp}>
-                            <ExplorerItem
-                                kind={kind}
-                                basename={basename}
-                                isSelected={isSelected}
-                                evtAction={getEvtItemAction(keyProp)}
-                                isCircularProgressShown={
-                                    (() => {
-                                        switch (kind) {
-                                            case "directory": return [
-                                                ...directoriesBeingCreated,
-                                                ...directoriesBeingRenamed
-                                            ];
-                                            case "file": return [
-                                                ...filesBeingCreated,
-                                                ...filesBeingRenamed
-                                            ];
-                                        }
-                                    })().includes(basename)
-                                }
-                                standardizedWidth={standardizedWidth}
-                                onMouseEvent={onMouseEventFactory(kind, basename)}
-                                onEditBasename={onEditBasenameFactory(kind, basename)}
-                                getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
-                                onIsInEditingStateValueChange={onIsInEditingStateValueChange}
-                            />
-                        </Grid>
-                    );
+                        return (
+                            <Grid item key={keyProp}>
+                                <ExplorerItem
+                                    kind={kind}
+                                    basename={basename}
+                                    isSelected={isSelected}
+                                    evtAction={getEvtItemAction(keyProp)}
+                                    isCircularProgressShown={
+                                        (() => {
+                                            switch (kind) {
+                                                case "directory": return [
+                                                    ...directoriesBeingCreated,
+                                                    ...directoriesBeingRenamed
+                                                ];
+                                                case "file": return [
+                                                    ...filesBeingCreated,
+                                                    ...filesBeingRenamed
+                                                ];
+                                            }
+                                        })().includes(basename)
+                                    }
+                                    standardizedWidth={standardizedWidth}
+                                    onMouseEvent={onMouseEventFactory(kind, basename)}
+                                    onEditBasename={onEditBasenameFactory(kind, basename)}
+                                    getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
+                                    onIsInEditingStateValueChange={onIsInEditingStateValueChange}
+                                />
+                            </Grid>
+                        );
 
-                }))}
+                    }))}
 
-        </Grid>
+            </Grid>
+
+        </div>
     );
 
 }

@@ -63,7 +63,7 @@ export type Props = {
 
 const useStyles = makeStyles(
     theme => createStyles<
-        "root" | "breadcrump" | "cmdTranslation" | "scrollable",
+        "root" | "breadcrump" | "cmdTranslation" | "scrollable" | "items",
         Props & { cmdTranslationTop: number; }
     >({
         "root": ({ paddingLeftSpacing })=>({
@@ -88,7 +88,10 @@ const useStyles = makeStyles(
             "width": "40%",
             "top": cmdTranslationTop,
             "zIndex": 1
-        })
+        }),
+        "items": {
+            "height": "100%"
+        }
     })
 );
 
@@ -358,6 +361,7 @@ export function Explorer(props: Props) {
                             files.length === 0 && directories.length === 0 ?
                                 <Typography>{t("empty directory")}</Typography> :
                                 <Items
+                                    className={classes.items}
                                     files={files}
                                     isNavigating={isNavigating}
                                     directories={directories}
