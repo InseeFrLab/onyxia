@@ -135,50 +135,22 @@ const { Section } = (() => {
         isFocused: boolean;
     };
 
+    //Failed attempt for bold on hover (refresh bug): https://css-tricks.com/bold-on-hover-without-the-layout-shift/
     const useStyles = makeStyles(
-        theme => {
-
-            //See: https://css-tricks.com/bold-on-hover-without-the-layout-shift/
-            //const hoverFontWeight = 500;
-
-            return createStyles<"root", Props>({
-                "root": ({ isClickable }) => ({
-                    ...(!isClickable ? {} : {
-                        "&:hover": {
-                            //"fontWeight": hoverFontWeight,
-                            "color": theme.custom.colors.useCases.typography.textPrimary
-                        },
-                    }),
-
-                    "padding-right": 5,
-
-                    "display": "inline-flex",
-
-                    /*
-                    "flexDirection": "column",
-                    "alignItems": "center",
-                    "justifyContent": "space-between",
-                    "&::after": {
-                        "content": `"${text}___"`,
-                        "height": 0,
-                        "visibility": "hidden",
-                        "overflow": "hidden",
-                        "userSelect": "none",
-                        "pointerEvents": "none",
-                        "fontWeight": hoverFontWeight,
-                        "@media speech": {
-                            "display": "none"
+        theme => createStyles<"root", Props>({
+            "root": ({ isClickable }) => ({
+                ...(!isClickable ? {} : {
+                    "&:hover": {
+                        "color": theme.custom.colors.useCases.typography.textPrimary,
+                        "&:active": {
+                            "color": theme.custom.colors.useCases.typography.textFocus
                         }
                     },
-                    */
-                    "&:active": {
-                        "color": theme.custom.colors.useCases.typography.textFocus
-                    }
-
-                })
-            });
-
-        }
+                }),
+                "padding-right": 5,
+                "display": "inline-flex",
+            })
+        })
     );
 
     function Section(props: Props) {
