@@ -246,14 +246,22 @@ export function Explorer(props: Props) {
         [onNavigate]
     );
 
+    const [evtBreadcrumpAction] = useState(() => Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>());
+
     const itemsOnCopyPath = useCallback(
-        ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) =>
+        ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) =>{
+
+            evtBreadcrumpAction.post({
+                "action": "DISPLAY COPY FEEDBACK",
+                basename
+            });
+
             onCopyPath({
                 "path": pathJoin(currentPath, basename)
-            }),
+            });
 
-        [onCopyPath, currentPath]
-
+        },
+        [onCopyPath, currentPath, evtBreadcrumpAction]
     );
 
     const itemsOnDeleteItem = useCallback(
@@ -336,6 +344,7 @@ export function Explorer(props: Props) {
                 minDepth={!isNavigating ? 0 : Infinity}
                 path={currentPath}
                 callback={breadcrumbCallback}
+                evtAction={evtBreadcrumpAction}
             />
             <Box className={classes.scrollable}>
                 {
