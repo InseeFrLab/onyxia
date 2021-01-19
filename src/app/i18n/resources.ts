@@ -96,8 +96,8 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "invalid key empty string": "Name required",
             "invalid key _ not valid": "Can't be just _",
             "invalid key start with digit": "Can't start with a digit",
-            "invalid key invalid character": "Only letter digits or _",
-            "invalid value cannot eval": "Not a valid shell expression"
+            "invalid key invalid character": "Invalid character",
+            "invalid value cannot eval": "Invalid shell expression"
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -144,9 +144,9 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "unavailable key": "Déjà utilisé",
             "invalid key empty string": "Un nom est requis",
             "invalid key _ not valid": "Ne peut pas être juste _",
-            "invalid key start with digit": "Ne doit pas commencer par un chifre",
-            "invalid key invalid character": "Caractère non valid",
-            "invalid value cannot eval": "Pas une expression shell valid"
+            "invalid key start with digit": "Ne doit pas commencer par un chiffre",
+            "invalid key invalid character": "Caractère non valide",
+            "invalid value cannot eval": "Expression shell non valide"
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
