@@ -6,14 +6,16 @@ import type { SecretWithMetadata, SecretsManagerClient, Secret } from "lib/ports
 import { assert } from "evt/tools/typeSafety/assert";
 import { basename as pathBasename, join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
 import memoize from "memoizee";
-import { Evt } from "evt";
 import { crawlFactory } from "lib/utils/crawl";
 import { unwrapWritableDraft } from "lib/utils/unwrapWritableDraft";
+import { Mutex } from "async-mutex";
 
-const getEvtIsCreatingOrRenaming = memoize(
-    (_: Dependencies) => Evt.create(false)
+const getMutexes = memoize(
+    (_: Dependencies) => ({
+        "createOrRename": new Mutex(),
+        "navigateMutex": new Mutex()
+    })
 );
-
 
 export declare type SecretExplorerState =
     SecretExplorerState.Failure |
@@ -385,22 +387,51 @@ export const thunks = {
     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
     */
     "navigateToDirectory":
-        (params: { directoryRelativePath: string; }): AppThunk => async (...args) => {
+        (
+            params: {
+                fromCurrentPath: true;
+                directoryRelativePath: string;
+            } | {
+                fromCurrentPath: false;
+                directoryPath: string;
+            }
+        ): AppThunk => async (...args) => {
 
-            const { directoryRelativePath } = params;
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
             dispatch(actions.navigationStarted());
 
-            await getEvtIsCreatingOrRenaming(dependencies)
-                .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
 
-            const directoryPath = pathJoin(getState().secretExplorer.currentPath, directoryRelativePath);
+            (
+                await getMutexes(dependencies)
+                    .createOrRename
+                    .acquire()
+            )();
+
+            const directoryPath = (() => {
+
+                const { currentPath } = getState().secretExplorer;
+
+                return params.fromCurrentPath ?
+                    (
+                        assert(currentPath !== ""),
+                        pathJoin(currentPath, params.directoryRelativePath)
+                    )
+                    :
+                    params.directoryPath;
+
+            })();
+
+            const releaseNavigationMutex= await getMutexes(dependencies)
+                .navigateMutex
+                .acquire();
 
             const listResult = await secretsManagerClient.list({ "path": directoryPath })
                 .catch((error: Error) => error);
+
+            releaseNavigationMutex();
 
             dispatch(
                 listResult instanceof Error ?
@@ -413,22 +444,49 @@ export const thunks = {
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
      */
     "navigateToSecret":
-        (params: { secretRelativePath: string; }): AppThunk => async (...args) => {
-
-            const { secretRelativePath } = params;
+        (
+            params: {
+                fromCurrentPath: true;
+                secretRelativePath: string;
+            } | {
+                fromCurrentPath: false;
+                secretPath: string;
+            }
+        ): AppThunk => async (...args) => {
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
             dispatch(actions.navigationStarted());
 
-            await getEvtIsCreatingOrRenaming(dependencies)
-                .waitFor(isCreatingOrRenaming => !isCreatingOrRenaming);
+            (
+                await getMutexes(dependencies)
+                    .createOrRename
+                    .acquire()
+            )();
 
-            const secretPath = pathJoin(getState().secretExplorer.currentPath, secretRelativePath);
+            const secretPath = (() => {
+
+                const { currentPath } = getState().secretExplorer;
+
+                return params.fromCurrentPath ?
+                    (
+                        assert(currentPath !== ""),
+                        pathJoin(currentPath, params.secretRelativePath)
+                    )
+                    :
+                    params.secretPath;
+
+            })();
+
+            const releaseNavigationMutex= await getMutexes(dependencies)
+                .navigateMutex
+                .acquire();
 
             const secretWithMetadata = await secretsManagerClient.get({ "path": secretPath })
                 .catch((error: Error) => error);
+
+            releaseNavigationMutex();
 
             if (secretWithMetadata instanceof Error) {
 
@@ -503,7 +561,6 @@ export const thunks = {
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
-            const evtIsCreatingOrRenaming = getEvtIsCreatingOrRenaming(dependencies);
 
             const { secretExplorer: state } = getState();
 
@@ -519,7 +576,9 @@ export const thunks = {
                 secretsManagerClient
             );
 
-            evtIsCreatingOrRenaming.state = true;
+            const prReleaseMutex = getMutexes(dependencies)
+                .createOrRename
+                .acquire()
 
             const error = await secretsManagerClientExtension.renameSecret({
                 "path": state.currentPath,
@@ -530,13 +589,13 @@ export const thunks = {
                 (error: Error) => error
             );
 
+            prReleaseMutex.then(release=> release());
+
             dispatch(
                 error !== undefined ?
                     actions.errorOcurred({ "errorMessage": error.message }) :
                     actions.renameCurrentlyShownSecretCompleted()
             );
-
-            evtIsCreatingOrRenaming.state = false;
 
 
         },
@@ -559,7 +618,7 @@ export const thunks = {
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
-            const evtIsCreatingOrRenaming = getEvtIsCreatingOrRenaming(dependencies);
+            
 
             const { secretExplorer: state } = getState();
 
@@ -577,7 +636,9 @@ export const thunks = {
                 secretsManagerClient
             );
 
-            evtIsCreatingOrRenaming.state = true;
+            const prReleaseMutex = getMutexes(dependencies)
+                .createOrRename
+                .acquire();
 
             const error = await (
                 kind === "secret" ?
@@ -593,7 +654,9 @@ export const thunks = {
             ).then(
                 () => undefined,
                 (error: Error) => error
-            )
+            );
+
+            prReleaseMutex.then(release=> release());
 
             dispatch(
                 error !== undefined ?
@@ -602,35 +665,6 @@ export const thunks = {
                         { "basename": newBasename, kind, "action": "rename" }
                     )
             );
-
-            {
-
-                const { secretExplorer: state } = getState();
-
-                assert(state.state === "SHOWING DIRECTORY");
-
-                if (
-                    [
-                        ...state[(() => {
-                            switch (kind) {
-                                case "directory": return "directoriesBeingCreated";
-                                case "secret": return "secretsBeingCreated";
-                            }
-                        })()],
-                        ...state[(() => {
-                            switch (kind) {
-                                case "directory": return "directoriesBeingRenamed";
-                                case "secret": return "secretsBeingRenamed";
-                            }
-                        })()]
-                    ].length !== 0
-                ) {
-                    return;
-                }
-
-                evtIsCreatingOrRenaming.state = false;
-
-            }
 
         },
     /** 
@@ -648,7 +682,6 @@ export const thunks = {
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
-            const evtIsCreatingOrRenaming = getEvtIsCreatingOrRenaming(dependencies);
 
             const { secretExplorer: state } = getState();
 
@@ -666,7 +699,9 @@ export const thunks = {
                 secretsManagerClient
             );
 
-            evtIsCreatingOrRenaming.state = true;
+            const prReleaseMutex = getMutexes(dependencies)
+                .createOrRename
+                .acquire();
 
             const error = await (
                 kind === "secret" ?
@@ -677,6 +712,8 @@ export const thunks = {
                 (error: Error) => error
             );
 
+            prReleaseMutex.then(release=> release());
+
             dispatch(
                 error !== undefined ?
                     actions.errorOcurred({ "errorMessage": error.message }) :
@@ -684,36 +721,6 @@ export const thunks = {
                         { basename, kind, "action": "create" }
                     )
             );
-
-            {
-
-                const { secretExplorer: state } = getState();
-
-                assert(state.state === "SHOWING DIRECTORY");
-
-                if (
-                    [
-                        ...state[(() => {
-                            switch (kind) {
-                                case "directory": return "directoriesBeingCreated";
-                                case "secret": return "secretsBeingCreated";
-                            }
-                        })()],
-                        ...state[(() => {
-                            switch (kind) {
-                                case "directory": return "directoriesBeingRenamed";
-                                case "secret": return "secretsBeingRenamed";
-                            }
-                        })()]
-                    ].length !== 0
-                ) {
-                    return;
-                }
-
-                evtIsCreatingOrRenaming.state = false;
-
-            }
-
 
         },
 
@@ -732,7 +739,10 @@ export const thunks = {
             assert(state.state === "SHOWING SECRET");
 
             await dispatch(
-                thunks.navigateToDirectory({ "directoryRelativePath": ".." })
+                thunks.navigateToDirectory({
+                    "fromCurrentPath": true,
+                    "directoryRelativePath": ".."
+                })
             );
 
             await dispatch(
@@ -1031,6 +1041,10 @@ export const pure = {
     "getIsValidBasename": (params: { basename: string; }): boolean => {
         const { basename } = params;
         return basename !== "" && !basename.includes(" ")
+    },
+    "getUserHomePath": (params: { idep: string; }): string => {
+        const { idep } = params;
+        return idep;
     }
 };
 

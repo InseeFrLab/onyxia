@@ -13,6 +13,9 @@ export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
     visualRepresentationOfAFile: "secret" | "file";
 
+    /** Tell if we are displaying an directory or a secret */
+    kind: "file" | "directory";
+
     fileBasename: string;
     date?: Date;
     onBack(): void;
@@ -24,7 +27,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const useStyles = makeStyles(
-    theme => createStyles({
+    theme => createStyles<"root" | "basename" | "date", { isDateProvided: boolean; }>({
         "root": {
             "display": "flex",
             "alignItems": "center",
@@ -32,9 +35,9 @@ const useStyles = makeStyles(
             "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`,
             "padding": theme.spacing(3, 0)
         },
-        "basename": {
-            "marginBottom": theme.spacing(1)
-        },
+        "basename": ({ isDateProvided }) => ({
+            "marginBottom": isDateProvided ? theme.spacing(1) : undefined
+        }),
         "date": {
             "color": theme.custom.colors.useCases.typography.textSecondary,
             "textTransform": "capitalize"
@@ -44,22 +47,17 @@ const useStyles = makeStyles(
 
 
 
-export function ExplorerFileHeader(props: Props) {
+export function ExplorerFileOrDirectoryHeader(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { visualRepresentationOfAFile, fileBasename, date, onBack } = completedProps;
+    const { visualRepresentationOfAFile, kind, fileBasename, date, onBack } = completedProps;
 
-    const classes = useStyles();
 
     const Icon = useSemanticGuaranteeMemo(
         () => withProps(
             FileOrDirectoryIcon,
-            {
-                visualRepresentationOfAFile,
-                "standardizedWidth": "big",
-                "kind": "file"
-            }
+            { visualRepresentationOfAFile }
         ),
         [visualRepresentationOfAFile]
     );
@@ -70,11 +68,15 @@ export function ExplorerFileHeader(props: Props) {
         date,
         "formatByLng": {
             /* spell-checker: disable */
-            "fr": `dddd Do MMMM${isSameYear?"":" YYYY"} à H[h]mm`,
-            "en": `dddd, MMMM Do${isSameYear?"":" YYYY"}, h:mm a`
+            "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
+            "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`
             /* spell-checker: enable */
         }
     });
+
+    const isDateProvided = date.getTime() !== 0;
+
+    const classes = useStyles({ isDateProvided });
 
     return (
         <div className={classes.root}>
@@ -86,7 +88,10 @@ export function ExplorerFileHeader(props: Props) {
                 />
             </div>
             <div>
-                <Icon />
+                <Icon
+                    kind={kind}
+                    standardizedWidth="big"
+                />
             </div>
             <div>
                 <Typography
@@ -96,7 +101,7 @@ export function ExplorerFileHeader(props: Props) {
                     {fileBasename}
                 </Typography>
                 {
-                    date.getTime() === 0 ? null :
+                    !isDateProvided ? null :
                         <Typography
                             variant="caption"
                             className={classes.date}
@@ -106,7 +111,6 @@ export function ExplorerFileHeader(props: Props) {
                 }
             </div>
         </div>
-
     );
 
 }

@@ -19,7 +19,8 @@ export type Props = {
 const memoizedCreateStore = (() => {
 
     const evtBackOnline= Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
-    const vaultCmdTranslationLogger= console.log.bind(console);
+    //const vaultCmdTranslationLogger= console.log.bind(console);
+    const vaultCmdTranslationLogger= ()=>{};
 
     const f = memoize(
         (createStoreParamsStr: string) => 

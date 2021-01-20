@@ -29,7 +29,7 @@ const useStyles = makeStyles(
 
 function Component(props: Omit<Props, "evtAction"> & StoryProps) {
 
-    const { tick, minDepth, path, callback } = props;
+    const { tick, minDepth, path, callback, isNavigationDisabled } = props;
 
     const [index, incrementIndex] = useReducer(
         (index: number) => index + 1,
@@ -59,6 +59,7 @@ function Component(props: Omit<Props, "evtAction"> & StoryProps) {
 
     return (
         <Breadcrump
+            isNavigationDisabled={isNavigationDisabled}
             className={classes.root}
             evtAction={evtAction}
             minDepth={minDepth}
@@ -99,7 +100,26 @@ export default {
 
 export const Vue1 = getStory({
     "path": "aaa/bbb/cccc/dddd/",
+    "isNavigationDisabled": false,
     "minDepth": 0,
+    "width": 800,
+    "tick": true,
+    ...logCallbacks(["callback"])
+});
+
+export const VueRelativeMinDepthNot0 = getStory({
+    "path": "aaa/bbb/cccc/dddd/",
+    "isNavigationDisabled": false,
+    "minDepth": 1,
+    "width": 800,
+    "tick": true,
+    ...logCallbacks(["callback"])
+});
+
+export const VueFromRoot = getStory({
+    "path": "/aaa/bbb/cccc/dddd/",
+    "isNavigationDisabled": false,
+    "minDepth": 2,
     "width": 800,
     "tick": true,
     ...logCallbacks(["callback"])

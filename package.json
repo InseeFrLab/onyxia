@@ -46,6 +46,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/system": "^4.9.14",
     "@reduxjs/toolkit": "^1.4.0",
+    "async-mutex": "^0.2.6",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "clipboard-polyfill": "^2.8.6",
