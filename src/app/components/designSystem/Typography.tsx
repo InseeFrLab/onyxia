@@ -6,6 +6,7 @@ import MuiTypography from "@material-ui/core/Typography";
 import type { TypographyClassKey } from "@material-ui/core/Typography";
 import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
+import type { InterpolationWithTheme } from "@emotion/core";
 
 export type Props = {
     className?: string | null;
@@ -14,6 +15,7 @@ export type Props = {
     style?: React.CSSProperties | null;
     children: NonNullable<React.ReactNode>;
     onClick?: (() => void) | null;
+    css?: InterpolationWithTheme<any> | null;
 };
 
 export const defaultProps: Optional<Props> = {
@@ -21,7 +23,8 @@ export const defaultProps: Optional<Props> = {
     "variant": "body1",
     "color": "primary",
     "style": null,
-    "onClick": null
+    "onClick": null,
+    "css": null
 };
 
 
@@ -52,6 +55,7 @@ export const Typography = React.forwardRef<any, Props>((props, ref) => {
         //For the forwarding, rest should be empty (typewise)
         color,
         onClick,
+        css,
         ...rest 
     } = completedProps;
 
@@ -59,6 +63,7 @@ export const Typography = React.forwardRef<any, Props>((props, ref) => {
 
     return (
         <MuiTypography
+            css={css}
             ref={ref}
             className={className ?? undefined}
             classes={classes}

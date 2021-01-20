@@ -16,7 +16,6 @@ import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrows
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
-import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
 import type { NonPostableEvt } from "evt";
 import type { StatefulReadonlyEvt } from "evt";
@@ -278,12 +277,6 @@ async function createStoreForLoggedUser(
 
 
     store.dispatch(tokensUseCase.privateThunks.initialize());
-
-    store.dispatch(
-        secretExplorerUseCase.thunks.navigateToDirectory(
-            { "directoryRelativePath": (await parseOidcAccessToken(oidcClient)).idep }
-        )
-    );
 
     await store.dispatch(
         userConfigsUseCase.privateThunks.initialize(

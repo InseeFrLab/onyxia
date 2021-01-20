@@ -1,13 +1,13 @@
 
 import type React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { withProps } from "app/utils/withProps";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin, basename as pathBasename, relative as pathRelative } from "path";
 import type { UnpackEvt } from "evt";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -17,12 +17,14 @@ import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUni
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
+import { assert } from "evt/tools/typeSafety/assert";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
-import { ExplorerFileHeader as PolymorphExplorerFileHeader } from "./ExplorerFileHeader";
+import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
 import { useDOMRect } from "app/utils/hooks/useDOMRect";
 import clsx from "clsx";
+import { getPathDepth } from "app/utils/getPathDepth";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -37,6 +39,18 @@ export type Props = {
     className: string;
 
     evtTranslation: CmdTranslationProps["evtTranslation"];
+
+    /**
+     * To provide user from browsing to ride to far up in the tree.
+     * For example by providing:
+     * browsablePath: "/a/b"
+     * currentPath: "/a/b/c/foo.txt"
+     * The breadcrumb will display /a/b/c/foo.txt but will not let user click
+     * on "/", "a/" or "b/", only "c/"
+     * 
+     * If currentPath is relative, we expect browsablePath to be relative as well.
+     */
+    browsablePath: string;
 
     currentPath: string;
     isNavigating: boolean;
@@ -66,7 +80,7 @@ const useStyles = makeStyles(
         "root" | "breadcrump" | "cmdTranslation" | "scrollable" | "items",
         Props & { cmdTranslationTop: number; }
     >({
-        "root": ({ paddingLeftSpacing })=>({
+        "root": ({ paddingLeftSpacing }) => ({
             "display": "flex",
             "flexDirection": "column",
             "position": "relative",
@@ -103,6 +117,7 @@ export function Explorer(props: Props) {
         type: wordForFile,
         getIsValidBasename,
         evtTranslation,
+        browsablePath,
         currentPath,
         isNavigating,
         file,
@@ -121,8 +136,14 @@ export function Explorer(props: Props) {
         paddingLeftSpacing
     } = props;
 
+    useMemo(
+        () => assert(!pathRelative(browsablePath, currentPath).startsWith("..")), 
+        [browsablePath, currentPath]
+    );
 
-    const { Items, ButtonBar, FileHeader } = useSemanticGuaranteeMemo(
+
+
+    const { Items, ButtonBar, FileOrDirectoryHeader } = useSemanticGuaranteeMemo(
         () => {
 
             const visualRepresentationOfAFile = wordForFile;
@@ -142,8 +163,8 @@ export function Explorer(props: Props) {
                         wordForFile
                     }
                 ),
-                "FileHeader": withProps(
-                    PolymorphExplorerFileHeader,
+                "FileOrDirectoryHeader": withProps(
+                    PolymorphExplorerFileOrDirectoryHeader,
                     {
                         visualRepresentationOfAFile
                     }
@@ -252,7 +273,7 @@ export function Explorer(props: Props) {
     const [evtBreadcrumpAction] = useState(() => Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>());
 
     const itemsOnCopyPath = useCallback(
-        ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) =>{
+        ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
 
             evtBreadcrumpAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
@@ -289,19 +310,19 @@ export function Explorer(props: Props) {
 
     // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
     const {
-        domRect: { 
-            height: buttonBarHeight, 
-            bottom: buttonBarBottom 
+        domRect: {
+            height: buttonBarHeight,
+            bottom: buttonBarBottom
         },
         ref: buttonBarRef
     } = useDOMRect();
 
-    const [ cmdTranslationTop, setCmdTranslationTop ]= 
+    const [cmdTranslationTop, setCmdTranslationTop] =
         useState<number>(0);
 
-    const [ cmdTranslationMaxHeight,setCmdTranslationMaxHeight ]=
+    const [cmdTranslationMaxHeight, setCmdTranslationMaxHeight] =
         useState<number>(0);
-    
+
     const classes = useStyles({ ...props, cmdTranslationTop });
 
     useEffect(
@@ -317,6 +338,11 @@ export function Explorer(props: Props) {
             buttonBarBottom,
             rootBottom
         ]
+    );
+
+    const isCurrentPathBrowsablePathRoot = useMemo(
+        ()=> pathRelative(browsablePath, currentPath) === "",
+        [browsablePath, currentPath]
     );
 
     return (
@@ -335,17 +361,21 @@ export function Explorer(props: Props) {
                 maxHeight={cmdTranslationMaxHeight}
             />
             {
-                file &&
-                <FileHeader
-                    fileBasename={pathBasename(currentPath)}
-                    date={fileDate}
-                    onBack={onBack}
-                />
+                isCurrentPathBrowsablePathRoot ?
+                    null
+                    :
+                    <FileOrDirectoryHeader
+                        kind={file ? "file" : "directory"}
+                        fileBasename={pathBasename(currentPath)}
+                        date={fileDate}
+                        onBack={onBack}
+                    />
             }
             <Breadcrump
                 className={classes.breadcrump}
-                minDepth={!isNavigating ? 0 : Infinity}
+                minDepth={getPathDepth(browsablePath)}
                 path={currentPath}
+                isNavigationDisabled={isNavigating}
                 callback={breadcrumbCallback}
                 evtAction={evtBreadcrumpAction}
             />

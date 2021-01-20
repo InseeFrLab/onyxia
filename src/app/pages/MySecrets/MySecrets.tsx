@@ -1,7 +1,7 @@
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { withProps } from "app/utils/withProps";
 import { copyToClipboard } from "app/utils/copyToClipboard";
-import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/lib/hooks";
+import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
 import { Props as ExplorerProps } from "app/components/Explorer";
 import * as lib from "lib/setup";
@@ -38,11 +38,15 @@ const useStyles = makeStyles(
 
 export type Props = {
     className: string;
+    directoryPath?: string;
 };
 
 export function MySecrets(props: Props) {
 
-    const { className } = props;
+    const {
+        className,
+        directoryPath: directoryPathFromProps
+    } = props;
 
     const { t } = useTranslation("MySecrets");
 
@@ -75,13 +79,64 @@ export function MySecrets(props: Props) {
             dispatch((() => {
                 switch (kind) {
                     case "directory":
-                        return thunks.navigateToDirectory({ "directoryRelativePath": relativePath });
+                        return thunks.navigateToDirectory({
+                            "fromCurrentPath": true,
+                            "directoryRelativePath": relativePath
+                        });
                     case "file":
-                        return thunks.navigateToSecret({ "secretRelativePath": relativePath })
+                        return thunks.navigateToSecret({
+                            "fromCurrentPath": true,
+                            "secretRelativePath": relativePath
+                        })
                 }
             })()),
         [dispatch]
     );
+
+
+    const { userHomePath } = (function useClosure() {
+
+        const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
+        const userHomePath = pure.getUserHomePath({ idep });
+        return { userHomePath };
+
+    })();
+
+    useState(
+        () => {
+
+            if (state.currentPath !== "") {
+                return;
+            }
+
+            dispatch(
+                thunks.navigateToDirectory({
+                    "fromCurrentPath": false,
+                    "directoryPath": userHomePath
+                })
+            );
+
+        }
+    );
+
+    useEffect(
+        () => {
+
+            if (directoryPathFromProps === undefined) {
+                return;
+            }
+
+            dispatch(
+                thunks.navigateToDirectory({
+                    "fromCurrentPath": false,
+                    "directoryPath": directoryPathFromProps
+                })
+            );
+
+        },
+        [directoryPathFromProps, dispatch]
+    );
+
 
     const onEditedBasename = useCallback(
         ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
@@ -155,62 +210,66 @@ export function MySecrets(props: Props) {
 
     const classes = useStyles();
 
-    return (
-        <div className={clsx(classes.root, className)}>
+    return state.currentPath === "" ?
+        <div className={className}> Placeholder for Marc's loading </div>
+        :
+        (
+            <div className={clsx(classes.root, className)}>
 
-            <PageHeader
-                className={classes.header}
-                icon="secrets"
-                text1={t("page title")}
-                text2={t("what this page is used for")}
-                text3={t("to learn more read", { "what": t("tfm") })}
-            />
-            <Explorer
-                paddingLeftSpacing={paddingLeftSpacing}
-                className={classes.explorer}
-                currentPath={state.currentPath}
-                isNavigating={state.isNavigationOngoing}
-                evtTranslation={evtSecretsManagerTranslation}
-                file={
-                    state.state !== "SHOWING SECRET" ? null :
-                        <MySecretsEditor
-                            isBeingUpdated={state.isBeingUpdated}
-                            secretWithMetadata={state.secretWithMetadata}
-                            onEdit={onEdit}
-                        />
-                }
-                fileDate={
-                    state.state !== "SHOWING SECRET" ?
-                        undefined :
-                        new Date(state.secretWithMetadata.metadata.created_time)
-                }
-                files={state.secrets}
-                directories={state.directories}
-                directoriesBeingCreated={
-                    state.state !== "SHOWING DIRECTORY" ? [] :
-                        state.directoriesBeingCreated
-                }
-                directoriesBeingRenamed={
-                    state.state !== "SHOWING DIRECTORY" ? [] :
-                        state.directoriesBeingRenamed
+                <PageHeader
+                    className={classes.header}
+                    icon="secrets"
+                    text1={t("page title")}
+                    text2={t("what this page is used for")}
+                    text3={t("to learn more read", { "what": t("tfm") })}
+                />
+                <Explorer
+                    paddingLeftSpacing={paddingLeftSpacing}
+                    className={classes.explorer}
+                    browsablePath={userHomePath}
+                    currentPath={state.currentPath}
+                    isNavigating={state.isNavigationOngoing}
+                    evtTranslation={evtSecretsManagerTranslation}
+                    file={
+                        state.state !== "SHOWING SECRET" ? null :
+                            <MySecretsEditor
+                                isBeingUpdated={state.isBeingUpdated}
+                                secretWithMetadata={state.secretWithMetadata}
+                                onEdit={onEdit}
+                            />
+                    }
+                    fileDate={
+                        state.state !== "SHOWING SECRET" ?
+                            undefined :
+                            new Date(state.secretWithMetadata.metadata.created_time)
+                    }
+                    files={state.secrets}
+                    directories={state.directories}
+                    directoriesBeingCreated={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.directoriesBeingCreated
+                    }
+                    directoriesBeingRenamed={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.directoriesBeingRenamed
 
-                }
-                filesBeingCreated={
-                    state.state !== "SHOWING DIRECTORY" ? [] :
-                        state.secretsBeingCreated
-                }
-                filesBeingRenamed={
-                    state.state !== "SHOWING DIRECTORY" ? [] :
-                        state.secretsBeingRenamed
-                }
-                onNavigate={onNavigate}
-                onEditBasename={onEditedBasename}
-                onDeleteItem={onDeleteItem}
-                onCreateItem={onCreateItem}
-                onCopyPath={onCopyPath}
-            />
-        </div>
-    );
+                    }
+                    filesBeingCreated={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.secretsBeingCreated
+                    }
+                    filesBeingRenamed={
+                        state.state !== "SHOWING DIRECTORY" ? [] :
+                            state.secretsBeingRenamed
+                    }
+                    onNavigate={onNavigate}
+                    onEditBasename={onEditedBasename}
+                    onDeleteItem={onDeleteItem}
+                    onCreateItem={onCreateItem}
+                    onCopyPath={onCopyPath}
+                />
+            </div>
+        );
 };
 
 export declare namespace MySecrets {

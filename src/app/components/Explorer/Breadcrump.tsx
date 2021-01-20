@@ -1,18 +1,21 @@
 
-import type React from "react";
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from "@emotion/core";
 import { useMemo, useState, useEffect } from "react";
 import { Typography } from "app/components/designSystem/Typography";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { basename as pathBasename, relative as pathRelative } from "path";
 import memoize from "memoizee";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { join as pathJoin } from "path";
 import { Evt } from "evt";
+import { useTheme } from "@material-ui/core/styles";
 
 export type Props = {
     path: string;
     minDepth: number;
+    isNavigationDisabled: boolean;
     callback(params: { relativePath: string }): void;
     className?: string;
     evtAction: NonPostableEvt<{ action: "DISPLAY COPY FEEDBACK"; basename: string; }>;
@@ -20,7 +23,7 @@ export type Props = {
 
 export function Breadcrump(props: Props) {
 
-    const { minDepth, callback, className, evtAction } = props;
+    const { minDepth, isNavigationDisabled , callback, className, evtAction } = props;
 
     const [path, setPath] = useState(props.path);
 
@@ -90,8 +93,8 @@ export function Breadcrump(props: Props) {
     );
 
     const partialPaths = useMemo(
-        () => getPartialPaths({ path, minDepth }),
-        [path, minDepth]
+        () => getPartialPaths({ path, minDepth, isNavigationDisabled }),
+        [path, minDepth, isNavigationDisabled]
     );
 
     return (
@@ -108,11 +111,29 @@ export function Breadcrump(props: Props) {
 
 }
 
-function getPartialPaths(params: { path: string; minDepth: number; }) {
+function getPartialPaths(params: { path: string; minDepth: number; isNavigationDisabled: boolean; }) {
 
-    const { path, minDepth } = params;
+    const { path, isNavigationDisabled } = params;
+    let { minDepth } = params;
 
-    const split = path.replace(/\/$/, "").split("/");
+    const split = (() => {
+
+        if (!/^[^./]/.test(path)) {
+            return path;
+        }
+
+        if( minDepth !== 0 ){
+
+            minDepth--;
+
+            return path;
+
+        }
+
+        return `./${path}`;
+
+    })()
+        .replace(/\/$/, "").split("/");
 
     return split.map((...[, i]) => {
 
@@ -121,7 +142,7 @@ function getPartialPaths(params: { path: string; minDepth: number; }) {
         return {
             "partialPath": [...split].splice(0, i + 1).join("/") || "/",
             isLast,
-            "isClickable": !isLast && (i >= minDepth)
+            "isClickable": isNavigationDisabled ? false : (!isLast && (i >= minDepth))
         };
 
     });
@@ -135,35 +156,28 @@ const { Section } = (() => {
         isFocused: boolean;
     };
 
-    //Failed attempt for bold on hover (refresh bug): https://css-tricks.com/bold-on-hover-without-the-layout-shift/
-    const useStyles = makeStyles(
-        theme => createStyles<"root", Props>({
-            "root": ({ isClickable }) => ({
-                ...(!isClickable ? {} : {
-                    "&:hover": {
-                        "color": theme.custom.colors.useCases.typography.textPrimary,
-                        "&:active": {
-                            "color": theme.custom.colors.useCases.typography.textFocus
-                        }
-                    },
-                }),
-                "padding-right": 5,
-                "display": "inline-flex",
-            })
-        })
-    );
-
     function Section(props: Props) {
 
-        const { partialPath, isLast, onClick, isFocused } = props;
+        const { partialPath, isLast, onClick, isFocused, isClickable } = props;
 
-        const classes = useStyles(props);
+        const theme = useTheme();
 
         return (
             <Typography
-                className={classes.root}
                 color={isFocused ? "focus" : isLast ? "primary" : "secondary"}
                 onClick={onClick}
+                css={{
+                    ...(!isClickable ? {} : {
+                        "&:hover": {
+                            "color": theme.custom.colors.useCases.typography.textPrimary
+                        },
+                        "&:active": {
+                            "color": theme.custom.colors.useCases.typography.textFocus
+                        }
+                    }),
+                    "paddingRight": 5,
+                    "display": "inline-flex",
+                }}
             >
                 {`${pathBasename(partialPath)}${isLast ? "" : " /"}`}
             </Typography>
