@@ -1,4 +1,5 @@
 
+// https://github.com/mui-org/material-ui/issues/22342
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
@@ -162,6 +163,10 @@ const { Section } = (() => {
 
         const theme = useTheme();
 
+        const hoverFontWeight = 500;
+
+        const text = `${pathBasename(partialPath)}${isLast ? "" : " /"}`;
+
         return (
             <Typography
                 color={isFocused ? "focus" : isLast ? "primary" : "secondary"}
@@ -169,17 +174,33 @@ const { Section } = (() => {
                 css={{
                     ...(!isClickable ? {} : {
                         "&:hover": {
+                            "fontWeight": hoverFontWeight,
                             "color": theme.custom.colors.useCases.typography.textPrimary
                         },
                         "&:active": {
                             "color": theme.custom.colors.useCases.typography.textFocus
                         }
                     }),
-                    "paddingRight": 5,
+                    //"paddingRight": 5,
                     "display": "inline-flex",
+                    "flexDirection": "column",	
+                    "alignItems": "center",	
+                    "justifyContent": "space-between",	
+                    "&::after": {	
+                        "content": `"${text}_"`,	
+                        "height": 0,	
+                        "visibility": "hidden",	
+                        "overflow": "hidden",	
+                        "userSelect": "none",	
+                        "pointerEvents": "none",	
+                        "fontWeight": hoverFontWeight,	
+                        "@media speech": {	
+                            "display": "none"	
+                        }	                        
+                    }
                 }}
             >
-                {`${pathBasename(partialPath)}${isLast ? "" : " /"}`}
+                {text}
             </Typography>
         );
 
