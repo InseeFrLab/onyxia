@@ -222,11 +222,6 @@ export function ExplorerItems(props: Props) {
 
                         const { added } = params;
 
-                        console.log(JSON.stringify({
-                            kind,
-                            added
-                        }, null, 2));
-
                         if (added.length > 1) {
                             return;
                         }
