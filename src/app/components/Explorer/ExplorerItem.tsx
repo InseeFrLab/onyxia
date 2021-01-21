@@ -1,10 +1,12 @@
 
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
 import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
 import { Typography } from "../designSystem/Typography"
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useClick } from "app/utils/hooks/useClick";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -55,25 +57,25 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root" | "frame" | "text" | "hiddenSpan" | "input", Props>({
+const { useCssRecord } = createUseCssRecord<Props>()(
+    ({ theme }, { isSelected, standardizedWidth })=> ({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
-            "width": ({ standardizedWidth }) =>
-                theme.spacing((() => {
+            "width": theme.spacing((() => {
                     switch (standardizedWidth) {
                         case "big": return 15;
                         case "normal": return 10;
                     }
                 })())
         },
-        "frame": ({ isSelected }) => ({
+        "frame": {
             "borderRadius": "5px",
             "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
-            "display": "inline-block"
-        }),
-        "text": ({ isSelected }) => ({
+            "display": "inline-block",
+            "padding": theme.spacing("4px", "6px")
+        },
+        "text": {
             //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
             //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
             "color": (() => {
@@ -84,9 +86,8 @@ const useStyles = makeStyles(
                     .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
                     .string();
 
-
             })()
-        }),
+        },
         "hiddenSpan": {
             "width": 0,
             "overflow": "hidden",
@@ -133,7 +134,7 @@ export function ExplorerItem(props: Props) {
 
     const { t } = useTranslation("ExplorerItem");
 
-    const classes = useStyles(props);
+    const { cssRecord } = useCssRecord(props);
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
@@ -207,11 +208,9 @@ export function ExplorerItem(props: Props) {
     );
 
     return (
-        <div className={classes.root}>
-            <Box
-                className={classes.frame}
-                px="6px"
-                py="4px"
+        <div css={cssRecord.root}>
+            <div
+                css={cssRecord.frame}
                 {...getOnMouseProps("icon")}
             >
                 <Icon
@@ -220,13 +219,13 @@ export function ExplorerItem(props: Props) {
                         kind
                     }}
                 />
-            </Box>
+            </div>
             {
                 !isInEditingState && !isCircularProgressShown ?
                     <Box {...getOnMouseProps("text")}>
                         {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
                         <Typography
-                            className={classes.text}
+                            css={cssRecord.text}
                             style={{ "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all" }}
                         >{
                                 smartTrim({
@@ -253,7 +252,7 @@ export function ExplorerItem(props: Props) {
                                             ...(
                                                 prev.length === 0 ?
                                                     [] :
-                                                    ["_", <span key={i} className={classes.hiddenSpan}> </span>]
+                                                    ["_", <span key={i} css={cssRecord.hiddenSpan}> </span>]
                                             ),
                                             curr
                                         ],
@@ -262,9 +261,9 @@ export function ExplorerItem(props: Props) {
                             }</Typography>
                     </Box>
                     :
-                    <form className={classes.root} noValidate autoComplete="off">
+                    <form css={cssRecord.root/*TODO*/} noValidate autoComplete="off">
                         <Input
-                            className={classes.input}
+                            css={cssRecord.input}
                             defaultValue={basename}
                             inputProps={{ "aria-label": t("description") }}
                             autoFocus={true}
