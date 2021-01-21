@@ -258,8 +258,6 @@ export function ExplorerItems(props: Props) {
             "callback": callbackFactory("file")
         });
 
-        console.log(JSON.stringify(directories, null, 2));
-
         useArrayDiff({
             "watchFor": "addition",
             "array": directories,
