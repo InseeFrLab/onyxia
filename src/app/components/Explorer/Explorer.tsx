@@ -330,7 +330,7 @@ export function Explorer(props: Props) {
 
             setCmdTranslationTop(buttonBarHeight);
 
-            setCmdTranslationMaxHeight(rootBottom - buttonBarBottom - 200);
+            setCmdTranslationMaxHeight(rootBottom - buttonBarBottom - 30);
 
         },
         [
