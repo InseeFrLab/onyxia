@@ -62,7 +62,7 @@ const useStyles = makeStyles(
 				"expandedPanel": ({ maxHeight, headerHeight }) => ({
 					"maxHeight": maxHeight - headerHeight,
 					"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
-					"overflow": "scroll",
+					"overflow": "auto",
 					"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
 					"& pre": {
 						"whiteSpace": "pre-wrap",
