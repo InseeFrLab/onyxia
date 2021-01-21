@@ -230,6 +230,7 @@ export function MySecrets(props: Props) {
                     currentPath={state.currentPath}
                     isNavigating={state.isNavigationOngoing}
                     evtTranslation={evtSecretsManagerTranslation}
+                    showHidden={false}
                     file={
                         state.state !== "SHOWING SECRET" ? null :
                             <MySecretsEditor

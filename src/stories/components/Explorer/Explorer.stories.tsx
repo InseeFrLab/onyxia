@@ -178,6 +178,7 @@ export const Vue1 = getStory({
     "currentPath": ".onyxia/this/is/a/path",
     "evtTranslation": new Evt(),
     "isNavigating": false,
+    "showHidden": false,
     "file": null,
     "files": ["this-is-a-file", "file2", "foo.csv"],
     "directories": ["My_directory-1", "dir2", "another-directory", "foo"],

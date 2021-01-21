@@ -16,6 +16,8 @@ import { assert } from "evt/tools/typeSafety/assert";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
+import { Typography } from "app/components/designSystem/Typography";
+import { useTranslation } from "app/i18n/useTranslations";
 
 
 export type Props = {
@@ -220,6 +222,11 @@ export function ExplorerItems(props: Props) {
 
                         const { added } = params;
 
+                        console.log(JSON.stringify({
+                            kind,
+                            added
+                        }, null, 2));
+
                         if (added.length > 1) {
                             return;
                         }
@@ -255,6 +262,8 @@ export function ExplorerItems(props: Props) {
             "array": files,
             "callback": callbackFactory("file")
         });
+
+        console.log(JSON.stringify(directories, null, 2));
 
         useArrayDiff({
             "watchFor": "addition",
@@ -379,64 +388,76 @@ export function ExplorerItems(props: Props) {
         []
     );
 
+    const { t } = useTranslation("ExplorerItems");
+
     return (
         <div
             className={className}
             ref={containerRef}
             onMouseDown={onGridMouseDown}
         >
-            <Grid
-                container
-                wrap="wrap"
-                justify="flex-start"
-                spacing={1}
-            >
-                {(["directory", "file"] as const).map(
-                    kind => ((() => {
-                        switch (kind) {
-                            case "directory": return directories;
-                            case "file": return files;
-                        }
-                    })()).map(basename => {
+            {
+                files.length === 0 && directories.length === 0 ?
+                    <Typography>{t("empty directory")}</Typography>
+                    :
+                    <Grid
+                        container
+                        wrap="wrap"
+                        justify="flex-start"
+                        spacing={1}
+                    >
+                        {(["directory", "file"] as const).map(
+                            kind => ((() => {
+                                switch (kind) {
+                                    case "directory": return directories;
+                                    case "file": return files;
+                                }
+                            })()).map(basename => {
 
-                        const keyProp = getKeyProp({ kind, basename });
-                        const isSelected = selectedItemKeyProp === keyProp;
+                                const keyProp = getKeyProp({ kind, basename });
+                                const isSelected = selectedItemKeyProp === keyProp;
 
-                        return (
-                            <Grid item key={keyProp}>
-                                <ExplorerItem
-                                    kind={kind}
-                                    basename={basename}
-                                    isSelected={isSelected}
-                                    evtAction={getEvtItemAction(keyProp)}
-                                    isCircularProgressShown={
-                                        (() => {
-                                            switch (kind) {
-                                                case "directory": return [
-                                                    ...directoriesBeingCreated,
-                                                    ...directoriesBeingRenamed
-                                                ];
-                                                case "file": return [
-                                                    ...filesBeingCreated,
-                                                    ...filesBeingRenamed
-                                                ];
+                                return (
+                                    <Grid item key={keyProp}>
+                                        <ExplorerItem
+                                            kind={kind}
+                                            basename={basename}
+                                            isSelected={isSelected}
+                                            evtAction={getEvtItemAction(keyProp)}
+                                            isCircularProgressShown={
+                                                (() => {
+                                                    switch (kind) {
+                                                        case "directory": return [
+                                                            ...directoriesBeingCreated,
+                                                            ...directoriesBeingRenamed
+                                                        ];
+                                                        case "file": return [
+                                                            ...filesBeingCreated,
+                                                            ...filesBeingRenamed
+                                                        ];
+                                                    }
+                                                })().includes(basename)
                                             }
-                                        })().includes(basename)
-                                    }
-                                    standardizedWidth={standardizedWidth}
-                                    onMouseEvent={onMouseEventFactory(kind, basename)}
-                                    onEditBasename={onEditBasenameFactory(kind, basename)}
-                                    getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
-                                    onIsInEditingStateValueChange={onIsInEditingStateValueChange}
-                                />
-                            </Grid>
-                        );
+                                            standardizedWidth={standardizedWidth}
+                                            onMouseEvent={onMouseEventFactory(kind, basename)}
+                                            onEditBasename={onEditBasenameFactory(kind, basename)}
+                                            getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
+                                            onIsInEditingStateValueChange={onIsInEditingStateValueChange}
+                                        />
+                                    </Grid>
+                                );
 
-                    }))}
+                            }))}
 
-            </Grid>
-
+                    </Grid>
+            }
         </div>
     );
 
+}
+
+export declare namespace ExplorerItems {
+    export type I18nScheme = {
+        'empty directory': undefined;
+    };
 }

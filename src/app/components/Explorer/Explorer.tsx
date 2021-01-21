@@ -9,7 +9,6 @@ import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename, relative as pathRelative } from "path";
 import type { UnpackEvt } from "evt";
-import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { Props as CmdTranslationProps } from "./CmdTranslation";
 import { CmdTranslation } from "./CmdTranslation";
@@ -18,13 +17,14 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 import { assert } from "evt/tools/typeSafety/assert";
+import { id } from "evt/tools/typeSafety/id";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
 import { useDOMRect } from "app/utils/hooks/useDOMRect";
 import clsx from "clsx";
-import { getPathDepth } from "app/utils/getPathDepth";
+import { getPathDepth } from "app/utils/getPathDepth";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -65,6 +65,7 @@ export type Props = {
     directoriesBeingRenamed: string[];
     filesBeingCreated: string[];
     filesBeingRenamed: string[];
+    showHidden: boolean;
     onNavigate(params: { kind: "file" | "directory"; relativePath: string; }): void;
     onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
     onDeleteItem(params: { kind: "file" | "directory"; basename: string; }): void;
@@ -122,12 +123,7 @@ export function Explorer(props: Props) {
         isNavigating,
         file,
         fileDate,
-        files,
-        directories,
-        directoriesBeingCreated,
-        directoriesBeingRenamed,
-        filesBeingCreated,
-        filesBeingRenamed,
+        showHidden,
         onNavigate,
         onEditBasename,
         onCopyPath,
@@ -137,11 +133,39 @@ export function Explorer(props: Props) {
     } = props;
 
     useMemo(
-        () => assert(!pathRelative(browsablePath, currentPath).startsWith("..")), 
+        () => assert(!pathRelative(browsablePath, currentPath).startsWith("..")),
         [browsablePath, currentPath]
     );
 
-
+    const [
+        files,
+        directories,
+        directoriesBeingCreated,
+        directoriesBeingRenamed,
+        filesBeingCreated,
+        filesBeingRenamed,
+    ] = useMemo(
+        () => ([
+            props.files,
+            props.directories,
+            props.directoriesBeingCreated,
+            props.directoriesBeingRenamed,
+            props.filesBeingCreated,
+            props.filesBeingRenamed,
+        ] as const).map(
+            showHidden ? id :
+                arr => arr.filter(basename => !basename.startsWith(".")
+                )),
+        [
+            props.files,
+            props.directories,
+            props.directoriesBeingCreated,
+            props.directoriesBeingRenamed,
+            props.filesBeingCreated,
+            props.filesBeingRenamed,
+            showHidden
+        ]
+    );
 
     const { Items, ButtonBar, FileOrDirectoryHeader } = useSemanticGuaranteeMemo(
         () => {
@@ -341,7 +365,7 @@ export function Explorer(props: Props) {
     );
 
     const isCurrentPathBrowsablePathRoot = useMemo(
-        ()=> pathRelative(browsablePath, currentPath) === "",
+        () => pathRelative(browsablePath, currentPath) === "",
         [browsablePath, currentPath]
     );
 
@@ -387,27 +411,23 @@ export function Explorer(props: Props) {
                             {file}
                         </div>
                         :
-                        (
-                            files.length === 0 && directories.length === 0 ?
-                                <Typography>{t("empty directory")}</Typography> :
-                                <Items
-                                    className={classes.items}
-                                    files={files}
-                                    isNavigating={isNavigating}
-                                    directories={directories}
-                                    directoriesBeingCreated={directoriesBeingCreated}
-                                    directoriesBeingRenamed={directoriesBeingRenamed}
-                                    filesBeingCreated={filesBeingCreated}
-                                    filesBeingRenamed={filesBeingRenamed}
-                                    onNavigate={itemsOnNavigate}
-                                    onEditBasename={onEditBasename}
-                                    evtAction={evtItemsAction}
-                                    onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
-                                    onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                                    onCopyPath={itemsOnCopyPath}
-                                    onDeleteItem={itemsOnDeleteItem}
-                                />
-                        )
+                        <Items
+                            className={classes.items}
+                            files={files}
+                            isNavigating={isNavigating}
+                            directories={directories}
+                            directoriesBeingCreated={directoriesBeingCreated}
+                            directoriesBeingRenamed={directoriesBeingRenamed}
+                            filesBeingCreated={filesBeingCreated}
+                            filesBeingRenamed={filesBeingRenamed}
+                            onNavigate={itemsOnNavigate}
+                            onEditBasename={onEditBasename}
+                            evtAction={evtItemsAction}
+                            onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                            onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                            onCopyPath={itemsOnCopyPath}
+                            onDeleteItem={itemsOnDeleteItem}
+                        />
                 }
             </Box>
         </div>
@@ -416,7 +436,6 @@ export function Explorer(props: Props) {
 }
 export declare namespace Explorer {
     export type I18nScheme = {
-        'empty directory': undefined;
         'untitled what': { what: string; };
         folder: undefined;
         file: undefined;
