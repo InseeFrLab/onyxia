@@ -174,6 +174,7 @@ export default {
 
 export const Vue1 = getStory({
     "type": "secret",
+    "browsablePath": ".onyxia",
     "currentPath": ".onyxia/this/is/a/path",
     "evtTranslation": new Evt(),
     "isNavigating": false,
