@@ -10,11 +10,18 @@ function getIsUpdated(
         return true;
     }
 
+    if( previousRecord === record ){
+        return false;
+    }
+
     const keys = Object.keys(record);
 
     for (const key of keys) {
 
         if (record[key] !== previousRecord[key]) {
+
+            console.log(key);
+
             return true;
         }
 

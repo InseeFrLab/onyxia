@@ -1,6 +1,8 @@
 
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
 import { useMemo } from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
@@ -17,11 +19,11 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root", Props>({
+const { useCssRecord } = createUseCssRecord<Props>()(
+    ({ theme }, { kind })=> ({
         "root": {
             "fill": "currentColor",
-            "color": ({ kind }) => {
+            "color": (() => {
                 switch (kind) {
                     case "directory": return theme.palette.primary.main;
                     case "file": return theme.palette.secondary[(() => {
@@ -31,18 +33,19 @@ const useStyles = makeStyles(
                         }
                     })()];
                 }
-            },
+            })(),
             "display": "block"
         }
     })
 );
 
 
+
 export function FileOrDirectoryIcon(props: Props) {
 
     const { visualRepresentationOfAFile, standardizedWidth, kind } = props;
 
-    const classes = useStyles(props);
+    const { cssRecord } = useCssRecord(props);
 
     /* 
      * NOTE: We can't set the width and height in css ref:
@@ -81,7 +84,7 @@ export function FileOrDirectoryIcon(props: Props) {
 
     return (
         <SvgComponent
-            className={classes.root}
+            css={cssRecord.root}
             width={width}
             height={height}
         />

@@ -1,12 +1,13 @@
 
-import { useMemo } from "react";
-import { useMemoizedRecord } from "app/utils/hooks/useMemoizedRecord";
+import { useMemo, useState } from "react";
 import type { Theme } from "@material-ui/core/styles";
 import type { 
     Interpolation, 
     InterpolationWithTheme as InterpolationWithThemeGeneric
 } from "@emotion/core";
 import { useTheme } from "@material-ui/core/styles";
+import { assert } from "evt/tools/typeSafety/assert";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 /** must be imported everywhere we use the css property!
  * 
  * Add the comments:
@@ -52,19 +53,53 @@ export type InterpolationWithTheme = InterpolationWithThemeGeneric<Theme>
  */
 export function createUseCssRecord<Params extends Record<string, unknown>>() {
 
-    return function<Names extends string>(
-        getCssRecord: (themeWrap: { theme: Theme; }, params: Params) => Record<Names, Interpolation>
+    return function <Key extends string>(
+        getCssRecord: (themeWrap: { theme: Theme; }, params: Params) => Record<Key, Interpolation>
     ) {
 
         function useCssRecord(params: Params) {
 
             const theme = useTheme();
 
-            const memoizedParams = useMemoizedRecord(params);
+            const [{  getParamsDependencyArray }] = useState(() => {
+
+                const keys: Key[] = [];
+
+                getCssRecord(
+                    { theme },
+                    new Proxy(
+                        params,
+                        {
+                            "get": (...args) => {
+
+                                const [, prop] = args;
+
+                                assert(
+                                    typeof prop === "string" && 
+                                    typeGuard<Key>(prop)
+                                );
+
+                                keys.push(prop);
+
+                                return Reflect.get(...args);
+
+                            }
+                        }
+                    )
+                );
+
+                function getParamsDependencyArray(record: Params){
+                    return keys.map(key=> record[key]);
+                }
+
+                return { getParamsDependencyArray };
+
+            });
 
             const cssRecord = useMemo(
-                () => getCssRecord({ theme }, memoizedParams),
-                [theme, memoizedParams]
+                () => getCssRecord({ theme }, params),
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [theme, ...getParamsDependencyArray(params)]
             );
 
             return { cssRecord };
@@ -78,3 +113,5 @@ export function createUseCssRecord<Params extends Record<string, unknown>>() {
 }
 
 export { useTheme };
+
+
