@@ -81,7 +81,7 @@ export function createVaultSecretsManagerClient(params: Params): {
 			const { path } = params;
 
 			await axiosInstance.delete(
-				ctxPathJoin("data", path)
+				ctxPathJoin("metadata", path)
 			);
 
 		}
