@@ -42,10 +42,13 @@ export function createVaultSecretsManagerClient(params: Params): {
 				{ "params": { "list": "true" } }
 			);
 
-			const [directories, secrets] = axiosResponse.data.data.keys
+			let [directories, secrets] = axiosResponse.data.data.keys
 				.reduce(...partition<string>(key => key.endsWith("/")));
 
-			return { directories, secrets };
+			return { 
+				"directories": directories.map(path => path.split("/")[0]),
+				secrets 
+			};
 
 		},
 		"get": async params => {
