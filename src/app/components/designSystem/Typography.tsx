@@ -6,7 +6,7 @@ import MuiTypography from "@material-ui/core/Typography";
 import type { TypographyClassKey } from "@material-ui/core/Typography";
 import type { Id, Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
-import type { InterpolationWithTheme } from "@emotion/core";
+import type { InterpolationWithTheme } from "app/theme/useCssRecord";
 
 export type Props = {
     className?: string | null;
@@ -15,7 +15,7 @@ export type Props = {
     style?: React.CSSProperties | null;
     children: NonNullable<React.ReactNode>;
     onClick?: (() => void) | null;
-    css?: InterpolationWithTheme<any> | null;
+    css?: InterpolationWithTheme;
 };
 
 export const defaultProps: Optional<Props> = {

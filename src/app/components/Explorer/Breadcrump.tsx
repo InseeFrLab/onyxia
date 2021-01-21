@@ -1,8 +1,9 @@
 
-// https://github.com/mui-org/material-ui/issues/22342
+
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx } from "@emotion/core";
+import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
+
 import { useMemo, useState, useEffect } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { basename as pathBasename, relative as pathRelative } from "path";
@@ -11,7 +12,6 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { join as pathJoin } from "path";
 import { Evt } from "evt";
-import { useTheme } from "@material-ui/core/styles";
 
 export type Props = {
     path: string;
@@ -157,48 +157,56 @@ const { Section } = (() => {
         isFocused: boolean;
     };
 
+    const hoverFontWeight = 500;
+
+    const { useCssRecord } = createUseCssRecord<Props & { text: string; }>()(
+        ({ theme }, { isClickable, text }) => ({
+            "root": {
+                ...(!isClickable ? {} : {
+                    "&:hover": {
+                        "fontWeight": hoverFontWeight,
+                        "color": theme.custom.colors.useCases.typography.textPrimary
+                    },
+                    "&:active": {
+                        "color": theme.custom.colors.useCases.typography.textFocus
+                    }
+                }),
+                "display": "inline-flex",
+                "flexDirection": "column",
+                "alignItems": "center",
+                "justifyContent": "space-between",
+                "&::after": {
+                    "content": `"${text}_"`,
+                    "height": 0,
+                    "visibility": "hidden",
+                    "overflow": "hidden",
+                    "userSelect": "none",
+                    "pointerEvents": "none",
+                    "fontWeight": hoverFontWeight,
+                    "@media speech": {
+                        "display": "none"
+                    }
+                }
+            }
+        })
+    );
+
     function Section(props: Props) {
 
-        const { partialPath, isLast, onClick, isFocused, isClickable } = props;
+        const { partialPath, isLast, onClick, isFocused } = props;
 
-        const theme = useTheme();
+        const text = useMemo(
+            () => `${pathBasename(partialPath)}${isLast ? "" : " /"}`,
+            [partialPath, isLast]
+        );
 
-        const hoverFontWeight = 500;
-
-        const text = `${pathBasename(partialPath)}${isLast ? "" : " /"}`;
+        const { cssRecord } = useCssRecord({ ...props, text });
 
         return (
             <Typography
                 color={isFocused ? "focus" : isLast ? "primary" : "secondary"}
                 onClick={onClick}
-                css={{
-                    ...(!isClickable ? {} : {
-                        "&:hover": {
-                            "fontWeight": hoverFontWeight,
-                            "color": theme.custom.colors.useCases.typography.textPrimary
-                        },
-                        "&:active": {
-                            "color": theme.custom.colors.useCases.typography.textFocus
-                        }
-                    }),
-                    //"paddingRight": 5,
-                    "display": "inline-flex",
-                    "flexDirection": "column",	
-                    "alignItems": "center",	
-                    "justifyContent": "space-between",	
-                    "&::after": {	
-                        "content": `"${text}_"`,	
-                        "height": 0,	
-                        "visibility": "hidden",	
-                        "overflow": "hidden",	
-                        "userSelect": "none",	
-                        "pointerEvents": "none",	
-                        "fontWeight": hoverFontWeight,	
-                        "@media speech": {	
-                            "display": "none"	
-                        }	                        
-                    }
-                }}
+                css={cssRecord.root}
             >
                 {text}
             </Typography>
