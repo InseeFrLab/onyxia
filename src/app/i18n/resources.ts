@@ -2,9 +2,10 @@ import { symToStr } from "app/utils/symToStr";
 import { Reflect } from "app/utils/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/Explorer/Explorer";
+import { ExplorerItems } from "app/components/Explorer/ExplorerItems";
+import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
@@ -19,9 +20,10 @@ type ToTranslations<S extends Scheme> = {
 
 const reflectedI18nSchemes = {
     [symToStr({ MySecrets })]: Reflect<MySecrets.I18nScheme>(),
-    [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
     [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
+    [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
+    [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
 };
@@ -75,9 +77,11 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         "Explorer": {
             ...common.en,
             "untitled what": "untitled_{{what}}",
-            "empty directory": "This directory is empty",
             "folder": "folder"
 
+        },
+        "ExplorerItems": {
+            "empty directory": "This directory is empty",
         },
         "MySecretsEditor": {
             "add an entry": "Add a new variable",
@@ -123,9 +127,11 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
         },
         "Explorer": {
             ...common.fr,
-            "empty directory": "Ce répertoire est vide",
             "untitled what": "{{what}}_sans_nom",
             "folder": "dossier"
+        },
+        "ExplorerItems": {
+            "empty directory": "Ce répertoire est vide",
         },
         "MySecretsEditor": {
 
