@@ -10,18 +10,11 @@ function getIsUpdated(
         return true;
     }
 
-    if( previousRecord === record ){
-        return false;
-    }
-
     const keys = Object.keys(record);
 
     for (const key of keys) {
 
         if (record[key] !== previousRecord[key]) {
-
-            console.log(key);
-
             return true;
         }
 
@@ -35,15 +28,19 @@ function getIsUpdated(
 
 }
 
+/** Grantee to always return a new ref if not shallow equal at level 1 */
 export function useMemoizedRecord<R extends Record<string, unknown>>(record: R): R {
 
     const previousRecordRef = useRef<typeof record | undefined>(undefined);
 
     const isUpdated = getIsUpdated(previousRecordRef.current, record);
 
-    const memoizedRecord = isUpdated ? record : previousRecordRef.current!;
+    const memoizedRecord = isUpdated ?
+        previousRecordRef.current !== record ? record : { ...record }
+        :
+        previousRecordRef.current!;
 
-    if( isUpdated ){
+    if (isUpdated) {
 
         previousRecordRef.current = record;
 
