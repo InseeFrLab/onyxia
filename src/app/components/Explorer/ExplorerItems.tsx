@@ -272,7 +272,7 @@ export const ExplorerItems = memo((props: Props) => {
             [kind, basename]: ["file" | "directory", string],
             [{ type, target }]: [Parameters<ExplorerItemProps["onMouseEvent"]>[0]]
         ) => {
-
+            
             if (isNavigating) {
                 return;
             }
@@ -291,6 +291,8 @@ export const ExplorerItems = memo((props: Props) => {
                         break;
 
                     }
+
+
 
                     setSelectedItemKeyProp(keyProp);
 
