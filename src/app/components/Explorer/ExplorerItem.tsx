@@ -140,7 +140,7 @@ export const ExplorerItem = memo((props: Props) => {
         "doubleClickDelayMs": 500,
         "callback": useCallback(({ type, extraArg: target }) =>
             onMouseEvent({ type, target }),
-            [onMouseEvent])
+        [onMouseEvent])
     });
 
     //TODO: We need a custom hook for this.

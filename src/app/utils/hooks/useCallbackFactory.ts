@@ -2,6 +2,13 @@
 import { useMemo, useRef } from "react";
 import memoize from "memoizee";
 import type { DependencyList } from "react";
+import { id } from "evt/tools/typeSafety/id";
+
+export type CallbackFactory<
+    FactoryArgs extends unknown[],
+    Args extends unknown[],
+    R
+    > = (...factoryArgs: FactoryArgs) => (...args: Args) => R
 
 /**
  *  const callbackFactory= useCallbackFactory(
@@ -18,7 +25,9 @@ export function useCallbackFactory<
 >(
     callback: (...callbackArgs: [FactoryArgs, Args]) => R,
     deps: DependencyList
-): (...factoryArgs: FactoryArgs) => (...args: Args) => R {
+): CallbackFactory<FactoryArgs, Args, R> {
+
+    type Out = CallbackFactory<FactoryArgs, Args, R>;
 
     const callbackRef = useRef<typeof callback>(callback);
 
@@ -28,13 +37,28 @@ export function useCallbackFactory<
         deps
     );
 
+    const memoizedRef = useRef<Out | undefined>(undefined);
+
     return useMemo(
-        () => memoize(
-            (...factoryArgs: FactoryArgs) =>
-                (...args: Args) =>
-                    callbackRef.current(factoryArgs, args)
+        () => id<Out>(
+            (...factoryArgs) => {
+
+                if (memoizedRef.current === undefined) {
+
+                    memoizedRef.current = memoize(
+                        (...factoryArgs: FactoryArgs) =>
+                            (...args: Args) =>
+                                callbackRef.current(factoryArgs, args),
+                        { "length": factoryArgs.length }
+                    );
+
+                }
+
+                return memoizedRef.current(...factoryArgs);
+
+            }
+
         ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
