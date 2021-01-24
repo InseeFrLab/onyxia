@@ -1,51 +1,11 @@
 
-import { useMemo } from "react";
+import { useState } from "react";
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
-import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
-import { withProps } from "app/utils/withProps";
 import { createTheme } from "./theme";
 
-
-
-function ThemeProvider(
-    props: {
-        /** Higher order */
-        isReactStrictModeEnabled: boolean;
-        isDarkModeEnabled: boolean;
-        children: React.ReactNode;
-    }
-) {
-
-    const {
-        isReactStrictModeEnabled,
-        isDarkModeEnabled,
-        children
-    } = props;
-
-    const { theme } = useMemo(
-        () => memoize(
-            (isDarkModeEnabled: boolean) =>
-                createTheme({
-                    isReactStrictModeEnabled,
-                    isDarkModeEnabled
-                })
-        ),
-        [isReactStrictModeEnabled]
-    )(isDarkModeEnabled);
-
-    return (
-        <MuiThemeProvider theme={theme}>
-            <ScopedCssBaseline>
-                {children}
-            </ScopedCssBaseline>
-        </MuiThemeProvider>
-    );
-
-
-}
-
-export function ThemeProviderFactory(
+export function themeProviderFactory(
     params: {
         isReactStrictModeEnabled: boolean;
     }
@@ -53,17 +13,43 @@ export function ThemeProviderFactory(
 
     const { isReactStrictModeEnabled } = params;
 
-    return {
-        "ThemeProvider": withProps(
-            ThemeProvider,
-            { isReactStrictModeEnabled }
-        )
+    function ThemeProvider(
+        props: {
+            isDarkModeEnabled: boolean;
+            children: React.ReactNode;
+        }
+    ) {
+
+        const {
+            isDarkModeEnabled,
+            children
+        } = props;
+
+        const { theme } = useState(
+            () => memoize(
+                (isDarkModeEnabled: boolean) =>
+                    createTheme({
+                        isReactStrictModeEnabled,
+                        isDarkModeEnabled
+                    })
+            )
+        )[0](isDarkModeEnabled);
+
+        return (
+            <MuiThemeProvider theme={theme}>
+                <ScopedCssBaseline>
+                    <StylesProvider injectFirst>
+                        {children}
+                    </StylesProvider>
+                </ScopedCssBaseline>
+            </MuiThemeProvider>
+        );
+
+
     }
 
+    return { ThemeProvider };
 
 }
-
-
-
 
 

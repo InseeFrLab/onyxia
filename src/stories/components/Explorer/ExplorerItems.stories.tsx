@@ -1,6 +1,7 @@
 
 
-import React, { useState, useCallback, useEffect } from "react";
+import { css } from "app/theme/useClassNames";
+import { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
@@ -11,17 +12,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { EventEmitter } from "events";
 import withEvents from "@storybook/addon-events";
 import type { UnpackEvt } from "evt";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 const eventEmitter = new EventEmitter();
-
-const useStyles = makeStyles(
-    () => createStyles<"root", { containerWidth: number; }>({
-        "root": ({ containerWidth }) => ({
-            "width": `${containerWidth}vw`
-        })
-    })
-);
 
 function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"> & { containerWidth: number; }) {
 
@@ -108,12 +100,10 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
         [files, directories, filesBeingRenamed, directoriesBeingRenamed]
     );
 
-    const classes = useStyles({ containerWidth });
-
     return (
         <ExplorerItems
             {...props}
-            className={classes.root}
+            className={css({ "width": `${containerWidth}vw` })}
             files={files}
             directories={directories}
             filesBeingRenamed={filesBeingRenamed}
@@ -173,11 +163,20 @@ export default {
 };
 
 export const Vue1 = getStory({
-    "containerWidth": 50,
+    "containerWidth": 500,
     "visualRepresentationOfAFile": "secret",
     "getIsValidBasename": pure.getIsValidBasename,
-    "files": ["this-is-a-file", "aFileWithAveryLongNameThatShouldNotOverlap.txt", "foo.csv"],
-    "directories": ["My_directory-1", "dir2", "another-directory", "another_directory_2"],
+    "files": [
+        ...((new Array(30).fill("").map((_,i)=> `aaa${i}`))),
+        "this-is-a-file", "aFileWithAveryLongNameThatShouldNotOverlap.txt", "foo.csv",
+    ],
+    "directories": [
+        "My_directory-1", "dir2", "another-directory", "another_directory_2",
+        "My_directory-2", "dir3", "another-directory_1", "another_directory_3",
+        "My_directory-3", "dir4", "another-directory_2", "another_directory_4",
+        "My_directory-4", "dir5", "another-directory_3", "another_directory_5",
+        "My_directory-5", "dir6", "another-directory_4", "another_directory_6",
+    ],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,
     "filesBeingCreated": [],

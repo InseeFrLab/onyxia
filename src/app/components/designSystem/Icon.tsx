@@ -1,5 +1,6 @@
 
-import React from "react";
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { memo } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import { ReactComponent as TourSvg } from "app/assets/svg/AssistedTour.svg";
 import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
@@ -22,8 +23,6 @@ import CheckIcon from "@material-ui/icons/Check";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import AttachMoney from "@material-ui/icons/AttachMoney";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "profile" |
@@ -39,6 +38,9 @@ export type MaterialType =
 
 
 export type Props = {
+
+    className?: string | null;
+
     /** Design which icon should be displayed */
     type: SvgTypes | MaterialType;
     /** Color of the icon based on the theme */
@@ -46,7 +48,6 @@ export type Props = {
     /** Enable to make the icon larger or smaller */
     fontSize?: "default" | "inherit" | "small" | "large";
 
-    className?: string | null;
 
 };
 
@@ -56,27 +57,28 @@ export const defaultProps: Optional<Props> = {
     "fontSize": "default"
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root", Required<Props>>({
-        "root": ({ color }) => ({
-            "color": color === "limeGreen" ? 
-                theme.custom.colors.palette.limeGreen.main : 
-                theme.custom.colors.useCases.typography[color],
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    ({ theme: { custom: { colors }} }, { color }) => ({
+        "root": {
+            "color": color === "limeGreen" ?
+                colors.palette.limeGreen.main :
+                colors.useCases.typography[color],
             // https://stackoverflow.com/a/24626986/3731798
             //"verticalAlign": "top",
             //"display": "inline-block"
-			"verticalAlign": "top"
-        })
+            "verticalAlign": "top"
+        }
     })
 );
 
-export function Icon(props: Props) {
+
+export const Icon = memo((props: Props) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
     const { type, fontSize, className } = completedProps;
 
-    const classes = useStyles(completedProps);
+    const { classNames } = useClassNames(completedProps);
 
     const svgTypeOrMuiIcon = (() => {
         switch (type) {
@@ -93,8 +95,8 @@ export function Icon(props: Props) {
 
         const MuiIcon = svgTypeOrMuiIcon;
 
-        return <MuiIcon 
-            className={clsx(className, classes.root)} 
+        return <MuiIcon
+            className={cx(classNames.root, className)}
             fontSize={fontSize}
         />;
     }
@@ -102,7 +104,7 @@ export function Icon(props: Props) {
     const svgType = svgTypeOrMuiIcon;
 
     return <SvgIcon
-        className={clsx(className ?? undefined, classes.root)}
+        className={cx(classNames.root, className)}
         component={(() => {
             switch (svgType) {
                 case "tour": return TourSvg;
@@ -123,4 +125,4 @@ export function Icon(props: Props) {
         })()}
         fontSize={fontSize}
     />;
-}
+});

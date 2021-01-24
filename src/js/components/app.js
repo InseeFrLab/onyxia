@@ -37,10 +37,10 @@ import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
 import { useAppConstants, useIsDarkModeEnabled } from "app/lib/hooks";
-import { ThemeProviderFactory } from "app/theme/ThemeProvider";
+import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 
-const { ThemeProvider } = ThemeProviderFactory(
+const { ThemeProvider } = themeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
 );
 

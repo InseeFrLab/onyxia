@@ -1,9 +1,9 @@
 
+import { css } from "app/theme/useClassNames";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "../sectionName";
 import { MySecrets } from "app/pages/MySecrets";
 import type { Props } from "app/pages/MySecrets";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { symToStr } from "app/utils/symToStr";
 
 type StoryProps = {
@@ -11,21 +11,14 @@ type StoryProps = {
     height: number;
 };
 
-const useStyles = makeStyles(
-    () => createStyles<"root", StoryProps>({
-        "root": ({ width, height }) => ({
-            width,
-            height
-        })
-    })
-);
-
-
 function Component(props: Omit<Props, "className"> & StoryProps) {
 
-    const classes = useStyles(props);
+    const { width, height} = props;
 
-    return <MySecrets className={classes.root} />;
+    return <MySecrets className={css({
+            width,
+            height
+    })} />;
 
 }
 

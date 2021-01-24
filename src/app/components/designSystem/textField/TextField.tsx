@@ -1,10 +1,8 @@
 
-
-import { useState, useCallback } from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { useState, useCallback, memo } from "react";
 import MuiTextField from "@material-ui/core/TextField";
-import type { TextFieldClassKey } from "@material-ui/core/TextField";
-import type { Id, Optional } from "evt/tools/typeSafety";
+import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
@@ -18,18 +16,18 @@ const defaultProps: Optional<TextFieldProps> = {
     ...defaultCommonProps,
 };
 
-const useStyles = makeStyles(
-    () => createStyles<Id<TextFieldClassKey, "root">, Required<TextFieldProps> & { error: boolean; }>({
-        "root": ({ error })=>({
-            ...(error? {
+const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error: boolean; }>()(
+    (...[, { error }]) => ({
+        "root": {
+            ...(error ? {
                 "position": "relative",
                 "top": "8px"
-            }:{})
-        })
+            } : {})
+        }
     })
 );
 
-export function TextField(props: TextFieldProps) {
+export const TextField = memo((props: TextFieldProps) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
@@ -37,7 +35,7 @@ export function TextField(props: TextFieldProps) {
 
     const [helperText, setHelperText] = useState<string | undefined>(undefined);
 
-    const commonMuiProps = useCommonInputLogic({
+    const { className, ...commonMuiProps } = useCommonInputLogic({
         ...completedCommonProps,
         "onValueBeingTypedChange": useCallback(
             (params: Parameters<NonNullable<CommonProps["onValueBeingTypedChange"]>>[0]) => {
@@ -54,20 +52,20 @@ export function TextField(props: TextFieldProps) {
         )
     });
 
-    const classes = useStyles({ 
-        ...completedProps, 
-        "error": commonMuiProps.error 
+    const { classNames } = useClassNames({
+        ...completedProps,
+        "error": commonMuiProps.error
     });
 
     return (
         <MuiTextField
             {...commonMuiProps}
             {...{
-                classes,
                 label,
                 helperText
             }}
+            className={cx(classNames.root, className)}
         />
     );
 
-}
+});

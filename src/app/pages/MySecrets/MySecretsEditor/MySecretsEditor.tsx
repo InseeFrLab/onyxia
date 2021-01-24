@@ -1,5 +1,6 @@
-import React from "react";
-import { useMemo, useCallback } from "react";
+
+import { createUseClassNames, css, useTheme } from "app/theme/useClassNames";
+import { useMemo, useCallback, memo } from "react";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -12,23 +13,18 @@ import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 import type { UseArrayDiffCallbackParams } from "app/utils/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
-import { useTheme } from "@material-ui/core/styles";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 import { Paper } from "app/components/designSystem/Paper";
-import {
-    Table,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TableBody,
-    //TableFooter
-} from "app/components/designSystem/Table";
-import { Tooltip } from "app/components/designSystem/Tooltip";
+import Tooltip from "@material-ui/core/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
 import type { Id } from "evt/tools/typeSafety/id";
 import { evaluateShellExpression } from "app/utils/evaluateShellExpression";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import Table from "@material-ui/core/Table";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableBody from "@material-ui/core/TableBody";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -36,10 +32,17 @@ export type Props = {
     onEdit(params: EditSecretParams): void;
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root" | "tableContainer" | "tableHead", Props>({
+const { useClassNames } = createUseClassNames<Props>()(
+    ({theme})=>({
         "root": {
-            "padding": theme.spacing(2), 
+            "padding": theme.spacing(2),
+            "& .MuiTableCell-root": {
+                "padding": 0,
+                "border": "unset"
+            },
+            "& .MuiTableHead-root": {
+                "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`
+            }
         },
         "tableContainer": {
             //So the error on the input of the last row is not cropped.
@@ -53,7 +56,8 @@ const useStyles = makeStyles(
     })
 );
 
-export function MySecretsEditor(props: Props) {
+
+export const MySecretsEditor = memo((props: Props) => {
 
     const { secretWithMetadata, onEdit, isBeingUpdated } = props;
 
@@ -194,7 +198,7 @@ export function MySecretsEditor(props: Props) {
 
                             const indexOfKeyBis = secretKeys.indexOf(keyBis);
 
-                            if ( indexOfKeyBis === -1 || !(indexOfKeyBis < indexOfKey)) {
+                            if (indexOfKeyBis === -1 || !(indexOfKeyBis < indexOfKey)) {
                                 return undefined;
                             }
 
@@ -223,7 +227,7 @@ export function MySecretsEditor(props: Props) {
                                 } as const :
                                 {
                                     "isResolvedSuccessfully": true,
-                                    "resolvedValue": resolvedValue === strValue.replace(/ +$/,"") ?
+                                    "resolvedValue": resolvedValue === strValue.replace(/ +$/, "") ?
                                         "" : resolvedValue
                                 } as const;
 
@@ -254,13 +258,13 @@ export function MySecretsEditor(props: Props) {
 
     const theme = useTheme();
 
-    const classes = useStyles(props);
+    const { classNames } = useClassNames(props);
 
     return (
-        <Paper className={classes.root}>
-            <TableContainer className={classes.tableContainer}>
+        <Paper className={classNames.root}>
+            <TableContainer className={classNames.tableContainer}>
                 <Table aria-label={t("table of secret")}>
-                    <TableHead className={classes.tableHead}>
+                    <TableHead className={classNames.tableHead}>
                         <TableRow>
                             <TableCell>
                                 <Typography
@@ -293,10 +297,10 @@ export function MySecretsEditor(props: Props) {
                                 <Tooltip title={t("what's a resolved value")} >
                                     <Typography
                                         variant="body1"
-                                        style={{ 
+                                        className={css({
                                             //So that the tooltip is well positioned
-                                            "display": "inline-block" 
-                                        }}
+                                            "display": "inline-block"
+                                        })}
                                     >
                                         {t("resolved value column name")}
                                     </Typography>
@@ -325,15 +329,14 @@ export function MySecretsEditor(props: Props) {
             <Button
                 startIcon="add"
                 onClick={onClick}
-                style={{ "marginTop": theme.spacing(3) }}
+                className={css({ "marginTop": theme.spacing(3) })}
             >
                 {t("add an entry")}
             </Button>
         </Paper>
     );
 
-}
-
+});
 export declare namespace MySecretsEditor {
 
     export type I18nScheme = {

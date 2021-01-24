@@ -1,8 +1,6 @@
 
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
-import { useMemo } from "react";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useMemo, memo } from "react";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "app/assets/svg/Directory.svg";
@@ -19,7 +17,7 @@ export type Props = {
 
 };
 
-const { useCssRecord } = createUseCssRecord<Props>()(
+const { useClassNames } = createUseClassNames<Props>()(
     ({ theme }, { kind })=> ({
         "root": {
             "fill": "currentColor",
@@ -41,15 +39,15 @@ const { useCssRecord } = createUseCssRecord<Props>()(
 
 
 
-export function FileOrDirectoryIcon(props: Props) {
+export const FileOrDirectoryIcon = memo((props: Props) =>{
 
     const { visualRepresentationOfAFile, standardizedWidth, kind } = props;
 
-    const { cssRecord } = useCssRecord(props);
+    const { classNames } = useClassNames(props);
 
     /* 
-     * NOTE: We can't set the width and height in css ref:
-     * https://css-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
+     * NOTE: We can't set the width and height in className ref:
+     * https://className-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
      */
     const { width, height } = useMemo(
         () => {
@@ -84,10 +82,10 @@ export function FileOrDirectoryIcon(props: Props) {
 
     return (
         <SvgComponent
-            css={cssRecord.root}
+            className={classNames.root}
             width={width}
             height={height}
         />
     );
 
-}
+});

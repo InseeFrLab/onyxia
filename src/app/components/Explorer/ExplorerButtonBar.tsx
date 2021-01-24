@@ -1,12 +1,12 @@
 
-import { useMemo } from "react";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
-import memoize from "memoizee";
 import { id } from "evt/tools/typeSafety/id";
-import Box from "@material-ui/core/Box";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
+import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+
 
 export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path";
 
@@ -23,22 +23,17 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<
-    "root" ,
-        Props 
-    >({
-        "root": ({ paddingLeftSpacing })=>({
+const { useClassNames } = createUseClassNames<Props>()(
+    ({ theme }, { paddingLeftSpacing }) => ({
+        "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[1],
             "paddingLeft": theme.spacing(paddingLeftSpacing)
-        })
+        }
     })
 );
 
-export function ExplorerButtonBar(props: Props) {
-
-
+export const ExplorerButtonBar = memo((props: Props) => {
 
     const {
         wordForFile,
@@ -47,20 +42,17 @@ export function ExplorerButtonBar(props: Props) {
         isSelectedItemInEditingState
     } = props;
 
-    const classes = useStyles(props);
+    const { classNames } = useClassNames(props);
 
     const { t } = useTranslation("ExplorerButtonBar");
 
-    const onClickFactory = useMemo(
-        () => memoize(
-            (action: Action) =>
-                () => callback({ action })
-        ),
+    const onClickFactory = useCallbackFactory<[Action], []>(
+        ([action]) => callback({ action }),
         [callback]
     );
 
     return (
-        <Box className={classes.root}>
+        <div className={classNames.root}>
             { ([
                 "rename",
                 "create file",
@@ -98,10 +90,10 @@ export function ExplorerButtonBar(props: Props) {
                     }
                 </CustomButton>
             )}
-        </Box>
+        </div>
     );
 
-}
+});
 export declare namespace ExplorerButtonBar {
     export type I18nScheme = Record<Exclude<Action, "create file">, undefined> & {
         "create what": { what: string; };
@@ -110,68 +102,72 @@ export declare namespace ExplorerButtonBar {
     };
 }
 
-type CustomButtonProps={
-    startIcon: IconProps["type"];
-    disabled: boolean;
-    onClick(): void;
-    children: React.ReactNode;
-};
+const { CustomButton } = (() => {
 
-const useCustomButtonStyles = makeStyles(
-    theme => createStyles<
-        "root",
-        CustomButtonProps
-    >({
-        "root": {
-            "&.Mui-disabled .MuiButton-label": {
-                "color": theme.custom.colors.useCases.typography.textDisabled
-            },
-            "& .MuiButton-label": {
-                "color": theme.custom.colors.useCases.typography.textPrimary
-            },
-            "&:active .MuiButton-label": {
-                "color": theme.custom.colors.useCases.typography.textFocus,
-                "& .MuiSvgIcon-root": {
-                    "color": theme.custom.colors.useCases.typography.textFocus
+    type CustomButtonProps = {
+        startIcon: IconProps["type"];
+        disabled: boolean;
+        onClick(): void;
+        children: React.ReactNode;
+    };
+
+    const { useClassNames } = createUseClassNames<CustomButtonProps>()(
+        ({ theme: { custom: { colors: { useCases } } } }) => ({
+            "root": {
+                "backgroundColor": "transparent",
+                "borderRadius": "unset",
+                "borderColor": "transparent",
+                "&.Mui-disabled .MuiButton-label": {
+                    "color": useCases.typography.textDisabled
+                },
+                "& .MuiButton-label": {
+                    "color": useCases.typography.textPrimary
+                },
+                "&:active .MuiButton-label": {
+                    "color": useCases.typography.textFocus,
+                    "& .MuiSvgIcon-root": {
+                        "color": useCases.typography.textFocus
+                    }
+                },
+                "& .MuiTouchRipple-root": {
+                    "display": "none"
+                },
+                "transition": "none",
+                "& > *": {
+                    "transition": "none"
+                },
+                "&:hover": {
+                    "borderBottomColor": useCases.buttons.actionActive,
+                    "boxSizing": "border-box",
+                    "backgroundColor": "unset",
+                    "& .MuiSvgIcon-root": {
+                        "color": useCases.typography.textPrimary
+                    }
                 }
-            },
-            "& .MuiTouchRipple-root": {
-                "display": "none"
-            },
-            "transition": "none",
-            "& > *": {
-                "transition": "none"
-            },
-            "borderRadius": "unset",
-            "&:hover": {
-                "borderBottom": `2px solid ${theme.custom.colors.useCases.buttons.actionActive}`,
-                "boxSizing": "border-box",
-                "backgroundColor": "unset",
-                "& .MuiSvgIcon-root": {
-                    "color": theme.custom.colors.useCases.typography.textPrimary
-                }
-            },
-        },
-    })
-);
-
-
-function CustomButton(props: CustomButtonProps) {
-
-    const { startIcon, disabled, onClick, children } = props;
-
-    const classes = useCustomButtonStyles(props);
-
-    return (
-        <Button
-            className={classes.root}
-            color="secondary"
-            isRounded={false}
-            startIcon={startIcon}
-            {...{ disabled, onClick }}
-        >
-            {children}
-        </Button>
+            }
+        })
     );
 
-}
+    function CustomButton(props: CustomButtonProps) {
+
+        const { startIcon, disabled, onClick, children } = props;
+
+        const { classNames } = useClassNames(props);
+
+        return (
+            <Button
+                className={classNames.root}
+                color="secondary"
+                startIcon={startIcon}
+                {...{ disabled, onClick }}
+            >
+                {children}
+            </Button>
+        );
+
+    }
+
+    return { CustomButton };
+
+
+})();

@@ -1,10 +1,9 @@
 
+import { createUseClassNames, cx } from "app/theme/useClassNames";
 
-import React from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { memo } from "react";
 import MuiCircularProgress from "@material-ui/core/CircularProgress";
-import type { CircularProgressClassKey } from "@material-ui/core/CircularProgress";
-import type { Id, Optional } from "evt/tools/typeSafety";
+import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 
 export type Props = {
@@ -19,36 +18,31 @@ export const defaultProps: Optional<Props> = {
     "color": "primary"
 };
 
-
-const useStyles = makeStyles(
-    theme => createStyles<Id<CircularProgressClassKey, "root">, Required<Props>>({
-        "root": ({ color }) => ({
-            "color": color !== "textPrimary" ? undefined : theme.palette.text.primary
-        })
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    ({ theme }, { color }) => ({
+        "root": {
+            "color": color !== "textPrimary" ?
+                undefined :
+                theme.palette.text.primary
+        }
     })
 );
 
 
-export function CircularProgress(props: Props) {
+export const CircularProgress = memo((props: Props) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { color, size } = completedProps;
+    const { color, size, className } = completedProps;
 
-    const classes = useStyles(completedProps);
+    const { classNames } = useClassNames(completedProps);
 
     return (
         <MuiCircularProgress
             color={color === "textPrimary" ? undefined : color}
-            classes={classes}
+            css={cx(classNames.root, className)}
             size={size}
         />
     );
 
-}
-
-
-
-
-
-
+});

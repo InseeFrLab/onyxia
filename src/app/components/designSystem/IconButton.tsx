@@ -1,8 +1,9 @@
 
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { memo } from "react";
 import MuiIconButton from "@material-ui/core/IconButton";
-import type { IconButtonClassKey } from "@material-ui/core/IconButton";
-import type { Id, Optional } from "evt/tools/typeSafety";
+import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
@@ -26,9 +27,8 @@ export const defaultProps: Optional<Props> = {
     "fontSize": "default"
 };
 
-
-const useIconButtonStyles = makeStyles(
-    theme => createStyles<Id<IconButtonClassKey, "root">, Required<Props>>({
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    ({theme})=>({
         "root": {
             "padding": theme.spacing(1),
             "&:hover": {
@@ -41,33 +41,21 @@ const useIconButtonStyles = makeStyles(
     })
 );
 
-
-const useStyles = makeStyles(
-    () => createStyles<"root", Required<Props>>({
-        "root": {
-        }
-    })
-);
-
-
-export function IconButton(props: Props) {
+export const IconButton =memo((props: Props) =>{
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { className, disabled, onClick, type, fontSize } = completedProps;
+    const { disabled, onClick, type, fontSize, className } = completedProps;
 
-    const iconButtonClasses = useIconButtonStyles(completedProps);
-    const classes= useStyles(completedProps);
+    const { classNames } = useClassNames(completedProps);
 
     return (
         <MuiIconButton
-            className={className ?? undefined}
-            classes={iconButtonClasses}
+            css={cx(classNames.root, className)}
             disabled={disabled}
             onClick={onClick}
         >
             <Icon
-                className={classes.root}
                 color={disabled ? "textDisabled" : "textPrimary"}
                 type={type}
                 fontSize={fontSize}
@@ -75,10 +63,7 @@ export function IconButton(props: Props) {
         </MuiIconButton>
     );
 
-}
-
-
-
+});
 
 
 

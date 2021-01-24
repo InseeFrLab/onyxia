@@ -1,5 +1,6 @@
 
 
+import { memo } from "react";
 import MuiInput from "@material-ui/core/Input";
 import type { Optional } from "evt/tools/typeSafety";
 import { CircularProgress } from "../CircularProgress";
@@ -17,12 +18,11 @@ const defaultProps: Optional<InputProps> = {
     "isCircularProgressShown": false
 };
 
-
-export function Input(props: InputProps) {
+export const Input = memo((props: InputProps) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { isCircularProgressShown, css, ...completedCommonProps } = completedProps;
+    const { isCircularProgressShown, ...completedCommonProps } = completedProps;
 
     const commonMuiProps = useCommonInputLogic(completedCommonProps);
 
@@ -38,4 +38,4 @@ export function Input(props: InputProps) {
         />
     );
 
-}
+});

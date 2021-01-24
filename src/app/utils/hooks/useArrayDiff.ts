@@ -9,8 +9,11 @@ export type UseArrayDiffCallbackParams<ArrOf> = {
     removed: ArrOf[];
 };
 
-/** NOTE: It is best for performance that the ref of the callback
- * be updated as few as possible ( use useCallback() ) */
+/** 
+ * NOTE: It is best for performance that the ref of the callback
+ * be updated as few as possible ( use useCallback() ) 
+ * WARNING: This hooks will only works with arrays that changes refs when updated.
+ * */
 export function useArrayDiff<ArrOf>(
     params: {
         watchFor: "addition";
@@ -45,17 +48,15 @@ export function useArrayDiff<ArrOf>(
 
     const [evtArray] = useState(() => Evt.create(array));
 
-    //NOTE: This should be called every render, do not put dep array.
-    useEffect(() => { evtArray.state = [...array]; });
+    useEffect(
+        () => { evtArray.state= [...array]; },
+        [array, evtArray]
+    );
 
     useEvt(
         ctx => evtArray
             .evtDiff
             .pipe(ctx, ({ prevState, newState }) => [arrDiff(prevState, newState)])
-            .pipe(({ removed, added }) => (
-                removed.length !== 0 ||
-                added.length !== 0
-            ))
             .attach(({ added, removed }) => {
 
                 switch (watchFor) {
@@ -70,6 +71,12 @@ export function useArrayDiff<ArrOf>(
                         }
                         break;
                     case "addition or deletion":
+                        if (
+                            removed.length === 0 &&
+                            added.length === 0
+                        ) {
+                            return;
+                        }
                         break;
                 }
 

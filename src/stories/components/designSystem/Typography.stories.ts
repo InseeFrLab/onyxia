@@ -1,8 +1,7 @@
-
-
 import { Typography, defaultProps } from "app/components/designSystem/Typography";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { css } from "app/theme/useClassNames";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -13,6 +12,18 @@ export default meta;
 
 export const Vue1 = getStory({
     ...defaultProps,
-    "children": "Foo bar"
+    "children": "Lorem ipsum dolor sit amet",
+});
+
+export const VueWithOnClick = getStory({
+    ...defaultProps,
+    "children": "Lorem ipsum dolor sit amet",
+    ...logCallbacks([ "onClick" ])
+});
+
+export const VueWithCss = getStory({
+    ...defaultProps,
+    "children": "Lorem ipsum dolor sit amet",
+    "className": css({ "backgroundColor": "blue" })
 });
 

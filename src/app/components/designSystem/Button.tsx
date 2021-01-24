@@ -1,14 +1,11 @@
 
-import { useMemo } from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { createUseClassNames, cx, css } from "app/theme/useClassNames";
 import MuiButton from "@material-ui/core/Button";
-import type { ButtonClassKey } from "@material-ui/core/Button";
-import type { Id, Optional } from "evt/tools/typeSafety";
+import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
-import { withProps } from "app/utils/withProps";
-
+import { useWithProps } from "app/utils/hooks/useWithProps";
 
 export type Props = {
 
@@ -23,9 +20,7 @@ export type Props = {
     startIcon?: IconProps["type"] | null;
     endIcon?: IconProps["type"] | null;
 
-    isRounded?: boolean;
 
-    style?: React.CSSProperties | null;
 
 };
 
@@ -34,25 +29,24 @@ export const defaultProps: Optional<Props> = {
     "color": "primary",
     "disabled": false,
     "children": null,
-    "isRounded": true,
     "startIcon": null,
     "endIcon": null,
-    "style": null
 };
 
-
-const useStyles = makeStyles(
-    theme => {
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    ({ theme }, { color, disabled }) => {
 
         const textColor = ({ color, disabled }: Pick<Required<Props>, "color" | "disabled">) =>
+            theme.custom.colors.useCases.typography[
             disabled ?
-                theme.custom.colors.useCases.typography.textDisabled :
-                theme.custom.colors.useCases.typography[(() => {
+                "textDisabled" :
+                (() => {
                     switch (color) {
                         case "primary": return "textFocus";
                         case "secondary": return "textPrimary";
                     }
-                })()];
+                })()
+            ];
 
         const hoverTextColor = ({ color }: Pick<Required<Props>, "color" | "disabled">) => {
             switch (theme.palette.type) {
@@ -68,8 +62,8 @@ const useStyles = makeStyles(
         };
 
 
-        return createStyles<Id<ButtonClassKey | "icon", "root" | "text" | "icon">, Required<Props>>({
-            "root": ({ isRounded, color, disabled }) => {
+        return {
+            "root": (() => {
 
                 const hoverBackgroundColor = theme.custom.colors.useCases.buttons[
                     (() => {
@@ -81,79 +75,66 @@ const useStyles = makeStyles(
                 ];
 
                 return {
-                    "backgroundColor": isRounded && disabled ? 
-                        theme.custom.colors.useCases.buttons.actionDisabledBackground : 
+                    "backgroundColor": disabled ?
+                        theme.custom.colors.useCases.buttons.actionDisabledBackground :
                         "transparent",
-                    "borderRadius": isRounded ? 20 : undefined,
-                    "border": `2px solid ${!isRounded || disabled ? "transparent" : hoverBackgroundColor}`,
+                    "borderRadius":  20,
+                    "borderWidth": "2px",
+                    "borderStyle": "solid",
+                    "borderColor": disabled ? "transparent" : hoverBackgroundColor,
                     "padding": theme.spacing(1, 2),
-                    "&:hover": { backgroundColor: hoverBackgroundColor },
-                    /*
-                    "&:active .MuiSvgIcon-root": {
-                        "color": theme.custom.colors.useCases.typography.textFocus
+                    "&.MuiButton-text": {
+                        "color": textColor({ color, disabled })
                     },
-                    */
-                    "&:hover .MuiSvgIcon-root": {
-                        "color": hoverTextColor({ color, disabled }),
+                    "&:hover": {
+                        "backgroundColor": hoverBackgroundColor,
+                        "& .MuiSvgIcon-root": {
+                            "color": hoverTextColor({ color, disabled }),
+                        },
+                        "&.MuiButton-text": {
+                            "color": hoverTextColor({ color, disabled }),
+                        }
                     }
                 };
 
-
-            },
-            "text": ({ color, disabled }) => ({
-                "color": textColor({ color, disabled }),
-                "&:hover": {
-                    "color": hoverTextColor({ color, disabled }),
-                }
-            }),
-            "icon": ({ color, disabled }) => ({
+            })(),
+            "icon": {
                 "color": textColor({ color, disabled })
-            })
-        });
+            }
+        };
 
     }
 );
-
 
 export function Button(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { color, disabled, children, onClick, startIcon, endIcon, className, style } = completedProps;
+    const { className, color, disabled, children, onClick, startIcon, endIcon } = completedProps;
 
-    const { icon: iconClassName, ...classes} = useStyles(completedProps);
+    const { classNames } = useClassNames(completedProps);
 
-    const ColoredIcon = useMemo(
-        () => withProps(
-            Icon,
-            {
-                "color": disabled ? "textDisabled" : "textPrimary",
-                "fontSize": "inherit",
-                "className": iconClassName
-            }
-        ),
-        [disabled, iconClassName]
+    const ColoredIcon = useWithProps(
+        Icon,
+        {
+            "color": disabled ? "textDisabled" : "textPrimary",
+            "fontSize": "inherit",
+            "className": classNames.icon
+        }
     );
 
     return (
+
         <MuiButton
-            style={style ?? undefined}
-            className={className ?? undefined}
-            classes={classes}
+            className={cx(classNames.root, className)}
             color={color}
             disabled={disabled}
             onClick={onClick}
-            startIcon={startIcon === null ? undefined :
-                <ColoredIcon
-                    type={startIcon}
-                />
-            }
-            endIcon={endIcon === null ? undefined :
-                <ColoredIcon type={endIcon} />
-            }
+            startIcon={startIcon === null ? undefined : <ColoredIcon type={startIcon} />}
+            endIcon={endIcon === null ? undefined : <ColoredIcon type={endIcon} />}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-            <span style={{ "paddingTop": "2px" }}>
+            <span className={css({ "paddingTop": "2px" })} >
                 {children}
             </span>
         </MuiButton>

@@ -1,7 +1,6 @@
 
-import type React from "react";
+import { createUseClassNames, cx, css } from "app/theme/useClassNames";
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { withProps } from "app/utils/withProps";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
@@ -13,9 +12,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import type { Props as CmdTranslationProps } from "./CmdTranslation";
 import { CmdTranslation } from "./CmdTranslation";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
-import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
 
@@ -23,8 +19,8 @@ import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
 import { useDOMRect } from "app/utils/hooks/useDOMRect";
-import clsx from "clsx";
 import { getPathDepth } from "app/utils/getPathDepth";
+import { useWithProps } from "app/utils/hooks/useWithProps";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -76,19 +72,16 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<
-        "root" | "breadcrump" | "cmdTranslation" | "scrollable" | "items",
-        Props & { cmdTranslationTop: number; }
-    >({
-        "root": ({ paddingLeftSpacing }) => ({
+const { useClassNames } = createUseClassNames<Props & { cmdTranslationTop: number; }>()(
+    ({ theme }, { paddingLeftSpacing, cmdTranslationTop }) => ({
+        "root": {
             "display": "flex",
             "flexDirection": "column",
             "position": "relative",
             "& > *:nth-child(n+3)": {
                 "marginLeft": theme.spacing(paddingLeftSpacing)
             }
-        }),
+        },
         "breadcrump": {
             "marginTop": theme.spacing(2),
             "marginBottom": theme.spacing(3),
@@ -97,19 +90,18 @@ const useStyles = makeStyles(
             "overflow": "auto",
             "flex": 1
         },
-        "cmdTranslation": ({ cmdTranslationTop }) => ({
+        "cmdTranslation": {
             "position": "absolute",
             "right": 0,
             "width": "40%",
             "top": cmdTranslationTop,
             "zIndex": 1
-        }),
+        },
         "items": {
             "height": "100%"
         }
     })
 );
-
 
 export function Explorer(props: Props) {
 
@@ -167,37 +159,24 @@ export function Explorer(props: Props) {
         ]
     );
 
-    const { Items, ButtonBar, FileOrDirectoryHeader } = useSemanticGuaranteeMemo(
-        () => {
-
-            const visualRepresentationOfAFile = wordForFile;
-
-            return {
-                "Items":
-                    withProps(
-                        PolymorphExplorerItems,
-                        {
-                            visualRepresentationOfAFile,
-                            getIsValidBasename
-                        }
-                    ),
-                "ButtonBar": withProps(
-                    PolymorphExplorerButtonBar,
-                    {
-                        wordForFile
-                    }
-                ),
-                "FileOrDirectoryHeader": withProps(
-                    PolymorphExplorerFileOrDirectoryHeader,
-                    {
-                        visualRepresentationOfAFile
-                    }
-                )
-            };
-
-        },
-        [wordForFile, getIsValidBasename]
+    const Items = useWithProps(
+        PolymorphExplorerItems,
+        {
+            "visualRepresentationOfAFile": wordForFile,
+            getIsValidBasename
+        }
     );
+
+    const ButtonBar = useWithProps(
+        PolymorphExplorerButtonBar,
+        { wordForFile }
+    );
+
+    const FileOrDirectoryHeader = useWithProps(
+        PolymorphExplorerFileOrDirectoryHeader,
+        { "visualRepresentationOfAFile": wordForFile }
+    );
+
 
 
     const { t } = useTranslation("Explorer");
@@ -347,7 +326,6 @@ export function Explorer(props: Props) {
     const [cmdTranslationMaxHeight, setCmdTranslationMaxHeight] =
         useState<number>(0);
 
-    const classes = useStyles({ ...props, cmdTranslationTop });
 
     useEffect(
         () => {
@@ -369,8 +347,13 @@ export function Explorer(props: Props) {
         [browsablePath, currentPath]
     );
 
+    const { classNames } = useClassNames({ ...props, cmdTranslationTop });
+
     return (
-        <div ref={rootRef} className={clsx(className, classes.root)}>
+        <div
+            ref={rootRef}
+            className={cx(classNames.root, className)}
+        >
             <div ref={buttonBarRef} >
                 <ButtonBar
                     paddingLeftSpacing={paddingLeftSpacing}
@@ -380,7 +363,7 @@ export function Explorer(props: Props) {
                 />
             </div>
             <CmdTranslation
-                className={classes.cmdTranslation}
+                className={classNames.cmdTranslation}
                 evtTranslation={evtTranslation}
                 maxHeight={cmdTranslationMaxHeight}
             />
@@ -396,23 +379,23 @@ export function Explorer(props: Props) {
                     />
             }
             <Breadcrump
-                className={classes.breadcrump}
+                className={classNames.breadcrump}
                 minDepth={getPathDepth(browsablePath)}
                 path={currentPath}
                 isNavigationDisabled={isNavigating}
                 callback={breadcrumbCallback}
                 evtAction={evtBreadcrumpAction}
             />
-            <Box className={classes.scrollable}>
+            <div className={classNames.scrollable}>
                 {
                     file ?
                         /* TODO: This is a temporary hack!! */
-                        <div style={{ "paddingLeft": 8, "paddingRight": 20 }}>
+                        <div className={css({ "paddingLeft": 8, "paddingRight": 20 })}>
                             {file}
                         </div>
                         :
                         <Items
-                            className={classes.items}
+                            className={classNames.items}
                             files={files}
                             isNavigating={isNavigating}
                             directories={directories}
@@ -429,7 +412,7 @@ export function Explorer(props: Props) {
                             onDeleteItem={itemsOnDeleteItem}
                         />
                 }
-            </Box>
+            </div>
         </div>
     );
 

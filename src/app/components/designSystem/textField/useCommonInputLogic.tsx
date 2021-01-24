@@ -7,11 +7,9 @@ import { noUndefined } from "app/utils/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
-import type { InterpolationWithTheme } from "app/theme/useCssRecord";
 
 export type Props = {
     className?: string | null;
-    css?: InterpolationWithTheme;
     /** Will overwrite value when updated */
     defaultValue: string;
     inputProps: { 'aria-label': string; };
@@ -41,7 +39,6 @@ export const defaultProps: Optional<Props> = {
     "onBlur": () => { },
     "onValueBeingTypedChange": () => { },
     "transformValueBeingTyped": id,
-    "css": null
 };
 
 export function useCommonInputLogic(props: Props) {
@@ -50,7 +47,6 @@ export function useCommonInputLogic(props: Props) {
 
     const {
         className,
-        css,
         defaultValue,
         inputProps,
         autoFocus,
@@ -161,7 +157,6 @@ export function useCommonInputLogic(props: Props) {
 
     return {
         "className": className ?? undefined,
-        css,
         inputProps,
         autoFocus,
         "color": color ?? undefined,

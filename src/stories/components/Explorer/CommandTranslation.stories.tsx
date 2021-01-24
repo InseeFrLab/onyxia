@@ -1,29 +1,14 @@
 
+import { css } from "app/theme/useClassNames";
 import { useState, useEffect, useReducer } from "react";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
 import { CmdTranslation } from "app/components/Explorer/CmdTranslation";
 import type { Props } from "app/components/Explorer/CmdTranslation";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { symToStr } from "app/utils/symToStr";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
-type StoryProps = {
-    width: number;
-    maxHeight: number;
-    /** Toggle to fire a translation event */ 
-    tick: boolean;
-};
-
-const useStyles = makeStyles(
-    () => createStyles<"root", StoryProps>({
-        "root": ({ width }) => ({
-            "border": "1px solid black",
-            width
-        })
-    })
-);
 
 const translations: UnpackEvt<Props["evtTranslation"][]> = [
     {
@@ -110,9 +95,14 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
     },
 ];
 
-function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryProps) {
+function Component(props: Omit<Props, "className" | "evtTranslation"> & {
+    width: number;
+    maxHeight: number;
+    /** Toggle to fire a translation event */
+    tick: boolean;
+}) {
 
-    const { tick, maxHeight } = props;
+    const { tick, maxHeight, width } = props;
 
     const [index, incrementIndex] = useReducer(
         (index: number) =>
@@ -127,7 +117,6 @@ function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryPro
         [tick]
     );
 
-    const classes = useStyles(props);
 
     const [evtTranslation] = useState(() => Evt.create<typeof translations[number]>());
 
@@ -138,9 +127,13 @@ function Component(props: Omit<Props, "className" | "evtTranslation"> & StoryPro
         [evtTranslation, index]
     );
 
+
     return (
         <CmdTranslation
-            className={classes.root}
+            className={css({
+                "border": "1px solid black",
+                width
+            })}
             evtTranslation={evtTranslation}
             maxHeight={maxHeight}
         />
@@ -188,8 +181,4 @@ export const Vue1 = getStory({
     "maxHeight": 350,
     "tick": true
 });
-
-
-
-
 

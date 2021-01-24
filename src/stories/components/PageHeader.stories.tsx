@@ -1,9 +1,8 @@
 
-import React from "react";
 import { PageHeader } from "app/components/PageHeader";
-import { Link } from "app/components/designSystem/Link";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
+import Link from "@material-ui/core/Link";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

@@ -1,7 +1,5 @@
 
-import React from "react";
 import { Provider as ReactReduxProvider } from "react-redux";
-//TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
 import { useAsync } from "react-async-hook";
 import Loader from "js/components/commons/loader";
 import { createStore } from "lib/setup";
@@ -9,6 +7,8 @@ import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
 import memoize from "memoizee";
+import { JSONSortStringify } from "app/utils/JSONSortStringify";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "vaultCmdTranslationLogger">;
@@ -16,34 +16,38 @@ export type Props = {
     children: React.ReactNode;
 };
 
-const memoizedCreateStore = (() => {
 
-    const evtBackOnline= Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
-    //const vaultCmdTranslationLogger= console.log.bind(console);
-    const vaultCmdTranslationLogger= ()=>{};
+const memoizedCreateStore = memoize(
+    (createStoreParams: Props["createStoreParams"]) => {
 
-    const f = memoize(
-        (createStoreParamsStr: string) => 
-            createStore({
-                ...JSON.parse(createStoreParamsStr) as Props["createStoreParams"],
-                evtBackOnline,
-                vaultCmdTranslationLogger
-            })
-    )
+        const evtBackOnline = Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
+        const vaultCmdTranslationLogger = id<typeof console.log>(() => { });
 
-    return (params: { createStoreParams: Props["createStoreParams"]; }) => 
-        f(JSON.stringify(params.createStoreParams));
+        return createStore({
+            ...createStoreParams,
+            evtBackOnline,
+            vaultCmdTranslationLogger
+        });
 
-})();
+    },
+    { 
+        "normalizer": ([createStoreParams]) => JSONSortStringify(createStoreParams),
+        "max": 1,
+        "dispose": ()=> assert(false, "Only one instance of the store by process should be created")
+    }
+
+);
+
 
 export function StoreProvider(props: Props) {
 
     const { createStoreParams, children } = props;
 
     const asyncCreateStore = useAsync(
-        () => memoizedCreateStore({ createStoreParams }),
+        () => memoizedCreateStore(createStoreParams),
         [createStoreParams]
     );
+
 
     if (asyncCreateStore.error) {
         throw asyncCreateStore.error;

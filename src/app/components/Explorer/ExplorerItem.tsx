@@ -1,8 +1,6 @@
 
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
-import React, { useState, useEffect, useCallback } from "react";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
@@ -16,9 +14,8 @@ import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/utils/smartTrim";
-import { withProps } from "app/utils/withProps";
-import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
+import { useWithProps } from "app/utils/hooks/useWithProps";
 
 
 export type Props = {
@@ -57,17 +54,17 @@ export type Props = {
 
 };
 
-const { useCssRecord } = createUseCssRecord<Props>()(
-    ({ theme }, { isSelected, standardizedWidth })=> ({
+const { useClassNames } = createUseClassNames<Props>()(
+    ({ theme }, { isSelected, standardizedWidth, basename }) => ({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
             "width": theme.spacing((() => {
-                    switch (standardizedWidth) {
-                        case "big": return 15;
-                        case "normal": return 10;
-                    }
-                })())
+                switch (standardizedWidth) {
+                    case "big": return 15;
+                    case "normal": return 10;
+                }
+            })())
         },
         "frame": {
             "borderRadius": "5px",
@@ -86,7 +83,8 @@ const { useCssRecord } = createUseCssRecord<Props>()(
                     .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
                     .string();
 
-            })()
+            })(),
+            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
         },
         "hiddenSpan": {
             "width": 0,
@@ -106,10 +104,7 @@ const { useCssRecord } = createUseCssRecord<Props>()(
     })
 );
 
-/** 
- * @protected This is exported only for storybook, use the factory instead.
- */
-export function ExplorerItem(props: Props) {
+export const ExplorerItem = memo((props: Props) => {
 
     const {
         visualRepresentationOfAFile,
@@ -124,17 +119,15 @@ export function ExplorerItem(props: Props) {
         getIsValidBasename
     } = props;
 
-    const Icon = useSemanticGuaranteeMemo(
-        () => withProps(
-            FileOrDirectoryIcon,
-            { visualRepresentationOfAFile }
-        ),
-        [visualRepresentationOfAFile]
+    const Icon = useWithProps(
+        FileOrDirectoryIcon,
+        { visualRepresentationOfAFile }
     );
+
 
     const { t } = useTranslation("ExplorerItem");
 
-    const { cssRecord } = useCssRecord(props);
+    const { classNames } = useClassNames(props);
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
@@ -197,6 +190,7 @@ export function ExplorerItem(props: Props) {
         [basename, onEditBasename]
     );
 
+
     const onEscapeKeyDown = useCallback(
         () => setIsInEditingState(false),
         []
@@ -207,63 +201,63 @@ export function ExplorerItem(props: Props) {
         [evtInputAction]
     );
 
+    const formattedBasename = useMemo(
+        () =>
+            smartTrim({
+                "text": basename,
+                ...(() => {
+                    switch (standardizedWidth) {
+                        case "big": return {
+                            "maxLength": 25,
+                            "minCharAtTheEnd": 7
+                        };
+                        case "normal": return {
+                            "maxLength": 21,
+                            "minCharAtTheEnd": 5
+                        };
+                    }
+                })()
+            })
+                //NOTE: Word break with - or space but not _, 
+                //see: https://stackoverflow.com/a/29541502/3731798
+                .split("_")
+                .reduce<React.ReactNode[]>(
+                    (prev, curr, i) => [
+                        ...prev,
+                        ...(
+                            prev.length === 0 ?
+                                [] :
+                                ["_", <span key={i} className={classNames.hiddenSpan}> </span>]
+                        ),
+                        curr
+                    ],
+                    []
+                )
+
+        ,
+        [basename, standardizedWidth, classNames.hiddenSpan]
+    );
+
     return (
-        <div css={cssRecord.root}>
+        <div className={classNames.root}>
             <div
-                css={cssRecord.frame}
+                className={classNames.frame}
                 {...getOnMouseProps("icon")}
             >
-                <Icon
-                    {...{
-                        standardizedWidth,
-                        kind
-                    }}
-                />
+                <Icon {...{ standardizedWidth, kind }} />
             </div>
             {
                 !isInEditingState && !isCircularProgressShown ?
                     <Box {...getOnMouseProps("text")}>
                         {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
-                        <Typography
-                            css={cssRecord.text}
-                            style={{ "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all" }}
-                        >{
-                                smartTrim({
-                                    "text": basename,
-                                    ...(() => {
-                                        switch (standardizedWidth) {
-                                            case "big": return {
-                                                "maxLength": 25,
-                                                "minCharAtTheEnd": 7
-                                            };
-                                            case "normal": return {
-                                                "maxLength": 21,
-                                                "minCharAtTheEnd": 5
-                                            };
-                                        }
-                                    })()
-                                })
-                                    //NOTE: Word break with - or space but not _, 
-                                    //see: https://stackoverflow.com/a/29541502/3731798
-                                    .split("_")
-                                    .reduce<React.ReactNode[]>(
-                                        (prev, curr, i) => [
-                                            ...prev,
-                                            ...(
-                                                prev.length === 0 ?
-                                                    [] :
-                                                    ["_", <span key={i} css={cssRecord.hiddenSpan}> </span>]
-                                            ),
-                                            curr
-                                        ],
-                                        []
-                                    )
-                            }</Typography>
+                        <Typography className={classNames.text} >
+                            {formattedBasename}
+                        </Typography>
                     </Box>
                     :
-                    <form css={cssRecord.root/*TODO*/} noValidate autoComplete="off">
+                    <form className={classNames.root/*TODO*/} noValidate autoComplete="off">
                         <Input
-                            css={cssRecord.input}
+                            className={classNames.input}
                             defaultValue={basename}
                             inputProps={{ "aria-label": t("description") }}
                             autoFocus={true}
@@ -283,14 +277,13 @@ export function ExplorerItem(props: Props) {
         </div>
     );
 
-}
 
+
+});
 export declare namespace ExplorerItem {
-
     export type I18nScheme = {
         description: undefined;
     };
-
 }
 
 
