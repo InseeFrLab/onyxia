@@ -1,7 +1,7 @@
 
 import { Button, defaultProps } from "app/components/designSystem/Button";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -15,6 +15,6 @@ export const Vue1 = getStory({
     ...defaultProps,
     "children": "Foo bar",
     "startIcon": "home",
-    "onClick": console.log.bind(null,"click!")
+    ...logCallbacks(["onClick"])
 });
 

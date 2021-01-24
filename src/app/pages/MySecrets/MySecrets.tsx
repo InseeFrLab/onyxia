@@ -1,5 +1,6 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
-import { withProps } from "app/utils/withProps";
+
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { useCallback, useEffect, useState, memo } from "react";
 import { copyToClipboard } from "app/utils/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";
@@ -7,10 +8,9 @@ import { Props as ExplorerProps } from "app/components/Explorer";
 import * as lib from "lib/setup";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { PageHeader } from "app/components/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
-import clsx from "clsx";
+import { useWithProps } from "app/utils/hooks/useWithProps";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -20,8 +20,9 @@ const pure = lib.pure.secretExplorer;
 
 const paddingLeftSpacing = 5;
 
-const useStyles = makeStyles(
-    theme => createStyles({
+
+const { useClassNames } = createUseClassNames<{}>()(
+    ({theme})=>({
         "header": {
             "paddingLeft": theme.spacing(paddingLeftSpacing)
         },
@@ -36,16 +37,20 @@ const useStyles = makeStyles(
     })
 );
 
+
+
+
 export type Props = {
-    className: string;
+    className?: string;
+    //TODO: Url navigation
     directoryPath?: string;
 };
 
-export function MySecrets(props: Props) {
+export const MySecrets = memo((props: Props) =>{
 
     const {
         className,
-        directoryPath: directoryPathFromProps
+        directoryPath: directoryPathFromProps,
     } = props;
 
     const { t } = useTranslation("MySecrets");
@@ -53,15 +58,12 @@ export function MySecrets(props: Props) {
     const state = useSelector(state => state.secretExplorer);
     const dispatch = useDispatch();
 
-    const Explorer = useMemo(
-        () => withProps(
+    const Explorer = useWithProps(
             SecretOrFileExplorer,
             {
                 "type": "secret",
                 "getIsValidBasename": pure.getIsValidBasename
             }
-        ),
-        []
     );
 
     useEffect(() => {
@@ -208,16 +210,16 @@ export function MySecrets(props: Props) {
         [dispatch]
     );
 
-    const classes = useStyles();
+    const { classNames } = useClassNames({});
 
     return state.currentPath === "" ?
         <div className={className}> Placeholder for Marc's loading </div>
         :
         (
-            <div className={clsx(classes.root, className)}>
+            <div className={cx(classNames.root, className)}>
 
                 <PageHeader
-                    className={classes.header}
+                    className={classNames.header}
                     icon="secrets"
                     text1={t("page title")}
                     text2={t("what this page is used for")}
@@ -225,7 +227,7 @@ export function MySecrets(props: Props) {
                 />
                 <Explorer
                     paddingLeftSpacing={paddingLeftSpacing}
-                    className={classes.explorer}
+                    className={classNames.explorer}
                     browsablePath={userHomePath}
                     currentPath={state.currentPath}
                     isNavigating={state.isNavigationOngoing}
@@ -271,7 +273,7 @@ export function MySecrets(props: Props) {
                 />
             </div>
         );
-};
+});
 
 export declare namespace MySecrets {
 

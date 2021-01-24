@@ -1,14 +1,15 @@
-import { useState, useReducer, useRef, useEffect } from "react";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useState, useReducer, useRef, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { id } from "evt/tools/typeSafety/id";
 import memoize from "memoizee";
 import { useDOMRect } from "app/utils/hooks/useDOMRect";
-import MuiCircularProgress from "@material-ui/core/CircularProgress";
+import { CircularProgress } from "app/components/designSystem/CircularProgress";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Icon } from "app/components/designSystem/Icon";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
 	className: string;
@@ -21,107 +22,105 @@ export type Props = {
 	maxHeight: number;
 };
 
-const useStyles = makeStyles(
-	theme => {
+const { useClassNames } = createUseClassNames<Props & { headerHeight: number; isExpended: boolean; }>()(
+	({ theme }, { isExpended, maxHeight, headerHeight }) => {
 
 		const borderRadius = `0 0 0 30px`;
 
-		return createStyles<
-			"iconButton" | "circularLoading" | "collapsedPanel" | "expandedPanel" | 
-			"header" | "lastTranslatedCmd" | "dollarContainer" | "entryRoot" | "preWrapper",
-			Props & { headerHeight: number; isExpended: boolean; }>({
-				"iconButton": ({ isExpended }) => ({
+		return {
+			"iconButton": ({
+				"& svg": {
+					"color": theme.custom.colors.palette.limeGreen.main,
+					"transition": theme.transitions.create(
+						["transform"],
+						{ "duration": theme.transitions.duration.short }
+					),
+					"transform": isExpended ?
+						"rotate(-180deg)" :
+						"rotate(0)",
+				},
+				"&:hover": {
 					"& svg": {
-						"color": theme.custom.colors.palette.limeGreen.main,
-						"transition": theme.transitions.create(
-							["transform"],
-							{ "duration": theme.transitions.duration.short }
-						),
-						"transform": isExpended ?
-							"rotate(-180deg)" :
-							"rotate(0)",
-					},
-					"&:hover": {
-						"& svg": {
-							"color": theme.custom.colors.palette.whiteSnow.white,
-						}
-					},
-					"& .MuiTouchRipple-root": {
-						"color": theme.custom.colors.palette.limeGreen.main,
-					},
-				}),
-				"circularLoading": {
-					"color": theme.custom.colors.palette.whiteSnow.main
-				},
-				"collapsedPanel": {
-					"maxHeight": 0,
-					"overflow": "hidden",
-					"transform": "scaleY(0)",
-					"transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-				},
-				"expandedPanel": ({ maxHeight, headerHeight }) => ({
-					"maxHeight": maxHeight - headerHeight,
-					"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
-					"overflow": "auto",
-					"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-					"& pre": {
-						"whiteSpace": "pre-wrap",
-						"wordBreak": "break-all"
-					},
-					"transform": "scaleY(1)",
-					"transformOrigin": "top",
-					borderRadius,
-					"paddingTop": theme.spacing(1)
-				}),
-				"header": ({ isExpended }) => ({
-					"backgroundColor": theme.custom.colors.palette.midnightBlue.main,
-					...(!isExpended ? {} : { borderRadius }),
-					"borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
-					"display": "flex",
-					"alignItems": "center",
-					//"border": "1px solid white"
-
-				}),
-				"lastTranslatedCmd": {
-					"flex": 1,
-					"whiteSpace": "nowrap",
-					"overflow": "hidden",
-					"textOverflow": "ellipsis",
-					"fontFamily": "monospace",
-					//"border": "1px solid white",
-					"color": theme.custom.colors.palette.limeGreen.main
-				},
-				"dollarContainer": {
-
-					"width": 70,
-					//"border": "1px solid white",
-					"textAlign": "end",
-					"paddingRight": 10,
-
-					"& svg": {
-						//"border": "1px solid white",
+						"color": theme.custom.colors.palette.whiteSnow.white,
 					}
 				},
-				"entryRoot": {
-					"display": "flex",
-					//"border": "1px solid white"
+				"& .MuiTouchRipple-root": {
+					"color": theme.custom.colors.palette.limeGreen.main,
 				},
-				"preWrapper": {
-					"flex": 1,
-					"& pre:nth-of-type(1)": {
-						"color": theme.custom.colors.palette.limeGreen.main,
-						"marginTop": 2
-					},
-					"& pre:nth-of-type(2)": {
-						"color": theme.custom.colors.palette.whiteSnow.white
-					}
+			}),
+			"circularLoading": {
+				"color": theme.custom.colors.palette.whiteSnow.main
+			},
+			"collapsedPanel": {
+				"maxHeight": 0,
+				"overflow": "hidden",
+				"transform": "scaleY(0)",
+				"transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+			},
+			"expandedPanel": {
+				"maxHeight": maxHeight - headerHeight,
+				"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
+				"overflow": "auto",
+				"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"& pre": {
+					"whiteSpace": "pre-wrap",
+					"wordBreak": "break-all"
+				},
+				"transform": "scaleY(1)",
+				"transformOrigin": "top",
+				borderRadius,
+				"paddingTop": theme.spacing(1)
+			},
+			"header": {
+				"backgroundColor": theme.custom.colors.palette.midnightBlue.main,
+				...(!isExpended ? {} : { borderRadius }),
+				"borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
+				"display": "flex",
+				"alignItems": "center",
+				//"border": "1px solid white"
 
+			},
+			"lastTranslatedCmd": {
+				"flex": 1,
+				"whiteSpace": "nowrap",
+				"overflow": "hidden",
+				"textOverflow": "ellipsis",
+				"fontFamily": "monospace",
+				//"border": "1px solid white",
+				"color": theme.custom.colors.palette.limeGreen.main
+			},
+			"dollarContainer": {
+
+				"width": 70,
+				//"border": "1px solid white",
+				"textAlign": "end",
+				"paddingRight": 10,
+
+				"& svg": {
+					//"border": "1px solid white",
 				}
-			});
+			},
+			"entryRoot": {
+				"display": "flex",
+				//"border": "1px solid white"
+			},
+			"preWrapper": {
+				"flex": 1,
+				"& pre:nth-of-type(1)": {
+					"color": theme.custom.colors.palette.limeGreen.main,
+					"marginTop": 2
+				},
+				"& pre:nth-of-type(2)": {
+					"color": theme.custom.colors.palette.whiteSnow.white
+				}
 
+			}
+		};
 	}
 );
-export function CmdTranslation(props: Props) {
+
+
+export const CmdTranslation= memo((props: Props) =>{
 
 	const { className, evtTranslation } = props;
 
@@ -200,13 +199,13 @@ export function CmdTranslation(props: Props) {
 				return;
 			}
 
-			const { current: element }= panelRef!;
+			const { current: element } = panelRef!;
 
-			assert(element !== null );
+			assert(element !== null);
 
-			element.scroll({ 
-				"top": element.scrollHeight, 
-				"behavior": "smooth" 
+			element.scroll({
+				"top": element.scrollHeight,
+				"behavior": "smooth"
 			});
 
 		},
@@ -214,50 +213,50 @@ export function CmdTranslation(props: Props) {
 	);
 
 	//TODO: see if classes are recomputed every time because ref object changes
-	const classes = useStyles({ ...props, headerHeight, isExpended });
+	const { classNames } = useClassNames({ ...props, headerHeight, isExpended });
 
 	return (
 		<div className={className}>
-			<div ref={headerRef} className={classes.header}>
+			<div ref={headerRef} className={classNames.header}>
 
-				<div className={classes.dollarContainer} >
+				<div className={classNames.dollarContainer} >
 					<Icon type="attachMoney" color="limeGreen" fontSize="small" />
 				</div>
 
-				<div className={classes.lastTranslatedCmd}>
+				<div className={classNames.lastTranslatedCmd}>
 					{lastTranslatedCmd}
 				</div>
 
 				<IconButton
 					onClick={toggleIsExpended}
 					type="expandMore"
-					className={classes.iconButton}
+					className={classNames.iconButton}
 				/>
 
 			</div>
-			<div 
-			ref={panelRef}
-			className={
-				isExpended ?
-					classes.expandedPanel :
-					classes.collapsedPanel
-			} 
+			<div
+				ref={panelRef}
+				className={
+					isExpended ?
+						classNames.expandedPanel :
+						classNames.collapsedPanel
+				}
 			>
 				{translationHistory.map(
 					({ cmdId, cmd, resp }) =>
-						<div key={cmdId} className={classes.entryRoot}>
+						<div key={cmdId} className={classNames.entryRoot}>
 
-							<div className={classes.dollarContainer}>
+							<div className={classNames.dollarContainer}>
 								<Icon type="attachMoney" color="limeGreen" fontSize="small" />
 							</div>
-							<div className={classes.preWrapper}>
+							<div className={classNames.preWrapper}>
 								<pre>
 									{cmd}
 								</pre>
 								<pre>
 									{resp === undefined ?
-										<MuiCircularProgress
-											classes={{ "root": classes.circularLoading }}
+										<CircularProgress
+											className={classNames.circularLoading}
 											size={10}
 										/>
 										: resp}
@@ -276,7 +275,7 @@ export function CmdTranslation(props: Props) {
 	);
 
 
-}
+});
 
 
 

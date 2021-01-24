@@ -1,13 +1,14 @@
 
+
+import { createUseClassNames } from "app/theme/useClassNames";
+import { memo } from "react";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import { Typography } from "app/components/designSystem/Typography";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
-import { withProps } from "app/utils/withProps";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { IconButton } from "app/components/designSystem/IconButton"
 import { useFormattedDate } from "app/i18n/useFormattedDate";
+import { useWithProps } from "app/utils/hooks/useWithProps";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -26,8 +27,8 @@ export const defaultProps: Optional<Props> = {
     "date": new Date(0)
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root" | "basename" | "date", { isDateProvided: boolean; }>({
+const { useClassNames } = createUseClassNames<{ isDateProvided: boolean; }>()(
+    ({ theme }, { isDateProvided }) => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
@@ -35,9 +36,9 @@ const useStyles = makeStyles(
             "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`,
             "padding": theme.spacing(3, 0)
         },
-        "basename": ({ isDateProvided }) => ({
+        "basename": {
             "marginBottom": isDateProvided ? theme.spacing(1) : undefined
-        }),
+        },
         "date": {
             "color": theme.custom.colors.useCases.typography.textSecondary,
             "textTransform": "capitalize"
@@ -45,21 +46,15 @@ const useStyles = makeStyles(
     })
 );
 
-
-
-export function ExplorerFileOrDirectoryHeader(props: Props) {
+export const ExplorerFileOrDirectoryHeader = memo((props: Props) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
     const { visualRepresentationOfAFile, kind, fileBasename, date, onBack } = completedProps;
 
-
-    const Icon = useSemanticGuaranteeMemo(
-        () => withProps(
-            FileOrDirectoryIcon,
-            { visualRepresentationOfAFile }
-        ),
-        [visualRepresentationOfAFile]
+    const Icon = useWithProps(
+        FileOrDirectoryIcon,
+        { visualRepresentationOfAFile }
     );
 
     const isSameYear = date.getFullYear() === new Date().getFullYear();
@@ -76,10 +71,10 @@ export function ExplorerFileOrDirectoryHeader(props: Props) {
 
     const isDateProvided = date.getTime() !== 0;
 
-    const classes = useStyles({ isDateProvided });
+    const { classNames } = useClassNames({ isDateProvided });
 
     return (
-        <div className={classes.root}>
+        <div className={classNames.root}>
             <div>
                 <IconButton
                     fontSize="large"
@@ -96,7 +91,7 @@ export function ExplorerFileOrDirectoryHeader(props: Props) {
             <div>
                 <Typography
                     variant="h5"
-                    className={classes.basename}
+                    className={classNames.basename}
                 >
                     {fileBasename}
                 </Typography>
@@ -104,7 +99,7 @@ export function ExplorerFileOrDirectoryHeader(props: Props) {
                     !isDateProvided ? null :
                         <Typography
                             variant="caption"
-                            className={classes.date}
+                            className={classNames.date}
                         >
                             {formattedDate}
                         </Typography>
@@ -113,4 +108,4 @@ export function ExplorerFileOrDirectoryHeader(props: Props) {
         </div>
     );
 
-}
+});

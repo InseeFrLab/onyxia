@@ -1,13 +1,11 @@
 
-import React from "react";
-import { Typography } from "app/components/designSystem/Typography";
-import { Props as AppIconProps }  from "./designSystem/Icon";
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { memo } from "react";
+import { Typography } from "app/components/designSystem/Typography";
+import { Props as AppIconProps } from "./designSystem/Icon";
 import { Icon } from "./designSystem/Icon";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import type { Optional } from "evt/tools/typeSafety";
-import Box from "@material-ui/core/Box";
 import { noUndefined } from "app/utils/noUndefined";
-import clsx from "clsx";
 
 export type Props = {
     icon: AppIconProps["type"];
@@ -19,11 +17,11 @@ export type Props = {
 };
 
 export const defaultProps: Optional<Props> = {
-    "className": null,
+    "className": null
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root" | "text1" | "text2" | "icon", Required<Props>>({
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    ({ theme }) => ({
         "root": {
             "backgroundColor": "inherit",
             "padding": theme.spacing(5),
@@ -47,25 +45,26 @@ const useStyles = makeStyles(
     })
 );
 
-export function PageHeader(props: Props) {
+
+export const PageHeader = memo((props: Props) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { icon, text1, text2, text3, className  } = completedProps;
+    const { icon, text1, text2, text3, className } = completedProps;
 
-    const classes = useStyles(completedProps);
+    const { classNames } = useClassNames(completedProps);
 
     return (
-        <Box className={clsx(classes.root, className)}>
-            <Typography variant="h2" className={classes.text1}>
-                <Icon type={icon} fontSize="large" className={classes.icon} />
+        <div className={cx(classNames.root, className)}>
+            <Typography variant="h2" className={classNames.text1}>
+                <Icon type={icon} fontSize="large" className={classNames.icon} />
                 {/* //TODO: Address the fact that our font does not have the same box size*/}
                 <span style={{ "paddingTop": "6px", /*"border": "1px solid black"*/ }}>{text1}</span>
             </Typography>
-            <Typography variant="h5" className={classes.text2}>{text2}</Typography>
+            <Typography variant="h5" className={classNames.text2}>{text2}</Typography>
             <Typography variant="body1">{text3}</Typography>
-        </Box>
+        </div>
     );
 
-}
+});
 

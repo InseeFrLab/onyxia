@@ -1,12 +1,10 @@
 
-import React, { useMemo, useState, useCallback, useRef } from "react";
+
+import { useMemo, useState, useCallback, useRef, memo } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
-import memoize from "memoizee";
-import { useTheme } from "@material-ui/core/styles";
 import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
-import { withProps } from "app/utils/withProps";
 import { getKeyPropFactory } from "app/utils/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -15,14 +13,17 @@ import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
-import { useSemanticGuaranteeMemo } from "evt/tools/hooks/useSemanticGuaranteeMemo";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
+import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+import { useWithProps } from "app/utils/hooks/useWithProps";
+import memoize from "memoizee";
+import { useTheme } from "app/theme/useClassNames";
 
 
 export type Props = {
 
-    className: string;
+    className?: string;
 
     /** [HIGHER ORDER] */
     visualRepresentationOfAFile: ExplorerItemProps["visualRepresentationOfAFile"];
@@ -58,7 +59,7 @@ export type Props = {
 };
 
 
-export function ExplorerItems(props: Props) {
+export const ExplorerItems = memo((props: Props) => {
 
     const {
         className,
@@ -80,10 +81,11 @@ export function ExplorerItems(props: Props) {
         onIsSelectedItemInEditingStateValueChange
     } = props;
 
-    const ExplorerItem = useSemanticGuaranteeMemo(
-        () => withProps(SecretOrFileExplorerItem, { visualRepresentationOfAFile }),
-        [visualRepresentationOfAFile]
+    const ExplorerItem = useWithProps(
+        SecretOrFileExplorerItem,
+        { visualRepresentationOfAFile }
     );
+
 
     const theme = useTheme();
 
@@ -103,7 +105,6 @@ export function ExplorerItems(props: Props) {
         },
         [windowInnerWidth, theme]
     );
-
 
     const [{
         getKeyProp,
@@ -175,28 +176,29 @@ export function ExplorerItems(props: Props) {
     // If selected item is removed, unselect it.
     {
 
-        const callbackFactory = useMemo(
-            () => memoize(
-                (kind: "file" | "directory") =>
-                    (params: { removed: string[]; }) => {
+        const callbackFactory = useCallbackFactory(
+            ([kind]: ["file" | "directory"], [params]: [{ removed: string[]; }]) => {
 
-                        const { removed } = params;
+                const { removed } = params;
 
-                        if (selectedItemKeyProp === undefined) {
-                            return;
-                        }
+                if (selectedItemKeyProp === undefined) {
+                    return;
+                }
 
-                        const selectedItem = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
+                const selectedItem = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
 
-                        if (selectedItem.kind === kind && removed.includes(selectedItem.basename)) {
-                            setIsSelectedItemInEditingState(false);
-                            setSelectedItemKeyProp(undefined);
-                        }
+                if (selectedItem.kind === kind && removed.includes(selectedItem.basename)) {
+                    setIsSelectedItemInEditingState(false);
+                    setSelectedItemKeyProp(undefined);
+                }
 
-                    }
-            ),
-            [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
+            },
+            [
+                selectedItemKeyProp,
+                getValuesCurrentlyMappedToKeyProp
+            ]
         );
+
 
         useArrayDiff({
             "watchFor": "deletion",
@@ -215,42 +217,40 @@ export function ExplorerItems(props: Props) {
     // When an item is created automatically enter editing mode.
     {
 
-        const callbackFactory = useMemo(
-            () => memoize(
-                (kind: "file" | "directory") =>
-                    (params: { added: string[]; }) => {
 
-                        const { added } = params;
+        const callbackFactory = useCallbackFactory(
+            ([kind]: ["file" | "directory"], [params]: [{ added: string[]; }]) => {
 
-                        if (added.length > 1) {
-                            return;
-                        }
+                const { added } = params;
 
-                        const [basename] = added;
+                if (added.length > 1) {
+                    return;
+                }
 
-                        if (!(() => {
-                            switch (kind) {
-                                case "directory": return directoriesBeingCreated;
-                                case "file": return filesBeingCreated;
-                            }
-                        })().includes(basename)) {
-                            return;
-                        }
+                const [basename] = added;
 
-                        const evtItemAction = getEvtItemAction(
-                            getKeyProp({ kind, basename })
-                        );
-
-
-                        evtItemAction.post("ENTER EDITING STATE");
-
+                if (!(() => {
+                    switch (kind) {
+                        case "directory": return directoriesBeingCreated;
+                        case "file": return filesBeingCreated;
                     }
-            ),
+                })().includes(basename)) {
+                    return;
+                }
+
+                const evtItemAction = getEvtItemAction(
+                    getKeyProp({ kind, basename })
+                );
+
+
+                evtItemAction.post("ENTER EDITING STATE");
+            },
             [
                 getEvtItemAction, getKeyProp,
                 directoriesBeingCreated, filesBeingCreated
             ]
         );
+
 
         useArrayDiff({
             "watchFor": "addition",
@@ -266,42 +266,51 @@ export function ExplorerItems(props: Props) {
 
     }
 
-    const onMouseEventFactory = useMemo(
-        () => memoize(
-            (kind: "file" | "directory", basename: string) =>
-                async ({ type, target }: Parameters<ExplorerItemProps["onMouseEvent"]>[0]) => {
 
-                    if (isNavigating) {
-                        return;
+    const onMouseEventFactory = useCallbackFactory(
+        async (
+            [kind, basename]: ["file" | "directory", string],
+            [{ type, target }]: [Parameters<ExplorerItemProps["onMouseEvent"]>[0]]
+        ) => {
+
+            if (isNavigating) {
+                return;
+            }
+
+            switch (type) {
+                case "down":
+
+                    const keyProp = getKeyProp({ kind, basename });
+
+                    if (target === "text" && selectedItemKeyProp === keyProp) {
+
+                        await Evt.from(window, "mouseup").waitFor();
+
+                        getEvtItemAction(keyProp).post("ENTER EDITING STATE");
+
+                        break;
+
                     }
 
-                    switch (type) {
-                        case "down":
+                    setSelectedItemKeyProp(keyProp);
 
-                            const keyProp = getKeyProp({ kind, basename });
+                    break;
 
-                            if (target === "text" && selectedItemKeyProp === keyProp) {
+                case "double":
+                    onNavigate({ kind, basename });
+                    break;
+            }
 
-                                await Evt.from(window, "mouseup").waitFor();
-
-                                getEvtItemAction(keyProp).post("ENTER EDITING STATE");
-
-                                break;
-
-                            }
-
-                            setSelectedItemKeyProp(keyProp);
-
-                            break;
-
-                        case "double":
-                            onNavigate({ kind, basename });
-                            break;
-                    }
-                }
-        ),
-        [onNavigate, selectedItemKeyProp, getKeyProp, getEvtItemAction, isNavigating]
+        },
+        [
+            onNavigate,
+            selectedItemKeyProp,
+            getKeyProp,
+            getEvtItemAction,
+            isNavigating
+        ]
     );
+
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
 
@@ -311,50 +320,49 @@ export function ExplorerItems(props: Props) {
     );
 
 
+    const onEditBasenameFactory = useCallbackFactory(
+        (
+            [kind, basename]: ["file" | "directory", string],
+            [{ editedBasename }]: [Parameters<ExplorerItemProps["onEditBasename"]>[0]]
+        ) => {
+            transfersKeyProp({
+                "toValues": { kind, "basename": editedBasename },
+                "fromValues": { kind, basename }
+            });
 
-    const onEditBasenameFactory = useMemo(
-        () => memoize(
-            (kind: "file" | "directory", basename: string) =>
-                ({ editedBasename }: Parameters<ExplorerItemProps["onEditBasename"]>[0]) => {
-
-                    transfersKeyProp({
-                        "toValues": { kind, "basename": editedBasename },
-                        "fromValues": { kind, basename }
-                    });
-
-                    onEditBasename({ kind, basename, editedBasename });
-
-                }
-        ),
+            onEditBasename({ kind, basename, editedBasename });
+        },
         [onEditBasename, transfersKeyProp]
     );
 
-    const getIsValidBasenameFactory = useMemo(
-        () => memoize(
-            (kind: "file" | "directory", basename: string) =>
-                ({ basename: candidateBasename }: Parameters<ExplorerItemProps["getIsValidBasename"]>[0]) => {
+    const getIsValidBasenameFactory = useCallbackFactory(
+        (
+            [kind, basename]: ["file" | "directory", string],
+            [{ basename: candidateBasename }]: [Parameters<ExplorerItemProps["getIsValidBasename"]>[0]]
+        ) => {
 
-                    if (basename === candidateBasename) {
-                        return true;
+            if (basename === candidateBasename) {
+                return true;
+            }
+
+            if (
+                (() => {
+                    switch (kind) {
+                        case "directory": return directories;
+                        case "file": return files;
                     }
+                })().includes(candidateBasename)
+            ) {
+                return false;
+            }
 
-                    if (
-                        (() => {
-                            switch (kind) {
-                                case "directory": return directories;
-                                case "file": return files;
-                            }
-                        })().includes(candidateBasename)
-                    ) {
-                        return false;
-                    }
+            return getIsValidBasename({ "basename": candidateBasename });
 
-                    return getIsValidBasename({ "basename": candidateBasename });
-
-                }
-        ),
+        },
         [getIsValidBasename, directories, files]
     );
+
+
 
     const onIsInEditingStateValueChange = useCallback(
         ({ isInEditingState }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
@@ -440,6 +448,8 @@ export function ExplorerItems(props: Props) {
                                     </Grid>
                                 );
 
+
+
                             }))}
 
                     </Grid>
@@ -447,7 +457,8 @@ export function ExplorerItems(props: Props) {
         </div>
     );
 
-}
+
+});
 
 export declare namespace ExplorerItems {
     export type I18nScheme = {

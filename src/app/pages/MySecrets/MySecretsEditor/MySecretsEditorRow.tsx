@@ -1,8 +1,6 @@
-
-import { useMemo, useState, useCallback } from "react";
-import { TableCell, TableRow } from "app/components/designSystem/Table";
+import { createUseClassNames, css, cx, useTheme } from "app/theme/useClassNames";
+import { useMemo, useState, useCallback, memo } from "react";
 import type { NonPostableEvt } from "evt";
-import memoize from "memoizee";
 import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
 import { Evt } from "evt";
@@ -10,10 +8,11 @@ import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/utils/smartTrim";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Typography } from "app/components/designSystem/Typography";
-import { useTheme } from "@material-ui/core/styles";
-import { IconButton } from "app/components/designSystem/IconButton";
+import { IconButton } from "app/components/designSystem/IconButton";
+import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
 
 
 export type Props = {
@@ -48,30 +47,29 @@ export type Props = {
 
 };
 
-const useStyles = makeStyles(
-    theme => createStyles<"root" | "dollarSign" | "valueAndResolvedValue" | "keyAndValueTableCells", Props & { isInEditingState: boolean; }>({
-        "dollarSign": ({ isInEditingState }) => ({
+const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolean; }>()(
+    ({ theme }, { isInEditingState, isDarker }) => ({
+        "root": {
+            "backgroundColor": isDarker ?
+                theme.custom.colors.useCases.surfaces.background :
+                "transparent",
+        },
+        "dollarSign": {
             "color": isInEditingState ?
                 theme.custom.colors.useCases.typography.textDisabled :
                 theme.custom.colors.useCases.typography.textFocus
-        }),
-        "root": ({ isDarker }) => ({
-            "backgroundColor": isDarker ?
-                theme.custom.colors.useCases.surfaces.background :
-                "transparent"
-        }),
+        },
         "valueAndResolvedValue": {
             "padding": theme.spacing(2, 1),
             "wordBreak": "break-all"
         },
-        "keyAndValueTableCells": ({ isInEditingState })=>({
+        "keyAndValueTableCells": {
             "padding": isInEditingState ? theme.spacing(0, 2) : undefined
-        })
+        }
     })
 );
 
-export function MySecretsEditorRow(props: Props) {
-
+export const MySecretsEditorRow = memo((props: Props) => {
 
     const { t } = useTranslation("MySecretsEditorRow");
 
@@ -104,12 +102,9 @@ export function MySecretsEditorRow(props: Props) {
 
     const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
 
-    const onSubmitFactory = useMemo(
-        () => memoize(
-            (inputTarget: keyof UnpackEvt<typeof evtEdited>) =>
-                ({ value }: Parameters<TextFieldProps["onSubmit"]>[0]) =>
-                    evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
-        ),
+    const onSubmitFactory = useCallbackFactory(
+        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [{ value }]: [Parameters<TextFieldProps["onSubmit"]>[0]]) =>
+            evtEdited.state = { ...evtEdited.state, [inputTarget]: value },
         [evtEdited]
     );
 
@@ -223,61 +218,74 @@ export function MySecretsEditorRow(props: Props) {
         [getResolvedValue]
     );
 
-    const classes = useStyles({ ...props, isInEditingState });
+    const { classNames } = useClassNames({ ...props, isInEditingState });
 
     const SmartTrim = useMemo(
         () =>
-            (props: { children: string; className: string; style?: React.CSSProperties | null; }) =>
-                <Typography className={props.className} style={props.style}>{
-                    smartTrim({
-                        "maxLength": 70,
-                        "minCharAtTheEnd": 10,
-                        "text": props.children,
-                        
-                    })
-                }</Typography>,
+            (props: {
+                className: string;
+                children: string;
+            }) => {
+
+                const { children, className } = props;
+
+                return (
+                    <Typography className={className}>{
+                        smartTrim({
+                            "maxLength": 70,
+                            "minCharAtTheEnd": 10,
+                            "text": children
+                        })
+                    }</Typography>
+                );
+
+            },
         []
     );
 
     const theme = useTheme();
 
     return (
-        <TableRow className={classes.root}>
+        <TableRow className={classNames.root}>
             <TableCell>
-                <Typography 
-                    style={{ "padding": theme.spacing(2, 1) }}
-                    variant="body1" 
-                    className={classes.dollarSign}
+                <Typography
+                    variant="body1"
+                    className={cx(
+                        classNames.dollarSign,
+                        css({ "padding": theme.spacing(2, 1) })
+                    )}
                 >
                     $
                 </Typography>
             </TableCell>
-            <TableCell className={classes.keyAndValueTableCells}>
+            <TableCell className={classNames.keyAndValueTableCells}>
                 {
+                    !isInEditingState ?
+                        <Typography
+                            variant="body1"
+                            className={css({ "padding": theme.spacing(2, 1) })}
+                        >
+                            {key}
+                        </Typography>
+                        :
+                        <TextField
+                            defaultValue={key}
+                            inputProps={{ "aria-label": t("key input desc") }}
+                            autoFocus={true}
+                            onEscapeKeyDown={onEscapeKeyDown}
+                            onEnterKeyDown={onEnterKeyDown}
+                            evtAction={evtInputAction}
+                            onSubmit={onSubmitFactory("editedKey")}
+                            getIsValidValue={getIsValidValue_key}
+                            onValueBeingTypedChange={onValueBeingTypedChange_key}
+                            transformValueBeingTyped={toUpperCase}
+                        />
+                }</TableCell>
+            <TableCell className={classNames.keyAndValueTableCells}>{
                 !isInEditingState ?
-                    <Typography 
-                    variant="body1"
-                    style={{ "padding": theme.spacing(2, 1) }}
-                    >
-                        {key}
-                    </Typography>
-                    :
-                    <TextField
-                        defaultValue={key}
-                        inputProps={{ "aria-label": t("key input desc") }}
-                        autoFocus={true}
-                        onEscapeKeyDown={onEscapeKeyDown}
-                        onEnterKeyDown={onEnterKeyDown}
-                        evtAction={evtInputAction}
-                        onSubmit={onSubmitFactory("editedKey")}
-                        getIsValidValue={getIsValidValue_key}
-                        onValueBeingTypedChange={onValueBeingTypedChange_key}
-                        transformValueBeingTyped={toUpperCase}
-                    />
-            }</TableCell>
-            <TableCell className={classes.keyAndValueTableCells}>{
-                !isInEditingState ?
-                    <SmartTrim className={classes.valueAndResolvedValue}>{strValue}</SmartTrim>
+                    <SmartTrim className={classNames.valueAndResolvedValue}>
+                        {strValue}
+                    </SmartTrim>
                     :
                     <TextField
                         defaultValue={strValue}
@@ -294,17 +302,17 @@ export function MySecretsEditorRow(props: Props) {
                 !resolveValueResult.isResolvedSuccessfully ?
                     null :
                     <SmartTrim
-                        className={classes.valueAndResolvedValue}
-                        style={{
-                            "color": theme.custom.colors.palette.whiteSnow.greyVariant3
-                        }}
+                        className={cx(
+                            classNames.valueAndResolvedValue,
+                            css({ "color": theme.custom.colors.palette.whiteSnow.greyVariant3 })
+                        )}
                     >
                         {resolveValueResult.resolvedValue}
                     </SmartTrim>
 
             }</TableCell>
             <TableCell align="right">
-                <div style={{ "display": "flex" }}>
+                <div className={css({ "display": "flex" })}>
                     <IconButton
                         type={isInEditingState ? "check" : "edit"}
                         disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
@@ -322,7 +330,7 @@ export function MySecretsEditorRow(props: Props) {
         </TableRow>
     );
 
-}
+});
 
 export declare namespace MySecretsEditorRow {
 

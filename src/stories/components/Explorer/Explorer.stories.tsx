@@ -1,3 +1,5 @@
+
+import { css } from "app/theme/useClassNames";
 import { useState, useCallback, useEffect } from "react";
 import { Explorer, Props } from "app/components/Explorer/Explorer";
 import { sectionName } from "./sectionName";
@@ -6,24 +8,12 @@ import { symToStr } from "app/utils/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
 
-type StoryProps = {
+function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem" | "className"> & {
     width: number;
     height: number;
-};
 
-const useStyles = makeStyles(
-    () => createStyles<"root", StoryProps>({
-        "root": ({ width, height }) => ({
-            "border": "1px solid black",
-            width,
-            height
-        })
-    })
-);
-
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem" | "className"> & StoryProps) {
+}) {
 
     const [files, setFiles] = useState(props.files);
     const [directories, setDirectories] = useState(props.directories);
@@ -43,7 +33,7 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
     const [directoriesBeingRenamed, setDirectoriesBeingRenamed] = useState<string[]>([]);
 
 
-    const [toRemoveFromBeingEdited, setToRemoveFromBeingEdited] = 
+    const [toRemoveFromBeingEdited, setToRemoveFromBeingEdited] =
         useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
 
     useEffect(
@@ -123,12 +113,16 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
         [directories, files]
     );
 
-    const classes = useStyles(props);
+    const { width, height } = props;
 
     return (
         <Explorer
             {...props}
-            className={classes.root}
+            className={css({
+                "border": "1px solid black",
+                width,
+                height
+            })}
             files={files}
             directories={directories}
             filesBeingRenamed={filesBeingRenamed}
@@ -180,13 +174,26 @@ export const Vue1 = getStory({
     "isNavigating": false,
     "showHidden": false,
     "file": null,
-    "files": ["this-is-a-file", "file2", "foo.csv"],
-    "directories": ["My_directory-1", "dir2", "another-directory", "foo"],
+    "files": [
+        "My_directory-3", "dir4", "another-directory_2", "another_directory_4",
+        "My_directory-4", "dir5", "another-directory_3", "another_directory_5",
+        "My_directory-5", "dir6", "another-directory_4", "another_directory_6",
+        "My_directory-6", "dir7", "another-directory_5", "another_directory_7",
+        "this-is-a-file", "file2", "foo.csv",
+    ],
+    "directories": [
+        "My_directory-1", "dir2", "another-directory", "another_directory_2",
+        "My_directory-2", "dir3", "another-directory_1", "another_directory_3",
+        "My_directory-3", "dir4", "another-directory_2", "another_directory_4",
+        "My_directory-4", "dir5", "another-directory_3", "another_directory_5",
+        "My_directory-5", "dir6", "another-directory_4", "another_directory_6",
+        "My_directory-6", "dir7", "another-directory_5", "another_directory_7",
+    ],
     "getIsValidBasename": pure.getIsValidBasename,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
-    "height": 400,
-    "width": 1100,
+    "height": 1000,
+    "width": 1600,
     "paddingLeftSpacing": 5,
     ...logCallbacks([
         "onNavigate",

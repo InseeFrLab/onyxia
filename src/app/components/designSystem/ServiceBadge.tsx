@@ -1,5 +1,5 @@
 
-import React from "react";
+import { memo } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import vscodeImg from "app/assets/img/vscode.png";
 import rstudioImg from "app/assets/img/rstudio.png";
@@ -26,11 +26,11 @@ import zeppelinImg from "app/assets/img/zeppelin.png";
 export type Props = {
     /** Design which service image should be displayed */
     type: "vscode" | "rstudio" | "blazingsql" | "elk" | "gitlab" | "gravitee"
-    | "jena" | "jupyter" | "keycloak" | "minio" | "mongodb"| "neo4j" | "openrefine"
-    | "plutojl" | "postgresql" | "rapidsai" | "tensorflow" | "ubuntu"| "vault" | "zeppelin";
+    | "jena" | "jupyter" | "keycloak" | "minio" | "mongodb" | "neo4j" | "openrefine"
+    | "plutojl" | "postgresql" | "rapidsai" | "tensorflow" | "ubuntu" | "vault" | "zeppelin";
 };
 
-export function ServiceBadge(props: Props) {
+export const ServiceBadge = memo((props: Props) => {
 
     const { type } = props;
 
@@ -59,4 +59,4 @@ export function ServiceBadge(props: Props) {
         }
     })()} />;
 
-}
+});

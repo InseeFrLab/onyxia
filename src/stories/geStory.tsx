@@ -4,7 +4,7 @@ import type { Meta } from "@storybook/react";
 import { symToStr } from "app/utils/symToStr";
 import type { Story } from "@storybook/react";
 import React from "react";
-import { ThemeProviderFactory } from "app/theme/ThemeProvider";
+import { themeProviderFactory } from "app/theme/ThemeProvider";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
@@ -13,9 +13,9 @@ import type { SupportedLanguages } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
-import { useTheme } from "@material-ui/core/styles";
+import { useTheme } from "app/theme/useClassNames";
 
-const { ThemeProvider } = ThemeProviderFactory(
+const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 

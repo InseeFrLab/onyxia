@@ -1,35 +1,24 @@
 
 
-import { useReducer, useState } from "react";
-import { useValueChangeEffect  } from "app/utils/hooks/useValueChangeEffect";
+import { css } from "app/theme/useClassNames";
+import { useReducer, useState } from "react";
+import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { Breadcrump } from "app/components/Explorer/Breadcrump";
 import type { Props } from "app/components/Explorer/Breadcrump";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/utils/symToStr";
 import type { UnpackEvt } from "evt";
-import { Evt } from "evt";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Evt } from "evt";
 
 
-type StoryProps = {
+function Component(props: Omit<Props, "evtAction"> & {
     width: number;
-    /** Toggle to fire a translation event */ 
+    /** Toggle to fire a translation event */
     tick: boolean;
-};
+}) {
 
-const useStyles = makeStyles(
-    () => createStyles<"root", StoryProps>({
-        "root": ({ width }) => ({
-            "border": "1px solid black",
-            width
-        })
-    })
-);
-
-function Component(props: Omit<Props, "evtAction"> & StoryProps) {
-
-    const { tick, minDepth, path, callback, isNavigationDisabled } = props;
+    const { tick, minDepth, path, callback, isNavigationDisabled, width } = props;
 
     const [index, incrementIndex] = useReducer(
         (index: number) => index + 1,
@@ -46,7 +35,7 @@ function Component(props: Omit<Props, "evtAction"> & StoryProps) {
     useValueChangeEffect(
         () => {
 
-            evtAction.post({ 
+            evtAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
                 "basename": "foo.svg"
             });
@@ -55,12 +44,14 @@ function Component(props: Omit<Props, "evtAction"> & StoryProps) {
         [evtAction, index]
     );
 
-    const classes = useStyles(props);
 
     return (
         <Breadcrump
             isNavigationDisabled={isNavigationDisabled}
-            className={classes.root}
+            className={css({
+                "border": "1px solid black",
+                width
+            })}
             evtAction={evtAction}
             minDepth={minDepth}
             path={path}

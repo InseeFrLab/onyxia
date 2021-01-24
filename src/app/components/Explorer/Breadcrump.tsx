@@ -1,42 +1,39 @@
 
-
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, createUseCssRecord } from "app/theme/useCssRecord";
-
-import { useMemo, useState, useEffect } from "react";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useMemo, useState, useEffect, memo } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { basename as pathBasename, relative as pathRelative } from "path";
-import memoize from "memoizee";
 import type { NonPostableEvt } from "evt";
-import { useEvt } from "evt/hooks";
-import { join as pathJoin } from "path";
-import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
+import { join as pathJoin } from "path";
+import { Evt } from "evt";
+import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
     path: string;
     minDepth: number;
     isNavigationDisabled: boolean;
     callback(params: { relativePath: string }): void;
-    className?: string;
     evtAction: NonPostableEvt<{ action: "DISPLAY COPY FEEDBACK"; basename: string; }>;
+    className?: string;
 };
 
-export function Breadcrump(props: Props) {
+export const Breadcrump = memo((props: Props) => {
 
-    const { minDepth, isNavigationDisabled , callback, className, evtAction } = props;
+    const { minDepth, isNavigationDisabled, callback, className, evtAction } = props;
 
     const [path, setPath] = useState(props.path);
 
 
-    const [isFocused, setIsFocused]= useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     //TODO: Design custom hook for that
     const [evtPropsPath] = useState(() => Evt.create<string>(props.path));
     useEffect(() => { evtPropsPath.state = props.path });
 
     useEvt(ctx =>
-        evtPropsPath.toStateless(ctx).attach(path=> {
+        evtPropsPath.toStateless(ctx).attach(path => {
             setIsFocused(false);
             setPath(path);
         }),
@@ -70,7 +67,7 @@ export function Breadcrump(props: Props) {
 
                 scopedCtx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
 
-                evtDisplayFeedback.attachOnce(scopedCtx, () => scopedCtx.done()); 
+                evtDisplayFeedback.attachOnce(scopedCtx, () => scopedCtx.done());
                 evtPropsPath.toStateless(scopedCtx).attachOnce(() => scopedCtx.done());
 
                 ctx.evtDoneOrAborted.attachOnce(scopedCtx, () => scopedCtx.done());
@@ -83,13 +80,13 @@ export function Breadcrump(props: Props) {
         ]
     );
 
-    const onClickFactory = useMemo(
-        () => memoize(
-            (partialPath: string, isClickable: boolean) =>
-                !isClickable ?
-                    undefined :
-                    (() => callback({ "relativePath": pathRelative(path, partialPath) }))
-        ),
+
+    const onClickFactory = useCallbackFactory<[string, boolean], []>(
+        ([partialPath, isClickable]) =>
+            !isClickable ?
+                assert(false) :
+                callback({ "relativePath": pathRelative(path, partialPath) })
+        ,
         [callback, path]
     );
 
@@ -110,7 +107,7 @@ export function Breadcrump(props: Props) {
         </div>
     );
 
-}
+});
 
 function getPartialPaths(params: { path: string; minDepth: number; isNavigationDisabled: boolean; }) {
 
@@ -123,7 +120,7 @@ function getPartialPaths(params: { path: string; minDepth: number; isNavigationD
             return path;
         }
 
-        if( minDepth !== 0 ){
+        if (minDepth !== 0) {
 
             minDepth--;
 
@@ -159,7 +156,7 @@ const { Section } = (() => {
 
     const hoverFontWeight = 500;
 
-    const { useCssRecord } = createUseCssRecord<Props & { text: string; }>()(
+    const { useClassNames } = createUseClassNames<Props & { text: string; }>()(
         ({ theme }, { isClickable, text }) => ({
             "root": {
                 ...(!isClickable ? {} : {
@@ -193,20 +190,20 @@ const { Section } = (() => {
 
     function Section(props: Props) {
 
-        const { partialPath, isLast, onClick, isFocused } = props;
+        const { partialPath, isLast, onClick, isFocused, isClickable } = props;
 
         const text = useMemo(
             () => `${pathBasename(partialPath)}${isLast ? "" : " /"}`,
             [partialPath, isLast]
         );
 
-        const { cssRecord } = useCssRecord({ ...props, text });
+        const { classNames } = useClassNames({ ...props, text });
 
         return (
             <Typography
                 color={isFocused ? "focus" : isLast ? "primary" : "secondary"}
-                onClick={onClick}
-                css={cssRecord.root}
+                onClick={isClickable ? onClick : undefined}
+                className={classNames.root}
             >
                 {text}
             </Typography>
