@@ -1,6 +1,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
-import { useState, useEffect, useCallback, useMemo, memo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";

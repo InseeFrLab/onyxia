@@ -1,6 +1,7 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
-import { useCallback, useEffect, useState, memo } from "react";
+import { useEffect, useState, memo } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import { copyToClipboard } from "app/utils/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/Explorer";

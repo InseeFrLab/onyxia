@@ -1,6 +1,7 @@
 
 import { createUseClassNames, css, useTheme } from "app/theme/useClassNames";
-import { useMemo, useCallback, memo } from "react";
+import { useMemo, memo } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";

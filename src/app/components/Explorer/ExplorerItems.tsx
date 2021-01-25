@@ -1,6 +1,6 @@
 
 
-import { useMemo, useState, useCallback, useRef, memo } from "react";
+import { useMemo, useState, useRef, memo } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
@@ -15,7 +15,7 @@ import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/utils/hooks/useArrayDiff";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+import { useCallbackFactory, useCallback } from "app/utils/hooks/useCallbackFactory";
 import { useWithProps } from "app/utils/hooks/useWithProps";
 import memoize from "memoizee";
 import { useTheme } from "app/theme/useClassNames";
