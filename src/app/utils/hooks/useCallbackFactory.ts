@@ -64,12 +64,22 @@ export function useCallbackFactory<
 
 }
 
+export function useCallback<T extends (...args: never[]) => unknown>(
+    callback: T, 
+    deps: DependencyList
+): T {
 
+    const callbackRef = useRef<T>(callback);
 
-export function useCallback<T extends (...args: never[]) => unknown>(callback: T, deps: DependencyList): T {
-    return useCallbackFactory<[], Parameters<T>, ReturnType<T>>(
-        (_, args) => (callback as any)(...args), 
+    useMemo(
+        () => callbackRef.current = callback,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         deps
-    )() as any;
+    );
+
+    return useMemo(
+        () => ((...args: Parameters<T>) => callbackRef.current(...args)) as T, 
+        []
+    );
 }
+
