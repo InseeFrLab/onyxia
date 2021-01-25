@@ -256,6 +256,12 @@ export function Explorer(props: Props) {
         ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
 
             switch (action) {
+                case "refresh": 
+                    onNavigate({ 
+                        "kind": !file ? "directory" : "file", 
+                        "relativePath": "."
+                    });
+                    break;
                 case "rename":
                     evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
                     break;
@@ -307,7 +313,8 @@ export function Explorer(props: Props) {
         },
         [
             evtItemsAction, onCreateItem, t, wordForFile, 
-            files, directories, file, itemsOnCopyPath
+            files, directories, file, itemsOnCopyPath,
+            onNavigate
         ]
     );
 
