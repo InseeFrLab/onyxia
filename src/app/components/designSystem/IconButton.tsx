@@ -51,7 +51,7 @@ export const IconButton =memo((props: Props) =>{
 
     return (
         <MuiIconButton
-            css={cx(classNames.root, className)}
+            className={cx(classNames.root, className)}
             disabled={disabled}
             onClick={onClick}
         >

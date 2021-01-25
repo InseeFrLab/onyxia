@@ -40,7 +40,7 @@ export const CircularProgress = memo((props: Props) => {
     return (
         <MuiCircularProgress
             color={color === "textPrimary" ? undefined : color}
-            css={cx(classNames.root, className)}
+            className={cx(classNames.root, className)}
             size={size}
         />
     );

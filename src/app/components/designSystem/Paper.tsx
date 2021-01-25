@@ -33,7 +33,7 @@ export function Paper(props: Props) {
     const { classNames } = useClassNames(completedProps);
 
     return (
-        <MuiPaper css={cx(classNames.root, className)} >
+        <MuiPaper className={cx(classNames.root, className)} >
             {children}
         </MuiPaper>
     );
