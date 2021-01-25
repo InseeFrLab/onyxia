@@ -6,6 +6,7 @@ import {
 	Switch,
 	Route as NativeRoute,
 	Redirect,
+	useLocation
 } from 'react-router-dom';
 import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
@@ -157,13 +158,6 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									path="/mes-fichiers/:bucketName/*"
 									component={NavigationFile}
 								/>
-								{/*
-								<PrivateRoute
-									exact
-									path="/mes-secrets"
-									component={MySecrets}
-								/>
-								*/}
 								<PrivateRoute
 									exact
 									path="/mes-secrets"
@@ -182,7 +176,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 								<Route path="/" component={() => <Redirect to={initialPathname} />} />
 							</Switch>
 						</main>
-						<Footer />
+						<FooterCond />
 						<Notifications />
 						{isUserLoggedIn && <QuickAccess />}
 					</div>
@@ -197,3 +191,12 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 };
 
 export default App;
+
+//TODO: Fix, hack for continuos integration.
+function FooterCond(){
+
+	const { pathname }= useLocation();
+
+	return  pathname.startsWith("/mes-secrets") ? null : <Footer />;
+
+}
