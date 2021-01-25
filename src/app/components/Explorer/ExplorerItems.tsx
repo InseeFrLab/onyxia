@@ -46,8 +46,10 @@ export type Props = {
     onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
     onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
     onCopyPath(params: { basename: string }): void;
-    /** Assert initial value is false */
-    onIsThereAnItemSelectedValueChange(params: { isThereAnItemSelected: boolean; }): void;
+
+    /** Assert initial value is none */
+    onSelectedItemKindValueChange(params: { selectedItemKind: "file" | "directory" | "none" }): void;
+
     onIsSelectedItemInEditingStateValueChange(params: { isSelectedItemInEditingState: boolean; }): void;
 
     evtAction: NonPostableEvt<
@@ -77,7 +79,7 @@ export const ExplorerItems = memo((props: Props) => {
         filesBeingCreated,
         filesBeingRenamed,
         evtAction,
-        onIsThereAnItemSelectedValueChange,
+        onSelectedItemKindValueChange,
         onIsSelectedItemInEditingStateValueChange
     } = props;
 
@@ -123,8 +125,15 @@ export const ExplorerItems = memo((props: Props) => {
     ] = useState<string | undefined>(undefined);
 
     useValueChangeEffect(
-        isThereAnItemSelected => onIsThereAnItemSelectedValueChange({ isThereAnItemSelected }),
-        [selectedItemKeyProp !== undefined]
+        selectedItemKind => onSelectedItemKindValueChange({ selectedItemKind }),
+        [
+            useMemo(
+                () => selectedItemKeyProp === undefined ?
+                    "none" as const :
+                    getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp).kind,
+                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
+            )
+        ]
     );
 
     const getEvtItemAction = useMemo(
@@ -272,7 +281,7 @@ export const ExplorerItems = memo((props: Props) => {
             [kind, basename]: ["file" | "directory", string],
             [{ type, target }]: [Parameters<ExplorerItemProps["onMouseEvent"]>[0]]
         ) => {
-            
+
             if (isNavigating) {
                 return;
             }

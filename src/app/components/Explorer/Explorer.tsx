@@ -237,11 +237,11 @@ export function Explorer(props: Props) {
 
 
 
-    const [isThereAnItemSelected, setIsThereAnItemSelected] = useState(false);
+    const [selectedItemKind, setSelectedItemKind] = useState<"file" | "directory" | "none">("none");
 
-    const onIsThereAnItemSelectedValueChange = useCallback(
-        ({ isThereAnItemSelected }: Parameters<ItemsProps["onIsThereAnItemSelectedValueChange"]>[0]) =>
-            setIsThereAnItemSelected(isThereAnItemSelected),
+    const onSelectedItemKindValueChange = useCallback(
+        ({ selectedItemKind }: Parameters<ItemsProps["onSelectedItemKindValueChange"]>[0]) =>
+            setSelectedItemKind(selectedItemKind),
         []
     );
 
@@ -357,7 +357,7 @@ export function Explorer(props: Props) {
             <div ref={buttonBarRef} >
                 <ButtonBar
                     paddingLeftSpacing={paddingLeftSpacing}
-                    isThereAnItemSelected={isThereAnItemSelected}
+                    selectedItemKind={selectedItemKind}
                     isSelectedItemInEditingState={isSelectedItemInEditingState}
                     callback={buttonBarCallback}
                 />
@@ -406,7 +406,7 @@ export function Explorer(props: Props) {
                             onNavigate={itemsOnNavigate}
                             onEditBasename={onEditBasename}
                             evtAction={evtItemsAction}
-                            onIsThereAnItemSelectedValueChange={onIsThereAnItemSelectedValueChange}
+                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
                             onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
                             onCopyPath={itemsOnCopyPath}
                             onDeleteItem={itemsOnDeleteItem}
