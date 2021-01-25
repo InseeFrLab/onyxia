@@ -1,7 +1,8 @@
 
 
 // source: https://gist.github.com/morajabi/523d7a642d8c0a2f71fcfa0d8b3d2846
-import { useLayoutEffect, useCallback, useState } from "react";
+import { useLayoutEffect, useState } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 
 type RectResult = {
   bottom: number;
@@ -57,6 +58,7 @@ export function useRect<T extends HTMLElement>(
       window.addEventListener("resize", handleResize); // Browser support, remove freely
       return () => window.removeEventListener("resize", handleResize);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref.current]);
 
   return rect;

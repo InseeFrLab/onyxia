@@ -1,6 +1,7 @@
 
 
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";

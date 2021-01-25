@@ -1,5 +1,5 @@
 import { createUseClassNames, css, cx, useTheme } from "app/theme/useClassNames";
-import { useMemo, useState, useCallback, memo } from "react";
+import { useMemo, useState, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
@@ -10,7 +10,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/utils/smartTrim";
 import { Typography } from "app/components/designSystem/Typography";
 import { IconButton } from "app/components/designSystem/IconButton";
-import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
+import { useCallbackFactory, useCallback } from "app/utils/hooks/useCallbackFactory";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 
