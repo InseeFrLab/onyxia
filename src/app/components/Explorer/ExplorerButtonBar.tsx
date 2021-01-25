@@ -3,7 +3,6 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
-import { id } from "evt/tools/typeSafety/id";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
 
@@ -14,8 +13,10 @@ export type Props = {
     /** [HIGHER ORDER] */
     wordForFile: "file" | "secret";
 
+
     selectedItemKind: "file" | "directory" | "none";
     isSelectedItemInEditingState: boolean;
+    isViewingFile: boolean;
 
     callback(params: { action: Action; }): void;
 
@@ -39,7 +40,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
         wordForFile,
         callback,
         selectedItemKind,
-        isSelectedItemInEditingState
+        isSelectedItemInEditingState,
+        isViewingFile
     } = props;
 
     const { classNames } = useClassNames(props);
@@ -70,17 +72,19 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             case "rename": return "edit";
                         }
                     })()}
-                    disabled={
-                        (
-                            selectedItemKind === "none" &&
-                            id<Action[]>(["copy path", "delete", "rename"]).includes(action)
-                        ) || (
-                            isSelectedItemInEditingState &&
-                            action === "rename"
-                        ) || (
-                            selectedItemKind === "directory" &&
-                            action === "copy path"
-                        )
+                    disabled={(() => {
+                        switch (action) {
+                            case "rename": return (
+                                isSelectedItemInEditingState || 
+                                selectedItemKind === "none" || 
+                                isViewingFile
+                            );
+                            case "create file":
+                            case "create directory": return isViewingFile;
+                            case "delete": return selectedItemKind === "none" && isViewingFile;
+                            case "copy path": return selectedItemKind !== "file" && !isViewingFile;
+                        }
+                    })()
                     }
                     key={action}
                     onClick={onClickFactory(action)}

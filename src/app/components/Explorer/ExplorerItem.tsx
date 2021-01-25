@@ -49,7 +49,6 @@ export type Props = {
     /** Assert initial value is false */
     onIsInEditingStateValueChange(params: { isInEditingState: boolean; }): void;
 
-
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 
 };

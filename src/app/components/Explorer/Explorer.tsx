@@ -1,6 +1,7 @@
 
 import { createUseClassNames, cx, css } from "app/theme/useClassNames";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
@@ -283,9 +284,7 @@ export function Explorer(props: Props) {
                 basename
             });
 
-            onCopyPath({
-                "path": pathJoin(currentPath, basename)
-            });
+            onCopyPath({ "path": pathJoin(currentPath, basename) });
 
         },
         [onCopyPath, currentPath, evtBreadcrumpAction]
@@ -359,6 +358,7 @@ export function Explorer(props: Props) {
                     paddingLeftSpacing={paddingLeftSpacing}
                     selectedItemKind={selectedItemKind}
                     isSelectedItemInEditingState={isSelectedItemInEditingState}
+                    isViewingFile={!!file}
                     callback={buttonBarCallback}
                 />
             </div>
