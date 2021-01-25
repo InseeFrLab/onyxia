@@ -166,7 +166,7 @@ export default {
     }
 };
 
-export const Vue1 = getStory({
+const props: Parameters<typeof getStory>[0] = {
     "type": "secret",
     "browsablePath": ".onyxia",
     "currentPath": ".onyxia/this/is/a/path",
@@ -192,13 +192,29 @@ export const Vue1 = getStory({
     "getIsValidBasename": pure.getIsValidBasename,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
-    "height": 1000,
-    "width": 1600,
     "paddingLeftSpacing": 5,
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",
         "onCreateItem",
         "onEditBasename"
-    ])
+    ]),
+    "height": 1000,
+    "width": 1600,
+};
+
+export const Vue1 = getStory(props);
+
+export const VueShowingFile = getStory({
+    ...props,
+    "height": 500,
+    "file":
+        <div className={css({ 
+            "backgroundColor": "blue",
+            "border": "6px solid pink"
+        })}>
+            {new Array(500).fill("Lorem ipsum ").join(" ")}
+            {/*file*/}
+        </div>
+
 });

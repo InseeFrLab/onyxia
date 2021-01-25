@@ -1,5 +1,5 @@
 
-import { createUseClassNames, cx, css } from "app/theme/useClassNames";
+import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo } from "react";
 import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import type { Props as ItemsProps } from "./ExplorerItems";
@@ -74,22 +74,11 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props & { cmdTranslationTop: number; }>()(
-    ({ theme }, { paddingLeftSpacing, cmdTranslationTop }) => ({
+    ({ theme }, { cmdTranslationTop }) => ({
         "root": {
+            "position": "relative",
             "display": "flex",
             "flexDirection": "column",
-            "position": "relative",
-            "& > *:nth-child(n+3)": {
-                "marginLeft": theme.spacing(paddingLeftSpacing)
-            }
-        },
-        "breadcrump": {
-            "marginTop": theme.spacing(2),
-            "marginBottom": theme.spacing(3),
-        },
-        "scrollable": {
-            "overflow": "auto",
-            "flex": 1
         },
         "cmdTranslation": {
             "position": "absolute",
@@ -98,8 +87,9 @@ const { useClassNames } = createUseClassNames<Props & { cmdTranslationTop: numbe
             "top": cmdTranslationTop,
             "zIndex": 1
         },
-        "items": {
-            "height": "100%"
+        "breadcrump": {
+            "marginTop": theme.spacing(2),
+            "marginBottom": theme.spacing(3),
         }
     })
 );
@@ -318,6 +308,114 @@ export function Explorer(props: Props) {
         ]
     );
 
+    const {
+        rootRef,
+        buttonBarRef,
+        cmdTranslationTop,
+        cmdTranslationMaxHeight
+    } = useCmdTranslationPositioning();
+
+    const isCurrentPathBrowsablePathRoot = useMemo(
+        () => pathRelative(browsablePath, currentPath) === "",
+        [browsablePath, currentPath]
+    );
+
+    const { classNames } = useClassNames({ ...props, cmdTranslationTop });
+
+    const theme = useTheme();
+
+    return (
+        <div
+            ref={rootRef}
+            className={cx(classNames.root, className)}
+        >
+            <div ref={buttonBarRef} >
+                <ButtonBar
+                    paddingLeftSpacing={paddingLeftSpacing}
+                    selectedItemKind={selectedItemKind}
+                    isSelectedItemInEditingState={isSelectedItemInEditingState}
+                    isViewingFile={!!file}
+                    callback={buttonBarCallback}
+                />
+            </div>
+            <CmdTranslation
+                className={classNames.cmdTranslation}
+                evtTranslation={evtTranslation}
+                maxHeight={cmdTranslationMaxHeight}
+            />
+            <div className={css({
+                "flex": 1,
+                "overflow": "hidden",
+                "display": "flex",
+                "flexDirection": "column",
+                "& > *:not(:last-child)": {
+                    "paddingLeft": theme.spacing(paddingLeftSpacing)
+                }
+            })}>
+                {
+                    isCurrentPathBrowsablePathRoot ?
+                        null
+                        :
+                        <FileOrDirectoryHeader
+                            kind={file ? "file" : "directory"}
+                            fileBasename={pathBasename(currentPath)}
+                            date={fileDate}
+                            onBack={onBack}
+                        />
+                }
+                <Breadcrump
+                    className={classNames.breadcrump}
+                    minDepth={getPathDepth(browsablePath)}
+                    path={currentPath}
+                    isNavigationDisabled={isNavigating}
+                    callback={breadcrumbCallback}
+                    evtAction={evtBreadcrumpAction}
+                />
+                <div className={cx(css({
+                    "flex": 1,
+                    "paddingLeft": theme.spacing(paddingLeftSpacing),
+                    "overflow": "auto"
+                }))}>
+                    {
+                        file
+                        ||
+                        <Items
+                            className={css({ "height": "100%" })}
+                            files={files}
+                            isNavigating={isNavigating}
+                            directories={directories}
+                            directoriesBeingCreated={directoriesBeingCreated}
+                            directoriesBeingRenamed={directoriesBeingRenamed}
+                            filesBeingCreated={filesBeingCreated}
+                            filesBeingRenamed={filesBeingRenamed}
+                            onNavigate={itemsOnNavigate}
+                            onEditBasename={onEditBasename}
+                            evtAction={evtItemsAction}
+                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                            onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                            onCopyPath={itemsOnCopyPath}
+                            onDeleteItem={itemsOnDeleteItem}
+                        />
+                    }
+                </div>
+
+
+            </div>
+        </div>
+    );
+
+}
+export declare namespace Explorer {
+    export type I18nScheme = {
+        'untitled what': { what: string; };
+        folder: undefined;
+        file: undefined;
+        secret: undefined;
+    };
+}
+
+
+function useCmdTranslationPositioning() {
 
     const {
         domRect: { bottom: rootBottom },
@@ -355,87 +453,9 @@ export function Explorer(props: Props) {
         ]
     );
 
-    const isCurrentPathBrowsablePathRoot = useMemo(
-        () => pathRelative(browsablePath, currentPath) === "",
-        [browsablePath, currentPath]
-    );
-
-    const { classNames } = useClassNames({ ...props, cmdTranslationTop });
-
-    return (
-        <div
-            ref={rootRef}
-            className={cx(classNames.root, className)}
-        >
-            <div ref={buttonBarRef} >
-                <ButtonBar
-                    paddingLeftSpacing={paddingLeftSpacing}
-                    selectedItemKind={selectedItemKind}
-                    isSelectedItemInEditingState={isSelectedItemInEditingState}
-                    isViewingFile={!!file}
-                    callback={buttonBarCallback}
-                />
-            </div>
-            <CmdTranslation
-                className={classNames.cmdTranslation}
-                evtTranslation={evtTranslation}
-                maxHeight={cmdTranslationMaxHeight}
-            />
-            {
-                isCurrentPathBrowsablePathRoot ?
-                    null
-                    :
-                    <FileOrDirectoryHeader
-                        kind={file ? "file" : "directory"}
-                        fileBasename={pathBasename(currentPath)}
-                        date={fileDate}
-                        onBack={onBack}
-                    />
-            }
-            <Breadcrump
-                className={classNames.breadcrump}
-                minDepth={getPathDepth(browsablePath)}
-                path={currentPath}
-                isNavigationDisabled={isNavigating}
-                callback={breadcrumbCallback}
-                evtAction={evtBreadcrumpAction}
-            />
-            <div className={classNames.scrollable}>
-                {
-                    file ?
-                        /* TODO: This is a temporary hack!! */
-                        <div className={css({ "paddingLeft": 8, "paddingRight": 20 })}>
-                            {file}
-                        </div>
-                        :
-                        <Items
-                            className={classNames.items}
-                            files={files}
-                            isNavigating={isNavigating}
-                            directories={directories}
-                            directoriesBeingCreated={directoriesBeingCreated}
-                            directoriesBeingRenamed={directoriesBeingRenamed}
-                            filesBeingCreated={filesBeingCreated}
-                            filesBeingRenamed={filesBeingRenamed}
-                            onNavigate={itemsOnNavigate}
-                            onEditBasename={onEditBasename}
-                            evtAction={evtItemsAction}
-                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                            onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                            onCopyPath={itemsOnCopyPath}
-                            onDeleteItem={itemsOnDeleteItem}
-                        />
-                }
-            </div>
-        </div>
-    );
-
-}
-export declare namespace Explorer {
-    export type I18nScheme = {
-        'untitled what': { what: string; };
-        folder: undefined;
-        file: undefined;
-        secret: undefined;
+    return {
+        rootRef, buttonBarRef,
+        cmdTranslationTop, cmdTranslationMaxHeight
     };
+
 }
