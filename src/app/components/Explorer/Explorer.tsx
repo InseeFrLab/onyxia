@@ -1,7 +1,7 @@
 
 import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
@@ -15,6 +15,7 @@ import { CmdTranslation } from "./CmdTranslation";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
+import { Paper } from "app/components/designSystem/Paper";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
@@ -246,9 +247,9 @@ export function Explorer(props: Props) {
         ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
 
             switch (action) {
-                case "refresh": 
-                    onNavigate({ 
-                        "kind": !file ? "directory" : "file", 
+                case "refresh":
+                    onNavigate({
+                        "kind": !file ? "directory" : "file",
                         "relativePath": "."
                     });
                     break;
@@ -302,7 +303,7 @@ export function Explorer(props: Props) {
 
         },
         [
-            evtItemsAction, onCreateItem, t, wordForFile, 
+            evtItemsAction, onCreateItem, t, wordForFile,
             files, directories, file, itemsOnCopyPath,
             onNavigate
         ]
@@ -374,28 +375,32 @@ export function Explorer(props: Props) {
                 <div className={cx(css({
                     "flex": 1,
                     "paddingLeft": theme.spacing(paddingLeftSpacing),
+                    "paddingRight": theme.spacing(1),
                     "overflow": "auto"
                 }))}>
                     {
-                        file
-                        ||
-                        <Items
-                            className={css({ "height": "100%" })}
-                            files={files}
-                            isNavigating={isNavigating}
-                            directories={directories}
-                            directoriesBeingCreated={directoriesBeingCreated}
-                            directoriesBeingRenamed={directoriesBeingRenamed}
-                            filesBeingCreated={filesBeingCreated}
-                            filesBeingRenamed={filesBeingRenamed}
-                            onNavigate={itemsOnNavigate}
-                            onEditBasename={onEditBasename}
-                            evtAction={evtItemsAction}
-                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                            onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                            onCopyPath={itemsOnCopyPath}
-                            onDeleteItem={itemsOnDeleteItem}
-                        />
+                        file ?
+                            <Paper elevation={2}>
+                                {file}
+                            </Paper>
+                            :
+                            <Items
+                                className={css({ "height": "100%" })}
+                                files={files}
+                                isNavigating={isNavigating}
+                                directories={directories}
+                                directoriesBeingCreated={directoriesBeingCreated}
+                                directoriesBeingRenamed={directoriesBeingRenamed}
+                                filesBeingCreated={filesBeingCreated}
+                                filesBeingRenamed={filesBeingRenamed}
+                                onNavigate={itemsOnNavigate}
+                                onEditBasename={onEditBasename}
+                                evtAction={evtItemsAction}
+                                onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                                onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                                onCopyPath={itemsOnCopyPath}
+                                onDeleteItem={itemsOnDeleteItem}
+                            />
                     }
                 </div>
 

@@ -1,5 +1,5 @@
 
-import { createUseClassNames, cx, css } from "app/theme/useClassNames";
+import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useEffect, useState, memo } from "react";
 import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import { copyToClipboard } from "app/utils/copyToClipboard";
