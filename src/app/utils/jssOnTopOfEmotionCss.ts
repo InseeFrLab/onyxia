@@ -25,7 +25,7 @@ import { objectKeys } from "evt/tools/typeSafety/objectKeys";
  * 
  *     const { classNames }=useClassName({...props, color });
  * 
- *     return <span css={classNames.root}>hello world</span>;
+ *     return <span className={classNames.root}>hello world</span>;
  * 
  * }
  * 
