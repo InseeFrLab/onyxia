@@ -63,3 +63,13 @@ export function useCallbackFactory<
     );
 
 }
+
+
+
+export function useCallback<T extends (...args: never[]) => unknown>(callback: T, deps: DependencyList): T {
+    return useCallbackFactory<[], Parameters<T>, ReturnType<T>>(
+        (_, args) => (callback as any)(...args), 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        deps
+    )() as any;
+}
