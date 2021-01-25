@@ -14,7 +14,7 @@ export type Props = {
     /** [HIGHER ORDER] */
     wordForFile: "file" | "secret";
 
-    isThereAnItemSelected: boolean;
+    selectedItemKind: "file" | "directory" | "none";
     isSelectedItemInEditingState: boolean;
 
     callback(params: { action: Action; }): void;
@@ -38,7 +38,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const {
         wordForFile,
         callback,
-        isThereAnItemSelected,
+        selectedItemKind,
         isSelectedItemInEditingState
     } = props;
 
@@ -72,11 +72,14 @@ export const ExplorerButtonBar = memo((props: Props) => {
                     })()}
                     disabled={
                         (
-                            !isThereAnItemSelected &&
+                            selectedItemKind === "none" &&
                             id<Action[]>(["copy path", "delete", "rename"]).includes(action)
                         ) || (
                             isSelectedItemInEditingState &&
                             action === "rename"
+                        ) || (
+                            selectedItemKind === "directory" &&
+                            action === "copy path"
                         )
                     }
                     key={action}
