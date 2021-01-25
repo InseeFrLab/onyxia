@@ -7,7 +7,7 @@ import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
 
 
-export type Action = "rename" | "create file" | "create directory" | "delete" | "copy path";
+export type Action = "refresh" | "rename" | "create file" | "create directory" | "delete" | "copy path";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -56,6 +56,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     return (
         <div className={classNames.root}>
             { ([
+                "refresh",
                 "rename",
                 "create file",
                 "create directory",
@@ -65,7 +66,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                 <CustomButton
                     startIcon={(() => {
                         switch (action) {
-                            case "copy path": return "filterNone" as const;
+                            case "refresh": return "cached" as const;
+                            case "copy path": return "filterNone";
                             case "create directory": return "add";
                             case "create file": return "add";
                             case "delete": return "delete";
@@ -74,6 +76,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                     })()}
                     disabled={(() => {
                         switch (action) {
+                            case "refresh": return false;
                             case "rename": return (
                                 isSelectedItemInEditingState || 
                                 selectedItemKind === "none" || 

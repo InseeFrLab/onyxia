@@ -11,7 +11,8 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const defaultView = getStory({
-    "isThereAnItemSelected": false,
+    "selectedItemKind": "none",
+    "isViewingFile": false,
     "isSelectedItemInEditingState": false,
     "wordForFile": "file",
     "paddingLeftSpacing": 5,

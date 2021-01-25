@@ -73,6 +73,7 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             "copy path": "Copy path",
             "create directory": "Create directory",
             "create what": "Create {{what}}",
+            "refresh": "refresh"
         },
         "Explorer": {
             ...common.en,
@@ -123,7 +124,8 @@ export const resources = id<Record<SupportedLanguages, Translations>>({
             ...common.fr,
             "copy path": "Copier le chemin",
             "create directory": "Nouveau dossier",
-            "create what": "Nouveau {{what}}"
+            "create what": "Nouveau {{what}}",
+            "refresh": "rafraîchir"
         },
         "Explorer": {
             ...common.fr,

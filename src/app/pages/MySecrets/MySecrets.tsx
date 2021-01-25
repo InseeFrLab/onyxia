@@ -233,7 +233,7 @@ export const MySecrets = memo((props: Props) =>{
                     currentPath={state.currentPath}
                     isNavigating={state.isNavigationOngoing}
                     evtTranslation={evtSecretsManagerTranslation}
-                    showHidden={false}
+                    showHidden={true}
                     file={
                         state.state !== "SHOWING SECRET" ? null :
                             <MySecretsEditor

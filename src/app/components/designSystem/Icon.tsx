@@ -23,6 +23,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import AttachMoney from "@material-ui/icons/AttachMoney";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
+import Cached from "@material-ui/icons/Cached";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "profile" |
@@ -31,7 +32,8 @@ export type SvgTypes =
 
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
-    "check" | "expandMore" | "attachMoney" | "chevronLeft";
+    "check" | "expandMore" | "attachMoney" | "chevronLeft" |
+    "cached";
 
 //NOTE: Ensure there is not overlap between the types
 (function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
@@ -121,6 +123,7 @@ export const Icon = memo((props: Props) => {
                 case "expandMore": return ExpandMore;
                 case "attachMoney": return AttachMoney;
                 case "chevronLeft": return ChevronLeft;
+                case "cached": return Cached;
             }
         })()}
         fontSize={fontSize}

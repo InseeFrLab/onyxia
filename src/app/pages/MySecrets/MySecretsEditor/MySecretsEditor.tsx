@@ -81,7 +81,8 @@ export const MySecretsEditor = memo((props: Props) => {
 
             if (!(
                 added.length === 1 &&
-                removed.length === 0
+                removed.length === 0 && 
+                secret[added[0]] === ""
             )) {
                 return;
             }
@@ -90,7 +91,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
             getEvtAction(key).post("ENTER EDITING STATE");
 
-        }, [getEvtAction])
+        }, [getEvtAction, secret])
     });
 
     const onEditFactory = useMemo(
