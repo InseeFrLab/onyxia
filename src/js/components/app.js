@@ -30,13 +30,13 @@ import Favicon from 'js/components/commons/favicon';
 import Notifications from 'js/components/notifications';
 import { Navbar } from 'js/components/commons/nav-bar/Navbar';
 import { About } from 'js/components/about/About';
-//import 'typeface-roboto';
+import 'typeface-roboto';
 import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useAppConstants, useIsDarkModeEnabled } from "app/lib/hooks";
+import { useAppConstants } from "app/lib/hooks";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 
@@ -88,8 +88,6 @@ const App404 = () => (
 );
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
-
-	const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
 	const appConstants = useAppConstants();
 
@@ -170,7 +168,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									exact
 									path="/mes-secrets"
 									component={() => (
-										<ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+										<ThemeProvider isDarkModeEnabled={false}>
 											<MySecrets className="mySecrets"/>
 										</ThemeProvider>
 									)}
