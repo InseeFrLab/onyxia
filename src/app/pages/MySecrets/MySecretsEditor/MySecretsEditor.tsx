@@ -1,7 +1,7 @@
 
 import { createUseClassNames, css, useTheme } from "app/theme/useClassNames";
 import { useMemo, memo } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -15,7 +15,6 @@ import type { UseArrayDiffCallbackParams } from "app/utils/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { generateUniqDefaultName, buildNameFactory } from "app/utils/generateUniqDefaultName";
-import { Paper } from "app/components/designSystem/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
 import type { Id } from "evt/tools/typeSafety/id";
@@ -34,7 +33,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({theme})=>({
+    ({ theme }) => ({
         "root": {
             "padding": theme.spacing(2),
             "& .MuiTableCell-root": {
@@ -43,9 +42,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             },
             "& .MuiTableHead-root": {
                 "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`
-            }
-        },
-        "tableContainer": {
+            },
             //So the error on the input of the last row is not cropped.
             "overflow": "visible"
         },
@@ -81,7 +78,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
             if (!(
                 added.length === 1 &&
-                removed.length === 0 && 
+                removed.length === 0 &&
                 secret[added[0]] === ""
             )) {
                 return;
@@ -263,8 +260,8 @@ export const MySecretsEditor = memo((props: Props) => {
     const { classNames } = useClassNames(props);
 
     return (
-        <Paper className={classNames.root}>
-            <TableContainer className={classNames.tableContainer}>
+        <div className={classNames.root}>
+            <TableContainer>
                 <Table aria-label={t("table of secret")}>
                     <TableHead className={classNames.tableHead}>
                         <TableRow>
@@ -335,7 +332,7 @@ export const MySecretsEditor = memo((props: Props) => {
             >
                 {t("add an entry")}
             </Button>
-        </Paper>
+        </div>
     );
 
 });
