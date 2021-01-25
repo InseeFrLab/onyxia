@@ -4,7 +4,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { resources } from "./resources";
-import type { SupportedLanguages } from "./resources";
+import type { SupportedLanguage } from "./resources";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
@@ -12,7 +12,7 @@ import { useEvt } from "evt/hooks";
 import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
 
 export type Props = {
-    lng: SupportedLanguages | "browser default";
+    lng: SupportedLanguage | "browser default";
     children: React.ReactNode;
 }
 
@@ -28,7 +28,7 @@ export function I18nProvider(props: Props) {
             .use(LanguageDetector)
             .use(initReactI18next)
             .init({
-                "fallbackLng": id<SupportedLanguages>("en"),
+                "fallbackLng": id<SupportedLanguage>("en"),
                 "debug": false,
                 "interpolation": {
                     "escapeValue": false

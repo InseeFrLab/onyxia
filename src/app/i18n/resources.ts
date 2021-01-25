@@ -32,9 +32,9 @@ export type I18nSchemes = typeof reflectedI18nSchemes;
 
 export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
 
-export type SupportedLanguages = "en" | "fr";
+export type SupportedLanguage = "en" | "fr";
 
-const common = id<Record<SupportedLanguages, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete", string>>>({
+const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete", string>>>({
     "en": {
         "file": "file",
         "secret": "secret",
@@ -55,7 +55,7 @@ const common = id<Record<SupportedLanguages, Record<"file" | "secret" | "create"
     }
 })
 
-export const resources = id<Record<SupportedLanguages, Translations>>({
+export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
         "MySecrets": {
             "page title": "My Secrets",
