@@ -182,62 +182,6 @@ export function Explorer(props: Props) {
 
     const { t } = useTranslation("Explorer");
 
-    const [{ evtItemsAction }] = useState(() => ({
-        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
-    }));
-
-    const buttonBarCallback = useCallback(
-        ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
-
-            switch (action) {
-                case "rename":
-                    evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
-                    break;
-                case "delete":
-                    evtItemsAction.post("DELETE SELECTED ITEM");
-                    break;
-                case "copy path":
-                    evtItemsAction.post("COPY SELECTED ITEM PATH");
-                    break;
-                case "create directory":
-                    onCreateItem({
-                        "kind": "directory" as const,
-                        "basename": generateUniqDefaultName({
-                            "names": directories,
-                            "buildName": buildNameFactory({
-                                "defaultName": t(
-                                    "untitled what",
-                                    { "what": t("folder") }
-                                ),
-                                "separator": "_"
-                            })
-                        })
-
-                    });
-                    break;
-                case "create file":
-                    onCreateItem({
-                        "kind": "file" as const,
-                        "basename": generateUniqDefaultName({
-                            "names": files,
-                            "buildName": buildNameFactory({
-                                "defaultName": t(
-                                    "untitled what",
-                                    { "what": t(wordForFile) }
-                                ),
-                                "separator": "_"
-                            })
-                        })
-                    });
-                    break;
-            }
-
-        },
-        [evtItemsAction, onCreateItem, t, wordForFile, files, directories]
-    );
-
-
-
     const [selectedItemKind, setSelectedItemKind] = useState<"file" | "directory" | "none">("none");
 
     const onSelectedItemKindValueChange = useCallback(
@@ -302,6 +246,69 @@ export function Explorer(props: Props) {
             "relativePath": ".."
         }),
         [onNavigate]
+    );
+
+    const [{ evtItemsAction }] = useState(() => ({
+        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
+    }));
+
+    const buttonBarCallback = useCallback(
+        ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
+
+            switch (action) {
+                case "rename":
+                    evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
+                    break;
+                case "delete":
+                    evtItemsAction.post("DELETE SELECTED ITEM");
+                    break;
+                case "copy path":
+
+                    if (!!file) {
+                        itemsOnCopyPath({ "basename": "." })
+                        break;
+                    }
+
+                    evtItemsAction.post("COPY SELECTED ITEM PATH");
+                    break;
+                case "create directory":
+                    onCreateItem({
+                        "kind": "directory" as const,
+                        "basename": generateUniqDefaultName({
+                            "names": directories,
+                            "buildName": buildNameFactory({
+                                "defaultName": t(
+                                    "untitled what",
+                                    { "what": t("folder") }
+                                ),
+                                "separator": "_"
+                            })
+                        })
+
+                    });
+                    break;
+                case "create file":
+                    onCreateItem({
+                        "kind": "file" as const,
+                        "basename": generateUniqDefaultName({
+                            "names": files,
+                            "buildName": buildNameFactory({
+                                "defaultName": t(
+                                    "untitled what",
+                                    { "what": t(wordForFile) }
+                                ),
+                                "separator": "_"
+                            })
+                        })
+                    });
+                    break;
+            }
+
+        },
+        [
+            evtItemsAction, onCreateItem, t, wordForFile, 
+            files, directories, file, itemsOnCopyPath
+        ]
     );
 
 
