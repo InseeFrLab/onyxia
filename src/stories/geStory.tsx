@@ -9,7 +9,7 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
-import type { SupportedLanguages } from "app/i18n/resources";
+import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
@@ -101,7 +101,7 @@ export function getStoryFactory<Props>(params: {
 
 
 
-    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguages; }> =
+    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
                 <ThemeProvider isDarkModeEnabled={darkMode}>
@@ -120,7 +120,7 @@ export function getStoryFactory<Props>(params: {
 
         out.args = {
             "darkMode": false,
-            "lng": id<SupportedLanguages>("fr"),
+            "lng": id<SupportedLanguage>("fr"),
             ...props
         };
 
@@ -137,7 +137,7 @@ export function getStoryFactory<Props>(params: {
                 "lng": {
                     "control": {
                         "type": "inline-radio",
-                        "options": id<SupportedLanguages[]>(["fr", "en"]),
+                        "options": id<SupportedLanguage[]>(["fr", "en"]),
                     }
                 }
             }
