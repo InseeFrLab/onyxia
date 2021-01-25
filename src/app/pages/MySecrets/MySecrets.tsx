@@ -1,5 +1,5 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames, cx, css } from "app/theme/useClassNames";
 import { useEffect, useState, memo } from "react";
 import { useCallback } from "app/utils/hooks/useCallbackFactory";
 import { copyToClipboard } from "app/utils/copyToClipboard";
@@ -21,7 +21,6 @@ const pure = lib.pure.secretExplorer;
 
 const paddingLeftSpacing = 5;
 
-
 const { useClassNames } = createUseClassNames<{}>()(
     ({theme})=>({
         "header": {
@@ -32,14 +31,12 @@ const { useClassNames } = createUseClassNames<{}>()(
             "flexDirection": "column"
         },
         "explorer": {
+            "overflow": "hidden",
             "flex": 1,
             "width": "100%"
         }
     })
 );
-
-
-
 
 export type Props = {
     className?: string;
