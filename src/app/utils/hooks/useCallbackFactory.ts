@@ -1,5 +1,5 @@
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import memoize from "memoizee";
 import type { DependencyList } from "react";
 import { id } from "evt/tools/typeSafety/id";
@@ -39,7 +39,7 @@ export function useCallbackFactory<
 
     const memoizedRef = useRef<Out | undefined>(undefined);
 
-    return useMemo(
+    return useState(
         () => id<Out>(
             (...factoryArgs) => {
 
@@ -58,14 +58,13 @@ export function useCallbackFactory<
 
             }
 
-        ),
-        []
-    );
+        )
+    )[0];
 
 }
 
 export function useCallback<T extends (...args: never[]) => unknown>(
-    callback: T, 
+    callback: T,
     deps: DependencyList
 ): T {
 
@@ -77,9 +76,9 @@ export function useCallback<T extends (...args: never[]) => unknown>(
         deps
     );
 
-    return useMemo(
-        () => ((...args: Parameters<T>) => callbackRef.current(...args)) as T, 
-        []
-    );
+    return useState(() =>
+        (...args: Parameters<T>) => callbackRef.current(...args)
+    )[0] as T;
+
 }
 
