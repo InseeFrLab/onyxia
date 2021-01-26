@@ -48,7 +48,13 @@ function Root() {
             }),
             "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Official>({
                 "implementation": "OFFICIAL",
-                "baseUrl": env.API.BASE_URL
+                "baseUrl": env.API.BASE_URL ?? (()=>{
+
+                    const { protocol, host } = window.location;
+
+                    return `${protocol}//${host}/api`;
+
+                })()
             })
         });
 
