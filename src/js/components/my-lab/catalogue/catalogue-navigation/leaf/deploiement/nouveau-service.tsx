@@ -409,10 +409,20 @@ const mapServiceToOnglets = (
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) => 
+export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) =>
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
-		    "path": key.split(/(?<!\\)\./).map(s=> s.replace(/\\\./g,".")),
+			"path": key
+				//NOTE the two next pipe mean "split all non escaped dots"
+				//the regular expression 'look behind' is not supported by Safari.
+				.split(".")
+				.reduce<string[]>((prev, curr) =>
+					prev[prev.length - 1]?.endsWith("\\") ?
+						(prev[prev.length - 1] += `.${curr}`, prev) :
+						[...prev, curr],
+					[]
+				)
+				.map(s => s.replace(/\\\./g, ".")),
 			value,
 		}))
 		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string | boolean | number>>({}));
