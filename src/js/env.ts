@@ -2,7 +2,7 @@ import { id } from "evt/tools/typeSafety/id";
 import memoizee from "memoizee";
 import { assert as _assert } from "evt/tools/typeSafety/assert";
 
-const assert: typeof _assert = process.env["NODE_ENV"] === "test" ? 
+const assert: typeof _assert = process.env["NODE_ENV"] === "test" ?
 	(() => { }) : _assert;
 
 function getEnvVar(key: string): string;
@@ -42,90 +42,99 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 }
 
-export const getEnv = memoizee(() => ({
-	"API": {
-		"BASE_URL": getEnvVar("BASE_API_URL")
-	},
-	"CONTENT": {
-		"SERVICES_URL": getEnvVar("SERVICES_URL"),
-		"HOMEPAGE_URL": getEnvVar("HOMEPAGE_URL"),
-		"TRAININGS_URL": getEnvVar("TRAININGS_URL")
-	},
-	"APP": {
-		"CONTACT": getEnvVar("CONTACT", { "mandatory": false }),
-		"WARNING_MESSAGE": getEnvVar("WARNING_MESSAGE", { "mandatory": false }),
-	},
-	"KUBERNETES": (() => {
+export const getEnv = memoizee(
+	() => {
 
-		const KUB_SERVER_NAME = getEnvVar("KUB_SERVER_NAME", { "mandatory": false });
+		const out = {
+			"API": {
+				"BASE_URL": getEnvVar("BASE_API_URL")
+			},
+			"CONTENT": {
+				"SERVICES_URL": getEnvVar("SERVICES_URL"),
+				"HOMEPAGE_URL": getEnvVar("HOMEPAGE_URL"),
+				"TRAININGS_URL": getEnvVar("TRAININGS_URL")
+			},
+			"APP": {
+				"CONTACT": getEnvVar("CONTACT", { "mandatory": false }),
+				"WARNING_MESSAGE": getEnvVar("WARNING_MESSAGE", { "mandatory": false }),
+			},
+			"KUBERNETES": (() => {
 
-		if (KUB_SERVER_NAME === undefined) {
-			return undefined;
-		}
+				const KUB_SERVER_NAME = getEnvVar("KUB_SERVER_NAME", { "mandatory": false });
 
-		return {
-			KUB_SERVER_NAME,
-			"KUB_SERVER_URL": getEnvVar("KUB_SERVER_URL")
-		} as const;
-
-	})(),
-	"VAULT": {
-		"BASE_URI": getEnvVar("VAULT_BASE_URI"),
-		"ENGINE": getEnvVar("VAULT_KV_ENGINE"),
-		"ROLE": getEnvVar("VAULT_ROLE")
-	},
-	"CHAT": {
-		"CHAT_URL": getEnvVar("CHAT_URL")
-	},
-	"AUTHENTICATION": id<{
-		TYPE: "oidc";
-		OIDC: {
-			clientId: string;
-			realm: string;
-			url: string;
-			'ssl-required': string;
-			resource: string;
-			'public-client': boolean;
-			'confidential-port': number;
-		};
-	} | {
-		TYPE: "none";
-	}>((() => {
-
-		const TYPE = getEnvVar("AUTH_TYPE")?.toLowerCase() ?? "none";
-
-		assert(TYPE === "oidc" || TYPE === "none");
-
-		switch (TYPE) {
-			case "none": return { TYPE } as const;
-			case "oidc": return {
-				TYPE,
-				"OIDC": {
-					"clientId": getEnvVar("AUTH_OIDC_CLIENT_ID"),
-					"realm": getEnvVar("AUTH_OIDC_REALM"),
-					"url": getEnvVar("AUTH_OIDC_URL"),
-					'ssl-required': getEnvVar("AUTH_OIDC_SSL_REQUIRED"),
-					"resource": getEnvVar("AUTH_OIDC_RESOURCE"),
-					"public-client": getEnvVar("AUTH_OIDC_PUBLIC_CLIENT")?.toLowerCase() === "true",
-					"confidential-port": getEnvVar("AUTH_OIDC_CONFIDENTIAL_PORT", { "parseInt": true })
+				if (KUB_SERVER_NAME === undefined) {
+					return undefined;
 				}
-			} as const;
-		}
 
-	})()),
-	"MINIO": {
-		"BASE_URI": getEnvVar("MINIO_BASE_URI"),
-		"END_POINT": getEnvVar("MINIO_END_POINT"),
-		"PORT": getEnvVar("MINIO_PORT", { "parseInt": true }),
-		"MINIMUM_DURATION": getEnvVar("MINIO_END_MINIMUM_DURATION_MS", { "parseInt": true })
-	},
-	"FOOTER": {
-		"ONYXIA": {
-			"GIT": getEnvVar("ONYXIA_GIT"),
-			"CHAT_ROOM": getEnvVar("ONYXIA_CHAT_ROOM", { "mandatory": false })
-		},
-		"SWAGGER_API": getEnvVar("SWAGGER_API"),
-		"BLOG_URL": getEnvVar("BLOG_URL"),
-		"MONITORING_URL": getEnvVar("MONITORING_URL", { "mandatory": false })
+				return {
+					KUB_SERVER_NAME,
+					"KUB_SERVER_URL": getEnvVar("KUB_SERVER_URL")
+				} as const;
+
+			})(),
+			"VAULT": {
+				"BASE_URI": getEnvVar("VAULT_BASE_URI"),
+				"ENGINE": getEnvVar("VAULT_KV_ENGINE"),
+				"ROLE": getEnvVar("VAULT_ROLE")
+			},
+			"CHAT": {
+				"CHAT_URL": getEnvVar("CHAT_URL")
+			},
+			"AUTHENTICATION": id<{
+				TYPE: "oidc";
+				OIDC: {
+					clientId: string;
+					realm: string;
+					url: string;
+					'ssl-required': string;
+					resource: string;
+					'public-client': boolean;
+					'confidential-port': number;
+				};
+			} | {
+				TYPE: "none";
+			}>((() => {
+
+				const TYPE = getEnvVar("AUTH_TYPE")?.toLowerCase() ?? "none";
+
+				assert(TYPE === "oidc" || TYPE === "none");
+
+				switch (TYPE) {
+					case "none": return { TYPE } as const;
+					case "oidc": return {
+						TYPE,
+						"OIDC": {
+							"clientId": getEnvVar("AUTH_OIDC_CLIENT_ID"),
+							"realm": getEnvVar("AUTH_OIDC_REALM"),
+							"url": getEnvVar("AUTH_OIDC_URL"),
+							'ssl-required': getEnvVar("AUTH_OIDC_SSL_REQUIRED"),
+							"resource": getEnvVar("AUTH_OIDC_RESOURCE"),
+							"public-client": getEnvVar("AUTH_OIDC_PUBLIC_CLIENT")?.toLowerCase() === "true",
+							"confidential-port": getEnvVar("AUTH_OIDC_CONFIDENTIAL_PORT", { "parseInt": true })
+						}
+					} as const;
+				}
+
+			})()),
+			"MINIO": {
+				"BASE_URI": getEnvVar("MINIO_BASE_URI"),
+				"END_POINT": getEnvVar("MINIO_END_POINT"),
+				"PORT": getEnvVar("MINIO_PORT", { "parseInt": true }),
+				"MINIMUM_DURATION": getEnvVar("MINIO_END_MINIMUM_DURATION_MS", { "parseInt": true })
+			},
+			"FOOTER": {
+				"ONYXIA": {
+					"GIT": getEnvVar("ONYXIA_GIT"),
+					"CHAT_ROOM": getEnvVar("ONYXIA_CHAT_ROOM", { "mandatory": false })
+				},
+				"SWAGGER_API": getEnvVar("SWAGGER_API"),
+				"BLOG_URL": getEnvVar("BLOG_URL"),
+				"MONITORING_URL": getEnvVar("MONITORING_URL", { "mandatory": false })
+			}
+		};
+
+		console.log(JSON.stringify(out, null, 2));
+
+		return out;
 	}
-}));
+);
