@@ -30,18 +30,12 @@ const Footer = () => {
 					</LienRapide>
 				)}
 
-				{env.FOOTER.BLOG_URL && (
-					<LienRapide
-						url={env.FOOTER.BLOG_URL}
-						icon={<Icon>LibraryBooks</Icon>}
-					>
-						le blog de l'Innovation
-					</LienRapide>
-				)}
 			</div>
 			<Typography gutterBottom noWrap>
-				<LienSimple href={env.FOOTER.ONYXIA.GIT}>Contribuer au projet</LienSimple>
-				<LienSimple href={env.FOOTER.SWAGGER_API}>REST API</LienSimple>
+				{env.FOOTER.ONYXIA.GIT && 
+				<LienSimple href={env.FOOTER.ONYXIA.GIT}>Contribuer au projet</LienSimple>}
+				{env.FOOTER.SWAGGER_API && 
+				<LienSimple href={env.FOOTER.SWAGGER_API}>REST API</LienSimple>}
 			</Typography>
 		</footer>
 	);
