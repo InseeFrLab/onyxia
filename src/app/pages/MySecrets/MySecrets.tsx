@@ -195,20 +195,9 @@ export const MySecrets = memo((props: Props) =>{
         [dispatch]
     );
 
-
     const onCopyPath = useCallback(
-        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) => {
-            const copiedToClipboard = pathRelative(userHomePath, path);
-
-            console.log(JSON.stringify({ 
-                userHomePath,
-                path,
-                copiedToClipboard
-
-            }, null, 2));
-
-            copyToClipboard(copiedToClipboard);
-        },
+        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) => 
+            copyToClipboard(pathRelative(userHomePath, path)) ,
         [userHomePath]
     );
 
