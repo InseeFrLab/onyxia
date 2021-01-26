@@ -127,5 +127,3 @@ export const getEnv = memoizee(
 		}
 	})
 );
-
-console.log(JSON.stringify(getEnv(),null,2));

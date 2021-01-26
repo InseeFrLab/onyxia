@@ -96,8 +96,6 @@ const slice = createSlice({
 		) => {
 			const { regions } = payload;
 
-			console.log(JSON.stringify({ regions }, null, 2));
-
 			assert( regions instanceof Array );
 
 			state.selectedRegion = regions[0] ?? state.selectedRegion;
