@@ -12,6 +12,7 @@ import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { PageHeader } from "app/components/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "app/utils/hooks/useWithProps";
+import { relative as pathRelative } from "path";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -194,10 +195,21 @@ export const MySecrets = memo((props: Props) =>{
         [dispatch]
     );
 
+
     const onCopyPath = useCallback(
-        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) =>
-            copyToClipboard(path),
-        []
+        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) => {
+            const copiedToClipboard = pathRelative(userHomePath, path);
+
+            console.log(JSON.stringify({ 
+                userHomePath,
+                path,
+                copiedToClipboard
+
+            }, null, 2));
+
+            copyToClipboard(copiedToClipboard);
+        },
+        [userHomePath]
     );
 
     const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
