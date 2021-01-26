@@ -705,7 +705,7 @@ export const thunks = {
 
             const error = await (
                 kind === "secret" ?
-                    secretsManagerClient.put({ path, "secret": { "foo": "bar" } }) :
+                    secretsManagerClient.put({ path, "secret": {} }) :
                     secretsManagerClientExtension.createDirectory({ path })
             ).then(
                 () => undefined,
