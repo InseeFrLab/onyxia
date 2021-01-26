@@ -32,7 +32,7 @@ papers:
     Easily access your data from either Onyxia or programmatically using S3
 project_history:
   smallerText: About Onyxia
-  image: "/images/insee_fr_lab.png"
+  image: "/images/inseeFrLab.png"
   biggerText: |
     Onyxia is a free and open-source project which started at Insee (French National Statistical Institute).  
     Onyxia can be installed on any Kubernetes cluster.  
