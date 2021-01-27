@@ -7,14 +7,14 @@ fs.readFile('.env', 'utf8', function (err, contents) {
 		.map((line) => line.split('='))
 		.filter((data) => data.length === 2)
 		.map(
-			([key, value]) =>
+			([key]) =>
 				`echo "window._env_['${key.replace(
 					'REACT_APP_',
 					''
-				)}'] = '\$${key.replace(
+				)}'] = \\"$${key.replace(
 					'REACT_APP_',
 					''
-				)}';" >> /usr/share/nginx/html/env-config.js`
+				)}\\";" >> /usr/share/nginx/html/env-config.js`
 		);
 
 	const fullFile = ['#!/bin/sh', ...content, 'exec "$@"'].join('\n');
