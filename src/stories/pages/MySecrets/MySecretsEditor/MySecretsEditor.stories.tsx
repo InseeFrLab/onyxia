@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor";
 import type { Props } from "app/pages/MySecrets/MySecretsEditor";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
 import { symToStr } from "app/utils/symToStr";
 
@@ -109,10 +109,13 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
         [secret, metadata]
     );
 
+    const { onCopyPath } = props;
+
     return <MySecretsEditor
         {...{
             isBeingUpdated,
-            onEdit
+            onEdit,
+            onCopyPath
         }}
         secretWithMetadata={{
             metadata,
@@ -131,5 +134,6 @@ export default meta;
 
 export const Vue1 = getStory({
     "isBeingUpdated": false,
+    ...logCallbacks(["onCopyPath"])
 });
 
