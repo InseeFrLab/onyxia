@@ -35,7 +35,7 @@ const ItemLogin = ({ login }: any) => (
 	</ListItem>
 );
 
- 
+
 export default ({
 	open,
 	handleClose,
@@ -112,14 +112,12 @@ export default ({
 						</ListItemIcon>
 						<ListItemText primary={D.myFilesTitle} />
 					</ListItem>
-					{isBetaModeEnabled ? (
-						<ListItem button component={Link} to="/mes-secrets">
-							<ListItemIcon>
-								<Icon>vpn_key</Icon>
-							</ListItemIcon>
-							<ListItemText primary={D.mySecretsTitle} />
-						</ListItem>
-					) : null}
+					<ListItem button component={Link} to="/mes-secrets">
+						<ListItemIcon>
+							<Icon>vpn_key</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.mySecretsTitle} />
+					</ListItem>
 					{isBetaModeEnabled && selectedRegion?.services?.type === 'KUBERNETES' ? (
 						<>
 							<ListItem>
