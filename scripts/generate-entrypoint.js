@@ -24,8 +24,7 @@ fs.readFile('.env', 'utf8', function (err, contents) {
 			pathJoin("build", "entrypoint.sh"),
 			"utf8"
 		),
-		fullFile,
-		{ "mode": 0o777 }
+		fullFile
 	);
 
 });
