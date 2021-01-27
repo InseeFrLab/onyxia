@@ -11,7 +11,6 @@ import {
 import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
-import { Alert } from 'js/components/commons/Alert';
 import { invalidIdep } from 'js/utils/idep';
 import { Home } from "js/components/home/Home";
 import MyService from 'js/components/my-service';
@@ -40,6 +39,7 @@ import { getEnv } from "js/env";
 import { useAppConstants } from "app/lib/hooks";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
+import { Alert } from "app/components/designSystem/Alert";
 
 const { ThemeProvider } = themeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
@@ -88,6 +88,21 @@ const App404 = () => (
 	</MuiThemeProvider>
 );
 
+function AlertWrapper(props) {
+
+	const { pathname } = useLocation();
+
+	if (!pathname.startsWith(initialPathname)) {
+		return null;
+	}
+
+	console.log(pathname);
+
+	return <ThemeProvider isDarkModeEnabled={false}>
+		<Alert {...props} />
+	</ThemeProvider>
+}
+
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const appConstants = useAppConstants();
@@ -105,14 +120,16 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						<Navbar />
 						<RegionBanner />
 						{invalidIdep(idep) && (
-							<Alert
-								severity="error"
-								message={`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
-							/>
+							<AlertWrapper severity="error">
+								{`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
+							</AlertWrapper>
 						)}
-						{env.APP.WARNING_MESSAGE && (
-							<Alert severity="warning" message={env.APP.WARNING_MESSAGE} />
-						)}
+						{env.APP.WARNING_MESSAGE &&
+							<AlertWrapper severity="warning">{env.APP.WARNING_MESSAGE}</AlertWrapper>
+						}
+						{env.APP.INFO_MESSAGE &&
+							<AlertWrapper severity="info">{env.APP.INFO_MESSAGE}</AlertWrapper>
+						}
 						<main role="main">
 							<Switch>
 								<Route path="/accueil" component={Home} />
@@ -163,7 +180,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									path="/mes-secrets"
 									component={() => (
 										<ThemeProvider isDarkModeEnabled={false}>
-											<MySecrets className="mySecrets"/>
+											<MySecrets className="mySecrets" />
 										</ThemeProvider>
 									)}
 								/>
@@ -193,10 +210,10 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 export default App;
 
 //TODO: Fix, hack for continuos integration.
-function FooterCond(){
+function FooterCond() {
 
-	const { pathname }= useLocation();
+	const { pathname } = useLocation();
 
-	return  pathname.startsWith("/mes-secrets") ? null : <Footer />;
+	return pathname.startsWith("/mes-secrets") ? null : <Footer />;
 
 }

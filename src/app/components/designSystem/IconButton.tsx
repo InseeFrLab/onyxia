@@ -18,13 +18,16 @@ export type Props = {
     type: IconProps["type"];
     fontSize?: IconProps["fontSize"];
 
+    'aria-label'?: string | null;
+
 
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
     "disabled": false,
-    "fontSize": "default"
+    "fontSize": "default",
+    "aria-label": null
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -45,7 +48,14 @@ export const IconButton =memo((props: Props) =>{
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { disabled, onClick, type, fontSize, className } = completedProps;
+    const { 
+        disabled, 
+        onClick, 
+        type, 
+        fontSize, 
+        className, 
+        'aria-label': ariaLabel 
+    } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
 
@@ -54,6 +64,7 @@ export const IconButton =memo((props: Props) =>{
             className={cx(classNames.root, className)}
             disabled={disabled}
             onClick={onClick}
+            aria-label={ariaLabel ?? undefined}
         >
             <Icon
                 color={disabled ? "textDisabled" : "textPrimary"}
