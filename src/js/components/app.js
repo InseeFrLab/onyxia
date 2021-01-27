@@ -39,7 +39,10 @@ import { getEnv } from "js/env";
 import { useAppConstants } from "app/lib/hooks";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
-import { Alert } from "app/components/designSystem/Alert";
+import { Alert } from "app/components/designSystem/Alert";
+import ReactMarkdown from 'react-markdown'
+import { css } from "app/theme/useClassNames";
+
 
 const { ThemeProvider } = themeProviderFactory(
 	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
@@ -90,17 +93,23 @@ const App404 = () => (
 
 function AlertWrapper(props) {
 
+	const { children, ...rest } = props;
+
 	const { pathname } = useLocation();
 
 	if (!pathname.startsWith(initialPathname)) {
 		return null;
 	}
 
-	console.log(pathname);
-
-	return <ThemeProvider isDarkModeEnabled={false}>
-		<Alert {...props} />
-	</ThemeProvider>
+	return (
+		<ThemeProvider isDarkModeEnabled={false}>
+			<Alert {...rest}  >
+				<ReactMarkdown className={css({ "& p": { "margin": "4px 0 0 0" } })}>
+					{children}
+				</ReactMarkdown>
+			</Alert>
+		</ThemeProvider>
+	);
 }
 
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {

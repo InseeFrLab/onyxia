@@ -1,5 +1,5 @@
 
-import { css } from "app/theme/useClassNames";
+import { css } from "app/theme/useClassNames";
 import { useReducer } from "react";
 import type { ReactNode } from "react";
 import { IconButton } from "./IconButton";
@@ -29,9 +29,13 @@ export function Alert(props: Props) {
                     />
                 }
             >
-                <Typography className={css({ "paddingTop": 2 })}>
-                    {children}
-                </Typography>
+                {typeof children === "string" ?
+                    <Typography className={css({ "paddingTop": 2 })}>
+                        {children}
+                    </Typography>
+                    :
+                    children
+                }
             </MuiAlert>
     );
 
