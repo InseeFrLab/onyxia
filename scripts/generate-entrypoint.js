@@ -15,7 +15,7 @@ fs.readFile('.env', 'utf8', function (err, contents) {
 				)}'] = \\"$${key.replace(
 					'REACT_APP_',
 					''
-				)}\\";" >> ${pathJoin(__dirname,"env-config.js")}`
+				)}\\";" >> /usr/share/nginx/html/env-config.js`
 		);
 
 	const fullFile = ['#!/bin/sh', ...content, 'exec "$@"'].join('\n');
