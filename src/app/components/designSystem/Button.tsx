@@ -20,6 +20,8 @@ export type Props = {
     startIcon?: IconProps["type"] | null;
     endIcon?: IconProps["type"] | null;
 
+    autoFocus?: boolean;
+
 
 
 };
@@ -31,6 +33,7 @@ export const defaultProps: Optional<Props> = {
     "children": null,
     "startIcon": null,
     "endIcon": null,
+    "autoFocus": false
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -110,7 +113,7 @@ export function Button(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { className, color, disabled, children, onClick, startIcon, endIcon } = completedProps;
+    const { className, color, disabled, children, onClick, startIcon, endIcon, autoFocus } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
 
@@ -132,6 +135,7 @@ export function Button(props: Props) {
             onClick={onClick}
             startIcon={startIcon === null ? undefined : <ColoredIcon type={startIcon} />}
             endIcon={endIcon === null ? undefined : <ColoredIcon type={endIcon} />}
+            autoFocus={autoFocus}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
             <span className={css({ "paddingTop": "2px" })} >
