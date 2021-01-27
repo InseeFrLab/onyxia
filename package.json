@@ -94,7 +94,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "yarn run generate-entrypoint && react-app-rewired build",
+    "build": "react-app-rewired build yarn && yarn run generate-entrypoint",
     "test": "react-app-rewired test --env=jsdom",
     "generate-entrypoint": "node scripts/generate-entrypoint.js",
     "analyze-bundle": "node scripts/analyze-bundle.js",

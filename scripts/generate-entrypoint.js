@@ -1,4 +1,5 @@
 var fs = require('fs');
+var pathJoin = require('path').join;
 
 fs.readFile('.env', 'utf8', function (err, contents) {
 	const content = contents
@@ -18,5 +19,13 @@ fs.readFile('.env', 'utf8', function (err, contents) {
 		);
 
 	const fullFile = ['#!/bin/sh', ...content, 'exec "$@"'].join('\n');
-	fs.writeFileSync('entrypoint.sh', fullFile, 'utf8');
+	fs.writeFileSync(
+		Buffer.from(
+			pathJoin("build", "entrypoint.sh"),
+			"utf8"
+		),
+		fullFile,
+		{ "mode": 0o755 }
+	);
+
 });
