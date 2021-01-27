@@ -196,9 +196,14 @@ export const MySecrets = memo((props: Props) =>{
     );
 
     const onCopyPath = useCallback(
-        ({ path }: Parameters<ExplorerProps["onCopyPath"]>[0]) => 
-            copyToClipboard(pathRelative(userHomePath, path)) ,
-        [userHomePath]
+        (params?: { path: string; }): void => {
+
+            const { path } = params ?? { "path": state.currentPath };
+
+            copyToClipboard(pathRelative(userHomePath, path)) ;
+
+        },
+        [userHomePath, state.currentPath]
     );
 
     const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
@@ -235,6 +240,7 @@ export const MySecrets = memo((props: Props) =>{
                     file={
                         state.state !== "SHOWING SECRET" ? null :
                             <MySecretsEditor
+                                onCopyPath={onCopyPath}
                                 isBeingUpdated={state.isBeingUpdated}
                                 secretWithMetadata={state.secretWithMetadata}
                                 onEdit={onEdit}

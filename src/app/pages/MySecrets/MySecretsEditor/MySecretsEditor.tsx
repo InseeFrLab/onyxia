@@ -1,7 +1,7 @@
 
-import { createUseClassNames, css, useTheme } from "app/theme/useClassNames";
-import { useMemo, memo } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { createUseClassNames, css } from "app/theme/useClassNames";
+import { useMemo, useState, memo } from "react";
+import { useCallback, useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -26,10 +26,18 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
 
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
+
 export type Props = {
     isBeingUpdated: boolean;
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
+    onCopyPath(): void;
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
@@ -50,6 +58,12 @@ const { useClassNames } = createUseClassNames<Props>()(
             "& .MuiTypography-root": {
                 "padding": theme.spacing(2, 1)
             }
+        },
+        "buttonWrapper": {
+            "& > *": {
+                "marginTop": theme.spacing(3),
+                "marginRight": theme.spacing(1)
+            }
         }
     })
 );
@@ -57,7 +71,7 @@ const { useClassNames } = createUseClassNames<Props>()(
 
 export const MySecretsEditor = memo((props: Props) => {
 
-    const { secretWithMetadata, onEdit, isBeingUpdated } = props;
+    const { secretWithMetadata, onEdit, isBeingUpdated, onCopyPath } = props;
 
     const { secret } = secretWithMetadata;
 
@@ -255,9 +269,28 @@ export const MySecretsEditor = memo((props: Props) => {
         [secret, onEdit, t]
     );
 
-    const theme = useTheme();
-
     const { classNames } = useClassNames(props);
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const dialogCallbackFactory = useCallbackFactory(
+        ([action]: ["open" | "close"]) => {
+
+            const isDialogOpen = (() => {
+                switch (action) {
+                    case "open": return true;
+                    case "close": return false;
+                }
+            })();
+
+            if (isDialogOpen) {
+                onCopyPath();
+            }
+
+            setIsDialogOpen(isDialogOpen);
+        },
+        [onCopyPath]
+    );
 
     return (
         <div className={classNames.root}>
@@ -325,13 +358,40 @@ export const MySecretsEditor = memo((props: Props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button
-                startIcon="add"
-                onClick={onClick}
-                className={css({ "marginTop": theme.spacing(3) })}
-            >
-                {t("add an entry")}
-            </Button>
+
+            <div className={classNames.buttonWrapper}>
+                <Button
+                    startIcon="add"
+                    onClick={onClick}
+                >
+                    {t("add an entry")}
+                </Button>
+
+                <Button
+                    onClick={dialogCallbackFactory("open")}
+                    color="secondary"
+                >
+                    {t("use this secret")}
+                </Button>
+                <Dialog
+                    open={isDialogOpen}
+                    onClose={dialogCallbackFactory("close")}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {t("how to use a secret")}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={dialogCallbackFactory("close")}>
+                            {t("ok")}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
         </div>
     );
 
@@ -354,6 +414,10 @@ export declare namespace MySecretsEditor {
         'invalid key invalid character': undefined;
 
         'invalid value cannot eval': undefined;
+
+        'use this secret': undefined;
+        'how to use a secret': undefined;
+        ok: undefined;
 
 
     };

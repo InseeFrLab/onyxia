@@ -34,14 +34,15 @@ export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nScheme
 
 export type SupportedLanguage = "en" | "fr";
 
-const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete", string>>>({
+const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok", string>>>({
     "en": {
         "file": "file",
         "secret": "secret",
         "create": "create",
         "cancel": "cancel",
         "rename": "rename",
-        "delete": "delete"
+        "delete": "delete",
+        "ok": "Ok"
     },
     "fr": {
         /* spell-checker: disable */
@@ -50,7 +51,8 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
         "create": "crée",
         "cancel": "annuler",
         "rename": "renommer",
-        "delete": "supprimer"
+        "delete": "supprimer",
+        "ok": "Ok"
         /* spell-checker: enable */
     }
 })
@@ -85,6 +87,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "empty directory": "This directory is empty",
         },
         "MySecretsEditor": {
+            ...common.en,
+
             "add an entry": "Add a new variable",
             "environnement variable default name": "NEW_VAR",
             "table of secret": "table of secret",
@@ -102,7 +106,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key _ not valid": "Can't be just _",
             "invalid key start with digit": "Can't start with a digit",
             "invalid key invalid character": "Invalid character",
-            "invalid value cannot eval": "Invalid shell expression"
+            "invalid value cannot eval": "Invalid shell expression",
+            "use this secret": `Use in my services`,
+            "how to use a secret": `The path of this secret has been copied to you clipboard.
+            Now when you launch a service (RStudio, Jupyter, ect) go to the
+            secret tab and and paste the path of the secret provided for this 
+            purpose.
+            The values will be injected as environnement variable.
+            `
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -136,6 +147,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "empty directory": "Ce répertoire est vide",
         },
         "MySecretsEditor": {
+            ...common.fr,
 
             "add an entry": "Ajouter une variable",
             "environnement variable default name": "NOUVELLE_VARENV",
@@ -154,7 +166,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key _ not valid": "Ne peut pas être juste _",
             "invalid key start with digit": "Ne doit pas commencer par un chiffre",
             "invalid key invalid character": "Caractère non valide",
-            "invalid value cannot eval": "Expression shell non valide"
+            "invalid value cannot eval": "Expression shell non valide",
+            "use this secret": "Utilliser dans un service",
+            "how to use a secret": `
+            Le chemin du secret a été copié dans le presse papier!
+            Au moment de lancer un service (RStudio, Jupyter), rendez-vous
+            dans l'onglet 'VAULT' et coller le chemin du secret dans le champ prévu a cet effet.
+            Vos clefs valeurs seront disponible sous forme de variable d'environnement.
+            `
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
