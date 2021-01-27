@@ -13,6 +13,8 @@ import { PageHeader } from "app/components/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "app/utils/hooks/useWithProps";
 import { relative as pathRelative } from "path";
+import Link from "@material-ui/core/Link";
+import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -227,7 +229,7 @@ export const MySecrets = memo((props: Props) =>{
                     icon="secrets"
                     text1={t("page title")}
                     text2={t("what this page is used for")}
-                    text3={t("to learn more read", { "what": t("tfm") })}
+                    text3={<>{t("watch the video")} <Link href={videoUrl} target="_blank">{t("here")}</Link></>}
                 />
                 <Explorer
                     paddingLeftSpacing={paddingLeftSpacing}
@@ -285,8 +287,8 @@ export declare namespace MySecrets {
     export type I18nScheme = {
         'page title': undefined;
         'what this page is used for': undefined;
-        'to learn more read': { what: string; }
-        tfm: undefined;
+        'watch the video': undefined;
+        'here': undefined;
     };
 
 }

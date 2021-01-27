@@ -34,7 +34,7 @@ export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nScheme
 
 export type SupportedLanguage = "en" | "fr";
 
-const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok", string>>>({
+const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
     "en": {
         "file": "file",
         "secret": "secret",
@@ -42,7 +42,8 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
         "cancel": "cancel",
         "rename": "rename",
         "delete": "delete",
-        "ok": "Ok"
+        "ok": "Ok",
+        "here": "here"
     },
     "fr": {
         /* spell-checker: disable */
@@ -52,7 +53,8 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
         "cancel": "annuler",
         "rename": "renommer",
         "delete": "supprimer",
-        "ok": "Ok"
+        "ok": "Ok",
+        "here": "ici"
         /* spell-checker: enable */
     }
 })
@@ -60,12 +62,11 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
         "MySecrets": {
+            ...common.en,
             "page title": "My Secrets",
             "what this page is used for": `
-            Store here the passwords, tokens and other secrets that should note appear in your source code.
-            You will be able to access your secrets within your services as environnement variable.`,
-            "to learn more read": "To learn more about how to use secrets refer to {{what}}",
-            "tfm": "the documentation"
+            Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
+            "watch the video": "Watch the video demonstration",
         },
         "ExplorerItem": {
             "description": "description"
@@ -123,10 +124,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     "fr": {
         /* spell-checker: disable */
         "MySecrets": {
+            ...common.fr,
             "page title": "Mes secrets",
-            "what this page is used for": `Stocker ici les mots de passe et jetons sous forme de variables d'environnement`,
-            "to learn more read": "Pour en apprendre plus vous pouvez consulter {{what}}",
-            "tfm": "notre documentation"
+            "what this page is used for": `Définissez ici des variables qui seront accessibles sous forme de variable d'environnement dans vos services.`,
+            "watch the video": "Visionner la vidéo de démonstration",
         },
         "ExplorerItem": {
             "description": "déscription"

@@ -55,6 +55,7 @@ export const getEnv = memoizee(
 		"APP": {
 			"CONTACT": getEnvVar("CONTACT", { "mandatory": false }),
 			"WARNING_MESSAGE": getEnvVar("WARNING_MESSAGE", { "mandatory": false }),
+			"INFO_MESSAGE": getEnvVar("INFO_MESSAGE", { "mandatory": false })
 		},
 		"KUBERNETES": (() => {
 
