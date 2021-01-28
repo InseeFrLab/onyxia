@@ -170,12 +170,12 @@ export const NouveauService: React.FC<Props> = ({
 		queryParams
 	]);
 
-	const handlechangeField = (path: string) => (value: string) => {
+	const handlechangeField = (path: string) => (value: any) => {
 		setFieldsValues({ 
 			...fieldsValues, 
 			[path]: (()=>{
 				switch(typeof fieldsValues[path]){
-					case "boolean": return value === "true";
+					case "boolean": return value; 
 					case "number": return Number.parseFloat(value);
 					default: return value;
 				}
