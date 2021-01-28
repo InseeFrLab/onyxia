@@ -5,6 +5,7 @@ import { getService, deleteServices } from 'js/api/my-lab';
 import { Service } from 'js/model';
 import Toolbar from './toolbar';
 import { Redirect } from 'react-router-dom';
+import { useSelector, useAppConstants } from "app/lib/hooks";
 
 interface Props {
 	serviceId: string;
@@ -31,6 +32,8 @@ const MyService = ({ serviceId }: Props) => {
 		});
 	};
 
+	const { monitoringUrl } = useMonitoringUrl({ serviceId });
+
 	useEffect(() => {
 		if (!service) {
 			refreshData();
@@ -44,7 +47,7 @@ const MyService = ({ serviceId }: Props) => {
 			<Toolbar
 				handleRefresh={() => refreshData()}
 				handleDelete={() => handleDelete()}
-				monitoringUrl={service?.monitoring?.url}
+				monitoringUrl={monitoringUrl}
 			/>
 			{loading ? <Loader em={18} /> : <ServiceDetails service={service} />}
 		</div>
@@ -52,3 +55,28 @@ const MyService = ({ serviceId }: Props) => {
 };
 
 export default MyService;
+
+
+function useMonitoringUrl(params: { serviceId: string; }) {
+
+	const { serviceId } = params;
+
+
+	const monitoringURLPattern = useSelector(state => state.regions.selectedRegion?.services.monitoring?.URLPattern);
+	const namespacePrefix = useSelector(state => state.regions.selectedRegion?.services.namespacePrefix);
+
+	const idep = (function useClosure() {
+
+		const appConstants = useAppConstants();
+
+		return appConstants.isUserLoggedIn ? appConstants.userProfile.idep : undefined;
+
+	})();
+
+	const monitoringUrl = monitoringURLPattern
+		?.replace("$NAMESPACE", `${namespacePrefix}${idep}`)
+		.replace("$INSTANCE", serviceId.replace(/^\//, ""));
+
+	return { monitoringUrl };
+
+}
