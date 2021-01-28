@@ -51,7 +51,7 @@ export const NouveauService: React.FC<Props> = ({
 	const [redirect, setRedirect] = useState(false);
 	const [service, setService] = useState<Service | undefined>(undefined);
 	const [onglet, setOnglet] = useState(0);
-	const [fieldsValues, setFieldsValues] = useState<Record<string, string>>({});
+	const [fieldsValues, setFieldsValues] = useState<Record<string, string | boolean | number>>({});
 	const [initialValues, setInitialValues] = useState<Record<string, string>>({});
 	const [ongletFields, setOngletFields] = useState<{
 		description: string; nom: string; fields: {
@@ -171,7 +171,16 @@ export const NouveauService: React.FC<Props> = ({
 	]);
 
 	const handlechangeField = (path: string) => (value: string) => {
-		setFieldsValues({ ...fieldsValues, [path]: value });
+		setFieldsValues({ 
+			...fieldsValues, 
+			[path]: (()=>{
+				switch(typeof fieldsValues[path]){
+					case "boolean": return value === "true";
+					case "number": return Number.parseFloat(value);
+					default: return value;
+				}
+			})()
+		});
 		setContract(undefined);
 	};
 	if (redirect) return <Redirect to="/my-services" />;
@@ -298,11 +307,13 @@ const getOnglets = (onglets: Record<string, Onglet>) =>
 		.map(([nom, onglet]) => mapOngletToFields(nom)(onglet))
 		.filter((o) => o.fields && o.fields.length > 0);
 
+const escapeDots = (str: string) => str.replace(/\./g, "\\.");
+
 const mapOngletToFields = (nom: string) => (onglet: Onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
-	fields: getFields(nom)(onglet.properties),
+	fields: getFields(escapeDots(nom))(onglet.properties)
 });
 
 const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
@@ -313,13 +324,14 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 
 	Object.entries(ongletProperties).forEach(([key, entry]) => {
 		const { type, properties, enum: options, title } = entry;
+		const path = `${nom}.${escapeDots(key)}`;
 
 		switch (type) {
 			case 'boolean':
 			case 'number':
 			case 'string':
 				fields.push({
-					path: `${nom}.${key}`,
+					path,
 					field: {
 						...entry,
 						type: options && options.length > 0 ? 'select' : type,
@@ -330,7 +342,7 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 				break;
 			case 'object':
 
-				const fieldsToAdd = getFields(`${nom}.${key}`)(properties as any);
+				const fieldsToAdd = getFields(path)(properties as any);
 
 				assert(fieldsToAdd !== undefined);
 
@@ -346,6 +358,8 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 };
 
 
+
+
 const arrayToObject =
 	(queryParams: Record<string, string>) =>
 		(buildMustacheViewParams: BuildMustacheViewParams) =>
@@ -354,9 +368,10 @@ const arrayToObject =
 				const fromParams = getFromQueryParams(queryParams);
 				fields.forEach(({ path, field }) =>
 					obj[path] =
-					fromParams(path)(field) ||
-					mustacheRender(field as any, buildMustacheViewParams) ||
-					getDefaultSingleOption(field)
+					fromParams(path)(field) ?? (
+						mustacheRender(field as any, buildMustacheViewParams) ||
+						getDefaultSingleOption(field)
+					)
 				);
 				return obj;
 			};
@@ -373,11 +388,18 @@ const getFromQueryParams =
 				if (jsControl === 'ro') {
 					return undefined;
 				}
-				return path in queryParams
-					? type === 'boolean'
-						? queryParams[path] === 'true'
-						: queryParams[path]
-					: undefined;
+
+				if( !(path in queryParams) ){
+					return undefined;
+				}
+
+				const value = queryParams[path];
+
+				switch(type){
+					case "boolean": return value === "true";
+					case "number": return Number.parseFloat(value);
+					default: return value;
+				}
 			};
 
 const mapServiceToOnglets = (
@@ -388,16 +410,26 @@ const mapServiceToOnglets = (
  * Fonctions permettant de remettre en forme les valeurs
  * de champs comme attendu par l'api.
  */
-export const getValuesObject = (fieldsValues: Record<string, string>) =>
+export const getValuesObject = (fieldsValues: Record<string, string | boolean | number>) =>
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
-			path: key.split('.'),
+			"path": key
+			//NOTE the two next pipe mean "split all non escaped dots"
+			//the regular expression 'look behind' is not supported by Safari.
+			.split(".")
+			.reduce<string[]>((prev, curr) =>
+				prev[prev.length - 1]?.endsWith("\\") ?
+					(prev[prev.length - 1] += `.${curr}`, prev) :
+					[...prev, curr],
+				[]
+			)
+			.map(s => s.replace(/\\\./g, ".")),
 			value,
 		}))
-		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string>>({}));
+		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string | boolean | number>>({}));
 
-const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value: string; }) =>
-	(other = id<Record<string, string>>({})): Record<string, string> => {
+const getPathValue = ({ path: [first, ...rest], value }: { path: string[]; value: string | boolean | number; }) =>
+	(other = id<Record<string, string | boolean | number>>({})): Record<string, string | boolean | number> => {
 		if (rest.length === 0) {
 			return { [first]: value, ...other };
 		}

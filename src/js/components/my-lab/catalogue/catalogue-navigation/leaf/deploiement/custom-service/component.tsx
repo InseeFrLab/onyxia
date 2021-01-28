@@ -8,8 +8,8 @@ import D from 'js/i18n';
 import './custom-service.scss';
 
 type Props = {
-	initialValues?: Record<string, string>;
-	fieldsValues?: Record<string, string>;
+	initialValues?: Record<string, string | boolean | number>;
+	fieldsValues?: Record<string, string | boolean | number>;
 	setInit?: () => void;
 	location: RouteComponentProps<any, any, unknown>["location"];
 };

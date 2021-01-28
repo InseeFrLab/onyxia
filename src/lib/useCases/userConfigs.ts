@@ -7,6 +7,7 @@ import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../utils/createObjectThatThrowsIfAccessed";
+import "minimal-polyfills/Object.fromEntries";
 
 /*
  * Values of the user profile that can be changed.
