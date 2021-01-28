@@ -4,6 +4,7 @@ import { Next } from './../vignette-commons';
 import { WarnIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: () => (
 		<>

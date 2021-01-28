@@ -1,2 +1,2 @@
 
-import "js/components/index";
+import "app/index";

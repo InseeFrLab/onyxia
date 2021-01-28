@@ -2,6 +2,7 @@
 import fileReaderStream from 'filereader-stream';
 import { Client, PostPolicy } from 'minio';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default (client: Client) => ({
 	statObject: ({ bucketName, fileName }: any) =>
 		client.statObject(bucketName, fileName),

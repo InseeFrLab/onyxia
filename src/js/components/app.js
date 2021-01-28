@@ -6,11 +6,11 @@ import {
 	Switch,
 	Route as NativeRoute,
 	Redirect,
+	useLocation
 } from 'react-router-dom';
 import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
-import { Alert } from 'js/components/commons/Alert';
 import { invalidIdep } from 'js/utils/idep';
 import { Home } from "js/components/home/Home";
 import MyService from 'js/components/my-service';
@@ -36,8 +36,18 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
-import { useIsUserLoggedIn } from "js/redux/hooks";
-import { MySecrets } from "js/components/MySecrets";
+import { useAppConstants } from "app/lib/hooks";
+import { themeProviderFactory } from "app/theme/ThemeProvider";
+import { MySecrets } from "app/pages/MySecrets/MySecrets";
+import { Alert } from "app/components/designSystem/Alert";
+import ReactMarkdown from 'react-markdown'
+import { css } from "app/theme/useClassNames";
+
+
+const { ThemeProvider } = themeProviderFactory(
+	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
+);
+
 
 const env = getEnv();
 
@@ -81,9 +91,32 @@ const App404 = () => (
 	</MuiThemeProvider>
 );
 
+function AlertWrapper(props) {
+
+	const { children, ...rest } = props;
+
+	const { pathname } = useLocation();
+
+	if (!pathname.startsWith(initialPathname)) {
+		return null;
+	}
+
+	return (
+		<ThemeProvider isDarkModeEnabled={false}>
+			<Alert {...rest}  >
+				<ReactMarkdown className={css({ "& p": { "margin": "4px 0 0 0" } })}>
+					{children}
+				</ReactMarkdown>
+			</Alert>
+		</ThemeProvider>
+	);
+}
+
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
-	const { isUserLoggedIn } = useIsUserLoggedIn();
+	const appConstants = useAppConstants();
+
+	const { isUserLoggedIn } = appConstants;
 
 	return (
 		<MuiThemeProvider theme={theme}>
@@ -96,14 +129,16 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						<Navbar />
 						<RegionBanner />
 						{invalidIdep(idep) && (
-							<Alert
-								severity="error"
-								message={`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
-							/>
+							<AlertWrapper severity="error">
+								{`Votre identifiant utilisateur ("${idep}") n'est pas valide (caractères alphanumériques sans espace). ${env.APP.CONTACT}`}
+							</AlertWrapper>
 						)}
-						{env.APP.WARNING_MESSAGE && (
-							<Alert severity="warning" message={env.APP.WARNING_MESSAGE} />
-						)}
+						{env.APP.WARNING_MESSAGE &&
+							<AlertWrapper severity="warning">{env.APP.WARNING_MESSAGE}</AlertWrapper>
+						}
+						{env.APP.INFO_MESSAGE &&
+							<AlertWrapper severity="info">{env.APP.INFO_MESSAGE}</AlertWrapper>
+						}
 						<main role="main">
 							<Switch>
 								<Route path="/accueil" component={Home} />
@@ -152,8 +187,14 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 								<PrivateRoute
 									exact
 									path="/mes-secrets"
-									component={MySecrets}
+									component={() => (
+										<ThemeProvider isDarkModeEnabled={false}>
+											<MySecrets className="mySecrets" />
+										</ThemeProvider>
+									)}
 								/>
+
+
 								<PrivateRoute
 									path="/visite-guidee"
 									component={VisiteGuideeDebut}
@@ -161,7 +202,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 								<Route path="/" component={() => <Redirect to={initialPathname} />} />
 							</Switch>
 						</main>
-						<Footer />
+						<FooterCond />
 						<Notifications />
 						{isUserLoggedIn && <QuickAccess />}
 					</div>
@@ -176,3 +217,12 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 };
 
 export default App;
+
+//TODO: Fix, hack for continuos integration.
+function FooterCond() {
+
+	const { pathname } = useLocation();
+
+	return pathname.startsWith("/mes-secrets") ? null : <Footer />;
+
+}

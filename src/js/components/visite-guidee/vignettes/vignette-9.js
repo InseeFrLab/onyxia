@@ -4,6 +4,7 @@ import { Both } from './../vignette-commons';
 import { Icon, IconButton } from '@material-ui/core';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: () => {
 		return (

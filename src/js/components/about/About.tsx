@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import Typography from '@material-ui/core/Typography';
 import dayjs from 'dayjs';
 import GitInfo from 'react-git-info/macro';
@@ -8,8 +8,10 @@ import SelectRegion from './SelectRegion';
 import type { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
 import { actions as regionActions } from "js/redux/regions";
-import { useDispatch, useSelector } from "js/redux/hooks";
+import { useDispatch, useSelector } from "app/lib/hooks";
 import { useAsync } from "react-async-hook";
+import { thunks } from "lib/setup";
+
 
 export const About = () => {
 
@@ -43,8 +45,10 @@ export const About = () => {
 
 	const dispatch = useDispatch();
 
+	/*
 	const changeRegion = (newRegion: Region) =>
 		dispatch(regionActions.regionChanged({ newRegion }));
+	*/
 
 	const gitInfo = GitInfo();
 
@@ -63,6 +67,23 @@ export const About = () => {
 				")"
 			].join(""),
 		[state.configuration]
+	);
+
+
+	const onRegionSelected = useCallback(
+		(region: Region) => {
+
+			dispatch(regionActions.regionChanged({ "newRegion": region }));
+
+			dispatch(
+				thunks.userConfigs.changeValue({
+					"key": "deploymentRegionId",
+					"value": region.id
+				})
+			);
+
+		},
+		[dispatch]
 	);
 
 	return (
@@ -86,7 +107,7 @@ export const About = () => {
 					<SelectRegion
 						regions={state.regions}
 						selectedRegion={state.selectedRegion.id}
-						onRegionSelected={region => changeRegion(region)}
+						onRegionSelected={onRegionSelected}
 					/>}
 			</div>
 		</>

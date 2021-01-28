@@ -6,7 +6,6 @@ import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 
 
-
 export type State = {
 	currentObjects: (Blob & { name: string; })[];
 	currentDirectories: { prefix: string; }[];
@@ -80,8 +79,6 @@ const asyncThunks = {
 
 					}
 
-
-					//TODO: Investigate at runtime
 					const stream = await minio.getBucketContent(
 						bucketName, 
 						prefix.replace(/^\//, ""), 

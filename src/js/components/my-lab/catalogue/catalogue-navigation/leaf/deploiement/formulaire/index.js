@@ -7,6 +7,7 @@ import SelectField from './field-select';
 import SelectWarField from './field-media-war';
 import { getFieldSafeAttr } from 'js/utils/form-field';
 
+ 
 export default ({ fields, user, handleChange, name, values }) => {
 	if (!fields) {
 		return <div></div>;

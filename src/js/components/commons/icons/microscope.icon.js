@@ -1,5 +1,6 @@
 import React from 'react';
 
+ 
 export default ({ width = 40, height = 40, color = '#777' }) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"

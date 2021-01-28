@@ -1,21 +1,29 @@
 
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import { createInMemoryImplOfVaultClient } from "./secondaryAdapters/inMemoryVaultClient";
-import { createRestImplOfVaultClient } from "./secondaryAdapters/restVaultClient";
-import * as translateVaultRequests from "./useCases/translateVaultRequests";
+import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
+import { createVaultSecretsManagerClient, getVaultClientTranslator } from "./secondaryAdapters/vaultSecretsManagerClient";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
-import * as userProfileInVaultUseCase from "./useCases/userProfileInVault";
-import * as tokenUseCase from "./useCases/tokens";
-import type { VaultClient } from "./ports/VaultClient";
-import { getVaultClientProxyWithTranslator } from "./ports/VaultClient";
+import * as userConfigsUseCase from "./useCases/userConfigs";
+import * as tokensUseCase from "./useCases/tokens";
+import * as appConstantsUseCase from "./useCases/appConstants";
+import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
+import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
 import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
-import { createImplOfKeycloakClientBasedOnOfficialAddapter } from "./secondaryAdapters/basedOnOfficialAdapterKeycloakClient";
-import type { KeycloakClient } from "./ports/KeycloakClient";
-import { parseOidcAccessToken } from "./ports/KeycloakClient";
+import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
+import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
+import type { OidcClient } from "./ports/OidcClient";
+import { id } from "evt/tools/typeSafety/id";
+import type { NonPostableEvt } from "evt";
+import type { StatefulReadonlyEvt } from "evt";
+import { Evt } from "evt";
+import type { AxiosInstance } from "axios";
+import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
+import { createMockOnyxiaApiClient } from "./secondaryAdapters/mockOnyxiaApiClient";
+import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxiaApiClient";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -26,49 +34,79 @@ import * as app from "js/redux/app";
 
 
 export type Dependencies = {
-    vaultClient: VaultClient;
-    evtVaultCliTranslation: ReturnType<typeof getVaultClientProxyWithTranslator>["evtTranslation"];
-    keycloakClient: KeycloakClient;
+    secretsManagerClient: SecretsManagerClient;
+    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
+    oidcClient: OidcClient;
+    onyxiaApiClient: OnyxiaApiClient;
 };
 
 
 export type CreateStoreParams = {
-    paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
-    paramsNeededToInitializeKeycloakClient: ParamsNeededToInitializeKeycloakClient;
+    isOsPrefersColorSchemeDark: boolean;
+    secretsManagerClientConfig: SecretsManagerClientConfig;
+    oidcClientConfig: OidcClientConfig;
+    onyxiaApiClientConfig: OnyxiaApiClientConfig;
+    evtBackOnline: NonPostableEvt<void>;
+    vaultCmdTranslationLogger: typeof console.log;
 };
 
-export declare type ParamsNeededToInitializeVaultClient =
-    ParamsNeededToInitializeVaultClient.InMemory |
-    ParamsNeededToInitializeVaultClient.Real;
+export declare type SecretsManagerClientConfig =
+    SecretsManagerClientConfig.LocalStorage |
+    SecretsManagerClientConfig.Vault;
 
-export declare namespace ParamsNeededToInitializeVaultClient {
+export declare namespace SecretsManagerClientConfig {
 
-    export type InMemory = {
-        doUseInMemoryClient: true;
-    } & Parameters<typeof createInMemoryImplOfVaultClient>[0];
+    export type Vault = {
+        implementation: "VAULT";
+    } & Omit<Parameters<typeof createVaultSecretsManagerClient>[0],
+        "evtOidcAccessToken" |
+        "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
+    >;
 
-    export type Real = {
-        doUseInMemoryClient: false;
-    } & Omit<Parameters<typeof createRestImplOfVaultClient>[0], 
+    export type LocalStorage = {
+        implementation: "LOCAL STORAGE";
+        paramsForTranslator: Pick<Vault, "role" | "baseUri" | "engine">;
+    } & Parameters<typeof createLocalStorageSecretManagerClient>[0];
+
+
+}
+
+export declare type OidcClientConfig =
+    OidcClientConfig.Phony |
+    OidcClientConfig.Keycloak;
+
+export declare namespace OidcClientConfig {
+
+    export type Phony = {
+        implementation: "PHONY";
+    } & Parameters<typeof createPhonyOidcClient>[0];
+
+    export type Keycloak = {
+        implementation: "KEYCLOAK";
+    } & Omit<
+        Parameters<typeof createKeycloakOidcClient>[0],
         "evtOidcAccessToken" |
         "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >;
 
 }
 
-export declare type ParamsNeededToInitializeKeycloakClient =
-    ParamsNeededToInitializeKeycloakClient.InMemory |
-    ParamsNeededToInitializeKeycloakClient.Real;
+export type OnyxiaApiClientConfig =
+    OnyxiaApiClientConfig.Mock |
+    OnyxiaApiClientConfig.Official;
 
-export declare namespace ParamsNeededToInitializeKeycloakClient {
+export declare namespace OnyxiaApiClientConfig {
 
-    export type InMemory = {
-        doUseInMemoryClient: true;
-    };
+    export type Mock = {
+        implementation: "MOCK";
+    } & Parameters<typeof createMockOnyxiaApiClient>[0];
 
-    export type Real = {
-        doUseInMemoryClient: false;
-    } & Parameters<typeof createImplOfKeycloakClientBasedOnOfficialAddapter>[0];
+    export type Official = {
+        implementation: "OFFICIAL";
+    } & Omit<
+        Parameters<typeof createOfficialOnyxiaApiClient>[0],
+        "getCurrentlySelectedDeployRegionId" | "oidcClient"
+    >;
 
 }
 
@@ -81,10 +119,9 @@ const reducer = {
     [user.name]: user.reducer,
     [regions.name]: regions.reducer,
 
-    [translateVaultRequests.name]: translateVaultRequests.reducer,
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
-    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.reducer,
-    [tokenUseCase.name]: tokenUseCase.reducer
+    [userConfigsUseCase.name]: userConfigsUseCase.reducer,
+    [tokensUseCase.name]: tokensUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -97,83 +134,196 @@ const getMiddleware = (params: { dependencies: Dependencies; }) => ({
 
 async function createStoreForLoggedUser(
     params: {
-        paramsNeededToInitializeVaultClient: ParamsNeededToInitializeVaultClient;
-        keycloakClient: KeycloakClient.LoggedIn;
-    }
+        secretsManagerClientConfig: SecretsManagerClientConfig;
+        onyxiaApiClientConfig: OnyxiaApiClientConfig;
+        oidcClient: OidcClient.LoggedIn;
+    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark" | "vaultCmdTranslationLogger">
 ) {
 
-    //const { idep, email, paramsNeededToInitializeVaultClient } = params;
-    const { keycloakClient, paramsNeededToInitializeVaultClient } = params;
+    const {
+        oidcClient,
+        secretsManagerClientConfig,
+        onyxiaApiClientConfig,
+        isOsPrefersColorSchemeDark,
+        vaultCmdTranslationLogger
+    } = params;
+
+    let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
+
+        const clientType = "CLI";
+
+        switch (secretsManagerClientConfig.implementation) {
+            case "LOCAL STORAGE": {
+
+                const { paramsForTranslator, ...params } = secretsManagerClientConfig;
+
+                return {
+                    ...createLocalStorageSecretManagerClient(params),
+                    "evtVaultToken": Evt.create<string | undefined>(
+                        "We are not currently using Vault for secret management"
+                    ),
+                    "secretsManagerTranslator": getVaultClientTranslator({
+                        clientType,
+                        "oidcAccessToken": oidcClient.evtOidcTokens.state!.accessToken,
+                        ...paramsForTranslator
+                    })
+                };
+
+            }
+            case "VAULT": {
+
+                const params: Parameters<typeof createVaultSecretsManagerClient>[0] = {
+                    ...secretsManagerClientConfig,
+                    "evtOidcAccessToken":
+                        oidcClient.evtOidcTokens.pipe(oidcTokens => [oidcTokens?.accessToken]),
+                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
+                        oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
+                };
+
+                const {
+                    evtOidcAccessToken: { state: oidcAccessToken },
+                    ...translatorParams
+                } = params;
+
+                assert(oidcAccessToken !== undefined);
+
+                return {
+                    ...createVaultSecretsManagerClient(params),
+                    "secretsManagerTranslator": getVaultClientTranslator({
+                        clientType,
+                        oidcAccessToken,
+                        ...translatorParams
+                    })
+                };
+            }
+        }
+    })();
 
     const {
-        vaultClientProxy: vaultClient,
-        evtTranslation: evtVaultCliTranslation,
-    } = getVaultClientProxyWithTranslator({
-        "translateForClientType": "CLI",
-        "vaultClient":
-            paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
-                createInMemoryImplOfVaultClient(paramsNeededToInitializeVaultClient) :
-                createRestImplOfVaultClient({
-                    ...paramsNeededToInitializeVaultClient,
-                    "evtOidcAccessToken": keycloakClient.evtOidcTokens
-                        .pipe(oidcTokens => [oidcTokens?.accessToken]),
-                    "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-                        keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired
-                }),
+        secretsManagerClientProxy,
+        getEvtSecretsManagerTranslation
+    } = observeSecretsManagerClientWithTranslator({
+        secretsManagerClient,
+        secretsManagerTranslator
     });
 
+    {
 
-    evtVaultCliTranslation.attach(
-        ({ type }) => type === "cmd",
-        cmd => evtVaultCliTranslation.attachOnce(
-            ({ cmdId }) => cmdId === cmd.cmdId,
-            resp => console.log(
-                `%c$ ${cmd.value}\n\n${resp.value}`, 
-                'background: #222; color: #bada55'
-            )
-        )
-    );
+        const { evtSecretsManagerTranslation } = getEvtSecretsManagerTranslation();
+
+        const log = (str: string) => vaultCmdTranslationLogger(
+            `%c$ ${str}`,
+            'background: #222; color: #bada55'
+        );
+
+        evtSecretsManagerTranslation.attach(
+            ({ type }) => type === "cmd",
+            cmd => {
+
+                log(cmd.translation);
+
+                evtSecretsManagerTranslation.attachOnce(
+                    ({ cmdId }) => cmdId === cmd.cmdId,
+                    resp => log(resp.translation)
+                );
+
+            }
+        );
+
+    }
+
+    secretsManagerClient = secretsManagerClientProxy;
+
+    let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
+
+    const { onyxiaApiClient, axiosInstance } = (() => {
+        switch (onyxiaApiClientConfig.implementation) {
+            case "MOCK": return {
+                ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
+                "axiosInstance": undefined
+            };
+            case "OFFICIAL": return createOfficialOnyxiaApiClient({
+                ...onyxiaApiClientConfig,
+                oidcClient,
+                "getCurrentlySelectedDeployRegionId": () => {
+
+                    assert(getCurrentlySelectedDeployRegionId !== undefined);
+
+                    return getCurrentlySelectedDeployRegionId();
+
+                }
+            });
+        }
+    })();
+
+    if (axiosInstance !== undefined) {
+        dAxiosInstance.resolve(axiosInstance);
+    }
 
     const store = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
-                vaultClient,
-                evtVaultCliTranslation,
-                keycloakClient
+                secretsManagerClient,
+                oidcClient,
+                evtVaultToken,
+                onyxiaApiClient
             }
         })
     });
 
-    store.dispatch(
-        secretExplorerUseCase.thunks.navigateToPath(
-            { "path": (await parseOidcAccessToken(keycloakClient)).idep }
+    getCurrentlySelectedDeployRegionId = () =>
+        store.getState().userConfigs.deploymentRegionId.value ?? undefined;
+
+
+    store.dispatch(tokensUseCase.privateThunks.initialize());
+
+    await store.dispatch(
+        userConfigsUseCase.privateThunks.initialize(
+            { isOsPrefersColorSchemeDark }
         )
     );
 
-    await store.dispatch(
-        userProfileInVaultUseCase.privateThunks.initialize()
-    );
-
-    return { store };
+    return { store, getEvtSecretsManagerTranslation };
 
 }
 
 
 async function createStoreForNonLoggedUser(
-    params: { keycloakClient: KeycloakClient.NotLoggedIn; }
-): Promise<AsyncReturnType<typeof createStoreForLoggedUser>> {
+    params: {
+        oidcClient: OidcClient.NotLoggedIn;
+        onyxiaApiClientConfig: OnyxiaApiClientConfig;
+    }
+) {
 
-    const { keycloakClient } = params;
-    const store = configureStore({
+    const { oidcClient, onyxiaApiClientConfig } = params;
+
+    const { onyxiaApiClient, axiosInstance } = (() => {
+        switch (onyxiaApiClientConfig.implementation) {
+            case "MOCK": return {
+                ...createMockOnyxiaApiClient(onyxiaApiClientConfig),
+                "axiosInstance": undefined
+            };
+            case "OFFICIAL": return createOfficialOnyxiaApiClient({
+                ...onyxiaApiClientConfig,
+                "oidcClient": null,
+                "getCurrentlySelectedDeployRegionId": null
+            });
+        }
+    })();
+
+    if (axiosInstance !== undefined) {
+        dAxiosInstance.resolve(axiosInstance);
+    }
+
+    const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
-                "vaultClient":
-                    createObjectThatThrowsIfAccessed<Dependencies["vaultClient"]>(),
-                "evtVaultCliTranslation":
-                    createObjectThatThrowsIfAccessed<Dependencies["evtVaultCliTranslation"]>(),
-                keycloakClient
+                "secretsManagerClient": createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>(),
+                "evtVaultToken": createObjectThatThrowsIfAccessed<Dependencies["evtVaultToken"]>(),
+                oidcClient,
+                onyxiaApiClient
             }
         })
     });
@@ -187,6 +337,7 @@ createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
 
+
     assert(
         createStore.isFirstInvocation,
         "createStore has already been called, " +
@@ -197,74 +348,105 @@ export async function createStore(params: CreateStoreParams) {
     createStore.isFirstInvocation = false;
 
     const {
-        paramsNeededToInitializeKeycloakClient,
-        paramsNeededToInitializeVaultClient
+        oidcClientConfig,
+        secretsManagerClientConfig,
+        isOsPrefersColorSchemeDark,
+        onyxiaApiClientConfig,
+        evtBackOnline,
+        vaultCmdTranslationLogger
     } = params;
 
-    assert(
-        !paramsNeededToInitializeKeycloakClient.doUseInMemoryClient,
-        "TODO: We need a mock implementation of KeycloakClient"
+    const oidcClient = await (() => {
+        switch (oidcClientConfig.implementation) {
+            case "PHONY": return createPhonyOidcClient(oidcClientConfig);
+            case "KEYCLOAK": return createKeycloakOidcClient(oidcClientConfig);
+        }
+    })();
+
+    const { store, getEvtSecretsManagerTranslation } = await (
+        oidcClient.isUserLoggedIn ?
+            createStoreForLoggedUser({
+                oidcClient,
+                secretsManagerClientConfig,
+                onyxiaApiClientConfig,
+                isOsPrefersColorSchemeDark,
+                vaultCmdTranslationLogger
+            }) :
+            {
+                ...await createStoreForNonLoggedUser({
+                    oidcClient,
+                    onyxiaApiClientConfig
+                }),
+                "getEvtSecretsManagerTranslation": undefined
+            }
     );
 
-
-    const keycloakClient =
-        await createImplOfKeycloakClientBasedOnOfficialAddapter(
-            paramsNeededToInitializeKeycloakClient
-        );
-
-
-    const { store } = await (
-        keycloakClient.isUserLoggedIn ?
-            createStoreForLoggedUser({ keycloakClient, paramsNeededToInitializeVaultClient }) :
-            createStoreForNonLoggedUser({ keycloakClient })
-    );
-
-    store.dispatch(app.privateThunk.initialize());
-
-    if (keycloakClient.isUserLoggedIn) {
-
-        store.dispatch(
-            tokenUseCase.privateThunks.initialize({
-                "vaultConfig": paramsNeededToInitializeVaultClient.doUseInMemoryClient ?
-                    {
-                        "baseUri": "",
-                        "engine": paramsNeededToInitializeVaultClient.engine,
-                        "role": ""
-                    }
-                    :
-                    paramsNeededToInitializeVaultClient,
-                "keycloakConfig": paramsNeededToInitializeKeycloakClient.keycloakConfig
-            })
-        );
-
-    }
-
-    dKeyCloakClient.resolve(keycloakClient);
+    dOidcClient.resolve(oidcClient);
 
     dStoreInstance.resolve(store);
 
-    //TODO: Move the rest of the redux slices inside.
-    if (keycloakClient.isUserLoggedIn) {
+    store.dispatch(
+        appConstantsUseCase.privateThunks.initialize({
+            "appConstants": await (async () => {
 
-        await store.dispatch(user.privateThunks.initialize());
+                const _common: appConstantsUseCase.AppConstant._Common = {
+                    isOsPrefersColorSchemeDark,
+                    "vaultClientConfig": (() => {
+                        switch (secretsManagerClientConfig.implementation) {
+                            case "VAULT": return secretsManagerClientConfig;
+                            case "LOCAL STORAGE": return { "baseUri": "", "engine": "", "role": "" };
+                        }
+                    })(),
+                    "keycloakConfig": (() => {
+                        switch (oidcClientConfig.implementation) {
+                            case "PHONY":
+                                const message = [
+                                    "N.A. This instance is not configured to use Keycloak but",
+                                    "a phony implementation of the OIDC client"
+                                ].join(" ");
+                                return { "clientId": message, "realm": message };
+                            case "KEYCLOAK": return oidcClientConfig.keycloakConfig;
+                        }
+                    })()
+                };
 
-    }
+                return oidcClient.isUserLoggedIn ?
+                    id<appConstantsUseCase.AppConstant.LoggedIn>({
+                        "isUserLoggedIn": true,
+                        ..._common,
+                        "userProfile": await store.dispatch(
+                            user.privateThunks.initializeAndGetUserProfile(
+                                { evtBackOnline }
+                            )
+                        ),
+                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!
+                    }) :
+                    id<appConstantsUseCase.AppConstant.NotLoggedIn>({
+                        "isUserLoggedIn": false,
+                        ..._common,
+                    })
+
+            })()
+
+        })
+    );
+
+
 
     return store;
 
 }
 
-
-
-
-
 export const thunks = {
-    [userProfileInVaultUseCase.name]: userProfileInVaultUseCase.thunks,
+    [userConfigsUseCase.name]: userConfigsUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
-    [translateVaultRequests.name]: translateVaultRequests.thunks,
-    [tokenUseCase.name]: tokenUseCase.thunks,
-    [user.name]: user.thunk,
+    [appConstantsUseCase.name]: appConstantsUseCase.thunks,
+    [tokensUseCase.name]: tokensUseCase.thunks,
     [app.name]: app.thunk
+};
+
+export const pure = {
+    [secretExplorerUseCase.name]: secretExplorerUseCase.pure
 };
 
 export type Store = AsyncReturnType<typeof createStore>;
@@ -279,7 +461,10 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
 >;
 
 
+const dAxiosInstance = new Deferred<AxiosInstance>();
 
+/** @deprecated */
+export const { pr: prAxiosInstance } = dAxiosInstance;
 
 const dStoreInstance = new Deferred<Store>();
 
@@ -291,9 +476,9 @@ const dStoreInstance = new Deferred<Store>();
  */
 export const { pr: prStore } = dStoreInstance;
 
-const dKeyCloakClient = new Deferred<KeycloakClient>();
+const dOidcClient = new Deferred<OidcClient>();
 
 /** @deprecated */
-export const { pr: prKeycloakClient } = dKeyCloakClient;
+export const { pr: prOidcClient } = dOidcClient;
 
 

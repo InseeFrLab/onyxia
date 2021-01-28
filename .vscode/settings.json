@@ -1,0 +1,14 @@
+{
+    "cSpell.words": [
+        "gitlab",
+        "gravitee",
+        "keycloak",
+        "minio",
+        "openrefine",
+        "plutojl",
+        "postgresql",
+        "rapidsai",
+        "tensorflow"
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

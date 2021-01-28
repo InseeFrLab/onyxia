@@ -2,14 +2,13 @@ import { connect } from 'react-redux';
 import vignettes from './vignettes';
 import { actions } from 'js/redux/legacyActions';
 import Visite from './visite-guidee.component';
-import { axiosPublic } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { getMinioToken } from "js/minio-client/minio-client";
 import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { prStore } from "lib/setup";
+import { prStore, prAxiosInstance } from "lib/setup";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
@@ -41,7 +40,7 @@ const mapToDispatchToProps = dispatch => ({
 			"inseefrlab-datascience";
 
 		const service = {
-			...await axiosPublic(`${restApiPaths.catalogue}/${catalogId}/rstudio`),
+			...(await (await prAxiosInstance)(`${restApiPaths.catalogue}/${catalogId}/rstudio`)).data,
 			catalogId
 		};
 

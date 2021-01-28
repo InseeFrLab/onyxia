@@ -2,13 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
-import { restApiPaths } from "js/restApiPaths";
-import { axiosAuth } from "js/utils/axios-config";
 import { getEnv } from "js/env";
 import type { AppThunk } from "lib/setup";
-import { parseOidcAccessToken } from "lib/ports/KeycloakClient";
-import { Evt } from "evt";
-import type { KeycloakClient } from "lib/ports/KeycloakClient";
+import { parseOidcAccessToken } from "lib/ports/OidcClient";
+import type { AppConstant } from "lib/useCases/appConstants";
+import type { NonPostableEvt } from "evt";
 
 export type S3 = {
     AWS_ACCESS_KEY_ID: string;
@@ -24,43 +22,21 @@ export type UserState = {
     s3: S3 | undefined;
 };
 
-export type UserProfile = {
-    idep: string;
-    email: string;
-    nomComplet: string;
-};
-
-
-const userProfileByVaultClient = new WeakMap<KeycloakClient.LoggedIn, UserProfile>();
-
-
 export const name = "user";
 
-
-export const thunk = {
-    "getUserProfile":
-        (): AppThunk<UserProfile> => (...args) => {
-
-            const [, , { keycloakClient }] = args;
-
-            assert(keycloakClient.isUserLoggedIn);
-
-            return userProfileByVaultClient.get(keycloakClient)!;
-
-        }
-};
-
 export const privateThunks = {
-    "initialize":
-        (): AppThunk => async (...args) => {
+    "initializeAndGetUserProfile":
+        (params: { evtBackOnline: NonPostableEvt<void>; }): AppThunk<Promise<AppConstant.LoggedIn["userProfile"]>> => async (...args) => {
 
-            const [dispatch, , { keycloakClient }] = args;
+            const { evtBackOnline } = params;
 
-            assert(keycloakClient.isUserLoggedIn);
+            const [dispatch, , { oidcClient, onyxiaApiClient }] = args;
 
-            const getNomCompletAndSetIp = async ()=> {
+            assert(oidcClient.isUserLoggedIn);
 
-                const { ip, nomComplet }: any = await axiosAuth.get(restApiPaths.userInfo);
+            const getNomCompletAndSetIp = async () => {
+
+                const { ip, nomComplet } = await onyxiaApiClient.getUserInfo();
 
                 dispatch(slice.actions.setIp(ip));
 
@@ -68,13 +44,13 @@ export const privateThunks = {
 
             };
 
-            Evt.from(window, "online").attach(getNomCompletAndSetIp);
+            evtBackOnline.attach(getNomCompletAndSetIp);
 
-            const { nomComplet } = await getNomCompletAndSetIp();
+            const { nomComplet } = await getNomCompletAndSetIp();
 
-            const { email, idep } = await parseOidcAccessToken(keycloakClient);
+            const { email, idep } = await parseOidcAccessToken(oidcClient);
 
-            userProfileByVaultClient.set(keycloakClient, { email, idep, nomComplet });
+            return { email, idep, nomComplet };
 
         }
 };

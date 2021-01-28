@@ -1,24 +1,12 @@
 
-import type {
-    AppThunk,
-    ParamsNeededToInitializeKeycloakClient,
-    ParamsNeededToInitializeVaultClient
-} from "../setup";
+import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { VaultClient } from "../ports/VaultClient";
-import type { KeycloakClient } from "../ports/KeycloakClient";
 import { createSlice } from "@reduxjs/toolkit";
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt, nonNullable } from "evt";
 
 export const name = "tokens";
-
-export type VaultConfig = Pick<ParamsNeededToInitializeVaultClient.Real, "baseUri" | "engine" | "role">;
-export type KeycloakConfig = ParamsNeededToInitializeKeycloakClient.Real["keycloakConfig"];
-
-const vaultConfigByClient = new WeakMap<VaultClient, VaultConfig>();
-const keycloakConfigByClient = new WeakMap<KeycloakClient, KeycloakConfig>();
 
 export type TokenState = {
     areTokensBeingRefreshed: boolean;
@@ -55,42 +43,31 @@ export { reducer };
 export const privateThunks = {
 
     "initialize":
-        (params: {
-            vaultConfig: VaultConfig;
-            keycloakConfig: KeycloakConfig;
-        }): AppThunk<void> => async (...args) => {
+        (): AppThunk<void> => async (...args) => {
 
-            const {
-                vaultConfig,
-                keycloakConfig
-            } = params;
+            const [dispatch, , { evtVaultToken, oidcClient }] = args;
 
-            const [dispatch, , { vaultClient, keycloakClient }] = args;
+            assert(oidcClient.isUserLoggedIn);
 
-            vaultConfigByClient.set(vaultClient, vaultConfig);
-            keycloakConfigByClient.set(keycloakClient, keycloakConfig);
-
-            assert(keycloakClient.isUserLoggedIn);
-
-            keycloakClient.evtOidcTokens.$attach(
-                oidcTokens => oidcTokens === undefined ? null: [oidcTokens],
+            oidcClient.evtOidcTokens.$attach(
+                nonNullable(),
                 oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
             );
 
-            vaultClient.evtVaultToken.$attach(
+            evtVaultToken.$attach(
                 nonNullable(),
                 vaultToken => dispatch(actions.vaultTokenRenewed({ vaultToken }))
             );
 
             Evt.merge([
-                vaultClient.evtVaultToken,
-                vaultClient.evtVaultToken
+                evtVaultToken,
+                evtVaultToken
             ])
                 .toStateful()
                 .$attach(
                     () => [
-                        vaultClient.evtVaultToken.state === undefined ||
-                        vaultClient.evtVaultToken.state === undefined
+                        evtVaultToken.state === undefined ||
+                        evtVaultToken.state === undefined
                     ],
                     areTokensBeingRefreshed =>
                         dispatch(actions.startedOrStoppedRefreshing({ areTokensBeingRefreshed }))
@@ -101,26 +78,15 @@ export const privateThunks = {
 }
 
 export const thunks = {
-    "getParamsNeededToInitializeKeycloakAndVolt":
-        () => (...args: Parameters<AppThunk>) => {
-
-            const [, , { vaultClient, keycloakClient }] = args;
-
-            return {
-                "vaultConfig": vaultConfigByClient.get(vaultClient)!,
-                "keycloakConfig": keycloakConfigByClient.get(keycloakClient)!
-            };
-
-        },
     /** Once this thunk resolves we can assume oidc tokens and Volt token to be valid */
     "refreshTokenIfExpiresInLessThan8Hours":
         (): AppThunk => async (...args) => {
 
-            const [, , { keycloakClient }] = args;
+            const [, , { oidcClient }] = args;
 
-            assert(keycloakClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
-            keycloakClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
+            oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
                 { "minValidity": 3600 * 8 }
             );
 

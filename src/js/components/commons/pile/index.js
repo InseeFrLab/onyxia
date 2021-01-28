@@ -1,6 +1,7 @@
 import React from 'react';
 import './pile.scss';
 
+ 
 export default ({
 	size,
 	sizeMax,

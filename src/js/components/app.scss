@@ -201,6 +201,13 @@ a {
 			@include paragraphe();
 		}
 	}
+
+}
+
+/** NOTE | TODO, remove, temporary hack to give page a fixed height */
+.mySecrets {
+	height: calc(100vh - 64px);
+	width: 100%;
 }
 
 .application {

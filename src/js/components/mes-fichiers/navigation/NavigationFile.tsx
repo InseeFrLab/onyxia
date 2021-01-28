@@ -3,9 +3,9 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useUserProfile } from "js/redux/hooks";
+import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
 import { useLocation } from "react-router-dom";
-import { relative as pathRelative } from "path";
+import { relative as pathRelative } from "path";
 
 
 export const NavigationFile: React.FC<{
@@ -19,7 +19,7 @@ export const NavigationFile: React.FC<{
 	// re-render when it's changed.
 	const { pathname: window_location_pathname }= useLocation();
 
-	const { userProfile: { idep } } = useUserProfile();
+	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
 	const [pathname, setPathname] = useState(decodeURI(window_location_pathname));
 	const [racine] = useState(`/mes-fichiers/${bucketName}`);

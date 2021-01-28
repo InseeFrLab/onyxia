@@ -4,7 +4,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch, useUserProfile } from "js/redux/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 
 
@@ -14,17 +14,19 @@ export const MyBuckets = () => {
 		state => state.regions.selectedRegion
 	);
 
-	const { userProfile: { idep } } = useUserProfile();
+	const { userProfile: { idep } } = useAppConstants(
+		{ "assertIsUserLoggedInIs": true }
+	);
 
 	const buckets = useSelector(
 		state => state.myFiles.userBuckets
 	);
 
 	useEffect(() => {
-		if ( idep && !buckets) {
+		if (idep && !buckets) {
 			dispatch(myFilesActions.loadUserBuckets({ idep }));
 		}
-	}, [ idep, dispatch, buckets ]);
+	}, [idep, dispatch, buckets]);
 
 	return (
 		<>

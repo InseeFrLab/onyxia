@@ -3,15 +3,22 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
-import { axiosAuth } from "js/utils/axios-config";
 import { restApiPaths } from "js/restApiPaths";
 import { PUSHER } from "js/components/notifications";
 import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
 import { assert } from "evt/tools/typeSafety/assert";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
-
 import { actions as appActions } from "./app";
+import memoize from "memoizee";
+
+
+/** We avoid importing app right away to prevent require cycles */
+const getAxiosInstance = memoize(
+	() => import("lib/setup")
+		.then(ns => ns.prAxiosInstance),
+	{ "promise": true }
+);
+
 
 //TODO: Rename franglish, all theses states can be deleted, they are never used.
 export type State = {
@@ -97,7 +104,9 @@ const asyncThunks = {
 
 					dispatch(appActions.startWaiting());
 
-					const services = await axiosAuth.put(
+					
+
+					const services = await (await getAxiosInstance()).put<State.Service[]>(
 						service.category === "group" ?
 							restApiPaths.nouveauGroupe :
 							restApiPaths.nouveauService,
@@ -108,7 +117,10 @@ const asyncThunks = {
 							dryRun,
 							options
 						}
-					).catch((error: Error) => error);
+					).then(
+						({ data })=> data,
+						(error: Error) => error
+					);
 
 
 					dispatch(appActions.stopWaiting());
@@ -126,9 +138,6 @@ const asyncThunks = {
 
 					}
 
-					//TODO: The response is supposed to be an object containing at lease { id }, check if true.
-					//(axios middleware.
-					assert(typeGuard<State.Service[]>(services));
 
 					if (dryRun) {
 						return services;

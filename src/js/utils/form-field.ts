@@ -1,10 +1,9 @@
 import Mustache from 'mustache';
 import type { RootState } from "lib/setup";
 import { getEnv } from "js/env";
-import type { KeycloakConfig, VaultConfig } from "lib/useCases/tokens";
-import type { OidcTokens } from "lib/ports/KeycloakClient";
-import type { UserProfile } from "js/redux/user";
-import type { UserProfileInVault } from "lib/useCases/userProfileInVault";
+import type { AppConstant } from "lib/useCases/appConstants";
+import type { OidcTokens } from "lib/ports/OidcClient";
+import type { UserConfigs } from "lib/useCases/userConfigs";
 
 const env = getEnv();
 
@@ -22,22 +21,21 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 export type BuildMustacheViewParams = {
 	s3: NonNullable<RootState["user"]["s3"]>;
 	ip: string;
-	userProfile: UserProfile;
-	userProfileInVault: UserProfileInVault;
-	keycloakConfig: KeycloakConfig;
-	vaultConfig: VaultConfig;
+	userProfile: AppConstant.LoggedIn["userProfile"];
+	userConfigs: UserConfigs;
+	keycloakConfig: AppConstant["keycloakConfig"];
+	vaultClientConfig: AppConstant["vaultClientConfig"];
 	oidcTokens: OidcTokens;
 	vaultToken: string;
 };
 
 
-//TODO: Rename
 const buildMustacheView = (params: BuildMustacheViewParams) => {
 
 	const {
 		s3, ip, userProfile,
-		userProfileInVault,
-		vaultConfig, oidcTokens, vaultToken
+		userConfigs,
+		vaultClientConfig, oidcTokens, vaultToken
 	} = params;
 
 	return {
@@ -45,14 +43,14 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"idep": userProfile.idep,
 			"name": userProfile.nomComplet,
 			"email": userProfile.email,
-			"password": userProfileInVault.userServicePassword,
+			"password": userConfigs.userServicePassword,
 			"key": "https://example.com/placeholder.gpg",
 			"ip": ip,
 		},
 		"git": {
-			"name": userProfileInVault.gitName,
-			"email": userProfileInVault.gitEmail,
-			"credentials_cache_duration": userProfileInVault.gitCredentialCacheDuration
+			"name": userConfigs.gitName,
+			"email": userConfigs.gitEmail,
+			"credentials_cache_duration": userConfigs.gitCredentialCacheDuration
 		},
 		"status": "",
 		"keycloak": {
@@ -62,12 +60,12 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 		},
 		"kubernetes": env.KUBERNETES !== undefined ? { ...env.KUBERNETES } : undefined,
 		"vault": {
-			"VAULT_ADDR": vaultConfig.baseUri,
+			"VAULT_ADDR": vaultClientConfig.baseUri,
 			"VAULT_TOKEN": vaultToken,
-			"VAULT_MOUNT": vaultConfig.engine,
+			"VAULT_MOUNT": vaultClientConfig.engine,
 			"VAULT_TOP_DIR": userProfile.idep,
 		},
-		"kaggleApiToken": userProfileInVault.kaggleApiToken,
+		"kaggleApiToken": userConfigs.kaggleApiToken,
 		"s3": {
 			...s3,
 			"AWS_BUCKET_NAME": userProfile.idep

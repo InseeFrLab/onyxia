@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Both } from './../vignette-commons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: () => {
 		return (

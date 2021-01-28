@@ -4,6 +4,7 @@ import { LinkTo } from './../vignette-commons';
 import { BecherIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: class Diapo extends React.Component {
 		render = () => (

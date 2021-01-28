@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: class Diapo extends React.Component {
 		state = { redirect: false };
