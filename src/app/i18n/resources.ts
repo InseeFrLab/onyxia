@@ -159,7 +159,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "resolved value column name": "Valeur résolue",
             "what's a resolved value": `
             Une variable d'environement peut en référencer une autre, si par example vous avez
-            defini la variable PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
+            défini la variable PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
             qui aura comme valeur résolue «Louis-Dupon»
             `,
             "unavailable key": "Déjà utilisé",
