@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
 type PropsBase = { location: string; };
 
@@ -10,7 +11,7 @@ export function createAiguilleur<
 	{
 		Leaf,
 		Node,
-		Root = ()=> null,
+		Root = () => null,
 		isLeaf = () => Promise.resolve(false),
 		isRoot = () => Promise.resolve(false),
 	}: {
@@ -20,7 +21,7 @@ export function createAiguilleur<
 		isLeaf?: (location: Location) => Promise<boolean>;
 		isRoot?: (location: Location) => Promise<boolean>;
 	}
-): React.FC<Omit<LeafProps & NodeProps & RootProps, "location"> & { location: Location; } > {
+): React.FC<Omit<LeafProps & NodeProps & RootProps, "location"> & { location: Location; }> {
 
 	return (props) => {
 
@@ -57,11 +58,15 @@ export function createAiguilleur<
 		} as any;
 
 		return !init ? null : (
-			isRoot_ ?
-				<Root {...p} /> :
-				isLeaf_ ?
-					<Leaf {...p}/> :
-					<Node {...p}/>
+			<LegacyThemeProvider >
+				{
+					isRoot_ ?
+						<Root {...p} /> :
+						isLeaf_ ?
+							<Leaf {...p} /> :
+							<Node {...p} />
+				}
+			</LegacyThemeProvider>
 		);
 	};
 

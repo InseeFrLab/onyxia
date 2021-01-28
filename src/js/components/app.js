@@ -1,6 +1,5 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -8,7 +7,6 @@ import {
 	Redirect,
 	useLocation
 } from 'react-router-dom';
-import createTheme from './material-ui-theme';
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import { invalidIdep } from 'js/utils/idep';
@@ -41,7 +39,8 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
-import { css } from "app/theme/useClassNames";
+import { css } from "app/theme/useClassNames";
+import { LegacyThemeProvider } from "./LegacyThemeProvider";
 
 
 const { ThemeProvider } = themeProviderFactory(
@@ -53,7 +52,6 @@ const env = getEnv();
 
 const initialPathname = "/accueil";
 
-const theme = createTheme();
 const routerContext = createRouterContext(Home)(initialPathname);
 const Route = createRouteComponent(routerContext)(NativeRoute);
 const PrivateRoute = createPrivateRouteComponent(routerContext);
@@ -79,7 +77,7 @@ export const App = ({
 		);
 
 const App404 = () => (
-	<MuiThemeProvider theme={theme}>
+	<LegacyThemeProvider>
 		<CssBaseline />
 		<Router>
 			<div className="application">
@@ -88,7 +86,7 @@ const App404 = () => (
 				<Footer />
 			</div>
 		</Router>
-	</MuiThemeProvider>
+	</LegacyThemeProvider>
 );
 
 function AlertWrapper(props) {
@@ -112,6 +110,9 @@ function AlertWrapper(props) {
 	);
 }
 
+
+//<MuiThemeProvider theme={theme}></MuiThemeProvider>
+
 const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 
 	const appConstants = useAppConstants();
@@ -119,14 +120,16 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 	const { isUserLoggedIn } = appConstants;
 
 	return (
-		<MuiThemeProvider theme={theme}>
+		<ThemeProvider isDarkModeEnabled={false}>
 			{waiting ? <Preloader /> : null}
 			<CssBaseline />
 			<Favicon />
 			<Router>
 				<>
 					<div className="application">
-						<Navbar />
+						<LegacyThemeProvider>
+							<Navbar />
+						</LegacyThemeProvider>
 						<RegionBanner />
 						{invalidIdep(idep) && (
 							<AlertWrapper severity="error">
@@ -168,18 +171,24 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									component={MyService}
 								/>
 
+
+
 								<PrivateRoute path="/mon-compte" component={MonCompte} />
+
+
 								<PrivateRoute
 									exact
 									path="/mes-fichiers"
 									component={MyBuckets}
 								/>
 
+
 								<PrivateRoute
 									path="/mes-fichiers/:bucketName"
 									exact
 									component={NavigationFile}
 								/>
+
 								<PrivateRoute
 									path="/mes-fichiers/:bucketName/*"
 									component={NavigationFile}
@@ -188,9 +197,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									exact
 									path="/mes-secrets"
 									component={() => (
-										<ThemeProvider isDarkModeEnabled={false}>
-											<MySecrets className="mySecrets" />
-										</ThemeProvider>
+										<MySecrets className="mySecrets" />
 									)}
 								/>
 
@@ -204,14 +211,16 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 						</main>
 						<FooterCond />
 						<Notifications />
-						{isUserLoggedIn && <QuickAccess />}
+						<LegacyThemeProvider>
+							{isUserLoggedIn && <QuickAccess />}
+						</LegacyThemeProvider>
 					</div>
 					{isUserLoggedIn && <CloudShell />}
 					<VisiteGuidee />
 					<ToastContainer position="bottom-left" />
 				</>
 			</Router>
-		</MuiThemeProvider>
+		</ThemeProvider>
 	);
 
 };

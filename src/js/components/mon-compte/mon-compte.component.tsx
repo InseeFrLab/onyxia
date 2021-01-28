@@ -17,6 +17,7 @@ import S3Field from './s3';
 import { thunks } from "lib/setup";
 import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
+import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
 export const MonCompte = () => {
 
@@ -46,7 +47,7 @@ export const MonCompte = () => {
 	const credentials = s3;
 
 	return (
-		<>
+		<LegacyThemeProvider>
 			<div className="en-tete">
 				<Typography
 					variant="h2"
@@ -194,7 +195,7 @@ export const MonCompte = () => {
 					/>
 				</Paper>
 			</div>
-		</>
+		</LegacyThemeProvider>
 	);
 };
 

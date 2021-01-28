@@ -6,7 +6,7 @@ import './myBuckets.scss';
 import { Region } from 'js/model/Region';
 import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
-
+import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
 export const MyBuckets = () => {
 	const dispatch = useDispatch();
@@ -29,7 +29,7 @@ export const MyBuckets = () => {
 	}, [idep, dispatch, buckets]);
 
 	return (
-		<>
+		<LegacyThemeProvider>
 			<div className="en-tete">
 				<Typography
 					variant="h2"
@@ -66,7 +66,7 @@ export const MyBuckets = () => {
 					</div>
 				</Paper>
 			</div>
-		</>
+		</LegacyThemeProvider>
 	);
 };
 
