@@ -79,10 +79,12 @@ const Bucket = ({
 	description: string;
 	region: Region;
 }) => {
+
 	const monitoringUrl = region?.data?.S3?.monitoring?.URLPattern?.replace(
-		'$bucketId',
+		'$BUCKET_ID',
 		id
 	);
+
 	return (
 		<>
 			<Paper className="onyxia-toolbar actions" elevation={5}>
