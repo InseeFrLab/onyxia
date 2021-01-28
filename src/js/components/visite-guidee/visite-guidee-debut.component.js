@@ -5,6 +5,7 @@ import { actions } from 'js/redux/legacyActions';
 import VisiteGuide from './visite-guidee.component';
 import { Next, LinkTo, Arrow } from './vignette-commons';
 import D from 'js/i18n';
+import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
 const { startVisite } = actions;
 
@@ -53,7 +54,9 @@ const ETAPES = [
 ];
 
 const Visite = (props) => (
-	<VisiteGuide visite={true} etapes={ETAPES} {...props} />
+	<LegacyThemeProvider>
+		<VisiteGuide visite={true} etapes={ETAPES} {...props} />
+	</LegacyThemeProvider>
 );
 
-export default connect(undefined, { "startVisite": ()=> startVisite() })(Visite);
+export default connect(undefined, { "startVisite": () => startVisite() })(Visite);

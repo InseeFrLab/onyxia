@@ -3,10 +3,10 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
+import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
 import { useLocation } from "react-router-dom";
 import { relative as pathRelative } from "path";
-
+import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
 export const NavigationFile: React.FC<{
 	match: { params: { bucketName: string; } };
@@ -17,7 +17,7 @@ export const NavigationFile: React.FC<{
 
 	//NOTE: Exactly the same as window.location.pathname but we can be sure that there is a
 	// re-render when it's changed.
-	const { pathname: window_location_pathname }= useLocation();
+	const { pathname: window_location_pathname } = useLocation();
 
 	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
@@ -50,7 +50,7 @@ export const NavigationFile: React.FC<{
 
 		setPathname(where);
 
-	},[pathname, dispatch, bucketName, racine, window_location_pathname ] );
+	}, [pathname, dispatch, bucketName, racine, window_location_pathname]);
 
 	const refresh = useCallback(() => {
 
@@ -140,22 +140,27 @@ export const NavigationFile: React.FC<{
 	const here = pathRelative(racine, pathname);
 	const file = currentObjects.find(({ name }) => name === here);
 
-	return file ? (
-		<MyFile
-			fileName={decodeURI(here)}
-			bucketName={bucketName}
-			file={file}
-			path={decodeURI(pathname.replace(racine, ''))}
-		/>
-	) : (
-			<MyFiles
-				files={currentObjects}
-				directories={currentDirectories}
-				bucketName={bucketName}
-				refresh={refresh}
-				path={pathname.replace(racine, '')}
-			/>
-		);
-
+	return (
+		<LegacyThemeProvider>
+			{
+				file ? (
+					<MyFile
+						fileName={decodeURI(here)}
+						bucketName={bucketName}
+						file={file}
+						path={decodeURI(pathname.replace(racine, ''))}
+					/>
+				) : (
+						<MyFiles
+							files={currentObjects}
+							directories={currentDirectories}
+							bucketName={bucketName}
+							refresh={refresh}
+							path={pathname.replace(racine, '')}
+						/>
+					)
+			}
+		</LegacyThemeProvider>
+	);
 
 };
