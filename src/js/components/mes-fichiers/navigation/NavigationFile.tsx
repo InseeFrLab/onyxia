@@ -5,6 +5,7 @@ import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
 import { useLocation } from "react-router-dom";
+import { relative as pathRelative } from "path";
 
 
 export const NavigationFile: React.FC<{
@@ -136,12 +137,12 @@ export const NavigationFile: React.FC<{
 		return null;
 	}
 
-	const here = pathname.replace(racine, '');
+	const here = pathRelative(racine, pathname);
 	const file = currentObjects.find(({ name }) => name === here);
 
 	return file ? (
 		<MyFile
-			fileName={decodeURI(here).substr(1)}
+			fileName={decodeURI(here)}
 			bucketName={bucketName}
 			file={file}
 			path={decodeURI(pathname.replace(racine, ''))}

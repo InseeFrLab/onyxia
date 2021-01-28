@@ -79,9 +79,11 @@ const asyncThunks = {
 
 					}
 
-
-					//TODO: Investigate at runtime
-					const stream = await minio.getBucketContent(bucketName, prefix, rec);
+					const stream = await minio.getBucketContent(
+						bucketName, 
+						prefix.replace(/^\//, ""), 
+						rec
+					);
 
 					stream.on(
 						"data",
