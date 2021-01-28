@@ -6,9 +6,6 @@ import "./style.scss";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 
-
-
-
 export const HidablePane: React.FC<{
 	post?: () => boolean;
 	anchor?: HTMLElement;
@@ -114,7 +111,7 @@ export const HidablePane: React.FC<{
 
 
 
-	}, [anchor]);
+	}, [anchor, display, hide ]);
 
 
 	useEffect(() => {

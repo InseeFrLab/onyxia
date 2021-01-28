@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Prec, Next } from './../vignette-commons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: class Vignette extends React.Component {
 		render() {

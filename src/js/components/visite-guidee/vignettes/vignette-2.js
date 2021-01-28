@@ -5,6 +5,7 @@ import { Icon, IconButton } from '@material-ui/core';
 import { WorkInProgress } from 'js/components/commons/icons';
 import D from 'js/i18n';
 
+ 
 export default {
 	description: () => {
 		//document.getElementById('onglets-accueil-services').style.zIndex = 1000;

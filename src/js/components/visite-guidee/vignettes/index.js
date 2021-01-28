@@ -11,6 +11,7 @@ import vignette10 from './vignette-10';
 import vignette11 from './vignette-11';
 import vignette12 from './vignette-12';
 import vignetteFin from './vignette-fin';
+ 
 export default [
 	vignette1,
 	vignette2,

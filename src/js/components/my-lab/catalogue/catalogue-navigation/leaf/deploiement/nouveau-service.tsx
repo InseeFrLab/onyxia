@@ -16,7 +16,6 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Loader from 'js/components/commons/loader';
 import JSONEditor from 'js/components/commons/json-editor';
-import { axiosPublic } from "js/utils/axios-config";
 import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
 import { id } from "evt/tools/typeSafety/id";
@@ -25,9 +24,9 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useMustacheParams, useUserProfile, useIsUserLoggedIn, useIsBetaModeEnabled } from "js/redux/hooks";
+import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prKeycloakClient } from "lib/setup";
+import { prOidcClient, prAxiosInstance } from "lib/setup";
 
 type Service = {
 	category: "group" | "service";
@@ -66,7 +65,7 @@ export const NouveauService: React.FC<Props> = ({
 			}, "hidden">>
 		}[];
 	}[]>([]);
-	const { isUserLoggedIn } = useIsUserLoggedIn();
+	const { isUserLoggedIn } = useAppConstants();
 	const dispatch = useDispatch();
 
 
@@ -74,7 +73,8 @@ export const NouveauService: React.FC<Props> = ({
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
 	const { isBetaModeEnabled } = useIsBetaModeEnabled();
-	const { userProfile: { idep } } = useUserProfile();
+	//TODO: This should be private
+	const appConstants = useAppConstants();
 
 	const queryParams = queryString.decode(getCleanParams());
 
@@ -115,9 +115,9 @@ export const NouveauService: React.FC<Props> = ({
 			return;
 		}
 
-		prKeycloakClient.then(keycloakClient => {
-			assert(!keycloakClient.isUserLoggedIn);
-			keycloakClient.login();
+		prOidcClient.then(oidcClient => {
+			assert(!oidcClient.isUserLoggedIn);
+			oidcClient.login();
 		});
 
 	}, [isUserLoggedIn]);
@@ -156,7 +156,7 @@ export const NouveauService: React.FC<Props> = ({
 		const { iFV, fV, oF } = getOptions(
 			//NOTE: we should be able to just write mustacheParams but
 			//TS is not clever enough to figure it out.
-			{ ...mustacheParams, "s3": mustacheParams.s3 }, 
+			{ ...mustacheParams, "s3": mustacheParams.s3 },
 			service,
 			queryParams
 		);
@@ -233,7 +233,7 @@ export const NouveauService: React.FC<Props> = ({
 								</Typography>
 							</div>
 							<Formulaire
-								user={{ idep }}
+								user={{ "idep": appConstants.isUserLoggedIn ? appConstants.userProfile.idep : "" }}
 								name={ongletContent.nom}
 								handleChange={handlechangeField}
 								fields={ongletContent.fields}
@@ -313,7 +313,7 @@ const mapOngletToFields = (nom: string) => (onglet: Onglet) => ({
 	nom: nom,
 	description:
 		onglet.description || 'Cet onglet ne possède pas de description.',
-	fields: getFields(escapeDots(nom))(onglet.properties),
+	fields: getFields(escapeDots(nom))(onglet.properties)
 });
 
 const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
@@ -358,6 +358,8 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 };
 
 
+
+
 const arrayToObject =
 	(queryParams: Record<string, string>) =>
 		(buildMustacheViewParams: BuildMustacheViewParams) =>
@@ -398,7 +400,6 @@ const getFromQueryParams =
 					case "number": return Number.parseFloat(value);
 					default: return value;
 				}
-
 			};
 
 const mapServiceToOnglets = (
@@ -413,16 +414,16 @@ export const getValuesObject = (fieldsValues: Record<string, string | boolean | 
 	Object.entries(fieldsValues)
 		.map(([key, value]) => ({
 			"path": key
-				//NOTE the two next pipe mean "split all non escaped dots"
-				//the regular expression 'look behind' is not supported by Safari.
-				.split(".")
-				.reduce<string[]>((prev, curr) =>
-					prev[prev.length - 1]?.endsWith("\\") ?
-						(prev[prev.length - 1] += `.${curr}`, prev) :
-						[...prev, curr],
-					[]
-				)
-				.map(s => s.replace(/\\\./g, ".")),
+			//NOTE the two next pipe mean "split all non escaped dots"
+			//the regular expression 'look behind' is not supported by Safari.
+			.split(".")
+			.reduce<string[]>((prev, curr) =>
+				prev[prev.length - 1]?.endsWith("\\") ?
+					(prev[prev.length - 1] += `.${curr}`, prev) :
+					[...prev, curr],
+				[]
+			)
+			.map(s => s.replace(/\\\./g, ".")),
 			value,
 		}))
 		.reduce((acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }), id<Record<string, string | boolean | number>>({}));
@@ -465,4 +466,5 @@ export const getOptions = (
 };
 
 export const getService = async (idCatalogue: string, idService: string) =>
-	axiosPublic(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`);
+	(await prAxiosInstance)(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`)
+		.then(({ data }) => data);

@@ -7,20 +7,20 @@ import { getEnv } from "js/env";
 import { nonNullable } from "evt";
 
 /** We avoid importing app right away to prevent require cycles */
-const getKeycloakClient = memoize(
+const getOidcClient = memoize(
 	() => import("lib/setup")
-		.then(ns => ns.prKeycloakClient),
+		.then(ns => ns.prOidcClient),
 	{ "promise": true }
 );
 
 const fetchMinioToken = async () => {
 
-	const keycloakClient = await getKeycloakClient();
+	const oidcClient = await getOidcClient();
 
-	assert(keycloakClient.isUserLoggedIn);
+	assert(oidcClient.isUserLoggedIn);
 
 	const { accessToken: oidcAccessToken } =
-		await keycloakClient.evtOidcTokens.waitFor(nonNullable());
+		await oidcClient.evtOidcTokens.waitFor(nonNullable());
 
 	const url = `${getEnv().MINIO.BASE_URI}?Action=AssumeRoleWithClientGrants&Token=${oidcAccessToken}&DurationSeconds=43200&Version=2011-06-15`;
 	const minioResponse = await axios.post(url);

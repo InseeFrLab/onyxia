@@ -1,7 +1,13 @@
-import { axiosAuth } from "js/utils/axios-config";
 import { Service, Group } from 'js/model';
-
 import { restApiPaths } from "js/restApiPaths";
+import memoize from "memoizee";
+
+/** We avoid importing app right away to prevent require cycles */
+const getAxiosInstance = memoize(
+	() => import("lib/setup")
+		.then(ns => ns.prAxiosInstance),
+	{ "promise": true }
+);
 
 interface ServicesListing {
 	apps: Service[];
@@ -9,44 +15,46 @@ interface ServicesListing {
 }
 
 export const getServices = async (groupId?: String) => {
-	return await axiosAuth
+	return await (await getAxiosInstance())
 		.get<ServicesListing>(restApiPaths.myServices, {
 			params: {
 				groupId: groupId,
 			},
 		})
-		.then((resp) => (resp as unknown) as ServicesListing);
+		.then(({data})=> data)
 };
 
 export const getService = async (id: string) => {
-	return await axiosAuth
+	return await (await getAxiosInstance())
 		.get<Service>(restApiPaths.getService, {
 			params: {
 				serviceId: id,
 			},
 		})
-		.then((resp) => (resp as unknown) as Service);
+		.then(({data})=> data)
 };
 
-export const deleteServices = (path?: string, bulk?: boolean) => {
+export const deleteServices = async (path?: string, bulk?: boolean) => {
 	if (path && bulk && !path.startsWith('/')) {
 		path = '/' + path;
 	}
-	return axiosAuth.delete(`${restApiPaths.deleteService}`, {
+	return (await getAxiosInstance()).delete(`${restApiPaths.deleteService}`, {
 		params: {
 			path: path,
 			bulk: bulk,
 		},
-	});
+	})
+	.then(({data})=> data);
+
 };
 
 export const getLogs = async (serviceId: string, taskId: string) => {
-	return await axiosAuth
+	return await (await getAxiosInstance())
 		.get<string>(restApiPaths.getLogs, {
 			params: {
 				serviceId: serviceId,
 				taskId: taskId,
 			},
 		})
-		.then((resp) => (resp as unknown) as string);
+		.then(({data})=> data)
 };

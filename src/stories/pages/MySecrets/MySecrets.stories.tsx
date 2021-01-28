@@ -1,0 +1,62 @@
+
+import { css } from "app/theme/useClassNames";
+import { getStoryFactory } from "stories/geStory";
+import { sectionName } from "../sectionName";
+import { MySecrets } from "app/pages/MySecrets";
+import type { Props } from "app/pages/MySecrets";
+import { symToStr } from "app/utils/symToStr";
+
+type StoryProps = {
+    width: number;
+    height: number;
+};
+
+function Component(props: Omit<Props, "className"> & StoryProps) {
+
+    const { width, height} = props;
+
+    return <MySecrets className={css({
+            width,
+            height
+    })} />;
+
+}
+
+const { meta, getStory } = getStoryFactory({
+    sectionName,
+    "doProvideMockStore": true,
+    "wrappedComponent": { [symToStr({ MySecrets })]: Component }
+});
+
+
+export default {
+    ...meta,
+    "argTypes": {
+        ...meta.argTypes,
+        "width": {
+            "control": {
+                "type": "range",
+                "min": 200,
+                "max": 1920
+            }
+        },
+        "height": {
+            "control": {
+                "type": "range",
+                "min": 200,
+                "max": 1080
+            }
+        }
+
+    }
+};
+
+export const Vue1 = getStory({
+    "width": 1400,
+    "height": 1100
+});
+
+
+
+
+

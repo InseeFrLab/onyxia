@@ -1,5 +1,6 @@
 import React from 'react';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default ({ width = 30, height = 20, color = '#cf0' }) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"

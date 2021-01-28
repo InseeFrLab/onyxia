@@ -19,7 +19,7 @@ import { getEnv } from 'js/env';
 import D from 'js/i18n';
 
 import type { RootState } from "lib/setup";
-import { useSelector, useIsBetaModeEnabled } from "js/redux/hooks";
+import { useSelector, useIsBetaModeEnabled } from "app/lib/hooks";
 
 const env = getEnv();
 
@@ -34,6 +34,7 @@ const ItemLogin = ({ login }: any) => (
 		<ListItemText primary="Login" />
 	</ListItem>
 );
+
 
 export default ({
 	open,
@@ -111,14 +112,12 @@ export default ({
 						</ListItemIcon>
 						<ListItemText primary={D.myFilesTitle} />
 					</ListItem>
-					{isBetaModeEnabled ? (
-						<ListItem button component={Link} to="/mes-secrets">
-							<ListItemIcon>
-								<Icon>vpn_key</Icon>
-							</ListItemIcon>
-							<ListItemText primary={D.mySecretsTitle} />
-						</ListItem>
-					) : null}
+					<ListItem button component={Link} to="/mes-secrets">
+						<ListItemIcon>
+							<Icon>vpn_key</Icon>
+						</ListItemIcon>
+						<ListItemText primary={D.mySecretsTitle} />
+					</ListItem>
 					{isBetaModeEnabled && selectedRegion?.services?.type === 'KUBERNETES' ? (
 						<>
 							<ListItem>
