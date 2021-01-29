@@ -9,6 +9,7 @@ import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
 import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { Header } from "app/components/Header";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -26,6 +27,7 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -119,6 +121,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
             "value input desc": "Environnement variable value"
+        },
+        "Header": {
+            "login": "Login",
+            "logout": "Logout"
         }
     },
     "fr": {
@@ -179,6 +185,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
             "value input desc": "Valeur de la variable d'environnement"
+        },
+        "Header": {
+            "login": "Connexion",
+            "logout": "Déconnexion"
         }
         /* spell-checker: enable */
     }

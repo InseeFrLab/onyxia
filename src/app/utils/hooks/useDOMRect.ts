@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import ResizeObserver from "resize-observer-polyfill";
@@ -48,10 +48,16 @@ export function useDOMRect<T extends HTMLElement = any>() {
         "width": 0
     });
 
+    const [htmlElement, setHtmlElement] =useState<T | null>(null);
+
+    useEffect(
+        () => { setHtmlElement(ref.current); },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [ref.current]
+    );
+
     useEvt(
         ctx => {
-
-            const htmlElement = ref.current;
 
             if (htmlElement === null) {
                 return;
@@ -67,8 +73,7 @@ export function useDOMRect<T extends HTMLElement = any>() {
                 );
 
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [ref.current]
+        [htmlElement]
     );
 
     return { domRect, ref };
