@@ -138,7 +138,7 @@ export function Button(props: Props) {
             autoFocus={autoFocus}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-            <span className={css({ "paddingTop": "2px" })} >
+            <span className={css({ "paddingTop": 2 })} >
                 {children}
             </span>
         </MuiButton>

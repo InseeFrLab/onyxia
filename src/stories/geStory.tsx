@@ -57,7 +57,7 @@ function Container(props: { children: React.ReactNode; }) {
             <Box clone p={4} m={2} display="inline-block">
                 <Paper
                     style={{
-                        "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                        "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
                     }}
                 >
                     <div

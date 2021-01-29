@@ -2,17 +2,17 @@
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { memo } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import { ReactComponent as TourSvg } from "app/assets/svg/AssistedTour.svg";
+import { ReactComponent as TourSvg } from "app/assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "app/assets/svg/Secrets.svg";
-import { ReactComponent as ProfileSvg } from "app/assets/svg/Profile.svg";
+import { ReactComponent as AccountSvg } from "app/assets/svg/Account.svg";
 import { ReactComponent as LabSvg } from "app/assets/svg/Lab.svg";
-import { ReactComponent as InfoSvg } from "app/assets/svg/Info.svg";
 import { ReactComponent as HomeSvg } from "app/assets/svg/Home.svg";
 import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
+import { ReactComponent as CommunitySvg } from "app/assets/svg/Community.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/utils/noUndefined";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -25,16 +25,17 @@ import AttachMoney from "@material-ui/icons/AttachMoney";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import Cached from "@material-ui/icons/Cached";
 import CloseSharp from "@material-ui/icons/CloseSharp";
+import InfoOutlined from "@material-ui/icons/InfoOutlined";
 
 export type SvgTypes =
-    "tour" | "services" | "secrets" | "profile" |
-    "lab" | "info" | "home" | "trainings" | "files" |
-    "collaborationTools" | "bash";
+    "tour" | "services" | "secrets" | "account" |
+    "lab" | "home" | "trainings" | "files" |
+    "collaborationTools" | "bash" | "community";
 
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
-    "cached" | "closeSharp";
+    "cached" | "closeSharp" | "infoOutlined";
 
 //NOTE: Ensure there is not overlap between the types
 (function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
@@ -91,6 +92,7 @@ export const Icon = memo((props: Props) => {
             case "filterNone": return FilterNoneIcon;
             case "check": return CheckIcon;
             case "closeSharp": return CloseSharp;
+            case "infoOutlined": return InfoOutlined;
             default: return type;
         }
     })();
@@ -114,9 +116,8 @@ export const Icon = memo((props: Props) => {
                 case "tour": return TourSvg;
                 case "services": return ServicesSvg;
                 case "secrets": return SecretsSvg;
-                case "profile": return ProfileSvg;
+                case "account": return AccountSvg;
                 case "lab": return LabSvg;
-                case "info": return InfoSvg;
                 case "home": return HomeSvg;
                 case "trainings": return TrainingsSvg;
                 case "files": return FilesSvg;
@@ -126,6 +127,7 @@ export const Icon = memo((props: Props) => {
                 case "attachMoney": return AttachMoney;
                 case "chevronLeft": return ChevronLeft;
                 case "cached": return Cached;
+                case "community": return CommunitySvg;
             }
         })()}
         fontSize={fontSize}

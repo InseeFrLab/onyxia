@@ -10,6 +10,7 @@ import { MySecrets } from "app/pages/MySecrets/MySecrets";
 import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "app/components/Header";
+import { LeftBar } from "app/components/LeftBar";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -28,6 +29,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
+    [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -125,6 +127,19 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Login",
             "logout": "Logout"
+        },
+        "LeftBar": {
+            "about": "About",
+            "account": "Account",
+            "catalog": "Catalog",
+            "home": "Home",
+            "my files": "My Files",
+            "my secrets": "My Secrets",
+            "my services": "My Services",
+            "shared services": "Shared services",
+            "tour": "Tour",
+            "trainings": "Trainings",
+            "toggle isExpanded": "Collapse"
         }
     },
     "fr": {
@@ -189,6 +204,19 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Connexion",
             "logout": "Déconnexion"
+        },
+        "LeftBar": {
+            "about": "À propos",
+            "account": "Mon compte",
+            "catalog": "Catalogue",
+            "home": "Acceuil",
+            "my files": "Mes Fichiers",
+            "my secrets": "Mes Secrets",
+            "my services": "Mes Services",
+            "shared services": "Services partagées",
+            "tour": "Visite guidée",
+            "trainings": "Formation",
+            "toggle isExpanded": "Réduire"
         }
         /* spell-checker: enable */
     }
