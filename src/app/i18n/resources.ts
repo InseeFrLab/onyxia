@@ -130,7 +130,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "watch the video": "Visionner la vidéo de démonstration",
         },
         "ExplorerItem": {
-            "description": "déscription"
+            "description": "description"
         },
         "ExplorerButtonBar": {
             ...common.fr,
@@ -159,7 +159,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "resolved value column name": "Valeur résolue",
             "what's a resolved value": `
             Une variable d'environement peut en référencer une autre, si par example vous avez
-            definit la varialbe PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
+            défini la variable PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
             qui aura comme valeur résolue «Louis-Dupon»
             `,
             "unavailable key": "Déjà utilisé",
@@ -168,12 +168,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key start with digit": "Ne doit pas commencer par un chiffre",
             "invalid key invalid character": "Caractère non valide",
             "invalid value cannot eval": "Expression shell non valide",
-            "use this secret": "Utilliser dans un service",
+            "use this secret": "Utiliser dans un service",
             "how to use a secret": `
             Le chemin du secret a été copié dans le presse papier!
             Au moment de lancer un service (RStudio, Jupyter), rendez-vous
-            dans l'onglet 'VAULT' et coller le chemin du secret dans le champ prévu a cet effet.
-            Vos clefs valeurs seront disponible sous forme de variable d'environnement.
+            dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
+            Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
             `
         },
         "MySecretsEditorRow": {
