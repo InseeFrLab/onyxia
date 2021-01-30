@@ -3,7 +3,7 @@ import { useMemo, memo } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { css, cx, useTheme } from "app/theme/useClassNames";
+import { cx, createUseClassNames } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/utils/hooks/useCallbackFactory";
 
@@ -74,9 +74,54 @@ const { CustomButton } = (() => {
         onClick(): void;
     };
 
+    const { useClassNames } = createUseClassNames<Props>()(
+        ({ theme }, { collapsedWidth, isExpanded, target }) => ({
+            "root": {
+                "display": "flex",
+                "cursor": "pointer",
+                "marginTop": theme.spacing(1),
+                "&:hover .hoverBox": {
+                    "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                }
+            },
+            "iconWrapper": {
+                "width": collapsedWidth,
+                "textAlign": "center",
+                "position": "relative",
+            },
+            "hoverBox": {
+                "display": "inline-block",
+                "position": "absolute",
+                "height": "100%",
+                "left": collapsedWidth * 1 / 8,
+                "right": isExpanded ? 0 : collapsedWidth * 1 / 8,
+                "zIndex": 1,
+                "borderRadius": `10px ${isExpanded ? "0 0" : "10px 10px"} 10px`,
+            },
+            "icon": {
+                "position": "relative",
+                "zIndex": 2,
+                "margin": theme.spacing(1, 0),
+                ...(target !== "toggle isExpanded" ? {} : {
+                    "transform": isExpanded ? "rotate(0)" : "rotate(-180deg)"
+                })
+
+            },
+            "typoWrapper": {
+                "paddingRight": theme.spacing(1),
+                "flex": 1,
+                "borderRadius": "0 10px 10px 0",
+                "display": "flex",
+                "alignItems": "center",
+                "marginRight": theme.spacing(2)
+            }
+
+        })
+    );
+
     const CustomButton = memo((props: Props) => {
 
-        const { isExpanded, target, collapsedWidth, onClick } = props;
+        const { isExpanded, target, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -96,60 +141,20 @@ const { CustomButton } = (() => {
             }
         }, [target]);
 
-        const theme = useTheme();
+        const { classNames } = useClassNames(props);
 
         return (
             <div
-                className={css({
-                    "display": "flex",
-                    "cursor": "pointer",
-                    //"border": "1px solid red",
-                    "marginTop": theme.spacing(1),
-                    "&:hover .hoverBox": isExpanded ? {
-                        "backgroundColor": theme.custom.colors.useCases.surfaces.background,
-                    } : undefined
-                })}
+                className={classNames.root}
                 onClick={onClick}
             >
-                <div
-                    className={css({
-                        "width": collapsedWidth,
-                        "textAlign": "center",
-                        //"border": "1px solid black",
-                        "position": "relative",
+                <div className={classNames.iconWrapper} >
 
-                    })}
-                >
-
-                    <div
-                        className={cx(
-                            "hoverBox",
-                            css({
-                                "display": "inline-block",
-                                "position": "absolute",
-                                "height": "100%",
-                                "left": collapsedWidth * 1 / 8,
-                                "right": 0,
-                                "zIndex": 1,
-                                "borderRadius": "10px 0 0 10px",
-                            })
-                        )}
-                    />
+                    <div className={cx("hoverBox", classNames.hoverBox)} />
 
                     <Icon
                         type={type}
-                        className={
-                            cx(
-                                target !== "toggle isExpanded" ?
-                                    undefined :
-                                    css({ "transform": isExpanded ? "rotate(0)" : "rotate(-180deg)" }),
-                                css({ 
-                                    "position": "relative", 
-                                    "zIndex": 2,
-                                    "margin": theme.spacing(1,0),
-                                })
-                            )
-                        }
+                        className={classNames.icon}
                         fontSize="large"
                     />
 
@@ -158,30 +163,13 @@ const { CustomButton } = (() => {
                     !isExpanded ?
                         null
                         :
-                        
-                        <div
-                            className={cx(
-                                "hoverBox",
-                                css({
-                                    //"border": "1px solid purple",
-                                    "paddingRight": theme.spacing(1),
-                                    "flex": 1,
-                                    "borderRadius": "0 10px 10px 0",
-                                    "display": "flex",
-                                    "alignItems": "center"
-                                })
-                            )}
-                        >
-
-                        <Typography
-                            variant="h6"
-                        >
-                            {t(target)}
-                        </Typography>
+                        <div className={cx("hoverBox", classNames.typoWrapper)} >
+                            <Typography variant="h6">
+                                {t(target)}
+                            </Typography>
                         </div>
 
                 }
-
             </div>
         );
 
