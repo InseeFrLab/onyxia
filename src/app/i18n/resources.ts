@@ -1,16 +1,16 @@
-import { symToStr } from "app/utils/symToStr";
-import { Reflect } from "app/utils/Reflect";
+import { symToStr } from "app/tools/symToStr";
+import { Reflect } from "app/tools/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
-import { Explorer } from "app/components/Explorer/Explorer";
-import { ExplorerItems } from "app/components/Explorer/ExplorerItems";
-import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
-import { MySecrets } from "app/pages/MySecrets/MySecrets";
-import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
-import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
-import { Header } from "app/components/Header";
-import { LeftBar } from "app/components/LeftBar";
+import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
+import { Explorer } from "app/components/shared/Explorer/Explorer";
+import { ExplorerItems } from "app/components/shared/Explorer/ExplorerItems";
+import { ExplorerItem } from "app/components/shared/Explorer/ExplorerItem";
+import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
+import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditor";
+import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { Header } from "app/components/App/Header";
+import { LeftBar } from "app/components/App/LeftBar";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;

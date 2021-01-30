@@ -6,7 +6,7 @@ import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
 import "minimal-polyfills/Object.fromEntries";
 
 /*

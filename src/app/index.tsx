@@ -8,7 +8,7 @@ import { getEnv } from "../js/env";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
-import { getIsOsPreferredColorSchemeDark } from "app/utils/getIsOsPreferredColorSchemeDark";
+import { getIsOsPreferredColorSchemeDark } from "app/tools/getIsOsPreferredColorSchemeDark";
 
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
@@ -63,11 +63,7 @@ function Root() {
     return (
         <React.StrictMode>
             <I18nProvider lng="browser default">
-                <StoreProvider
-                    createStoreParams={createStoreParams}
-                    //TODO: False once we will actually log things
-                    doLogSecretManager={true}
-                >
+                <StoreProvider createStoreParams={createStoreParams} >
                     <App />
                 </StoreProvider>
             </I18nProvider>

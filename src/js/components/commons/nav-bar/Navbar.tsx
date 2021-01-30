@@ -16,7 +16,7 @@ import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
 import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
-import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
+import { useWindowInnerWidth } from "app/tools/hooks/useWindowInnerWidth";
 
 
 

@@ -1,10 +1,10 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useState, memo } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { useCallback } from "app/tools/hooks/useCallbackFactory";
 import MuiTextField from "@material-ui/core/TextField";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
 

@@ -4,7 +4,7 @@ import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
-import { getLocalStorage } from "../utils/safeLocalStorage";
+import { getLocalStorage } from "../tools/safeLocalStorage";
 import { assert } from "evt/tools/typeSafety/assert";
 
 //TODO: We shouldn't have to specify /acceuil

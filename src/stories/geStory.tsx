@@ -1,7 +1,7 @@
 
 
 import type { Meta } from "@storybook/react";
-import { symToStr } from "app/utils/symToStr";
+import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
 import React from "react";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
@@ -92,10 +92,7 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider
-                createStoreParams={createStoreParams}
-                doLogSecretManager={true}
-            >
+            <StoreProvider createStoreParams={createStoreParams} >
                 {children}
             </StoreProvider>;
 

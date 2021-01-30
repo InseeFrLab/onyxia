@@ -1,13 +1,13 @@
 
 
 import { useState, useEffect } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { useCallback } from "app/tools/hooks/useCallbackFactory";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "app/utils/hooks/useValueChangeEffect";
+import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 
 export type Props = {
     className?: string | null;

@@ -5,7 +5,7 @@ import { partition } from "evt/tools/reducers/partition";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManagerClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { symToStr } from "app/utils/symToStr";
+import { symToStr } from "app/tools/symToStr";
 
 
 function formatPath(path: string): string {

@@ -3,7 +3,7 @@
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import MuiPaper from "@material-ui/core/Paper";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
     children: NonNullable<React.ReactNode>;

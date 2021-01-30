@@ -10,7 +10,7 @@ import {
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import { invalidIdep } from 'js/utils/idep';
-import { Home } from "js/components/home/Home";
+import { Home } from "app/components/pages/Home";
 import MyService from 'js/components/my-service';
 import MyServices from 'js/components/my-services';
 import Services, { ServiceDetails } from 'js/components/services';
@@ -36,7 +36,7 @@ import { ToastContainer } from 'react-toastify';
 import { getEnv } from "js/env";
 import { useAppConstants } from "app/lib/hooks";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
-import { MySecrets } from "app/pages/MySecrets/MySecrets";
+import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
 import { css } from "app/theme/useClassNames";

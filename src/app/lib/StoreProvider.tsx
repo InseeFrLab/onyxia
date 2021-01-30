@@ -7,12 +7,11 @@ import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
 import memoize from "memoizee";
-import { JSONSortStringify } from "app/utils/JSONSortStringify";
+import { JSONSortStringify } from "app/tools/JSONSortStringify";
 import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "vaultCmdTranslationLogger">;
-    doLogSecretManager: boolean;
     children: React.ReactNode;
 };
 
@@ -21,12 +20,10 @@ const memoizedCreateStore = memoize(
     (createStoreParams: Props["createStoreParams"]) => {
 
         const evtBackOnline = Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
-        const vaultCmdTranslationLogger = id<typeof console.log>(() => { });
 
         return createStore({
             ...createStoreParams,
             evtBackOnline,
-            vaultCmdTranslationLogger
         });
 
     },

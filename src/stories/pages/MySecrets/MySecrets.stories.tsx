@@ -2,9 +2,9 @@
 import { css } from "app/theme/useClassNames";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "../sectionName";
-import { MySecrets } from "app/pages/MySecrets";
-import type { Props } from "app/pages/MySecrets";
-import { symToStr } from "app/utils/symToStr";
+import { MySecrets } from "app/components/pages/MySecrets";
+import type { Props } from "app/components/pages/MySecrets";
+import { symToStr } from "app/tools/symToStr";
 
 type StoryProps = {
     width: number;

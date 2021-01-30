@@ -14,7 +14,7 @@ import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/Collabor
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
 import { ReactComponent as CommunitySvg } from "app/assets/svg/Community.svg";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";

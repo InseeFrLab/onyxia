@@ -12,7 +12,7 @@ import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManage
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
-import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
@@ -47,7 +47,6 @@ export type CreateStoreParams = {
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     evtBackOnline: NonPostableEvt<void>;
-    vaultCmdTranslationLogger: typeof console.log;
 };
 
 export declare type SecretsManagerClientConfig =
@@ -137,15 +136,14 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark" | "vaultCmdTranslationLogger">
+    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isOsPrefersColorSchemeDark,
-        vaultCmdTranslationLogger
+        isOsPrefersColorSchemeDark
     } = params;
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
@@ -206,31 +204,6 @@ async function createStoreForLoggedUser(
         secretsManagerClient,
         secretsManagerTranslator
     });
-
-    {
-
-        const { evtSecretsManagerTranslation } = getEvtSecretsManagerTranslation();
-
-        const log = (str: string) => vaultCmdTranslationLogger(
-            `%c$ ${str}`,
-            'background: #222; color: #bada55'
-        );
-
-        evtSecretsManagerTranslation.attach(
-            ({ type }) => type === "cmd",
-            cmd => {
-
-                log(cmd.translation);
-
-                evtSecretsManagerTranslation.attachOnce(
-                    ({ cmdId }) => cmdId === cmd.cmdId,
-                    resp => log(resp.translation)
-                );
-
-            }
-        );
-
-    }
 
     secretsManagerClient = secretsManagerClientProxy;
 
@@ -352,8 +325,7 @@ export async function createStore(params: CreateStoreParams) {
         secretsManagerClientConfig,
         isOsPrefersColorSchemeDark,
         onyxiaApiClientConfig,
-        evtBackOnline,
-        vaultCmdTranslationLogger
+        evtBackOnline
     } = params;
 
     const oidcClient = await (() => {
@@ -369,8 +341,7 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isOsPrefersColorSchemeDark,
-                vaultCmdTranslationLogger
+                isOsPrefersColorSchemeDark
             }) :
             {
                 ...await createStoreForNonLoggedUser({
