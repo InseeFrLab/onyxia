@@ -181,6 +181,7 @@ export const App = memo(() => {
                     className={classNames.leftBar}
                     collapsedWidth={logoMaxWidth}
                     onClick={onLeftBarClick}
+                    currentPage={route.name}
                 />
 
                 <main className={classNames.main}>

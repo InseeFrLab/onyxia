@@ -23,7 +23,7 @@ export type PageTarget = Exclude<Target, "toggle isExpanded">;
 export type Props = {
     className?: string;
     collapsedWidth: number;
-    currentPage: PageTarget;
+    currentPage: PageTarget | false;
     onClick(target: Exclude<Target, "toggle isExpanded">): void;
 };
 
