@@ -16,23 +16,35 @@ const targets = [
     "catalog" as const, "my services" as const, "my files" as const, "about" as const
 ];
 
-
-
 export type Target = typeof targets[number];
+
+export type PageTarget = Exclude<Target, "toggle isExpanded">;
 
 export type Props = {
     className?: string;
     collapsedWidth: number;
+    currentPage: PageTarget;
     onClick(target: Exclude<Target, "toggle isExpanded">): void;
 };
 
+const { useClassNames } = createUseClassNames<Props>()(
+    ({theme})=>({
+        "root": {
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "borderRadius": 16,
+            "boxShadow": theme.custom.shadows[3],
+            "paddingTop": theme.spacing(1)
+        }
+    })
+);
 
 export const LeftBar = memo((props: Props) => {
 
     const {
         collapsedWidth,
         onClick,
-        className
+        className,
+        currentPage
     } = props;
 
     const [isExpanded, toggleIsExpanded] = useReducer(value => !value, false);
@@ -50,13 +62,16 @@ export const LeftBar = memo((props: Props) => {
         }
     );
 
+    const { classNames } = useClassNames(props);
+
     return (
-        <nav className={className} >
+        <nav className={cx(classNames.root, className)} >
             {
                 targets.map(
                     target =>
                         <CustomButton
                             key={target}
+                            isActive={currentPage === target}
                             target={target}
                             isExpanded={isExpanded}
                             collapsedWidth={collapsedWidth}
@@ -82,13 +97,14 @@ const { CustomButton } = (() => {
         target: Exclude<Target, "toggle expand">;
         isExpanded: boolean;
         collapsedWidth: number;
+        isActive: boolean;
         onClick(): void;
     };
 
     const hoverBoxClassName = "hoverBox";
 
     const { useClassNames } = createUseClassNames<Props>()(
-        ({ theme }, { collapsedWidth, isExpanded, target }) => ({
+        ({ theme }, { collapsedWidth, isExpanded, target, isActive }) => ({
             "root": {
                 "display": "flex",
                 "cursor": "pointer",
@@ -117,7 +133,8 @@ const { CustomButton } = (() => {
                 "margin": theme.spacing(1, 0),
                 ...(target !== "toggle isExpanded" ? {} : {
                     "transform": isExpanded ? "rotate(0)" : "rotate(-180deg)"
-                })
+                }),
+                "color": !isActive ? undefined:  theme.custom.colors.useCases.typography.textFocus
 
             },
             "typoWrapper": {
@@ -134,7 +151,7 @@ const { CustomButton } = (() => {
 
     const CustomButton = memo((props: Props) => {
 
-        const { isExpanded, target, onClick } = props;
+        const { isExpanded, target, isActive, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -177,7 +194,7 @@ const { CustomButton } = (() => {
                         null
                         :
                         <div className={cx(hoverBoxClassName, classNames.typoWrapper)} >
-                            <Typography variant="h6">
+                            <Typography variant="h6" color={isActive ? "focus" : undefined}>
                                 {t(target)}
                             </Typography>
                         </div>

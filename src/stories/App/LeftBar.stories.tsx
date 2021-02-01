@@ -14,6 +14,7 @@ export default meta;
 export const Vue1 = getStory({
     "className": css({ "height": 700, "maxWidth": 400 }),
     "collapsedWidth": 72,
+    "currentPage": "home",
     ...logCallbacks(["onClick"])
 });
 
