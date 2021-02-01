@@ -24,8 +24,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
     ({ theme }) => ({
         "root": {
             "backgroundColor": "inherit",
-            "padding": theme.spacing(5),
-            "paddingLeft": theme.spacing(3)
+            "padding": theme.spacing(4,0)
         },
         "text1": {
             "marginBottom": theme.spacing(3),

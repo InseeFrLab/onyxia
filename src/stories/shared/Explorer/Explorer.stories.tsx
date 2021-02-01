@@ -192,7 +192,6 @@ const props: Parameters<typeof getStory>[0] = {
     "getIsValidBasename": pure.getIsValidBasename,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
-    "paddingLeftSpacing": 5,
     ...logCallbacks([
         "onNavigate",
         "onCopyPath",

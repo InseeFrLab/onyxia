@@ -28,13 +28,9 @@ const { secretExplorer: pure } = lib.pure;
 const thunks = lib.thunks.secretExplorer;
 const pure = lib.pure.secretExplorer;
 
-const paddingLeftSpacing = 5;
 
 const { useClassNames } = createUseClassNames<{}>()(
-    ({ theme }) => ({
-        "header": {
-            "paddingLeft": theme.spacing(paddingLeftSpacing)
-        },
+    () => ({
         "root": {
             "display": "flex",
             "flexDirection": "column"
@@ -235,14 +231,12 @@ export function MySecrets(props: Props) {
             <div className={cx(classNames.root, className)}>
 
                 <PageHeader
-                    className={classNames.header}
                     icon="secrets"
                     text1={t("page title")}
                     text2={t("what this page is used for")}
                     text3={<>{t("watch the video")} <Link href={videoUrl} target="_blank">{t("here")}</Link></>}
                 />
                 <Explorer
-                    paddingLeftSpacing={paddingLeftSpacing}
                     className={classNames.explorer}
                     browsablePath={userHomePath}
                     currentPath={state.currentPath}

@@ -15,6 +15,5 @@ export const defaultView = getStory({
     "isViewingFile": false,
     "isSelectedItemInEditingState": false,
     "wordForFile": "file",
-    "paddingLeftSpacing": 5,
     ...logCallbacks(["callback"])
 });

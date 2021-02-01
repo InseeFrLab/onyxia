@@ -70,8 +70,6 @@ export type Props = {
     onCreateItem(params: { kind: "file" | "directory"; basename: string; }): void;
     onCopyPath(params: { path: string; }): void;
 
-    paddingLeftSpacing: number;
-
 };
 
 const { useClassNames } = createUseClassNames<Props & { cmdTranslationTop: number; }>()(
@@ -113,7 +111,6 @@ export function Explorer(props: Props) {
         onCopyPath,
         onDeleteItem,
         onCreateItem,
-        paddingLeftSpacing
     } = props;
 
     useMemo(
@@ -321,7 +318,6 @@ export function Explorer(props: Props) {
         >
             <div ref={buttonBarRef} >
                 <ButtonBar
-                    paddingLeftSpacing={paddingLeftSpacing}
                     selectedItemKind={selectedItemKind}
                     isSelectedItemInEditingState={isSelectedItemInEditingState}
                     isViewingFile={!!file}
@@ -333,68 +329,57 @@ export function Explorer(props: Props) {
                 evtTranslation={evtTranslation}
                 maxHeight={cmdTranslationMaxHeight}
             />
-            <div className={css({
+            {
+                isCurrentPathBrowsablePathRoot ?
+                    null
+                    :
+                    <FileOrDirectoryHeader
+                        kind={file ? "file" : "directory"}
+                        fileBasename={pathBasename(currentPath)}
+                        date={fileDate}
+                        onBack={onBack}
+                    />
+            }
+            <Breadcrump
+                className={classNames.breadcrump}
+                minDepth={getPathDepth(browsablePath)}
+                path={currentPath}
+                isNavigationDisabled={isNavigating}
+                callback={breadcrumbCallback}
+                evtAction={evtBreadcrumpAction}
+            />
+            <div className={cx(css({
                 "flex": 1,
-                "overflow": "hidden",
-                "display": "flex",
-                "flexDirection": "column",
-                "& > *:not(:last-child)": {
-                    "paddingLeft": theme.spacing(paddingLeftSpacing)
-                }
-            })}>
+                "paddingRight": theme.spacing(1),
+                "overflow": "auto"
+            }))}>
                 {
-                    isCurrentPathBrowsablePathRoot ?
-                        null
+                    file ?
+                        <Paper elevation={2}>
+                            {file}
+                        </Paper>
                         :
-                        <FileOrDirectoryHeader
-                            kind={file ? "file" : "directory"}
-                            fileBasename={pathBasename(currentPath)}
-                            date={fileDate}
-                            onBack={onBack}
+                        <Items
+                            className={css({ "height": "100%" })}
+                            files={files}
+                            isNavigating={isNavigating}
+                            directories={directories}
+                            directoriesBeingCreated={directoriesBeingCreated}
+                            directoriesBeingRenamed={directoriesBeingRenamed}
+                            filesBeingCreated={filesBeingCreated}
+                            filesBeingRenamed={filesBeingRenamed}
+                            onNavigate={itemsOnNavigate}
+                            onEditBasename={onEditBasename}
+                            evtAction={evtItemsAction}
+                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                            onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
+                            onCopyPath={itemsOnCopyPath}
+                            onDeleteItem={itemsOnDeleteItem}
                         />
                 }
-                <Breadcrump
-                    className={classNames.breadcrump}
-                    minDepth={getPathDepth(browsablePath)}
-                    path={currentPath}
-                    isNavigationDisabled={isNavigating}
-                    callback={breadcrumbCallback}
-                    evtAction={evtBreadcrumpAction}
-                />
-                <div className={cx(css({
-                    "flex": 1,
-                    "paddingLeft": theme.spacing(paddingLeftSpacing),
-                    "paddingRight": theme.spacing(1),
-                    "overflow": "auto"
-                }))}>
-                    {
-                        file ?
-                            <Paper elevation={2}>
-                                {file}
-                            </Paper>
-                            :
-                            <Items
-                                className={css({ "height": "100%" })}
-                                files={files}
-                                isNavigating={isNavigating}
-                                directories={directories}
-                                directoriesBeingCreated={directoriesBeingCreated}
-                                directoriesBeingRenamed={directoriesBeingRenamed}
-                                filesBeingCreated={filesBeingCreated}
-                                filesBeingRenamed={filesBeingRenamed}
-                                onNavigate={itemsOnNavigate}
-                                onEditBasename={onEditBasename}
-                                evtAction={evtItemsAction}
-                                onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                                onIsSelectedItemInEditingStateValueChange={onIsSelectedItemInEditingStateValueChange}
-                                onCopyPath={itemsOnCopyPath}
-                                onDeleteItem={itemsOnDeleteItem}
-                            />
-                    }
-                </div>
-
-
             </div>
+
+
         </div>
     );
 

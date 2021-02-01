@@ -20,16 +20,15 @@ export type Props = {
 
     callback(params: { action: Action; }): void;
 
-    paddingLeftSpacing: number;
-
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }, { paddingLeftSpacing }) => ({
+    ({ theme }) => ({
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[1],
-            "paddingLeft": theme.spacing(paddingLeftSpacing)
+            "borderRadius": "8px 0 0 8px",
+            "overflow": "hidden"
         }
     })
 );
@@ -56,11 +55,11 @@ export const ExplorerButtonBar = memo((props: Props) => {
         <div className={classNames.root}>
             { ([
                 "refresh",
-                "rename",
                 "create file",
                 "create directory",
+                "copy path",
+                "rename",
                 "delete",
-                "copy path"
             ] as const).map(action =>
                 <CustomButton
                     startIcon={(() => {

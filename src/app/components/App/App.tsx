@@ -52,7 +52,8 @@ const { useClassNames } = createUseClassNames()(
             "flex": 1,
             "height": "100%",
             //TODO: See if scroll delegation works if we put auto here instead of "hidden"
-            "overflow": "auto"
+            "overflow": "auto",
+            "paddingLeft": theme.spacing(3)
         }
 
     })

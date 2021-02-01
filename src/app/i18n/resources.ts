@@ -79,7 +79,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "ExplorerButtonBar": {
             ...common.en,
-            "copy path": "Copy path",
+            "copy path": "Use in a service",
             "create directory": "Create directory",
             "create what": "Create {{what}}",
             "refresh": "refresh"
@@ -114,7 +114,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key start with digit": "Can't start with a digit",
             "invalid key invalid character": "Invalid character",
             "invalid value cannot eval": "Invalid shell expression",
-            "use this secret": `Use in my services`,
+            "use this secret": `Use in services`,
             "how to use a secret": `The path of this secret has been copied to you clipboard.
             Now when you launch a service (RStudio, Jupyter, ect) go to the
             secret tab and and paste the path of the secret provided for this 
@@ -160,7 +160,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "ExplorerButtonBar": {
             ...common.fr,
-            "copy path": "Copier le chemin",
+            "copy path": "Utiliser dans le service",
             "create directory": "Nouveau dossier",
             "create what": "Nouveau {{what}}",
             "refresh": "rafraîchir"
