@@ -12,7 +12,8 @@ export type Props = {
 const { useClassNames } = createUseClassNames<Props>()(
     ({ theme }) => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background
+            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "border": "1px solid white"
         }
     })
 );

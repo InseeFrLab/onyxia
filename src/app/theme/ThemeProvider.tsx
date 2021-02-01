@@ -1,6 +1,8 @@
 
 import { useState } from "react";
-import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
+//import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import { createTheme } from "./theme";
@@ -37,11 +39,10 @@ export function themeProviderFactory(
 
         return (
             <MuiThemeProvider theme={theme}>
-                <ScopedCssBaseline>
-                    <StylesProvider injectFirst>
-                        {children}
-                    </StylesProvider>
-                </ScopedCssBaseline>
+                <CssBaseline />
+                <StylesProvider injectFirst>
+                    {children}
+                </StylesProvider>
             </MuiThemeProvider>
         );
 

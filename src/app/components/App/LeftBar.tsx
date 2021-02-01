@@ -3,7 +3,7 @@ import { useMemo, memo, useReducer } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { cx, createUseClassNames } from "app/theme/useClassNames";
+import { cx, createUseClassNames, useTheme } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
 import { routes } from "app/router";
@@ -33,7 +33,9 @@ const { useClassNames } = createUseClassNames<Props>()(
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "borderRadius": 16,
             "boxShadow": theme.custom.shadows[3],
-            "paddingTop": theme.spacing(1)
+            "paddingTop": theme.spacing(1),
+            "marginLeft": theme.spacing(2),
+            "marginRight": theme.spacing(2)
         }
     })
 );
@@ -64,6 +66,8 @@ export const LeftBar = memo((props: Props) => {
 
     const { classNames } = useClassNames(props);
 
+    const theme = useTheme();
+
     return (
         <nav className={cx(classNames.root, className)} >
             {
@@ -74,7 +78,7 @@ export const LeftBar = memo((props: Props) => {
                             isActive={currentPage === target}
                             target={target}
                             isExpanded={isExpanded}
-                            collapsedWidth={collapsedWidth}
+                            collapsedWidth={collapsedWidth - theme.spacing(4)}
                             onClick={onClickFactory(target)}
                         />
                 )
