@@ -1,44 +1,57 @@
 
-import { useMemo, memo } from "react";
+import { useMemo, memo, useReducer } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { cx, createUseClassNames } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { routes } from "app/router";
+import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
 const targets = [
-    "toggle isExpanded",
-    "home", "account", "tour", "trainings", "shared services",
-    "catalog", "my services", "my files", "my secrets", "about"
-] as const;
+    "toggle isExpanded" as const,
+    ...objectKeys(routes),
+    "account" as const, "tour" as const, "trainings" as const, "shared services" as const,
+    "catalog" as const, "my services" as const, "my files" as const, "about" as const
+];
+
+
 
 export type Target = typeof targets[number];
 
 export type Props = {
     className?: string;
-    isExpanded: boolean;
-    onClick(target: Target): void;
     collapsedWidth: number;
+    onClick(target: Exclude<Target, "toggle isExpanded">): void;
 };
 
 
 export const LeftBar = memo((props: Props) => {
 
     const {
-        isExpanded,
         collapsedWidth,
         onClick,
         className
     } = props;
 
+    const [isExpanded, toggleIsExpanded] = useReducer(value => !value, false);
+
     const onClickFactory = useCallbackFactory(
-        ([target]: Parameters<Props["onClick"]>) => onClick(target),
-        [onClick]
+        ([target]: [Target]) => {
+
+            if( target === "toggle isExpanded" ){
+                toggleIsExpanded();
+                return;
+            }
+
+            onClick(target)
+
+        }
     );
 
     return (
-        <div className={className} >
+        <nav className={className} >
             {
                 targets.map(
                     target =>
@@ -51,9 +64,7 @@ export const LeftBar = memo((props: Props) => {
                         />
                 )
             }
-
-
-        </div>
+        </nav>
     );
 
 });
@@ -74,13 +85,15 @@ const { CustomButton } = (() => {
         onClick(): void;
     };
 
+    const hoverBoxClassName = "hoverBox";
+
     const { useClassNames } = createUseClassNames<Props>()(
         ({ theme }, { collapsedWidth, isExpanded, target }) => ({
             "root": {
                 "display": "flex",
                 "cursor": "pointer",
                 "marginTop": theme.spacing(1),
-                "&:hover .hoverBox": {
+                [`&:hover .${hoverBoxClassName}`]: {
                     "backgroundColor": theme.custom.colors.useCases.surfaces.background,
                 }
             },
@@ -89,7 +102,7 @@ const { CustomButton } = (() => {
                 "textAlign": "center",
                 "position": "relative",
             },
-            "hoverBox": {
+            "iconHoverBox": {
                 "display": "inline-block",
                 "position": "absolute",
                 "height": "100%",
@@ -131,7 +144,7 @@ const { CustomButton } = (() => {
                 case "account": return "account";
                 case "catalog": return "services";
                 case "my files": return "files";
-                case "my secrets": return "secrets";
+                case "mySecrets": return "secrets";
                 case "my services": return "lab";
                 case "shared services": return "community";
                 case "toggle isExpanded": return "chevronLeft";
@@ -150,7 +163,7 @@ const { CustomButton } = (() => {
             >
                 <div className={classNames.iconWrapper} >
 
-                    <div className={cx("hoverBox", classNames.hoverBox)} />
+                    <div className={cx(hoverBoxClassName, classNames.iconHoverBox)} />
 
                     <Icon
                         type={type}
@@ -163,7 +176,7 @@ const { CustomButton } = (() => {
                     !isExpanded ?
                         null
                         :
-                        <div className={cx("hoverBox", classNames.typoWrapper)} >
+                        <div className={cx(hoverBoxClassName, classNames.typoWrapper)} >
                             <Typography variant="h6">
                                 {t(target)}
                             </Typography>

@@ -1,4 +1,7 @@
+
 import React from 'react';
+import JavascriptTimeAgo from 'javascript-time-ago';
+import fr from 'javascript-time-ago/locale/fr';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
 	BrowserRouter as Router,
@@ -33,19 +36,15 @@ import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 import { useAppConstants } from "app/lib/hooks";
-import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
 import { css } from "app/theme/useClassNames";
 import { LegacyThemeProvider } from "./LegacyThemeProvider";
 
-
-const { ThemeProvider } = themeProviderFactory(
-	{ "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
-);
+JavascriptTimeAgo.locale(fr);
 
 
 const env = getEnv();
@@ -100,13 +99,11 @@ function AlertWrapper(props) {
 	}
 
 	return (
-		<ThemeProvider isDarkModeEnabled={false}>
-			<Alert {...rest}  >
-				<ReactMarkdown className={css({ "& p": { "margin": "4px 0 0 0" } })}>
-					{children}
-				</ReactMarkdown>
-			</Alert>
-		</ThemeProvider>
+		<Alert {...rest}  >
+			<ReactMarkdown className={css({ "& p": { "margin": "4px 0 0 0" } })}>
+				{children}
+			</ReactMarkdown>
+		</Alert>
 	);
 }
 
@@ -120,7 +117,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 	const { isUserLoggedIn } = appConstants;
 
 	return (
-		<ThemeProvider isDarkModeEnabled={false}>
+		<>
 			{waiting ? <Preloader /> : null}
 			<CssBaseline />
 			<Favicon />
@@ -197,7 +194,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 									exact
 									path="/mes-secrets"
 									component={() => (
-										<MySecrets className="mySecrets" />
+										<MySecrets className="mySecrets" splashScreen={null}/>
 									)}
 								/>
 
@@ -220,7 +217,7 @@ const AppFeelGood = ({ waiting, applicationResize, idep }) => {
 					<ToastContainer position="bottom-left" />
 				</>
 			</Router>
-		</ThemeProvider>
+		</>
 	);
 
 };

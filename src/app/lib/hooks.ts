@@ -7,6 +7,8 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "evt/tools/typeSafety/assert";
+import { useIsDarkModeEnabled as useLocalStorageIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -100,27 +102,33 @@ export function useIsDarkModeEnabled(): {
     setIsDarkModeEnabled(value: boolean): void;
 } {
 
-    const dispatch = useDispatch();
+    const { isUserLoggedIn } = useAppConstants();
 
-    const { isUserLoggedIn, isOsPrefersColorSchemeDark } = useAppConstants();
+    const localStorageImpl = useLocalStorageIsDarkModeEnabled();
+
+    const dispatch = useDispatch();
 
     const isDarkModeEnabled = useSelector(
         state =>
             !isUserLoggedIn ?
-                isOsPrefersColorSchemeDark :
+                false :
                 state.userConfigs.isDarkModeEnabled.value
     );
 
-    return {
-        isDarkModeEnabled,
-        "setIsDarkModeEnabled": value =>
+    const setIsDarkModeEnabled = useConstCallback(
+        (value: boolean)=> {
             dispatch(
                 thunks.userConfigs.changeValue({
                     "key": "isDarkModeEnabled",
                     value
                 })
-            )
-    };
+            ).then(()=> localStorageImpl.setIsDarkModeEnabled(value));
+        }
+    );
+
+    return isUserLoggedIn ? { isDarkModeEnabled, setIsDarkModeEnabled } : localStorageImpl;
+
+
 
 };
 

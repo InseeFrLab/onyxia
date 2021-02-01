@@ -1,7 +1,8 @@
 
 import { createUseClassNames, css } from "app/theme/useClassNames";
 import { useMemo, useState, memo } from "react";
-import { useCallback, useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -11,7 +12,6 @@ import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "app/tools/hooks/useArrayDiff";
-import type { UseArrayDiffCallbackParams } from "app/tools/hooks/useArrayDiff";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
@@ -88,7 +88,7 @@ export const MySecretsEditor = memo((props: Props) => {
     useArrayDiff({
         "watchFor": "addition or deletion",
         "array": Object.keys(secret),
-        "callback": useCallback(({ added, removed }: UseArrayDiffCallbackParams<string>) => {
+        "callback": ({ added, removed })=>{
 
             if (!(
                 added.length === 1 &&
@@ -101,8 +101,7 @@ export const MySecretsEditor = memo((props: Props) => {
             const [key] = added;
 
             getEvtAction(key).post("ENTER EDITING STATE");
-
-        }, [getEvtAction, secret])
+        }
     });
 
     const onEditFactory = useMemo(
@@ -254,7 +253,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
 
 
-    const onClick = useCallback(() =>
+    const onClick = useConstCallback(() =>
         onEdit({
             "action": "addOrOverwriteKeyValue",
             "key": generateUniqDefaultName({
@@ -265,8 +264,7 @@ export const MySecretsEditor = memo((props: Props) => {
                 })
             }),
             "value": ""
-        }),
-        [secret, onEdit, t]
+        })
     );
 
     const { classNames } = useClassNames(props);
@@ -288,8 +286,7 @@ export const MySecretsEditor = memo((props: Props) => {
             }
 
             setIsDialogOpen(isDialogOpen);
-        },
-        [onCopyPath]
+        }
     );
 
     return (

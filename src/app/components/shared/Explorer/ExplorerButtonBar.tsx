@@ -49,8 +49,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const { t } = useTranslation("ExplorerButtonBar");
 
     const onClickFactory = useCallbackFactory<[Action], []>(
-        ([action]) => callback({ action }),
-        [callback]
+        ([action]) => callback({ action })
     );
 
     return (

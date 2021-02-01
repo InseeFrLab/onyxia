@@ -1,7 +1,7 @@
 
 import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo } from "react";
-import { useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
@@ -175,43 +175,40 @@ export function Explorer(props: Props) {
 
     const [selectedItemKind, setSelectedItemKind] = useState<"file" | "directory" | "none">("none");
 
-    const onSelectedItemKindValueChange = useCallback(
+    const onSelectedItemKindValueChange = useConstCallback(
         ({ selectedItemKind }: Parameters<ItemsProps["onSelectedItemKindValueChange"]>[0]) =>
-            setSelectedItemKind(selectedItemKind),
-        []
+            setSelectedItemKind(selectedItemKind)
     );
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
 
-    const onIsSelectedItemInEditingStateValueChange = useCallback(
+    const onIsSelectedItemInEditingStateValueChange = useConstCallback(
         ({ isSelectedItemInEditingState }: Parameters<ItemsProps["onIsSelectedItemInEditingStateValueChange"]>[0]) =>
-            setIsSelectedItemInEditingState(isSelectedItemInEditingState),
-        []
+            setIsSelectedItemInEditingState(isSelectedItemInEditingState)
     );
 
-    const breadcrumbCallback = useCallback(
+    const breadcrumbCallback = useConstCallback(
         ({ relativePath }: Parameters<BreadcrumpProps["callback"]>[0]) => {
             onNavigate({
                 "kind": "directory",
                 relativePath
             })
-        },
-        [onNavigate]
+        }
     );
 
 
-    const itemsOnNavigate = useCallback(
+
+    const itemsOnNavigate = useConstCallback(
         ({ kind, basename }: Parameters<ItemsProps["onNavigate"]>[0]) =>
             onNavigate({
                 kind,
                 "relativePath": basename
-            }),
-        [onNavigate]
+            })
     );
 
     const [evtBreadcrumpAction] = useState(() => Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>());
 
-    const itemsOnCopyPath = useCallback(
+    const itemsOnCopyPath = useConstCallback(
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
 
             evtBreadcrumpAction.post({
@@ -221,29 +218,26 @@ export function Explorer(props: Props) {
 
             onCopyPath({ "path": pathJoin(currentPath, basename) });
 
-        },
-        [onCopyPath, currentPath, evtBreadcrumpAction]
+        }
     );
 
-    const itemsOnDeleteItem = useCallback(
+    const itemsOnDeleteItem = useConstCallback(
         ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) =>
-            onDeleteItem({ kind, basename }),
-        [onDeleteItem]
+            onDeleteItem({ kind, basename })
     );
 
-    const onBack = useCallback(
+    const onBack = useConstCallback(
         () => onNavigate({
             "kind": "directory",
             "relativePath": ".."
-        }),
-        [onNavigate]
+        })
     );
 
     const [{ evtItemsAction }] = useState(() => ({
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
     }));
 
-    const buttonBarCallback = useCallback(
+    const buttonBarCallback = useConstCallback(
         ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
 
             switch (action) {
@@ -301,12 +295,7 @@ export function Explorer(props: Props) {
                     break;
             }
 
-        },
-        [
-            evtItemsAction, onCreateItem, t, wordForFile,
-            files, directories, file, itemsOnCopyPath,
-            onNavigate
-        ]
+        }
     );
 
     const {

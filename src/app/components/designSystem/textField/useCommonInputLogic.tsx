@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect } from "react";
-import { useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
@@ -70,11 +70,10 @@ export function useCommonInputLogic(props: Props) {
 
         const [value, setValue] = useState(defaultValue);
 
-        const transformAndSetValue = useCallback(
+        const transformAndSetValue = useConstCallback(
             (value: string) => setValue(
                 transformValueBeingTyped(value)
-            ),
-            [transformValueBeingTyped]
+            )
         );
 
         return { value, transformAndSetValue };
@@ -117,19 +116,17 @@ export function useCommonInputLogic(props: Props) {
     );
 
 
-    const onChange = useCallback(
+    const onChange = useConstCallback(
         ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            transformAndSetValue(target.value),
-        [transformAndSetValue]
+            transformAndSetValue(target.value)
     );
 
-    const onFocus = useCallback(
+    const onFocus = useConstCallback(
         ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            target.setSelectionRange(0, target.value.length),
-        []
+            target.setSelectionRange(0, target.value.length)
     );
 
-    const onKeyDown = useCallback(
+    const onKeyDown = useConstCallback(
         (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>) => {
 
             const key = (() => {
@@ -152,8 +149,7 @@ export function useCommonInputLogic(props: Props) {
                 case "Enter": onEnterKeyDown(); return;
             }
 
-        },
-        [onEscapeKeyDown, onEnterKeyDown]
+        }
     );
 
     return {

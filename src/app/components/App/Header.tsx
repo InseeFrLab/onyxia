@@ -8,29 +8,31 @@ import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
 import { useDOMRect } from "app/tools/hooks/useDOMRect";
 import { Typography } from "app/components/designSystem/Typography";
+import type { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 
 type Target = "logo" | "cloudShell" | "auth button";
 
 export type Props = {
     className?: string;
     isUserLoggedIn: boolean;
+    logoMaxWidth: number;
     onClick(target: Target): void;
-    logoWidthInPercent: number;
-    paddingRightInPercent: number;
+    useIsDarkModeEnabled: typeof useIsDarkModeEnabled;
 };
 
 const logoWidth = 53;
 
-const { useClassNames } = createUseClassNames<Props & { width: number; }>()(
-    ({ theme }, { logoWidthInPercent, paddingRightInPercent, width }) => ({
+const { useClassNames } = createUseClassNames<Props>()(
+    ({ theme }, { logoMaxWidth }) => ({
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.background,
-            "display": "flex",
-            "paddingRight": width * (paddingRightInPercent / 100)
+            "overflow": "auto",
+            "display": "flex"
         },
         "logoContainer": {
             "cursor": "pointer",
-            "width": Math.max(width * (logoWidthInPercent / 100), logoWidth),
+            "width": Math.max(logoMaxWidth, logoWidth),
             "textAlign": "center"
         }
     })
@@ -38,24 +40,23 @@ const { useClassNames } = createUseClassNames<Props & { width: number; }>()(
 
 export const Header = memo((props: Props) => {
 
-    const { isUserLoggedIn, onClick, className = undefined } = props;
+    const { isUserLoggedIn, onClick, useIsDarkModeEnabled, className = undefined } = props;
 
 
     const { t } = useTranslation("Header");
 
     const onClickFactory = useCallbackFactory(
-        ([target]: [Target]) => onClick(target),
-        [onClick]
+        ([target]: [Target]) => onClick(target)
     );
 
-    const { domRect: { width, height }, ref } = useDOMRect();
+    const { domRect: { height }, ref } = useDOMRect();
 
-    const { classNames } = useClassNames({ ...props, width });
+    const { classNames } = useClassNames(props);
 
     const theme = useTheme();
 
     return (
-        <div className={cx(classNames.root, className)} ref={ref}>
+        <header className={cx(classNames.root, className)} ref={ref}>
             <div
                 onClick={onClickFactory("logo")}
                 className={classNames.logoContainer}
@@ -102,6 +103,7 @@ export const Header = memo((props: Props) => {
                 "justifyContent": "flex-end",
                 "alignItems": "center",
             })}>
+                <ToggleDarkMode useIsDarkModeEnabled={useIsDarkModeEnabled} />
                 <IconButton
                     type="bash"
                     fontSize="large"
@@ -117,7 +119,7 @@ export const Header = memo((props: Props) => {
             </div>
 
 
-        </div>
+        </header>
     );
 
 });
@@ -128,3 +130,33 @@ export declare namespace Header {
         login: undefined;
     };
 }
+
+const { ToggleDarkMode } = (() => {
+
+    type Props = {
+        useIsDarkModeEnabled: typeof useIsDarkModeEnabled;
+    };
+
+    const ToggleDarkMode = memo((props: Props) => {
+
+        const { useIsDarkModeEnabled } = props;
+
+        const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
+
+        const onClick = useConstCallback(() => setIsDarkModeEnabled(!isDarkModeEnabled));
+
+        return (
+            <IconButton
+                type={isDarkModeEnabled ? "brightness7" : "brightness4"}
+                onClick={onClick}
+            />
+        );
+
+
+    });
+
+    return { ToggleDarkMode };
+
+})();
+
+

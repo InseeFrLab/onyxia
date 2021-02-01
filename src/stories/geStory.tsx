@@ -13,14 +13,16 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
-import { useTheme } from "app/theme/useClassNames";
+import { useTheme, css } from "app/theme/useClassNames";
+import { SplashScreen } from "app/components/shared/SplashScreen";
+import { RouteProvider } from "app/router";
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
-    "isOsPrefersColorSchemeDark": false,
+    "isColorSchemeDarkEnabledByDefalut": false,
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
@@ -92,7 +94,10 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider createStoreParams={createStoreParams} >
+            <StoreProvider
+                createStoreParams={createStoreParams}
+                splashScreen={<SplashScreen className={css({ "width": 100, "heigh": 100 })} />}
+            >
                 {children}
             </StoreProvider>;
 
@@ -101,13 +106,15 @@ export function getStoryFactory<Props>(params: {
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
-                <ThemeProvider isDarkModeEnabled={darkMode}>
-                    <StoreProviderOrFragment>
-                        <Container>
-                            <Component {...props} />
-                        </Container>
-                    </StoreProviderOrFragment>
-                </ThemeProvider>
+                <RouteProvider>
+                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                        <StoreProviderOrFragment>
+                            <Container>
+                                <Component {...props} />
+                            </Container>
+                        </StoreProviderOrFragment>
+                    </ThemeProvider>
+                </RouteProvider>
             </I18nProvider>;
 
 

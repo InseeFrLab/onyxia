@@ -1,7 +1,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo, memo } from "react";
-import { useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
@@ -138,9 +138,7 @@ export const ExplorerItem = memo((props: Props) => {
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": useCallback(({ type, extraArg: target }) =>
-            onMouseEvent({ type, target }),
-        [onMouseEvent])
+        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
     });
 
     //TODO: We need a custom hook for this.
@@ -162,17 +160,16 @@ export const ExplorerItem = memo((props: Props) => {
     );
 
 
-    const getIsValidValue = useCallback(
+    const getIsValidValue = useConstCallback(
         (value: string) =>
             getIsValidBasename({ "basename": value }) ?
                 { "isValidValue": true } as const :
-                { "isValidValue": false, "message": "" } as const,
-        [getIsValidBasename]
+                { "isValidValue": false, "message": "" } as const
     );
 
     const [evtInputAction] = useState(() => Evt.create<UnpackEvt<InputProps["evtAction"]>>());
 
-    const onInputSubmit = useCallback(
+    const onInputSubmit = useConstCallback(
         ({ value, isValidValue }: Parameters<InputProps["onSubmit"]>[0]) => {
 
             if (!isValidValue) {
@@ -186,19 +183,16 @@ export const ExplorerItem = memo((props: Props) => {
             }
 
             onEditBasename({ "editedBasename": value });
-        },
-        [basename, onEditBasename]
+        }
     );
 
 
-    const onEscapeKeyDown = useCallback(
-        () => setIsInEditingState(false),
-        []
+    const onEscapeKeyDown = useConstCallback(
+        () => setIsInEditingState(false)
     );
 
-    const onEnterKeyDown = useCallback(
-        () => evtInputAction.post("TRIGGER SUBMIT"),
-        [evtInputAction]
+    const onEnterKeyDown = useConstCallback(
+        () => evtInputAction.post("TRIGGER SUBMIT")
     );
 
     const formattedBasename = useMemo(

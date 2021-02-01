@@ -1,4 +1,4 @@
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 
 const env = getEnv();
 

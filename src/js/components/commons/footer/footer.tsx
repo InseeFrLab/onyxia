@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Button, Icon } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import './footer.scss';
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 
 const env = getEnv();
 

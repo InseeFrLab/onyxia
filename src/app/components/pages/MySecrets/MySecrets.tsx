@@ -1,7 +1,8 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
-import { useEffect, useState, memo } from "react";
-import { useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
@@ -11,10 +12,15 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useWithProps } from "app/tools/hooks/useWithProps";
-import { relative as pathRelative } from "path";
+import { useWithProps } from "app/tools/hooks/useWithProps";
+import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
 import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
+import type { Route } from "type-route";
+import { routes } from "app/router";
+import { createGroup } from "type-route";
+
+
 /*
 const { secretExplorer: thunks } = lib.thunks;
 const { secretExplorer: pure } = lib.pure;
@@ -24,8 +30,8 @@ const pure = lib.pure.secretExplorer;
 
 const paddingLeftSpacing = 5;
 
-const { useClassNames } = createUseClassNames<{}>()(
-    ({theme})=>({
+const { useClassNames } = createUseClassNames<{}>()(
+    ({ theme }) => ({
         "header": {
             "paddingLeft": theme.spacing(paddingLeftSpacing)
         },
@@ -43,16 +49,25 @@ const { useClassNames } = createUseClassNames<{}>()(
 
 export type Props = {
     className?: string;
-    //TODO: Url navigation
-    directoryPath?: string;
+    route: Route<typeof MySecrets.routeGroup>;
+    splashScreen: ReactNode;
 };
 
-export const MySecrets = memo((props: Props) =>{
+MySecrets.routeGroup = createGroup([routes.mySecrets]);
+
+MySecrets.requireUserLoggedIn = true;
+
+export function MySecrets(props: Props) {
 
     const {
         className,
-        directoryPath: directoryPathFromProps,
+        route,
+        splashScreen
     } = props;
+
+    //TODO
+    console.log(route);
+    const directoryPathFromRoot: string | undefined = undefined;
 
     const { t } = useTranslation("MySecrets");
 
@@ -60,11 +75,11 @@ export const MySecrets = memo((props: Props) =>{
     const dispatch = useDispatch();
 
     const Explorer = useWithProps(
-            SecretOrFileExplorer,
-            {
-                "type": "secret",
-                "getIsValidBasename": pure.getIsValidBasename
-            }
+        SecretOrFileExplorer,
+        {
+            "type": "secret",
+            "getIsValidBasename": pure.getIsValidBasename
+        }
     );
 
     useEffect(() => {
@@ -77,7 +92,7 @@ export const MySecrets = memo((props: Props) =>{
 
     }, [state]);
 
-    const onNavigate = useCallback(
+    const onNavigate = useConstCallback(
         ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) =>
             dispatch((() => {
                 switch (kind) {
@@ -92,8 +107,7 @@ export const MySecrets = memo((props: Props) =>{
                             "secretRelativePath": relativePath
                         })
                 }
-            })()),
-        [dispatch]
+            })())
     );
 
 
@@ -125,23 +139,24 @@ export const MySecrets = memo((props: Props) =>{
     useEffect(
         () => {
 
-            if (directoryPathFromProps === undefined) {
+            if (directoryPathFromRoot === undefined) {
                 return;
             }
 
             dispatch(
                 thunks.navigateToDirectory({
                     "fromCurrentPath": false,
-                    "directoryPath": directoryPathFromProps
+                    "directoryPath": directoryPathFromRoot
                 })
             );
 
         },
-        [directoryPathFromProps, dispatch]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [directoryPathFromRoot]
     );
 
 
-    const onEditedBasename = useCallback(
+    const onEditedBasename = useConstCallback(
         ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
             dispatch(
                 thunks.renameDirectoryOrSecretWithinCurrentDirectory({
@@ -154,11 +169,10 @@ export const MySecrets = memo((props: Props) =>{
                     basename,
                     "newBasename": editedBasename
                 })
-            ),
-        [dispatch]
+            )
     );
 
-    const onDeleteItem = useCallback(
+    const onDeleteItem = useConstCallback(
         async ({ kind, basename }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
 
             console.log("TODO: Deletion started");
@@ -177,11 +191,10 @@ export const MySecrets = memo((props: Props) =>{
 
             console.log("TODO: Deletion completed");
 
-        },
-        [dispatch]
+        }
     );
 
-    const onCreateItem = useCallback(
+    const onCreateItem = useConstCallback(
         ({ kind, basename }: Parameters<ExplorerProps["onCreateItem"]>[0]) =>
             dispatch(
                 thunks.createSecretOrDirectory({
@@ -193,33 +206,30 @@ export const MySecrets = memo((props: Props) =>{
                     })(),
                     basename
                 })
-            ),
-        [dispatch]
+            )
     );
 
-    const onCopyPath = useCallback(
+    const onCopyPath = useConstCallback(
         (params?: { path: string; }): void => {
 
-            const { path } = params ?? { "path": state.currentPath };
+            const { path } = params ?? { "path": state.currentPath };
 
-            copyToClipboard(pathRelative(userHomePath, path)) ;
+            copyToClipboard(pathRelative(userHomePath, path));
 
-        },
-        [userHomePath, state.currentPath]
+        }
     );
 
     const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
 
-    const onEdit = useCallback(
+    const onEdit = useConstCallback(
         (params: EditSecretParams) =>
-            dispatch(thunks.editCurrentlyShownSecret(params)),
-        [dispatch]
+            dispatch(thunks.editCurrentlyShownSecret(params))
     );
 
     const { classNames } = useClassNames({});
 
     return state.currentPath === "" ?
-        <div className={className}> Placeholder for Marc's loading </div>
+        <>{splashScreen}</>
         :
         (
             <div className={cx(classNames.root, className)}>
@@ -280,7 +290,8 @@ export const MySecrets = memo((props: Props) =>{
                 />
             </div>
         );
-});
+};
+
 
 export declare namespace MySecrets {
 

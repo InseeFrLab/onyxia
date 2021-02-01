@@ -86,8 +86,6 @@ export const Breadcrump = memo((props: Props) => {
             !isClickable ?
                 assert(false) :
                 callback({ "relativePath": pathRelative(path, partialPath) })
-        ,
-        [callback, path]
     );
 
     const partialPaths = useMemo(

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 import type { AppThunk } from "lib/setup";
 import { parseOidcAccessToken } from "lib/ports/OidcClient";
 import type { AppConstant } from "lib/useCases/appConstants";

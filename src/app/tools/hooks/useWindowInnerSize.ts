@@ -3,19 +3,21 @@
 import { Evt } from "evt";
 import { useEvt, useStatefulEvt } from "evt/hooks";
 
-export function useWindowInnerWidth() {
+export function useWindowInnerSize() {
 
     const evtInnerWidth = useEvt(ctx =>
         Evt.from(ctx, window, "resize")
             .toStateful()
-            .pipe(() => [window.innerWidth])
-        ,
+            .pipe(() => [{
+                "windowInnerWidth": window.innerWidth,
+                "windowInnerHeight": window.innerHeight
+            }]),
         []
     );
 
     useStatefulEvt([evtInnerWidth]);
 
-    return { "windowInnerWidth": evtInnerWidth.state };
+    return evtInnerWidth.state;
 
 }
 

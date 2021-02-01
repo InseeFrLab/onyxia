@@ -42,7 +42,9 @@ export type Dependencies = {
 
 
 export type CreateStoreParams = {
-    isOsPrefersColorSchemeDark: boolean;
+    /** If we can't get the value from the user profile we want to
+     * load the os preferred default or the value saved in local storage */
+    isColorSchemeDarkEnabledByDefalut: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
@@ -136,14 +138,14 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark">
+    } & Pick<CreateStoreParams, "isColorSchemeDarkEnabledByDefalut">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isOsPrefersColorSchemeDark
+        isColorSchemeDarkEnabledByDefalut
     } = params;
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
@@ -253,7 +255,7 @@ async function createStoreForLoggedUser(
 
     await store.dispatch(
         userConfigsUseCase.privateThunks.initialize(
-            { isOsPrefersColorSchemeDark }
+            { isColorSchemeDarkEnabledByDefalut }
         )
     );
 
@@ -323,7 +325,7 @@ export async function createStore(params: CreateStoreParams) {
     const {
         oidcClientConfig,
         secretsManagerClientConfig,
-        isOsPrefersColorSchemeDark,
+        isColorSchemeDarkEnabledByDefalut,
         onyxiaApiClientConfig,
         evtBackOnline
     } = params;
@@ -341,7 +343,7 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isOsPrefersColorSchemeDark
+                isColorSchemeDarkEnabledByDefalut
             }) :
             {
                 ...await createStoreForNonLoggedUser({
@@ -361,7 +363,6 @@ export async function createStore(params: CreateStoreParams) {
             "appConstants": await (async () => {
 
                 const _common: appConstantsUseCase.AppConstant._Common = {
-                    isOsPrefersColorSchemeDark,
                     "vaultClientConfig": (() => {
                         switch (secretsManagerClientConfig.implementation) {
                             case "VAULT": return secretsManagerClientConfig;
@@ -383,18 +384,18 @@ export async function createStore(params: CreateStoreParams) {
 
                 return oidcClient.isUserLoggedIn ?
                     id<appConstantsUseCase.AppConstant.LoggedIn>({
-                        "isUserLoggedIn": true,
                         ..._common,
                         "userProfile": await store.dispatch(
                             user.privateThunks.initializeAndGetUserProfile(
                                 { evtBackOnline }
                             )
                         ),
-                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!
+                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!,
+                        ...oidcClient
                     }) :
                     id<appConstantsUseCase.AppConstant.NotLoggedIn>({
-                        "isUserLoggedIn": false,
                         ..._common,
+                        ...oidcClient
                     })
 
             })()

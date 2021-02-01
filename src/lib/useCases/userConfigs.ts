@@ -111,9 +111,9 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (params: { isOsPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
+        (params: { isColorSchemeDarkEnabledByDefalut: boolean; }): AppThunk => async (...args) => {
 
-            const { isOsPrefersColorSchemeDark } = params;
+            const { isColorSchemeDarkEnabledByDefalut } = params;
 
             const [dispatch, , { secretsManagerClient, oidcClient }] = args;
 
@@ -131,7 +131,7 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
-                "isDarkModeEnabled": isOsPrefersColorSchemeDark,
+                "isDarkModeEnabled": isColorSchemeDarkEnabledByDefalut,
                 "deploymentRegionId": null
             };
 

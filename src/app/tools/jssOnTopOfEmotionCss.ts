@@ -30,7 +30,7 @@ import { objectKeys } from "evt/tools/typeSafety/objectKeys";
  * }
  * 
  */
-export function createUseClassNamesFactory<Theme extends Object>(
+export function createUseClassNamesFactory<Theme extends Object = {}>(
     params: {
         useTheme(): Theme;
     }

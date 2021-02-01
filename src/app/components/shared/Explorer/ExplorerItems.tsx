@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, memo } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
-import { useWindowInnerWidth } from "app/tools/hooks/useWindowInnerWidth";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { getKeyPropFactory } from "app/tools/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -15,7 +15,8 @@ import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 import { useArrayDiff } from "app/tools/hooks/useArrayDiff";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory, useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { useWithProps } from "app/tools/hooks/useWithProps";
 import memoize from "memoizee";
 import { useTheme } from "app/theme/useClassNames";
@@ -91,7 +92,7 @@ export const ExplorerItems = memo((props: Props) => {
 
     const theme = useTheme();
 
-    const { windowInnerWidth } = useWindowInnerWidth();
+    const { windowInnerWidth } = useWindowInnerSize();
 
     const standardizedWidth = useMemo(
         (): ExplorerItemProps["standardizedWidth"] => {
@@ -201,11 +202,7 @@ export const ExplorerItems = memo((props: Props) => {
                     setSelectedItemKeyProp(undefined);
                 }
 
-            },
-            [
-                selectedItemKeyProp,
-                getValuesCurrentlyMappedToKeyProp
-            ]
+            }
         );
 
 
@@ -253,11 +250,7 @@ export const ExplorerItems = memo((props: Props) => {
 
 
                 evtItemAction.post("ENTER EDITING STATE");
-            },
-            [
-                getEvtItemAction, getKeyProp,
-                directoriesBeingCreated, filesBeingCreated
-            ]
+            }
         );
 
 
@@ -312,14 +305,7 @@ export const ExplorerItems = memo((props: Props) => {
                     break;
             }
 
-        },
-        [
-            onNavigate,
-            selectedItemKeyProp,
-            getKeyProp,
-            getEvtItemAction,
-            isNavigating
-        ]
+        }
     );
 
 
@@ -342,8 +328,7 @@ export const ExplorerItems = memo((props: Props) => {
             });
 
             onEditBasename({ kind, basename, editedBasename });
-        },
-        [onEditBasename, transfersKeyProp]
+        }
     );
 
     const getIsValidBasenameFactory = useCallbackFactory(
@@ -369,21 +354,19 @@ export const ExplorerItems = memo((props: Props) => {
 
             return getIsValidBasename({ "basename": candidateBasename });
 
-        },
-        [getIsValidBasename, directories, files]
+        }
     );
 
 
 
-    const onIsInEditingStateValueChange = useCallback(
+    const onIsInEditingStateValueChange = useConstCallback(
         ({ isInEditingState }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
-            setIsSelectedItemInEditingState(isInEditingState),
-        []
+            setIsSelectedItemInEditingState(isInEditingState)
     );
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const onGridMouseDown = useCallback(
+    const onGridMouseDown = useConstCallback(
         ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 
             if (
@@ -396,8 +379,7 @@ export const ExplorerItems = memo((props: Props) => {
             setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
 
-        },
-        []
+        }
     );
 
     const { t } = useTranslation("ExplorerItems");

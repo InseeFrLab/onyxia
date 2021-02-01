@@ -7,9 +7,6 @@ import { Evt } from "evt";
 import { getLocalStorage } from "../tools/safeLocalStorage";
 import { assert } from "evt/tools/typeSafety/assert";
 
-//TODO: We shouldn't have to specify /acceuil
-const fallbackUri = `${window.location.origin}/accueil`;
-
 export async function createKeycloakOidcClient(
     params: {
         keycloakConfig: KeycloakConfig;
@@ -22,9 +19,11 @@ export async function createKeycloakOidcClient(
 
     const { evtLocallyStoredOidcAccessToken } = getEvtLocallyStoredOidcAccessToken();
 
+    const { origin } = window.location;
+
     const isAuthenticated = await keycloakInstance.init({
         "onLoad": "check-sso",
-        "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
+        "silentCheckSsoRedirectUri": `${origin}/silent-sso.html`,
         "responseMode": "query",
         "checkLoginIframe": false,
         "token": evtLocallyStoredOidcAccessToken.state
@@ -37,9 +36,9 @@ export async function createKeycloakOidcClient(
 
     const login: OidcClient.NotLoggedIn["login"] = async params => {
 
-        const { redirectUri = fallbackUri } = params ?? {};
+        const { redirectHref = `${window.location.pathname}${window.location.search}` } = params ?? {};
 
-        await keycloakInstance.login({ redirectUri });
+        await keycloakInstance.login({ "redirectUri": `${origin}${redirectHref}` });
 
         return new Promise<never>(() => { });
 
@@ -93,7 +92,7 @@ export async function createKeycloakOidcClient(
                 if (error) {
 
                     //NOTE: Never resolves
-                    await login({ "redirectUri": window.location.href });
+                    await login();
 
                 }
 
@@ -105,7 +104,7 @@ export async function createKeycloakOidcClient(
             },
         "logout": async () => {
 
-            await keycloakInstance.logout({ "redirectUri": fallbackUri });
+            await keycloakInstance.logout({ "redirectUri": origin });
 
             return new Promise<never>(() => { });
 

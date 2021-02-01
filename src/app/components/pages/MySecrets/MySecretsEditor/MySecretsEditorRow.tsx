@@ -10,7 +10,8 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/tools/smartTrim";
 import { Typography } from "app/components/designSystem/Typography";
 import { IconButton } from "app/components/designSystem/IconButton";
-import { useCallbackFactory, useCallback } from "app/tools/hooks/useCallbackFactory";
+import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 
@@ -104,8 +105,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const onSubmitFactory = useCallbackFactory(
         ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [{ value }]: [Parameters<TextFieldProps["onSubmit"]>[0]]) =>
-            evtEdited.state = { ...evtEdited.state, [inputTarget]: value },
-        [evtEdited]
+            evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
     );
 
     useEvt(
@@ -146,17 +146,15 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const isSubmitButtonDisabled = isLocked || !isValidKey || !isValidStrValue;
 
-    const onSubmitButtonClick = useCallback(
+    const onSubmitButtonClick = useConstCallback(
         () => {
             evtInputAction.post("TRIGGER SUBMIT");
             setIsInEditingState(false);
-        },
-        [evtInputAction]
+        }
     );
 
-    const onEscapeKeyDown = useCallback(
-        () => evtInputAction.post("RESTORE DEFAULT VALUE"),
-        [evtInputAction]
+    const onEscapeKeyDown = useConstCallback(
+        () => evtInputAction.post("RESTORE DEFAULT VALUE")
     );
 
     const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
@@ -165,26 +163,23 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
 
-    const onValueBeingTypedChange_key = useCallback(
+    const onValueBeingTypedChange_key = useConstCallback(
         ({ isValidValue }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
-            setIsValidKey(isValidValue),
-        []
+            setIsValidKey(isValidValue)
     );
 
-    const onValueBeingTypedChange_strValue = useCallback(
+    const onValueBeingTypedChange_strValue = useConstCallback(
         ({ isValidValue, value }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
 
             setIsValidStrValue(isValidValue);
 
             setStrValueBeingTyped(value);
 
-        },
-        []
+        }
     );
 
-    const onEditButtonClick = useCallback(
-        () => setIsInEditingState(true),
-        []
+    const onEditButtonClick = useConstCallback(
+        () => setIsInEditingState(true)
     );
 
     //NOTE: We don't want to use useMemo here because the resolved values depends on other keys.
@@ -192,7 +187,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
         { "strValue": isInEditingState ? strValueBeingTyped : strValue }
     );
 
-    const getIsValidValue_key = useCallback(
+    const getIsValidValue_key = useConstCallback(
         (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
 
             const result = getIsValidAndAvailableKey({ "key": value });
@@ -201,11 +196,10 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 { "isValidValue": true } as const :
                 { "isValidValue": false, "message": result.message } as const;
 
-        },
-        [getIsValidAndAvailableKey]
+        }
     );
 
-    const getIsValidValue_strValue = useCallback(
+    const getIsValidValue_strValue = useConstCallback(
         (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
 
             const resolveValueResult = getResolvedValue({ "strValue": value });
@@ -214,8 +208,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 { "isValidValue": true } as const :
                 { "isValidValue": false, "message": resolveValueResult.message } as const;
 
-        },
-        [getResolvedValue]
+        }
     );
 
     const { classNames } = useClassNames({ ...props, isInEditingState });

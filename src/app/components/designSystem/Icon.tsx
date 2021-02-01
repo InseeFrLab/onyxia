@@ -26,6 +26,9 @@ import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import Cached from "@material-ui/icons/Cached";
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import InfoOutlined from "@material-ui/icons/InfoOutlined";
+import Brightness7 from "@material-ui/icons/Brightness7";
+import Brightness4 from "@material-ui/icons/Brightness4";
+
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "account" |
@@ -35,7 +38,7 @@ export type SvgTypes =
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
-    "cached" | "closeSharp" | "infoOutlined";
+    "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4";
 
 //NOTE: Ensure there is not overlap between the types
 (function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
@@ -128,6 +131,8 @@ export const Icon = memo((props: Props) => {
                 case "chevronLeft": return ChevronLeft;
                 case "cached": return Cached;
                 case "community": return CommunitySvg;
+                case "brightness7": return Brightness7;
+                case "brightness4": return Brightness4;
             }
         })()}
         fontSize={fontSize}

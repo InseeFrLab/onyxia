@@ -1,24 +1,29 @@
 
-import { css } from "app/theme/useClassNames";
+import { css } from "app/theme/useClassNames";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "../sectionName";
 import { MySecrets } from "app/components/pages/MySecrets";
 import type { Props } from "app/components/pages/MySecrets";
 import { symToStr } from "app/tools/symToStr";
+import { SplashScreen } from "app/components/shared/SplashScreen";
 
 type StoryProps = {
     width: number;
     height: number;
 };
 
-function Component(props: Omit<Props, "className"> & StoryProps) {
+function Component(props: Omit<Props, "className" | "route" | "splashScreen"> & StoryProps) {
 
-    const { width, height} = props;
+    const { width, height } = props;
 
-    return <MySecrets className={css({
+    return <MySecrets
+        route={null as any}
+        splashScreen={<SplashScreen css={{ "height": "100%" }} />}
+        className={css({
             width,
             height
-    })} />;
+        })}
+    />;
 
 }
 

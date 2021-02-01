@@ -7,6 +7,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import { id } from "evt/tools/typeSafety/id";
 import memoize from "memoizee";
+import { useConstCallback } from "./useConstCallback";
 
 export type ReactMouseEvent = React.MouseEvent<HTMLElement, MouseEvent>;
 
@@ -15,11 +16,11 @@ type OnMouseUpOrDown = (mouseEvent: ReactMouseEvent) => void;
 /**
  * Why not use onDoubleClick? 
  * Because it down is fired event when a double click is pending.
+ * NOTE: callback does not need to be constant.
  */
 export function useClick<ExtraArg>(
     params: {
         doubleClickDelayMs: number;
-        /** Use useCallback, the ref should not be different at each render */
         callback(params: {
             type: "down" | "double";
             mouseEvent: ReactMouseEvent;
@@ -28,7 +29,9 @@ export function useClick<ExtraArg>(
     }
 ) {
 
-    const { doubleClickDelayMs, callback } = params;
+    const { doubleClickDelayMs } = params;
+
+    const constCallback = useConstCallback(params.callback);
 
     const [{
         evtMouseUpOrDown,
@@ -45,7 +48,7 @@ export function useClick<ExtraArg>(
             evtMouseUpOrDown,
             "getOnMouseProps": memoize((extraArg: ExtraArg) => ({
                 "onMouseDown": id<OnMouseUpOrDown>(
-                    mouseEvent => { 
+                    mouseEvent => {
                         evtMouseUpOrDown.post({ "type": "down", mouseEvent, extraArg });
                     }
                 ),
@@ -60,7 +63,7 @@ export function useClick<ExtraArg>(
     });
 
     //NOTE: We wrap in useEvt for update when double click delay is changed
-    const { evtDownOrDouble } = useEvt(
+    useEvt(
         ctx => {
 
             const evtDownOrDouble = Evt.create<{
@@ -117,21 +120,14 @@ export function useClick<ExtraArg>(
                     })
                 );
 
-            return { evtDownOrDouble };
+            evtDownOrDouble.attach(
+                ({ type, mouseEvent, extraArg }) =>
+                    constCallback({ type, mouseEvent, extraArg })
+            );
+
 
         },
-        [doubleClickDelayMs, evtMouseUpOrDown]
-    );
-
-    //NOTE: We don't want to loose the state when the callback is
-    //changed so we use a separate useEvt
-    useEvt(
-        ctx => evtDownOrDouble.attach(
-            ctx,
-            ({ type, mouseEvent, extraArg }) =>
-                callback({ type, mouseEvent, extraArg })
-        ),
-        [callback, evtDownOrDouble]
+        [doubleClickDelayMs, evtMouseUpOrDown, constCallback]
     );
 
     return { getOnMouseProps };

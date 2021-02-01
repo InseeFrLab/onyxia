@@ -11,6 +11,7 @@ import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "app/components/App/Header";
 import { LeftBar } from "app/components/App/LeftBar";
+import { FourOhFour } from "app/components/App/FourOhFour";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -30,6 +31,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
+    [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -134,12 +136,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "catalog": "Catalog",
             "home": "Home",
             "my files": "My Files",
-            "my secrets": "My Secrets",
+            "mySecrets": "My Secrets",
             "my services": "My Services",
             "shared services": "Shared services",
             "tour": "Tour",
             "trainings": "Trainings",
             "toggle isExpanded": "Collapse"
+        },
+        "FourOhFour": {
+            "not found": "Page not found"
         }
     },
     "fr": {
@@ -211,12 +216,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "catalog": "Catalogue",
             "home": "Acceuil",
             "my files": "Mes Fichiers",
-            "my secrets": "Mes Secrets",
+            "mySecrets": "Mes Secrets",
             "my services": "Mes Services",
             "shared services": "Services partagées",
             "tour": "Visite guidée",
             "trainings": "Formation",
             "toggle isExpanded": "Réduire"
+        },
+        "FourOhFour": {
+            "not found": "Page non trouvé"
         }
         /* spell-checker: enable */
     }

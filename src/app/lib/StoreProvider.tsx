@@ -1,7 +1,7 @@
 
+import type { ReactNode } from "react";
 import { Provider as ReactReduxProvider } from "react-redux";
 import { useAsync } from "react-async-hook";
-import Loader from "js/components/commons/loader";
 import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
@@ -12,7 +12,8 @@ import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "vaultCmdTranslationLogger">;
-    children: React.ReactNode;
+    splashScreen: ReactNode;
+    children: ReactNode;
 };
 
 
@@ -38,7 +39,7 @@ const memoizedCreateStore = memoize(
 
 export function StoreProvider(props: Props) {
 
-    const { createStoreParams, children } = props;
+    const { createStoreParams, splashScreen, children } = props;
 
     const asyncCreateStore = useAsync(
         () => memoizedCreateStore(createStoreParams),
@@ -54,7 +55,7 @@ export function StoreProvider(props: Props) {
 
     return (
         store === undefined ?
-            <Loader em={30} /> :
+            <>{splashScreen}</> :
             <ReactReduxProvider store={store}>
                 {children}
             </ReactReduxProvider>

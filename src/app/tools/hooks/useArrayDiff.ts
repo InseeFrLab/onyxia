@@ -10,8 +10,7 @@ export type UseArrayDiffCallbackParams<ArrOf> = {
 };
 
 /** 
- * NOTE: It is best for performance that the ref of the callback
- * be updated as few as possible ( use useCallback() ) 
+ * NOTE: Callback does not need to be constant.
  * WARNING: This hooks will only works with arrays that changes refs when updated.
  * */
 export function useArrayDiff<ArrOf>(
@@ -53,6 +52,7 @@ export function useArrayDiff<ArrOf>(
         [array, evtArray]
     );
 
+
     useEvt(
         ctx => evtArray
             .evtDiff
@@ -86,8 +86,7 @@ export function useArrayDiff<ArrOf>(
                 });
 
 
-            })
-        ,
+            }),
         [callback, evtArray, watchFor]
     );
 
