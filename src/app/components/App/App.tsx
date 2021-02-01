@@ -6,7 +6,7 @@ import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
-import { createUseClassNames, css } from "app/theme/useClassNames";
+import { createUseClassNames, css, useTheme } from "app/theme/useClassNames";
 import { useAppConstants } from "app/lib/hooks";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { useDOMRect } from "app/tools/hooks/useDOMRect";
@@ -18,6 +18,7 @@ import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 
 
 
@@ -25,11 +26,12 @@ import { useIsDarkModeEnabled } from "app/lib/hooks";
 const logoMaxWidthInPercent = 4;
 
 const { useClassNames } = createUseClassNames()(
-    () => ({
+    ({theme}) => ({
         "root": {
             "height": "100vh",
             "display": "flex",
-            "flexDirection": "column"
+            "flexDirection": "column",
+            "backgroundColor": theme.custom.colors.useCases.surfaces.background
         },
 
         "header": {
@@ -164,7 +166,18 @@ export const App = memo(() => {
     );
 
 
-    const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
+    
+    const logoMaxWidth = (function useClosure() {
+
+        const theme = useTheme();
+
+        const { windowInnerWidth } = useWindowInnerSize();
+
+        return theme.breakpoints.values["xl"] <= windowInnerWidth ?
+            72 :
+            Math.floor(rootWidth * logoMaxWidthInPercent / 100);
+
+    })()
 
     return (
         <div ref={rootRef} className={classNames.root} >
