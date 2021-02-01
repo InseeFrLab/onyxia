@@ -111,6 +111,13 @@ const { CustomButton } = (() => {
                 "marginTop": theme.spacing(1),
                 [`&:hover .${hoverBoxClassName}`]: {
                     "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                },
+                [
+                    [".MuiSvgIcon-root", ".MuiTypography-root"]
+                        .map(name => `&${!isActive ? ":active" : ""} ${name}`)
+                        .join(", ")
+                ]: {
+                    "color": theme.custom.colors.useCases.typography.textFocus
                 }
             },
             "iconWrapper": {
@@ -133,9 +140,7 @@ const { CustomButton } = (() => {
                 "margin": theme.spacing(1, 0),
                 ...(target !== "toggle isExpanded" ? {} : {
                     "transform": isExpanded ? "rotate(0)" : "rotate(-180deg)"
-                }),
-                "color": !isActive ? undefined:  theme.custom.colors.useCases.typography.textFocus
-
+                })
             },
             "typoWrapper": {
                 "paddingRight": theme.spacing(1),
@@ -151,7 +156,7 @@ const { CustomButton } = (() => {
 
     const CustomButton = memo((props: Props) => {
 
-        const { isExpanded, target, isActive, onClick } = props;
+        const { isExpanded, target, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -194,7 +199,7 @@ const { CustomButton } = (() => {
                         null
                         :
                         <div className={cx(hoverBoxClassName, classNames.typoWrapper)} >
-                            <Typography variant="h6" color={isActive ? "focus" : undefined}>
+                            <Typography variant="h6">
                                 {t(target)}
                             </Typography>
                         </div>
