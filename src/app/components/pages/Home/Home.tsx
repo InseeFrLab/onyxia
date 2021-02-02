@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from "react";
 import type { ReactNode } from "react";
 //import { Link } from 'react-router-dom';
 //import Button from '@material-ui/core/Button';
@@ -9,7 +9,7 @@ import "./style.scss";
 import { getEnv } from "app/env";
 import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
-import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
+import { getScreenTypeFromWidth } from "js/model/ScreenType";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { useTheme } from "app/theme/useClassNames";
 import { createGroup } from "type-route";
@@ -20,6 +20,7 @@ import { Typography } from "app/components/designSystem/Typography";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/lib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 
 const fetchContent = (): Promise<Content.Root> =>
 	(axiosURL as any)(
@@ -69,13 +70,31 @@ Home.routeGroup = createGroup([routes.home]);
 
 Home.requireUserLoggedIn = false;
 
-const { useClassNames } = createUseClassNames()(
-	({ theme }) => ({
+const { useClassNames } = createUseClassNames<{ heroBackgroundImageUrl: string; }>()(
+	({ theme }, { heroBackgroundImageUrl }) => ({
 		"root": {
 			"backgroundColor": "transparent"
 		},
 		"hero": {
-			"paddingBottom": theme.spacing(4)
+			"paddingBottom": theme.spacing(4),
+			"backgroundImage": `url(${heroBackgroundImageUrl})`,
+
+			"backgroundPosition": "right",
+			"backgroundRepeat": "no-repeat",
+			"backgroundSize": "50%",
+
+			"paddingTop": 50
+
+		},
+		"heroTextWrapper": {
+					"maxWidth": "35%",
+					"& > *": {
+						"marginBottom": theme.spacing(3)
+					},
+		},
+		"papers": {
+			"borderTop": `1px solid ${theme.custom.colors.useCases.typography.textPrimary}`,
+			"marginRight": theme.spacing(3),
 		}
 	})
 )
@@ -90,53 +109,62 @@ export function Home(props: Props) {
 
 	const { result: contentRoot } = useAsync(fetchContent, []);
 
-	const { classNames } = useClassNames({});
+	const { classNames } = useClassNames({ "heroBackgroundImageUrl": contentRoot?.hero.image ?? "" });
 
 	const appConstants = useAppConstants();
 
 	const { t } = useTranslation("Home");
 
+	const onHeroButtonClick = useConstCallback(() => {
+
+		if (!appConstants.isUserLoggedIn) {
+			appConstants.login();
+			return;
+		}
+
+		window.location.href = contentRoot!.hero.button.url;
+
+	});
+
+
 	return !contentRoot || !screenType ?
 		<>{splashScreen}</>
 		:
 		<div className={cx("home", classNames.root)}>
-			<div
-				className={cx("hero", classNames.hero)}
-				style={{
-					"backgroundImage":
-						screenType === "LARGE"
-							? `url(${contentRoot.hero.image})`
-							: undefined,
-				}}
-			>
-				<div className={css({
-					"maxWidth": "35%",
-					"& > *": {
-						"marginBottom": theme.spacing(3)
-					},
-				})}>
+			<div className={classNames.hero} >
+				<div className={classNames.heroTextWrapper}>
 
 					<HeaderLogoSvg width={122} height={80} />
-					{windowInnerWidth > getScreenTypeBreakpoint("SMALL") && (
-						<Typography variant="h2">
-							{
-								appConstants.isUserLoggedIn ?
-									t("welcome", { "who": appConstants.userProfile.nomComplet }) :
-									contentRoot.hero.smallerText
-							}
-
-						</Typography>
-					)}
+					<Typography variant="h2">
+						{
+							appConstants.isUserLoggedIn ?
+								t("welcome", { "who": appConstants.userProfile.nomComplet }) :
+								contentRoot.hero.smallerText
+						}
+					</Typography>
 					<Typography variant="h3">{contentRoot.hero.biggerText}</Typography>
 
-					<Button onClick={() => { window.location.href = contentRoot.hero.button.url }} >
-						{contentRoot.hero.button.label}
+					<Button onClick={onHeroButtonClick}>
+						{
+							appConstants.isUserLoggedIn ?
+								contentRoot.hero.button.label :
+								t("logIn")
+						}
 					</Button>
 
 				</div>
 
 			</div>
-			<div className="papers">
+			<div>
+				<Card
+					title="foo"
+					text="lorem ipsum"
+					buttonText="button text"
+					onClick={() => { }}
+				/>
+
+			</div>
+			<div className={cx("papers", classNames.papers)}>
 				{contentRoot.papers.map((paper, i) => (
 					<div key={i}>
 						<section>
@@ -193,7 +221,8 @@ export function Home(props: Props) {
 export declare namespace Home {
 
 	export type I18nScheme = {
-		welcome: { who: string; }
+		welcome: { who: string; };
+		logIn: undefined;
 	};
 
 }
@@ -218,3 +247,54 @@ const ButtonLinked: React.FC<{ label: string; target: string; }> =
 
 
 	};
+
+
+const { Card } = (() => {
+
+	type Props = {
+		title: string;
+		text: string;
+		buttonText: string;
+		onClick(): void;
+	};
+
+	const { useClassNames } = createUseClassNames<Props>()(
+		() => ({
+			"root": {}
+		})
+	);
+
+	const Card = memo((props: Props) => {
+
+		const { title, text, buttonText, onClick } = props;
+
+		const { classNames } = useClassNames(props);
+
+		return (
+			<div className={classNames.root}>
+				<div className={css({ "display": "flex", })}>
+					<div>SVG</div>
+					<div className={css({ "flex": 1, })}>
+						<Typography>{title}</Typography>
+					</div>
+				</div>
+				<div className={css({ "display": "flex", "flexDirection": "column" })}>
+					<div className={css({ "flex": 1, })}>
+						<Typography>{text}</Typography>
+					</div>
+					<Button onClick={onClick}>{buttonText}</Button>
+				</div>
+
+			</div>
+		);
+
+
+
+
+
+	});
+
+	return { Card };
+
+
+})();

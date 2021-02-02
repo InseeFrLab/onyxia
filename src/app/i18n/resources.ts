@@ -149,7 +149,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page not found"
         },
         "Home": {
-            "welcome": `Welcome {{who}}!`
+            "welcome": `Welcome {{who}}!`,
+            "logIn": "Login"
         }
     },
     "fr": {
@@ -232,7 +233,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page non trouvé"
         },
         "Home": {
-            "welcome": `Bienvenue {{who}}!`
+            "welcome": `Bienvenue {{who}}!`,
+            "logIn": "Connexion"
         }
         /* spell-checker: enable */
     }
