@@ -193,7 +193,22 @@ export function Home(props: Props) {
 export declare namespace Home {
 
 	export type I18nScheme = {
-		welcome: { who: string; }
+		welcome: { who: string; };
+		'subtitle':undefined;
+		'cardTitle1':undefined;
+		'cardTitle2':undefined;
+		'cardTitle3':undefined;
+		'cardText1':undefined;
+		'cardText2':undefined;
+		'cardText3':undefined;
+		'cardButton1':undefined;
+		'cardButton2':undefined;
+		'cardButton3':undefined;
+		'projectTitle':undefined;
+		'projectText':undefined;
+		'projectButton':undefined;
+		'warningTitle':undefined;
+		'warningText':undefined;
 	};
 
 }

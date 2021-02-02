@@ -149,7 +149,22 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page not found"
         },
         "Home": {
-            "welcome": `Welcome {{who}}!`
+            "welcome": `Welcome {{who}}!`,
+            "subtitle":"Work with Python or R and use the power you need!",
+            "cardTitle1":"An ergonomic environment and on-demand services",
+            "cardTitle2":"An active and enthusiastic community at your service",
+            "cardTitle3": "Fast, flexible and online data storage",
+            "cardText1": "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
+            "cardText2": "Use and share the resources available to you: tutorials, training and exchange channels.",
+            "cardText3": "To easily access your data and those made available to you from your programs - S3 API implementation",
+            "cardButton1":"Consult the catalog",
+            "cardButton2":"Join the community",
+            "cardButton3":"Consult the data",
+            "projectTitle":"The project in a few words",
+            "projectText":"With INSEE as coordinator, we want to design a shared platform of statistical and data science tool services. One of the objectives of our project is to share tools, knowledge and resources within the official statistical service (SSP). As part of a public collaboration, the project is also available in open-source.",
+            "projectButton":"Contribute to the project",
+            "warningTitle":"Precautions for use",
+            "warningText":"The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",   
         }
     },
     "fr": {
@@ -232,7 +247,22 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page non trouvé"
         },
         "Home": {
-            "welcome": `Bienvenue {{who}}!`
+            "welcome": `Bienvenue {{who}}!`,
+            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
+            "cardTitle1":"Un environnement ergonomique et des services à la demande",
+            "cardTitle2":"Une communauté active et enthousiaste à votre écoute",
+            "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
+            "cardText1": "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "cardText2": "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
+            "cardText3": "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
+            "cardButton1":"Consulter le catalogue",
+            "cardButton2":"Rejoindre la communauté",
+            "cardButton3":"Consulter des données",
+            "projectTitle":"Le projet en quelques mots",
+            "projectText":"Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
+            "projectButton":"Contribuer au projet",
+            "warningTitle":"Précautions d’usage",
+            "warningText":"Le datalab est un terrain d'exploration. Les garanties de service sont par conséquen limitées: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorer en fonction de vos retours."
         }
         /* spell-checker: enable */
     }
