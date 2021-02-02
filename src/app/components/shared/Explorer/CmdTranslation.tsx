@@ -27,10 +27,18 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 
 		const borderRadius = `0 0 0 30px`;
 
+		const textColor = (() => {
+						switch (theme.palette.type) {
+							case "light": return theme.custom.colors.palette.limeGreen.main;
+							case "dark": return theme.custom.colors.palette.midnightBlue.main;
+						}
+					})();
+
 		return {
 			"iconButton": ({
 				"& svg": {
-					"color": theme.custom.colors.palette.limeGreen.main,
+
+					"color": textColor,
 					"transition": theme.transitions.create(
 						["transform"],
 						{ "duration": theme.transitions.duration.short }
@@ -41,11 +49,16 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				},
 				"&:hover": {
 					"& svg": {
-						"color": theme.custom.colors.palette.whiteSnow.white,
+						"color": (()=>{
+						switch (theme.palette.type) {
+							case "light": return theme.custom.colors.palette.whiteSnow.white;
+							case "dark": return theme.custom.colors.palette.midnightBlue.light2;
+						}
+						})()
 					}
 				},
 				"& .MuiTouchRipple-root": {
-					"color": theme.custom.colors.palette.limeGreen.main,
+					"color": textColor
 				},
 			}),
 			"circularLoading": {
@@ -72,12 +85,20 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				"paddingTop": theme.spacing(1)
 			},
 			"header": {
-				"backgroundColor": theme.custom.colors.palette.midnightBlue.main,
+				"backgroundColor": (() => {
+					switch (theme.palette.type) {
+						case "light": return theme.custom.colors.palette.midnightBlue.main;
+						case "dark": return theme.custom.colors.palette.limeGreen.main;
+					}
+				})(),
 				...(!isExpended ? {} : { borderRadius }),
 				"borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
 				"display": "flex",
 				"alignItems": "center",
 				//"border": "1px solid white"
+				"& .dollarSign": {
+					"color": textColor
+				}
 
 			},
 			"lastTranslatedCmd": {
@@ -87,7 +108,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				"textOverflow": "ellipsis",
 				"fontFamily": "monospace",
 				//"border": "1px solid white",
-				"color": theme.custom.colors.palette.limeGreen.main
+				"color": textColor
 			},
 			"dollarContainer": {
 
@@ -95,10 +116,6 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				//"border": "1px solid white",
 				"textAlign": "end",
 				"paddingRight": 10,
-
-				"& svg": {
-					//"border": "1px solid white",
-				}
 			},
 			"entryRoot": {
 				"display": "flex",
@@ -120,7 +137,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 );
 
 
-export const CmdTranslation= memo((props: Props) =>{
+export const CmdTranslation = memo((props: Props) => {
 
 	const { className, evtTranslation } = props;
 
@@ -220,7 +237,7 @@ export const CmdTranslation= memo((props: Props) =>{
 			<div ref={headerRef} className={classNames.header}>
 
 				<div className={classNames.dollarContainer} >
-					<Icon type="attachMoney" color="limeGreen" fontSize="small" />
+					<Icon className="dollarSign" type="attachMoney" fontSize="small" />
 				</div>
 
 				<div className={classNames.lastTranslatedCmd}>
