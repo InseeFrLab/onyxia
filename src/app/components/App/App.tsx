@@ -18,16 +18,18 @@ import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+//import { getZoomCSSProperties } from "app/tools/getZoomCSSProperties";
 
 const logoMaxWidthInPercent = 5;
 
-const { useClassNames } = createUseClassNames()(
-    ({theme}) => ({
+const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
+    ({theme}, /*{ windowInnerWidth, windowInnerHeight }*/) => ({
         "root": {
-            "height": "100vh",
+            "height": "100%",
             "display": "flex",
             "flexDirection": "column",
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background
+            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
         },
 
         "header": {
@@ -71,9 +73,13 @@ export const App = memo(() => {
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
 
-    const { classNames } = useClassNames({});
+    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
 
-
+    const { classNames } = useClassNames({ 
+        windowInnerWidth, 
+        "aspectRatio": windowInnerWidth / windowInnerHeight,
+        windowInnerHeight
+    });
 
 
     const route = useRoute();

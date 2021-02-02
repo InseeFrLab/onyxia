@@ -4,7 +4,6 @@ import { useMemo, useState, useRef, memo } from "react";
 import Grid from '@material-ui/core/Grid';
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { getKeyPropFactory } from "app/tools/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -19,7 +18,6 @@ import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { useWithProps } from "app/tools/hooks/useWithProps";
 import memoize from "memoizee";
-import { useTheme } from "app/theme/useClassNames";
 
 
 export type Props = {
@@ -87,26 +85,6 @@ export const ExplorerItems = memo((props: Props) => {
     const ExplorerItem = useWithProps(
         SecretOrFileExplorerItem,
         { visualRepresentationOfAFile }
-    );
-
-
-    const theme = useTheme();
-
-    const { windowInnerWidth } = useWindowInnerSize();
-
-    const standardizedWidth = useMemo(
-        (): ExplorerItemProps["standardizedWidth"] => {
-
-            if (windowInnerWidth > theme.breakpoints.width("md")) {
-
-                return "big";
-
-            }
-
-            return "normal";
-
-        },
-        [windowInnerWidth, theme]
     );
 
     const [{
@@ -432,7 +410,7 @@ export const ExplorerItems = memo((props: Props) => {
                                                     }
                                                 })().includes(basename)
                                             }
-                                            standardizedWidth={standardizedWidth}
+                                            standardizedWidth="big"
                                             onMouseEvent={onMouseEventFactory(kind, basename)}
                                             onEditBasename={onEditBasenameFactory(kind, basename)}
                                             getIsValidBasename={getIsValidBasenameFactory(kind, basename)}

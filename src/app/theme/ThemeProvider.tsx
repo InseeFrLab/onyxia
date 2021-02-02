@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-//import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { ZoomProvider } from "app/tools/hooks/useDOMRect";
 
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
@@ -41,7 +41,9 @@ export function themeProviderFactory(
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    {children}
+                    <ZoomProvider referenceWidth={theme.custom.referenceWidth}>
+                        {children}
+                    </ZoomProvider>
                 </StylesProvider>
             </MuiThemeProvider>
         );
