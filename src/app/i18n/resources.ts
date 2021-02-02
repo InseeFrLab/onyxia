@@ -12,6 +12,7 @@ import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEdit
 import { Header } from "app/components/App/Header";
 import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
+import { Home } from "app/components/pages/Home";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -32,6 +33,7 @@ const reflectedI18nSchemes = {
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
+    [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -145,6 +147,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "FourOhFour": {
             "not found": "Page not found"
+        },
+        "Home": {
+            "welcome": `Welcome {{who}}!`
         }
     },
     "fr": {
@@ -225,6 +230,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "FourOhFour": {
             "not found": "Page non trouvé"
+        },
+        "Home": {
+            "welcome": `Bienvenue {{who}}!`
         }
         /* spell-checker: enable */
     }

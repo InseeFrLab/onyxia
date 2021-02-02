@@ -2,8 +2,8 @@
 import React, { useMemo } from 'react';
 import type { ReactNode } from "react";
 //import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
+import { Button } from "app/components/designSystem/Button";
 import { axiosURL } from "js/utils/axios-config";
 import "./style.scss";
 import { getEnv } from "app/env";
@@ -11,10 +11,15 @@ import { useAsync } from 'react-async-hook';
 import { safeLoad as parseYaml } from 'js-yaml';
 import { getScreenTypeFromWidth, getScreenTypeBreakpoint } from "js/model/ScreenType";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
-import { useTheme} from "app/theme/useClassNames";
+import { useTheme } from "app/theme/useClassNames";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
 import type { Route } from "type-route";
+import { createUseClassNames, cx, css } from "app/theme/useClassNames";
+import { Typography } from "app/components/designSystem/Typography";
+import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { useAppConstants } from "app/lib/hooks";
+import { useTranslation } from "app/i18n/useTranslations";
 
 const fetchContent = (): Promise<Content.Root> =>
 	(axiosURL as any)(
@@ -57,12 +62,23 @@ declare namespace Content {
 
 export type Props = {
 	splashScreen: ReactNode;
-    route?: Route<typeof Home.routeGroup>;
+	route?: Route<typeof Home.routeGroup>;
 };
 
-Home.routeGroup = createGroup([ routes.home ]);
+Home.routeGroup = createGroup([routes.home]);
 
 Home.requireUserLoggedIn = false;
+
+const { useClassNames } = createUseClassNames()(
+	({ theme }) => ({
+		"root": {
+			"backgroundColor": "transparent"
+		},
+		"hero": {
+			"paddingBottom": theme.spacing(4)
+		}
+	})
+)
 
 export function Home(props: Props) {
 
@@ -74,28 +90,51 @@ export function Home(props: Props) {
 
 	const { result: contentRoot } = useAsync(fetchContent, []);
 
+	const { classNames } = useClassNames({});
+
+	const appConstants = useAppConstants();
+
+	const { t } = useTranslation("Home");
+
 	return !contentRoot || !screenType ?
 		<>{splashScreen}</>
 		:
-		<div className="home">
+		<div className={cx("home", classNames.root)}>
 			<div
-				className="hero"
+				className={cx("hero", classNames.hero)}
 				style={{
-					backgroundImage:
+					"backgroundImage":
 						screenType === "LARGE"
 							? `url(${contentRoot.hero.image})`
 							: undefined,
 				}}
 			>
-				{windowInnerWidth > getScreenTypeBreakpoint("SMALL") && (
-					<Typography variant="h1">{contentRoot.hero.smallerText}</Typography>
-				)}
-				<Typography variant="h2">{contentRoot.hero.biggerText}</Typography>
+				<div className={css({
+					"maxWidth": "35%",
+					"& > *": {
+						"marginBottom": theme.spacing(3)
+					},
+				})}>
 
-				<ButtonLinked
-					label={contentRoot.hero.button.label}
-					target={contentRoot.hero.button.url}
-				/>
+					<HeaderLogoSvg width={122} height={80} />
+					{windowInnerWidth > getScreenTypeBreakpoint("SMALL") && (
+						<Typography variant="h2">
+							{
+								appConstants.isUserLoggedIn ?
+									t("welcome", { "who": appConstants.userProfile.nomComplet }) :
+									contentRoot.hero.smallerText
+							}
+
+						</Typography>
+					)}
+					<Typography variant="h3">{contentRoot.hero.biggerText}</Typography>
+
+					<Button onClick={() => { window.location.href = contentRoot.hero.button.url }} >
+						{contentRoot.hero.button.label}
+					</Button>
+
+				</div>
+
 			</div>
 			<div className="papers">
 				{contentRoot.papers.map((paper, i) => (
@@ -151,6 +190,14 @@ export function Home(props: Props) {
 		;
 }
 
+export declare namespace Home {
+
+	export type I18nScheme = {
+		welcome: { who: string; }
+	};
+
+}
+
 const ButtonLinked: React.FC<{ label: string; target: string; }> =
 	({ label, target, }) => {
 
@@ -167,7 +214,7 @@ const ButtonLinked: React.FC<{ label: string; target: string; }> =
 					</a>
 				);
 
-		return <InternalOrExternalLink> <Button>{label}</Button> </InternalOrExternalLink>;
+		return <InternalOrExternalLink> <Button onClick={() => { }}>{label}</Button> </InternalOrExternalLink>;
 
 
 	};

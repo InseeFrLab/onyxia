@@ -3,6 +3,7 @@
 
 	display: inline-block;
 
+	/*
 	> button {
 
 		width: 100%;
@@ -18,6 +19,7 @@
 		}
 
 	}
+	*/
 
 
 }
@@ -26,47 +28,17 @@
 
 	background-position: right;
 	background-repeat: no-repeat;
-
 	background-size: 50%;
 	
 	padding-top: 50px;
 
 	$paddingSide: 8.7%;
 
-	padding-left: $paddingSide;
-	padding-bottom: 65px;
-
 	border-bottom: 1px black solid;
 
-	> h1 {
 
-		font-weight: 500;
-		font-size: 37px;
+	> h3 {
 
-		line-height: 42px;
-		position: relative;
-		display: inline-block;
-
-		&::after {
-			display: block;
-			position: absolute;
-			content: '';
-			bottom: -45%;
-			width: 82%;
-			border-bottom: 1px solid black;
-		}
-
-		margin-bottom: 67px;
-
-	}
-
-
-	> h2 {
-
-		font-style: normal;
-		font-weight: normal;
-		font-size: 49px;
-		line-height: 56px;
 		padding-right: $paddingSide;
 
 		@media (min-width: 960px) { 
@@ -77,12 +49,6 @@
 
 	}
 
-	> a {
-
-		margin-top: 33px;
-		min-width: 300px;
-
-	}
 	
 }
 
