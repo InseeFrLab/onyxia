@@ -48,7 +48,6 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
 
         "leftBar": {
             "height": "100%",
-            "overflow": "auto"
         },
         "main": {
             "flex": 1,

@@ -29,13 +29,19 @@ export type Props = {
 
 const { useClassNames } = createUseClassNames<Props>()(
     ({theme})=>({
-        "root": {
+        "root":{
+            "padding": theme.spacing(2, 0),
+            "overflow": "visible"
+        },
+        "nav": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "borderRadius": 16,
             "boxShadow": theme.custom.shadows[3],
             "paddingTop": theme.spacing(1),
             "marginLeft": theme.spacing(2),
-            "marginRight": theme.spacing(2)
+            "marginRight": theme.spacing(2),
+            "overflow": "auto",
+            "height": "100%"
         }
     })
 );
@@ -69,21 +75,23 @@ export const LeftBar = memo((props: Props) => {
     const theme = useTheme();
 
     return (
-        <nav className={cx(classNames.root, className)} >
-            {
-                targets.map(
-                    target =>
-                        <CustomButton
-                            key={target}
-                            isActive={currentPage === target}
-                            target={target}
-                            isExpanded={isExpanded}
-                            collapsedWidth={collapsedWidth - theme.spacing(4)}
-                            onClick={onClickFactory(target)}
-                        />
-                )
-            }
-        </nav>
+        <section className={cx(classNames.root, className)}>
+            <nav className={cx(classNames.nav)} >
+                {
+                    targets.map(
+                        target =>
+                            <CustomButton
+                                key={target}
+                                isActive={currentPage === target}
+                                target={target}
+                                isExpanded={isExpanded}
+                                collapsedWidth={collapsedWidth - theme.spacing(4)}
+                                onClick={onClickFactory(target)}
+                            />
+                    )
+                }
+            </nav>
+        </section>
     );
 
 });
