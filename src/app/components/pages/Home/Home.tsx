@@ -1,5 +1,5 @@
 
-import React, { memo } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import "./style.scss";
 import { useTheme } from "app/theme/useClassNames";
@@ -208,36 +208,56 @@ const { Card } = (() => {
 
 		const theme = useTheme();
 
+		const iconRef = useRef<SVGSVGElement>(null);
+
+		useEffect(
+			() => {
+				iconRef.current!
+					.querySelectorAll("g")
+					.forEach(g =>
+						g.setAttribute("fill",
+							g.classList.contains("colorPrimary") ?
+								theme.custom.colors.palette.exuberantOrange.main :
+								theme.custom.colors.useCases.typography.textPrimary
+						)
+					);
+			},
+			[theme]
+		);
+
 		return (
-			<Paper className={cx(css({ 
-				"display": "flex", 
+			<Paper className={cx(css({
+				"display": "flex",
 				"flexDirection": "column",
-				"padding": theme.spacing(2)
+				"padding": theme.spacing(2),
+				"backgroundColor": (() => {
+					switch (theme.palette.type) {
+						case "dark": return "#383E50";
+						case "light": return undefined;
+					}
+				})()
 			}), className)}>
 				<div className={css({ "display": "flex", })}>
-					<Icon className={css({ "border": "1px solid black"})} width={120} height={120} />
-					<div className={css({ 
-						"flex": 1, 
-						"display": "flex", 
+					<Icon ref={iconRef} width={120} height={120} />
+					<div className={css({
+						"flex": 1,
+						"display": "flex",
 						"alignItems": "center",
-						"padding": theme.spacing(0,3)
-						})}>
+						"padding": theme.spacing(0, 3)
+					})}>
 						<Typography variant="h4">{title}</Typography>
 					</div>
 				</div>
-				<div className={css({ 
-					"flex":1, 
-					"display": "flex", 
+				<div className={css({
+					"flex": 1,
+					"display": "flex",
 					"flexDirection": "column",
 					"paddingTop": theme.spacing(2)
 				})}>
 					<div className={css({ "flex": 1, })}>
 						<Typography>{text}</Typography>
 					</div>
-					<div className={css({ 
-						"border": "1px solid black",
-						"marginTop": theme.spacing(1)
-					})} >
+					<div className={css({ "marginTop": theme.spacing(4) })} >
 						<Button onClick={onClick}>{buttonText}</Button>
 					</div>
 				</div>
