@@ -49,7 +49,6 @@ export const getEnv = memoizee(
 		},
 		"CONTENT": {
 			"SERVICES_URL": getEnvVar("SERVICES_URL"),
-			"HOMEPAGE_URL": getEnvVar("HOMEPAGE_URL"),
 			"TRAININGS_URL": getEnvVar("TRAININGS_URL")
 		},
 		"APP": {

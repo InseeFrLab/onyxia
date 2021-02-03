@@ -1,6 +1,6 @@
 
 
-import { useMemo, useEffect, memo } from "react";
+import { useMemo, memo } from "react";
 import { Header } from "./Header";
 import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
@@ -93,6 +93,9 @@ export const App = memo(() => {
             }
 
             if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
+
+                appConstants.login();
+
                 return SplashScreen;
             }
 
@@ -105,11 +108,7 @@ export const App = memo(() => {
                         className={classNameFillBlock}
                     />;
                 case Home:
-                    assert(Page.routeGroup.has(route));
-                    return () => <Page
-                        splashScreen={<SplashScreen />}
-                        route={route}
-                    />;
+                    return () => <Page/>;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");
@@ -117,22 +116,6 @@ export const App = memo(() => {
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [route.name]
-    );
-
-    useEffect(
-        ()=>{
-
-        if( Page !== SplashScreen ){
-            return;
-        }
-
-        assert(!appConstants.isUserLoggedIn);
-
-        appConstants.login();
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [Page]
     );
 
     const onHeaderClick = useConstCallback(
@@ -161,9 +144,8 @@ export const App = memo(() => {
                 return;
             }
 
-            alert("TODO: Report missing pages");
+            alert(`TODO: missing page ${target}`);
 
-            //TODO
         }
     );
 

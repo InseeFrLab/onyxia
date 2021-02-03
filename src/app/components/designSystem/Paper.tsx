@@ -19,6 +19,7 @@ const defaultProps: Optional<Props> = {
 const { useClassNames } = createUseClassNames<Required<Props>>()(
     ({ theme }, { elevation }) => ({
         "root": {
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[elevation]
         }
     })
