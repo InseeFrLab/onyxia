@@ -151,6 +151,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Home": {
             "welcome": `Welcome {{who}}!`,
             "title": "Welcome ont the SSP Cloud's datalab",
+            "start tour": "Start tour",
             "logIn": "Login",
             "subtitle":"Work with Python or R and use the power you need!",
             "cardTitle1":"An ergonomic environment and on-demand services",
@@ -252,6 +253,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "welcome": `Bienvenue {{who}}!`,
             "title": "Bienvenue sur le datalab du SSP Cloud",
             "logIn": "Connexion",
+            "start tour": "Visite guidée",
             "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
             "cardTitle1":"Un environnement ergonomique et des services à la demande",
             "cardTitle2":"Une communauté active et enthousiaste à votre écoute",

@@ -46,9 +46,10 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"cardsWrapper": {
 			"borderTop": `1px solid ${theme.custom.colors.useCases.typography.textPrimary}`,
+			"borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textPrimary}`,
 			"marginRight": theme.spacing(3),
 			"display": "flex",
-			"paddingTop": theme.spacing(3),
+			"padding": theme.spacing(3,0),
 			"& > *": {
 				"flex": 1
 			}
@@ -102,7 +103,7 @@ export function Home() {
 					<Button onClick={onHeroButtonClick}>
 						{
 							appConstants.isUserLoggedIn ?
-								t("projectButton") :
+								t("start tour") :
 								t("logIn")
 						}
 					</Button>
@@ -139,24 +140,43 @@ export function Home() {
 
 
 			</div>
-			<div className="project_history">
-				<section>
-					<Typography variant="h1">
-						{"Le project en quelques mots..."}
-					</Typography>
-					<p>{"Avec l'insee en tant que coordinateur"}</p>
-					<Button onClick={() => { }} >
-						Contribuer au projet...
-					</Button>
+
+			<div className={css({
+				"display": "flex",
+				"marginRight": theme.spacing(3),
+			})}>
+				<section className={css({ "flex": 1, "display": "flex", "alignItems": "center" })}>
+					<div className={css({ "width": "60%" })}>
+						<Typography
+							variant="h4"
+							className={css({ "marginBottom": theme.spacing(3) })}
+						>
+							{t("projectTitle")}
+						</Typography>
+						<Typography>{t("projectText")}</Typography>
+						<Button
+							onClick={() => { }}
+							color="secondary"
+							className={css({ "marginTop": theme.spacing(3) })}
+						>
+							{t("projectButton")}
+						</Button>
+					</div>
 				</section>
-				<div className="imageContainer">
-					<img src={serverHomeImageUrl} alt="Logo INSEEFrLab" />
+				<div className={css({ "flex": 1 })}>
+					<img src={serverHomeImageUrl} alt="Logo INSEEFrLab" className={css({
+						"width": "100%",
+						"height": 410,
+						"objectFit": "cover"
+					})} />
 				</div>
 			</div>
+
+
 			<div className="warning">
 				<div style={{ "backgroundColor": theme.palette.primary.main }}>
-					<h1>{"Précaution d'usage"}</h1>
-					<p>{"Le datalab est un terain d'exploration..."}</p>
+					<h1>{t("warningTitle")}</h1>
+					<p>{t("warningText")}</p>
 				</div>
 			</div>
 		</div>
@@ -170,6 +190,7 @@ export declare namespace Home {
 		logIn: undefined;
 		title: undefined;
 		subtitle: undefined;
+		'start tour': undefined;
 		cardTitle1: undefined;
 		cardTitle2: undefined;
 		cardTitle3: undefined;
