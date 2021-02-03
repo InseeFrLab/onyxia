@@ -134,15 +134,9 @@ export function observeSecretsManagerClientWithTranslator(
 
                 const out = evtSecretsManagerTranslation.pipe();
 
-                const [first, ...rest] = initializationCommands;
-
-                (async () => {
-
-                    await out.postAsyncOnceHandled(first);
-
-                    rest.forEach(translation => out.post(translation));
-
-                })();
+                initializationCommands.forEach(
+                    translation=> out.postAsyncOnceHandled(translation)
+                );
 
                 return { "evtSecretsManagerTranslation": out };
 
