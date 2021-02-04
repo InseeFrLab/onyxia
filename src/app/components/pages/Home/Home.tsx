@@ -14,9 +14,10 @@ import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg"
 import { ReactComponent as IconServiceSvg } from "app/assets/svg/IconService.svg"
 import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg"
-import dotsSvgUrl from "app/assets/svg/dots.svg";
+import dotsDarkSvgUrl from "app/assets/svg/dotsDark.svg";
+import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
-import { Paper } from "app/components/designSystem/Paper"
+import { Paper } from "app/components/designSystem/Paper"
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -29,8 +30,12 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"hero": {
 			"paddingBottom": theme.spacing(4),
-			"backgroundImage": `url(${dotsSvgUrl})`,
-
+			"backgroundImage": `url(${(() => {
+					switch (theme.palette.type) {
+						case "dark": return dotsDarkSvgUrl;
+						case "light": return dotsLightSvgUrl;
+					}
+				})()})`,
 			"backgroundPosition": "right",
 			"backgroundRepeat": "no-repeat",
 			"backgroundSize": "50%",
@@ -49,13 +54,13 @@ const { useClassNames } = createUseClassNames()(
 			"borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textPrimary}`,
 			"marginRight": theme.spacing(3),
 			"display": "flex",
-			"padding": theme.spacing(3,0),
+			"padding": theme.spacing(3, 0),
 			"& > *": {
 				"flex": 1
 			}
 		},
 		"middleCard": {
-			"margin": theme.spacing(0,2)
+			"margin": theme.spacing(0, 2)
 		}
 	})
 )
@@ -121,7 +126,7 @@ export function Home() {
 				/>
 				<Card
 					className={classNames.middleCard}
-					Icon={ IconCommunitySvg}
+					Icon={IconCommunitySvg}
 					title={t("cardTitle2")}
 					text={t("cardText2")}
 					buttonText={t("cardButton2")}
