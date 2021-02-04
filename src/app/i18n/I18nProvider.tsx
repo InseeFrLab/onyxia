@@ -12,17 +12,15 @@ import { useEvt } from "evt/hooks";
 import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 
 export type Props = {
-    lng: SupportedLanguage | "browser default";
+    lng: SupportedLanguage;
     children: React.ReactNode;
 }
-
-
 
 export function I18nProvider(props: Props) {
 
     const { children, lng } = props;
 
-    const [{ browserDefaultLng, i18nInstance }] = useState(() => {
+    const [{ i18nInstance }] = useState(() => {
 
         i18n
             .use(LanguageDetector)
@@ -36,19 +34,12 @@ export function I18nProvider(props: Props) {
                 resources
             });
 
-        return {
-            "browserDefaultLng": i18n.language,
-            "i18nInstance": i18n.cloneInstance(...(lng === "browser default" ? [] : [{ lng }]))
-        };
+        return { "i18nInstance": i18n.cloneInstance({ lng }) };
 
     });
 
     useValueChangeEffect(
-        () => i18nInstance.changeLanguage(
-            lng === "browser default" ?
-                browserDefaultLng :
-                lng
-        ),
+        () => i18nInstance.changeLanguage(lng),
         [lng]
     );
 

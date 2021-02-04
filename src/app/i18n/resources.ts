@@ -40,7 +40,7 @@ export type I18nSchemes = typeof reflectedI18nSchemes;
 
 export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
 
-export type SupportedLanguage = "en" | "fr";
+export type SupportedLanguage = "en"| "fr";
 
 const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
     "en": {
@@ -153,7 +153,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "title": "Welcome ont the SSP Cloud's datalab",
             "start tour": "Start tour",
             "logIn": "Login",
-            "subtitle":"Work with Python or R and use the power you need!",
+            "subtitle":"Work with Python or R, enjoy all the computing power you need!",
             "cardTitle1":"An ergonomic environment and on-demand services",
             "cardTitle2":"An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",

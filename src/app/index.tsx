@@ -13,6 +13,7 @@ import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
 import { css } from "app/theme/useClassNames";
+import { useLng } from "app/i18n/useLng";
 
 /*
 import App_ from "js/components/app.container";
@@ -68,9 +69,11 @@ function Root() {
 
     });
 
+    const { lng } = useLng();
+
     return (
         <React.StrictMode>
-            <I18nProvider lng="browser default">
+            <I18nProvider lng={lng}>
                 <RouteProvider>
                     <ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
                         <StoreProvider
