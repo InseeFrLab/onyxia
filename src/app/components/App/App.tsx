@@ -5,7 +5,7 @@ import { Header } from "./Header";
 import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
-import { Footer } from "./Footer";
+//import { Footer } from "./Footer";
 import { createUseClassNames, css, cx } from "app/theme/useClassNames";
 import { useAppConstants } from "app/lib/hooks";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
@@ -185,7 +185,7 @@ export const App = memo((props: Props) => {
                 </main>
 
             </section>
-            <Footer className={classNames.footer} />
+            {/*<Footer className={classNames.footer} />*/}
 
         </div>
     );

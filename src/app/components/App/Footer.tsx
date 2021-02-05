@@ -28,8 +28,6 @@ export const Footer = memo((props: Props) => {
 
     return (
         <footer className={cx(classNames.root, className)}>
-
-
         </footer>
     );
 
