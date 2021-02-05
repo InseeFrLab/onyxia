@@ -181,11 +181,15 @@ const { ChangeLanguage } = (() => {
     const { useClassNames } = createUseClassNames<{ buttonWidth: number; }>()(
         ({ theme },{ buttonWidth }) => ({
             "menu": {
+                "& .Mui-selected": {
+                    "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces
+                },
                 "& .MuiPaper-root":{
+                    "backgroundColor": theme.custom.colors.useCases.surfaces.background,
                     "width": buttonWidth
                 },
-                "& .MuiList-root": {
-                    "backgroundColor": theme.custom.colors.useCases.surfaces.background
+                "& a": {
+                    "color": theme.custom.colors.useCases.typography.textPrimary
                 }
             }
         })
