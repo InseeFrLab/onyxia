@@ -5,7 +5,6 @@ import { sectionName } from "../sectionName";
 import { MySecrets } from "app/components/pages/MySecrets";
 import type { Props } from "app/components/pages/MySecrets";
 import { symToStr } from "app/tools/symToStr";
-import { SplashScreen } from "app/components/shared/SplashScreen";
 
 type StoryProps = {
     width: number;
@@ -18,7 +17,7 @@ function Component(props: Omit<Props, "className" | "route" | "splashScreen"> & 
 
     return <MySecrets
         route={null as any}
-        splashScreen={<SplashScreen css={{ "height": "100%" }} />}
+        splashScreen={null}
         className={css({
             width,
             height

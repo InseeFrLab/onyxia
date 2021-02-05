@@ -13,8 +13,7 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
-import { useTheme, css } from "app/theme/useClassNames";
-import { SplashScreen } from "app/components/shared/SplashScreen";
+import { useTheme } from "app/theme/useClassNames";
 import { RouteProvider } from "app/router";
 
 const { ThemeProvider } = themeProviderFactory(
@@ -94,10 +93,7 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider
-                createStoreParams={createStoreParams}
-                splashScreen={<SplashScreen className={css({ "width": 100, "heigh": 100 })} />}
-            >
+            <StoreProvider createStoreParams={createStoreParams}>
                 {children}
             </StoreProvider>;
 

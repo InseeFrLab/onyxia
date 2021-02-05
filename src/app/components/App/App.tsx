@@ -6,12 +6,11 @@ import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
-import { createUseClassNames, css } from "app/theme/useClassNames";
+import { createUseClassNames, css, cx } from "app/theme/useClassNames";
 import { useAppConstants } from "app/lib/hooks";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { useDOMRect } from "app/tools/hooks/useDOMRect";
 import { MySecrets } from "app/components/pages/MySecrets";
-import { SplashScreen as UnsizedSplashScreen } from "app/components/shared/SplashScreen";
 import { useRoute } from "app/router";
 import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
@@ -19,12 +18,13 @@ import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
-//import { getZoomCSSProperties } from "app/tools/getZoomCSSProperties";
+import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+
 
 const logoMaxWidthInPercent = 5;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
-    ({theme}, /*{ windowInnerWidth, windowInnerHeight }*/) => ({
+    ({theme}) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -62,20 +62,32 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
 
 const classNameFillBlock= css({ "height": "100%" });
 
-const SplashScreen = memo(() => <UnsizedSplashScreen className={classNameFillBlock} />);
+//const SplashScreen = memo(() => <UnsizedSplashScreen className={classNameFillBlock} />);
 
+export type Props = {
+    className?: string;
+    onReady(): void;
+}
 
-export const App = memo(() => {
+export const App = memo((props: Props) => {
 
+    const { className, onReady } = props;
 
     const appConstants = useAppConstants();
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
 
-    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
+    useValueChangeEffect(
+        () => onReady(),
+        [rootWidth === 0]
+    );
 
-    const { classNames } = useClassNames({ 
-        windowInnerWidth, 
+    const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
+
+    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
+
+    const { classNames } = useClassNames({
+        windowInnerWidth,
         "aspectRatio": windowInnerWidth / windowInnerHeight,
         windowInnerHeight
     });
@@ -96,19 +108,19 @@ export const App = memo(() => {
 
                 appConstants.login();
 
-                return SplashScreen;
+                return () => null;
             }
 
             switch (Page) {
                 case MySecrets:
                     assert(Page.routeGroup.has(route));
                     return () => <Page
-                        splashScreen={<SplashScreen />}
+                        splashScreen={null}
                         route={route}
                         className={classNameFillBlock}
                     />;
                 case Home:
-                    return () => <Page/>;
+                    return () => <Page />;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");
@@ -123,15 +135,15 @@ export const App = memo(() => {
             switch (target) {
                 case "logo": routes.home().push(); return;
                 case "cloudShell": alert("TODO: Report cloudshell could shell"); return;
-                case "auth button": 
+                case "auth button":
 
-                if( appConstants.isUserLoggedIn ){
-                    appConstants.logout();
-                }else{
-                    appConstants.login();
-                }
+                    if (appConstants.isUserLoggedIn) {
+                        appConstants.logout();
+                    } else {
+                        appConstants.login();
+                    }
 
-                return;
+                    return;
             }
         }
     );
@@ -139,7 +151,7 @@ export const App = memo(() => {
     const onLeftBarClick = useConstCallback(
         (target: Parameters<LeftBarProps["onClick"]>[0]) => {
 
-            if( target in routes ){
+            if (target in routes) {
                 routes[target as keyof typeof routes]().push();
                 return;
             }
@@ -149,10 +161,9 @@ export const App = memo(() => {
         }
     );
 
-    const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
 
     return (
-        <div ref={rootRef} className={classNames.root} >
+        <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
                 className={classNames.header}
                 logoMaxWidth={logoMaxWidth}

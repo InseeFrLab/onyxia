@@ -12,13 +12,12 @@ import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
     createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "vaultCmdTranslationLogger">;
-    splashScreen: ReactNode;
     children: ReactNode;
 };
 
 
 const memoizedCreateStore = memoize(
-    (createStoreParams: Props["createStoreParams"]) => {
+    async (createStoreParams: Props["createStoreParams"]) => {
 
         const evtBackOnline = Evt.from(window, "online").pipe(() => [id<void>(undefined)]);
 
@@ -39,7 +38,7 @@ const memoizedCreateStore = memoize(
 
 export function StoreProvider(props: Props) {
 
-    const { createStoreParams, splashScreen, children } = props;
+    const { createStoreParams, children } = props;
 
     const asyncCreateStore = useAsync(
         () => memoizedCreateStore(createStoreParams),
@@ -55,7 +54,7 @@ export function StoreProvider(props: Props) {
 
     return (
         store === undefined ?
-            <>{splashScreen}</> :
+            null :
             <ReactReduxProvider store={store}>
                 {children}
             </ReactReduxProvider>
