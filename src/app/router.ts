@@ -6,10 +6,15 @@ const routeDefs = {
   "mySecrets": defineRoute(
     { "directoryPath": param.path.trailing.optional.string },
     ({ directoryPath }) => `/my-secrets/${directoryPath}`
+  ),
+  "catalog": defineRoute(
+    { "optionalTrailingPath": param.path.trailing.optional.string },
+    ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
+  ),
+  "myServices": defineRoute(
+    { "serviceId": param.path.optional.string },
+    ({ serviceId }) => `/my-service/${serviceId}`
   )
 };
-
-
-
 
 export const { RouteProvider, useRoute, routes } = createRouter(routeDefs);

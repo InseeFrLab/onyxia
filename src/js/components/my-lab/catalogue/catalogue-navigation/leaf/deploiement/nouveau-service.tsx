@@ -4,7 +4,6 @@ import Typography from '@material-ui/core/Typography';
 import { AppBar, Chip, Button } from '@material-ui/core/';
 // @ts-ignore
 import queryString from 'query-params';
-import { Redirect } from 'react-router-dom';
 import Formulaire from './formulaire';
 import { CustomService } from "./custom-service/component";
 import { getAvatar } from 'js/utils';
@@ -27,6 +26,7 @@ import { actions } from "js/redux/legacyActions";
 import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prOidcClient, prAxiosInstance } from "lib/setup";
+import { routes } from "app/router";
 
 type Service = {
 	category: "group" | "service";
@@ -183,7 +183,11 @@ export const NouveauService: React.FC<Props> = ({
 		});
 		setContract(undefined);
 	};
-	if (redirect) return <Redirect to="/my-services" />;
+	if( redirect ) {
+		routes.myServices().replace();
+		return null;
+	}
+
 	const ongletContent = filterOnglets(ongletFields)[onglet] || {};
 	return (
 		<>

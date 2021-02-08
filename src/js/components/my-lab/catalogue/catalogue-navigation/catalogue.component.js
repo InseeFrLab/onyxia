@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,6 +7,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardActions from '@material-ui/core/CardActions';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import { routes } from "app/router";
 
 const Catalogue = ({ catalogue: { id, name, description } }) => (
 	<Grid item sm={12} lg={4} classes={{ item: 'carte' }}>
@@ -26,11 +26,15 @@ const Catalogue = ({ catalogue: { id, name, description } }) => (
 				</div>
 			</CardContent>
 			<CardActions classes={{ root: 'boutons' }}>
-				<Link to={`/my-lab/catalogue/${id}`}>
+
+				<a {...routes.catalog({
+					"optionalTrailingPath": id
+				}).link}>
 					<IconButton color="secondary" aria-label="Explorer">
 						<Icon>folder_open</Icon>
 					</IconButton>
-				</Link>
+				</a>
+
 			</CardActions>
 		</Card>
 	</Grid>

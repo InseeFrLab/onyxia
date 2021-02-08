@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Icon } from '@material-ui/core';
 import './fil-d-ariane.scss';
@@ -116,29 +115,6 @@ export const fil = {
 		})),
 	],
 	/* */
-	mesSecrets: (location) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		...location
-			.split('/')
-			.filter((c) => c.length > 0)
-			.reduce(
-				(a, c) => [
-					...a,
-					{
-						pathname:
-							a.length > 0
-								? `${a[a.length - 1].pathname.replace(
-										'?path=true',
-										''
-								  )}/${c}?path=true`
-								: `/${c}?path=true`,
-						component: <span>{c}</span>,
-					},
-				],
-				[]
-			),
-	],
-	/* */
 	serviceCatalogue: (idCatalogue, idService) => [
 		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
 		{ pathname: `/my-lab/catalogue`, component: <span>catalogue</span> },
@@ -184,9 +160,13 @@ const makeAll = ([home, ...rest]) => (
 	<nav aria-label="Breadcrumb" className="fil-d-ariane-container">
 		<ol className="fil-d-ariane">
 			<li>
+				{(console.log({ "home.pathname": home.pathname, "home.component": home.component }), null)}
+				<a href={home.pathname} className="home">{home.component}</a>
+				{/*
 				<Link to={home.pathname} className="home">
 					{home.component}
 				</Link>
+				*/}
 			</li>
 			{makeRest(rest)}
 		</ol>
@@ -204,7 +184,9 @@ const makeRest = ([curr, ...rest], index = 1) => {
 	return (
 		<>
 			<li>
-				<Link to={curr.pathname}>{curr.component}</Link>
+				{(console.log({ "curr.pathname": curr.pathname, "curr.component": curr.component }), null)}
+				<a href={curr.pathname}>{curr.component}</a>
+				{/*<Link to={curr.pathname}>{curr.component}</Link>*/}
 			</li>
 			{makeRest(rest, index + 1)}
 		</>

@@ -12,8 +12,7 @@ import { useDispatch, useSelector } from "app/lib/hooks";
 import { useAsync } from "react-async-hook";
 import { thunks } from "lib/setup";
 
-
-export const About = () => {
+export function About() {
 
 	//NOTE: We wrap the states in an object so we
 	//can establish that !!configuration => !!regions
@@ -112,5 +111,5 @@ export const About = () => {
 			</div>
 		</>
 	);
-};
+}
 

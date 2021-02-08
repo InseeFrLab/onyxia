@@ -20,6 +20,8 @@ import { useIsDarkModeEnabled } from "app/lib/hooks";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 
+//Legacy
+import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 
 const logoMaxWidthInPercent = 5;
 
@@ -98,7 +100,11 @@ export const App = memo((props: Props) => {
     const Page = useMemo(
         () => {
 
-            const Page = [Home, MySecrets].find(({ routeGroup }) => routeGroup.has(route));
+            const Page = [
+                Home, 
+                MySecrets,
+                Catalogue
+            ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
                 return () => <FourOhFour className={classNameFillBlock} />;
@@ -121,6 +127,9 @@ export const App = memo((props: Props) => {
                     />;
                 case Home:
                     return () => <Page />;
+                case Catalogue:
+                    assert(Page.routeGroup.has(route));
+                    return () => <Page route={route} />;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");

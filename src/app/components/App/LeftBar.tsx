@@ -12,8 +12,8 @@ import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 const targets = [
     "toggle isExpanded" as const,
     ...objectKeys(routes),
-    "account" as const, "tour" as const, "trainings" as const, "shared services" as const,
-    "catalog" as const, "my services" as const, "my files" as const, "about" as const
+    "account" as const, "tour" as const, "trainings" as const, 
+    "shared services" as const, "my files" as const, "about" as const
 ];
 
 export type Target = typeof targets[number];
@@ -179,7 +179,7 @@ const { CustomButton } = (() => {
                 case "catalog": return "services";
                 case "my files": return "files";
                 case "mySecrets": return "secrets";
-                case "my services": return "lab";
+                case "myServices": return "lab";
                 case "shared services": return "community";
                 case "toggle isExpanded": return "chevronLeft";
                 case "tour": return "tour";
