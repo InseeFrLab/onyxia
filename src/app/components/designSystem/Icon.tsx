@@ -6,13 +6,13 @@ import { ReactComponent as TourSvg } from "app/assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "app/assets/svg/Secrets.svg";
 import { ReactComponent as AccountSvg } from "app/assets/svg/Account.svg";
-import { ReactComponent as LabSvg } from "app/assets/svg/Lab.svg";
 import { ReactComponent as HomeSvg } from "app/assets/svg/Home.svg";
 import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
 import { ReactComponent as CommunitySvg } from "app/assets/svg/Community.svg";
+import { ReactComponent as CatalogSvg } from "app/assets/svg/Catalog.svg";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -32,9 +32,8 @@ import Translate from "@material-ui/icons/Translate";
 
 
 export type SvgTypes =
-    "tour" | "services" | "secrets" | "account" |
-    "lab" | "home" | "trainings" | "files" |
-    "collaborationTools" | "bash" | "community";
+    "tour" | "services" | "secrets" | "account" | "home" | "trainings" | "files" |
+    "collaborationTools" | "bash" | "community"| "catalog";
 
 export type MaterialType = 
     "delete" | "edit" | "add" | "filterNone" |
@@ -122,7 +121,6 @@ export const Icon = memo((props: Props) => {
                 case "services": return ServicesSvg;
                 case "secrets": return SecretsSvg;
                 case "account": return AccountSvg;
-                case "lab": return LabSvg;
                 case "home": return HomeSvg;
                 case "trainings": return TrainingsSvg;
                 case "files": return FilesSvg;
@@ -136,6 +134,7 @@ export const Icon = memo((props: Props) => {
                 case "brightness7": return Brightness7;
                 case "brightness4": return Brightness4;
                 case "translate": return Translate;
+                case "catalog": return CatalogSvg;
             }
         })()}
         fontSize={fontSize}
