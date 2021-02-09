@@ -6,14 +6,34 @@ import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { cx, createUseClassNames, useTheme } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { routes } from "app/router";
-import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+//import { routes } from "app/router";
+//import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
+/*
 const targets = [
     "toggle isExpanded" as const,
     ...objectKeys(routes),
-    "account" as const, "tour" as const, "trainings" as const, 
-    "shared services" as const, "my files" as const, "about" as const
+    "account" as const, 
+    "tour" as const, 
+    "trainings" as const, 
+    "shared services" as const, 
+    "my files" as const, 
+    "about" as const
+];
+*/
+
+const targets = [
+    "toggle isExpanded" as const,
+    "home" as const,
+    "account" as const, 
+    "tour" as const, 
+    "trainings" as const, 
+    "shared services" as const, 
+    "catalog" as const,
+    "myServices" as const,
+    "mySecrets" as const,
+    "my files" as const, 
+    "about" as const
 ];
 
 export type Target = typeof targets[number];
