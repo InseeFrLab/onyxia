@@ -7,5 +7,3 @@ export const { useIsDarkModeEnabled } = createUseGlobalState(
         window.matchMedia("(prefers-color-scheme: dark)").matches
     )
 );
-
-console.log("=>", useIsDarkModeEnabled)
