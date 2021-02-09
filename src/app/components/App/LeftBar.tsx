@@ -196,10 +196,10 @@ const { CustomButton } = (() => {
             switch (target) {
                 case "home": return "home";
                 case "account": return "account";
-                case "catalog": return "services";
+                case "catalog": return "catalog";
                 case "my files": return "files";
                 case "mySecrets": return "secrets";
-                case "myServices": return "lab";
+                case "myServices": return "services";
                 case "shared services": return "community";
                 case "toggle isExpanded": return "chevronLeft";
                 case "tour": return "tour";
