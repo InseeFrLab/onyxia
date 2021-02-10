@@ -4,7 +4,7 @@ import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { getRefFromDepsFactory } from "app/tools/getRefFromDeps";
 import { areSameSet } from "app/tools/areSameSet";
 import { Polyfill as WeakMap } from "minimal-polyfills/WeakMap";
-import { css, cx } from "@emotion/css";
+import { css, cx, keyframes } from "@emotion/css";
 import type { CSSObject } from "@emotion/css";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
@@ -153,6 +153,6 @@ export function createUseClassNamesFactory<Theme extends Object = {}>(
 
 
 
-export { css, cx };
+export { css, cx, keyframes };
 
 

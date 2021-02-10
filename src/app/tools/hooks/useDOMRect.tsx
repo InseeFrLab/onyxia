@@ -56,7 +56,7 @@ export function useDOMRect<T extends HTMLElement = any>() {
     useEffect(
         () => { setHtmlElement(ref.current); },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [ref.current]
+        [ref.current ?? {}]
     );
 
     const { referenceWidth } = useContext(zoomContext);
