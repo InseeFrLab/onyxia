@@ -1,22 +1,60 @@
 
-import { useState, useRef, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames, cx, keyframes } from "app/theme/useClassNames";
 import { useDOMRect } from "app/tools/hooks/useDOMRect";
-import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
 import Color from "color";
-
+import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 
 export type Props = {
     className?: string;
-    evtAction: NonPostableEvt<"START FADING OUT">;
 };
 
+export const { useSplashScreen } = (() => {
 
-const fadeOutDuration = 500;
+    const { useDisplayState } = createUseGlobalState(
+        "displayState",
+        { "count": 1, "isTransparencyEnabled": false },
+        { "doDisableLocalStorage": true }
+    );
+
+    function useSplashScreen() {
+
+        const { displayState, setDisplayState } = useDisplayState();
+
+        return {
+            "isSplashScreenShown": displayState.count > 0,
+            "isTransparencyEnabled": displayState.isTransparencyEnabled,
+            "showSplashScreen": useConstCallback((params: { enableTransparency: boolean; }) => {
+
+                const { enableTransparency } = params;
+
+                setDisplayState({
+                    "count": displayState.count + 1,
+                    "isTransparencyEnabled": enableTransparency
+                });
+            }),
+            "hideSplashScreen": useConstCallback(() => 
+                setDisplayState({
+                    "count":
+                        displayState.count === 0 ?
+                            0 : displayState.count - 1,
+                    "isTransparencyEnabled": false
+                })
+            )
+        };
+
+    }
+
+    return { useSplashScreen };
+
+})();
+
+
+const fadeOutDuration = 700;
 
 const fadeInAndOut = keyframes`
 60%, 100% {
@@ -30,15 +68,13 @@ const fadeInAndOut = keyframes`
 }
 `;
 
-const { useClassNames } = createUseClassNames<{ 
-    isRemoved: boolean; 
-    isFadingOut: boolean; 
+const { useClassNames } = createUseClassNames<{
+    isVisible: boolean;
+    isFadingOut: boolean;
     isTransparencyEnabled: boolean;
 }>()(
-    ({ theme }, { isRemoved, isFadingOut, isTransparencyEnabled }) => ({
+    ({ theme }, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
         "root": {
-            //"backgroundColor": theme.custom.colors.useCases.surfaces.background,
-
             "backgroundColor": (() => {
 
                 const color = new Color(theme.custom.colors.useCases.surfaces.background).rgb();
@@ -48,10 +84,10 @@ const { useClassNames } = createUseClassNames<{
                     .string();
 
             })(),
-            "backdropFilter": isTransparencyEnabled ? "blur(10px)": undefined,
+            "backdropFilter": isTransparencyEnabled ? "blur(10px)" : undefined,
             "display": "flex",
             "alignItems": "center",
-            "visibility": isRemoved ? "hidden" : "visible",
+            "visibility": isVisible ? "visible" : "hidden",
             "opacity": isFadingOut ? 0 : 1,
             "transition": `opacity ease-in-out ${fadeOutDuration}ms`,
             "& g": {
@@ -78,67 +114,62 @@ export const SplashScreen = memo((props: Props) => {
 
     const { ref, domRect: { width, height } } = useDOMRect();
 
-    const [isRemoved, setIsRemoved] = useState(false);
-    const [isFadingOut, setIsFadingOut] = useState(false);
+    const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 
-    const { classNames } = useClassNames({ 
-        isRemoved, 
-        isFadingOut, 
-        "isTransparencyEnabled": true
+    const [isFadingOut, setIsFadingOut] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+
+    const { classNames } = useClassNames({
+        isVisible,
+        isFadingOut,
+        //isTransparencyEnabled: isTransparencyEnabled || ( 1 === 0 +1)
+        isTransparencyEnabled
     });
 
-    //TODO: Make an operator fo that
-    const evtAction = useEvt(ctx => {
-
-        const evtAction = Evt.create<UnpackEvt<Props["evtAction"]>>();
-
-        props.evtAction.attach(ctx, data => evtAction.postAsyncOnceHandled(data));
-
-        return evtAction;
-
-    }, [props.evtAction]);
-
+    //TODO: Export in evt/hooks
+    const [evtIsSplashScreenShown] = useState(() => Evt.create(isSplashScreenShown));
+    useEffect(() => { evtIsSplashScreenShown.state = isSplashScreenShown });
 
     useEvt(
         ctx => {
 
-            evtAction.attach(
-                action => action === "START FADING OUT",
-                ctx,
-                async () => {
+            let timer = setTimeout(() => { }, 0);
 
-                    console.log("TODO: Remove sleep 1s, (just to show off the anim)");
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+            evtIsSplashScreenShown
+                .toStateless(ctx)
+                .attach(async isSplashScreenShown => {
 
-                    setIsFadingOut(true);
+                    clearTimeout(timer);
 
-                    await new Promise(resolve => setTimeout(resolve, fadeOutDuration));
+                    if (isSplashScreenShown) {
 
-                    setIsFadingOut(false);
-                    setIsRemoved(true);
+                        setIsFadingOut(false);
+                        setIsVisible(true);
 
-                    /*
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    } else {
 
-                    setIsRemoved(false);
-                    */
+                        console.log("TODO: Remove showoff splash screen delay");
+                        await new Promise(resolve => timer = setTimeout(resolve, 1000));
 
-                }
-            );
+                        setIsFadingOut(true);
+
+                        await new Promise(resolve => timer = setTimeout(resolve, fadeOutDuration));
+
+                        setIsFadingOut(false);
+                        setIsVisible(false);
+
+                    }
+
+                });
+
         },
-        [evtAction]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     );
-
-    const svgRef = useRef<SVGSVGElement>(null);
-
-    if (isRemoved) {
-        return null;
-    }
 
     return (
         <div ref={ref} className={cx(classNames.root, className)}>
             <HeaderLogoSvg
-                ref={svgRef}
                 width={width}
                 height={height * 0.2}
             />

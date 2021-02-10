@@ -1,7 +1,6 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
@@ -19,6 +18,7 @@ import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
 import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 
 
 /*
@@ -46,7 +46,6 @@ const { useClassNames } = createUseClassNames<{}>()(
 export type Props = {
     className?: string;
     route: Route<typeof MySecrets.routeGroup>;
-    splashScreen: ReactNode;
 };
 
 MySecrets.routeGroup = createGroup([routes.mySecrets]);
@@ -57,13 +56,12 @@ export function MySecrets(props: Props) {
 
     const {
         className,
-        route,
-        splashScreen
+        route
     } = props;
 
     //TODO
     console.log(route);
-    const directoryPathFromRoot: string | undefined = undefined;
+    const directoryPathFromRoot: string | undefined = undefined;
 
     const { t } = useTranslation("MySecrets");
 
@@ -224,66 +222,80 @@ export function MySecrets(props: Props) {
 
     const { classNames } = useClassNames({});
 
-    return state.currentPath === "" ?
-        <>{splashScreen}</>
-        :
-        (
-            <div className={cx(classNames.root, className)}>
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
-                <PageHeader
-                    icon="secrets"
-                    text1={t("page title")}
-                    text2={t("what this page is used for")}
-                    text3={<>{t("watch the video")} <Link href={videoUrl} target="_blank">{t("here")}</Link></>}
-                />
-                <Explorer
-                    className={classNames.explorer}
-                    browsablePath={userHomePath}
-                    currentPath={state.currentPath}
-                    isNavigating={state.isNavigationOngoing}
-                    evtTranslation={evtSecretsManagerTranslation}
-                    showHidden={false}
-                    file={
-                        state.state !== "SHOWING SECRET" ? null :
-                            <MySecretsEditor
-                                onCopyPath={onCopyPath}
-                                isBeingUpdated={state.isBeingUpdated}
-                                secretWithMetadata={state.secretWithMetadata}
-                                onEdit={onEdit}
-                            />
-                    }
-                    fileDate={
-                        state.state !== "SHOWING SECRET" ?
-                            undefined :
-                            new Date(state.secretWithMetadata.metadata.created_time)
-                    }
-                    files={state.secrets}
-                    directories={state.directories}
-                    directoriesBeingCreated={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.directoriesBeingCreated
-                    }
-                    directoriesBeingRenamed={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.directoriesBeingRenamed
+    useEffect(
+        () => {
+            if (state.currentPath === "") {
+                showSplashScreen({ "enableTransparency": true });
+            } else {
+                hideSplashScreen();
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [state.currentPath === ""]
+    );
 
-                    }
-                    filesBeingCreated={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.secretsBeingCreated
-                    }
-                    filesBeingRenamed={
-                        state.state !== "SHOWING DIRECTORY" ? [] :
-                            state.secretsBeingRenamed
-                    }
-                    onNavigate={onNavigate}
-                    onEditBasename={onEditedBasename}
-                    onDeleteItem={onDeleteItem}
-                    onCreateItem={onCreateItem}
-                    onCopyPath={onCopyPath}
-                />
-            </div>
-        );
+    if( state.currentPath === "" ){
+        return null;
+    }
+
+    return (
+        <div className={cx(classNames.root, className)}>
+            <PageHeader
+                icon="secrets"
+                text1={t("page title")}
+                text2={t("what this page is used for")}
+                text3={<>{t("watch the video")} <Link href={videoUrl} target="_blank">{t("here")}</Link></>}
+            />
+            <Explorer
+                className={classNames.explorer}
+                browsablePath={userHomePath}
+                currentPath={state.currentPath}
+                isNavigating={state.isNavigationOngoing}
+                evtTranslation={evtSecretsManagerTranslation}
+                showHidden={false}
+                file={
+                    state.state !== "SHOWING SECRET" ? null :
+                        <MySecretsEditor
+                            onCopyPath={onCopyPath}
+                            isBeingUpdated={state.isBeingUpdated}
+                            secretWithMetadata={state.secretWithMetadata}
+                            onEdit={onEdit}
+                        />
+                }
+                fileDate={
+                    state.state !== "SHOWING SECRET" ?
+                        undefined :
+                        new Date(state.secretWithMetadata.metadata.created_time)
+                }
+                files={state.secrets}
+                directories={state.directories}
+                directoriesBeingCreated={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.directoriesBeingCreated
+                }
+                directoriesBeingRenamed={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.directoriesBeingRenamed
+
+                }
+                filesBeingCreated={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.secretsBeingCreated
+                }
+                filesBeingRenamed={
+                    state.state !== "SHOWING DIRECTORY" ? [] :
+                        state.secretsBeingRenamed
+                }
+                onNavigate={onNavigate}
+                onEditBasename={onEditedBasename}
+                onDeleteItem={onDeleteItem}
+                onCreateItem={onCreateItem}
+                onCopyPath={onCopyPath}
+            />
+        </div>
+    );
 };
 
 

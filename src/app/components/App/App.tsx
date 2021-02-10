@@ -19,6 +19,7 @@ import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
@@ -64,23 +65,22 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
 
 const classNameFillBlock= css({ "height": "100%" });
 
-//const SplashScreen = memo(() => <UnsizedSplashScreen className={classNameFillBlock} />);
-
 export type Props = {
     className?: string;
-    onReady(): void;
 }
 
 export const App = memo((props: Props) => {
 
-    const { className, onReady } = props;
+    const { className } = props;
 
     const appConstants = useAppConstants();
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
 
+    const { hideSplashScreen } = useSplashScreen();
+
     useValueChangeEffect(
-        () => onReady(),
+        () => hideSplashScreen(),
         [rootWidth === 0]
     );
 
@@ -121,7 +121,6 @@ export const App = memo((props: Props) => {
                 case MySecrets:
                     assert(Page.routeGroup.has(route));
                     return () => <Page
-                        splashScreen={null}
                         route={route}
                         className={classNameFillBlock}
                     />;

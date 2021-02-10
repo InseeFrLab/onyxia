@@ -11,13 +11,9 @@ import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
-import type { Props as SplashScreenProps } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
 import { css } from "app/theme/useClassNames";
 import { useLng } from "app/i18n/useLng";
-import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { useDOMRect } from "app/tools/hooks/useDOMRect";
 
 /*
@@ -97,22 +93,11 @@ function InnerRoot() {
 
     const { ref, domRect: { width, height } } = useDOMRect();
 
-    const [evtSplashScreenAction] = useState(() => Evt.create<UnpackEvt<SplashScreenProps["evtAction"]>>());
-
-    //const [appVisibility, setAppVisibility] = useState<"visible" |"hidden">("hidden");
-
-    const onReady = useConstCallback(
-        () => evtSplashScreenAction.post("START FADING OUT")
-    );
-
     return (
         <div ref={ref} className={css({ "height": "100%" })}>
-            <SplashScreen
-                className={css({ width, "position": "absolute", height, "zIndex": 1000 })}
-                evtAction={evtSplashScreenAction}
-            />
+            <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
             <StoreProvider createStoreParams={createStoreParams} >
-                <App onReady={onReady} className={css({ "zIndex": 0 })} />
+                <App className={css({ "zIndex": 0 })} />
             </StoreProvider>
         </div>
     );
