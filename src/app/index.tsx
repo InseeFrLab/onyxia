@@ -36,7 +36,7 @@ function Root() {
             <I18nProvider lng={lng}>
                 <RouteProvider>
                     <ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
-                        <InnerRoot />
+                        <InnerRootWithThemeAvailable />
                     </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>
@@ -46,7 +46,7 @@ function Root() {
 };
 
 /** We need to be inside the theme provider to be able to use useDOMRect */
-function InnerRoot() {
+function InnerRootWithThemeAvailable() {
 
 
     const { isDarkModeEnabled } = useIsDarkModeEnabled();
@@ -97,7 +97,7 @@ function InnerRoot() {
         <div ref={ref} className={css({ "height": "100%" })}>
             <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
             <StoreProvider createStoreParams={createStoreParams} >
-                <App className={css({ "zIndex": 0 })} />
+                <App />
             </StoreProvider>
         </div>
     );

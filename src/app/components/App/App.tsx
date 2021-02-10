@@ -20,6 +20,7 @@ import { useIsDarkModeEnabled } from "app/lib/hooks";
 import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { useSelector } from "app/lib/hooks";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
@@ -77,11 +78,24 @@ export const App = memo((props: Props) => {
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
 
-    const { hideSplashScreen } = useSplashScreen();
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useValueChangeEffect(
         () => hideSplashScreen(),
         [rootWidth === 0]
+    );
+
+    const isWaiting = useSelector(state=> state.app.waiting);
+
+    useValueChangeEffect(
+        () => {
+            if( isWaiting ){
+                showSplashScreen({ "enableTransparency": true });
+            }else{
+                hideSplashScreen();
+            }
+        },
+        [isWaiting]
     );
 
     const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
@@ -168,6 +182,8 @@ export const App = memo((props: Props) => {
 
         }
     );
+
+
 
 
     return (
