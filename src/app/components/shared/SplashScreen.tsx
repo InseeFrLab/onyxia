@@ -42,7 +42,7 @@ export const { useSplashScreen } = (() => {
                     "count":
                         displayState.count === 0 ?
                             0 : displayState.count - 1,
-                    "isTransparencyEnabled": false
+                    "isTransparencyEnabled": displayState.isTransparencyEnabled
                 })
             )
         };
