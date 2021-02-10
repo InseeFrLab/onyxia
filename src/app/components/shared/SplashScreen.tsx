@@ -36,6 +36,7 @@ export const { useSplashScreen } = (() => {
                     "count": displayState.count + 1,
                     "isTransparencyEnabled": enableTransparency
                 });
+
             }),
             "hideSplashScreen": useConstCallback(() => 
                 setDisplayState({
@@ -50,6 +51,38 @@ export const { useSplashScreen } = (() => {
     }
 
     return { useSplashScreen };
+
+})();
+
+const { useDelay } = (()=>{
+
+    const { useLastDelayedTime } = createUseGlobalState(
+        "lastDelayedTime",
+        0
+    );
+
+    function useDelay(){
+
+        const { lastDelayedTime, setLastDelayedTime } = useLastDelayedTime();
+
+        return { 
+            "getDoUseDelay": useConstCallback(()=> {
+
+                const doUseDelay = Date.now() - lastDelayedTime > 30000;
+
+                if( doUseDelay ){
+                    setLastDelayedTime(Date.now());
+                }
+
+                return doUseDelay;
+
+            })
+        };
+
+    }
+
+    return { useDelay };
+
 
 })();
 
@@ -116,6 +149,8 @@ export const SplashScreen = memo((props: Props) => {
 
     const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 
+    const { getDoUseDelay } = useDelay();
+
     const [isFadingOut, setIsFadingOut] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
 
@@ -148,8 +183,9 @@ export const SplashScreen = memo((props: Props) => {
 
                     } else {
 
-                        console.log("TODO: Remove showoff splash screen delay");
-                        await new Promise(resolve => timer = setTimeout(resolve, 1000));
+                        if( getDoUseDelay() ){
+                            await new Promise(resolve => timer = setTimeout(resolve, 1000));
+                        }
 
                         setIsFadingOut(true);
 
