@@ -9,6 +9,7 @@ import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useIsDarkModeEnabled as useLocalStorageIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { id } from "evt/tools/typeSafety/id";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -97,10 +98,7 @@ export function useIsBetaModeEnabled(): {
 
 };
 
-export function useIsDarkModeEnabled(): {
-    isDarkModeEnabled: boolean;
-    setIsDarkModeEnabled(value: boolean): void;
-} {
+export function useIsDarkModeEnabled(): ReturnType<typeof useLocalStorageIsDarkModeEnabled> {
 
     const { isUserLoggedIn } = useAppConstants();
 
@@ -111,19 +109,26 @@ export function useIsDarkModeEnabled(): {
     const isDarkModeEnabled = useSelector(
         state =>
             !isUserLoggedIn ?
-                false :
+                false /*never*/ :
                 state.userConfigs.isDarkModeEnabled.value
     );
 
     const setIsDarkModeEnabled = useConstCallback(
-        (value: boolean)=> {
-            dispatch(
-                thunks.userConfigs.changeValue({
-                    "key": "isDarkModeEnabled",
-                    value
-                })
-            ).then(()=> localStorageImpl.setIsDarkModeEnabled(value));
-        }
+        id<typeof localStorageImpl["setIsDarkModeEnabled"]>(
+            valueOrGetValue => {
+
+                const value = typeof valueOrGetValue === "function" ? 
+                    valueOrGetValue(isDarkModeEnabled) : 
+                    valueOrGetValue;
+
+                dispatch(
+                    thunks.userConfigs.changeValue({
+                        "key": "isDarkModeEnabled",
+                        value
+                    })
+                ).then(() => localStorageImpl.setIsDarkModeEnabled(value));
+            }
+        )
     );
 
     return isUserLoggedIn ? { isDarkModeEnabled, setIsDarkModeEnabled } : localStorageImpl;

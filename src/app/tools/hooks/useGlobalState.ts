@@ -79,7 +79,7 @@ export function createUseGlobalState<T, Name extends string>(
 
     }
 
-    function useGlobalState(){
+    function useGlobalState() {
 
         const [state, setState] = useState(evtValue.state);
 
@@ -93,7 +93,11 @@ export function createUseGlobalState<T, Name extends string>(
         return {
             [name]: state,
             [`set${capitalize(name)}`]:
-                useConstCallback(value => evtValue.state = value)
+                useConstCallback((valueOrGetValue: any) =>
+                    evtValue.state = typeof valueOrGetValue === "function" ?
+                        valueOrGetValue(state) :
+                        valueOrGetValue
+                )
         } as any;
 
     }

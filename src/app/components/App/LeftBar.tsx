@@ -1,11 +1,12 @@
 
-import { useMemo, memo, useReducer } from "react";
+import { useMemo, memo } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { cx, createUseClassNames, useTheme } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
 //import { routes } from "app/router";
 //import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 
@@ -66,6 +67,9 @@ const { useClassNames } = createUseClassNames<Props>()(
     })
 );
 
+    const { useIsExpanded } = createUseGlobalState("isExpanded", false);
+
+
 export const LeftBar = memo((props: Props) => {
 
     const {
@@ -75,13 +79,13 @@ export const LeftBar = memo((props: Props) => {
         currentPage
     } = props;
 
-    const [isExpanded, toggleIsExpanded] = useReducer(value => !value, false);
+    const { isExpanded, setIsExpanded } = useIsExpanded();
 
     const onClickFactory = useCallbackFactory(
         ([target]: [Target]) => {
 
             if( target === "toggle isExpanded" ){
-                toggleIsExpanded();
+                setIsExpanded(isExpanded=>!isExpanded);
                 return;
             }
 

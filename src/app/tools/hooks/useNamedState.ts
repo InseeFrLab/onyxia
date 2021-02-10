@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import { capitalize } from "app/tools/capitalize";
+import type { Dispatch, SetStateAction } from "react";
 
 export type UseNamedStateReturnType<T, Name extends string> =
-    Record<Name, T> & Record<`set${Capitalize<Name>}`, (value: T) => void>;
+    Record<Name, T> & Record<`set${Capitalize<Name>}`, Dispatch<SetStateAction<T>>>;
 
 export function useNamedState<T, Name extends string>(
     name: Name,
