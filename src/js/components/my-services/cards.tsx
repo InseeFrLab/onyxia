@@ -16,6 +16,7 @@ const Cards = ({ services, groups }: Props) =>
 		<Alert severity="warning" message={D.noService} />
 	) : (
 		<Grid container spacing={8} classes={{ container: 'cartes' }}>
+			
 			{services &&
 				services.map((service, i) => <CardChecker key={i} service={service} />)}
 			{groups &&

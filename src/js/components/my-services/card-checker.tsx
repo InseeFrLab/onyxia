@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CardMyService } from 'js/components/commons/service-card';
 import { Service } from 'js/model';
 import { getService } from 'js/api/my-lab';

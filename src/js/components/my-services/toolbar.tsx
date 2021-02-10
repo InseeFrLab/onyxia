@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Paper, Fab, Icon, Tooltip } from '@material-ui/core/';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import { Link } from 'react-router-dom';
 import Dialog from 'js/components/commons/dialog';
 import D from 'js/i18n';
 import * as clipboard from 'clipboard-polyfill';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { routes } from "app/router";
 
 interface Props {
 	hasService: Boolean;
@@ -76,7 +76,7 @@ const Actions = ({
 				</Fab>
 			</Tooltip>
 		)}
-		<Link to="/my-lab/catalogue">
+		<a {...routes.catalog().link}>
 			<Tooltip title="New service">
 				<Fab
 					color="secondary"
@@ -86,7 +86,7 @@ const Actions = ({
 					<Icon>add</Icon>
 				</Fab>
 			</Tooltip>
-		</Link>
+		</a>
 		{hasService && (
 			<>
 				{handlePauseAll && (

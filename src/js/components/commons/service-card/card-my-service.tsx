@@ -9,7 +9,6 @@ import {
 	DialogContentText,
 } from '@material-ui/core/';
 import dayjs from 'dayjs';
-import { Link } from 'react-router-dom';
 import { CarteService } from 'js/components/commons/service-card/card-service.component';
 import Pile from 'js/components/commons/pile';
 import Chronometer from 'js/components/commons/chronometer';
@@ -17,6 +16,7 @@ import { getServiceAvatar, getTitle, getSubtitle } from './card-utils';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { Service, ServiceStatus } from 'js/model';
 import './card.scss';
+import { routes } from "app/router";
 
 interface Props {
 	service: Service;
@@ -71,11 +71,7 @@ const getActions = (service: Service) => (launch: any) => () => {
 			)}
 
 			{getLaunchIcon(service)(launch)}
-			<Link
-				to={`/my-service/${
-					service.id.startsWith('/') ? service.id.substring(1) : service.id
-				}`}
-			>
+			<a {...routes.myServices({ "serviceId": service.id.replace(/^\//, "") }).link}>
 				<IconButton
 					id={`bouton-details-${service.id}`}
 					color="secondary"
@@ -83,7 +79,8 @@ const getActions = (service: Service) => (launch: any) => () => {
 				>
 					<Icon>build</Icon>
 				</IconButton>
-			</Link>
+
+			</a>
 		</>
 	);
 };
@@ -100,18 +97,18 @@ const getLaunchIcon = (service: Service) => (handleClickLaunch: any) =>
 			</IconButton>
 		) : null
 	) : (
-		<IconButton
-			color="secondary"
-			aria-label="démarrer"
-			onClick={() => {
-				if (handleClickLaunch) {
-					handleClickLaunch(service);
-				}
-			}}
-		>
-			<PlayArrowIcon fontSize="large" />
-		</IconButton>
-	);
+			<IconButton
+				color="secondary"
+				aria-label="démarrer"
+				onClick={() => {
+					if (handleClickLaunch) {
+						handleClickLaunch(service);
+					}
+				}}
+			>
+				<PlayArrowIcon fontSize="large" />
+			</IconButton>
+		);
 
 const getContenu = (service: any) => () => {
 	const max = 5;

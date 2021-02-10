@@ -24,6 +24,7 @@ import { useSelector } from "app/lib/hooks";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
+import { MyServices } from "js/components/my-services/home";
 
 const logoMaxWidthInPercent = 5;
 
@@ -117,7 +118,8 @@ export const App = memo((props: Props) => {
             const Page = [
                 Home, 
                 MySecrets,
-                Catalogue
+                Catalogue,
+                MyServices
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -138,11 +140,12 @@ export const App = memo((props: Props) => {
                         route={route}
                         className={classNameFillBlock}
                     />;
-                case Home:
-                    return () => <Page />;
                 case Catalogue:
                     assert(Page.routeGroup.has(route));
                     return () => <Page route={route} />;
+                case Home:
+                case MyServices:
+                    return ()=> <Page/>;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");

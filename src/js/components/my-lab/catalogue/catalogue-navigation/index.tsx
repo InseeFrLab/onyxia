@@ -41,8 +41,6 @@ export function Catalogue(
 		{ route: Route<typeof Catalogue.routeGroup>; }
 ) {
 
-	console.log(route);
-
 	return (
 		<Aiguilleur
 			{...props}
