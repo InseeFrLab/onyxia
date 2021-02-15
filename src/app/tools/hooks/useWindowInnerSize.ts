@@ -1,7 +1,7 @@
 
 
 import { Evt } from "evt";
-import { useEvt, useStatefulEvt } from "evt/hooks";
+import { useEvt, useRerenderOnStateChange } from "evt/hooks";
 
 export function useWindowInnerSize() {
 
@@ -15,7 +15,7 @@ export function useWindowInnerSize() {
         []
     );
 
-    useStatefulEvt([evtInnerWidth]);
+    useRerenderOnStateChange(evtInnerWidth);
 
     return evtInnerWidth.state;
 
