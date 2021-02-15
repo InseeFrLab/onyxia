@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Icon } from '@material-ui/core';
 import type { IconTypeMap } from "@material-ui/core";
-import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
+import type { Link } from "type-route";
 
 type Props= {
-	path: string;
+	linkProps: Link;
 	name: string;
 	icone: string;
 	color?: IconTypeMap["props"]["color"];
@@ -15,7 +15,7 @@ type Props= {
 };
 
 export const Ligne: React.FC<Props> = ({
-	path,
+	linkProps,
 	name,
 	icone,
 	color = 'secondary',
@@ -25,7 +25,7 @@ export const Ligne: React.FC<Props> = ({
 }) => (
 	<>
 		<div className="entry">
-			<Link to={path}>
+			<a {...linkProps}>
 				<Button className="directory" onClick={onClick}>
 					<Icon className="icone" color={color}>
 						{icone}
@@ -40,7 +40,7 @@ export const Ligne: React.FC<Props> = ({
 						className="select-it"
 					/>
 				) : null}
-			</Link>
+			</a>
 		</div>
 	</>
 );

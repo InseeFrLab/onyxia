@@ -4,19 +4,29 @@ import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
-import { useLocation } from "react-router-dom";
 import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
+import { createGroup } from "type-route";
+import { routes } from "app/router";
+import { useLocation } from "js/utils/reactRouterPolyfills";
+import type { Route } from "type-route";
 
-export const NavigationFile: React.FC<{
-	match: { params: { bucketName: string; } };
-}> = props => {
+
+NavigationFile.routeGroup = createGroup([routes.myFiles]);
+
+NavigationFile.requireUserLoggedIn = true;
+
+export function NavigationFile(
+	props: {
+		route: Route<typeof NavigationFile.routeGroup>;
+	}
+) {
+
+	const { route } = props;
 
 	const dispatch = useDispatch();
-	const [bucketName] = useState(props.match.params.bucketName);
+	const [bucketName] = useState(route.params.bucketName);
 
-	//NOTE: Exactly the same as window.location.pathname but we can be sure that there is a
-	// re-render when it's changed.
 	const { pathname: window_location_pathname } = useLocation();
 
 	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });

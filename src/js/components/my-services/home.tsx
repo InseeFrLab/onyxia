@@ -6,11 +6,15 @@ import 'js/components/app.scss';
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
-import { withTypeRouteBasedImplementationOfwithRouter } from "js/utils/withTypeRouteBasedImplementationOfwithRouter";
+import { useLocation } from "js/utils/reactRouterPolyfills";
 
-const MyServicesHome = (props: { location: Location; }) => {
+MyServices.routeGroup = createGroup([routes.myServices]);
 
-	const { location } = props;
+MyServices.requireUserLoggedIn = true;
+
+export function MyServices() {
+
+	const location = useLocation();
 
 	const groupId = (() => {
 
@@ -27,8 +31,6 @@ const MyServicesHome = (props: { location: Location; }) => {
 
 	})();
 
-	console.log("===>", groupId);
-
 	//TODO: Make sure groupId exists in URL params.
 	//const { groupId } = useParams<{ groupId: string; }>();
 
@@ -39,16 +41,9 @@ const MyServicesHome = (props: { location: Location; }) => {
 			<Services groupId={groupId} />
 		</LegacyThemeProvider>
 	);
-};
-
-const MyServicesHomeWithRouter = withTypeRouteBasedImplementationOfwithRouter(MyServicesHome);
-
-export default MyServicesHomeWithRouter;
-
-MyServices.routeGroup = createGroup([routes.myServices]);
-
-MyServices.requireUserLoggedIn = true;
-
-export function MyServices(props: Parameters<typeof MyServicesHomeWithRouter>[0]) {
-	return <MyServicesHomeWithRouter {...props} />;
 }
+
+export default MyServices;
+
+
+

@@ -6,23 +6,36 @@ import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { cx, createUseClassNames, useTheme } from "app/theme/useClassNames";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
-//import { routes } from "app/router";
-//import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { routes } from "app/router";
+import { doExtends } from "app/tools/doExtends";
 
-/*
 const targets = [
     "toggle isExpanded" as const,
-    ...objectKeys(routes),
-    "account" as const, 
-    "tour" as const, 
-    "trainings" as const, 
-    "shared services" as const, 
-    "my files" as const, 
-    "about" as const
-];
-*/
+    ...(() => {
 
+        const pageTarget = [
+            "home",
+            "account",
+            //tour
+            //trainings
+            //shared services
+            "catalog",
+            "myServices",
+            "mySecrets",
+            "myBuckets"
+            //about
+        ] as const;
+
+        doExtends<typeof pageTarget[number], keyof typeof routes>();
+
+        return pageTarget;
+
+    })()
+    //...objectKeys(routes)
+];
+
+/*
 const targets = [
     "toggle isExpanded" as const,
     "home" as const,
@@ -36,21 +49,21 @@ const targets = [
     "my files" as const, 
     "about" as const
 ];
+*/
 
 export type Target = typeof targets[number];
 
-export type PageTarget = Exclude<Target, "toggle isExpanded">;
 
 export type Props = {
     className?: string;
     collapsedWidth: number;
-    currentPage: PageTarget | false;
+    currentPage: keyof typeof routes | false;
     onClick(target: Exclude<Target, "toggle isExpanded">): void;
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({theme})=>({
-        "root":{
+    ({ theme }) => ({
+        "root": {
             "padding": theme.spacing(2, 0),
             "overflow": "visible"
         },
@@ -67,7 +80,7 @@ const { useClassNames } = createUseClassNames<Props>()(
     })
 );
 
-    const { useIsExpanded } = createUseGlobalState("isExpanded", false);
+const { useIsExpanded } = createUseGlobalState("isExpanded", false);
 
 
 export const LeftBar = memo((props: Props) => {
@@ -79,13 +92,13 @@ export const LeftBar = memo((props: Props) => {
         currentPage
     } = props;
 
-    const { isExpanded, setIsExpanded } = useIsExpanded();
+    const { isExpanded, setIsExpanded } = useIsExpanded();
 
     const onClickFactory = useCallbackFactory(
         ([target]: [Target]) => {
 
-            if( target === "toggle isExpanded" ){
-                setIsExpanded(isExpanded=>!isExpanded);
+            if (target === "toggle isExpanded") {
+                setIsExpanded(isExpanded => !isExpanded);
                 return;
             }
 
@@ -106,7 +119,10 @@ export const LeftBar = memo((props: Props) => {
                         target =>
                             <CustomButton
                                 key={target}
-                                isActive={currentPage === target}
+                                isActive={
+                                    currentPage === target || 
+                                    (currentPage === "myFiles" && target === "myBuckets")
+                                }
                                 target={target}
                                 isExpanded={isExpanded}
                                 collapsedWidth={collapsedWidth - theme.spacing(4)}
@@ -201,14 +217,14 @@ const { CustomButton } = (() => {
                 case "home": return "home";
                 case "account": return "account";
                 case "catalog": return "catalog";
-                case "my files": return "files";
+                case "myBuckets": return "files";
                 case "mySecrets": return "secrets";
                 case "myServices": return "services";
-                case "shared services": return "community";
+                //case "shared services": return "community";
                 case "toggle isExpanded": return "chevronLeft";
-                case "tour": return "tour";
-                case "trainings": return "trainings";
-                case "about": return "infoOutlined";
+                //case "tour": return "tour";
+                //case "trainings": return "trainings";
+                //case "about": return "infoOutlined";
             }
         }, [target]);
 

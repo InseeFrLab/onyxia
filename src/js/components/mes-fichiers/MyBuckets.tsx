@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
@@ -8,14 +7,21 @@ import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
-export const MyBuckets = () => {
+import { createGroup } from "type-route";
+import { routes } from "app/router";
+
+MyBuckets.routeGroup = createGroup([routes.myBuckets]);
+
+MyBuckets.requireUserLoggedIn = true as const;
+
+export function MyBuckets() {
 	const dispatch = useDispatch();
 	const region = useSelector(
 		state => state.regions.selectedRegion
 	);
 
 	const { userProfile: { idep } } = useAppConstants(
-		{ "assertIsUserLoggedInIs": true }
+		{ "assertIsUserLoggedInIs": MyBuckets.requireUserLoggedIn }
 	);
 
 	const buckets = useSelector(
@@ -88,10 +94,10 @@ const Bucket = ({
 	return (
 		<>
 			<Paper className="onyxia-toolbar actions" elevation={5}>
-				<Link to={`/mes-fichiers/${id}`}>
+				<a {...routes.myFiles({ "bucketName": id }).link}>
 					<h4>{id}</h4>
 					<h5>{description}</h5>
-				</Link>
+				</a>
 				{monitoringUrl && (
 					<Tooltip title="Monitoring" className="action">
 						<Fab
@@ -107,4 +113,4 @@ const Bucket = ({
 			</Paper>
 		</>
 	);
-};
+}

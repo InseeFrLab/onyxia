@@ -133,17 +133,13 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "logout": "Logout"
         },
         "LeftBar": {
-            "about": "About",
+            "toggle isExpanded": "Collapse",
+            "home": "Home",
             "account": "Account",
             "catalog": "Catalog",
-            "home": "Home",
-            "my files": "My Files",
-            "mySecrets": "My Secrets",
             "myServices": "My Services",
-            "shared services": "Shared services",
-            "tour": "Tour",
-            "trainings": "Trainings",
-            "toggle isExpanded": "Collapse"
+            "mySecrets": "My Secrets",
+            "myBuckets": "My Files",
         },
         "FourOhFour": {
             "not found": "Page not found"
@@ -234,17 +230,13 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "logout": "Déconnexion"
         },
         "LeftBar": {
-            "about": "À propos",
+            "toggle isExpanded": "Réduire",
+            "home": "Acceuil",
             "account": "Mon compte",
             "catalog": "Catalogue",
-            "home": "Acceuil",
-            "my files": "Mes Fichiers",
-            "mySecrets": "Mes Secrets",
             "myServices": "Mes Services",
-            "shared services": "Services partagées",
-            "tour": "Visite guidée",
-            "trainings": "Formation",
-            "toggle isExpanded": "Réduire"
+            "mySecrets": "Mes Secrets",
+            "myBuckets": "Mes Fichiers"
         },
         "FourOhFour": {
             "not found": "Page non trouvé"

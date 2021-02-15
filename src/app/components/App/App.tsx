@@ -5,7 +5,7 @@ import { Header } from "./Header";
 import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
-//import { Footer } from "./Footer";
+import { Footer } from "./Footer";
 import { createUseClassNames, css, cx } from "app/theme/useClassNames";
 import { useAppConstants } from "app/lib/hooks";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
@@ -26,6 +26,8 @@ import { useSelector } from "app/lib/hooks";
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
 import { MonCompte } from "js/components/mon-compte/mon-compte.component";
+import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
+import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 
 const logoMaxWidthInPercent = 5;
 
@@ -121,7 +123,9 @@ export const App = memo((props: Props) => {
                 MySecrets,
                 Catalogue,
                 MyServices,
-                MonCompte
+                MonCompte,
+                MyBuckets,
+                NavigationFile
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -142,12 +146,16 @@ export const App = memo((props: Props) => {
                         route={route}
                         className={classNameFillBlock}
                     />;
-                case Catalogue:
+                case NavigationFile:
                     assert(Page.routeGroup.has(route));
-                    return () => <Page route={route} />;
+                    return () => <Page
+                        route={route}
+                    />;
+                case Catalogue:
                 case Home:
                 case MyServices:
                 case MonCompte:
+                case MyBuckets:
                     return ()=> <Page/>;
             }
 
@@ -180,7 +188,7 @@ export const App = memo((props: Props) => {
         (target: Parameters<LeftBarProps["onClick"]>[0]) => {
 
             if (target in routes) {
-                routes[target as keyof typeof routes]().push();
+                routes[target]().push();
                 return;
             }
 
@@ -215,7 +223,7 @@ export const App = memo((props: Props) => {
                 </main>
 
             </section>
-            {/*<Footer className={classNames.footer} />*/}
+            <Footer className={classNames.footer} />
 
         </div>
     );

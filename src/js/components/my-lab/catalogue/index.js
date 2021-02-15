@@ -1,1 +1,1 @@
-export { default } from './catalogue-navigation';
+export { default } from './catalogue-navigation/index2';

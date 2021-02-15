@@ -29,6 +29,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
+import { doExtends } from "app/tools/doExtends";
 
 
 export type SvgTypes =
@@ -42,8 +43,7 @@ export type MaterialType =
     "translate";
 
 //NOTE: Ensure there is not overlap between the types
-(function f<T extends never>(): T | void { })<SvgTypes & MaterialType>();
-
+doExtends<SvgTypes & MaterialType, never>();
 
 export type Props = {
 

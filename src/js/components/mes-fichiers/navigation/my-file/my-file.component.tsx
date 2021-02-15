@@ -14,6 +14,7 @@ import './my-file.scss';
 import { id } from "evt/tools/typeSafety/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
+import { routes } from "app/router";
 
 const env = getEnv();
 
@@ -131,7 +132,7 @@ export const MyFile: React.FC<{
 			<FilDAriane fil={fil.myFiles(bucketName)(getFilPaths(path))} />
 			<div className="contenu mon-fichier">
 				<Toolbar
-					parentPath={getParentPath(bucketName)(fileName)}
+					linkToParentPathProps={getLinkToParentPath(bucketName,fileName)}
 					download={download}
 					deleteFile={deleteFile}
 				/>
@@ -226,13 +227,13 @@ const getExpirationString = (presignedUrl: string) => {
 };
 
 /* */
-const getParentPath = (bucketName: string) => (fileName: string) => {
+const getLinkToParentPath = (bucketName: string, fileName: string) => {
 	const tmp = fileName.split('/');
 	if (tmp.length > 1) {
 		const last = fileName.replace(`/${tmp[tmp.length - 1]}`, '');
-		return `/mes-fichiers/${bucketName}/${last}`;
+		return routes.myFiles({ bucketName, "fileOrDirectoryPath": last }).link;
 	} else {
-		return `/mes-fichiers/${bucketName}`;
+		return routes.myFiles({ bucketName }).link;
 	}
 };
 
