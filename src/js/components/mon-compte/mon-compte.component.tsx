@@ -18,8 +18,14 @@ import { thunks } from "lib/setup";
 import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
+import { createGroup } from "type-route";
+import { routes } from "app/router";
 
-export const MonCompte = () => {
+MonCompte.routeGroup = createGroup([routes.account]);
+
+MonCompte.requireUserLoggedIn = true;
+
+export function MonCompte() {
 
 	const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
 
@@ -197,7 +203,7 @@ export const MonCompte = () => {
 			</div>
 		</LegacyThemeProvider>
 	);
-};
+}
 
 
 

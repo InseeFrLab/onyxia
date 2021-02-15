@@ -14,7 +14,8 @@ const routeDefs = {
   "myServices": defineRoute(
     { "serviceId": param.path.optional.string },
     ({ serviceId }) => `/my-service/${serviceId}`
-  )
+  ),
+  "account": defineRoute("/account")
 };
 
 export const { RouteProvider, useRoute, routes } = createRouter(routeDefs);

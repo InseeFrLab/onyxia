@@ -25,6 +25,7 @@ import { useSelector } from "app/lib/hooks";
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
+import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 
 const logoMaxWidthInPercent = 5;
 
@@ -119,7 +120,8 @@ export const App = memo((props: Props) => {
                 Home, 
                 MySecrets,
                 Catalogue,
-                MyServices
+                MyServices,
+                MonCompte
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -145,6 +147,7 @@ export const App = memo((props: Props) => {
                     return () => <Page route={route} />;
                 case Home:
                 case MyServices:
+                case MonCompte:
                     return ()=> <Page/>;
             }
 
