@@ -8,6 +8,8 @@ import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/
 import memoize from "memoizee";
 import { createTheme } from "./theme";
 
+import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+
 export function themeProviderFactory(
     params: {
         isReactStrictModeEnabled: boolean;
@@ -40,14 +42,18 @@ export function themeProviderFactory(
 
         const { windowInnerHeight, windowInnerWidth } = useWindowInnerSize();
 
+        const isLandscape = windowInnerWidth > windowInnerHeight;
+
+        useValueChangeEffect(
+            ()=> { window.location.reload(); },
+            [isLandscape]
+        );
+
         return (
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    <ZoomProvider referenceWidth={
-                        windowInnerWidth > windowInnerHeight ?
-                            theme.custom.referenceWidth : undefined
-                    }>
+                    <ZoomProvider referenceWidth={isLandscape ? theme.custom.referenceWidth : undefined}>
                         {children}
                     </ZoomProvider>
                 </StylesProvider>
