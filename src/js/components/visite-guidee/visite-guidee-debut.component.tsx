@@ -6,14 +6,15 @@ import VisiteGuide from './visite-guidee.component';
 import { Next, LinkTo, Arrow } from './vignette-commons';
 import D from 'js/i18n';
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
-
-const { startVisite } = actions;
+import { routes } from "app/router";
+import { createGroup } from "type-route";
+const { startVisite } = actions;
 
 const ETAPES = [
 	{
 		description: () => (
 			<>
-				<Typography variant="h6" gutterBottom> 
+				<Typography variant="h6" gutterBottom>
 					{D.guidedTourWelcomeTitle}
 				</Typography>
 				<Typography variant="body1" gutterBottom>
@@ -24,7 +25,7 @@ const ETAPES = [
 				</Typography>
 			</>
 		),
-		actions: ({ next }) => <Next next={next} />,
+		actions: ({ next }: { next: any }) => <Next next={next} />,
 	},
 	{
 		description: () => {
@@ -33,30 +34,45 @@ const ETAPES = [
 				<>
 					<Arrow dom={bouton} />
 					<Typography variant="h6" gutterBottom>
-					{D.guidedTourAuthenticationTitle}
+						{D.guidedTourAuthenticationTitle}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-					{D.guidedTourAuthenticationText1}
+						{D.guidedTourAuthenticationText1}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-					{D.guidedTourAuthenticationText2}
+						{D.guidedTourAuthenticationText2}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-					{D.guidedTourAuthenticationText3}
+						{D.guidedTourAuthenticationText3}
 					</Typography>
 				</>
 			);
 		},
-		actions: ({ startVisite }) => (
-			<LinkTo to="/services" onClick={startVisite} type="home" />
+		actions: ({ startVisite }: { startVisite: any }) => (
+			<LinkTo 
+				anchorProps={routes.myServices().link}
+				onClick={startVisite} 
+				type="home" 
+			/>
 		),
 	},
 ];
 
-const Visite = (props) => (
-	<LegacyThemeProvider>
-		<VisiteGuide visite={true} etapes={ETAPES} {...props} />
-	</LegacyThemeProvider>
+const VisiteConnected: any=  connect(undefined, { "startVisite": () => startVisite() })(
+	(props) => (
+		<LegacyThemeProvider>
+			<VisiteGuide visite={true} etapes={ETAPES} {...props} />
+		</LegacyThemeProvider>
+	)
+
 );
 
-export default connect(undefined, { "startVisite": () => startVisite() })(Visite);
+VisiteGuideeDebut.routeGroup = createGroup([routes.tour]);
+
+VisiteGuideeDebut.requireUserLoggedIn = true;
+
+export function VisiteGuideeDebut(){
+
+	return <VisiteConnected />;
+
+}

@@ -4,6 +4,7 @@ import { createRouter, defineRoute, param } from "type-route";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
     "home": defineRoute(["/home", "/"]),
+    "tour": defineRoute("/visite-guidee"),
     "account": defineRoute("/account"),
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },

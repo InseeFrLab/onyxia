@@ -29,6 +29,8 @@ import { MyService } from "js/components/my-service/home";
 import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
+import VisiteGuidee from 'js/components/visite-guidee';
+import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
 
 const logoMaxWidthInPercent = 5;
 
@@ -127,7 +129,8 @@ export const App = memo((props: Props) => {
                 MyService,
                 MonCompte,
                 MyBuckets,
-                NavigationFile
+                NavigationFile,
+                VisiteGuideeDebut
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -158,11 +161,12 @@ export const App = memo((props: Props) => {
                     return () => <Page
                         route={route}
                     />;
-                case Catalogue:
                 case Home:
                 case MyServices:
                 case MonCompte:
                 case MyBuckets:
+                case Catalogue:
+                case VisiteGuideeDebut:
                     return ()=> <Page/>;
             }
 
@@ -231,6 +235,7 @@ export const App = memo((props: Props) => {
 
             </section>
             <Footer className={classNames.footer} />
+            <VisiteGuidee />
 
         </div>
     );

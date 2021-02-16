@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Prec, LinkTo } from './../vignette-commons';
 import { CatalogueIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
+import { routes } from "app/router";
 
  
 export default {
@@ -28,7 +29,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to="/my-lab/catalogue"
+				anchorProps={routes.catalog({}).link}
 				onClick={next}
 				title={D.btnSelfServiceCatalog}
 				component={() => <CatalogueIcon width={20} height={20} color="#fff" />}

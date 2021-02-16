@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
 import {
 	Dialog,
 	DialogActions,
@@ -10,6 +9,7 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import './visite-guidee.scss';
+import { routes } from "app/router";
 
 class VisiteGuidee extends React.Component {
 	state = { step: 0, redirect: false };
@@ -31,7 +31,12 @@ class VisiteGuidee extends React.Component {
 
 	render() {
 		const { redirect } = this.state;
-		if (redirect) return <Redirect to="/accueil" />;
+
+		if( redirect ){
+			routes.home().replace();
+			return null;
+		}
+
 		const { visite, etapes } = this.props;
 		if (!visite || etapes.length === 0) return null;
 		const { description: Description, actions: Actions } = etapes[

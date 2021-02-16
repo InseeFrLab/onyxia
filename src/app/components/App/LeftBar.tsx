@@ -17,7 +17,7 @@ const targets = [
         const pageTarget = [
             "home",
             "account",
-            //tour
+            //"tour",
             //trainings
             //shared services
             "catalog",
@@ -32,27 +32,9 @@ const targets = [
         return pageTarget;
 
     })()
-    //...objectKeys(routes)
 ];
-
-/*
-const targets = [
-    "toggle isExpanded" as const,
-    "home" as const,
-    "account" as const, 
-    "tour" as const, 
-    "trainings" as const, 
-    "shared services" as const, 
-    "catalog" as const,
-    "myServices" as const,
-    "mySecrets" as const,
-    "my files" as const, 
-    "about" as const
-];
-*/
 
 export type Target = typeof targets[number];
-
 
 export type Props = {
     className?: string;
