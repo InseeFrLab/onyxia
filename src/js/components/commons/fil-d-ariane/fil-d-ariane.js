@@ -12,7 +12,7 @@ const catalog = {
 	"component": <span>catalogue</span>,
 };
 
-export const fil = {
+export const fil: any = {
 	about: [
 		home,
 		{
