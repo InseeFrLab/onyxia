@@ -2,6 +2,7 @@
 import { useState } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ZoomProvider } from "app/tools/hooks/useDOMRect";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
@@ -37,11 +38,16 @@ export function themeProviderFactory(
             )
         )[0](isDarkModeEnabled);
 
+        const { windowInnerHeight, windowInnerWidth } = useWindowInnerSize();
+
         return (
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    <ZoomProvider referenceWidth={theme.custom.referenceWidth}>
+                    <ZoomProvider referenceWidth={
+                        windowInnerWidth > windowInnerHeight ?
+                            theme.custom.referenceWidth : undefined
+                    }>
                         {children}
                     </ZoomProvider>
                 </StylesProvider>
