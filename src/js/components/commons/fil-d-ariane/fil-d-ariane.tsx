@@ -31,7 +31,7 @@ export const fil: any = {
 		home,
 		catalog
 	],
-	catalogue: (idCatalogue) => [
+	catalogue: (idCatalogue: any) => [
 		home,
 		catalog,
 		{
@@ -46,7 +46,7 @@ export const fil: any = {
 			component: <span>formations</span>,
 		},
 	],
-	training: (id, title) => [
+	training: (_id: any, title: any) => [
 		home,
 		{
 			anchorProps: null,
@@ -73,7 +73,7 @@ export const fil: any = {
 			component: <span>Services partagés</span>,
 		},
 	],
-	services: ({ id, title }) => [
+	services: ({ id, title }: { id: any, title: any}) => [
 		home,
 		{
 			"anchorProps": routes.myServices().link,
@@ -84,7 +84,7 @@ export const fil: any = {
 			"component": <span>{title}</span>
 		},
 	],
-	myServices: (id) => [
+	myServices: (id: any) => [
 		home,
 		{
 			"anchorProps": routes.myServices().link,
@@ -96,7 +96,7 @@ export const fil: any = {
 			"component": <span>{id}</span>
 		}
 	],
-	myService: (id) => [
+	myService: (id: any) => [
 		home,
 		{
 			"anchorProps": routes.myServices().link,
@@ -113,20 +113,20 @@ export const fil: any = {
 		{ "anchorProps": routes.myBuckets().link, "component": <span>mes fichiers</span> },
 	],
 
-	myFiles: (bucketName) => (paths) => [
+	myFiles: (bucketName: any) => (paths: any) => [
 		home,
 		{ "anchorProps": routes.myBuckets().link, "component": <span>mes fichiers</span> },
 		{
 			anchorProps: routes.myFiles({ bucketName }).link,
 			component: <span>{bucketName}</span>,
 		},
-		...paths.map(({ label, path }) => ({
+		...paths.map(({ label, path }: { label: any, path: any }) => ({
 			"anchorProps": routes.myFiles({ bucketName, "fileOrDirectoryPath": path }).link,
 			component: <span>{label}</span>,
 		})),
 	],
 	/* */
-	serviceCatalogue: (idCatalogue, idService) => [
+	serviceCatalogue: (idCatalogue: any, idService: any) => [
 		home,
 		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
@@ -138,7 +138,7 @@ export const fil: any = {
 			component: <span>{idService}</span>,
 		},
 	],
-	nouveauService: (idCatalogue, idService) => [
+	nouveauService: (idCatalogue: any, idService: any) => [
 		home,
 		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
@@ -156,7 +156,7 @@ export const fil: any = {
 	],
 };
 
-const FilDAriane = ({ fil }) => makeAll(fil);
+const FilDAriane = ({ fil }: { fil: any}) => makeAll(fil);
 
 FilDAriane.propTypes = {
 	fil: PropTypes.arrayOf(
@@ -167,7 +167,7 @@ FilDAriane.propTypes = {
 	),
 };
 
-const makeAll = ([home, ...rest]) => (
+const makeAll = ([home, ...rest]: any[]) => (
 	<nav aria-label="Breadcrumb" className="fil-d-ariane-container">
 		<ol className="fil-d-ariane">
 			<li>
@@ -177,7 +177,7 @@ const makeAll = ([home, ...rest]) => (
 		</ol>
 	</nav>
 );
-const makeRest = ([curr, ...rest], index = 1) => {
+const makeRest = ([curr, ...rest]: any[], index: any = 1): any => {
 	if (!curr) return null;
 	if (rest.length === 0) {
 		return (
