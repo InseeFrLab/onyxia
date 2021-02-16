@@ -25,6 +25,7 @@ import { useSelector } from "app/lib/hooks";
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
+import { MyService } from "js/components/my-service/home";
 import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -123,6 +124,7 @@ export const App = memo((props: Props) => {
                 MySecrets,
                 Catalogue,
                 MyServices,
+                MyService,
                 MonCompte,
                 MyBuckets,
                 NavigationFile
@@ -147,6 +149,11 @@ export const App = memo((props: Props) => {
                         className={classNameFillBlock}
                     />;
                 case NavigationFile:
+                    assert(Page.routeGroup.has(route));
+                    return () => <Page
+                        route={route}
+                    />;
+                case MyService:
                     assert(Page.routeGroup.has(route));
                     return () => <Page
                         route={route}

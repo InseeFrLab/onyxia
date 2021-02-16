@@ -9,11 +9,19 @@ export const { RouteProvider, useRoute, routes } = createRouter({
         { "optionalTrailingPath": param.path.trailing.optional.string },
         ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
     ),
-    "myServices": defineRoute(
-        { "serviceId": param.path.optional.string },
-        ({ serviceId }) => `/my-service/${serviceId}`
-    ),
+    ...(() => {
 
+        const myServices = defineRoute("/my-service");
+
+        return {
+            myServices,
+            "myService": myServices.extend(
+                { "serviceId": param.path.string },
+                ({ serviceId }) => `/${serviceId}`
+            )
+        };
+
+    })(),
     "mySecrets": defineRoute(
         { "directoryPath": param.path.trailing.optional.string },
         ({ directoryPath }) => `/my-secrets/${directoryPath}`

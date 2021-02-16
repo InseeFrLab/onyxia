@@ -71,7 +71,7 @@ const getActions = (service: Service) => (launch: any) => () => {
 			)}
 
 			{getLaunchIcon(service)(launch)}
-			<a {...routes.myServices({ "serviceId": service.id.replace(/^\//, "") }).link}>
+			<a {...routes.myService({ "serviceId": service.id.replace(/^\//, "") }).link}>
 				<IconButton
 					id={`bouton-details-${service.id}`}
 					color="secondary"

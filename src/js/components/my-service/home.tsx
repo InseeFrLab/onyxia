@@ -3,12 +3,25 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Header from './header';
 import Service from './service';
 import 'js/components/app.scss';
-import { withRouter, useParams } from 'react-router-dom';
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
+import { createGroup } from "type-route";
+import type { Route } from "type-route";
+import { routes } from "app/router";
 
-const MyServiceHome = () => {
-	//TODO: Makes sure there is actually a serviceId here
-	const { serviceId } = useParams<{ serviceId: string; }>();
+MyService.routeGroup = createGroup([routes.myService]);
+
+MyService.requireUserLoggedIn = true;
+
+export type Props = { 
+	route: Route<typeof MyService.routeGroup>;
+};
+
+export function MyService(props: Props) {
+
+	const { route } = props;
+
+	const { serviceId } = route.params;
+
 	return (
 		<LegacyThemeProvider>
 			<Header/>
@@ -16,6 +29,8 @@ const MyServiceHome = () => {
 			<Service serviceId={`/${serviceId}`} />
 		</LegacyThemeProvider>
 	);
-};
+}
 
-export default withRouter(MyServiceHome);
+export default MyService;
+
+

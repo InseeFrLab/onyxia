@@ -4,8 +4,8 @@ import ServiceDetails from './service-details';
 import { getService, deleteServices } from 'js/api/my-lab';
 import { Service } from 'js/model';
 import Toolbar from './toolbar';
-import { Redirect } from 'react-router-dom';
 import { useSelector, useAppConstants } from "app/lib/hooks";
+import { routes } from "app/router";
 
 interface Props {
 	serviceId: string;
@@ -14,7 +14,7 @@ interface Props {
 const MyService = ({ serviceId }: Props) => {
 	const [loading, setLoading] = useState(false);
 	const [service, setService] = useState<Service>(undefined as any);
-	const [redirect, setRedirect] = useState<string>(undefined as any);
+	const [redirect, setRedirect] = useState<(()=> void) | undefined>(undefined);
 
 	const refreshData = useCallback(() => {
 		setLoading(true);
@@ -28,7 +28,7 @@ const MyService = ({ serviceId }: Props) => {
 		setLoading(true);
 		deleteServices(service.id).then(() => {
 			setLoading(false);
-			setRedirect('/my-services');
+			setRedirect(() => routes.myServices().replace());
 		});
 	};
 
@@ -40,7 +40,10 @@ const MyService = ({ serviceId }: Props) => {
 		}
 	}, [service, serviceId, refreshData]);
 
-	if (redirect) return <Redirect to={redirect} />;
+	if (redirect) {
+		redirect();
+		return null;
+	}
 
 	return (
 		<div className="contenu accueil">
