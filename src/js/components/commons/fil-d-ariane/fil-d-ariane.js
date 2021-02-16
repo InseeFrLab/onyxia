@@ -3,145 +3,156 @@ import PropTypes from 'prop-types';
 import { Icon } from '@material-ui/core';
 import './fil-d-ariane.scss';
 import D from 'js/i18n';
+import { routes } from "app/router";
+import { join as pathJoin } from "path";
+
+const home = { "anchorProps": routes.home().link, "component": <Icon className="home-icone">home</Icon> };
+const catalog = {
+	"anchorProps": routes.catalog().link,
+	"component": <span>catalogue</span>,
+};
 
 export const fil = {
-	accueil: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-	],
 	about: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/about',
+			anchorProps: null,
 			component: <span>A propos</span>,
 		},
 	],
 	cluster: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/cluster',
+			anchorProps: null,
 			component: <span>{D.cluster}</span>,
 		},
 	],
 	catalogues: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{
-			pathname: '/my-lab/catalogue',
-			component: <span>catalogue</span>,
-		},
+		home,
+		catalog
 	],
 	catalogue: (idCatalogue) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
+		catalog,
 		{
-			pathname: '/my-lab/catalogue',
-			component: <span>catalogue</span>,
-		},
-		{
-			pathname: `/my-lab/catalogue/${idCatalogue}`,
-			component: <span>{idCatalogue}</span>,
-		},
+			"anchorProps": routes.catalog({ "optionalTrailingPath": idCatalogue }),
+			"component": <span>{idCatalogue}</span>
+		}
 	],
 	trainings: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/trainings',
+			anchorProps: null,
 			component: <span>formations</span>,
 		},
 	],
 	training: (id, title) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/trainings',
+			anchorProps: null,
 			component: <span>formations</span>,
 		},
 		{
-			pathname: `/trainings/${id}`,
+			//pathname: `/trainings/${id}`,
+			anchorProps: null,
 			component: <span>{title}</span>,
 		},
 	],
 	monCompte: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/mon-compte',
+			"anchorProps": routes.home().link,
 			component: <span>Mon compte</span>,
 		},
 	],
 	servicesCollaboratifs: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/services',
+			//pathname: '/services',
+			"anchorProps": null,
 			component: <span>Services partagés</span>,
 		},
 	],
 	services: ({ id, title }) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
+		home,
 		{
-			pathname: '/services',
+			"anchorProps": routes.myServices().link,
 			component: <span>services</span>,
 		},
 		{
-			pathname: `/services/${id}`,
-			component: <span>{title}</span>,
+			"anchorProps": routes.myService({ "serviceId": id }).link,
+			"component": <span>{title}</span>
 		},
 	],
 	myServices: (id) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/my-services', component: <span>My lab</span> },
-		id && { pathname: `/my-services/${id}`, component: <span>{id}</span> },
+		home,
+		{
+			"anchorProps": routes.myServices().link,
+			component: <span>services</span>,
+		},
+		id &&
+		{
+			"anchorProps": routes.myService({ "serviceId": id }).link,
+			"component": <span>{id}</span>
+		}
 	],
 	myService: (id) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/my-services', component: <span>My lab</span> },
+		home,
 		{
-			pathname: `/my-service/${id}`,
-			component: <span>{id}</span>,
+			"anchorProps": routes.myServices().link,
+			component: <span>services</span>,
 		},
+		{
+			"anchorProps": routes.myService({ "serviceId": id }).link,
+			"component": <span>{id}</span>
+		}
 	],
 	/* */
 	mesFichiers: [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/mes-fichiers', component: <span>mes fichiers</span> },
+		home,
+		{ "anchorProps": routes.myBuckets().link, "component": <span>mes fichiers</span> },
 	],
 
 	myFiles: (bucketName) => (paths) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/mes-fichiers', component: <span>mes fichiers</span> },
+		home,
+		{ "anchorProps": routes.myBuckets().link, "component": <span>mes fichiers</span> },
 		{
-			pathname: `/mes-fichiers/${bucketName}`,
+			anchorProps: routes.myFiles({ bucketName }).link,
 			component: <span>{bucketName}</span>,
 		},
 		...paths.map(({ label, path }) => ({
-			pathname: `/mes-fichiers/${bucketName}${path}`,
+			"anchorProps": routes.myFiles({ bucketName, "fileOrDirectoryPath": path }).link,
 			component: <span>{label}</span>,
 		})),
 	],
 	/* */
 	serviceCatalogue: (idCatalogue, idService) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: `/my-lab/catalogue`, component: <span>catalogue</span> },
+		home,
+		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
-			pathname: `/my-lab/catalogue/${idCatalogue}`,
+			anchorParams: routes.catalog({ "optionalTrailingPath": idCatalogue }).link,
 			component: <span>{idCatalogue}</span>,
 		},
 		{
-			pathname: `/my-lab/catalogue/${idService}`,
+			"anchorProps": routes.catalog({ "optionalTrailingPath": idService }).link,
 			component: <span>{idService}</span>,
 		},
 	],
 	nouveauService: (idCatalogue, idService) => [
-		{ pathname: '/home', component: <Icon className="home-icone">home</Icon> },
-		{ pathname: '/my-lab/catalogue', component: <span>catalogue</span> },
+		home,
+		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
-			pathname: `/my-lab/catalogue/${idCatalogue}`,
+			anchorParams: routes.catalog({ "optionalTrailingPath": idCatalogue }).link,
 			component: <span>{idCatalogue}</span>,
 		},
 		{
-			pathname: `/my-lab/catalogue/${idCatalogue}/${idService}`,
+			"anchorProps": routes.catalog({ "optionalTrailingPath": pathJoin(idCatalogue, idService) }).link,
 			component: <span>{idService}</span>,
 		},
 		{
-			pathname: `/my-lab/catalogue/${idCatalogue}/${idService}/deploiement`,
+			"anchorProps": routes.catalog({ "optionalTrailingPath": pathJoin(idCatalogue, idService, "deploiement") }).link,
 			component: <span>déploiement</span>,
-		},
+		}
 	],
 };
 
@@ -150,7 +161,7 @@ const FilDAriane = ({ fil }) => makeAll(fil);
 FilDAriane.propTypes = {
 	fil: PropTypes.arrayOf(
 		PropTypes.shape({
-			pathname: PropTypes.string.isRequired,
+			anchorProps: PropTypes.object.isRequired,
 			component: PropTypes.object.isRequired,
 		})
 	),
@@ -160,13 +171,7 @@ const makeAll = ([home, ...rest]) => (
 	<nav aria-label="Breadcrumb" className="fil-d-ariane-container">
 		<ol className="fil-d-ariane">
 			<li>
-				{(console.log({ "home.pathname": home.pathname, "home.component": home.component }), null)}
-				<a href={home.pathname} className="home">{home.component}</a>
-				{/*
-				<Link to={home.pathname} className="home">
-					{home.component}
-				</Link>
-				*/}
+				<a {...home.anchorProps} className="home">{home.component}</a>
 			</li>
 			{makeRest(rest)}
 		</ol>
@@ -184,9 +189,7 @@ const makeRest = ([curr, ...rest], index = 1) => {
 	return (
 		<>
 			<li>
-				{(console.log({ "curr.pathname": curr.pathname, "curr.component": curr.component }), null)}
-				<a href={curr.pathname}>{curr.component}</a>
-				{/*<Link to={curr.pathname}>{curr.component}</Link>*/}
+				<a {...curr.anchorProps}>{curr.component}</a>
 			</li>
 			{makeRest(rest, index + 1)}
 		</>
