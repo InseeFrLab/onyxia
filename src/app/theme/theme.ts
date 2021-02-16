@@ -53,7 +53,7 @@ export function createTheme(
                     typography,
                     "colors": getColors(paletteType),
                     shadows,
-                    "referenceWidth": 1920
+                    //"referenceWidth": 1920
                 },
             })
         );
