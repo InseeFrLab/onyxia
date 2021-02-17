@@ -22,6 +22,7 @@ import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { useSelector } from "app/lib/hooks";
 
+
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
@@ -31,6 +32,7 @@ import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import VisiteGuidee from 'js/components/visite-guidee';
 import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
+import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 
 const logoMaxWidthInPercent = 5;
 
@@ -181,7 +183,6 @@ export const App = memo((props: Props) => {
         (target: Parameters<HeaderProps["onClick"]>[0]) => {
             switch (target) {
                 case "logo": routes.home().push(); return;
-                case "cloudShell": alert("TODO: Report cloudshell could shell"); return;
                 case "auth button":
 
                     if (appConstants.isUserLoggedIn) {
@@ -218,6 +219,7 @@ export const App = memo((props: Props) => {
                 logoMaxWidth={logoMaxWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsDarkModeEnabled={useIsDarkModeEnabled}
+                useIsCloudShellVisible={useIsCloudShellVisible}
                 onClick={onHeaderClick}
             />
             <section className={classNames.betweenHeaderAndFooter}>
@@ -236,6 +238,7 @@ export const App = memo((props: Props) => {
             </section>
             <Footer className={classNames.footer} />
             <VisiteGuidee />
+            {appConstants.isUserLoggedIn && <CloudShell />}
 
         </div>
     );
