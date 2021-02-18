@@ -31,7 +31,7 @@ export default Aiguilleur;
 
 Catalogue.routeGroup = createGroup([routes.catalog]);
 
-Catalogue.requireUserLoggedIn = true;
+Catalogue.requireUserLoggedIn = false;
 
 export function Catalogue(
 	props: Omit<Parameters<typeof Aiguilleur>[0], "location">
