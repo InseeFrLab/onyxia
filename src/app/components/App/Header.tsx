@@ -133,12 +133,14 @@ export const Header = memo((props: Props) => {
             })}>
                 <ChangeLanguage />
                 <ToggleDarkMode useIsDarkModeEnabled={useIsDarkModeEnabled} />
-                <IconButton
-                    disabled={!isUserLoggedIn || isCloudShellVisible}
-                    type="bash"
-                    fontSize="large"
-                    onClick={setIsCloudShellVisibleToTrue}
-                />
+                {isUserLoggedIn &&
+                    <IconButton
+                        disabled={isCloudShellVisible}
+                        type="bash"
+                        fontSize="large"
+                        onClick={setIsCloudShellVisibleToTrue}
+                    />
+                }
                 <Button
                     onClick={onClickFactory("auth button")}
                     color={isUserLoggedIn ? "secondary" : "primary"}
