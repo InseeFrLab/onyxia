@@ -62,13 +62,14 @@ export const Header = memo((props: Props) => {
 
     const { t } = useTranslation("Header");
 
-    const { isCloudShellVisible, setIsCloudShellVisibleToTrue } = (function useClosure() {
+    const { toggleCloudShellVisibility } = (function useClosure() {
 
-        const { isCloudShellVisible, setIsCloudShellVisible } = useIsCloudShellVisible();
+        const { setIsCloudShellVisible } = useIsCloudShellVisible();
 
-        const setIsCloudShellVisibleToTrue = useConstCallback(() => setIsCloudShellVisible(true));
-
-        return { isCloudShellVisible, setIsCloudShellVisibleToTrue };
+        return {
+            "toggleCloudShellVisibility":
+                useConstCallback(() => setIsCloudShellVisible(value => !value) )
+        };
 
     })();
 
@@ -135,10 +136,9 @@ export const Header = memo((props: Props) => {
                 <ToggleDarkMode useIsDarkModeEnabled={useIsDarkModeEnabled} />
                 {isUserLoggedIn &&
                     <IconButton
-                        disabled={isCloudShellVisible}
                         type="bash"
                         fontSize="large"
-                        onClick={setIsCloudShellVisibleToTrue}
+                        onClick={toggleCloudShellVisibility}
                     />
                 }
                 <Button
