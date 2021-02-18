@@ -1,6 +1,6 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
@@ -45,7 +45,8 @@ const { useClassNames } = createUseClassNames<{}>()(
 
 export type Props = {
     className?: string;
-    route: Route<typeof MySecrets.routeGroup>;
+    //We allow route to be undefined to be able to test in storybook
+    route?: Route<typeof MySecrets.routeGroup>;
 };
 
 MySecrets.routeGroup = createGroup([routes.mySecrets]);
@@ -58,10 +59,6 @@ export function MySecrets(props: Props) {
         className,
         route
     } = props;
-
-    //TODO
-    console.log(route);
-    const directoryPathFromRoot: string | undefined = undefined;
 
     const { t } = useTranslation("MySecrets");
 
@@ -113,40 +110,50 @@ export function MySecrets(props: Props) {
 
     })();
 
-    useState(
+    useEffect(
         () => {
 
             if (state.currentPath !== "") {
                 return;
             }
 
+            const {
+                secretOrDirectoryPath = userHomePath,
+                isFile = false
+            } = route?.params ?? {};
+
             dispatch(
-                thunks.navigateToDirectory({
-                    "fromCurrentPath": false,
-                    "directoryPath": userHomePath
-                })
+                isFile ?
+                    thunks.navigateToSecret({
+                        "fromCurrentPath": false,
+                        "secretPath": secretOrDirectoryPath
+                    }) :
+                    thunks.navigateToDirectory({
+                        "fromCurrentPath": false,
+                        "directoryPath": secretOrDirectoryPath
+                    })
             );
 
-        }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     );
 
     useEffect(
         () => {
 
-            if (directoryPathFromRoot === undefined) {
+            if (state.currentPath === "" || route === undefined) {
                 return;
             }
 
-            dispatch(
-                thunks.navigateToDirectory({
-                    "fromCurrentPath": false,
-                    "directoryPath": directoryPathFromRoot
-                })
-            );
+            routes.mySecrets({
+                ...(state.state === "SHOWING SECRET" ? { "isFile": true } : {}),
+                "secretOrDirectoryPath": state.currentPath.replace(/^\//, "")
+            }).push()
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [directoryPathFromRoot]
+        [state.currentPath]
     );
 
 
@@ -236,7 +243,7 @@ export function MySecrets(props: Props) {
         [state.currentPath === ""]
     );
 
-    if( state.currentPath === "" ){
+    if (state.currentPath === "") {
         return null;
     }
 

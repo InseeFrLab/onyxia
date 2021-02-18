@@ -1,7 +1,6 @@
 
 import { createRouter, defineRoute, param } from "type-route";
 
-
 export const { RouteProvider, useRoute, routes } = createRouter({
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
@@ -24,8 +23,11 @@ export const { RouteProvider, useRoute, routes } = createRouter({
 
     })(),
     "mySecrets": defineRoute(
-        { "directoryPath": param.path.trailing.optional.string },
-        ({ directoryPath }) => `/my-secrets/${directoryPath}`
+        { 
+            "secretOrDirectoryPath": param.path.trailing.optional.string,
+            "isFile": param.query.optional.boolean
+        },
+        ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`
     ),
     ...(() => {
 
