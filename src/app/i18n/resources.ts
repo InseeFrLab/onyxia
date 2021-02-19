@@ -232,7 +232,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "LeftBar": {
             "toggle isExpanded": "Réduire",
-            "home": "Acceuil",
+            "home": "Accueil",
             "account": "Mon compte",
             "catalog": "Catalogue",
             "myServices": "Mes Services",
@@ -241,7 +241,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             //"tour": "Visite Guidée"
         },
         "FourOhFour": {
-            "not found": "Page non trouvé"
+            "not found": "Page non trouvée"
         },
         "Home": {
             "welcome": `Bienvenue {{who}}!`,
