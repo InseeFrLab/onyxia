@@ -1,8 +1,8 @@
 
-import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
-import { getIsValidKey } from "app/pages/MySecrets/MySecretsEditor";
+import { getIsValidKey } from "app/components/pages/MySecrets/MySecretsEditor";
 import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({

@@ -1,9 +1,14 @@
 
 import { useState } from "react";
-import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ZoomProvider } from "app/tools/hooks/useDOMRect";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import { createTheme } from "./theme";
+
+import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
 
 export function themeProviderFactory(
     params: {
@@ -35,13 +40,23 @@ export function themeProviderFactory(
             )
         )[0](isDarkModeEnabled);
 
+        const { windowInnerHeight, windowInnerWidth } = useWindowInnerSize();
+
+        const isLandscape = windowInnerWidth > windowInnerHeight;
+
+        useValueChangeEffect(
+            ()=> { window.location.reload(); },
+            [isLandscape]
+        );
+
         return (
             <MuiThemeProvider theme={theme}>
-                <ScopedCssBaseline>
-                    <StylesProvider injectFirst>
+                <CssBaseline />
+                <StylesProvider injectFirst>
+                    <ZoomProvider referenceWidth={isLandscape ? theme.custom.referenceWidth : undefined}>
                         {children}
-                    </StylesProvider>
-                </ScopedCssBaseline>
+                    </ZoomProvider>
+                </StylesProvider>
             </MuiThemeProvider>
         );
 

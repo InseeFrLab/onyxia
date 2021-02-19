@@ -1,10 +1,10 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useState, memo } from "react";
-import { useCallback } from "app/utils/hooks/useCallbackFactory";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
 import MuiTextField from "@material-ui/core/TextField";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
 
@@ -38,7 +38,7 @@ export const TextField = memo((props: TextFieldProps) => {
 
     const { className, ...commonMuiProps } = useCommonInputLogic({
         ...completedCommonProps,
-        "onValueBeingTypedChange": useCallback(
+        "onValueBeingTypedChange": useConstCallback(
             (params: Parameters<NonNullable<CommonProps["onValueBeingTypedChange"]>>[0]) => {
 
                 setHelperText(
@@ -48,8 +48,7 @@ export const TextField = memo((props: TextFieldProps) => {
 
                 return onValueBeingTypedChange(params);
 
-            },
-            [onValueBeingTypedChange]
+            }
         )
     });
 

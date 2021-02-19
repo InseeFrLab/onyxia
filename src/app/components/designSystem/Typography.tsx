@@ -3,7 +3,7 @@ import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { forwardRef, memo } from "react";
 import MuiTypography from "@material-ui/core/Typography";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
     className?: string | null;

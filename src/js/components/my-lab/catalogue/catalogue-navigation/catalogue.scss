@@ -1,7 +1,6 @@
 @import './../../../app.scss';
 
 .catalogue {
-	background-color: yellow;
 
 	.carte {
 		@include carte();

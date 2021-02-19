@@ -15,7 +15,7 @@ import {
 	CatalogueIcon,
 	PokerHandIcon,
 } from 'js/components/commons/icons';
-import { getEnv } from 'js/env';
+import { getEnv } from 'app/env';
 import D from 'js/i18n';
 
 import type { RootState } from "lib/setup";

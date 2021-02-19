@@ -6,7 +6,7 @@ import { Id } from "evt/tools/typeSafety/id";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "evt/tools/typeSafety/assert";
-import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
 import "minimal-polyfills/Object.fromEntries";
 
 /*
@@ -111,9 +111,9 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (params: { isOsPrefersColorSchemeDark: boolean; }): AppThunk => async (...args) => {
+        (params: { isColorSchemeDarkEnabledByDefalut: boolean; }): AppThunk => async (...args) => {
 
-            const { isOsPrefersColorSchemeDark } = params;
+            const { isColorSchemeDarkEnabledByDefalut } = params;
 
             const [dispatch, , { secretsManagerClient, oidcClient }] = args;
 
@@ -131,7 +131,7 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
-                "isDarkModeEnabled": isOsPrefersColorSchemeDark,
+                "isDarkModeEnabled": isColorSchemeDarkEnabledByDefalut,
                 "deploymentRegionId": null
             };
 

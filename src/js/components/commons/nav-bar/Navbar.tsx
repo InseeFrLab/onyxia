@@ -16,7 +16,7 @@ import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
 import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
-import { useWindowInnerWidth } from "app/utils/hooks/useWindowInnerWidth";
+import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
 
 
 
@@ -27,7 +27,7 @@ export const Navbar: React.FC<{}> = ()=>{
 
 	const { isUserLoggedIn } = useAppConstants();
 
-	const { windowInnerWidth } = useWindowInnerWidth();
+	const { windowInnerWidth } = useWindowInnerSize();
 
 	const screenType = useMemo(() => getScreenTypeFromWidth(windowInnerWidth), [windowInnerWidth]);
 

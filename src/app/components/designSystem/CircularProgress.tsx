@@ -4,7 +4,7 @@ import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { memo } from "react";
 import MuiCircularProgress from "@material-ui/core/CircularProgress";
 import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
     className?: string | null;

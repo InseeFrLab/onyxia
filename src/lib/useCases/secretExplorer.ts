@@ -6,8 +6,8 @@ import type { SecretWithMetadata, SecretsManagerClient, Secret } from "lib/ports
 import { assert } from "evt/tools/typeSafety/assert";
 import { basename as pathBasename, join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
 import memoize from "memoizee";
-import { crawlFactory } from "lib/utils/crawl";
-import { unwrapWritableDraft } from "lib/utils/unwrapWritableDraft";
+import { crawlFactory } from "lib/tools/crawl";
+import { unwrapWritableDraft } from "lib/tools/unwrapWritableDraft";
 import { Mutex } from "async-mutex";
 
 const getMutexes = memoize(

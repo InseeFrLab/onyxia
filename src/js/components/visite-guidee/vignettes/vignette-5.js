@@ -1,8 +1,8 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { Redirect } from 'react-router-dom';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
 import D from 'js/i18n';
+import { routes } from "app/router";
 
  
 export default {
@@ -24,7 +24,8 @@ export default {
 		render = () => {
 			const bouton = document.getElementById('bouton-service-drawio');
 			return this.state.redirect ? (
-				<Redirect to="/my-lab/catalogue/inseefrlab-datascience" />
+				routes.catalog({ "optionalTrailingPath": "inseefrlab-datascience" }).replace(),
+				null
 			) : (
 				<>
 					<Arrow dom={bouton} />
@@ -45,7 +46,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				to="/my-lab/catalogue/inseefrlab-datascience"
+				anchorProps={routes.catalog({ "optionalTrailingPath": "inseefrlab-datascience" }).link}
 				type="add"
 				title={D.btnSelfServiceCreation}
 				onClick={next}

@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as Minio from 'minio';
 import { assert } from "evt/tools/typeSafety/assert";
 import memoize from "memoizee";
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 //import { prKeycloakClient } from "lib/setup";
 import { nonNullable } from "evt";
 

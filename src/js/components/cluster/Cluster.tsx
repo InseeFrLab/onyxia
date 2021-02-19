@@ -7,7 +7,7 @@ import CopyableField from '../commons/copyable-field';
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
 import D from 'js/i18n';
 import exportKub from './exportCredentialsKub';
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 
 const env = getEnv();
 

@@ -79,7 +79,9 @@ export default {
 				{this.state.serviceCreeId === undefined ?
 					<p>Loading...</p> :
 					<LinkTo
-						to={getDetailButtonElement(this.state.serviceCreeId).parentElement.getAttribute("href")}
+						anchorProps={{
+							"href": getDetailButtonElement(this.state.serviceCreeId).parentElement.getAttribute("href")
+						}}
 						onClick={this.props.next}
 						title={D.btnDetails}
 						component={() => <Icon>more_horiz</Icon>}

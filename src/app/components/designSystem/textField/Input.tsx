@@ -5,7 +5,7 @@ import MuiInput from "@material-ui/core/Input";
 import type { Optional } from "evt/tools/typeSafety";
 import { CircularProgress } from "../CircularProgress";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { noUndefined } from "app/utils/noUndefined";
+import { noUndefined } from "app/tools/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
 

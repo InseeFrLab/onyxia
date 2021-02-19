@@ -23,8 +23,9 @@ export declare namespace OidcClient {
         isUserLoggedIn: false;
 
         login(
+            /** The href of the route to redirect to without domain but including path, query string, and hash. */
             params?: {
-                redirectUri: string
+                redirectHref: string;
             }
         ): Promise<never>;
     };
@@ -41,7 +42,9 @@ export declare namespace OidcClient {
          * @param minValidity — If not specified, 10 is used.
          */
         renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
-            params?: { minValidity?: number; }
+            params?: { 
+                minValidity?: number; 
+            }
         ): Promise<void>;
 
         logout(): Promise<never>;

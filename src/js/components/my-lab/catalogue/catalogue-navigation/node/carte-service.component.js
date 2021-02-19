@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -10,6 +9,7 @@ import Fab from '@material-ui/core/Fab';
 import Icon from '@material-ui/core/Icon';
 import { getAvatar } from 'js/utils';
 import { WorkInProgress } from 'js/components/commons/icons';
+import { routes } from "app/router";
 
 const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 	const down = service.disable;
@@ -40,7 +40,9 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 				<CardActions className="boutons">
 					{down ? null : (
 						<>
-							<Link to={`/my-lab/catalogue/${idCatalogue}/${service.name}`}>
+							<a {...routes.catalog({
+								"optionalTrailingPath": `${idCatalogue}/${service.name}`
+							}).link}>
 								<Fab
 									id={`bouton-service-${service.name}`}
 									color="primary"
@@ -49,10 +51,10 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 								>
 									<Icon>more_horiz</Icon>
 								</Fab>
-							</Link>
-							<Link
-								to={`/my-lab/catalogue/${idCatalogue}/${service.name}/deploiement`}
-							>
+							</a>
+							<a {...routes.catalog({
+								"optionalTrailingPath": `${idCatalogue}/${service.name}/deploiement`
+							}).link}>
 								<Fab
 									className="bouton"
 									id={`bouton-service-${service.name}`}
@@ -62,7 +64,7 @@ const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 								>
 									<Icon>add</Icon>
 								</Fab>
-							</Link>
+							</a>
 						</>
 					)}
 				</CardActions>
