@@ -146,11 +146,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page not found"
         },
         "Home": {
-            "welcome": `Welcome {{who}}!`,
+            "welcome": `Welcome {{who}} !`,
             "title": "Welcome ont the SSP Cloud's datalab",
             "start tour": "Start tour",
             "logIn": "Login",
-            "subtitle":"Work with Python or R, enjoy all the computing power you need!",
+            "subtitle":"Work with Python or R, enjoy all the computing power you need !",
             "cardTitle1":"An ergonomic environment and on-demand services",
             "cardTitle2":"An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",
@@ -216,7 +216,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
             "how to use a secret": `
-            Le chemin du secret a été copié dans le presse papier!
+            Le chemin du secret a été copié dans le presse papier !
             Au moment de lancer un service (RStudio, Jupyter), rendez-vous
             dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
             Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
@@ -244,11 +244,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page non trouvée"
         },
         "Home": {
-            "welcome": `Bienvenue {{who}}!`,
+            "welcome": `Bienvenue {{who}} !`,
             "title": "Bienvenue sur le datalab du SSP Cloud",
             "logIn": "Connexion",
             "start tour": "Visite guidée",
-            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
+            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin !",
             "cardTitle1":"Un environnement ergonomique et des services à la demande",
             "cardTitle2":"Une communauté active et enthousiaste à votre écoute",
             "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
