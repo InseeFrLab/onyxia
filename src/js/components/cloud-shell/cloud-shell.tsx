@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useDispatch, useMustacheParams, useAppConstants } from "app/lib/hooks";
-import { Resizable } from 're-resizable';
+import { Resizable } from "re-resizable";
+import type { ResizableProps } from "re-resizable";
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Autorenew from '@material-ui/icons/Autorenew';
-import KeyboardIcon from '@material-ui/icons/Keyboard';
-import LoopSharpIcon from '@material-ui/icons/LoopSharp';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import './cloud-shell.scss';
@@ -17,21 +16,28 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
+import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
 import { prAxiosInstance } from "lib/setup";
+import { useConstCallback } from "app/tools/hooks/useConstCallback";
+
+export const { useIsCloudShellVisible } = createUseGlobalState(
+	"isCloudShellVisible",
+	() => false,
+	{ "doDisableLocalStorage": true }
+);
 interface CloudShellData {
-	status?: string;
+	status?: "UP" | "DOWN" | undefined;
 	packageToDeploy?: any;
 	catalogId?: string;
 	url?: string;
 }
 
-const CloudShell = () => {
+export const CloudShell = memo(() => {
 
 	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
-	const [cloudShellStatus, setCloudShellStatus] = useState<string | null>();
-	const [url, setUrl] = useState<string | null>();
-	const [height, setHeight] = useState(200);
-	const [visibility, setVisibility] = useState(false);
+	const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(undefined);
+	const [url, setUrl] = useState<string | undefined>(undefined);
+	const { isCloudShellVisible, setIsCloudShellVisible}= useIsCloudShellVisible();
 	const [minioCredentials, setMinioCredentials] = useState<any>();
 	const [reloadCloudshell, setReloadCloudShell] = useState(0);
 	const dispatch = useDispatch();
@@ -39,7 +45,8 @@ const CloudShell = () => {
 
 	const { mustacheParams } = useMustacheParams();
 
-	const launchCloudShell = async () => {
+
+	const launchCloudShell = useConstCallback(async () => {
 
 		const axiosAuth = await prAxiosInstance;
 
@@ -68,7 +75,7 @@ const CloudShell = () => {
 					) as any).then(() => {
 						axiosAuth
 							.get<CloudShellData>(restApiPaths.cloudShell)
-							.then(({data})=> data)
+							.then(({ data }) => data)
 							.then(cloudShell => {
 								setUrl(cloudShell.url);
 								setCloudShellStatus(cloudShell.status);
@@ -80,72 +87,18 @@ const CloudShell = () => {
 					}
 				}
 			});
-	};
+	});
 
-	const deleteCloudShell = () => {
+	const deleteCloudShell = useConstCallback(() => {
 		dispatch(myLabActions.requestDeleteMonService(
 			{ "service": { id: 'cloudshell' } })
 		);
 		setCloudShellStatus(undefined);
 		setUrl(undefined);
-	};
-
-	const CloudShellIconButton = withStyles({
-		root: {
-			color: 'white',
-		},
-	})(IconButton);
-
-	const Button = () => {
-		return (
-			cloudShellStatus && cloudShellStatus === 'DOWN' ? (
-				<LoopSharpIcon className="loading" />
-			) : (
-					<KeyboardIcon />
-				))
-	}
-
-	const CloudShellStartButton = () => {
-		return (
-			<div style={{ position: 'fixed', bottom: 0, zIndex: 999 }}>
-				<IconButton
-					aria-label="maximize"
-					onClick={() => {
-						if ((!cloudShellStatus || cloudShellStatus === 'DOWN')) {
-							launchCloudShell();
-						}
-						setVisibility(true);
-					}}
-					className="maximize-shell"
-				>
-					<Button />
-				</IconButton>
-			</div>
-		);
-	};
+	});
 
 
-	const CloudShellWindow = () => {
-		return (<Resizable
-			size={{
-				height: height,
-				width: '100%',
-			}}
-			onResizeStop={(...[, , , d]) => {
-				setHeight(height + d.height);
-			}}
-		>
-			<iframe
-				key={reloadCloudshell}
-				title="Cloud shell"
-				height={height}
-				width="100%"
-				src={url!}
-				id="cloudshell-iframe"
-			></iframe>
-		</Resizable>
-		);
-	}
+
 
 	useEffect(() => {
 		if (!minioCredentials) {
@@ -159,8 +112,25 @@ const CloudShell = () => {
 		}
 	}, [minioCredentials]);
 
-	if (!visibility || cloudShellStatus === 'DOWN') {
-		return <CloudShellStartButton />;
+	useEffect(
+		() => {
+
+			if (
+				!isCloudShellVisible ||
+				cloudShellStatus === "UP"
+			) {
+				return;
+			}
+
+			launchCloudShell();
+
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[isCloudShellVisible]
+	);
+
+	if (!isCloudShellVisible || cloudShellStatus === "DOWN") {
+		return null;
 	}
 
 
@@ -191,7 +161,7 @@ const CloudShell = () => {
 								'cloudshell-iframe'
 							) as HTMLImageElement;
 							window.open(String(cloudshell.src), '_blank');
-							setVisibility(false);
+							setIsCloudShellVisible(false);
 						}}
 						className="opennewtab-shell"
 					>
@@ -201,7 +171,7 @@ const CloudShell = () => {
 					<CloudShellIconButton
 						aria-label="delete"
 						onClick={() => {
-							setVisibility(false);
+							setIsCloudShellVisible(false);
 							(deleteCloudShell as any)(idep);
 						}}
 						className="close-shell"
@@ -211,17 +181,70 @@ const CloudShell = () => {
 
 					<CloudShellIconButton
 						aria-label="close"
-						onClick={() => setVisibility(false)}
+						onClick={() => setIsCloudShellVisible(false)}
 						className="close-shell"
 					>
 						<CloseIcon />
 					</CloudShellIconButton>
 				</div>
-				<CloudShellWindow />
+				<CloudShellWindow
+					reloadCloudshell={reloadCloudshell}
+					src={url!}
+				/>
 			</div>
 		</div>
 	);
 
-};
+});
 
-export default CloudShell;
+
+const CloudShellIconButton = withStyles({
+	"root": {
+		"color": 'white',
+	},
+})(IconButton);
+
+
+
+const { CloudShellWindow } = (() => {
+
+	type Props = {
+		reloadCloudshell: number;
+		src: string;
+
+	};
+
+	const CloudShellWindow = memo((props: Props) => {
+
+		const { reloadCloudshell, src } = props;
+
+		const [height, setHeight] = useState(200);
+
+		const onResizeStop = useConstCallback(
+			(...[, , , d]: Parameters<NonNullable<ResizableProps["onResizeStop"]>>) =>
+				setHeight(height + d.height)
+		);
+
+		return (
+			<Resizable
+				size={{
+					height: height,
+					width: '100%',
+				}}
+				onResizeStop={onResizeStop}
+			>
+				<iframe
+					key={reloadCloudshell}
+					title="Cloud shell"
+					height={height}
+					width="100%"
+					src={src}
+					id="cloudshell-iframe"
+				></iframe>
+			</Resizable>
+		);
+	});
+
+	return { CloudShellWindow };
+
+})();

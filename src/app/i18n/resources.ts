@@ -1,14 +1,18 @@
-import { symToStr } from "app/utils/symToStr";
-import { Reflect } from "app/utils/Reflect";
+import { symToStr } from "app/tools/symToStr";
+import { Reflect } from "app/tools/Reflect";
 import { id } from "evt/tools/typeSafety/id";
 
-import { ExplorerButtonBar } from "app/components/Explorer/ExplorerButtonBar";
-import { Explorer } from "app/components/Explorer/Explorer";
-import { ExplorerItems } from "app/components/Explorer/ExplorerItems";
-import { ExplorerItem } from "app/components/Explorer/ExplorerItem";
-import { MySecrets } from "app/pages/MySecrets/MySecrets";
-import { MySecretsEditor } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditor";
-import { MySecretsEditorRow } from "app/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
+import { Explorer } from "app/components/shared/Explorer/Explorer";
+import { ExplorerItems } from "app/components/shared/Explorer/ExplorerItems";
+import { ExplorerItem } from "app/components/shared/Explorer/ExplorerItem";
+import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
+import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditor";
+import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { Header } from "app/components/App/Header";
+import { LeftBar } from "app/components/App/LeftBar";
+import { FourOhFour } from "app/components/App/FourOhFour";
+import { Home } from "app/components/pages/Home";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -26,13 +30,17 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
+    [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
+    [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
+    [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
 
 export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
 
-export type SupportedLanguage = "en" | "fr";
+export type SupportedLanguage = "en"| "fr";
 
 const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
     "en": {
@@ -73,7 +81,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "ExplorerButtonBar": {
             ...common.en,
-            "copy path": "Copy path",
+            "copy path": "Use in a service",
             "create directory": "Create directory",
             "create what": "Create {{what}}",
             "refresh": "refresh"
@@ -108,7 +116,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key start with digit": "Can't start with a digit",
             "invalid key invalid character": "Invalid character",
             "invalid value cannot eval": "Invalid shell expression",
-            "use this secret": `Use in my services`,
+            "use this secret": `Use in services`,
             "how to use a secret": `The path of this secret has been copied to you clipboard.
             Now when you launch a service (RStudio, Jupyter, ect) go to the
             secret tab and and paste the path of the secret provided for this 
@@ -119,6 +127,44 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
             "value input desc": "Environnement variable value"
+        },
+        "Header": {
+            "login": "Login",
+            "logout": "Logout"
+        },
+        "LeftBar": {
+            "toggle isExpanded": "Collapse",
+            "home": "Home",
+            "account": "Account",
+            "catalog": "Catalog",
+            "myServices": "My Services",
+            "mySecrets": "My Secrets",
+            "myBuckets": "My Files",
+            //"tour": "Guided Tour"
+        },
+        "FourOhFour": {
+            "not found": "Page not found"
+        },
+        "Home": {
+            "welcome": `Welcome {{who}} !`,
+            "title": "Welcome ont the SSP Cloud's datalab",
+            "start tour": "Start tour",
+            "logIn": "Login",
+            "subtitle":"Work with Python or R, enjoy all the computing power you need !",
+            "cardTitle1":"An ergonomic environment and on-demand services",
+            "cardTitle2":"An active and enthusiastic community at your service",
+            "cardTitle3": "Fast, flexible and online data storage",
+            "cardText1": "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
+            "cardText2": "Use and share the resources available to you: tutorials, training and exchange channels.",
+            "cardText3": "To easily access your data and those made available to you from your programs - S3 API implementation",
+            "cardButton1":"Consult the catalog",
+            "cardButton2":"Join the community",
+            "cardButton3":"Consult the data",
+            "projectTitle":"The project in a few words",
+            "projectText":"With INSEE as coordinator, we want to design a shared platform of statistical and data science tool services. One of the objectives of our project is to share tools, knowledge and resources within the official statistical service (SSP). As part of a public collaboration, the project is also available in open-source.",
+            "projectButton":"Contribute to the project",
+            "warningTitle":"Precautions for use",
+            "warningText":"The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",   
         }
     },
     "fr": {
@@ -134,7 +180,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "ExplorerButtonBar": {
             ...common.fr,
-            "copy path": "Copier le chemin",
+            "copy path": "Utiliser dans le service",
             "create directory": "Nouveau dossier",
             "create what": "Nouveau {{what}}",
             "refresh": "rafraîchir"
@@ -170,7 +216,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
             "how to use a secret": `
-            Le chemin du secret a été copié dans le presse papier!
+            Le chemin du secret a été copié dans le presse papier !
             Au moment de lancer un service (RStudio, Jupyter), rendez-vous
             dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
             Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
@@ -179,6 +225,44 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
             "value input desc": "Valeur de la variable d'environnement"
+        },
+        "Header": {
+            "login": "Connexion",
+            "logout": "Déconnexion"
+        },
+        "LeftBar": {
+            "toggle isExpanded": "Réduire",
+            "home": "Accueil",
+            "account": "Mon compte",
+            "catalog": "Catalogue",
+            "myServices": "Mes Services",
+            "mySecrets": "Mes Secrets",
+            "myBuckets": "Mes Fichiers",
+            //"tour": "Visite Guidée"
+        },
+        "FourOhFour": {
+            "not found": "Page non trouvée"
+        },
+        "Home": {
+            "welcome": `Bienvenue {{who}} !`,
+            "title": "Bienvenue sur le datalab du SSP Cloud",
+            "logIn": "Connexion",
+            "start tour": "Visite guidée",
+            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin !",
+            "cardTitle1":"Un environnement ergonomique et des services à la demande",
+            "cardTitle2":"Une communauté active et enthousiaste à votre écoute",
+            "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
+            "cardText1": "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "cardText2": "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
+            "cardText3": "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
+            "cardButton1":"Consulter le catalogue",
+            "cardButton2":"Rejoindre la communauté",
+            "cardButton3":"Consulter des données",
+            "projectTitle":"Le projet en quelques mots",
+            "projectText":"Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
+            "projectButton":"Contribuer au projet",
+            "warningTitle":"Précautions d’usage",
+            "warningText":"Le datalab est un terrain d'exploration. Les garanties de service sont par conséquen limitées: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorer en fonction de vos retours."
         }
         /* spell-checker: enable */
     }

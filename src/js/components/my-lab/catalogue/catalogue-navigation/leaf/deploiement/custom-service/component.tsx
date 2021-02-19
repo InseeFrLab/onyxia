@@ -1,27 +1,27 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
-import type { RouteComponentProps } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import CopyableField from 'js/components/commons/copyable-field';
 import { objDiff, buildParamsFromObj } from 'js/utils';
 import D from 'js/i18n';
 import './custom-service.scss';
+import { useLocation } from "js/utils/reactRouterPolyfills";
 
 type Props = {
 	initialValues?: Record<string, string | boolean | number>;
 	fieldsValues?: Record<string, string | boolean | number>;
 	setInit?: () => void;
-	location: RouteComponentProps<any, any, unknown>["location"];
 };
 
-const CustomService_: React.FC<Props> = ({
+export const CustomService: React.FC<Props> = ({
 	initialValues,
 	fieldsValues,
 	setInit,
-	location: { pathname }
 }) => {
 
+	const { pathname } = useLocation();
+
 	if (!initialValues) return null;
+
 	const deploymentRoute = `${window.location.origin}${pathname}`;
 	const params = buildParamsFromObj(objDiff(fieldsValues)(initialValues));
 	return !params ? null : (
@@ -47,4 +47,3 @@ const CustomService_: React.FC<Props> = ({
 
 };
 
-export const CustomService = withRouter(CustomService_) as unknown as React.FC<Omit<Props, "location">>;

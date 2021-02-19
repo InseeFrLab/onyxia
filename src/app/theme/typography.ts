@@ -23,7 +23,7 @@ export const typography = {
     },
 
     "h4": {
-        "fontWeight": 500,
+        "fontWeight": "bold",
         "fontSize": "28px",
         "lineHeight": 1.15
     },

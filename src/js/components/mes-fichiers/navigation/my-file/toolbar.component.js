@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Paper, Fab, Icon } from '@material-ui/core';
 
-const Toolbar = ({ parentPath, download, deleteFile }) => (
+const Toolbar = ({ linkToParentPathProps, download, deleteFile }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>
 		<Fab
 			className="bouton"
@@ -13,7 +12,8 @@ const Toolbar = ({ parentPath, download, deleteFile }) => (
 		>
 			<Icon fontSize="small">cloud_download</Icon>
 		</Fab>
-		<Link to={parentPath}>
+
+		<a {...linkToParentPathProps}>
 			<Fab
 				className="bouton"
 				color="secondary"
@@ -22,12 +22,12 @@ const Toolbar = ({ parentPath, download, deleteFile }) => (
 			>
 				<Icon fontSize="small">delete</Icon>
 			</Fab>
-		</Link>
+		</a>
 	</Paper>
 );
 
 Toolbar.propTypes = {
-	parentPath: PropTypes.string.isRequired,
+	linkToParentPathProps: PropTypes.object.isRequired,
 	download: PropTypes.func.isRequired,
 	deleteFile: PropTypes.func.isRequired,
 };

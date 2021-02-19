@@ -1,31 +1,62 @@
 import React, { useState } from "react";
 import * as reactDom from "react-dom";
-//TODO: setAuthenticated same action type in app and user, see how we do that with redux/toolkit
-import JavascriptTimeAgo from 'javascript-time-ago';
-import fr from 'javascript-time-ago/locale/fr';
-import { getEnv } from "../js/env";
+import { getEnv } from "./env";
 
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
-import { getIsOsPreferredColorSchemeDark } from "app/utils/getIsOsPreferredColorSchemeDark";
-
+import { RouteProvider } from "./router";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
+import { themeProviderFactory } from "app/theme/ThemeProvider";
+import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import { SplashScreen } from "app/components/shared/SplashScreen";
+import { App } from "app/components/App";
+import { css } from "app/theme/useClassNames";
+import { useLng } from "app/i18n/useLng";
+import { useDOMRect } from "app/tools/hooks/useDOMRect";
 
+/*
 import App_ from "js/components/app.container";
 const App: any = App_;
+*/
 
-JavascriptTimeAgo.locale(fr);
+
+const { ThemeProvider } = themeProviderFactory(
+    { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
+);
 
 function Root() {
+
+    const { isDarkModeEnabled } = useIsDarkModeEnabled();
+    const { lng } = useLng();
+
+    return (
+        <React.StrictMode>
+            <I18nProvider lng={lng}>
+                <RouteProvider>
+                    <ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+                        <InnerRootWithThemeAvailable />
+                    </ThemeProvider>
+                </RouteProvider>
+            </I18nProvider>
+        </React.StrictMode>
+    );
+
+};
+
+/** We need to be inside the theme provider to be able to use useDOMRect */
+function InnerRootWithThemeAvailable() {
+
+
+    const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
     const [createStoreParams] = useState(() => {
 
         const env = getEnv();
 
         return id<StoreProviderProps["createStoreParams"]>({
-            "isOsPrefersColorSchemeDark": getIsOsPreferredColorSchemeDark(),
+            "isColorSchemeDarkEnabledByDefalut": isDarkModeEnabled,
             "oidcClientConfig":
                 env.AUTHENTICATION.TYPE === "oidc" ?
                     id<OidcClientConfig.Keycloak>({
@@ -48,7 +79,7 @@ function Root() {
             }),
             "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Official>({
                 "implementation": "OFFICIAL",
-                "baseUrl": env.API.BASE_URL ?? (()=>{
+                "baseUrl": env.API.BASE_URL ?? (() => {
 
                     const { protocol, host } = window.location;
 
@@ -60,21 +91,19 @@ function Root() {
 
     });
 
+    const { ref, domRect: { width, height } } = useDOMRect();
+
     return (
-        <React.StrictMode>
-            <I18nProvider lng="browser default">
-                <StoreProvider
-                    createStoreParams={createStoreParams}
-                    //TODO: False once we will actually log things
-                    doLogSecretManager={true}
-                >
-                    <App />
-                </StoreProvider>
-            </I18nProvider>
-        </React.StrictMode>
+        <div ref={ref} className={css({ "height": "100%" })}>
+            <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
+            <StoreProvider createStoreParams={createStoreParams} >
+                <App />
+            </StoreProvider>
+        </div>
     );
 
-};
+}
+
 
 reactDom.render(
     <Root />,

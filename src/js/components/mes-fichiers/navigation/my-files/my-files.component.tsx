@@ -27,6 +27,7 @@ import { id } from "evt/tools/typeSafety/id";
 import type { actions } from "js/redux/legacyActions";
 import { assert } from "evt/tools/typeSafety/assert";
 import type { HandleThunkActionCreator } from "react-redux";
+import { routes } from "app/router";
 
 
 import { MyPolicy } from '../my-policy.component';
@@ -392,7 +393,7 @@ export class MyFiles extends React.Component<Props,State> {
 							{directories.map((d, i) => (
 								<Ligne
 									key={i}
-									path={getPath(bucketName)(d.prefix)}
+									linkProps={routes.myFiles({ bucketName, "fileOrDirectoryPath": d.prefix }).link}
 									icone="folder"
 									name={getName(d.prefix)}
 								/>
@@ -400,7 +401,7 @@ export class MyFiles extends React.Component<Props,State> {
 							{files.map(({ name }, i) => (
 								<Ligne
 									key={i}
-									path={getPath(bucketName)(name)}
+									linkProps={routes.myFiles({ bucketName, "fileOrDirectoryPath": name }).link}
 									icone="description"
 									name={getName(name)}
 									color="primary"
@@ -608,10 +609,6 @@ const isValidePath = (path: string) =>
 		? path.toLowerCase().match(/^[a-z0-9]/i)
 		: false;
 
-const getPath = (bucketName: string) => (path: string) =>
-	path.startsWith('/')
-		? `/mes-fichiers/${bucketName}${path}`
-		: `/mes-fichiers/${bucketName}/${path}`;
 
 const getName = (name: string) =>
 	name

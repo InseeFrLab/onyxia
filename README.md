@@ -1,7 +1,6 @@
 # Onyxia UI
 
-[![Build Status](https://travis-ci.org/InseeFrLab/onyxia-ui.svg?branch=master)](https://travis-ci.org/InseeFrLab/onyxia-ui)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=InseeFrLab_onyxia-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=InseeFrLab_onyxia-ui)
+![Build](https://github.com/inseefrlab/onyxia-ui/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/InseeFrLab/onyxia-ui/badge.svg?branch=master)](https://coveralls.io/github/InseeFrLab/onyxia-ui?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -10,8 +9,6 @@ It provides R Studio and python environnement alongside many other service that 
 Onyxia is developed by the French National institute of statistic and economic studies ( [Insee](https://insee.fr) ).  
 This project is the frontend part of the platform (the website, build with React).
 It interacts with the [Onyxia-API](https://github.com/inseefrlab/onyxia-api) (Rest API).
-
-The opensourcing (and documentation) is still a work in progress, please be patient :)
 
 ## Documentation
 

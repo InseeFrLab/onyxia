@@ -1,20 +1,20 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import Tooltip from '@material-ui/core/Tooltip';
-import { Link } from 'react-router-dom';
 import { Fab, Icon } from '@material-ui/core';
 import { ArrowIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
+import { routes } from "app/router";
 
 export const LinkTo = ({
 	disabled = false,
 	onClick,
 	type = 'forward',
-	to = '/accueil',
+	anchorProps= routes.home().link,
 	component: Component = undefined,
 	title = '',
 }) => (
-	<Link to={to}>
+	<a {...anchorProps}>
 		<Tooltip title={title}>
 			<Fab
 				className="fab"
@@ -25,7 +25,7 @@ export const LinkTo = ({
 				<Icon>{Component ? <Component /> : type}</Icon>
 			</Fab>
 		</Tooltip>
-	</Link>
+	</a>
 );
 
 export const Next = ({ next, disabled = false, type = 'arrow_right' }) => (

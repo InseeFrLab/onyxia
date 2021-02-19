@@ -6,16 +6,16 @@ import type {
     SecretsManagerClientConfig
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
+import type { OidcClient } from "lib/ports/OidcClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
-import type { NonPostableEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
 export declare namespace AppConstant {
 
     export type _Common = {
-        isOsPrefersColorSchemeDark: boolean;
         vaultClientConfig: Readonly<Omit<SecretsManagerClientConfig.Vault,
             "implementation" |
             "evtOidcAccessToken" |
@@ -26,18 +26,16 @@ export declare namespace AppConstant {
     };
 
     export type LoggedIn = _Common & {
-        isUserLoggedIn: true;
         userProfile: {
             idep: string;
             email: string;
             nomComplet: string;
         };
         getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation> };
-    };
+    } & Omit<OidcClient.LoggedIn, "evtOidcTokens">;
 
-    export type NotLoggedIn = _Common & {
-        isUserLoggedIn: false;
-    };
+    export type NotLoggedIn = _Common & OidcClient.NotLoggedIn;
+
 
 }
 

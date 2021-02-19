@@ -5,7 +5,7 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import CopyableField from 'js/components/commons/copyable-field';
 import { axiosURL } from "js/utils/axios-config";
 import { wrapPromise } from 'js/utils';
-import { getEnv } from 'js/env';
+import { getEnv } from 'app/env';
 
 const env = getEnv();
 

@@ -18,14 +18,17 @@ class LogMe extends React.Component {
 	handleClose = () => {};
 
 	handleLogin = async () => {
+		/*
 		const redirectUri =
 			this.props.redirectUri || `${window.location.origin}/accueil`;
+		*/
 
 		const oidcClient = await prOidcClient;
 
 		assert(!oidcClient.isUserLoggedIn);
 
-		oidcClient.login({ redirectUri });
+		//oidcClient.login({ redirectUri });
+		oidcClient.login();
 
 	};
 

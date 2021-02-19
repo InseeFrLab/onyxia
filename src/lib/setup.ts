@@ -12,7 +12,7 @@ import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManage
 import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "evt/tools/typeSafety/assert";
-import { createObjectThatThrowsIfAccessed } from "./utils/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
@@ -42,12 +42,13 @@ export type Dependencies = {
 
 
 export type CreateStoreParams = {
-    isOsPrefersColorSchemeDark: boolean;
+    /** If we can't get the value from the user profile we want to
+     * load the os preferred default or the value saved in local storage */
+    isColorSchemeDarkEnabledByDefalut: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     evtBackOnline: NonPostableEvt<void>;
-    vaultCmdTranslationLogger: typeof console.log;
 };
 
 export declare type SecretsManagerClientConfig =
@@ -137,15 +138,14 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isOsPrefersColorSchemeDark" | "vaultCmdTranslationLogger">
+    } & Pick<CreateStoreParams, "isColorSchemeDarkEnabledByDefalut">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isOsPrefersColorSchemeDark,
-        vaultCmdTranslationLogger
+        isColorSchemeDarkEnabledByDefalut
     } = params;
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
@@ -207,31 +207,6 @@ async function createStoreForLoggedUser(
         secretsManagerTranslator
     });
 
-    {
-
-        const { evtSecretsManagerTranslation } = getEvtSecretsManagerTranslation();
-
-        const log = (str: string) => vaultCmdTranslationLogger(
-            `%c$ ${str}`,
-            'background: #222; color: #bada55'
-        );
-
-        evtSecretsManagerTranslation.attach(
-            ({ type }) => type === "cmd",
-            cmd => {
-
-                log(cmd.translation);
-
-                evtSecretsManagerTranslation.attachOnce(
-                    ({ cmdId }) => cmdId === cmd.cmdId,
-                    resp => log(resp.translation)
-                );
-
-            }
-        );
-
-    }
-
     secretsManagerClient = secretsManagerClientProxy;
 
     let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
@@ -280,7 +255,7 @@ async function createStoreForLoggedUser(
 
     await store.dispatch(
         userConfigsUseCase.privateThunks.initialize(
-            { isOsPrefersColorSchemeDark }
+            { isColorSchemeDarkEnabledByDefalut }
         )
     );
 
@@ -350,10 +325,9 @@ export async function createStore(params: CreateStoreParams) {
     const {
         oidcClientConfig,
         secretsManagerClientConfig,
-        isOsPrefersColorSchemeDark,
+        isColorSchemeDarkEnabledByDefalut,
         onyxiaApiClientConfig,
-        evtBackOnline,
-        vaultCmdTranslationLogger
+        evtBackOnline
     } = params;
 
     const oidcClient = await (() => {
@@ -369,8 +343,7 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isOsPrefersColorSchemeDark,
-                vaultCmdTranslationLogger
+                isColorSchemeDarkEnabledByDefalut
             }) :
             {
                 ...await createStoreForNonLoggedUser({
@@ -390,7 +363,6 @@ export async function createStore(params: CreateStoreParams) {
             "appConstants": await (async () => {
 
                 const _common: appConstantsUseCase.AppConstant._Common = {
-                    isOsPrefersColorSchemeDark,
                     "vaultClientConfig": (() => {
                         switch (secretsManagerClientConfig.implementation) {
                             case "VAULT": return secretsManagerClientConfig;
@@ -412,18 +384,18 @@ export async function createStore(params: CreateStoreParams) {
 
                 return oidcClient.isUserLoggedIn ?
                     id<appConstantsUseCase.AppConstant.LoggedIn>({
-                        "isUserLoggedIn": true,
                         ..._common,
                         "userProfile": await store.dispatch(
                             user.privateThunks.initializeAndGetUserProfile(
                                 { evtBackOnline }
                             )
                         ),
-                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!
+                        "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!,
+                        ...oidcClient
                     }) :
                     id<appConstantsUseCase.AppConstant.NotLoggedIn>({
-                        "isUserLoggedIn": false,
                         ..._common,
+                        ...oidcClient
                     })
 
             })()

@@ -5,7 +5,7 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import TrainingCard from 'js/components/commons/training-card';
 import { wrapPromise } from 'js/utils';
 import { axiosURL } from "js/utils/axios-config";
-import { getEnv } from "js/env";
+import { getEnv } from "app/env";
 
 const env = getEnv();
 

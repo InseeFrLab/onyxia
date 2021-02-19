@@ -1,7 +1,7 @@
 
 
 import type { Meta } from "@storybook/react";
-import { symToStr } from "app/utils/symToStr";
+import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
 import React from "react";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
@@ -14,13 +14,14 @@ import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
 import { useTheme } from "app/theme/useClassNames";
+import { RouteProvider } from "app/router";
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
-    "isOsPrefersColorSchemeDark": false,
+    "isColorSchemeDarkEnabledByDefalut": false,
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
@@ -57,7 +58,7 @@ function Container(props: { children: React.ReactNode; }) {
             <Box clone p={4} m={2} display="inline-block">
                 <Paper
                     style={{
-                        "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                        "backgroundColor": theme.custom.colors.useCases.surfaces.background
                     }}
                 >
                     <div
@@ -92,10 +93,7 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider
-                createStoreParams={createStoreParams}
-                doLogSecretManager={true}
-            >
+            <StoreProvider createStoreParams={createStoreParams}>
                 {children}
             </StoreProvider>;
 
@@ -104,13 +102,15 @@ export function getStoryFactory<Props>(params: {
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
-                <ThemeProvider isDarkModeEnabled={darkMode}>
-                    <StoreProviderOrFragment>
-                        <Container>
-                            <Component {...props} />
-                        </Container>
-                    </StoreProviderOrFragment>
-                </ThemeProvider>
+                <RouteProvider>
+                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                        <StoreProviderOrFragment>
+                            <Container>
+                                <Component {...props} />
+                            </Container>
+                        </StoreProviderOrFragment>
+                    </ThemeProvider>
+                </RouteProvider>
             </I18nProvider>;
 
 

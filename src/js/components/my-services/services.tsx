@@ -7,7 +7,7 @@ import { getServices, deleteServices } from 'js/api/my-lab';
 import { useSelector } from "app/lib/hooks";
 
 interface Props {
-	groupId: string;
+	groupId?: string;
 }
 
 const Services = ({ groupId }: Props) => {

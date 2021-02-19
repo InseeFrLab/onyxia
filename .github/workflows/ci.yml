@@ -1,13 +1,13 @@
-name: Onyxia UI CI
+name: CI
 
 on:
   #schedule:
   #- cron: "0 10 * * *" # everyday at 10am
   push:
     branches:
-      - '**'
+      - "**"
     tags:
-      - '*'
+      - "*"
   pull_request:
 
 jobs:

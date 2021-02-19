@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Typography, Fab, Icon } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
@@ -8,6 +7,7 @@ import Loader from 'js/components/commons/loader';
 import { getAvatar } from 'js/utils/service-utils';
 import { restApiPaths } from 'js/restApiPaths';
 import { prAxiosInstance } from "lib/setup";
+import { routes } from "app/router";
 
 export const Service = ({ idCatalogue, idService }) => {
 	const [service, setService] = useState({});
@@ -97,10 +97,12 @@ const getPreinstallNotes = (service) =>
 const getAjouter = (idCatalogue) => (idService) =>
 	idService ? (
 		<div className="ajouter">
-			<Link to={`/my-lab/catalogue/${idCatalogue}/${idService}/deploiement`}>
+			<a {...routes.catalog({
+				"optionalTrailingPath": `${idCatalogue}/${idService}/deploiement`
+			}).link}>
 				<Fab color="primary" aria-label="Nouveau">
 					<Icon>add</Icon>
 				</Fab>
-			</Link>
+			</a>
 		</div>
 	) : null;

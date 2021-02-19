@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { LinkTo } from './../vignette-commons';
 import { BecherIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
+import { routes } from "app/router";
 
  
 export default {
@@ -20,7 +21,7 @@ export default {
 	},
 	actions: ({ next }) => (
 		<LinkTo
-			to="/my-services"
+			anchorProps={routes.myServices({}).link}
 			onClick={next}
 			title={D.btnMyLab}
 			component={() => <BecherIcon height={20} width={20} color="#fff" />}
