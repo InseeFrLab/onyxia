@@ -1,12 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 import Content from './content';
 import DetailsService from '../details';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
+import { createGroup } from "type-route";
+import { routes } from "app/router";
 
-const Services = ({ serviceSelectionne }) =>
-	serviceSelectionne ? (
+type Props = {
+	serviceSelectionne: boolean;
+};
+
+SharedServices.routeGroup = createGroup([routes.sharedServices]);
+
+SharedServices.requireUserLoggedIn = false;
+
+export function SharedServices({ serviceSelectionne }: Props) {
+
+	return serviceSelectionne ? (
 		<>
 			<EnTete />
 			<FilDAriane fil={fil.servicesCollaboratifs} />
@@ -14,16 +24,14 @@ const Services = ({ serviceSelectionne }) =>
 			<DetailsService />
 		</>
 	) : (
-		<>
-			<EnTete />
-			<FilDAriane fil={fil.servicesCollaboratifs} />
-			<Content />
-		</>
-	);
+			<>
+				<EnTete />
+				<FilDAriane fil={fil.servicesCollaboratifs} />
+				<Content />
+			</>
+		);
 
-Services.propTypes = {
-	serviceSelectionne: PropTypes.object,
-};
+}
 
 const EnTete = () => (
 	<div className="en-tete">
@@ -36,4 +44,4 @@ const EnTete = () => (
 	</div>
 );
 
-export default Services;
+export default SharedServices;

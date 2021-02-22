@@ -5,6 +5,11 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
     "account": defineRoute("/account"),
+    "sharedServices": defineRoute("/services"),
+    "trainings": defineRoute(
+        { "courseCode": param.path.optional.string },
+        ({ courseCode })=> `/trainings/${courseCode}`
+    ),
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
         ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`

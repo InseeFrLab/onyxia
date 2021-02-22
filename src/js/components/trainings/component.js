@@ -1,19 +1,23 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
 import { Typography, Grid } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import TrainingCard from 'js/components/commons/training-card';
 import { wrapPromise } from 'js/utils';
 import { axiosURL } from "js/utils/axios-config";
 import { getEnv } from "app/env";
+import { useRoute } from "app/router";
 
 const env = getEnv();
 
 const resource = wrapPromise(axiosURL(env.CONTENT.TRAININGS_URL));
 
-const Content = (props) => {
+const Content = () => {
 	const res = resource.read();
-	const id = props.match.params['id'];
+
+	const route= useRoute();
+
+	const id = route.params.courseCode;
+
 	const trainings = id
 		? (res.find((r) => r.courseCode === id) &&
 				res.find((r) => r.courseCode === id).hasPart) ||
@@ -47,4 +51,4 @@ const Content = (props) => {
 	);
 };
 
-export default withRouter(Content);
+export default Content;

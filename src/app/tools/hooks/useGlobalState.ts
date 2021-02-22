@@ -9,6 +9,86 @@ import type { UseNamedStateReturnType } from "./useNamedState";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { capitalize } from "app/tools/capitalize";
 
+
+type PersistentStorage = {
+    getItem(): string | null;
+    setItem(value: string): void;
+};
+
+const { getPersistentStorage } = (() => {
+
+
+    function getLocalStorageImplementationOfPersistantStorage(
+        params: {
+            key: string;
+        }
+    ): PersistentStorage {
+
+        const { key } = params;
+
+        return {
+            "getItem": () => localStorage.getItem(key),
+            "setItem": value => localStorage.setItem(key, value)
+        };
+
+    }
+
+    function getCookieImplementationOfPersistantStorage(
+        params: {
+            key: string;
+        }
+    ): PersistentStorage {
+
+        const { key } = params;
+
+        return {
+            "getItem": () => {
+                return document.cookie
+                    .split("; ")
+                    .find(row => row.startsWith(`${key}=`))
+                    ?.split("=")?.[1] ?? null;
+            },
+            "setItem": value => {
+
+                let newCookie = `${key}=${value}`;
+
+                //We do not set the domain if we are on localhost or an ip
+                if (window.location.hostname.match(/\.[a-zA-Z]{2,}$/)) {
+                    newCookie += `; domain=${window.location.hostname.split(".").length >= 3 ?
+                        window.location.hostname.replace(/^[^.]+\./, "") :
+                        window.location.hostname
+                        }`;
+                }
+
+                document.cookie = newCookie;
+
+            }
+        }
+
+    }
+
+    function getPersistentStorage(
+        params: {
+            key: string;
+            mechanism: "localStorage" | "cookies"
+        }
+    ): PersistentStorage {
+
+        const { key, mechanism } = params;
+
+        switch (mechanism) {
+            case "localStorage": return getLocalStorageImplementationOfPersistantStorage({ key });
+            case "cookies": return getCookieImplementationOfPersistantStorage({ key });
+        }
+    }
+
+    return { getPersistentStorage };
+
+
+})();
+
+
+
 const names = new Set<string>();
 
 /**
@@ -28,31 +108,34 @@ export function createUseGlobalState<T, Name extends string>(
     /** If function called only if not in local storage */
     initialState: T | (() => T),
     params?: {
-        doDisableLocalStorage?: boolean;
+        persistance?: false | "localStorage" | "cookies"
     }
 ): Record<
     `use${Capitalize<Name>}`,
     () => UseNamedStateReturnType<T, Name>
 > {
 
-    const { doDisableLocalStorage = false } = params ?? {};
+    const { persistance = "cookies" } = params ?? {};
 
-    const localStorageKey = doDisableLocalStorage ?
+    const persistentStorage = persistance === false ?
         undefined :
-        (
-            assert(!names.has(name)),
-            names.add(name),
-            `useGlobalState_${name}`
-        );
+        getPersistentStorage({
+            "mechanism": persistance ?? "localStorage",
+            "key": (
+                assert(!names.has(name)),
+                names.add(name),
+                `useGlobalState_${name}`
+            )
+        });
 
     //TODO: should be initialized when first used
     const evtValue = Evt.create(
         (
             (
-                localStorageKey !== undefined &&
+                persistentStorage !== undefined &&
                 (() => {
 
-                    const serializedBoxedValue = localStorage.getItem(localStorageKey);
+                    const serializedBoxedValue = persistentStorage.getItem();
 
                     return serializedBoxedValue === null ?
                         false :
@@ -70,11 +153,10 @@ export function createUseGlobalState<T, Name extends string>(
         )[0]
     );
 
-    if (localStorageKey !== undefined) {
+    if (persistentStorage !== undefined) {
 
-        evtValue.attach(value => localStorage.setItem(
-            localStorageKey,
-            JSON.stringify([value]))
+        evtValue.attach(value =>
+            persistentStorage.setItem(JSON.stringify([value]))
         );
 
     }
