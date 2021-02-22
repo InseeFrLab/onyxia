@@ -19,7 +19,7 @@ const targets = [
             "account",
             //"tour",
             "trainings",
-            //"sharedServices",
+            "sharedServices",
             "catalog",
             "myServices",
             "mySecrets",
@@ -202,7 +202,7 @@ const { CustomButton } = (() => {
                 case "myBuckets": return "files";
                 case "mySecrets": return "secrets";
                 case "myServices": return "services";
-                //case "sharedServices": return "community";
+                case "sharedServices": return "community";
                 case "toggle isExpanded": return "chevronLeft";
                 //case "tour": return "tour";
                 case "trainings": return "trainings";

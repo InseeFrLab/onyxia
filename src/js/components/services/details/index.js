@@ -1,1 +1,1 @@
-export { default } from './details-service-async';
+export { ServiceDetails as default } from './details-service-async';

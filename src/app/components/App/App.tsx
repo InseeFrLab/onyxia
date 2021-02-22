@@ -34,6 +34,7 @@ import VisiteGuidee from 'js/components/visite-guidee';
 import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
 import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { SharedServices } from "js/components/services/home/services";
+import { ServiceDetails } from "js/components/services/details/details-service-async";
 import { Trainings } from "js/components/trainings/async-component";
 
 const logoMaxWidthInPercent = 5;
@@ -136,7 +137,8 @@ export const App = memo((props: Props) => {
                 NavigationFile,
                 VisiteGuideeDebut,
                 SharedServices,
-                Trainings
+                Trainings,
+                ServiceDetails
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -178,6 +180,7 @@ export const App = memo((props: Props) => {
                 case MyBuckets:
                 case Catalogue:
                 case VisiteGuideeDebut:
+                case ServiceDetails:
                     return ()=> <Page/>;
             }
 
