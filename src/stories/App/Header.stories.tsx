@@ -25,7 +25,7 @@ const { useIsCloudShellVisible } = (() => {
     const { useIsCloudShellVisible: useIsCloudShellVisibleSrc } = createUseGlobalState(
         "isCloudShellVisible",
         () => false,
-        { "doDisableLocalStorage": true }
+        { "persistance": false }
     );
 
     function useIsCloudShellVisible() {

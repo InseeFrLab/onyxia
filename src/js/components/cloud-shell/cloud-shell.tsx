@@ -23,7 +23,7 @@ import { useConstCallback } from "app/tools/hooks/useConstCallback";
 export const { useIsCloudShellVisible } = createUseGlobalState(
 	"isCloudShellVisible",
 	() => false,
-	{ "doDisableLocalStorage": true }
+	{ "persistance": false }
 );
 interface CloudShellData {
 	status?: "UP" | "DOWN" | undefined;

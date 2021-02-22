@@ -18,7 +18,7 @@ export const { useSplashScreen } = (() => {
     const { useDisplayState } = createUseGlobalState(
         "displayState",
         { "count": 1, "isTransparencyEnabled": false },
-        { "doDisableLocalStorage": true }
+        { "persistance": false }
     );
 
     function useSplashScreen() {

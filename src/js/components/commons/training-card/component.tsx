@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Training } from 'js/model';
 import {
 	Card,
@@ -12,6 +11,7 @@ import {
 	Icon,
 } from '@material-ui/core';
 import './training-card.scss';
+import { routes } from "app/router";
 
 interface Props {
 	training: Training;
@@ -121,7 +121,7 @@ const TrainingCard = ({ training }: Props) => {
 				</CardContent>
 				<CardActions className="boutons">
 					{hasPart && hasPart.length > 0 && (
-						<Link to={`/trainings/${courseCode}`}>
+						<a {...routes.trainings({ courseCode }).link}>
 							<Fab
 								id={`bouton-training-${name}`}
 								color="primary"
@@ -129,7 +129,8 @@ const TrainingCard = ({ training }: Props) => {
 							>
 								<Icon>more_horiz</Icon>
 							</Fab>
-						</Link>
+
+						</a>
 					)}
 					{deployment && (
 						<a href={deployment}>

@@ -140,17 +140,19 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
+            "trainings": "Trainings",
+            //"sharedServices": "Shared services"
             //"tour": "Guided Tour"
         },
         "FourOhFour": {
             "not found": "Page not found"
         },
         "Home": {
-            "welcome": `Welcome {{who}} !`,
+            "welcome": `Welcome {{who}}!`,
             "title": "Welcome ont the SSP Cloud's datalab",
             "start tour": "Start tour",
             "logIn": "Login",
-            "subtitle":"Work with Python or R, enjoy all the computing power you need !",
+            "subtitle":"Work with Python or R, enjoy all the computing power you need!",
             "cardTitle1":"An ergonomic environment and on-demand services",
             "cardTitle2":"An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",
@@ -216,7 +218,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
             "how to use a secret": `
-            Le chemin du secret a été copié dans le presse papier !
+            Le chemin du secret a été copié dans le presse papier!
             Au moment de lancer un service (RStudio, Jupyter), rendez-vous
             dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
             Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
@@ -238,17 +240,19 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "Mes Services",
             "mySecrets": "Mes Secrets",
             "myBuckets": "Mes Fichiers",
+            "trainings": "Formations",
+            //"sharedServices": "Services partagés"
             //"tour": "Visite Guidée"
         },
         "FourOhFour": {
             "not found": "Page non trouvée"
         },
         "Home": {
-            "welcome": `Bienvenue {{who}} !`,
+            "welcome": `Bienvenue {{who}}!`,
             "title": "Bienvenue sur le datalab du SSP Cloud",
             "logIn": "Connexion",
             "start tour": "Visite guidée",
-            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin !",
+            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
             "cardTitle1":"Un environnement ergonomique et des services à la demande",
             "cardTitle2":"Une communauté active et enthousiaste à votre écoute",
             "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
@@ -262,7 +266,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "projectText":"Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
             "projectButton":"Contribuer au projet",
             "warningTitle":"Précautions d’usage",
-            "warningText":"Le datalab est un terrain d'exploration. Les garanties de service sont par conséquen limitées: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorer en fonction de vos retours."
+            "warningText":"Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
         }
         /* spell-checker: enable */
     }
