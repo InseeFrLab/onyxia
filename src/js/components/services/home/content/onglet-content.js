@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Grid, IconButton, Icon } from '@material-ui/core';
-import { getServiceAvatar} from 'js/components/commons/service-card';
+import { getServiceAvatar } from 'js/components/commons/service-card';
 import { CarteService } from "js/components/commons/service-card/card-service.component";
 import { axiosURL } from "js/utils/axios-config";
 import { wrapPromise } from 'js/utils';
 import { getEnv } from "app/env";
+import { routes } from "app/router";
 
 const env = getEnv();
 
@@ -47,16 +47,17 @@ const createActionsCarte = (service) => (openService) => () => (
 		>
 			<Icon>launch</Icon>
 		</IconButton>
-		<Link to={`/services/${service.id}`}>
+		<a {...routes.sharedServicesDetails({ "serviceId": service.id }).ling}>
 			<IconButton
 				className="more-details"
 				color="secondary"
 				aria-label="plus de détails"
-				onClick={() => {}}
+				onClick={() => { }}
 			>
 				<Icon>more_horiz</Icon>
 			</IconButton>
-		</Link>
+
+		</a>
 	</>
 );
 

@@ -1,14 +1,24 @@
 import React, { Suspense, lazy } from 'react';
 import Loader from 'js/components/commons/loader';
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
+import { createGroup } from "type-route";
+import { routes } from "app/router";
 const OngletContent = lazy(() => import('./details-service'));
 
-const AsyncDetailsService = (props) => (
+ServiceDetails.routeGroup = createGroup([routes.account]);
+
+ServiceDetails.requireUserLoggedIn = true;
+
+export function ServiceDetails(){
+
+	return(
 	<LegacyThemeProvider>
 		<Suspense fallback={<Loader em={18} />}>
-			<OngletContent {...props} />
+			<OngletContent />
 		</Suspense>
 	</LegacyThemeProvider>
-);
+	);
 
-export default AsyncDetailsService;
+}
+
+

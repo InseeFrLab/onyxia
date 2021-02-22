@@ -141,7 +141,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
             "trainings": "Trainings",
-            //"sharedServices": "Shared services"
+            "sharedServices": "Shared services"
             //"tour": "Guided Tour"
         },
         "FourOhFour": {
@@ -241,7 +241,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "mySecrets": "Mes Secrets",
             "myBuckets": "Mes Fichiers",
             "trainings": "Formations",
-            //"sharedServices": "Services partagés"
+            "sharedServices": "Services partagés"
             //"tour": "Visite Guidée"
         },
         "FourOhFour": {

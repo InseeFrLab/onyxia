@@ -5,10 +5,22 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
     "account": defineRoute("/account"),
-    "sharedServices": defineRoute("/services"),
+    ...(() => {
+
+        const sharedServices = defineRoute("/services");
+
+        return {
+            sharedServices,
+            "sharedServicesDetails": sharedServices.extend(
+                { "serviceId": param.path.string },
+                ({ serviceId }) => `/${serviceId}`
+            )
+        };
+
+    })(),
     "trainings": defineRoute(
         { "courseCode": param.path.optional.string },
-        ({ courseCode })=> `/trainings/${courseCode}`
+        ({ courseCode }) => `/trainings/${courseCode}`
     ),
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
@@ -28,7 +40,7 @@ export const { RouteProvider, useRoute, routes } = createRouter({
 
     })(),
     "mySecrets": defineRoute(
-        { 
+        {
             "secretOrDirectoryPath": param.path.trailing.optional.string,
             "isFile": param.query.optional.boolean
         },
