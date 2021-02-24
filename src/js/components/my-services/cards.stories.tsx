@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import Cards from 'js/components/my-services/cards';
 import basicService from 'js/model/sampledata/service-basic.json';
 

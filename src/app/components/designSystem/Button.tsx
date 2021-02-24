@@ -1,11 +1,12 @@
 
-import { createUseClassNames, cx, css } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css, cx } from "jss-emotion";
 import MuiButton from "@material-ui/core/Button";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 
 export type Props = {
 
@@ -37,7 +38,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }, { color, disabled }) => {
+    (theme, { color, disabled }) => {
 
         const textColor = ({ color, disabled }: Pick<Required<Props>, "color" | "disabled">) =>
             theme.custom.colors.useCases.typography[

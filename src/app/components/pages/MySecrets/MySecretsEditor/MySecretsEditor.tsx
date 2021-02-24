@@ -1,8 +1,9 @@
 
-import { createUseClassNames, css } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css } from "jss-emotion";
 import { useMemo, useState, memo } from "react";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useCallbackFactory } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -11,7 +12,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
-import { useArrayDiff } from "app/tools/hooks/useArrayDiff";
+import { useArrayDiff } from "powerhooks";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
@@ -41,7 +42,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }) => ({
+    theme => ({
         "root": {
             "padding": theme.spacing(2),
             "& .MuiTableCell-root": {

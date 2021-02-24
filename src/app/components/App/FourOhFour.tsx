@@ -8,7 +8,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames()(
-    ({ theme })=>({
+    (theme)=>({
         "root": {
             "display": "flex",
             "alignItems": "center",

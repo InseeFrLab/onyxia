@@ -1,6 +1,6 @@
 
 
-import { css } from "app/theme/useClassNames";
+import { css } from "jss-emotion";
 import { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/shared/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";

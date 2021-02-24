@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Loader from '../commons/loader';
 import ServiceDetails from './service-details';
 import { getService, deleteServices } from 'js/api/my-lab';

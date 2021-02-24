@@ -21,7 +21,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }) => ({
+    theme => ({
         "root": {
             "backgroundColor": "inherit",
             "padding": theme.spacing(4,0)

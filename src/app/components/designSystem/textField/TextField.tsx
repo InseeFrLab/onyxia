@@ -1,7 +1,7 @@
 
 import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useState, memo } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import MuiTextField from "@material-ui/core/TextField";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";

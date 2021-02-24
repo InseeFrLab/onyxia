@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Fab, Icon } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';

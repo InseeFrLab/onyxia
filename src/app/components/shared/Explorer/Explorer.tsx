@@ -1,7 +1,9 @@
 
-import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useTheme } from "@material-ui/core/styles";
+import { cx, css } from "jss-emotion";
 import { useState, useEffect, useMemo } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "./Breadcrump";
 import type { Props as BreadcrumpProps } from "./Breadcrump";
@@ -20,9 +22,9 @@ import { Paper } from "app/components/designSystem/Paper";
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { useDomRect } from "powerhooks";
 import { getPathDepth } from "app/tools/getPathDepth";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -73,7 +75,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props & { cmdTranslationTop: number; }>()(
-    ({ theme }, { cmdTranslationTop }) => ({
+    (theme, { cmdTranslationTop }) => ({
         "root": {
             "position": "relative",
             "display": "flex",
@@ -399,7 +401,7 @@ function useCmdTranslationPositioning() {
     const {
         domRect: { bottom: rootBottom },
         ref: rootRef
-    } = useDOMRect();
+    } = useDomRect();
 
     // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
     const {
@@ -408,7 +410,7 @@ function useCmdTranslationPositioning() {
             bottom: buttonBarBottom
         },
         ref: buttonBarRef
-    } = useDOMRect();
+    } = useDomRect();
 
     const [cmdTranslationTop, setCmdTranslationTop] =
         useState<number>(0);

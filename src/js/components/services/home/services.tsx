@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import { Typography } from '@material-ui/core';
 import Content from './content';
 import DetailsService from '../details';

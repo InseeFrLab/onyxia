@@ -2,12 +2,12 @@
 import { useState, useEffect, memo } from "react";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames, cx, keyframes } from "app/theme/useClassNames";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { useDomRect } from "powerhooks";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import Color from "color";
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { createUseGlobalState } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 
 export type Props = {
     className?: string;
@@ -106,7 +106,7 @@ const { useClassNames } = createUseClassNames<{
     isFadingOut: boolean;
     isTransparencyEnabled: boolean;
 }>()(
-    ({ theme }, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
+    (theme, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
         "root": {
             "backgroundColor": (() => {
 
@@ -145,7 +145,7 @@ export const SplashScreen = memo((props: Props) => {
 
     const { className } = props;
 
-    const { ref, domRect: { width, height } } = useDOMRect();
+    const { ref, domRect: { width, height } } = useDomRect();
 
     const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 

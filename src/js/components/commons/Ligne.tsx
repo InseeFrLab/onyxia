@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Icon } from '@material-ui/core';
 import type { IconTypeMap } from "@material-ui/core";
 import Checkbox from '@material-ui/core/Checkbox';

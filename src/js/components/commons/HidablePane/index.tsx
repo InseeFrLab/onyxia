@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Fade from '@material-ui/core/Fade';
 import classnames from 'classnames';

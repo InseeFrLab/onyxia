@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import Button from '@material-ui/core/Button';
 import CopyableField from 'js/components/commons/copyable-field';
 import { objDiff, buildParamsFromObj } from 'js/utils';

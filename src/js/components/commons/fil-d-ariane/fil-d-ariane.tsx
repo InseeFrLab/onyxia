@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@material-ui/core';
 import './fil-d-ariane.scss';

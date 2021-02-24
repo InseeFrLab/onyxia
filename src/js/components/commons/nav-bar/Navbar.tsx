@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -16,7 +16,7 @@ import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
 import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+import { useWindowInnerSize } from "powerhooks";
 
 
 

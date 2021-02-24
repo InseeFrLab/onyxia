@@ -1,4 +1,6 @@
-import { createUseClassNames, css, cx, useTheme } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useTheme } from "@material-ui/core/styles";
+import { css, cx } from "jss-emotion";
 import { useMemo, useState, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { TextField } from "app/components/designSystem/textField/TextField";
@@ -10,8 +12,8 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { smartTrim } from "app/tools/smartTrim";
 import { Typography } from "app/components/designSystem/Typography";
 import { IconButton } from "app/components/designSystem/IconButton";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useCallbackFactory } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 
@@ -49,7 +51,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolean; }>()(
-    ({ theme }, { isInEditingState, isDarker }) => ({
+    (theme, { isInEditingState, isDarker }) => ({
         "root": {
             "backgroundColor": isDarker ?
                 theme.custom.colors.useCases.surfaces.background :

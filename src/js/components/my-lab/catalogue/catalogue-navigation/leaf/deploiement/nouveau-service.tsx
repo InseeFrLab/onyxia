@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Tabs, Tab } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { AppBar, Chip, Button } from '@material-ui/core/';

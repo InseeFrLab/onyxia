@@ -1,4 +1,4 @@
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { createUseGlobalState } from "powerhooks";
 
 export const { useIsDarkModeEnabled } = createUseGlobalState(
     "isDarkModeEnabled",

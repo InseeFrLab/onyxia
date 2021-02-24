@@ -1,5 +1,5 @@
 import { Map, TileLayer, Marker } from 'react-leaflet';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './about.scss';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';

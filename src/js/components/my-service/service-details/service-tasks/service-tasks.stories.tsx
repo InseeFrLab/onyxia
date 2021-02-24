@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import ServiceTasks from './tasks';
 import basicService from 'js/model/sampledata/service-basic.json';
 

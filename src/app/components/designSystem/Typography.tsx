@@ -22,7 +22,7 @@ export const defaultProps: Optional<Props> = {
 
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }, { color, onClick }) => ({
+    (theme, { color, onClick }) => ({
         "root": {
             "color": theme.custom.colors.useCases.typography[(() => {
                 switch (color) {

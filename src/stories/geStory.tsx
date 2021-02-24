@@ -3,7 +3,6 @@
 import type { Meta } from "@storybook/react";
 import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
-import React from "react";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
@@ -13,7 +12,7 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/lib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
-import { useTheme } from "app/theme/useClassNames";
+import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/router";
 
 const { ThemeProvider } = themeProviderFactory(
