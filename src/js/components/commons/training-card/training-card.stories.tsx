@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import TrainingCard from './component';
 import fakeTraining from 'js/model/sampledata/basic-training.json';
 

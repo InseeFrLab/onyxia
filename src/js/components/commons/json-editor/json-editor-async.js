@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import Loader from '../loader';
 const JSONEditor = lazy(() => import('./json-editor.component'));
 

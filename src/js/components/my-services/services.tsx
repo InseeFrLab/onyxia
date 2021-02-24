@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../commons/loader';
 import Cards from './cards';
 import Toolbar from './toolbar';

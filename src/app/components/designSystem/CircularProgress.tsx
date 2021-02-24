@@ -19,7 +19,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }, { color }) => ({
+    (theme, { color }) => ({
         "root": {
             "color": color !== "textPrimary" ?
                 undefined :

@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import ServiceConf from './conf';
 import basicService from 'js/model/sampledata/service-basic.json';
 

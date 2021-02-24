@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from "react";
 import Typography from '@material-ui/core/Typography';
 import dayjs from 'dayjs';
 import GitInfo from 'react-git-info/macro';

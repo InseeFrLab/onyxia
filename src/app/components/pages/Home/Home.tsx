@@ -1,16 +1,17 @@
 
-import React, { useEffect, useRef, memo } from "react";
+import { useEffect, useRef, memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import "./style.scss";
-import { useTheme } from "app/theme/useClassNames";
+import { useTheme } from "@material-ui/core/styles";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
-import { createUseClassNames, cx, css } from "app/theme/useClassNames";
+import { createUseClassNames, cx } from "app/theme/useClassNames";
+import {  css } from "jss-emotion";
 import { Typography } from "app/components/designSystem/Typography";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/lib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg"
 import { ReactComponent as IconServiceSvg } from "app/assets/svg/IconService.svg"
 import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg"
@@ -24,7 +25,7 @@ Home.routeGroup = createGroup([routes.home]);
 Home.requireUserLoggedIn = false;
 
 const { useClassNames } = createUseClassNames()(
-	({ theme }) => ({
+	theme => ({
 		"root": {
 			"backgroundColor": "transparent"
 		},

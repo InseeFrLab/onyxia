@@ -66,7 +66,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme: { custom: { colors }} }, { color }) => ({
+    ({ custom: { colors }}, { color }) => ({
         "root": {
             "color": color === "limeGreen" ?
                 colors.palette.limeGreen.main :

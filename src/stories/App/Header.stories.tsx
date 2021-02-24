@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { Header } from "app/components/App/Header";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
-import { css } from "app/theme/useClassNames";
+import { css } from "jss-emotion";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { createUseGlobalState } from "powerhooks";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

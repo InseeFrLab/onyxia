@@ -31,7 +31,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({theme})=>({
+    theme=>({
         "root": {
             "padding": theme.spacing(1),
             "&:hover": {

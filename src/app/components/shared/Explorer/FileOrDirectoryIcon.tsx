@@ -18,7 +18,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }, { kind })=> ({
+    (theme, { kind })=> ({
         "root": {
             "fill": "currentColor",
             "color": (() => {

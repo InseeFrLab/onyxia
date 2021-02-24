@@ -1,4 +1,3 @@
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { useSelector, useAppConstants } from "app/lib/hooks";

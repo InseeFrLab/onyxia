@@ -12,9 +12,9 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
-import { css } from "app/theme/useClassNames";
+import { css } from "jss-emotion";
 import { useLng } from "app/i18n/useLng";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { useDomRect } from "powerhooks";
 
 /*
 import App_ from "js/components/app.container";
@@ -91,7 +91,7 @@ function InnerRootWithThemeAvailable() {
 
     });
 
-    const { ref, domRect: { width, height } } = useDOMRect();
+    const { ref, domRect: { width, height } } = useDomRect();
 
     return (
         <div ref={ref} className={css({ "height": "100%" })}>

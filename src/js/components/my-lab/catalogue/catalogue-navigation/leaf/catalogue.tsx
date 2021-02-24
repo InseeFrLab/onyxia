@@ -1,4 +1,3 @@
-import React from "react";
 import { NouveauService } from './deploiement/nouveau-service';
 import { Service } from './service.component';
 import { useAppConstants } from "app/lib/hooks";

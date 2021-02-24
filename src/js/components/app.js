@@ -1,5 +1,4 @@
 
-import React from 'react';
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import CssBaseline from '@material-ui/core/CssBaseline';

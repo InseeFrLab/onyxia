@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SelectRegion from './SelectRegion';
 import { basicRegion } from "js/model/sampledata/region-basic";
 import { regionWithLocation } from "js/model/sampledata/region-with-location";

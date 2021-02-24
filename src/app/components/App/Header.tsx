@@ -3,11 +3,13 @@ import { useState, memo } from "react";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useCallbackFactory } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames, cx, css, useTheme } from "app/theme/useClassNames";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useTheme } from "@material-ui/core/styles";
+import { cx, css } from "jss-emotion";
+import { useDomRect } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
 import type { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -35,7 +37,7 @@ export type Props = {
 const logoWidth = 53;
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }, { logoMaxWidth }) => ({
+    (theme, { logoMaxWidth }) => ({
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.background,
             "overflow": "auto",
@@ -78,7 +80,7 @@ export const Header = memo((props: Props) => {
         ([target]: [Target]) => onClick(target)
     );
 
-    const { domRect: { height }, ref } = useDOMRect();
+    const { domRect: { height }, ref } = useDomRect();
 
     const { classNames } = useClassNames(props);
 
@@ -201,7 +203,7 @@ const { ChangeLanguage } = (() => {
     };
 
     const { useClassNames } = createUseClassNames<{ buttonWidth: number; }>()(
-        ({ theme }, { buttonWidth }) => ({
+        (theme, { buttonWidth }) => ({
             "menu": {
                 "& .Mui-selected": {
                     "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces
@@ -221,7 +223,7 @@ const { ChangeLanguage } = (() => {
 
         const { lng, setLng } = useLng();
 
-        const { ref: buttonRef, domRect: { width: buttonWidth } } = useDOMRect();
+        const { ref: buttonRef, domRect: { width: buttonWidth } } = useDomRect();
 
         const { classNames } = useClassNames({ buttonWidth });
 

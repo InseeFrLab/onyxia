@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";  
 import { IconButton, Icon } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import './progress.scss';

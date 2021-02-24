@@ -1,22 +1,22 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
 import Box from "@material-ui/core/Box";
 import { Typography } from "../../designSystem/Typography"
-import { useClick } from "app/tools/hooks/useClick";
+import { useClick } from "powerhooks";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useValueChangeEffect } from "powerhooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 
 
 export type Props = {
@@ -55,7 +55,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }, { isSelected, standardizedWidth, basename }) => ({
+    (theme, { isSelected, standardizedWidth, basename }) => ({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",

@@ -1,4 +1,3 @@
-import React from "react";
 import { Icon, Avatar } from "@material-ui/core/";
 import type { FunctionComponent } from "react";
 

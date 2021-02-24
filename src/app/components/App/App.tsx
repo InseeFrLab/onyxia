@@ -6,10 +6,10 @@ import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
-import { createUseClassNames, css, cx } from "app/theme/useClassNames";
-import { useAppConstants } from "app/lib/hooks";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css, cx } from "jss-emotion";
+import { useAppConstants, useSelector } from "app/lib/hooks";
+import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/router";
 import { Home } from "app/components/pages/Home";
@@ -17,11 +17,10 @@ import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { useSelector } from "app/lib/hooks";
-
+import { useWindowInnerSize } from "powerhooks";
+import { useValueChangeEffect } from "powerhooks";
+import { useDomRect } from "powerhooks";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
@@ -40,7 +39,7 @@ import { Trainings } from "js/components/trainings/async-component";
 const logoMaxWidthInPercent = 5;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
-    ({theme}) => ({
+    (theme) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -88,7 +87,7 @@ export const App = memo((props: Props) => {
 
     const appConstants = useAppConstants();
 
-    const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
+    const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 

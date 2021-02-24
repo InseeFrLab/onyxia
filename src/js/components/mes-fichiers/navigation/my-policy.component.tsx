@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import { Typography, Paper } from '@material-ui/core';
 import {
 	Table,

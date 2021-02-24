@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardHeader, Grid } from '@material-ui/core';
 import { PauseIcon } from 'js/components/commons/icons';

@@ -1,14 +1,14 @@
 
 import { useState } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { ZoomProvider } from "app/tools/hooks/useDOMRect";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+import { ZoomProvider } from "powerhooks";
+import { useWindowInnerSize } from "powerhooks";
 
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import { createTheme } from "./theme";
 
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useValueChangeEffect } from "powerhooks";
 
 export function themeProviderFactory(
     params: {
@@ -45,7 +45,14 @@ export function themeProviderFactory(
         const isLandscape = windowInnerWidth > windowInnerHeight;
 
         useValueChangeEffect(
-            ()=> { window.location.reload(); },
+            ()=> { 
+
+                if( theme.custom.referenceWidth === undefined ){
+                    return;
+                }
+
+                window.location.reload(); 
+            },
             [isLandscape]
         );
 
