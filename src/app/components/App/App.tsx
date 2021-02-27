@@ -7,7 +7,7 @@ import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { css, cx } from "jss-emotion";
+import { css, cx } from "tss-react";
 import { useAppConstants, useSelector } from "app/lib/hooks";
 import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
@@ -21,12 +21,13 @@ import { useWindowInnerSize } from "powerhooks";
 import { useValueChangeEffect } from "powerhooks";
 import { useDomRect } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { Account } from "app/components/pages/Account";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
-import { MonCompte } from "js/components/mon-compte/mon-compte.component";
+//import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import VisiteGuidee from 'js/components/visite-guidee';
@@ -35,6 +36,7 @@ import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cl
 import { SharedServices } from "js/components/services/home/services";
 import { ServiceDetails } from "js/components/services/details/details-service-async";
 import { Trainings } from "js/components/trainings/async-component";
+
 
 const logoMaxWidthInPercent = 5;
 
@@ -131,7 +133,8 @@ export const App = memo((props: Props) => {
                 Catalogue,
                 MyServices,
                 MyService,
-                MonCompte,
+                //MonCompte,
+                Account,
                 MyBuckets,
                 NavigationFile,
                 VisiteGuideeDebut,
@@ -175,7 +178,7 @@ export const App = memo((props: Props) => {
                 case Trainings:
                 case Home:
                 case MyServices:
-                case MonCompte:
+                case Account:
                 case MyBuckets:
                 case Catalogue:
                 case VisiteGuideeDebut:

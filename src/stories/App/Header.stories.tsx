@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Header } from "app/components/App/Header";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { createUseGlobalState } from "powerhooks";
 

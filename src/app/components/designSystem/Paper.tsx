@@ -11,7 +11,7 @@ export type Props = {
     className?: string | null;
 };
 
-const defaultProps: Optional<Props> = {
+export const defaultProps: Optional<Props> = {
     "className": null,
     "elevation": 1
 };

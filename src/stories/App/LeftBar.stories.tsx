@@ -2,7 +2,7 @@
 import { LeftBar } from "app/components/App/LeftBar";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

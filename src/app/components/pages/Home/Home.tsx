@@ -6,7 +6,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
 import { createUseClassNames, cx } from "app/theme/useClassNames";
-import {  css } from "jss-emotion";
+import {  css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/lib/hooks";
