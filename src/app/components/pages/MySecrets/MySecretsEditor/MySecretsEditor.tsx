@@ -1,6 +1,6 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";

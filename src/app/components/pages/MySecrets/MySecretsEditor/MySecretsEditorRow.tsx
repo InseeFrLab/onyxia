@@ -1,6 +1,6 @@
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
-import { css, cx } from "jss-emotion";
+import { css, cx } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { TextField } from "app/components/designSystem/textField/TextField";

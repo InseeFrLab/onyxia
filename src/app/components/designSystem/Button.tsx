@@ -1,6 +1,6 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
-import { css, cx } from "jss-emotion";
+import { css, cx } from "tss-react";
 import MuiButton from "@material-ui/core/Button";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";

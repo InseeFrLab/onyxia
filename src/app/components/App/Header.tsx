@@ -8,7 +8,7 @@ import { useConstCallback } from "powerhooks";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
-import { cx, css } from "jss-emotion";
+import { cx, css } from "tss-react";
 import { useDomRect } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
 import type { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";

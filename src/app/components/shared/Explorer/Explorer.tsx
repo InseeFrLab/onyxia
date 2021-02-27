@@ -1,7 +1,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
-import { cx, css } from "jss-emotion";
+import { cx, css } from "tss-react";
 import { useState, useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks";
 import type { Props as ItemsProps } from "./ExplorerItems";

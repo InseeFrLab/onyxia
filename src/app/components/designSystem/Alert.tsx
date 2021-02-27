@@ -1,5 +1,5 @@
 
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 import { useReducer } from "react";
 import type { ReactNode } from "react";
 import { IconButton } from "./IconButton";

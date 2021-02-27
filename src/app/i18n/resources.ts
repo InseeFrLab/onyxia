@@ -13,6 +13,7 @@ import { Header } from "app/components/App/Header";
 import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
+import { Account } from "app/components/pages/Account";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -34,6 +35,7 @@ const reflectedI18nSchemes = {
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
+    [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -69,6 +71,15 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
+        "Account": {
+            "user info": "User infos",
+            "onyxia info": "Onyxia Infos",
+            "userServicePassword": "Services password",
+            "gitName": "User name for git",
+            "gitEmail": "Email for git",
+            "kaggleApiToken": "Kaggle API token",
+            "githubPersonalAccessToken": "GitHub Personal Access Token"
+        },
         "MySecrets": {
             ...common.en,
             "page title": "My Secrets",
@@ -171,6 +182,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     },
     "fr": {
         /* spell-checker: disable */
+        "Account": {
+            "user info": "Informations utilisateur",
+            "onyxia info": "Informations Onyxia",
+            "userServicePassword": "Mot de passe pour vos services",
+            "gitName": "Nom d'utilisateur pour git",
+            "gitEmail": "Email pour git",
+            "kaggleApiToken": "Kaggle API token",
+            "githubPersonalAccessToken": "GitHub Personal Access Token"
+        },
         "MySecrets": {
             ...common.fr,
             "page title": "Mes secrets",

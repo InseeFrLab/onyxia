@@ -12,7 +12,7 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 import { useLng } from "app/i18n/useLng";
 import { useDomRect } from "powerhooks";
 

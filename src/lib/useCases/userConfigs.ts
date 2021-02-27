@@ -28,6 +28,7 @@ export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     isBetaModeEnabled: boolean;
     isDarkModeEnabled: boolean;
     deploymentRegionId: string | null;
+    githubPersonalAccessToken: string | null;
 }>;
 
 export type UserConfigsState = {
@@ -132,7 +133,8 @@ export const privateThunks = {
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
                 "isDarkModeEnabled": isColorSchemeDarkEnabledByDefalut,
-                "deploymentRegionId": null
+                "deploymentRegionId": null,
+                "githubPersonalAccessToken": null
             };
 
             await Promise.all(

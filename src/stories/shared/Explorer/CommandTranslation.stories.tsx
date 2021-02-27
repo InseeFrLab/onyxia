@@ -1,5 +1,5 @@
 
-import { css } from "jss-emotion";
+import { css } from "tss-react";
 import { useState, useEffect, useReducer } from "react";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "./sectionName";
