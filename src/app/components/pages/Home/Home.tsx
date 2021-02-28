@@ -76,17 +76,9 @@ export function Home() {
 
 	const { t } = useTranslation("Home");
 
-	const onHeroButtonClick = useConstCallback(() => {
-
-		if (!appConstants.isUserLoggedIn) {
-			appConstants.login();
-			return;
-		}
-
-		alert('Use { routes } from "app/routes" to redirect to assisted tour');
-
-	});
-
+	const onHeroButtonClick = useConstCallback(() => 
+		routes.catalog({ "optionalTrailingPath": "inseefrlab-helm-charts-datascience" }).push()
+	);
 
 	return (
 		<div className={cx("home", classNames.root)}>
@@ -122,7 +114,7 @@ export function Home() {
 					title={t("cardTitle1")}
 					text={t("cardText1")}
 					buttonText={t("cardButton1")}
-					onClick={() => { }}
+					onClick={onHeroButtonClick}
 				/>
 				<Card
 					className={classNames.middleCard}
@@ -130,14 +122,14 @@ export function Home() {
 					title={t("cardTitle2")}
 					text={t("cardText2")}
 					buttonText={t("cardButton2")}
-					onClick={() => { }}
+					onClick={onHeroButtonClick}
 				/>
 				<Card
 					Icon={IconStorageSvg}
 					title={t("cardTitle3")}
 					text={t("cardText3")}
 					buttonText={t("cardButton3")}
-					onClick={() => { }}
+					onClick={onHeroButtonClick}
 				/>
 
 
