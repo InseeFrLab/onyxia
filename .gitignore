@@ -28,3 +28,5 @@ android
 # We ignore package-lock.json as we recommend yarn
 package-lock.json
 .eslintcache
+
+/build_keycloak
