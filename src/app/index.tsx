@@ -12,14 +12,10 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
+import { KcApp, kcContext, defaultKcProps } from "keycloakify";
 import { css } from "tss-react";
 import { useLng } from "app/i18n/useLng";
 import { useDomRect } from "powerhooks";
-
-/*
-import App_ from "js/components/app.container";
-const App: any = App_;
-*/
 
 
 const { ThemeProvider } = themeProviderFactory(
@@ -104,8 +100,9 @@ function InnerRootWithThemeAvailable() {
 
 }
 
-
 reactDom.render(
-    <Root />,
+    kcContext !== undefined ?
+        <KcApp {...defaultKcProps} /> :
+        <Root />,
     document.getElementById("root")
 );
