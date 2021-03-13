@@ -72,7 +72,7 @@
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
     "path": "^0.12.7",
-    "powerhooks": "^0.0.19",
+    "powerhooks": "^0.0.22",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
     "react": "^16.13.1",
@@ -96,7 +96,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build yarn && yarn run generate-entrypoint && build-keycloak-theme",
+    "build": "react-app-rewired build yarn && yarn run generate-entrypoint",
+    "keycloak": "yarn build && build-keycloak-theme",
     "test": "react-app-rewired test --env=jsdom",
     "generate-entrypoint": "node scripts/generate-entrypoint.js",
     "analyze-bundle": "node scripts/analyze-bundle.js",
