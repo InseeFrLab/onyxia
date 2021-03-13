@@ -12,10 +12,16 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
-import { KcApp, kcContext, defaultKcProps } from "keycloakify";
 import { css } from "tss-react";
 import { useLng } from "app/i18n/useLng";
 import { useDomRect } from "powerhooks";
+import {
+    KcApp,
+    defaultKcProps,
+    kcContext as realKcContext,
+    kcContextMocks
+} from "keycloakify";
+
 
 
 const { ThemeProvider } = themeProviderFactory(
@@ -100,9 +106,24 @@ function InnerRootWithThemeAvailable() {
 
 }
 
+const kcContext = realKcContext ?? (
+    false /* Set to true to test the login pages outside of Keycloak */
+        ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
+        :
+        undefined
+);
+
+console.log(JSON.stringify(kcContext, null, 2));
+
 reactDom.render(
     kcContext !== undefined ?
-        <KcApp {...defaultKcProps} /> :
+        <KcApp
+            kcContext={kcContext}
+            {...{
+                ...defaultKcProps,
+                "kcHeaderWrapperClass": css({ "color": "red" })
+            }}
+        /> :
         <Root />,
     document.getElementById("root")
 );
