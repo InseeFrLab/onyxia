@@ -18,7 +18,7 @@ import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
 import { useIsDarkModeEnabled } from "app/lib/hooks";
 import { useWindowInnerSize } from "powerhooks";
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { Account } from "app/components/pages/Account";
@@ -93,14 +93,14 @@ export const App = memo((props: Props) => {
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => hideSplashScreen(),
         [rootWidth === 0]
     );
 
     const isWaiting = useSelector(state=> state.app.waiting);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => {
             if( isWaiting ){
                 showSplashScreen({ "enableTransparency": true });

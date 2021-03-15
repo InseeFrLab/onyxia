@@ -8,7 +8,7 @@ import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/
 import memoize from "memoizee";
 import { createTheme } from "./theme";
 
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 
 export function themeProviderFactory(
     params: {
@@ -44,7 +44,7 @@ export function themeProviderFactory(
 
         const isLandscape = windowInnerWidth > windowInnerHeight;
 
-        useValueChangeEffect(
+        useEffectOnValueChange(
             ()=> { 
 
                 if( theme.custom.referenceWidth === undefined ){
