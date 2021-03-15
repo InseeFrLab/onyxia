@@ -1,7 +1,5 @@
 
-
-import { KeycloakPromise } from "keycloak-js";
-import type { KeycloakInstance, KeycloakAdapter, KeycloakLoginOptions } from "keycloak-js";
+import type { KeycloakPromise, KeycloakInstance, KeycloakAdapter, KeycloakLoginOptions } from "keycloak-js";
 
 /**
 * NOTE: This is just a slightly modified version of the default adapter in keycloak-js
@@ -19,7 +17,13 @@ export function createKeycloakAdapter(
 
     const { keycloakInstance, transformUrlBeforeRedirect } = params;
 
-    const neverResolvingPromise = new KeycloakPromise<void, void>(() => { });
+    const neverResolvingPromise: KeycloakPromise<void, void> = Object.defineProperties(
+        new Promise(() => { }),
+        {
+            "success": { "value": () => { } },
+            "error": { "value": () => { } }
+        }
+    );
 
     return {
         "login": (options) => {
