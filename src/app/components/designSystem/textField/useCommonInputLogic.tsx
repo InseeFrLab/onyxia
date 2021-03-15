@@ -7,7 +7,7 @@ import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 
 export type Props = {
     className?: string | null;
@@ -80,7 +80,7 @@ export function useCommonInputLogic(props: Props) {
 
     })(transformValueBeingTyped);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => transformAndSetValue(defaultValue),
         [defaultValue]
     );

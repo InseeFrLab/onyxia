@@ -10,7 +10,7 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 import { useArrayDiff } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -103,7 +103,7 @@ export const ExplorerItems = memo((props: Props) => {
         setSelectedItemKeyProp
     ] = useState<string | undefined>(undefined);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         selectedItemKind => onSelectedItemKindValueChange({ selectedItemKind }),
         [
             useMemo(
@@ -153,7 +153,7 @@ export const ExplorerItems = memo((props: Props) => {
     );
 
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => {
             setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
@@ -289,7 +289,7 @@ export const ExplorerItems = memo((props: Props) => {
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => onIsSelectedItemInEditingStateValueChange({ isSelectedItemInEditingState }),
         [isSelectedItemInEditingState]
     );

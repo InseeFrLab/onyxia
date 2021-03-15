@@ -11,7 +11,7 @@ import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
@@ -131,7 +131,7 @@ export const ExplorerItem = memo((props: Props) => {
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => onIsInEditingStateValueChange({ isInEditingState }),
         [isInEditingState]
     );

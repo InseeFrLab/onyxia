@@ -9,7 +9,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 
 export type Props = {
     lng: SupportedLanguage;
@@ -38,7 +38,7 @@ export function I18nProvider(props: Props) {
 
     });
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => i18nInstance.changeLanguage(lng),
         [lng]
     );
