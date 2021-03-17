@@ -22,7 +22,7 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 		assert(
 			value !== undefined,
 			[
-				`The REACT_${key} environnement variable need to be defined`,
+				`The REACT_APP_${key} environnement variable need to be defined`,
 				"update .env or .env.local then re-launch the app"
 			].join(" ")
 		);
@@ -42,7 +42,7 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 }
 
-export const getEnv = memoizee(
+export const getValidatedEnv = memoizee(
 	() => ({
 		"API": {
 			"BASE_URL": getEnvVar("BASE_API_URL", { "mandatory": false })

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as reactDom from "react-dom";
-import { getEnv } from "./env";
+import { getValidatedEnv } from "./validatedEnv";
 
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
@@ -55,7 +55,7 @@ function InnerRootWithThemeAvailable() {
 
     const [createStoreParams] = useState(() => {
 
-        const env = getEnv();
+        const env = getValidatedEnv();
 
         return id<StoreProviderProps["createStoreParams"]>({
             "isColorSchemeDarkEnabledByDefault": isDarkModeEnabled,

@@ -1,11 +1,11 @@
 import Mustache from 'mustache';
 import type { RootState } from "lib/setup";
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 import type { AppConstant } from "lib/useCases/appConstants";
 import type { OidcTokens } from "lib/ports/OidcClient";
 import type { UserConfigs } from "lib/useCases/userConfigs";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 // Disable mustache html escaping
 Mustache.escape = text => text;
