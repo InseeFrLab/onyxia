@@ -58,7 +58,7 @@ function InnerRootWithThemeAvailable() {
         const env = getEnv();
 
         return id<StoreProviderProps["createStoreParams"]>({
-            "isColorSchemeDarkEnabledByDefalut": isDarkModeEnabled,
+            "isColorSchemeDarkEnabledByDefault": isDarkModeEnabled,
             "oidcClientConfig":
                 env.AUTHENTICATION.TYPE === "oidc" ?
                     id<OidcClientConfig.Keycloak>({
@@ -113,7 +113,9 @@ const kcContext = realKcContext ?? (
         undefined
 );
 
-console.log(JSON.stringify(kcContext, null, 2));
+if (kcContext !== undefined) {
+    console.log(JSON.stringify(kcContext, null, 2));
+}
 
 reactDom.render(
     kcContext !== undefined ?

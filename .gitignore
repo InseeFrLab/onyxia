@@ -30,3 +30,4 @@ package-lock.json
 .eslintcache
 
 /build_keycloak
+/src/env.ts

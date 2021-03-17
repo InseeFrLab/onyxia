@@ -44,7 +44,7 @@ export type Dependencies = {
 export type CreateStoreParams = {
     /** If we can't get the value from the user profile we want to
      * load the os preferred default or the value saved in local storage */
-    isColorSchemeDarkEnabledByDefalut: boolean;
+    isColorSchemeDarkEnabledByDefault: boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
@@ -138,14 +138,14 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isColorSchemeDarkEnabledByDefalut">
+    } & Pick<CreateStoreParams, "isColorSchemeDarkEnabledByDefault">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isColorSchemeDarkEnabledByDefalut
+        isColorSchemeDarkEnabledByDefault
     } = params;
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
@@ -255,7 +255,7 @@ async function createStoreForLoggedUser(
 
     await store.dispatch(
         userConfigsUseCase.privateThunks.initialize(
-            { isColorSchemeDarkEnabledByDefalut }
+            { isColorSchemeDarkEnabledByDefault }
         )
     );
 
@@ -325,7 +325,7 @@ export async function createStore(params: CreateStoreParams) {
     const {
         oidcClientConfig,
         secretsManagerClientConfig,
-        isColorSchemeDarkEnabledByDefalut,
+        isColorSchemeDarkEnabledByDefault,
         onyxiaApiClientConfig,
         evtBackOnline
     } = params;
@@ -343,7 +343,7 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isColorSchemeDarkEnabledByDefalut
+                isColorSchemeDarkEnabledByDefault
             }) :
             {
                 ...await createStoreForNonLoggedUser({

@@ -1,68 +1,151 @@
-name: CI
-
+name: ci
 on:
-  #schedule:
-  #- cron: "0 10 * * *" # everyday at 10am
   push:
     branches:
-      - "**"
-    tags:
-      - "*"
+      - master
   pull_request:
+    branches:
+      - master
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+
+  test:
+    runs-on: ${{matrix.os}}
+    if: github.event.head_commit.author.name != 'ts_ci'
+    strategy:
+      matrix:
+       os: [ windows-latest, ubuntu-latest ]
+    name: Test with on ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Use Node.js 14
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - run: yarn --frozen-lockfile
-      - run: yarn build
-      - name: Upload build
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: build
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - run: |
+        yarn install --frozen-lockfile                                                                                                                                                                                        
+        yarn build
+#       yarn test
+
+  check_if_version_upgraded:
+    name: Check if version upgrade
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      from_version: ${{ steps.step1.outputs.from_version }}
+      to_version: ${{ steps.step1.outputs.to_version }}
+      is_upgraded_version: ${{steps.step1.outputs.is_upgraded_version }}
+      branch: ${{steps.step2.outputs.branch }}
+    steps:
+    - uses: garronej/github_actions_toolkit@v2.1
+      id: step1
+      with: 
+        action_name: is_package_json_version_upgraded
+    - name: Get branch name
+      id: step2
+      run: |
+        echo ::set-output name=branch::$(
+          [ "$GITHUB_EVENT_NAME" == "pull_request" ] &&
+            echo "$GITHUB_HEAD_REF" ||
+            echo "${GITHUB_REF#refs/*/}"
+        )
   docker:
-    needs: build
+    name: Build Docker image and publish on DockerHub
+    needs: check_if_version_upgraded
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.owner.login == github.event.pull_request.base.repo.owner.login }}
     steps:
       - uses: actions/checkout@v2
-      - name: Download build
-        id: download
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
-      - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1.8.4
-        with:
-          images: inseefrlab/onyxia-ui # list of Docker images to use as base name for tags
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
+      - name: Computing Docker image tags
+        id: step1
+        env: 
+          IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
+          TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
+          BRANCH: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        run: |
+          OUT=$GITHUB_REPOSITORY:$BRANCH
+          if [ "$IS_UPGRADED_VERSION" = "true" ]; then
+            OUT=$OUT,$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
+          fi
+          OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
+          echo ::set-output name=docker_tags::$OUT
+      - uses: docker/build-push-action@v2
         with:
-          context: .
-          file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ steps.docker_meta.outputs.tags }}
-            ${{ github.ref == 'refs/heads/master' && 'inseefrlab/onyxia-ui:latest' || '' }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          push: true
+          tags: ${{ steps.step1.outputs.docker_tags }}
+
+  build_keycloak_theme:
+    name: Build keycloak theme
+    runs-on: ubuntu-latest
+    needs: check_if_version_upgraded
+    if: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: main
+    - uses: actions/setup-node@v1
+    - run: |
+        yarn install --frozen-lockfile                                                                                                                                                                                        
+        yarn build
+        npx build-keycloak-theme
+    - name: Upload keycloak theme
+      uses: actions/upload-artifact@v2
+      with:
+        name: keycloak_theme
+        path: build_keycloak/target/*keycloak-theme*.jar
+
+  update_changelog:
+    name: Update CHANGELOG.md
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs:
+      - build_keycloak_theme
+      - docker
+      - check_if_version_upgraded
+    steps:
+    - uses: garronej/github_actions_toolkit@v2.1
+      with:
+        action_name: update_changelog
+        branch: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        commit_author_email: ts_ci@github.com
+
+  release:
+    runs-on: ubuntu-latest
+    needs: 
+      - update_changelog
+      - check_if_version_upgraded
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
+    - name: Download keycloak_theme
+      uses: actions/download-artifact@v2
+      with:
+        name: keycloak_theme
+    - run: mv *keycloak-theme*.jar keycloak-theme.jar
+    - name: Build GitHub release body
+      id: step1
+      run: |
+        if [ "$FROM_VERSION" = "0.0.0" ]; then
+            echo "::set-output name=body::🚀"
+        else
+            echo "::set-output name=body::📋 [CHANGELOG](https://github.com/$GITHUB_REPOSITORY/blob/v$TO_VERSION/CHANGELOG.md)"
+        fi
+      env: 
+        FROM_VERSION: ${{ needs.check_if_version_upgraded.outputs.from_version }}
+        TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
+    - name: Create Release
+      uses: garronej/action-gh-release@8eb01d050288728124e879e2e724873f39433141
+      with:
+        name: Release v${{ needs.check_if_version_upgraded.outputs.to_version }}
+        tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
+        target_commitish: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        files: keycloak-theme.jar
+        body: ${{ steps.step1.outputs.body }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
