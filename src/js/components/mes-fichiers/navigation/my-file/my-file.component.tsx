@@ -9,14 +9,14 @@ import Details from './details.component';
 import * as minioTools from 'js/minio-client/minio-tools';
 import * as minioPolicy from "js/minio-client/minio-policy";
 import { MyPolicy } from '../my-policy.component';
-import { getEnv } from 'app/env';
+import { getValidatedEnv } from 'app/validatedEnv';
 import './my-file.scss';
 import { id } from "evt/tools/typeSafety/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "app/router";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 const MINIO_BASE_URI = env.MINIO.BASE_URI;
 

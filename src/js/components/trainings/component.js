@@ -4,10 +4,10 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import TrainingCard from 'js/components/commons/training-card';
 import { wrapPromise } from 'js/utils';
 import { axiosURL } from "js/utils/axios-config";
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 import { useRoute } from "app/router";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 const resource = wrapPromise(axiosURL(env.CONTENT.TRAININGS_URL));
 

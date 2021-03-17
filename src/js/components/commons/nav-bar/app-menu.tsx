@@ -15,13 +15,13 @@ import {
 	CatalogueIcon,
 	PokerHandIcon,
 } from 'js/components/commons/icons';
-import { getEnv } from 'app/env';
+import { getValidatedEnv } from 'app/validatedEnv';
 import D from 'js/i18n';
 
 import type { RootState } from "lib/setup";
 import { useSelector, useIsBetaModeEnabled } from "app/lib/hooks";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 
 const ItemLogin = ({ login }: any) => (
