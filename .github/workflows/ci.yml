@@ -14,7 +14,8 @@ jobs:
     if: github.event.head_commit.author.name != 'ts_ci'
     strategy:
       matrix:
-       os: [ windows-latest, ubuntu-latest ]
+       #os: [ windows-latest, ubuntu-latest ]
+       os: [ ubuntu-latest ]
     name: Test with on ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -50,6 +51,8 @@ jobs:
     name: Build Docker image and publish on DockerHub
     needs: check_if_version_upgraded
     runs-on: ubuntu-latest
+    # Build the docker image only if it's a push on master or if it's a PR from a branch (and not a PR from a fork)
+    # It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is defined but GitHub Action don't allow it.
     if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.owner.login == github.event.pull_request.base.repo.owner.login }}
     steps:
       - uses: actions/checkout@v2
