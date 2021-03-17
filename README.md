@@ -50,7 +50,7 @@ The app is configured using [environnement variables](https://gist.github.com/ga
 
 ```bash
 yarn install
-wget https://gist.githubusercontent.com/garronej/e0f7485fac23e8aa0ceda6ce82256df6/raw/e5af4415f33bbc4bfb9c009d4b0e302a1080bf8e/.env.local #Setup the var envs to tell the app to connect to INSEE's infra
+wget https://gist.githubusercontent.com/garronej/e0f7485fac23e8aa0ceda6ce82256df6/raw/0cb60c6759d4e3005c15c9ca9706316e08013fc2/.env.local #Setup the var envs to tell the app to connect to INSEE's infra
 yarn start # To launch the app
 yarn storybook # To test the React's component in isolation.
 ```
