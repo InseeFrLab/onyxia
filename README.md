@@ -21,8 +21,8 @@
 
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to 
 provide a state of the art data analysis experience.  
-Onyxia is developed by the French National institute of statistic and economic studies ( [INSEE](https://insee.fr) ).  
-
+Onyxia is developed by the French National institute of statistic and economic studies ([INSEE](https://insee.fr)).  
+  
 Core feature set: 
 - A web GUI where users can upload/download files to/from a S3 servers. (S3 as the open standard, not the AWS service)
 - An interface for launching docker images (e.g: Jupyter, RStudio) on demand on a Kubernetes cluster. 
