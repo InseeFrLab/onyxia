@@ -19,8 +19,8 @@
 
 ---
 
-Onyxia is a web app that aims to be the glue between multiple outsource backend technologies and providing, 
-doing so, a state of the art data analysis experience.  
+Onyxia is a web app that aims at being the glue between multiple open source backend technologies to 
+provide a state of the art data analysis experience.  
 Onyxia is developed by the French National institute of statistic and economic studies ( [INSEE](https://insee.fr) ).  
 
 Core feature set: 
