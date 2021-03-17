@@ -1,6 +1,7 @@
 import { id } from "evt/tools/typeSafety/id";
 import memoizee from "memoizee";
 import { assert as _assert } from "evt/tools/typeSafety/assert";
+import { getEnv } from "env";
 
 const assert: typeof _assert = process.env["NODE_ENV"] === "test" ?
 	(() => { }) : _assert;
@@ -13,10 +14,7 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 	const { mandatory = true, parseInt = false } = options ?? {};
 
-	let value: string | number | undefined = (
-		(window as any)?._env_?.[key] ||
-		process.env[`REACT_APP_${key}`]
-	) || undefined;
+	let value = (getEnv() as any)[key] || undefined;
 
 	if (mandatory) {
 		assert(
