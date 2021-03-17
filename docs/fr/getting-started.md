@@ -1,3 +1,0 @@
-# Démarrage
-
-TODO

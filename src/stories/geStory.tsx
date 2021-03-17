@@ -20,7 +20,7 @@ const { ThemeProvider } = themeProviderFactory(
 );
 
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
-    "isColorSchemeDarkEnabledByDefalut": false,
+    "isColorSchemeDarkEnabledByDefault": false,
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
