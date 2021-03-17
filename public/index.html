@@ -1,19 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		
+		<script>
+			/*
+			This is a way to get the correct background color as soon as possible,
+			even before the JavaScript bundle is evaluated.
+			It is to prevent a white flash when the user has dark mode enabled.
+			It is very implementation dependent and can easily break...
+			if it does no big deal.
+			*/
+			(function (){
+
+				var isDarkModeEnabled= /true/.test((function (){
+
+					var key= "powerhooks_useGlobalState_isDarkModeEnabled";
+					var value= null;
+
+					try{
+						value= (new URLSearchParams(location.search)).get(key);
+					}catch(_){ }
+
+					if( value !== null ){
+						return value;
+					}
+
+					try{
+						value = localStorage.getItem(key);
+					}catch(_){ }
+
+					if( value !== null ){
+						return value;
+					}
+
+					try{
+						value= window.matchMedia("(prefers-color-scheme: dark)")
+							.matches ? "true" : "false";
+					}catch(_){ }
+
+					if( value !== null ){
+						return value;
+					}
+
+					return "false";
+
+				})());
+
+				document.documentElement.style.backgroundColor = 
+					//getColor("light"|"dark").useCases.surfaces.background in src/app/theme/colors.ts
+					isDarkModeEnabled ? "#2C323F" : "#F1F0EB" ;
+
+			})();
+		</script>
+
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<script src="%PUBLIC_URL%/env-config.js"></script>
 		<!--
-      Notice the use of %PUBLIC_URL% in the tag above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+      	Notice the use of %PUBLIC_URL% in the tag above.
+      	It will be replaced with the URL of the `public` folder during the build.
+      	Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+      	Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      	work correctly both with client-side routing and a non-root public URL.
+      	Learn how to configure a non-root public URL by running `npm run build`.
+    	-->
 		<title>Onyxia</title>
 
 		<!-- start favicon -->
@@ -28,21 +79,19 @@
 		<!-- TODO: Remove, Font for legacy icons -->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
+
 	</head>
 	<body>
 		<div id="root"></div>
 		<!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+      	This HTML file is a template.
+      	If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+      	You can add webfonts, meta tags, or analytics to this file.
+      	The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start`.
-      To create a production bundle, use `npm run build`.
-    -->
-
-		<!-- Start of Rocket.Chat Livechat Script -->
-		<!-- End of Rocket.Chat Livechat Script -->
+      	To begin the development, run `npm start`.
+      	To create a production bundle, use `npm run build`.
+    	-->
 	</body>
 </html>
