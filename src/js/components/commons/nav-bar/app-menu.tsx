@@ -19,7 +19,7 @@ import { getValidatedEnv } from 'app/validatedEnv';
 import D from 'js/i18n';
 
 import type { RootState } from "lib/setup";
-import { useSelector, useIsBetaModeEnabled } from "app/lib/hooks";
+import { useSelector, useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
 
 const env = getValidatedEnv();
 

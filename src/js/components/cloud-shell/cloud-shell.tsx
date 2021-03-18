@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from 'react';
-import { useDispatch, useMustacheParams, useAppConstants } from "app/lib/hooks";
+import { useDispatch, useMustacheParams, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
 import IconButton from '@material-ui/core/IconButton';

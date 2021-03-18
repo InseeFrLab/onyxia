@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Catalogue from '../catalogue.component';
 import { restApiPaths } from 'js/restApiPaths';
-import { useIsBetaModeEnabled } from "app/lib/hooks";
+import { useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
 import { prAxiosInstance } from "lib/setup";
 
 const Catalogues = () => {

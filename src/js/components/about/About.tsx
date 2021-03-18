@@ -8,7 +8,7 @@ import SelectRegion from './SelectRegion';
 import type { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
 import { actions as regionActions } from "js/redux/regions";
-import { useDispatch, useSelector } from "app/lib/hooks";
+import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { useAsync } from "react-async-hook";
 import { thunks } from "lib/setup";
 

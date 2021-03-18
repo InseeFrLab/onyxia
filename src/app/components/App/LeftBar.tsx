@@ -8,7 +8,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/router";
-import { doExtends } from "app/tools/doExtends";
+import  { doExtends } from "evt/tools/typeSafety/doExtends";
 
 const targets = [
     "toggle isExpanded" as const,

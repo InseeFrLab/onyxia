@@ -9,7 +9,7 @@ import { createUseClassNames, cx } from "app/theme/useClassNames";
 import {  css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { useAppConstants } from "app/lib/hooks";
+import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg"

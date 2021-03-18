@@ -3,7 +3,7 @@ import { createUseClassNames, cx } from "app/theme/useClassNames";
 import { useEffect } from "react";
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
+import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { Props as ExplorerProps } from "app/components/shared/Explorer";
 import * as lib from "lib/setup";

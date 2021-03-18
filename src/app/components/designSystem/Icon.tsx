@@ -29,7 +29,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
-import { doExtends } from "app/tools/doExtends";
+import  { doExtends } from "evt/tools/typeSafety/doExtends";
 
 
 export type SvgTypes =

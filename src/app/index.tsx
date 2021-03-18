@@ -6,10 +6,10 @@ import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfi
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./router";
-import { StoreProvider } from "app/lib/StoreProvider";
-import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
+import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
+import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
-import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { SplashScreen } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
 import { css } from "tss-react";
@@ -21,8 +21,6 @@ import {
     kcContext as realKcContext,
     kcContextMocks
 } from "keycloakify";
-
-
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
@@ -45,20 +43,16 @@ function Root() {
         </React.StrictMode>
     );
 
-};
+}
 
 /** We need to be inside the theme provider to be able to use useDOMRect */
 function InnerRootWithThemeAvailable() {
-
-
-    const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
     const [createStoreParams] = useState(() => {
 
         const env = getValidatedEnv();
 
         return id<StoreProviderProps["createStoreParams"]>({
-            "isColorSchemeDarkEnabledByDefault": isDarkModeEnabled,
             "oidcClientConfig":
                 env.AUTHENTICATION.TYPE === "oidc" ?
                     id<OidcClientConfig.Keycloak>({
@@ -113,19 +107,15 @@ const kcContext = realKcContext ?? (
         undefined
 );
 
-if (kcContext !== undefined) {
-    console.log(JSON.stringify(kcContext, null, 2));
-}
-
 reactDom.render(
     kcContext !== undefined ?
-        <KcApp
+        (console.log(JSON.stringify(kcContext, null, 2)), <KcApp
             kcContext={kcContext}
             {...{
                 ...defaultKcProps,
                 "kcHeaderWrapperClass": css({ "color": "red" })
             }}
-        /> :
+        />) :
         <Root />,
     document.getElementById("root")
 );

@@ -9,9 +9,9 @@ import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
-import { StoreProvider } from "app/lib/StoreProvider";
+import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
-import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
+import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/router";
 
@@ -20,7 +20,6 @@ const { ThemeProvider } = themeProviderFactory(
 );
 
 const createStoreParams: StoreProviderProps["createStoreParams"] = {
-    "isColorSchemeDarkEnabledByDefault": false,
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
