@@ -8,7 +8,7 @@ import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { css, cx } from "tss-react";
-import { useAppConstants, useSelector } from "app/lib/hooks";
+import { useAppConstants, useSelector, useSyncDarkModeWithValueInProfile } from "app/interfaceWithLib/hooks";
 import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/router";
@@ -16,7 +16,7 @@ import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
-import { useIsDarkModeEnabled } from "app/lib/hooks";
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { useWindowInnerSize } from "powerhooks";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
@@ -86,6 +86,8 @@ export type Props = {
 export const App = memo((props: Props) => {
 
     const { className } = props;
+
+    useSyncDarkModeWithValueInProfile();
 
     const appConstants = useAppConstants();
 

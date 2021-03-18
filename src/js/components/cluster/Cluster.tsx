@@ -1,6 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector, useAppConstants } from "app/lib/hooks";
+import { useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import ExportCredentialsField from '../mon-compte/export-credentials-component';

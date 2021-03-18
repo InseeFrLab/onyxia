@@ -4,7 +4,7 @@ import { routes } from "app/router";
 import { cx } from "tss-react";
 import { Paper } from "app/components/designSystem/Paper";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useSelector, useDispatch } from "app/lib/hooks";
+import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
 import { css } from "tss-react";
@@ -24,7 +24,7 @@ import { thunks } from "lib/setup";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useCallbackFactory } from "powerhooks";
 import type { UserConfigs } from "lib/useCases/userConfigs";
-import { doExtends } from "app/tools/doExtends";
+import  { doExtends } from "evt/tools/typeSafety/doExtends";
 
 Account.routeGroup = createGroup([routes.account]);
 

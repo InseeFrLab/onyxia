@@ -5,7 +5,7 @@ import { Header } from "app/components/App/Header";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
 import { css } from "tss-react";
-import { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { createUseGlobalState } from "powerhooks";
 
 const { meta, getStory } = getStoryFactory({

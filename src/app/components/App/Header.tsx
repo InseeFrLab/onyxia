@@ -11,7 +11,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { cx, css } from "tss-react";
 import { useDomRect } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
-import type { useIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
+import type { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import Tooltip from "@material-ui/core/Tooltip";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonProps as MuiButtonProps } from "@material-ui/core/Button";

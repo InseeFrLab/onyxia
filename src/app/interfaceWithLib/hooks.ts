@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { thunks } from "lib/setup";
@@ -7,9 +7,8 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "evt/tools/typeSafety/assert";
-import { useIsDarkModeEnabled as useLocalStorageIsDarkModeEnabled } from "app/tools/hooks/useIsDarkModeEnabled";
-import { useConstCallback } from "powerhooks";
-import { id } from "evt/tools/typeSafety/id";
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
+import { useEffectOnValueChange } from "powerhooks";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -98,44 +97,63 @@ export function useIsBetaModeEnabled(): {
 
 };
 
-export function useIsDarkModeEnabled(): ReturnType<typeof useLocalStorageIsDarkModeEnabled> {
+
+/**
+ * This hook to two things:
+ * - It sets whether or not the dark mode is enabled based on 
+ * the value stored in user configs.
+ * - Each time the dark mode it changed it changes the value in
+ * user configs.
+ */
+export function useSyncDarkModeWithValueInProfile() {
 
     const { isUserLoggedIn } = useAppConstants();
 
-    const localStorageImpl = useLocalStorageIsDarkModeEnabled();
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
     const dispatch = useDispatch();
 
-    const isDarkModeEnabled = useSelector(
+    const userConfigsIsDarkModeEnabled = useSelector(
         state =>
             !isUserLoggedIn ?
-                false /*never*/ :
+                undefined :
                 state.userConfigs.isDarkModeEnabled.value
     );
 
-    const setIsDarkModeEnabled = useConstCallback(
-        id<typeof localStorageImpl["setIsDarkModeEnabled"]>(
-            valueOrGetValue => {
+    useEffect(
+        () => {
 
-                const value = typeof valueOrGetValue === "function" ? 
-                    valueOrGetValue(isDarkModeEnabled) : 
-                    valueOrGetValue;
-
-                dispatch(
-                    thunks.userConfigs.changeValue({
-                        "key": "isDarkModeEnabled",
-                        value
-                    })
-                ).then(() => localStorageImpl.setIsDarkModeEnabled(value));
+            if (userConfigsIsDarkModeEnabled === undefined) {
+                return;
             }
-        )
+
+            setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     );
 
-    return isUserLoggedIn ? { isDarkModeEnabled, setIsDarkModeEnabled } : localStorageImpl;
+    useEffectOnValueChange(
+        () => {
+
+            if( !isUserLoggedIn ){
+                return;
+            }
+
+            dispatch(
+                thunks.userConfigs.changeValue({
+                    "key": "isDarkModeEnabled",
+                    "value": isDarkModeEnabled
+                })
+            );
+
+        },
+        [isDarkModeEnabled]
+    );
 
 
-
-};
+}
 
 export function useEvtSecretsManagerTranslation() {
 
