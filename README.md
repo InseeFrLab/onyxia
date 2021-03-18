@@ -1,6 +1,6 @@
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/6702424/111334368-ccc8ba00-8673-11eb-81ba-15656c559f56.png">
+    <img src="https://user-images.githubusercontent.com/6702424/111553867-7fd50880-8785-11eb-8942-75f161864b5f.png">
 </p>
 <p align="center">
     <i>A data science oriented container launcher</i>
@@ -94,6 +94,6 @@ we use to put the docker image of the app in production.
 # Screenshots
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/6702424/111324934-82dbd600-866b-11eb-813f-72f25861e94d.png">
+    <img src="https://user-images.githubusercontent.com/6702424/111554614-f0305980-8786-11eb-9729-a942fb3a4dbe.png">
     <img src="https://user-images.githubusercontent.com/6702424/111326486-e1558400-866c-11eb-94f8-b00f23bd4b7b.png">
 </p>
