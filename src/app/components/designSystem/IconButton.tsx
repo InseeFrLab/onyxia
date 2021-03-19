@@ -1,6 +1,7 @@
 
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { memo } from "react";
 import MuiIconButton from "@material-ui/core/IconButton";
 import type { Optional } from "evt/tools/typeSafety";

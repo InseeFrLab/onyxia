@@ -1,5 +1,6 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { memo } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { Props as AppIconProps } from "../designSystem/Icon";

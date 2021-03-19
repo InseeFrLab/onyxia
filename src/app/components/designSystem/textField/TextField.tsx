@@ -1,5 +1,6 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { useState, memo } from "react";
 import { useConstCallback } from "powerhooks";
 import MuiTextField from "@material-ui/core/TextField";

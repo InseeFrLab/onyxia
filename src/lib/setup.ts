@@ -316,6 +316,8 @@ createStore.isFirstInvocation = true;
 export async function createStore(params: CreateStoreParams) {
 
 
+    console.log(JSON.stringify(params, null,2));
+
     assert(
         createStore.isFirstInvocation,
         "createStore has already been called, " +
@@ -333,12 +335,16 @@ export async function createStore(params: CreateStoreParams) {
         evtBackOnline
     } = params;
 
+    console.log(0);
+
     const oidcClient = await (() => {
         switch (oidcClientConfig.implementation) {
             case "PHONY": return createPhonyOidcClient(oidcClientConfig);
             case "KEYCLOAK": return createKeycloakOidcClient(oidcClientConfig);
         }
     })();
+
+    console.log(1);
 
     const { store, getEvtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
@@ -356,6 +362,8 @@ export async function createStore(params: CreateStoreParams) {
                 "getEvtSecretsManagerTranslation": undefined
             }
     );
+
+    console.log(2);
 
     dOidcClient.resolve(oidcClient);
 
@@ -405,6 +413,8 @@ export async function createStore(params: CreateStoreParams) {
 
         })
     );
+
+    console.log(3);
 
 
 

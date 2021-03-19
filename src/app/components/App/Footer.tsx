@@ -1,7 +1,8 @@
 
 
 import { memo } from "react";
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 
 
 
