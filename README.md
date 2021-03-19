@@ -26,11 +26,11 @@ Onyxia is developed by the French National institute of statistic and economic s
 Core feature set: 
 - A web GUI where users can upload/download files to/from a S3 servers. (S3 as the open standard, not the AWS service)
 - An interface for launching docker images (e.g: Jupyter, RStudio) on demand on a Kubernetes cluster. 
-  The catalog of available images is not part of the app and is fully customizable. (You can checkout [here](https://github.com/inseefrlab/helm-charts-datascience) th catalog we offer to our staff on the instance of Onyxia hosted @ INSEE)
+  The catalog of available images is not part of the app and is fully customizable. (You can checkout [here](https://github.com/inseefrlab/helm-charts-datascience) the catalog we offer to our staff on the instance of Onyxia hosted @ INSEE)
 - Users can define the amount of RAM, CPU and GPU they would like to allocate for their containers.
 - When the user log into it's container (e.g: RStudio, Jupyter), the environnement is pre configured according
   to he's profile, the user don't have to fill in it's credentials. For example he can easily access the file 
-  he uploaded from the GUI using the pre-configured minio client. He can also push to GitHub without having to to 
+  he previously uploaded from the GUI using the pre-configured minio client. He can also push to GitHub without having to to 
   type he's password. 
 - Users can provide a bash script to be executed at the start of a container. (e.g: `git clone ... && pip install` )
 
@@ -71,7 +71,7 @@ The is four source directories:
 - `src/app/`: The react code.
 - `src/stories/`: [Storybook](https://storybook.js.org) stories, to develop the react component in isolation.
 - `*/tools`: All generic code. Everything that could be externalized to a standalone modules independent from the project.
-- `*/js`: Legacy code that hasn't be ported to the new architecture yet.
+- `src/js`: Legacy code that hasn't be ported to the new architecture yet.
 
 # OPS
 
