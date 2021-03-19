@@ -1,6 +1,7 @@
 
 import { useTranslation } from "app/i18n/useTranslations";
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 
 export type Props = {

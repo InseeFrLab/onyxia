@@ -19,7 +19,7 @@ const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
-const createStoreParams: StoreProviderProps["createStoreParams"] = {
+const getStoreInitializationParams: StoreProviderProps["getStoreInitializationParams"] = ()=>({
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
@@ -43,7 +43,7 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
         "ip": "185.24.1.1",
         "nomComplet": "John Doe"
     })
-};
+});
 
 function Container(props: { children: React.ReactNode; }) {
 
@@ -91,7 +91,7 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider createStoreParams={createStoreParams}>
+            <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
                 {children}
             </StoreProvider>;
 

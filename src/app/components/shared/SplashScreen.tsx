@@ -1,7 +1,9 @@
 
 import { useState, useEffect, memo } from "react";
+import type { ReactNode } from "react";
 import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames, cx, keyframes } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css, cx, keyframes } from "tss-react";
 import { useDomRect } from "powerhooks";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
@@ -141,7 +143,7 @@ const { useClassNames } = createUseClassNames<{
     })
 );
 
-export const SplashScreen = memo((props: Props) => {
+const SplashScreen = memo((props: Props) => {
 
     const { className } = props;
 
@@ -214,3 +216,20 @@ export const SplashScreen = memo((props: Props) => {
 
 });
 
+export function SplashScreenWrapper(
+    params: {
+        children: ReactNode;
+    }
+){
+    const { children } = params;
+
+    const { ref, domRect: { width, height } } = useDomRect();
+
+    return (
+        <div ref={ref} className={css({ "height": "100%" })}>
+            <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
+            {children}
+        </div>
+    );
+
+}

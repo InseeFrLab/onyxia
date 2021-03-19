@@ -6,23 +6,31 @@ import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
 import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
-import { JSONSortStringify } from "app/tools/JSONSortStringify";
-import { assert } from "evt/tools/typeSafety/assert";
 import { getIsDarkModeEnabledOsDefault } from "app/theme/useIsDarkModeEnabled";
-import { useEffectOnValueChange } from "powerhooks";
 
 export type Props = {
-    createStoreParams: Omit<CreateStoreParams, "evtBackOnline" | "getIsDarkModeEnabledValueForProfileInitialization">;
+    /** 
+     * We use a getter instead of just an object to enable 
+     * lazy evaluation. 
+     * The getter will be called ONLY ONCE.
+     * You can't change the store parameters after it has been
+     * first initialized. Swiping the reference of this getter will
+     * have no effect.
+     */
+    getStoreInitializationParams(): Omit<
+        CreateStoreParams,
+        "evtBackOnline" | "getIsDarkModeEnabledValueForProfileInitialization"
+    >;
     children: ReactNode;
 };
 
 export function StoreProvider(props: Props) {
 
-    const { createStoreParams, children } = props;
+    const { getStoreInitializationParams, children } = props;
 
     const asyncCreateStore = useAsync(
         () => createStore({
-            ...createStoreParams,
+            ...getStoreInitializationParams(),
             "evtBackOnline": Evt.from(window, "online").pipe(() => [id<void>(undefined)]),
             "getIsDarkModeEnabledValueForProfileInitialization": getIsDarkModeEnabledOsDefault
         }),
@@ -30,11 +38,7 @@ export function StoreProvider(props: Props) {
         []
     );
 
-    /** This is so we get an error if we try to create a new instance of the store */
-    useEffectOnValueChange(
-        () => assert(false, "Only one instance of the store by process should be created"),
-        [JSONSortStringify(createStoreParams)]
-    );
+    console.log(asyncCreateStore);
 
     if (asyncCreateStore.error) {
         throw asyncCreateStore.error;
