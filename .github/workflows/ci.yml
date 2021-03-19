@@ -11,7 +11,7 @@ jobs:
 
   test:
     runs-on: ${{matrix.os}}
-    if: github.event.head_commit.author.name != 'ts_ci'
+    if: github.event.head_commit.author.name != 'actions'
     strategy:
       matrix:
        #os: [ windows-latest, ubuntu-latest ]
@@ -113,7 +113,7 @@ jobs:
       with:
         action_name: update_changelog
         branch: ${{ needs.check_if_version_upgraded.outputs.branch }}
-        commit_author_email: ts_ci@github.com
+        commit_author_email: actions@github.com
 
   release:
     runs-on: ubuntu-latest

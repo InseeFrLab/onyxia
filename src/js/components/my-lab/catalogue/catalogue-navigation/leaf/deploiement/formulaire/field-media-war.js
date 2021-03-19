@@ -10,10 +10,6 @@ import { getMinioClient } from "js/minio-client/minio-client";
 import { getValidatedEnv } from 'app/validatedEnv';
 import { HidablePane } from 'js/components/commons/HidablePane';
 
-const env = getValidatedEnv();
-
-const MINIO_BASE_URI = env.MINIO.BASE_URI || '';
-
 class SelectWarField extends React.Component {
 	state = { paths: [], displayOptions: false };
 	timer = null;
@@ -93,7 +89,7 @@ const getWarPath = async (user) => {
 	return userObjects.reduce(
 		(acc, { name }) =>
 			name.endsWith('.war')
-				? [...acc, { url: `${MINIO_BASE_URI}/${user.idep}/${name}`, name }]
+				? [...acc, { url: `${getValidatedEnv().MINIO.BASE_URI || ''}/${user.idep}/${name}`, name }]
 				: acc,
 		[]
 	);

@@ -5,7 +5,6 @@ import type { AppConstant } from "lib/useCases/appConstants";
 import type { OidcTokens } from "lib/ports/OidcClient";
 import type { UserConfigs } from "lib/useCases/userConfigs";
 
-const env = getValidatedEnv();
 
 // Disable mustache html escaping
 Mustache.escape = text => text;
@@ -31,6 +30,8 @@ export type BuildMustacheViewParams = {
 
 
 const buildMustacheView = (params: BuildMustacheViewParams) => {
+
+	const env = getValidatedEnv();
 
 	const {
 		s3, ip, userProfile,
