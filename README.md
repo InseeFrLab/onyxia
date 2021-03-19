@@ -53,11 +53,8 @@ yarn install
 wget https://gist.githubusercontent.com/garronej/e0f7485fac23e8aa0ceda6ce82256df6/raw/0cb60c6759d4e3005c15c9ca9706316e08013fc2/.env.local #Setup the var envs to tell the app to connect to INSEE's infra
 yarn start # To launch the app
 yarn storybook # To test the React's component in isolation.
+yarn keycloak # To spin up Keycloak container and test the login/register page. See https://github.com/InseeFrLab/keycloakify
 ```
-
-Note that the project uses [Keycloakify](https://github.com/InseeFrLab/keycloakify) for generating a custom theme that
-matches the design system of the app.  
-
 ## Architecture
 
 The is four source directories:  
@@ -97,3 +94,10 @@ we use to put the docker image of the app in production.
     <img src="https://user-images.githubusercontent.com/6702424/111554614-f0305980-8786-11eb-9729-a942fb3a4dbe.png">
     <img src="https://user-images.githubusercontent.com/6702424/111326486-e1558400-866c-11eb-94f8-b00f23bd4b7b.png">
 </p>
+
+# NOTE (for self)
+
+To login to local keycloak: 
+- In `.env.local` set: `REACT_APP_AUTH_OIDC_URL=http://localhost:8080/auth`
+- After launching and logging in to keycloak create realm: `sspcloud`
+- Root url when you add the "onyxia" client in keycloak: http://localhost:3000

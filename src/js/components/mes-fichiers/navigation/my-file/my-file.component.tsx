@@ -16,10 +16,6 @@ import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "app/router";
 
-const env = getValidatedEnv();
-
-const MINIO_BASE_URI = env.MINIO.BASE_URI;
-
 export const MyFile: React.FC<{
 	file: Blob & { name: string; };
 	bucketName: string;
@@ -46,7 +42,7 @@ export const MyFile: React.FC<{
 	);
 	//
 	const minioPath = minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`);
-	const minioDownloadUrl = `${MINIO_BASE_URI}/${bucketName}/${fileName}`;
+	const minioDownloadUrl = `${getValidatedEnv().MINIO.BASE_URI}/${bucketName}/${fileName}`;
 
 	// comportements
 	const generatePresignedUrl = useCallback(
