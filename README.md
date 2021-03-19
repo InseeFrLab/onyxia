@@ -30,7 +30,7 @@ Core feature set:
 - Users can define the amount of RAM, CPU and GPU they would like to allocate for their containers.
 - When the user log into it's container (e.g: RStudio, Jupyter), the environnement is pre configured according
   to he's profile, the user don't have to fill in it's credentials. For example he can easily access the file 
-  he uploaded from the GUI using the pre-configured minio client. He can also push to GitHub without having to to 
+  he previously uploaded from the GUI using the pre-configured minio client. He can also push to GitHub without having to to 
   type he's password. 
 - Users can provide a bash script to be executed at the start of a container. (e.g: `git clone ... && pip install` )
 
