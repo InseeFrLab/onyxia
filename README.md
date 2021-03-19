@@ -71,7 +71,7 @@ The is four source directories:
 - `src/app/`: The react code.
 - `src/stories/`: [Storybook](https://storybook.js.org) stories, to develop the react component in isolation.
 - `*/tools`: All generic code. Everything that could be externalized to a standalone modules independent from the project.
-- `*/js`: Legacy code that hasn't be ported to the new architecture yet.
+- `src/js`: Legacy code that hasn't be ported to the new architecture yet.
 
 # OPS
 
