@@ -8,7 +8,7 @@ import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/
 import memoize from "memoizee";
 import { createTheme } from "./theme";
 
-import { useEffectOnValueChange } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
 
 export function themeProviderFactory(
     params: {
@@ -21,12 +21,14 @@ export function themeProviderFactory(
     function ThemeProvider(
         props: {
             isDarkModeEnabled: boolean;
+            doEnableZoom: boolean;
             children: React.ReactNode;
         }
     ) {
 
         const {
             isDarkModeEnabled,
+            doEnableZoom,
             children
         } = props;
 
@@ -45,13 +47,13 @@ export function themeProviderFactory(
         const isLandscape = windowInnerWidth > windowInnerHeight;
 
         useEffectOnValueChange(
-            ()=> { 
+            () => {
 
-                if( theme.custom.referenceWidth === undefined ){
+                if (theme.custom.referenceWidth === undefined) {
                     return;
                 }
 
-                window.location.reload(); 
+                window.location.reload();
             },
             [isLandscape]
         );
@@ -60,7 +62,11 @@ export function themeProviderFactory(
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    <ZoomProvider referenceWidth={isLandscape ? theme.custom.referenceWidth : undefined}>
+                    <ZoomProvider referenceWidth={
+                        (isLandscape && doEnableZoom) ?
+                            theme.custom.referenceWidth : undefined
+                    }
+                    >
                         {children}
                     </ZoomProvider>
                 </StylesProvider>
