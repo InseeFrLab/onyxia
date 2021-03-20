@@ -12429,6 +12429,15 @@ powerhooks@^0.0.27:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
 
+powerhooks@^0.0.31:
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.31.tgz#d00c894739545063d01ef51311f1b37338935d04"
+  integrity sha512-wkyw6xA/nyoZ5H3bupC3t2+vxlg4LMQFvLTDewTwswdabFq4t5hZRsY5yzn7ImHwRisViM3RGUk6gh9fXrfCFA==
+  dependencies:
+    evt "2.0.0-beta.15"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"

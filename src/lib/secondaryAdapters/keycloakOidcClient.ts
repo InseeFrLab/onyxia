@@ -5,8 +5,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
 import { getLocalStorage } from "../tools/safeLocalStorage";
 import { assert } from "evt/tools/typeSafety/assert";
-//import { createKeycloakAdapter } from "keycloakify";
-//import { injectGlobalStatesInSearchParams } from "powerhooks";
+import { createKeycloakAdapter } from "keycloakify";
+import { injectGlobalStatesInSearchParams } from "powerhooks";
 
 export async function createKeycloakOidcClient(
     params: {
@@ -28,12 +28,10 @@ export async function createKeycloakOidcClient(
         "responseMode": "query",
         "checkLoginIframe": false,
         "token": evtLocallyStoredOidcAccessToken.state,
-        /*
         "adapter": createKeycloakAdapter({
             "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
             keycloakInstance
         })
-        */
     }).catch((error: Error) => error);
 
     //TODO: Make sure that result is always an object.
