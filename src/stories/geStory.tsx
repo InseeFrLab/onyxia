@@ -101,7 +101,7 @@ export function getStoryFactory<Props>(params: {
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                    <ThemeProvider isDarkModeEnabled={darkMode} doEnableZoom={true}>
                         <StoreProviderOrFragment>
                             <Container>
                                 <Component {...props} />

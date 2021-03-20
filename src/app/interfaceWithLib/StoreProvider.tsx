@@ -38,8 +38,6 @@ export function StoreProvider(props: Props) {
         []
     );
 
-    console.log(asyncCreateStore);
-
     if (asyncCreateStore.error) {
         throw asyncCreateStore.error;
     }

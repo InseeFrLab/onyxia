@@ -18,7 +18,7 @@ import {
     kcContextMocks
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
-import { KcApp } from "app/components/pages/KcApp";
+import { KcApp } from "app/components/KcApp";
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
@@ -81,7 +81,10 @@ function Root() {
         <React.StrictMode>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={isDarkModeEnabled}>
+                    <ThemeProvider
+                        isDarkModeEnabled={isDarkModeEnabled}
+                        doEnableZoom={kcContext === undefined}
+                    >
                         <SplashScreenWrapper>
                             {kcContext !== undefined ?
                                 <KcApp kcContext={kcContext} /> :
