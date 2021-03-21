@@ -1,7 +1,7 @@
 
 import { useState, useEffect, memo } from "react";
 import type { ReactNode } from "react";
-import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { css, cx, keyframes } from "tss-react";
 import { useDomRect } from "powerhooks";
@@ -137,7 +137,10 @@ const { useClassNames } = createUseClassNames<{
                 "&:nth-child(3)": {
                     "animationDelay": "1.2s"
                 }
-            }
+            },
+        },
+        "svg": {
+            "fill": theme.custom.colors.palette.exuberantOrange.main
         }
 
     })
@@ -207,7 +210,8 @@ const SplashScreen = memo((props: Props) => {
 
     return (
         <div ref={ref} className={cx(classNames.root, className)}>
-            <HeaderLogoSvg
+            <OnyxiaLogoSvg
+                className={classNames.svg}
                 width={width}
                 height={height * 0.2}
             />
@@ -216,7 +220,7 @@ const SplashScreen = memo((props: Props) => {
 
 });
 
-export function SplashScreenWrapper(
+export function SplashScreenProvider(
     params: {
         children: ReactNode;
     }

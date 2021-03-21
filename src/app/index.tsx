@@ -10,7 +10,7 @@ import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
-import { SplashScreenWrapper } from "app/components/shared/SplashScreen";
+import { SplashScreenProvider } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
 import { useLng } from "app/i18n/useLng";
 import {
@@ -85,14 +85,14 @@ function Root() {
                         isDarkModeEnabled={isDarkModeEnabled}
                         doEnableZoom={kcContext === undefined}
                     >
-                        <SplashScreenWrapper>
+                        <SplashScreenProvider>
                             {kcContext !== undefined ?
                                 <KcApp kcContext={kcContext} /> :
                                 <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
                                     <App />
                                 </StoreProvider>
                             }
-                        </SplashScreenWrapper>
+                        </SplashScreenProvider>
                     </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>
