@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, memo } from "react";
 import { useConstCallback } from "powerhooks";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
-import Box from "@material-ui/core/Box";
 import { Typography } from "../../designSystem/Typography"
 import { useClick } from "powerhooks";
 import Color from "color";
@@ -242,12 +241,12 @@ export const ExplorerItem = memo((props: Props) => {
             </div>
             {
                 !isInEditingState && !isCircularProgressShown ?
-                    <Box {...getOnMouseProps("text")}>
+                    <div {...getOnMouseProps("text")}>
                         {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
                         <Typography className={classNames.text} >
                             {formattedBasename}
                         </Typography>
-                    </Box>
+                    </div>
                     :
                     <form className={classNames.root/*TODO*/} noValidate autoComplete="off">
                         <Input

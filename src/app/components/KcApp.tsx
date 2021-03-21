@@ -1,9 +1,11 @@
 
-import { KcApp as DefaultKcApp, defaultKcProps, } from "keycloakify";
-import { KcContext } from "keycloakify";
-import { createUseClassNames } from "app/theme/useClassNames";
 import { useEffect } from "react";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { KcApp as DefaultKcApp, defaultKcProps } from "keycloakify";
+import type { KcContext } from "keycloakify";
+import { createUseClassNames } from "app/theme/useClassNames";
 
 export type Params = {
     kcContext: KcContext;
@@ -17,9 +19,14 @@ const { useClassNames } = createUseClassNames()(
             }
         },
         "kcHtmlClass": {
-            "background": "unset !important",
+            "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
             "& body": {
-                "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
+                "background": `url(${(()=>{
+                    switch(theme.palette.type){
+                        case "dark": return onyxiaNeumorphismDarkModeUrl;
+                        case "light": return onyxiaNeumorphismLightModeUrl;
+                    }
+                })()}) no-repeat center center fixed !important`
             }
         }
     })
@@ -29,19 +36,16 @@ export function KcApp(params: Params) {
 
     const { kcContext } = params;
 
-    //useState(()=> console.log("===>", JSON.stringify(kcContext, null, 2)));
-
     const { hideSplashScreen } = useSplashScreen();
 
     useEffect(
-        () => { hideSplashScreen() },
+        () => { hideSplashScreen(); },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
     const { classNames } = useClassNames({});
 
-    //console.log(JSON.stringify(defaultKcProps, null, 2));
 
     return (
         <DefaultKcApp
