@@ -1,8 +1,8 @@
 
 
-import { css } from "app/theme/useClassNames";
+import { css } from "tss-react";
 import { useReducer, useState } from "react";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useEffectOnValueChange } from "powerhooks";
 import { Breadcrump } from "app/components/shared/Explorer/Breadcrump";
 import type { Props } from "app/components/shared/Explorer/Breadcrump";
 import { sectionName } from "./sectionName";
@@ -25,14 +25,14 @@ function Component(props: Omit<Props, "evtAction"> & {
         0
     );
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => { incrementIndex(); },
         [tick]
     );
 
     const [evtAction] = useState(() => Evt.create<UnpackEvt<Props["evtAction"]>>());
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => {
 
             evtAction.post({

@@ -1,3 +1,5 @@
+// This is an webpack extension to detect circular import (example:  A imports B that imports A)
+
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = function override(config) {

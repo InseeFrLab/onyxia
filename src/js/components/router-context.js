@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import { createContext } from 'react';
 /*
  * context permettant de suivre l'itinéraire des routes publiques.
  * quand une route privé demande authentification (ouverture de la modale d'auth),

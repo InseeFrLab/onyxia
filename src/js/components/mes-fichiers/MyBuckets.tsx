@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch, useAppConstants } from "app/lib/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/interfaceWithLib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 

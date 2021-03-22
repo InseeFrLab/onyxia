@@ -8,7 +8,7 @@ import { Typography } from "app/components/designSystem/Typography";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { IconButton } from "app/components/designSystem/IconButton"
 import { useFormattedDate } from "app/i18n/useFormattedDate";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -28,7 +28,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<{ isDateProvided: boolean; }>()(
-    ({ theme }, { isDateProvided }) => ({
+    (theme, { isDateProvided }) => ({
         "root": {
             "display": "flex",
             "alignItems": "center",

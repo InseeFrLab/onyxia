@@ -1,5 +1,6 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import MuiTypography from "@material-ui/core/Typography";
 import type { Optional } from "evt/tools/typeSafety";
@@ -22,7 +23,7 @@ export const defaultProps: Optional<Props> = {
 
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }, { color, onClick }) => ({
+    (theme, { color, onClick }) => ({
         "root": {
             "color": theme.custom.colors.useCases.typography[(() => {
                 switch (color) {

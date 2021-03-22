@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import Typography from '@material-ui/core/Typography';
 import { Icon, Fab } from '@material-ui/core';
@@ -15,7 +15,7 @@ import exportMinio from './export-credentials-minio';
 import D from 'js/i18n';
 import S3Field from './s3';
 import { thunks } from "lib/setup";
-import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/lib/hooks";
+import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from "app/interfaceWithLib/hooks";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";

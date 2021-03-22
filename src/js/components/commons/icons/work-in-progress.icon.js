@@ -1,4 +1,4 @@
-import React from 'react';
+  
 
  
 export default ({ width = 40, height = 60 }) => (

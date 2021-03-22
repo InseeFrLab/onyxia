@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import { DialogTitle, Button } from '@material-ui/core';
 import PropTypes from 'prop-types';

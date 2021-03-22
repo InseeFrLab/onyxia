@@ -6,22 +6,22 @@ import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
-import { createUseClassNames, css, cx } from "app/theme/useClassNames";
-import { useAppConstants } from "app/lib/hooks";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css, cx } from "tss-react";
+import { useAppConstants, useSelector, useSyncDarkModeWithValueInProfile } from "app/interfaceWithLib/hooks";
+import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/router";
 import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
-import { useIsDarkModeEnabled } from "app/lib/hooks";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { useSelector } from "app/lib/hooks";
-
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
+import { useWindowInnerSize } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks";
+import { useDomRect } from "powerhooks";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
+//import { Account } from "app/components/pages/Account";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
@@ -37,10 +37,11 @@ import { SharedServices } from "js/components/services/home/services";
 import { ServiceDetails } from "js/components/services/details/details-service-async";
 import { Trainings } from "js/components/trainings/async-component";
 
+
 const logoMaxWidthInPercent = 5;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
-    ({theme}) => ({
+    (theme) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -86,20 +87,22 @@ export const App = memo((props: Props) => {
 
     const { className } = props;
 
+    useSyncDarkModeWithValueInProfile();
+
     const appConstants = useAppConstants();
 
-    const { domRect: { width: rootWidth }, ref: rootRef } = useDOMRect();
+    const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => hideSplashScreen(),
         [rootWidth === 0]
     );
 
     const isWaiting = useSelector(state=> state.app.waiting);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => {
             if( isWaiting ){
                 showSplashScreen({ "enableTransparency": true });
@@ -133,6 +136,7 @@ export const App = memo((props: Props) => {
                 MyServices,
                 MyService,
                 MonCompte,
+                //Account,
                 MyBuckets,
                 NavigationFile,
                 VisiteGuideeDebut,

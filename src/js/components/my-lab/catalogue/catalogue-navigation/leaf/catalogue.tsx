@@ -1,7 +1,6 @@
-import React from "react";
 import { NouveauService } from './deploiement/nouveau-service';
 import { Service } from './service.component';
-import { useAppConstants } from "app/lib/hooks";
+import { useAppConstants } from "app/interfaceWithLib/hooks";
 
 export const Leaf: React.FC<{ location: string; }> = ({ location }) => {
 	const [idCatalogue, idService] = getId(location);

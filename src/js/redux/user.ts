@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 import type { AppThunk } from "lib/setup";
 import { parseOidcAccessToken } from "lib/ports/OidcClient";
 import type { AppConstant } from "lib/useCases/appConstants";
@@ -100,7 +100,7 @@ const slice = createSlice({
                 "AWS_EXPIRATION": expiration,
                 "AWS_SESSION_TOKEN": sessionToken,
                 "AWS_DEFAULT_REGION": "us-east-1",
-                "AWS_S3_ENDPOINT": getEnv().MINIO.END_POINT
+                "AWS_S3_ENDPOINT": getValidatedEnv().MINIO.END_POINT
             };
 
         },

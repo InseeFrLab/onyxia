@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import ServiceDetails from './details';
 import basicService from 'js/model/sampledata/service-basic.json';
 

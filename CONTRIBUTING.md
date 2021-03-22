@@ -8,10 +8,11 @@ The following is a set of guidelines for contributing to [Onyxia UI](https://git
 
 ### Table Of Contents
 
-* [Bug report](#bug-report)
-* [Code proposal](#code-proposal)
-  * [How to contribute?](#how-to-contribute)
-  * [PR Requirements](#pr-requirements)
+- [Contributing to Onyxia UI](#contributing-to-onyxia-ui)
+    - [Table Of Contents](#table-of-contents)
+  - [Bug report](#bug-report)
+  - [Code proposal](#code-proposal)
+    - [How to contribute?](#how-to-contribute)
 
 ## Bug report
 
@@ -28,11 +29,3 @@ Simplest way to contribute to [Onyxia UI](https://github.com/InseeFrLab/onyxia-u
 Opened by the core team or by contributors, issues are the place to describe and discuss about future works.
 
 Before starting to work on a topic, ask to be assigned, and if there are more than one, make sure you coordinate well.
-
-### PR Requirements
-
-Below are some simple rules to adopt Onyxia UI best practices:
-- Code in english
-- Ensure to edit eloquent files & folders, splitting different layers (react / redux for instance)
-- Adopt as you can the new [React](https://reactjs.org/docs) features & a functional approach thanks to [ES6](http://es6-features.org) at least.
-- Be sure to activate `Prettier` plugin in your favorite IDE (activating `formatOnSave` property) to have the benefits of the project configuration and build nice git diff.

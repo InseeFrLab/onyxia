@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import dayjs from 'dayjs';
 
 const MINUTE_IN_MILLI = 60 * 1000;

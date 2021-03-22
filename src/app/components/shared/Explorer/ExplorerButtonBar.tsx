@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useCallbackFactory } from "powerhooks";
 
 
 export type Action = "refresh" | "rename" | "create file" | "create directory" | "delete" | "copy path";
@@ -23,7 +23,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }) => ({
+    theme => ({
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[1],
@@ -120,7 +120,7 @@ const { CustomButton } = (() => {
     };
 
     const { useClassNames } = createUseClassNames<CustomButtonProps>()(
-        ({ theme: { custom: { colors: { useCases } } } }) => ({
+        ({ custom: { colors: { useCases } } }) => ({
             "root": {
                 "backgroundColor": "transparent",
                 "borderRadius": "unset",

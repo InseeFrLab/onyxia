@@ -1,9 +1,10 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { useEffect } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/lib/hooks";
+import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { Props as ExplorerProps } from "app/components/shared/Explorer";
 import * as lib from "lib/setup";
@@ -11,7 +12,7 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
 import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
@@ -43,15 +44,16 @@ const { useClassNames } = createUseClassNames<{}>()(
     })
 );
 
+
+MySecrets.routeGroup = createGroup([routes.mySecrets]);
+
+MySecrets.requireUserLoggedIn = true;
+
 export type Props = {
     className?: string;
     //We allow route to be undefined to be able to test in storybook
     route?: Route<typeof MySecrets.routeGroup>;
 };
-
-MySecrets.routeGroup = createGroup([routes.mySecrets]);
-
-MySecrets.requireUserLoggedIn = true;
 
 export function MySecrets(props: Props) {
 

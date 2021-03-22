@@ -1,5 +1,6 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 
 import { memo } from "react";
 import MuiCircularProgress from "@material-ui/core/CircularProgress";
@@ -19,7 +20,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme }, { color }) => ({
+    (theme, { color }) => ({
         "root": {
             "color": color !== "textPrimary" ?
                 undefined :

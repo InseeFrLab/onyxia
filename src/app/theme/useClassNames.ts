@@ -1,10 +1,5 @@
 
 import { useTheme } from "@material-ui/core/styles";
-import { createUseClassNamesFactory } from "app/tools/jssOnTopOfEmotionCss";
-export { css, cx, keyframes } from "app/tools/jssOnTopOfEmotionCss";
+import { createUseClassNamesFactory } from "tss-react";
 
 export const { createUseClassNames } = createUseClassNamesFactory({ useTheme });
-
-export { useTheme };
-
-

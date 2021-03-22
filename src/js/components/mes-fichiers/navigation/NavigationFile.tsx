@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import { useState, useEffect, useReducer, useCallback } from 'react';
 import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useAppConstants } from "app/lib/hooks";
+import { useDispatch, useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
 import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";

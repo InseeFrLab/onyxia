@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import {
 	IconButton,
@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { getConfiguration } from 'js/api/configuration';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useIsBetaModeEnabled } from "app/lib/hooks";
+import { useSelector, useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
 
 const RegionBanner = () => {
 	const regions = useSelector(store => store.regions);

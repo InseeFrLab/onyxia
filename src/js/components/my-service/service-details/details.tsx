@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Service } from 'js/model';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import ServiceConf from './service-conf';

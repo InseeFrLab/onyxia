@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { actions as appActions } from "js/redux/app";

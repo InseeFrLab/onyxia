@@ -1,7 +1,7 @@
 import { Typography, defaultProps } from "app/components/designSystem/Typography";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
-import { css } from "app/theme/useClassNames";
+import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

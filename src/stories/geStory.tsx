@@ -3,25 +3,23 @@
 import type { Meta } from "@storybook/react";
 import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
-import React from "react";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "evt/tools/typeSafety/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
-import { StoreProvider } from "app/lib/StoreProvider";
+import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
-import type { Props as StoreProviderProps } from "app/lib/StoreProvider";
-import { useTheme } from "app/theme/useClassNames";
+import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
+import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/router";
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
-const createStoreParams: StoreProviderProps["createStoreParams"] = {
-    "isColorSchemeDarkEnabledByDefalut": false,
+const getStoreInitializationParams: StoreProviderProps["getStoreInitializationParams"] = ()=>({
     "oidcClientConfig": id<OidcClientConfig.Phony>({
         "implementation": "PHONY",
         "tokenValidityDurationMs": Infinity,
@@ -45,7 +43,7 @@ const createStoreParams: StoreProviderProps["createStoreParams"] = {
         "ip": "185.24.1.1",
         "nomComplet": "John Doe"
     })
-};
+});
 
 function Container(props: { children: React.ReactNode; }) {
 
@@ -93,7 +91,7 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider createStoreParams={createStoreParams}>
+            <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
                 {children}
             </StoreProvider>;
 
@@ -103,7 +101,7 @@ export function getStoryFactory<Props>(params: {
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                    <ThemeProvider isDarkModeEnabled={darkMode} doEnableZoom={true}>
                         <StoreProviderOrFragment>
                             <Container>
                                 <Component {...props} />

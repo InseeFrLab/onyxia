@@ -1,7 +1,8 @@
 
 
 import { memo } from "react";
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 
 
 
@@ -10,7 +11,7 @@ export type Props = {
 }
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }) => ({
+    (theme) => ({
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.background,
             "border": "1px solid white"

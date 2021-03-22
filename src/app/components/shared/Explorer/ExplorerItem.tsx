@@ -1,22 +1,21 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import { Input } from "app/components/designSystem/textField/Input";
 import type { InputProps } from "app/components/designSystem/textField/Input";
-import Box from "@material-ui/core/Box";
 import { Typography } from "../../designSystem/Typography"
-import { useClick } from "app/tools/hooks/useClick";
+import { useClick } from "powerhooks";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useEffectOnValueChange } from "powerhooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useWithProps } from "powerhooks";
 
 
 export type Props = {
@@ -55,7 +54,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }, { isSelected, standardizedWidth, basename }) => ({
+    (theme, { isSelected, standardizedWidth, basename }) => ({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
@@ -131,7 +130,7 @@ export const ExplorerItem = memo((props: Props) => {
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => onIsInEditingStateValueChange({ isInEditingState }),
         [isInEditingState]
     );
@@ -242,12 +241,12 @@ export const ExplorerItem = memo((props: Props) => {
             </div>
             {
                 !isInEditingState && !isCircularProgressShown ?
-                    <Box {...getOnMouseProps("text")}>
+                    <div {...getOnMouseProps("text")}>
                         {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
                         <Typography className={classNames.text} >
                             {formattedBasename}
                         </Typography>
-                    </Box>
+                    </div>
                     :
                     <form className={classNames.root/*TODO*/} noValidate autoComplete="off">
                         <Input

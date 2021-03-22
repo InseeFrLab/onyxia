@@ -1,15 +1,14 @@
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
-import { useSelector, useAppConstants } from "app/lib/hooks";
+import { useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Paper } from '@material-ui/core';
 import CopyableField from '../commons/copyable-field';
 import ExportCredentialsField from '../mon-compte/export-credentials-component';
 import D from 'js/i18n';
 import exportKub from './exportCredentialsKub';
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 const EnTete = () => (
 	<div className="en-tete">
