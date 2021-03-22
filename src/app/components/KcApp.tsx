@@ -29,6 +29,46 @@ const { useClassNames } = createUseClassNames()(
                 "fontFamily": theme.typography.fontFamily,
             },
             "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
+            "& a": {
+                "color": `${theme.custom.colors.palette.exuberantOrange.main} !important`
+            },
+            "& #kc-current-locale-link": {
+                "color": `${theme.custom.colors.palette.whiteSnow.greyVariant3} !important`
+            },
+            "& label": {
+                "fontSize": 14,
+                "color": theme.custom.colors.palette.whiteSnow.greyVariant3,
+                "fontWeight": "normal"
+            },
+            "& #kc-page-title": theme.typography.h2 as any,
+            "& #kc-header-wrapper": {
+                "visibility": "hidden"
+            }
+
+        },
+        "kcFormCardClass": {
+            "borderRadius": 10
+        },
+        "kcButtonPrimaryClass": {
+            "backgroundColor": "unset !important",
+            "backgroundImage": "unset !important",
+            "borderColor": `${theme.custom.colors.palette.exuberantOrange.main} !important`,
+            "borderWidth": "2px !important",
+            "borderRadius": `20px !important`,
+            "color": `${theme.custom.colors.palette.exuberantOrange.main} !important`,
+            "textTransform": "uppercase"
+
+        },
+        "kcInputClass": {
+            "borderRadius": "unset !important",
+            "border": "unset !important",
+            "boxShadow": "unset !important",
+            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textDisabled} !important`,
+            "&:focus": {
+                "borderColor": `unset !important`,
+                "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textFocus} !important`,
+            }
+
         }
     })
 );
@@ -45,10 +85,12 @@ export function KcApp(params: Params) {
         []
     );
 
+    /*
     useEffect(
         ()=> { console.log(JSON.stringify(defaultKcProps,null,2)); },
         []
     );
+    */
 
     const { classNames } = useClassNames({});
 
@@ -59,7 +101,10 @@ export function KcApp(params: Params) {
             {...{
                 ...defaultKcProps,
                 "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classNames.kcHtmlClass],
-                "kcLoginClass": [...defaultKcProps.kcLoginClass, classNames.kcLoginClass]
+                "kcLoginClass": [...defaultKcProps.kcLoginClass, classNames.kcLoginClass],
+                "kcFormCardClass": [...defaultKcProps.kcFormCardClass, classNames.kcFormCardClass],
+                "kcButtonPrimaryClass": [...defaultKcProps.kcButtonPrimaryClass, classNames.kcButtonPrimaryClass],
+                "kcInputClass": [...defaultKcProps.kcInputClass, classNames.kcInputClass]
             }}
         />
     );
