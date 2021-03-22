@@ -19,15 +19,16 @@ const { useClassNames } = createUseClassNames()(
             }
         },
         "kcHtmlClass": {
-            "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
             "& body": {
                 "background": `url(${(()=>{
                     switch(theme.palette.type){
                         case "dark": return onyxiaNeumorphismDarkModeUrl;
                         case "light": return onyxiaNeumorphismLightModeUrl;
                     }
-                })()}) no-repeat center center fixed !important`
-            }
+                })()}) no-repeat center center fixed !important`,
+                "fontFamily": theme.typography.fontFamily,
+            },
+            "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
         }
     })
 );
@@ -44,6 +45,11 @@ export function KcApp(params: Params) {
         []
     );
 
+    useEffect(
+        ()=> { console.log(JSON.stringify(defaultKcProps,null,2)); },
+        []
+    );
+
     const { classNames } = useClassNames({});
 
 
@@ -53,7 +59,7 @@ export function KcApp(params: Params) {
             {...{
                 ...defaultKcProps,
                 "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classNames.kcHtmlClass],
-                "kcLoginClass": [...defaultKcProps.kcLoginClass, classNames.kcLoginClass],
+                "kcLoginClass": [...defaultKcProps.kcLoginClass, classNames.kcLoginClass]
             }}
         />
     );
