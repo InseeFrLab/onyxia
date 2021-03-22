@@ -9,7 +9,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import {  css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
-import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks";
@@ -63,7 +63,10 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"middleCard": {
 			"margin": theme.spacing(0, 2)
-		}
+		},
+        "svg": {
+            "fill": theme.custom.colors.palette.exuberantOrange.main
+        }
 	})
 )
 
@@ -87,7 +90,7 @@ export function Home() {
 			<div className={classNames.hero} >
 				<div className={classNames.heroTextWrapper}>
 
-					<HeaderLogoSvg width={122} height={80} />
+					<OnyxiaLogoSvg className={classNames.svg} width={122} height={80} />
 					<Typography variant="h2">
 						{
 							appConstants.isUserLoggedIn ?
