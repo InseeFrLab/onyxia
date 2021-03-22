@@ -1,13 +1,13 @@
 
 
 import { useState, useEffect } from "react";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useEffectOnValueChange } from "powerhooks";
 
 export type Props = {
     className?: string | null;
@@ -80,7 +80,7 @@ export function useCommonInputLogic(props: Props) {
 
     })(transformValueBeingTyped);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => transformAndSetValue(defaultValue),
         [defaultValue]
     );

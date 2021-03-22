@@ -1,4 +1,3 @@
-
 import type { OidcClient } from "../ports/OidcClient";
 import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
@@ -6,6 +5,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { Evt } from "evt";
 import { getLocalStorage } from "../tools/safeLocalStorage";
 import { assert } from "evt/tools/typeSafety/assert";
+import { createKeycloakAdapter } from "keycloakify";
+import { injectGlobalStatesInSearchParams } from "powerhooks";
 
 export async function createKeycloakOidcClient(
     params: {
@@ -19,14 +20,18 @@ export async function createKeycloakOidcClient(
 
     const { evtLocallyStoredOidcAccessToken } = getEvtLocallyStoredOidcAccessToken();
 
-    const { origin } = window.location;
+    const { origin } = window.location;
 
     const isAuthenticated = await keycloakInstance.init({
         "onLoad": "check-sso",
         "silentCheckSsoRedirectUri": `${origin}/silent-sso.html`,
         "responseMode": "query",
         "checkLoginIframe": false,
-        "token": evtLocallyStoredOidcAccessToken.state
+        "token": evtLocallyStoredOidcAccessToken.state,
+        "adapter": createKeycloakAdapter({
+            "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
+            keycloakInstance
+        })
     }).catch((error: Error) => error);
 
     //TODO: Make sure that result is always an object.
@@ -73,7 +78,7 @@ export async function createKeycloakOidcClient(
 
                 const { minValidity = 10 } = params ?? {};
 
-                if( evtLocallyStoredOidcAccessToken.state === undefined ){
+                if (evtLocallyStoredOidcAccessToken.state === undefined) {
                     return;
                 }
 

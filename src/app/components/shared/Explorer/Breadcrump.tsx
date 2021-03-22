@@ -7,7 +7,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { join as pathJoin } from "path";
 import { Evt } from "evt";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
+import { useCallbackFactory } from "powerhooks";
 import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props = {
@@ -155,7 +155,7 @@ const { Section } = (() => {
     const hoverFontWeight = 500;
 
     const { useClassNames } = createUseClassNames<Props & { text: string; }>()(
-        ({ theme }, { isClickable, text }) => ({
+        (theme, { isClickable, text }) => ({
             "root": {
                 ...(!isClickable ? {} : {
                     "&:hover": {

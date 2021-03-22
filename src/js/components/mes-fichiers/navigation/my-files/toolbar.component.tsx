@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import { Paper, Icon, Fab } from '@material-ui/core';
 
 const Toolbar = ({

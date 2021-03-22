@@ -42,9 +42,12 @@ export type Dependencies = {
 
 
 export type CreateStoreParams = {
-    /** If we can't get the value from the user profile we want to
-     * load the os preferred default or the value saved in local storage */
-    isColorSchemeDarkEnabledByDefalut: boolean;
+    /** 
+     * not that we are going to change anything about the UI from src/lib
+     * but we want to be able to provide a good default for state.userConfigs.isDarkModeEnabled
+     * when it's the first time the user logs in and the value hasn't been stored yet in vault.
+     * */
+    getIsDarkModeEnabledValueForProfileInitialization(): boolean;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
@@ -138,14 +141,14 @@ async function createStoreForLoggedUser(
         secretsManagerClientConfig: SecretsManagerClientConfig;
         onyxiaApiClientConfig: OnyxiaApiClientConfig;
         oidcClient: OidcClient.LoggedIn;
-    } & Pick<CreateStoreParams, "isColorSchemeDarkEnabledByDefalut">
+    } & Pick<CreateStoreParams, "getIsDarkModeEnabledValueForProfileInitialization">
 ) {
 
     const {
         oidcClient,
         secretsManagerClientConfig,
         onyxiaApiClientConfig,
-        isColorSchemeDarkEnabledByDefalut
+        getIsDarkModeEnabledValueForProfileInitialization
     } = params;
 
     let { secretsManagerClient, evtVaultToken, secretsManagerTranslator } = (() => {
@@ -255,7 +258,7 @@ async function createStoreForLoggedUser(
 
     await store.dispatch(
         userConfigsUseCase.privateThunks.initialize(
-            { isColorSchemeDarkEnabledByDefalut }
+            { getIsDarkModeEnabledValueForProfileInitialization }
         )
     );
 
@@ -312,7 +315,6 @@ createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
 
-
     assert(
         createStore.isFirstInvocation,
         "createStore has already been called, " +
@@ -325,7 +327,7 @@ export async function createStore(params: CreateStoreParams) {
     const {
         oidcClientConfig,
         secretsManagerClientConfig,
-        isColorSchemeDarkEnabledByDefalut,
+        getIsDarkModeEnabledValueForProfileInitialization,
         onyxiaApiClientConfig,
         evtBackOnline
     } = params;
@@ -343,7 +345,7 @@ export async function createStore(params: CreateStoreParams) {
                 oidcClient,
                 secretsManagerClientConfig,
                 onyxiaApiClientConfig,
-                isColorSchemeDarkEnabledByDefalut
+                getIsDarkModeEnabledValueForProfileInitialization
             }) :
             {
                 ...await createStoreForNonLoggedUser({
@@ -402,8 +404,6 @@ export async function createStore(params: CreateStoreParams) {
 
         })
     );
-
-
 
     return store;
 

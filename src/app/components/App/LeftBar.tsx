@@ -3,12 +3,13 @@ import { useMemo, memo } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { cx, createUseClassNames, useTheme } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
+import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/router";
-import { doExtends } from "app/tools/doExtends";
+import  { doExtends } from "evt/tools/typeSafety/doExtends";
 
 const targets = [
     "toggle isExpanded" as const,
@@ -44,7 +45,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    ({ theme }) => ({
+    theme => ({
         "root": {
             "padding": theme.spacing(2, 0),
             "overflow": "visible"
@@ -138,7 +139,7 @@ const { CustomButton } = (() => {
     const hoverBoxClassName = "hoverBox";
 
     const { useClassNames } = createUseClassNames<Props>()(
-        ({ theme }, { collapsedWidth, isExpanded, target, isActive }) => ({
+        (theme, { collapsedWidth, isExpanded, target, isActive }) => ({
             "root": {
                 "display": "flex",
                 "cursor": "pointer",

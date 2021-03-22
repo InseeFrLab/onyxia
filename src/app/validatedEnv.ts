@@ -1,6 +1,7 @@
 import { id } from "evt/tools/typeSafety/id";
 import memoizee from "memoizee";
 import { assert as _assert } from "evt/tools/typeSafety/assert";
+import { getEnv } from "env";
 
 const assert: typeof _assert = process.env["NODE_ENV"] === "test" ?
 	(() => { }) : _assert;
@@ -13,16 +14,13 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 	const { mandatory = true, parseInt = false } = options ?? {};
 
-	let value: string | number | undefined = (
-		(window as any)?._env_?.[key] ||
-		process.env[`REACT_APP_${key}`]
-	) || undefined;
+	let value = (getEnv() as any)[key] || undefined;
 
 	if (mandatory) {
 		assert(
 			value !== undefined,
 			[
-				`The REACT_${key} environnement variable need to be defined`,
+				`The REACT_APP_${key} environnement variable need to be defined`,
 				"update .env or .env.local then re-launch the app"
 			].join(" ")
 		);
@@ -42,7 +40,7 @@ function getEnvVar(key: string, options?: { mandatory?: boolean; parseInt?: bool
 
 }
 
-export const getEnv = memoizee(
+export const getValidatedEnv = memoizee(
 	() => ({
 		"API": {
 			"BASE_URL": getEnvVar("BASE_API_URL", { "mandatory": false })
@@ -81,10 +79,6 @@ export const getEnv = memoizee(
 				clientId: string;
 				realm: string;
 				url: string;
-				'ssl-required': string;
-				resource: string;
-				'public-client': boolean;
-				'confidential-port': number;
 			};
 		} | {
 			TYPE: "none";
@@ -101,11 +95,7 @@ export const getEnv = memoizee(
 					"OIDC": {
 						"clientId": getEnvVar("AUTH_OIDC_CLIENT_ID"),
 						"realm": getEnvVar("AUTH_OIDC_REALM"),
-						"url": getEnvVar("AUTH_OIDC_URL"),
-						'ssl-required': getEnvVar("AUTH_OIDC_SSL_REQUIRED"),
-						"resource": getEnvVar("AUTH_OIDC_RESOURCE"),
-						"public-client": getEnvVar("AUTH_OIDC_PUBLIC_CLIENT")?.toLowerCase() === "true",
-						"confidential-port": getEnvVar("AUTH_OIDC_CONFIDENTIAL_PORT", { "parseInt": true })
+						"url": getEnvVar("AUTH_OIDC_URL")
 					}
 				} as const;
 			}

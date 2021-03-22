@@ -4,12 +4,9 @@ import { Fab, IconButton, Icon } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Next, CarteMask } from './../vignette-commons';
 import { MinioIcon, GitlabIcon } from 'js/components/commons/icons';
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 import D from 'js/i18n';
 
-const env = getEnv();
-
- 
 export default {
 	description: class Vignette1 extends React.Component {
 		state = { dom: null };
@@ -65,7 +62,7 @@ export default {
 	actions: ({ next }) => (
 		<>
 			<Tooltip title="Chat">
-				<Fab color="primary" onClick={() => window.open(env.CHAT.URL)}>
+				<Fab color="primary" onClick={() => window.open(getValidatedEnv().CHAT.URL)}>
 					<Icon height={20} width={20}>
 						group
 					</Icon>

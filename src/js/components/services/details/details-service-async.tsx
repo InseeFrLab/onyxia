@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import Loader from 'js/components/commons/loader';
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";

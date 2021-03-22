@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../commons/loader';
 import Cards from './cards';
 import Toolbar from './toolbar';
 import { Service, Group } from 'js/model';
 import { getServices, deleteServices } from 'js/api/my-lab';
-import { useSelector } from "app/lib/hooks";
+import { useSelector } from "app/interfaceWithLib/hooks";
 
 interface Props {
 	groupId?: string;

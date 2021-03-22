@@ -5,7 +5,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { id } from "evt/tools/typeSafety/id";
 import memoize from "memoizee";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import { useDomRect } from "powerhooks";
 import { CircularProgress } from "app/components/designSystem/CircularProgress";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Icon } from "app/components/designSystem/Icon";
@@ -23,7 +23,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props & { headerHeight: number; isExpended: boolean; }>()(
-	({ theme }, { isExpended, maxHeight, headerHeight }) => {
+	(theme, { isExpended, maxHeight, headerHeight }) => {
 
 		const borderRadius = `0 0 0 30px`;
 
@@ -200,7 +200,7 @@ export const CmdTranslation = memo((props: Props) => {
 		[evtTranslation, translationHistory]
 	);
 
-	const { domRect: { height: headerHeight }, ref: headerRef } = useDOMRect();
+	const { domRect: { height: headerHeight }, ref: headerRef } = useDomRect();
 
 	const panelRef = useRef<HTMLDivElement>(null);
 

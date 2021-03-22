@@ -1,5 +1,4 @@
 
-import React from 'react';
 import JavascriptTimeAgo from 'javascript-time-ago';
 import fr from 'javascript-time-ago/locale/fr';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -36,8 +35,8 @@ import './app.scss';
 import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
-import { getEnv } from "app/env";
-import { useAppConstants } from "app/lib/hooks";
+import { getValidatedEnv } from "app/validatedEnv";
+import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
@@ -47,7 +46,7 @@ import { LegacyThemeProvider } from "./LegacyThemeProvider";
 JavascriptTimeAgo.locale(fr);
 
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 const initialPathname = "/accueil";
 

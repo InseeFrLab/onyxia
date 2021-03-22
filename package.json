@@ -11,8 +11,6 @@
     "@storybook/node-logger": "^6.1.11",
     "@storybook/preset-create-react-app": "^3.1.5",
     "@storybook/react": "^6.1.11",
-    "@testing-library/jest-dom": "^5.10.0",
-    "@testing-library/react": "^10.2.1",
     "@types/classnames": "^2.2.10",
     "@types/color": "^3.0.1",
     "@types/javascript-time-ago": "^2.0.1",
@@ -29,19 +27,14 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/shell-quote": "^1.7.0",
     "circular-dependency-plugin": "^5.2.0",
-    "clean-webpack-plugin": "^3.0.0",
-    "coveralls": "^3.1.0",
     "events": "^3.2.0",
     "fs": "file:./.storybook/.compatibility/fs",
+    "keycloakify": "^0.3.3",
     "minimal-polyfills": "^2.1.6",
-    "progress-bar-webpack-plugin": "^2.1.0",
-    "react-app-rewired": "^2.1.6",
-    "source-map-explorer": "^2.4.2",
-    "typescript": "^4.1.3",
-    "webpack-bundle-analyzer": "^3.7.0"
+    "react-app-rewired": "^2.1.8",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@emotion/css": "^11.1.3",
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
@@ -54,6 +47,7 @@
     "clsx": "^1.1.1",
     "color": "3.1.3",
     "dayjs": "^1.8.26",
+    "react-envs": "^0.1.6",
     "evt": "beta",
     "file-saver": "^2.0.2",
     "filereader-stream": "^2.0.0",
@@ -72,6 +66,7 @@
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
     "path": "^0.12.7",
+    "powerhooks": "^0.0.31",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
     "react": "^16.13.1",
@@ -89,27 +84,22 @@
     "remove-accents": "^0.4.2",
     "resize-observer-polyfill": "^1.5.1",
     "shell-quote": "^1.7.2",
+    "tss-react": "^0.0.11",
     "type-route": "^0.6.0",
     "typeface-roboto": "^0.0.75"
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build yarn && yarn run generate-entrypoint",
-    "test": "react-app-rewired test --env=jsdom",
-    "generate-entrypoint": "node scripts/generate-entrypoint.js",
-    "analyze-bundle": "node scripts/analyze-bundle.js",
-    "source-map-explorer": "source-map-explorer 'build/static/js/*.js' --html bundle-report/source-map-explorer.html",
-    "analyze": "npm run analyze-bundle && npm run source-map-explorer",
-    "test-coverage": "react-scripts test --coverage --watchAll=false --env=jsdom",
+    "build": "react-app-rewired build yarn",
+    "keycloak": "yarn build && build-keycloak-theme",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
-    "_postinstall": "cd node_modules/\\@storybook && mkdir -p node_modules && (mv ../babel-loader node_modules/ 2>/dev/null || true)"
+    "postinstall": "generate-env-getter",
+    "prestart": "generate-env-getter"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ],
     "rules": {
       "@typescript-eslint/no-redeclare": "off",
@@ -118,7 +108,7 @@
       "react-hooks/exhaustive-deps": [
         "error",
         {
-          "additionalHooks": "(useEvt|useAsync|useAsyncCallback|useEffectButSkipFirstRender|useSemanticGuaranteeMemo)"
+          "additionalHooks": "(useEvt|useAsync|useAsyncCallback|useSemanticGuaranteeMemo)"
         }
       ]
     }

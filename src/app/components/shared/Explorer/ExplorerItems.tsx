@@ -10,13 +10,13 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "evt/tools/typeSafety/assert";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
-import { useArrayDiff } from "app/tools/hooks/useArrayDiff";
+import { useEffectOnValueChange } from "powerhooks";
+import { useArrayDiff } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory } from "app/tools/hooks/useCallbackFactory";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
-import { useWithProps } from "app/tools/hooks/useWithProps";
+import { useCallbackFactory } from "powerhooks";
+import { useConstCallback } from "powerhooks";
+import { useWithProps } from "powerhooks";
 import memoize from "memoizee";
 
 
@@ -103,7 +103,7 @@ export const ExplorerItems = memo((props: Props) => {
         setSelectedItemKeyProp
     ] = useState<string | undefined>(undefined);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         selectedItemKind => onSelectedItemKindValueChange({ selectedItemKind }),
         [
             useMemo(
@@ -153,7 +153,7 @@ export const ExplorerItems = memo((props: Props) => {
     );
 
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => {
             setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
@@ -289,7 +289,7 @@ export const ExplorerItems = memo((props: Props) => {
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => onIsSelectedItemInEditingStateValueChange({ isSelectedItemInEditingState }),
         [isSelectedItemInEditingState]
     );

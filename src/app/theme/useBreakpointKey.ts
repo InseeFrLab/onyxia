@@ -1,6 +1,6 @@
 
-import { useTheme } from "./useClassNames";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+import { useTheme } from "@material-ui/core/styles";
+import { useWindowInnerSize } from "powerhooks";
 
 export function useBreakpointKey() {
 

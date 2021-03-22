@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import ServiceEnv from './env';
 import basicService from 'js/model/sampledata/service-basic.json';
 

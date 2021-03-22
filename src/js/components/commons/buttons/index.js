@@ -1,4 +1,3 @@
-import React from 'react';
 import { FileCopy, Save } from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
 import { saveAs } from 'file-saver';

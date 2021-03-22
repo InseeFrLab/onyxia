@@ -1,5 +1,6 @@
 
-import { createUseClassNames, cx } from "app/theme/useClassNames";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { cx } from "tss-react";
 import { memo } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import { ReactComponent as TourSvg } from "app/assets/svg/Tour.svg";
@@ -29,7 +30,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
-import { doExtends } from "app/tools/doExtends";
+import  { doExtends } from "evt/tools/typeSafety/doExtends";
 
 
 export type SvgTypes =
@@ -66,7 +67,7 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ theme: { custom: { colors }} }, { color }) => ({
+    ({ custom: { colors }}, { color }) => ({
         "root": {
             "color": color === "limeGreen" ?
                 colors.palette.limeGreen.main :

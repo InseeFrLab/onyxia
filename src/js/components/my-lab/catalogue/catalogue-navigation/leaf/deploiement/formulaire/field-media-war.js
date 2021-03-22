@@ -7,12 +7,8 @@ import MenuList from '@material-ui/core/MenuList';
 import RootRef from '@material-ui/core/RootRef';
 import getMinioApi from 'js/minio-client/minio-api';
 import { getMinioClient } from "js/minio-client/minio-client";
-import { getEnv } from 'app/env';
+import { getValidatedEnv } from 'app/validatedEnv';
 import { HidablePane } from 'js/components/commons/HidablePane';
-
-const env = getEnv();
-
-const MINIO_BASE_URI = env.MINIO.BASE_URI || '';
 
 class SelectWarField extends React.Component {
 	state = { paths: [], displayOptions: false };
@@ -93,7 +89,7 @@ const getWarPath = async (user) => {
 	return userObjects.reduce(
 		(acc, { name }) =>
 			name.endsWith('.war')
-				? [...acc, { url: `${MINIO_BASE_URI}/${user.idep}/${name}`, name }]
+				? [...acc, { url: `${getValidatedEnv().MINIO.BASE_URI || ''}/${user.idep}/${name}`, name }]
 				: acc,
 		[]
 	);

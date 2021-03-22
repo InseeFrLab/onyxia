@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import PropTypes from 'prop-types';
 import removeAccents from 'remove-accents';
 import { TextField, InputAdornment, Icon } from '@material-ui/core';

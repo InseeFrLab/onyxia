@@ -1,4 +1,5 @@
-import React from 'react';
+  
+import React from "react";
 import './preloader.scss';
 
 class Preloader extends React.Component {

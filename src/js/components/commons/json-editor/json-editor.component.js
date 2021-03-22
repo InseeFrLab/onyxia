@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import PropTypes from 'prop-types';
 import { JsonEditor } from 'jsoneditor-react';
 import 'jsoneditor-react/es/editor.min.css';

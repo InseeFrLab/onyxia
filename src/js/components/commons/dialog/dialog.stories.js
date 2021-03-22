@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import Dialog from './component';
 
 export default {

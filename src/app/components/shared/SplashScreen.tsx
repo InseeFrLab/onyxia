@@ -1,13 +1,15 @@
 
 import { useState, useEffect, memo } from "react";
-import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames, cx, keyframes } from "app/theme/useClassNames";
-import { useDOMRect } from "app/tools/hooks/useDOMRect";
+import type { ReactNode } from "react";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { css, cx, keyframes } from "tss-react";
+import { useDomRect } from "powerhooks";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import Color from "color";
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { createUseGlobalState } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 
 export type Props = {
     className?: string;
@@ -106,7 +108,7 @@ const { useClassNames } = createUseClassNames<{
     isFadingOut: boolean;
     isTransparencyEnabled: boolean;
 }>()(
-    ({ theme }, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
+    (theme, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
         "root": {
             "backgroundColor": (() => {
 
@@ -135,17 +137,20 @@ const { useClassNames } = createUseClassNames<{
                 "&:nth-child(3)": {
                     "animationDelay": "1.2s"
                 }
-            }
+            },
+        },
+        "svg": {
+            "fill": theme.custom.colors.palette.exuberantOrange.main
         }
 
     })
 );
 
-export const SplashScreen = memo((props: Props) => {
+const SplashScreen = memo((props: Props) => {
 
     const { className } = props;
 
-    const { ref, domRect: { width, height } } = useDOMRect();
+    const { ref, domRect: { width, height } } = useDomRect();
 
     const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 
@@ -205,7 +210,8 @@ export const SplashScreen = memo((props: Props) => {
 
     return (
         <div ref={ref} className={cx(classNames.root, className)}>
-            <HeaderLogoSvg
+            <OnyxiaLogoSvg
+                className={classNames.svg}
                 width={width}
                 height={height * 0.2}
             />
@@ -214,3 +220,20 @@ export const SplashScreen = memo((props: Props) => {
 
 });
 
+export function SplashScreenProvider(
+    params: {
+        children: ReactNode;
+    }
+){
+    const { children } = params;
+
+    const { ref, domRect: { width, height } } = useDomRect();
+
+    return (
+        <div ref={ref} className={css({ "height": "100%" })}>
+            <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
+            {children}
+        </div>
+    );
+
+}

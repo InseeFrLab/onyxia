@@ -28,6 +28,7 @@ export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     isBetaModeEnabled: boolean;
     isDarkModeEnabled: boolean;
     deploymentRegionId: string | null;
+    githubPersonalAccessToken: string | null;
 }>;
 
 export type UserConfigsState = {
@@ -81,9 +82,13 @@ export const thunks = {
     "changeValue":
         <K extends keyof UserConfigs>(params: ChangeValueParams<K>): AppThunk => async (...args) => {
 
-            const [dispatch, , { secretsManagerClient, oidcClient }] = args;
+            const [dispatch, getState, { secretsManagerClient, oidcClient }] = args;
 
             assert(oidcClient.isUserLoggedIn);
+
+            if( getState().userConfigs[params.key].value === params.value ){
+                return;
+            }
 
             const { idep } = await parseOidcAccessToken(oidcClient);
 
@@ -111,9 +116,9 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (params: { isColorSchemeDarkEnabledByDefalut: boolean; }): AppThunk => async (...args) => {
+        (params: { getIsDarkModeEnabledValueForProfileInitialization(): boolean; }): AppThunk => async (...args) => {
 
-            const { isColorSchemeDarkEnabledByDefalut } = params;
+            const { getIsDarkModeEnabledValueForProfileInitialization } = params;
 
             const [dispatch, , { secretsManagerClient, oidcClient }] = args;
 
@@ -131,8 +136,9 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
-                "isDarkModeEnabled": isColorSchemeDarkEnabledByDefalut,
-                "deploymentRegionId": null
+                "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
+                "deploymentRegionId": null,
+                "githubPersonalAccessToken": null
             };
 
             await Promise.all(

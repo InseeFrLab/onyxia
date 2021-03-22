@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Typography } from '@material-ui/core';
@@ -9,16 +9,12 @@ import Details from './details.component';
 import * as minioTools from 'js/minio-client/minio-tools';
 import * as minioPolicy from "js/minio-client/minio-policy";
 import { MyPolicy } from '../my-policy.component';
-import { getEnv } from 'app/env';
+import { getValidatedEnv } from 'app/validatedEnv';
 import './my-file.scss';
 import { id } from "evt/tools/typeSafety/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "app/router";
-
-const env = getEnv();
-
-const MINIO_BASE_URI = env.MINIO.BASE_URI;
 
 export const MyFile: React.FC<{
 	file: Blob & { name: string; };
@@ -46,7 +42,7 @@ export const MyFile: React.FC<{
 	);
 	//
 	const minioPath = minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`);
-	const minioDownloadUrl = `${MINIO_BASE_URI}/${bucketName}/${fileName}`;
+	const minioDownloadUrl = `${getValidatedEnv().MINIO.BASE_URI}/${bucketName}/${fileName}`;
 
 	// comportements
 	const generatePresignedUrl = useCallback(

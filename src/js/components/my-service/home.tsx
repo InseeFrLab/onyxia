@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Header from './header';
 import Service from './service';

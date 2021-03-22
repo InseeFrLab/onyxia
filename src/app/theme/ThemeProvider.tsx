@@ -1,14 +1,14 @@
 
 import { useState } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { ZoomProvider } from "app/tools/hooks/useDOMRect";
-import { useWindowInnerSize } from "app/tools/hooks/useWindowInnerSize";
+import { ZoomProvider } from "powerhooks";
+import { useWindowInnerSize } from "powerhooks";
 
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
 import memoize from "memoizee";
 import { createTheme } from "./theme";
 
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useEffectOnValueChange } from "powerhooks";
 
 export function themeProviderFactory(
     params: {
@@ -21,12 +21,14 @@ export function themeProviderFactory(
     function ThemeProvider(
         props: {
             isDarkModeEnabled: boolean;
+            doEnableZoom: boolean;
             children: React.ReactNode;
         }
     ) {
 
         const {
             isDarkModeEnabled,
+            doEnableZoom,
             children
         } = props;
 
@@ -44,8 +46,15 @@ export function themeProviderFactory(
 
         const isLandscape = windowInnerWidth > windowInnerHeight;
 
-        useValueChangeEffect(
-            ()=> { window.location.reload(); },
+        useEffectOnValueChange(
+            () => {
+
+                if (theme.custom.referenceWidth === undefined) {
+                    return;
+                }
+
+                window.location.reload();
+            },
             [isLandscape]
         );
 
@@ -53,7 +62,11 @@ export function themeProviderFactory(
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    <ZoomProvider referenceWidth={isLandscape ? theme.custom.referenceWidth : undefined}>
+                    <ZoomProvider referenceWidth={
+                        (isLandscape && doEnableZoom) ?
+                            theme.custom.referenceWidth : undefined
+                    }
+                    >
                         {children}
                     </ZoomProvider>
                 </StylesProvider>

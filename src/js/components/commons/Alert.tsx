@@ -1,5 +1,4 @@
 
-import React from "react";
 import { default as MaterialUiAlert } from "@material-ui/lab/Alert";
 import type { AlertProps } from "@material-ui/lab/Alert";
 

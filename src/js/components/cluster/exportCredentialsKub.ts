@@ -1,6 +1,6 @@
-import { getEnv } from "app/env";
+import { getValidatedEnv } from "app/validatedEnv";
 
-const env = getEnv();
+const env = getValidatedEnv();
 
 const exportTypes = [
 	{

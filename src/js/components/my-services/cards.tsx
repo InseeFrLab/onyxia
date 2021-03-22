@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import { Grid } from '@material-ui/core/';
 import { CardMyGroup } from 'js/components/commons/service-card';
 import CardChecker from './card-checker';

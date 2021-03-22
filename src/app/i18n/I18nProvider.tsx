@@ -1,5 +1,5 @@
 
-import React, { useState, useReducer } from "react";
+import { useState, useReducer } from "react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -9,7 +9,7 @@ import { id } from "evt/tools/typeSafety/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useValueChangeEffect } from "app/tools/hooks/useValueChangeEffect";
+import { useEffectOnValueChange } from "powerhooks";
 
 export type Props = {
     lng: SupportedLanguage;
@@ -38,7 +38,7 @@ export function I18nProvider(props: Props) {
 
     });
 
-    useValueChangeEffect(
+    useEffectOnValueChange(
         () => i18nInstance.changeLanguage(lng),
         [lng]
     );

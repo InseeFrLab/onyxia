@@ -1,4 +1,4 @@
-import React from 'react';
+  
 import PropTypes from 'prop-types';
 import { Paper, Fab, Icon } from '@material-ui/core';
 

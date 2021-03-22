@@ -1,5 +1,5 @@
-import React, { useState, useEffect, memo } from 'react';
-import { useDispatch, useMustacheParams, useAppConstants } from "app/lib/hooks";
+import { useState, useEffect, memo } from 'react';
+import { useDispatch, useMustacheParams, useAppConstants } from "app/interfaceWithLib/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
 import IconButton from '@material-ui/core/IconButton';
@@ -16,9 +16,9 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { createUseGlobalState } from "app/tools/hooks/useGlobalState";
+import { createUseGlobalState } from "powerhooks";
 import { prAxiosInstance } from "lib/setup";
-import { useConstCallback } from "app/tools/hooks/useConstCallback";
+import { useConstCallback } from "powerhooks";
 
 export const { useIsCloudShellVisible } = createUseGlobalState(
 	"isCloudShellVisible",
