@@ -88,7 +88,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: main
+        ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
     - uses: actions/setup-node@v1
     - run: |
         yarn install --frozen-lockfile                                                                                                                                                                                        
