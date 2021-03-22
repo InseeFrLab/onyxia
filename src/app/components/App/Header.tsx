@@ -5,7 +5,7 @@ import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
-import { ReactComponent as HeaderLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
 import { cx, css } from "tss-react";
@@ -47,6 +47,9 @@ const { useClassNames } = createUseClassNames<Props>()(
             "cursor": "pointer",
             "width": Math.max(logoMaxWidth, logoWidth),
             "textAlign": "center"
+        },
+        "svg": {
+            "fill": theme.custom.colors.palette.exuberantOrange.main
         }
     })
 );
@@ -92,7 +95,8 @@ export const Header = memo((props: Props) => {
                 onClick={onClickFactory("logo")}
                 className={classNames.logoContainer}
             >
-                <HeaderLogoSvg
+                <OnyxiaLogoSvg
+                    className={classNames.svg}
                     width={logoWidth}
                     height={height}
                 />
