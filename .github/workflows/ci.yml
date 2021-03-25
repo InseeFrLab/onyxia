@@ -10,13 +10,15 @@ on:
 jobs:
 
   test:
+    name: Test with on ${{ matrix.os }}
     runs-on: ${{matrix.os}}
     if: github.event.head_commit.author.name != 'actions'
     strategy:
       matrix:
        #os: [ windows-latest, ubuntu-latest ]
        os: [ ubuntu-latest ]
-    name: Test with on ${{ matrix.os }}
+    outputs:
+      keycloakify_version: ${{ steps.step1.outputs.out }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -29,6 +31,11 @@ jobs:
       with:
         name: build
         path: build
+    - id: step1
+      run: |
+        echo ::set-output name=out::$(
+          node -e 'console.log(require("./node_modules/keycloakify/package.json")["version"])'
+        )
 
   check_if_version_upgraded:
     name: Check if version upgrade
@@ -54,7 +61,7 @@ jobs:
         )
 
   docker:
-    name: Build Docker image and publish on DockerHub
+    name: Build Docker image 
     needs: check_if_version_upgraded
     runs-on: ubuntu-latest
     # Build the docker image only if it's a push on master or if it's a PR from a branch (and not a PR from a fork)
@@ -97,19 +104,24 @@ jobs:
   build_keycloak_theme:
     name: Build keycloak theme
     runs-on: ubuntu-latest
-    needs: check_if_version_upgraded
+    needs: 
+      - check_if_version_upgraded
+      - test
     if: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' }}
     steps:
     - uses: actions/checkout@v2
       with:
         ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
     - uses: actions/setup-node@v1
+      with:
+        node-version: '15'
     - uses: actions/download-artifact@v2
       with:
         name: build
         path: build
-    - run: yarn --frozen-lockfile
-    - run: npx build-keycloak-theme --external-assets
+    - run: npx -y -p keycloakify@$VER build-keycloak-theme
+      env: 
+        VER: ${{ needs.test.outputs.keycloakify_version }}
     - name: Upload keycloak theme
       uses: actions/upload-artifact@v2
       with:
