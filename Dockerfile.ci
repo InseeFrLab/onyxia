@@ -11,7 +11,7 @@ WORKDIR /app
 ADD build.tar build 
 COPY .env .
 COPY .nginx.conf .
-COPY node_modules/react-envs/package.json node_modules/react-envs/package.json 
+COPY re.json node_modules/react-envs/package.json 
 
 # production environment
 FROM nginx:stable-alpine

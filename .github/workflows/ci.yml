@@ -18,7 +18,8 @@ jobs:
        #os: [ windows-latest, ubuntu-latest ]
        os: [ ubuntu-latest ]
     outputs:
-      keycloakify_version: ${{ steps.step1.outputs.out }}
+      keycloakify_version: ${{ steps.step1.outputs.out1 }}
+      react_envs_version: ${{ steps.step1.outputs.out2 }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -33,8 +34,11 @@ jobs:
         path: build
     - id: step1
       run: |
-        echo ::set-output name=out::$(
+        echo ::set-output name=out1::$(
           node -e 'console.log(require("./node_modules/keycloakify/package.json")["version"])'
+        )
+        echo ::set-output name=out2::$(
+          node -e 'console.log(require("./node_modules/react-envs/package.json")["version"])'
         )
 
   check_if_version_upgraded:
@@ -62,7 +66,9 @@ jobs:
 
   docker:
     name: Build Docker image 
-    needs: check_if_version_upgraded
+    needs: 
+      - test
+      - check_if_version_upgraded
     runs-on: ubuntu-latest
     # Build the docker image only if it's a push on master or if it's a PR from a branch (and not a PR from a fork)
     # It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is defined but GitHub Action don't allow it.
@@ -88,6 +94,9 @@ jobs:
           fi
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
           echo ::set-output name=docker_tags::$OUT
+      - run: echo "{\"version\":\"$VER\"}" > re.json
+        env: 
+          VER: ${{ needs.test.outputs.react_envs_version }}
       - uses: actions/download-artifact@v2
         with:
           name: build
