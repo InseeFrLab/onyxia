@@ -9,6 +9,7 @@ FROM node:14.16.0-alpine as build
 WORKDIR /app
 #We use ADD instead of COPY because build/ is in .dockerignore
 ADD build.tar build 
+COPY .env .
 
 # production environment
 FROM nginx:stable-alpine
