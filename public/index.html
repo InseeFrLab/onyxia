@@ -1,62 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		
-		<script>
-			/*
-			This is a way to get the correct background color as soon as possible,
-			even before the JavaScript bundle is evaluated.
-			It is to prevent a white flash when the user has dark mode enabled.
-			It is very implementation dependent and can easily break...
-			if it does no big deal.
-			*/
-			(function (){
 
-				var isDarkModeEnabled= /true/.test((function (){
+<head>
 
-					var key= "powerhooks_useGlobalState_isDarkModeEnabled";
-					var value= null;
+	<style>
+		@font-face {
+			font-family: "Work Sans";
 
-					try{
-						value= (new URLSearchParams(location.search)).get(key);
-					}catch(_){ }
+			src: url("%PUBLIC_URL%/fonts/worksans-bold-webfont.woff2") format("woff2"),
+				url("%PUBLIC_URL%/fonts/worksans-bold-webfont.woff") format("woff");
 
-					if( value !== null ){
-						return value;
-					}
+			font-weight: bold;
+			/*700*/
+			font-style: normal;
+		}
 
-					try{
-						value = localStorage.getItem(key);
-					}catch(_){ }
+		@font-face {
+			font-family: "Work Sans";
 
-					if( value !== null ){
-						return value;
-					}
+			src: url("%PUBLIC_URL%/fonts/worksans-semibold-webfont.woff2") format("woff2"),
+				url("%PUBLIC_URL%/fonts/worksans-semibold-webfont.woff") format("woff");
 
-					try{
-						value= window.matchMedia("(prefers-color-scheme: dark)")
-							.matches ? "true" : "false";
-					}catch(_){ }
 
-					if( value !== null ){
-						return value;
-					}
+			font-weight: 600;
+			font-style: normal;
+		}
 
-					return "false";
+		@font-face {
+			font-family: "Work Sans";
 
-				})());
+			src: url("%PUBLIC_URL%/fonts/worksans-medium-webfont.woff2") format("woff2"),
+				url("%PUBLIC_URL%/fonts/worksans-medium-webfont.woff") format("woff");
 
-				document.documentElement.style.backgroundColor = 
-					//getColor("light"|"dark").useCases.surfaces.background in src/app/theme/colors.ts
-					isDarkModeEnabled ? "#2C323F" : "#F1F0EB" ;
 
-			})();
-		</script>
+			font-weight: 500;
+			font-style: normal;
+		}
 
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		@font-face {
+			font-family: "Work Sans";
 
-		<!--
+			src: url("%PUBLIC_URL%/fonts/worksans-regular-webfont.woff2") format("woff2"),
+				url("%PUBLIC_URL%/fonts/worksans-regular-webfont.woff") format("woff");
+
+
+			font-weight: normal;
+			/*400*/
+			font-style: normal;
+		}
+	</style>
+
+
+
+
+	<script>
+		/*
+		This is a way to get the correct background color as soon as possible,
+		even before the JavaScript bundle is evaluated.
+		It is to prevent a white flash when the user has dark mode enabled.
+		It is very implementation dependent and can easily break...
+		if it does no big deal.
+		*/
+		(function () {
+
+			var isDarkModeEnabled = /true/.test((function () {
+
+				var key = "powerhooks_useGlobalState_isDarkModeEnabled";
+				var value = null;
+
+				try {
+					value = (new URLSearchParams(location.search)).get(key);
+				} catch (_) { }
+
+				if (value !== null) {
+					return value;
+				}
+
+				try {
+					value = localStorage.getItem(key);
+				} catch (_) { }
+
+				if (value !== null) {
+					return value;
+				}
+
+				try {
+					value = window.matchMedia("(prefers-color-scheme: dark)")
+						.matches ? "true" : "false";
+				} catch (_) { }
+
+				if (value !== null) {
+					return value;
+				}
+
+				return "false";
+
+			})());
+
+			document.documentElement.style.backgroundColor =
+				//getColor("light"|"dark").useCases.surfaces.background in src/app/theme/colors.ts
+				isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+
+		})();
+	</script>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!--
       	Notice the use of %PUBLIC_URL% in the tag above.
       	It will be replaced with the URL of the `public` folder during the build.
       	Only files inside the `public` folder can be referenced from the HTML.
@@ -65,26 +116,27 @@
       	work correctly both with client-side routing and a non-root public URL.
       	Learn how to configure a non-root public URL by running `npm run build`.
     	-->
-		<title>Onyxia</title>
+	<title>Onyxia</title>
 
-		<!-- start favicon -->
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon_package/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon_package/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon_package/favicon-16x16.png">
-		<link rel="manifest" href="/favicon_package/site.webmanifest">
-		<link rel="mask-icon" href="/favicon_package/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-		<!-- end favicon -->
+	<!-- start favicon -->
+	<link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/favicon_package/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon_package/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon_package/favicon-16x16.png">
+	<link rel="manifest" href="%PUBLIC_URL%/favicon_package/site.webmanifest">
+	<link rel="mask-icon" href="%PUBLIC_URL%/favicon_package/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">
+	<!-- end favicon -->
 
-		<!-- TODO: Remove, Font for legacy icons -->
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+	<!-- TODO: Remove, Font for legacy icons -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
 
-	</head>
-	<body>
-		<div id="root"></div>
-		<!--
+</head>
+
+<body>
+	<div id="root"></div>
+	<!--
       	This HTML file is a template.
       	If you open it directly in the browser, you will see an empty page.
 
@@ -94,5 +146,6 @@
       	To begin the development, run `npm start`.
       	To create a production bundle, use `npm run build`.
     	-->
-	</body>
+</body>
+
 </html>

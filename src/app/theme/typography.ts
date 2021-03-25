@@ -1,7 +1,8 @@
-import "./fonts.scss";
 import type { TypographyOptions } from "@material-ui/core/styles/createTypography";
 
 export const typography = {
+
+    //NOTE: Font imported in public/index.html
     "fontFamily": '"Work Sans"',
 
     "h1": {
