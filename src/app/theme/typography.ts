@@ -3,7 +3,7 @@ import type { TypographyOptions } from "@material-ui/core/styles/createTypograph
 export const typography = {
 
     //NOTE: Font imported in public/index.html
-    "fontFamily": '"Work Sans"',
+    "fontFamily": '"Work Sans", sans-serif',
 
     "h1": {
         "fontWeight": "bold",

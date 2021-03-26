@@ -33,6 +33,7 @@ jobs:
         name: build
         path: build
     - id: step1
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         echo ::set-output name=out1::$(
           node -e 'console.log(require("./node_modules/keycloakify/package.json")["version"])'
@@ -128,7 +129,7 @@ jobs:
       with:
         name: build
         path: build
-    - run: npx -y -p keycloakify@$VER build-keycloak-theme
+    - run: npx -y -p keycloakify@$VER build-keycloak-theme --external-assets
       env: 
         VER: ${{ needs.test.outputs.keycloakify_version }}
     - name: Upload keycloak theme
