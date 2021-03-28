@@ -1,3 +1,21 @@
+### **0.7.6** (2021-03-28)  
+  
+- Merge pull request #210 from InseeFrLab/develop
+
+Fix font issues  
+- Fix Dockerfile.ci  
+- Fix ngnix config  
+- Make fonts work with keycloakify  
+- fix Dockerfile.ci  
+- fix Dockerfile.ci  
+- fix Dockerfile.ci  
+- Update  
+- Merge pull request #209 from InseeFrLab/externalizing_components
+
+Fix favicon  
+- Fix favicon  
+- Fix font issue    
+  
 ## **0.7.5** (2021-03-22)  
   
 - Merge pull request #207 from InseeFrLab/externalizing_components
