@@ -2,7 +2,6 @@
 
 import { useMemo, memo } from "react";
 import { Header } from "./Header";
-import type { Props as HeaderProps } from "./Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
@@ -16,7 +15,6 @@ import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { useWindowInnerSize } from "powerhooks";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
@@ -195,21 +193,12 @@ export const App = memo((props: Props) => {
         [route.name]
     );
 
-    const onHeaderClick = useConstCallback(
-        (target: Parameters<HeaderProps["onClick"]>[0]) => {
-            switch (target) {
-                case "logo": routes.home().push(); return;
-                case "auth button":
+    const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-                    if (appConstants.isUserLoggedIn) {
-                        appConstants.logout();
-                    } else {
-                        appConstants.login();
-                    }
-
-                    return;
-            }
-        }
+    const onHeaderAuthClick = useConstCallback(
+        () => (appConstants.isUserLoggedIn ?
+            appConstants.logout : appConstants.login
+        )()
     );
 
     const onLeftBarClick = useConstCallback(
@@ -225,18 +214,17 @@ export const App = memo((props: Props) => {
         }
     );
 
-
-
-
     return (
         <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
+                type="core"
                 className={classNames.header}
                 logoMaxWidth={logoMaxWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
-                useIsDarkModeEnabled={useIsDarkModeEnabled}
                 useIsCloudShellVisible={useIsCloudShellVisible}
-                onClick={onHeaderClick}
+                onLogoClick={onHeaderLogoClick}
+                onAuthClick={onHeaderAuthClick}
+
             />
             <section className={classNames.betweenHeaderAndFooter}>
 

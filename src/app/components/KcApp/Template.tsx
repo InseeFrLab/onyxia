@@ -1,30 +1,33 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import { useReducer, useEffect, memo } from "react";
+import { useEffect, memo } from "react";
 import type { ReactNode } from "react";
-import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
+//import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useKcLanguageTag } from "keycloakify/lib/i18n/useKcLanguageTag";
 import type { KcContext } from "keycloakify/lib/KcContext";
 import { assert } from "evt/tools/typeSafety/assert";
 import { cx } from "tss-react";
-import type { KcLanguageTag } from "keycloakify/lib/i18n/KcLanguageTag";
+//import type { KcLanguageTag } from "keycloakify/lib/i18n/KcLanguageTag";
 import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageTag";
-import { getKcLanguageTagLabel } from "keycloakify/lib/i18n/KcLanguageTag";
-import { useCallbackFactory } from "powerhooks";
-import { appendHead } from "keycloakify/lib/tools/appendHead";
-import { join as pathJoin } from "path";
+//import { getKcLanguageTagLabel } from "keycloakify/lib/i18n/KcLanguageTag";
+//import { useCallbackFactory } from "powerhooks";
+//import { appendHead } from "keycloakify/lib/tools/appendHead";
+//import { join as pathJoin } from "path";
 import { useConstCallback } from "powerhooks";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/App/Header";
-import type { Props as HeaderProps } from "app/components/App/Header";
-import { logoMaxWidthInPercent } from "app/components/App";
+import { Footer } from "app/components/App/Footer";
+import { logoMaxWidthInPercent } from "app/components/App";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { useDomRect } from "powerhooks";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
-import { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { routes } from "app/router";
+import { useDomRect } from "powerhooks";
+import { routes } from "app/router";
+import { useWindowInnerSize } from "powerhooks";
+import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { Paper } from "app/components/designSystem/Paper";
 
 export type TemplateProps = {
+    className?: string;
     displayInfo?: boolean;
     displayMessage?: boolean;
     displayRequiredFields?: boolean;
@@ -36,51 +39,74 @@ export type TemplateProps = {
     infoNode?: ReactNode;
 } & { kcContext: KcContext.Template; } & KcTemplateProps;
 
-const { useClassNames } = createUseClassNames()(
-    () => ({
+const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
+    (theme) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+        },
+
         "header": {
             "width": "100%",
             "paddingRight": "2%",
             "height": 64
-        }
+        },
+        "betweenHeaderAndFooter": {
+            "flex": 1,
+            "overflow": "hidden",
+            "background": `center / contain no-repeat url(${(() => {
+                switch (theme.palette.type) {
+                    case "dark": return onyxiaNeumorphismDarkModeUrl;
+                    case "light": return onyxiaNeumorphismLightModeUrl;
+                }
+            })()})`,
+        },
+        "page": {
+            "height": "100%"
+        },
+        "footer": {
+            "height": 34
+        },
+
+
     })
 );
 
 export const Template = memo((props: TemplateProps) => {
 
     const {
-        displayInfo = false,
-        displayMessage = true,
-        displayRequiredFields = false,
-        displayWide = false,
-        showAnotherWayIfPresent = true,
-        headerNode,
-        showUsernameNode = null,
-        formNode,
-        infoNode = null,
+        className,
+        //displayInfo = false,
+        //displayMessage = true,
+        //displayRequiredFields = false,
+        //displayWide = false,
+        //showAnotherWayIfPresent = true,
+        //headerNode,
+        //showUsernameNode = null,
+        //formNode,
+        //infoNode = null,
         kcContext
     } = props;
 
     useEffect(() => { console.log("Rendering this page with react using keycloakify") }, []);
 
-    const { msg } = useKcMessage();
+    //const { msg } = useKcMessage();
 
-    const { kcLanguageTag, setKcLanguageTag } = useKcLanguageTag();
+    const { kcLanguageTag } = useKcLanguageTag();
 
-
-    const onChangeLanguageClickFactory = useCallbackFactory(
-        ([languageTag]: [KcLanguageTag]) =>
-            setKcLanguageTag(languageTag)
-    );
-
+    /*
     const onTryAnotherWayClick = useConstCallback(() => {
         document.forms["kc-select-try-another-way-form" as never].submit();
         return false;
     });
+    */
 
     const {
-        realm, locale, auth,
-        url, message, isAppInitiatedAction
+        realm, locale,
+        //auth,
+        //url, message, isAppInitiatedAction
     } = kcContext;
 
     useEffect(
@@ -104,100 +130,43 @@ export const Template = memo((props: TemplateProps) => {
         [kcLanguageTag]
     );
 
-    const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
 
-    useEffect(
-        () => {
 
-            let isUnmounted = false;
-            const cleanups: (() => void)[] = [];
-
-            const toArr = (x: string | readonly string[] | undefined) =>
-                typeof x === "string" ? x.split(" ") : x ?? [];
-
-            Promise.all(
-                [
-                    ...toArr(props.stylesCommon).map(relativePath => pathJoin(url.resourcesCommonPath, relativePath)),
-                    ...toArr(props.styles).map(relativePath => pathJoin(url.resourcesPath, relativePath))
-                ].map(href => appendHead({
-                    "type": "css",
-                    href
-                }))).then(() => {
-
-                    if (isUnmounted) {
-                        return;
-                    }
-
-                    setExtraCssLoaded();
-
-                });
-
-            toArr(props.scripts).forEach(
-                relativePath => appendHead({
-                    "type": "javascript",
-                    "src": pathJoin(url.resourcesPath, relativePath)
-                })
-            );
-
-            if (props.kcHtmlClass !== undefined) {
-
-                const htmlClassList =
-                    document.getElementsByTagName("html")[0]
-                        .classList;
-
-                const tokens = cx(props.kcHtmlClass).split(" ")
-
-                htmlClassList.add(...tokens);
-
-                cleanups.push(() => htmlClassList.remove(...tokens));
-
-            }
-
-            return () => {
-
-                isUnmounted = true;
-
-                cleanups.forEach(f => f());
-
-            };
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [props.kcHtmlClass]
-    );
-
-    const { classNames } = useClassNames({});
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
     const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
 
-    const onHeaderClick = useConstCallback(
-        (target: Parameters<HeaderProps["onClick"]>[0]) => {
-            switch (target) {
-                case "logo": routes.home().push(); return;
-                case "auth button": assert(false);
-            }
-        }
-    );
+    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
 
-    if (!isExtraCssLoaded) {
-        return null;
-    }
+    const { classNames } = useClassNames({
+        windowInnerWidth,
+        "aspectRatio": windowInnerWidth / windowInnerHeight,
+        windowInnerHeight
+    });
 
-
+    const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
     return (
-        <div ref={rootRef} className={cx(props.kcLoginClass)}>
-
+        <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
+                type="keycloak"
                 className={classNames.header}
                 logoMaxWidth={logoMaxWidth}
-                isUserLoggedIn={false}
-                useIsDarkModeEnabled={useIsDarkModeEnabled}
-                useIsCloudShellVisible={useIsCloudShellVisible}
-                onClick={onHeaderClick}
+                onLogoClick={onHeaderLogoClick}
             />
+            <section className={classNames.betweenHeaderAndFooter}>
+                <Page className={classNames.page} />
+            </section>
+            <Footer className={classNames.footer} />
+        </div>
+    );
+
+
+
+    /*
+    return (
+        <div ref={rootRef} className={cx(props.kcLoginClass)}>
 
             <div id="kc-header" className={cx(props.kcHeaderClass)}>
                 <div id="kc-header-wrapper" className={cx(props.kcHeaderWrapperClass)}>
@@ -308,7 +277,7 @@ export const Template = memo((props: TemplateProps) => {
                 </header>
                 <div id="kc-content">
                     <div id="kc-content-wrapper">
-                        {/* App-initiated actions should not see warning messages about the need to complete the action during login. */}
+                        {// App-initiated actions should not see warning messages about the need to complete the action during login. }
                         {
                             (
                                 displayMessage &&
@@ -357,4 +326,47 @@ export const Template = memo((props: TemplateProps) => {
             </div>
         </div>
     );
+    */
 });
+
+const { Page } = (() => {
+
+    type Props = {
+        className: string;
+    };
+
+    const { useClassNames } = createUseClassNames()(
+        (theme) => ({
+            "root": {
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center"
+            },
+            "paper": {
+                "padding": theme.spacing(3)
+            }
+        })
+    );
+
+    const Page = memo((props: Props) => {
+
+        const { className } = props;
+
+        const { classNames } = useClassNames({});
+
+        return (
+            <div className={cx(classNames.root, className)}>
+                <Paper className={classNames.paper}>
+                    <h1>Hello! I define the content</h1>
+                </Paper>
+            </div>
+        );
+
+    });
+
+    return { Page };
+
+
+})();
+
+
