@@ -15,7 +15,7 @@ import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageT
 //import { join as pathJoin } from "path";
 import { useConstCallback } from "powerhooks";
 import type { KcTemplateProps } from "keycloakify";
-import { Header } from "app/components/App/Header";
+import { Header } from "app/components/shared/Header";
 import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
 import { createUseClassNames } from "app/theme/useClassNames";

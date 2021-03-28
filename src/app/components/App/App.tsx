@@ -1,7 +1,7 @@
 
 
 import { useMemo, memo } from "react";
-import { Header } from "./Header";
+import { Header } from "app/components/shared/Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";

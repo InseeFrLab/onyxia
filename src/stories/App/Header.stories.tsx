@@ -1,7 +1,7 @@
 
 
 import { useEffect } from "react";
-import { Header } from "app/components/App/Header";
+import { Header } from "app/components/shared/Header";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
 import { css } from "tss-react";

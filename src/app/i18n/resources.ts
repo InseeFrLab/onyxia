@@ -9,7 +9,7 @@ import { ExplorerItem } from "app/components/shared/Explorer/ExplorerItem";
 import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditor";
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
-import { Header } from "app/components/App/Header";
+import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
