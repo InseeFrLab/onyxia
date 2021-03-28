@@ -11,7 +11,6 @@ import { useTheme } from "@material-ui/core/styles";
 import { cx, css } from "tss-react";
 import { useDomRect } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
-import type { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import Tooltip from "@material-ui/core/Tooltip";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonProps as MuiButtonProps } from "@material-ui/core/Button";
@@ -22,17 +21,30 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { useLng } from "app/i18n/useLng";
 import { objectKeys } from "evt/tools/typeSafety/objectKeys";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 
-type Target = "logo" | "auth button";
+export type Props = Props.Core | Props.Keycloak;
 
-export type Props = {
-    className?: string;
-    isUserLoggedIn: boolean;
-    logoMaxWidth: number;
-    onClick(target: Target): void;
-    useIsDarkModeEnabled: typeof useIsDarkModeEnabled;
-    useIsCloudShellVisible: typeof useIsCloudShellVisible;
-};
+export declare namespace Props {
+
+    export type Common = {
+        className?: string;
+        logoMaxWidth: number;
+        onLogoClick(): void;
+    };
+
+    export type Keycloak = Common & {
+        type: "keycloak";
+    };
+
+    export type Core = Common & {
+        type: "core";
+        isUserLoggedIn: boolean;
+        useIsCloudShellVisible: typeof useIsCloudShellVisible;
+        onAuthClick(): void;
+    };
+
+}
 
 const logoWidth = 53;
 
@@ -56,32 +68,9 @@ const { useClassNames } = createUseClassNames<Props>()(
 
 export const Header = memo((props: Props) => {
 
-    const {
-        isUserLoggedIn,
-        onClick,
-        useIsDarkModeEnabled,
-        useIsCloudShellVisible,
-        className = undefined
-    } = props;
-
+    const { className, onLogoClick } = props;
 
     const { t } = useTranslation("Header");
-
-    const { toggleCloudShellVisibility } = (function useClosure() {
-
-        const { setIsCloudShellVisible } = useIsCloudShellVisible();
-
-        return {
-            "toggleCloudShellVisibility":
-                useConstCallback(() => setIsCloudShellVisible(value => !value) )
-        };
-
-    })();
-
-
-    const onClickFactory = useCallbackFactory(
-        ([target]: [Target]) => onClick(target)
-    );
 
     const { domRect: { height }, ref } = useDomRect();
 
@@ -92,7 +81,7 @@ export const Header = memo((props: Props) => {
     return (
         <header className={cx(classNames.root, className)} ref={ref}>
             <div
-                onClick={onClickFactory("logo")}
+                onClick={onLogoClick}
                 className={classNames.logoContainer}
             >
                 <OnyxiaLogoSvg
@@ -102,25 +91,26 @@ export const Header = memo((props: Props) => {
                 />
             </div>
             <div
-                onClick={onClickFactory("logo")}
+                onClick={onLogoClick}
                 className={css({
                     "display": "flex",
                     "justifyContent": "center",
                     "alignItems": "center",
                     "cursor": "pointer"
                 })}>
-
-                <Typography
-                    variant="h4"
-                    className={css({ "fontWeight": 600 })}
-                >
-                    Onyxia
-                </Typography>
+                {props.type === "core" &&
+                    <Typography
+                        variant="h4"
+                        className={css({ "fontWeight": 600 })}
+                    >
+                        Onyxia -
+                    </Typography>
+                }
                 <Typography
                     variant="h4"
                     className={css({ "margin": theme.spacing(0, 1) })}
                 >
-                    - SSP Cloud
+                    SSP Cloud
                 </Typography>
                 <Typography
                     variant="h4"
@@ -139,21 +129,19 @@ export const Header = memo((props: Props) => {
                 "alignItems": "center",
             })}>
                 <ChangeLanguage />
-                <ToggleDarkMode useIsDarkModeEnabled={useIsDarkModeEnabled} />
-                {isUserLoggedIn &&
-                    <IconButton
-                        type="bash"
-                        fontSize="large"
-                        onClick={toggleCloudShellVisibility}
-                    />
+                <ToggleDarkMode />
+                {props.type === "core" &&
+                    <>
+                        {props.isUserLoggedIn && <ToggleCloudShell useIsCloudShellVisible={props.useIsCloudShellVisible} />}
+                        <Button
+                            onClick={props.onAuthClick}
+                            color={props.isUserLoggedIn ? "secondary" : "primary"}
+                            className={css({ "marginLeft": theme.spacing(2) })}
+                        >
+                            {t(props.isUserLoggedIn ? "logout" : "login")}
+                        </Button>
+                    </>
                 }
-                <Button
-                    onClick={onClickFactory("auth button")}
-                    color={isUserLoggedIn ? "secondary" : "primary"}
-                    className={css({ "marginLeft": theme.spacing(2) })}
-                >
-                    {t(isUserLoggedIn ? "logout" : "login")}
-                </Button>
             </div>
 
 
@@ -171,13 +159,8 @@ export declare namespace Header {
 
 const { ToggleDarkMode } = (() => {
 
-    type Props = {
-        useIsDarkModeEnabled: typeof useIsDarkModeEnabled;
-    };
 
-    const ToggleDarkMode = memo((props: Props) => {
-
-        const { useIsDarkModeEnabled } = props;
+    const ToggleDarkMode = memo(() => {
 
         const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
@@ -304,6 +287,41 @@ const { ChangeLanguage } = (() => {
 
     return { ChangeLanguage };
 
+
+})();
+
+const { ToggleCloudShell } = (() => {
+
+    type Props = {
+        useIsCloudShellVisible: typeof useIsCloudShellVisible;
+    };
+
+    const ToggleCloudShell = memo((props: Props) => {
+
+        const { useIsCloudShellVisible } = props;
+
+        const { toggleCloudShellVisibility } = (function useClosure() {
+
+            const { setIsCloudShellVisible } = useIsCloudShellVisible();
+
+            return {
+                "toggleCloudShellVisibility":
+                    useConstCallback(() => setIsCloudShellVisible(value => !value))
+            };
+
+        })();
+
+        return (
+            <IconButton
+                type="bash"
+                fontSize="large"
+                onClick={toggleCloudShellVisibility}
+            />
+        );
+
+    });
+
+    return { ToggleCloudShell };
 
 })();
 
