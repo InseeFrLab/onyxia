@@ -1,3 +1,7 @@
+### **0.7.8** (2021-03-28)  
+  
+- Fix language selection in login pages    
+  
 ### **0.7.7** (2021-03-28)  
   
 - Merge pull request #212 from InseeFrLab/develop
