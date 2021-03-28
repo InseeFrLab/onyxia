@@ -10,20 +10,37 @@ on:
 jobs:
 
   test:
+    name: Test with on ${{ matrix.os }}
     runs-on: ${{matrix.os}}
     if: github.event.head_commit.author.name != 'actions'
     strategy:
       matrix:
        #os: [ windows-latest, ubuntu-latest ]
        os: [ ubuntu-latest ]
-    name: Test with on ${{ matrix.os }}
+    outputs:
+      keycloakify_version: ${{ steps.step1.outputs.out1 }}
+      react_envs_version: ${{ steps.step1.outputs.out2 }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
     - run: |
-        yarn install --frozen-lockfile                                                                                                                                                                                        
+        yarn --frozen-lockfile                                                                                                                                                                                        
         yarn build
 #       yarn test
+    - uses: actions/upload-artifact@v2
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        name: build
+        path: build
+    - id: step1
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        echo ::set-output name=out1::$(
+          node -e 'console.log(require("./node_modules/keycloakify/package.json")["version"])'
+        )
+        echo ::set-output name=out2::$(
+          node -e 'console.log(require("./node_modules/react-envs/package.json")["version"])'
+        )
 
   check_if_version_upgraded:
     name: Check if version upgrade
@@ -47,9 +64,12 @@ jobs:
             echo "$GITHUB_HEAD_REF" ||
             echo "${GITHUB_REF#refs/*/}"
         )
+
   docker:
-    name: Build Docker image and publish on DockerHub
-    needs: check_if_version_upgraded
+    name: Build Docker image 
+    needs: 
+      - test
+      - check_if_version_upgraded
     runs-on: ubuntu-latest
     # Build the docker image only if it's a push on master or if it's a PR from a branch (and not a PR from a fork)
     # It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is defined but GitHub Action don't allow it.
@@ -75,25 +95,43 @@ jobs:
           fi
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
           echo ::set-output name=docker_tags::$OUT
+      - run: echo "{\"version\":\"$VER\"}" > re.json
+        env: 
+          VER: ${{ needs.test.outputs.react_envs_version }}
+      - uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+      - run: tar -cvf build.tar ./build
       - uses: docker/build-push-action@v2
         with:
           push: true
+          context: .
           tags: ${{ steps.step1.outputs.docker_tags }}
+          file: Dockerfile.ci
+
 
   build_keycloak_theme:
     name: Build keycloak theme
     runs-on: ubuntu-latest
-    needs: check_if_version_upgraded
+    needs: 
+      - check_if_version_upgraded
+      - test
     if: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' }}
     steps:
     - uses: actions/checkout@v2
       with:
         ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
     - uses: actions/setup-node@v1
-    - run: |
-        yarn install --frozen-lockfile                                                                                                                                                                                        
-        yarn build
-        npx build-keycloak-theme
+      with:
+        node-version: '15'
+    - uses: actions/download-artifact@v2
+      with:
+        name: build
+        path: build
+    - run: npx -y -p keycloakify@$VER build-keycloak-theme --external-assets
+      env: 
+        VER: ${{ needs.test.outputs.keycloakify_version }}
     - name: Upload keycloak theme
       uses: actions/upload-artifact@v2
       with:
@@ -112,7 +150,7 @@ jobs:
     - uses: garronej/github_actions_toolkit@v2.1
       with:
         action_name: update_changelog
-        branch: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        branch: ${{ needs.check_if_version_upgraded.outputs.branch }}
         commit_author_email: actions@github.com
 
   release:
