@@ -1,3 +1,10 @@
+### **0.7.7** (2021-03-28)  
+  
+- Merge pull request #212 from InseeFrLab/develop
+
+Remove all references to --external-assets  
+- Remove all references to --external-assets    
+  
 ### **0.7.6** (2021-03-28)  
   
 - Merge pull request #210 from InseeFrLab/develop
