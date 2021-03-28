@@ -38,7 +38,7 @@ import { ServiceDetails } from "js/components/services/details/details-service
 import { Trainings } from "js/components/trainings/async-component";
 
 
-const logoMaxWidthInPercent = 5;
+export const logoMaxWidthInPercent = 5;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
     (theme) => ({
