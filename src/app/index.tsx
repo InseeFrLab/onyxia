@@ -24,9 +24,15 @@ const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
 );
 
+Object.defineProperty(
+    kcContextMocks.kcRegisterContext.realm,
+    "registrationEmailAsUsername",
+    { "value": false }
+);
+
 const kcContext = realKcContext ?? (
     false /* Set to true to test the login pages outside of Keycloak */
-        ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
+        ? kcContextMocks.kcRegisterContext /* Change to .kcRegisterContext for example */
         :
         undefined
 );
