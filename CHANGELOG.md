@@ -1,3 +1,7 @@
+### **0.7.11** (2021-03-29)  
+  
+- Enable navigate back to the app from login pages    
+  
 ### **0.7.10** (2021-03-29)  
   
 - Merge pull request #214 from InseeFrLab/develop
