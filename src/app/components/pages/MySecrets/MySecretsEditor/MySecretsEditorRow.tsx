@@ -16,6 +16,7 @@ import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
+import type { Parameters } from "evt/tools/typeSafety";
 
 
 export type Props = {
@@ -100,13 +101,13 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 
     const [evtInputAction] = useState(
-        () => Evt.create<UnpackEvt<TextFieldProps["evtAction"]>>()
+        () => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
     );
 
     const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
 
     const onSubmitFactory = useCallbackFactory(
-        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [{ value }]: [Parameters<TextFieldProps["onSubmit"]>[0]]) =>
+        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [{ value }]: [Parameters<NonNullable<TextFieldProps["onSubmit"]>>[0]]) =>
             evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
     );
 
@@ -190,7 +191,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 
     const getIsValidValue_key = useConstCallback(
-        (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
+        (value: Parameters<NonNullable<TextFieldProps["getIsValidValue"]>>[0]) => {
 
             const result = getIsValidAndAvailableKey({ "key": value });
 

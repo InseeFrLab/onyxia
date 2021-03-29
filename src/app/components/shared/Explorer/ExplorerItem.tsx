@@ -16,6 +16,7 @@ import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { useWithProps } from "powerhooks";
+import type { Parameters } from "evt/tools/typeSafety";
 
 
 export type Props = {
@@ -166,7 +167,7 @@ export const ExplorerItem = memo((props: Props) => {
                 { "isValidValue": false, "message": "" } as const
     );
 
-    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<InputProps["evtAction"]>>());
+    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<NonNullable<InputProps["evtAction"]>>>());
 
     const onInputSubmit = useConstCallback(
         ({ value, isValidValue }: Parameters<InputProps["onSubmit"]>[0]) => {

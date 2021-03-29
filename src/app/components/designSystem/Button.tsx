@@ -16,12 +16,19 @@ export type Props = {
     /** can be optional with an icon */
     children?: React.ReactNode;
     disabled?: boolean;
-    onClick: () => void;
+    onClick?(): void;
 
     startIcon?: IconProps["type"] | null;
     endIcon?: IconProps["type"] | null;
 
     autoFocus?: boolean;
+
+    type?: "button" | "submit"
+
+    tabIndex?: number | null;
+
+    name?: string | null;
+    id?: string | null;
 
 
 
@@ -34,7 +41,12 @@ export const defaultProps: Optional<Props> = {
     "children": null,
     "startIcon": null,
     "endIcon": null,
-    "autoFocus": false
+    "autoFocus": false,
+    "type": "button",
+    "onClick": ()=>{},
+    "tabIndex": null,
+    "name": null,
+    "id": null
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -114,7 +126,11 @@ export function Button(props: Props) {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { className, color, disabled, children, onClick, startIcon, endIcon, autoFocus } = completedProps;
+    const { 
+        className, color, disabled, children, 
+        onClick, startIcon, endIcon, autoFocus, 
+        type, tabIndex, name, id
+    } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
 
@@ -137,6 +153,10 @@ export function Button(props: Props) {
             startIcon={startIcon === null ? undefined : <ColoredIcon type={startIcon} />}
             endIcon={endIcon === null ? undefined : <ColoredIcon type={endIcon} />}
             autoFocus={autoFocus}
+            type={type}
+            tabIndex={tabIndex??undefined}
+            name={name ?? undefined}
+            id={id ?? undefined}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
             <span className={css({ "paddingTop": 2 })} >

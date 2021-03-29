@@ -1,11 +1,10 @@
 
 
 import { useEffect } from "react";
-import { Header } from "app/components/App/Header";
+import { Header } from "app/components/shared/Header";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
 import { css } from "tss-react";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { createUseGlobalState } from "powerhooks";
 
 const { meta, getStory } = getStoryFactory({
@@ -46,12 +45,19 @@ const { useIsCloudShellVisible } = (() => {
 })();
 
 
-export const Vue1 = getStory({
+export const Core = getStory({
     "className": css({ width, "height": 64, paddingRight }),
     "isUserLoggedIn": false,
-    useIsDarkModeEnabled,
+    "type": "core",
     useIsCloudShellVisible,
     logoMaxWidth,
-    ...logCallbacks(["onClick"])
+    ...logCallbacks(["onLogoClick", "onAuthClick"])
+});
+
+export const Keycloak = getStory({
+    "className": css({ width, "height": 64, paddingRight }),
+    "type": "keycloak",
+    logoMaxWidth,
+    ...logCallbacks(["onLogoClick"])
 });
 

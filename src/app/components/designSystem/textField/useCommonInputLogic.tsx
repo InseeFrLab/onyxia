@@ -8,9 +8,15 @@ import { noUndefined } from "app/tools/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { useEffectOnValueChange } from "powerhooks";
+import type { ReturnType } from "evt/tools/typeSafety";
 
 export type Props = {
     className?: string | null;
+    tabIndex?: number | null;
+    id?: string | null;
+    name?: string | null;
+    autoComplete?: "on" | "off";
+    type?: "text" | "password";
     /** Will overwrite value when updated */
     defaultValue: string;
     inputProps: { 'aria-label': string; };
@@ -20,17 +26,22 @@ export type Props = {
     multiline?: boolean;
     onEscapeKeyDown?: () => void;
     onEnterKeyDown?: () => void;
-    onBlur?: () => void;
-    evtAction: NonPostableEvt<"TRIGGER SUBMIT" | "RESTORE DEFAULT VALUE">;
-    onSubmit(params: { value: string; isValidValue: boolean; }): void;
-    getIsValidValue(value: string): { isValidValue: true } | { isValidValue: false; message: string; };
+    onBlur?(): void;
+    evtAction?: NonPostableEvt<"TRIGGER SUBMIT" | "RESTORE DEFAULT VALUE"> | null;
+    onSubmit?(params: { value: string; isValidValue: boolean; }): void;
+    getIsValidValue?(value: string): { isValidValue: true } | { isValidValue: false; message: string; };
     /** Invoked on first render */
-    onValueBeingTypedChange?: (params: { value: string; } & ReturnType<Props["getIsValidValue"]>) => void;
+    onValueBeingTypedChange?(params: { value: string; } & ReturnType<Props["getIsValidValue"]>): void;
     transformValueBeingTyped?: (value: string) => string;
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
+    "tabIndex": null,
+    "id": null,
+    "name": null,
+    "autoComplete": "off",
+    "type": "text",
     "autoFocus": false,
     "color": null,
     "disabled": false,
@@ -38,6 +49,9 @@ export const defaultProps: Optional<Props> = {
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
+    "onSubmit": ()=> {},
+    "getIsValidValue": ()=> ({ "isValidValue": true }),
+    "evtAction": null,
     "onValueBeingTypedChange": () => { },
     "transformValueBeingTyped": id,
 };
@@ -48,6 +62,11 @@ export function useCommonInputLogic(props: Props) {
 
     const {
         className,
+        tabIndex,
+        id,
+        name,
+        autoComplete,
+        type,
         defaultValue,
         inputProps,
         autoFocus,
@@ -99,7 +118,7 @@ export function useCommonInputLogic(props: Props) {
     );
 
     useEvt(
-        ctx => evtAction.attach(
+        ctx => evtAction?.attach(
             ctx,
             action => {
                 switch (action) {
@@ -154,6 +173,11 @@ export function useCommonInputLogic(props: Props) {
 
     return {
         "className": className ?? undefined,
+        "tabIndex": tabIndex ?? undefined,
+        "id": id ?? undefined,
+        "name": name ?? undefined,
+        autoComplete,
+        type,
         inputProps,
         autoFocus,
         "color": color ?? undefined,

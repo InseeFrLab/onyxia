@@ -25,6 +25,7 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useCallbackFactory } from "powerhooks";
 import type { UserConfigs } from "lib/useCases/userConfigs";
 import  { doExtends } from "evt/tools/typeSafety/doExtends";
+import type { ReturnType, Params } from "evt/tools/typeSafety";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -87,7 +88,7 @@ export function Account(props: Props) {
         (
             [_target]: [Exclude<Target, "userServicePassword">],
             [_value]: [string]
-        ): ReturnType<TextFieldProps["getIsValidValue"]> =>
+        ): ReturnType<NonNullable<TextFieldProps["getIsValidValue"]>> =>
             ({ "isValidValue": true })
     );
 
@@ -289,15 +290,15 @@ const { EditableRow } = (() => {
         const { classNames } = useClassNames({ ...props, isInEditingState });
 
         const [evtInputAction] = useState(
-            () => Evt.create<UnpackEvt<TextFieldProps["evtAction"]>>()
+            () => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
         );
 
         const onValueBeingTypedChange_strValue = useConstCallback(
-            ({ isValidValue }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
+            ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
                 setIsValidValue(isValidValue)
         );
 
-        const onSubmit = useConstCallback((params: Parameters<TextFieldProps["onSubmit"]>[0]) => {
+        const onSubmit = useConstCallback((params: Params<TextFieldProps["onSubmit"]>) => {
 
             const { value } = params;
 
