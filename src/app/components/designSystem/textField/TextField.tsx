@@ -13,7 +13,7 @@ export type TextFieldProps = CommonProps & {
     label?: React.ReactNode;
 };
 
-const defaultProps: Optional<TextFieldProps> = {
+export const defaultProps: Optional<TextFieldProps> = {
     "label": null,
     ...defaultCommonProps,
 };
@@ -24,7 +24,10 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
             ...(error ? {
                 "position": "relative",
                 "top": "8px"
-            } : {})
+            } : {}),
+            "&:focus": {
+                "outline": "unset"
+            }
         }
     })
 );

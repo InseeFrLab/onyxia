@@ -94,6 +94,11 @@ export const KcApp = memo((props: Props) => {
 
     const { classNames } = useClassNames({});
 
+    console.log(classNames);
+
+    const kcProps= defaultKcProps;
+
+    /*
     const kcProps = {
         ...defaultKcProps,
         "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classNames.kcHtmlClass],
@@ -102,6 +107,7 @@ export const KcApp = memo((props: Props) => {
         "kcButtonPrimaryClass": [...defaultKcProps.kcButtonPrimaryClass, classNames.kcButtonPrimaryClass],
         "kcInputClass": [...defaultKcProps.kcInputClass, classNames.kcInputClass]
     };
+    */
 
     switch (kcContext.pageId) {
         case "login.ftl": return <Login {...{ kcContext, ...kcProps }} />;
