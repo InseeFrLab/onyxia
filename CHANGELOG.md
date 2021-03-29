@@ -1,3 +1,7 @@
+### **0.7.12** (2021-03-29)  
+  
+- Apply zoom provider to loggin pages    
+  
 ### **0.7.11** (2021-03-29)  
   
 - Enable navigate back to the app from login pages    
