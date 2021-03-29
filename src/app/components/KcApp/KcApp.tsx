@@ -7,7 +7,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Login } from "./Login"
-import { Register } from "keycloakify/lib/components/Register"
+import { Register } from "./Register"
 import { Info } from "keycloakify/lib/components/Info"
 import { Error } from "keycloakify/lib/components/Error"
 import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPassword"
@@ -94,11 +94,6 @@ export const KcApp = memo((props: Props) => {
 
     const { classNames } = useClassNames({});
 
-    console.log(classNames);
-
-    const kcProps= defaultKcProps;
-
-    /*
     const kcProps = {
         ...defaultKcProps,
         "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classNames.kcHtmlClass],
@@ -107,7 +102,6 @@ export const KcApp = memo((props: Props) => {
         "kcButtonPrimaryClass": [...defaultKcProps.kcButtonPrimaryClass, classNames.kcButtonPrimaryClass],
         "kcInputClass": [...defaultKcProps.kcInputClass, classNames.kcInputClass]
     };
-    */
 
     switch (kcContext.pageId) {
         case "login.ftl": return <Login {...{ kcContext, ...kcProps }} />;

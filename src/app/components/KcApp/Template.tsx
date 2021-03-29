@@ -22,10 +22,8 @@ import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLight
 import { Paper } from "app/components/designSystem/Paper";
 import { Typography } from "app/components/designSystem/Typography";
 
-/*
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";
-*/
 
 
 export type TemplateProps = {
@@ -39,7 +37,7 @@ export type TemplateProps = {
     showUsernameNode?: ReactNode;
     formNode: ReactNode;
     infoNode?: ReactNode;
-} & { kcContext: KcContext.Template; } & KcTemplateProps;
+} & { kcContext: KcContext; } & KcTemplateProps;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
     (theme) => ({
@@ -126,13 +124,14 @@ export const Template = memo((props: TemplateProps) => {
     useEffect(
         () => {
 
+            if ( kcContext.pageId === "login.ftl" ) {
+                setExtraCssLoaded();
+                return;
+            }
+
             let isUnmounted = false;
             const cleanups: (() => void)[] = [];
 
-
-            setExtraCssLoaded(); isUnmounted.valueOf();
-
-            /*
             const toArr = (x: string | readonly string[] | undefined) =>
                 typeof x === "string" ? x.split(" ") : x ?? [];
 
@@ -159,23 +158,20 @@ export const Template = memo((props: TemplateProps) => {
                     "src": pathJoin(kcContext.url.resourcesPath, relativePath)
                 })
             );
-            */
 
-            /*
             if (props.kcHtmlClass !== undefined) {
-    
+
                 const htmlClassList =
                     document.getElementsByTagName("html")[0]
                         .classList;
-    
+
                 const tokens = cx(props.kcHtmlClass).split(" ")
-    
+
                 htmlClassList.add(...tokens);
-    
+
                 cleanups.push(() => htmlClassList.remove(...tokens));
-    
+
             }
-            */
 
             return () => {
 
@@ -236,7 +232,7 @@ const { Page } = (() => {
             },
             "paper": {
                 "padding": theme.spacing(4),
-                "minWidth": 490
+                "minWidth": 490,
             }
         })
     );
@@ -282,10 +278,6 @@ const { Page } = (() => {
                         infoNode={infoNode}
                     />
 
-
-
-
-
                 </Paper>
             </div>
         );
@@ -300,8 +292,8 @@ const { Page } = (() => {
             showUsernameNode?: ReactNode;
         } & { kcContext: KcContext.Template; } & KcTemplateProps;
 
-        const { useClassNames } = createUseClassNames()(
-            theme=>({
+        const { useClassNames } = createUseClassNames()(
+            theme => ({
                 "root": {
                     "textAlign": "center",
                     "marginTop": theme.spacing(4)

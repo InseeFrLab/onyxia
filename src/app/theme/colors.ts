@@ -9,8 +9,9 @@ const palette = {
     },
     "midnightBlue": {
         "main": "#2C323F",
-        "light": "#525966",
-        "light2": "#C9C9C9"
+        "light": "#373E4F",
+        "light2": "#525966",
+        "light3": "#C9C9C9"
     },
     "whiteSnow": {
         "main": "#F1F0EB",
