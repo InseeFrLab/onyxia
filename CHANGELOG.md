@@ -1,3 +1,14 @@
+### **0.7.9** (2021-03-29)  
+  
+- Merge pull request #213 from InseeFrLab/develop
+
+Login an register for monday 29  
+- Login page custom implementation (ongoing)  
+- Refactor template  
+- Move Header to shared  
+- Share header bwn core and keycloak  
+- Minimal setup for custom html in login    
+  
 ### **0.7.8** (2021-03-28)  
   
 - Fix language selection in login pages    
