@@ -1,3 +1,10 @@
+### **0.7.10** (2021-03-29)  
+  
+- Merge pull request #214 from InseeFrLab/develop
+
+Register form validation  
+- Validation on the register page    
+  
 ### **0.7.9** (2021-03-29)  
   
 - Merge pull request #213 from InseeFrLab/develop
