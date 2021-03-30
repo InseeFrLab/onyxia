@@ -211,18 +211,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             name="credentialId"
                                             {...(auth?.selectedCredential !== undefined ? { "value": auth.selectedCredential } : {})}
                                         />
-
-                                        {/*
-                                        <input
-                                            tabIndex={4}
-                                            className={cx(props.kcButtonClass, props.kcButtonPrimaryClass, props.kcButtonBlockClass, props.kcButtonLargeClass)} 
-                                            name="login" 
-                                            id="kc-login" 
-                                            type="submit"
-                                            value={msgStr("doLogIn")}
-                                            disabled={isLoginButtonDisabled}
-                                        />
-                                        */}
                                         <Button
                                             tabIndex={4}
                                             className={cx(props.kcButtonClass, props.kcButtonPrimaryClass, props.kcButtonBlockClass, props.kcButtonLargeClass, classNames.buttonSubmit)}
@@ -258,23 +246,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     }
                 </div>
             }
-            /*
-            infoNode={
-                (
-                    realm.password &&
-                    realm.registrationAllowed &&
-                    !registrationDisabled
-                ) &&
-                <div id="kc-registration">
-                    <span>
-                        {msg("noAccount")}
-                        <a tabIndex={6} href={url.registrationUrl}>
-                            {msg("doRegister")}
-                        </a>
-                    </span>
-                </div>
-            }
-            */
             infoNode={
                 (
                     realm.password &&
