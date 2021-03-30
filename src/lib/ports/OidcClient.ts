@@ -57,6 +57,7 @@ export declare namespace OidcClient {
 export type ParsedOidcAccessToken = {
     idep: string;
     email: string;
+    groups: string[];
 };
 
 export type ParsedJwt = {
@@ -64,24 +65,31 @@ export type ParsedJwt = {
     preferred_username: string;
     name: string;
     email: string;
+    groups: string[];
 };
 
 export async function parseOidcAccessToken(
     oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
 ): Promise<ParsedOidcAccessToken> {
 
-    const {
-        email,
-        preferred_username,
-    } = jwtSimple.decode(
+    const parsedJwt = jwtSimple.decode(
         (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
         "",
         true
     ) as ParsedJwt;
 
+    console.log(JSON.stringify(parsedJwt,null,2));
+
+    const {
+        email,
+        preferred_username,
+        groups
+    } =  parsedJwt;
+
     return {
         "idep": preferred_username,
-        email
+        email,
+        groups
     };
 
 }
