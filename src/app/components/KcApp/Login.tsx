@@ -213,7 +213,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         />
                                         <Button
                                             tabIndex={4}
-                                            className={cx(props.kcButtonClass, props.kcButtonPrimaryClass, props.kcButtonBlockClass, props.kcButtonLargeClass, classNames.buttonSubmit)}
+                                            className={cx(classNames.buttonSubmit)}
                                             name="login"
                                             id="kc-login"
                                             type="submit"
