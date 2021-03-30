@@ -1,3 +1,10 @@
+### **0.7.14** (2021-03-30)  
+  
+- Merge pull request #218 from InseeFrLab/list_buckets_from_jwt
+
+List buckets from jwt  
+- List groups buckets    
+  
 ### **0.7.13** (2021-03-30)  
   
 - Merge pull request #216 from InseeFrLab/develop
