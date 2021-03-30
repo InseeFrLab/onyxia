@@ -1,3 +1,10 @@
+### **0.7.13** (2021-03-30)  
+  
+- Merge pull request #216 from InseeFrLab/develop
+
+Fix reset password #215  
+- Fix reset password #215    
+  
 ### **0.7.12** (2021-03-29)  
   
 - Apply zoom provider to loggin pages    
