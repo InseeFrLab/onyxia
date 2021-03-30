@@ -1,3 +1,7 @@
+### **0.7.15** (2021-03-30)  
+  
+- #211: Python boto3 downloadable config    
+  
 ### **0.7.14** (2021-03-30)  
   
 - Merge pull request #218 from InseeFrLab/list_buckets_from_jwt
