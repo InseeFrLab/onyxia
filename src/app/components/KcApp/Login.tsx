@@ -42,7 +42,7 @@ const { useClassNames } = createUseClassNames()(
         "buttonSubmit": {
             "marginLeft": theme.spacing(1)
         },
-        "forgotPasswordWrapper": {
+        "linkToRegisterWrapper": {
             "marginTop": theme.spacing(3),
             "textAlign": "center",
             "& > *": {
@@ -189,7 +189,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 realm.resetPasswordAllowed &&
                                                 <Link
                                                     tabIndex={5}
-                                                    href={url.loginRestartFlowUrl}
+                                                    href={url.loginResetCredentialsUrl}
                                                 >
                                                     {msg("doForgotPassword")}
                                                 </Link>
@@ -281,7 +281,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     realm.registrationAllowed &&
                     !registrationDisabled
                 ) &&
-                <div className={classNames.forgotPasswordWrapper}>
+                <div className={classNames.linkToRegisterWrapper}>
                     <Typography variant="body2" color="disabled">{msg("noAccount")!}</Typography>
                     <Link 
                     tabIndex={6} 
