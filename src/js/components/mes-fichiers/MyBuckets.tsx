@@ -30,7 +30,7 @@ export function MyBuckets() {
 
 	useEffect(() => {
 		if (idep && !buckets) {
-			dispatch(myFilesActions.loadUserBuckets({ idep }));
+			dispatch(myFilesActions.loadUserBuckets());
 		}
 	}, [idep, dispatch, buckets]);
 
