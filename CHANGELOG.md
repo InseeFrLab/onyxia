@@ -1,10 +1,11 @@
+
 ### **0.7.16** (2021-03-31)  
   
 - Merge pull request #221 from InseeFrLab/restore_monitoring_links
 
 Restore monitoring links  
 - Restore monitoring links    
-  
+
 ### **0.7.15** (2021-03-30)  
   
 - #211: Python boto3 downloadable config    

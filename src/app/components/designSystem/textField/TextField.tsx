@@ -19,15 +19,26 @@ export const defaultProps: Optional<TextFieldProps> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error: boolean; }>()(
-    (...[, { error }]) => ({
+    (theme, { error }) => ({
         "root": {
             ...(error ? {
                 "position": "relative",
-                "top": "8px"
+                "top": "8px",
             } : {}),
             "&:focus": {
-                "outline": "unset"
+                "outline": "unset",
+            },
+            "& input:-webkit-autofill": {
+                "-webkit-text-fill-color": 
+                    theme.palette.text[(()=>{
+                        switch(theme.palette.type){
+                            case "dark": return "primary";
+                            case "light": return "secondary";
+                        }
+                    })()],
+                "-webkit-box-shadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surfaces} inset`,
             }
+
         }
     })
 );
