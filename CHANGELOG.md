@@ -1,3 +1,33 @@
+
+### **0.7.16** (2021-03-31)  
+  
+- Merge pull request #221 from InseeFrLab/restore_monitoring_links
+
+Restore monitoring links  
+- Restore monitoring links    
+
+### **0.7.15** (2021-03-30)  
+  
+- #211: Python boto3 downloadable config    
+  
+### **0.7.14** (2021-03-30)  
+  
+- Merge pull request #218 from InseeFrLab/list_buckets_from_jwt
+
+List buckets from jwt  
+- List groups buckets    
+  
+### **0.7.13** (2021-03-30)  
+  
+- Merge pull request #216 from InseeFrLab/develop
+
+Fix reset password #215  
+- Fix reset password #215    
+  
+### **0.7.12** (2021-03-29)  
+  
+- Apply zoom provider to loggin pages    
+  
 ### **0.7.11** (2021-03-29)  
   
 - Enable navigate back to the app from login pages    

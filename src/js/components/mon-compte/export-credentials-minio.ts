@@ -48,12 +48,24 @@ minio <- paws::s3(config = list(
 minio$list_buckets()`,
 	},
 	{
-		id: 'python',
+		id: 'python_s3fs',
 		label: 'Python (s3fs)',
 		fileName: 'credentials.py',
 		text: (c: S3) => `
 import s3fs
 fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
+	},
+	{
+		id: 'python_boto3',
+		label: 'Python (boto3)',
+		fileName: 'credentials.py',
+		text: (c: S3)=> `
+import boto3
+s3 = boto3.client("s3",endpoint_url = 'http://'+'${c.AWS_S3_ENDPOINT}',
+                  aws_access_key_id= '${c.AWS_ACCESS_KEY_ID}', 
+                  aws_secret_access_key= '${c.AWS_SECRET_ACCESS_KEY}', 
+                  aws_session_token = '${c.AWS_SESSION_TOKEN}')
+		`
 	},
 	{
 		id: 'env',

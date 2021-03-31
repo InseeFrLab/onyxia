@@ -86,7 +86,7 @@ export function NavigationFile(
 
 		if (!userBuckets) {
 
-			dispatch(actions.loadUserBuckets({ "idep": idep }));
+			dispatch(actions.loadUserBuckets());
 
 			return;
 

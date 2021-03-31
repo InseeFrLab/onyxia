@@ -4,7 +4,7 @@ import ServiceDetails from './service-details';
 import { getService, deleteServices } from 'js/api/my-lab';
 import { Service } from 'js/model';
 import Toolbar from './toolbar';
-import { useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useAppConstants, useSelectedRegion } from "app/interfaceWithLib/hooks";
 import { routes } from "app/router";
 
 interface Props {
@@ -59,14 +59,14 @@ const MyService = ({ serviceId }: Props) => {
 
 export default MyService;
 
-
 function useMonitoringUrl(params: { serviceId: string; }) {
 
 	const { serviceId } = params;
 
+	const selectedRegion = useSelectedRegion();
 
-	const monitoringURLPattern = useSelector(state => state.regions.selectedRegion?.services.monitoring?.URLPattern);
-	const namespacePrefix = useSelector(state => state.regions.selectedRegion?.services.namespacePrefix);
+	const monitoringURLPattern = selectedRegion?.services.monitoring?.URLPattern;
+	const namespacePrefix = selectedRegion?.services.namespacePrefix;
 
 	const idep = (function useClosure() {
 

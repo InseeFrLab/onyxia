@@ -4,6 +4,8 @@ import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
+import type { AppThunk } from "lib/setup";
+import { parseOidcAccessToken } from "lib/ports/OidcClient";
 
 
 export type State = {
@@ -195,7 +197,28 @@ const asyncThunks = {
 		};
 
 
-	})()
+	})(),
+	"loadUserBuckets":
+		(): AppThunk => async (...args) => {
+
+			const [dispatch, , { oidcClient }] = args;
+
+			assert(oidcClient.isUserLoggedIn);
+
+			const { idep, groups } = await parseOidcAccessToken(oidcClient);
+
+			dispatch(
+				syncActions.loadUserBuckets({
+					"buckets":
+						[idep, ...groups].map((id, i) => ({
+							id,
+							"description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
+							"isPublic": false
+						}))
+				})
+			);
+
+		}
 };
 
 
@@ -210,20 +233,12 @@ const slice = createSlice({
 	"reducers": {
 		"loadUserBuckets": (
 			state,
-			{ payload }: PayloadAction<{ idep: State.Bucket["id"]; }>
+			{ payload }: PayloadAction<{ buckets: State.Bucket[]; }>
 		) => {
 
-			const { idep } = payload;
+			const { buckets } = payload;
 
-			assert(typeof idep === "string");
-
-			state.userBuckets = [
-				{
-					"id": idep,
-					"description": "bucket personnel", //TODO: Franglish
-					"isPublic": false
-				}
-			];
+			state.userBuckets = buckets;
 
 		},
 		"emptyCurrentBucket": state => {
@@ -270,10 +285,10 @@ const slice = createSlice({
 	}
 });
 
+
 const { actions: syncActions } = slice;
 
 export const actions = {
-	...id<Pick<typeof syncActions, "loadUserBuckets">>(syncActions),
 	...asyncThunks
 };
 
