@@ -78,8 +78,6 @@ export async function parseOidcAccessToken(
         true
     ) as ParsedJwt;
 
-    console.log(JSON.stringify(parsedJwt,null,2));
-
     const {
         email,
         preferred_username,

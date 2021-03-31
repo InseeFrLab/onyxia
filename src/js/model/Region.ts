@@ -17,6 +17,9 @@ export interface Services {
 	cloudshell?: CloudshellConfiguration;
 	monitoring?: Monitoring;
 	expose?: { domain: string; };
+	defaultIpProtection: boolean;
+	network?: "calico",
+	initScript?: string;
 }
 
 export interface Monitoring {
