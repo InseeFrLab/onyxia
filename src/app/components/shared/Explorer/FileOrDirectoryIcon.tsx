@@ -18,7 +18,7 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
-    (theme, { kind })=> ({
+    (theme, { kind, standardizedWidth }) => ({
         "root": {
             "fill": "currentColor",
             "color": (() => {
@@ -32,6 +32,20 @@ const { useClassNames } = createUseClassNames<Props>()(
                     })()];
                 }
             })(),
+            ...(() => {
+
+                const width = (() => {
+                    switch (standardizedWidth) {
+                        case "big": return 100;
+                        case "normal": return 60;
+
+                    }
+                })();
+
+                return { width, "height": ~~(width * 8 / 10) };
+
+            })(),
+
             "display": "block"
         }
     })
@@ -39,32 +53,11 @@ const { useClassNames } = createUseClassNames<Props>()(
 
 
 
-export const FileOrDirectoryIcon = memo((props: Props) =>{
+export const FileOrDirectoryIcon = memo((props: Props) => {
 
-    const { visualRepresentationOfAFile, standardizedWidth, kind } = props;
+    const { visualRepresentationOfAFile, kind } = props;
 
     const { classNames } = useClassNames(props);
-
-    /* 
-     * NOTE: We can't set the width and height in className ref:
-     * https://className-tricks.com/scale-svg/#how-to-scale-svg-to-fit-within-a-certain-size-without-distorting-the-image
-     */
-    const { width, height } = useMemo(
-        () => {
-
-            const width = (() => {
-                switch (standardizedWidth) {
-                    case "big": return 100;
-                    case "normal": return 60;
-
-                }
-            })();
-
-            return { width, "height": ~~(width * 8 / 10) };
-
-        },
-        [standardizedWidth]
-    );
 
     const SvgComponent = useMemo(() => {
 
@@ -80,12 +73,6 @@ export const FileOrDirectoryIcon = memo((props: Props) =>{
 
     }, [kind, visualRepresentationOfAFile]);
 
-    return (
-        <SvgComponent
-            className={classNames.root}
-            width={width}
-            height={height}
-        />
-    );
+    return <SvgComponent className={classNames.root} />;
 
 });

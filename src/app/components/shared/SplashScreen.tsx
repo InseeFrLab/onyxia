@@ -122,6 +122,7 @@ const { useClassNames } = createUseClassNames<{
             "backdropFilter": isTransparencyEnabled ? "blur(10px)" : undefined,
             "display": "flex",
             "alignItems": "center",
+            "justifyContent": "center",
             "visibility": isVisible ? "visible" : "hidden",
             "opacity": isFadingOut ? 0 : 1,
             "transition": `opacity ease-in-out ${fadeOutDuration}ms`,
@@ -137,10 +138,11 @@ const { useClassNames } = createUseClassNames<{
                 "&:nth-child(3)": {
                     "animationDelay": "1.2s"
                 }
-            },
+            }
         },
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main
+            "fill": theme.custom.colors.palette.exuberantOrange.main,
+            "height": "20%"
         }
 
     })
@@ -149,8 +151,6 @@ const { useClassNames } = createUseClassNames<{
 const SplashScreen = memo((props: Props) => {
 
     const { className } = props;
-
-    const { ref, domRect: { width, height } } = useDomRect();
 
     const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 
@@ -209,11 +209,9 @@ const SplashScreen = memo((props: Props) => {
     );
 
     return (
-        <div ref={ref} className={cx(classNames.root, className)}>
+        <div className={cx(classNames.root, className)}>
             <OnyxiaLogoSvg
                 className={classNames.svg}
-                width={width}
-                height={height * 0.2}
             />
         </div>
     );
