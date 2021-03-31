@@ -28,7 +28,6 @@ import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxi
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
 import * as myLab from "js/redux/myLab";
-import * as regions from "js/redux/regions";
 import * as user from "js/redux/user";
 import * as app from "js/redux/app";
 
@@ -121,7 +120,6 @@ const reducer = {
     [myLab.name]: myLab.reducer,
     [app.name]: app.reducer,
     [user.name]: user.reducer,
-    [regions.name]: regions.reducer,
 
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
     [userConfigsUseCase.name]: userConfigsUseCase.reducer,
@@ -212,7 +210,7 @@ async function createStoreForLoggedUser(
 
     secretsManagerClient = secretsManagerClientProxy;
 
-    let getCurrentlySelectedDeployRegionId: (() => string | undefined) | undefined = undefined;
+    let getCurrentlySelectedDeployRegionId: () => string;
 
     const { onyxiaApiClient, axiosInstance } = (() => {
         switch (onyxiaApiClientConfig.implementation) {
@@ -224,11 +222,12 @@ async function createStoreForLoggedUser(
                 ...onyxiaApiClientConfig,
                 oidcClient,
                 "getCurrentlySelectedDeployRegionId": () => {
-
-                    assert(getCurrentlySelectedDeployRegionId !== undefined);
-
-                    return getCurrentlySelectedDeployRegionId();
-
+                    try {
+                        //NOTE: Can throw when userConfigs not initialized yet.
+                        return getCurrentlySelectedDeployRegionId();
+                    } catch {
+                        return undefined;
+                    }
                 }
             });
         }
@@ -251,8 +250,7 @@ async function createStoreForLoggedUser(
     });
 
     getCurrentlySelectedDeployRegionId = () =>
-        store.getState().userConfigs.deploymentRegionId.value ?? undefined;
-
+        store.getState().userConfigs.deploymentRegionId.value;
 
     store.dispatch(tokensUseCase.privateThunks.initialize());
 
@@ -262,7 +260,7 @@ async function createStoreForLoggedUser(
         )
     );
 
-    return { store, getEvtSecretsManagerTranslation };
+    return { store, onyxiaApiClient, getEvtSecretsManagerTranslation };
 
 }
 
@@ -306,7 +304,7 @@ async function createStoreForNonLoggedUser(
         })
     });
 
-    return { store };
+    return { store, onyxiaApiClient };
 
 
 }
@@ -339,7 +337,7 @@ export async function createStore(params: CreateStoreParams) {
         }
     })();
 
-    const { store, getEvtSecretsManagerTranslation } = await (
+    const { store, onyxiaApiClient, getEvtSecretsManagerTranslation } = await (
         oidcClient.isUserLoggedIn ?
             createStoreForLoggedUser({
                 oidcClient,
@@ -355,6 +353,8 @@ export async function createStore(params: CreateStoreParams) {
                 "getEvtSecretsManagerTranslation": undefined
             }
     );
+
+    dOnyxiaApiClient.resolve(onyxiaApiClient);
 
     dOidcClient.resolve(oidcClient);
 
@@ -392,6 +392,13 @@ export async function createStore(params: CreateStoreParams) {
                                 { evtBackOnline }
                             )
                         ),
+                        ...await (async () => {
+
+                            const { build, regions } = await onyxiaApiClient.getConfigurations();
+
+                            return { build, regions };
+
+                        })(),
                         "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!,
                         ...oidcClient
                     }) :
@@ -432,6 +439,10 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
     Action<string>
 >;
 
+const dOnyxiaApiClient = new Deferred<OnyxiaApiClient>();
+
+/** @deprecated */
+export const { pr: prOnyxiaApiClient } = dOnyxiaApiClient;
 
 const dAxiosInstance = new Deferred<AxiosInstance>();
 

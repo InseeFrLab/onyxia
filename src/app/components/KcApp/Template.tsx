@@ -21,6 +21,7 @@ import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMo
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Paper } from "app/components/designSystem/Paper";
 import { Typography } from "app/components/designSystem/Typography";
+import Alert from "@material-ui/lab/Alert";
 
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";
@@ -233,6 +234,9 @@ const { Page } = (() => {
             "paper": {
                 "padding": theme.spacing(4),
                 "minWidth": 490,
+            },
+            "alert": {
+                "alignItems": "center"
             }
         })
     );
@@ -296,7 +300,8 @@ const { Page } = (() => {
             theme => ({
                 "root": {
                     "textAlign": "center",
-                    "marginTop": theme.spacing(4)
+                    "marginTop": theme.spacing(4),
+                    "marginBottom": theme.spacing(4)
                 }
             })
         );
@@ -424,6 +429,8 @@ const { Page } = (() => {
 
             const { msg } = useKcMessage();
 
+            const {classNames} = useClassNames({});
+
             return (
                 <div id="kc-content">
                     <div id="kc-content-wrapper">
@@ -437,13 +444,9 @@ const { Page } = (() => {
                                     !kcContext.isAppInitiatedAction
                                 )
                             ) &&
-                            <div className={cx("alert", `alert-${kcContext.message.type}`)}>
-                                {kcContext.message.type === "success" && <span className={cx(kcProps.kcFeedbackSuccessIcon)}></span>}
-                                {kcContext.message.type === "warning" && <span className={cx(kcProps.kcFeedbackWarningIcon)}></span>}
-                                {kcContext.message.type === "error" && <span className={cx(kcProps.kcFeedbackErrorIcon)}></span>}
-                                {kcContext.message.type === "info" && <span className={cx(kcProps.kcFeedbackInfoIcon)}></span>}
-                                <span className="kc-feedback-text">{kcContext.message.summary}</span>
-                            </div>
+                            <Alert className={classNames.alert} severity={kcContext.message.type}>
+                                {kcContext.message.summary}
+                            </Alert>
                         }
                         {formNode}
                         {
