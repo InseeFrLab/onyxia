@@ -22,6 +22,8 @@ jobs:
       react_envs_version: ${{ steps.step1.outputs.out2 }}
     steps:
     - uses: actions/checkout@v2
+      with:
+        lfs: true
     - uses: actions/setup-node@v1
     - run: |
         yarn --frozen-lockfile                                                                                                                                                                                        
