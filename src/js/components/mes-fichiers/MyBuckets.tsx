@@ -3,7 +3,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useAppConstants, useSelectedRegion } from "app/interfaceWithLib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
@@ -16,9 +16,8 @@ MyBuckets.requireUserLoggedIn = true as const;
 
 export function MyBuckets() {
 	const dispatch = useDispatch();
-	const region = useSelector(
-		state => state.regions.selectedRegion
-	);
+
+	const region = useSelectedRegion();
 
 	const { userProfile: { idep } } = useAppConstants(
 		{ "assertIsUserLoggedInIs": MyBuckets.requireUserLoggedIn }

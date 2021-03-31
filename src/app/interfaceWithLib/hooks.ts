@@ -38,6 +38,24 @@ export function useAppConstants(params?: { assertIsUserLoggedInIs: boolean; }): 
 
 }
 
+export function useSelectedRegion(){
+
+    const appConstants= useAppConstants();
+
+	const deploymentRegionId = useSelector(state=> 
+		appConstants.isUserLoggedIn ?
+			state.userConfigs.deploymentRegionId.value :
+			null
+	);
+
+	const selectedRegion = !appConstants.isUserLoggedIn ? 
+		undefined : 
+		appConstants.regions.find(({ id }) => id === deploymentRegionId);
+
+    return selectedRegion;
+
+};
+
 export function useMustacheParams() {
 
     const { oidcTokens, vaultToken } = useSelector(state => state.tokens);

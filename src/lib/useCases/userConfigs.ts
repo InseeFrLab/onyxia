@@ -27,7 +27,7 @@ export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     gitCredentialCacheDuration: number;
     isBetaModeEnabled: boolean;
     isDarkModeEnabled: boolean;
-    deploymentRegionId: string | null;
+    deploymentRegionId: string;
     githubPersonalAccessToken: string | null;
 }>;
 
@@ -46,12 +46,12 @@ const { reducer, actions } = createSlice({
         "debugMessage": "The userConfigState should have been initialized during the store initialization"
     }),
     "reducers": {
-        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userProfile: UserConfigs; }>]) => {
+        "initializationCompleted": (...[, { payload }]: [any, PayloadAction<{ userConfigs: UserConfigs; }>]) => {
 
-            const { userProfile } = payload;
+            const { userConfigs } = payload;
 
             return Object.fromEntries(
-                Object.entries(userProfile)
+                Object.entries(userConfigs)
                     .map(([key, value]) => [key, { value, "isBeingChanged": false }])
             ) as any;
 
@@ -120,7 +120,7 @@ export const privateThunks = {
 
             const { getIsDarkModeEnabledValueForProfileInitialization } = params;
 
-            const [dispatch, , { secretsManagerClient, oidcClient }] = args;
+            const [dispatch, , { secretsManagerClient, oidcClient, onyxiaApiClient }] = args;
 
             assert(oidcClient.isUserLoggedIn);
 
@@ -137,7 +137,7 @@ export const privateThunks = {
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
-                "deploymentRegionId": null,
+                "deploymentRegionId":  (await onyxiaApiClient.getConfigurations()).regions[0].id,
                 "githubPersonalAccessToken": null
             };
 
@@ -151,11 +151,18 @@ export const privateThunks = {
                             path
                         }).catch(() => undefined);
 
-                        if (
-                            !secretWithMetadata ||
-                            !("value" in secretWithMetadata.secret)
-                        ) {
+                        const isLegacyValue = (value: unknown)=> {
+                            switch(key){
+                                case "deploymentRegionId": return value === null;
+                            }
+                            return false;
+                        };
 
+                        const value = !secretWithMetadata ? undefined : secretWithMetadata.secret["value"];
+
+                        if ( value === undefined || isLegacyValue(value)) {
+
+                            //Store default value.
                             await secretsManagerClient.put({
                                 path,
                                 "secret": { "value": userConfigs[key] }
@@ -167,14 +174,14 @@ export const privateThunks = {
 
                         Object.assign(
                             userConfigs, 
-                            { [key]: secretWithMetadata.secret["value"] }
+                            { [key]: value }
                         );
 
                     }
                 )
             );
 
-            dispatch(actions.initializationCompleted({ userProfile: userConfigs }));
+            dispatch(actions.initializationCompleted({ userConfigs }));
 
         }
 };
