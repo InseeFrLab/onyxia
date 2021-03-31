@@ -10,6 +10,7 @@ import type { OidcClient } from "lib/ports/OidcClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
+import type { Region, Build } from "lib/ports/OnyxiaApiClient";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -31,6 +32,8 @@ export declare namespace AppConstant {
             email: string;
             nomComplet: string;
         };
+        regions: Region[];
+        build: Build;
         getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation> };
     } & Omit<OidcClient.LoggedIn, "evtOidcTokens">;
 
