@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import {
 	IconButton,
@@ -9,22 +9,20 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import { getConfiguration } from 'js/api/configuration';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
+import { useIsBetaModeEnabled, useAppConstants, useSelectedRegion } from "app/interfaceWithLib/hooks";
 
 const RegionBanner = () => {
-	const regions = useSelector(store => store.regions);
+
+	const appConstants = useAppConstants();
+	const selectedRegion = useSelectedRegion();
+	const regions= appConstants.isUserLoggedIn ? appConstants.regions : [];
+
 	const [open, setOpen] = useState(true);
 	const history = useHistory();
 	const { isBetaModeEnabled } = useIsBetaModeEnabled();
-	useEffect(() => {
-		if (!regions.selectedRegion) {
-			getConfiguration();
-		}
-	}, [regions.selectedRegion]);
 
-	return regions?.selectedRegion && (regions?.regions?.length ?? 0) > 1 && isBetaModeEnabled ? (
+	return selectedRegion && regions.length> 1 && isBetaModeEnabled ? (
 		<>
 			<Collapse in={open}>
 				<Alert
@@ -42,7 +40,7 @@ const RegionBanner = () => {
 					}
 				>
 					<Typography>
-						Vous déployez dans la région {regions.selectedRegion.name}
+						Vous déployez dans la région {selectedRegion.name}
 					</Typography>
 				</Alert>
 			</Collapse>

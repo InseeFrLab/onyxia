@@ -3,51 +3,18 @@ import Typography from '@material-ui/core/Typography';
 import dayjs from 'dayjs';
 import GitInfo from 'react-git-info/macro';
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
-import { getConfiguration } from 'js/api/configuration';
 import SelectRegion from './SelectRegion';
 import type { Region } from 'js/model/Region';
 import CopyableField from '../commons/copyable-field';
-import { actions as regionActions } from "js/redux/regions";
-import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
-import { useAsync } from "react-async-hook";
+import { useDispatch, useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
 import { thunks } from "lib/setup";
 
 export function About() {
 
-	//NOTE: We wrap the states in an object so we
-	//can establish that !!configuration => !!regions
-	const state = (function useClosure() {
-
-		const regions = useSelector(({ regions }) => regions.regions);
-		const selectedRegion = useSelector(({ regions }) => regions.selectedRegion);
-
-		//NOTE: After getConfiguration we know for sure that
-		//regions and selectedRegion are not undefined.
-		const configuration = useAsync(getConfiguration, []).result;
-
-		return {
-			configuration,
-			regions,
-			selectedRegion,
-		} as unknown as (
-				{
-					configuration: undefined;
-				} |
-				{
-					configuration: NonNullable<typeof configuration>;
-					regions: NonNullable<typeof regions>;
-					selectedRegion: NonNullable<typeof selectedRegion>;
-				}
-			);
-
-	})();
-
 	const dispatch = useDispatch();
 
-	/*
-	const changeRegion = (newRegion: Region) =>
-		dispatch(regionActions.regionChanged({ newRegion }));
-	*/
+	const { regions, build } = useAppConstants({ "assertIsUserLoggedInIs": true });
+	const deploymentRegionId = useSelector(state => state.userConfigs.deploymentRegionId.value);
 
 	const gitInfo = GitInfo();
 
@@ -56,32 +23,24 @@ export function About() {
 	const versionInterfaceDate = gitInfo.commit.date;
 
 	const serverVersion = useMemo(
-		() => !state.configuration ?
-			"Loading server version..."
-			:
-			[
-				state.configuration.build.version,
-				" (",
-				dayjs(state.configuration.build.timestamp * 1000).format(),
-				")"
-			].join(""),
-		[state.configuration]
+		() => [
+			build.version,
+			" (",
+			dayjs(build.timestamp * 1000).format(),
+			")"
+		].join(""),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
 	);
 
-
 	const onRegionSelected = useCallback(
-		(region: Region) => {
-
-			dispatch(regionActions.regionChanged({ "newRegion": region }));
-
+		(region: Region) =>
 			dispatch(
 				thunks.userConfigs.changeValue({
 					"key": "deploymentRegionId",
 					"value": region.id
 				})
-			);
-
-		},
+			),
 		[dispatch]
 	);
 
@@ -101,13 +60,11 @@ export function About() {
 				/>
 				<CopyableField label="Server version" value={serverVersion} copy />
 
-				{!state.configuration ?
-					<span>Fetching configuration</span> :
-					<SelectRegion
-						regions={state.regions}
-						selectedRegion={state.selectedRegion.id}
-						onRegionSelected={onRegionSelected}
-					/>}
+				<SelectRegion
+					regions={regions}
+					selectedRegion={deploymentRegionId}
+					onRegionSelected={onRegionSelected}
+				/>
 			</div>
 		</>
 	);

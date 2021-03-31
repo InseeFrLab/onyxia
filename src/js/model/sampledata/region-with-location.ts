@@ -6,19 +6,22 @@ export const regionWithLocation: Region = {
 	"name": "DG Insee",
 	"description": "A region with location data",
 	"services": {
-		"type": "MARATHON",
-		"namespacePrefix": "users",
-		"marathonDnsSuffix": "marathon.containerip.dcos.thisdcos.directory",
+		"type": 'MARATHON',
+		"defaultIpProtection": true,
+		"network": 'calico',
+		"namespacePrefix": 'users',
+		"marathonDnsSuffix": 'marathon.containerip.dcos.thisdcos.directory',
 		"expose": {
-			"domain": "apps.example.com"
+			"domain": 'lab.sspcloud.fr'
 		},
 		"monitoring": {
-			"URLPattern": "https://graphana.example.com/$appIdSlug"
+			"URLPattern": 'https://grafana.lab.sspcloud.fr/d/mZUaipcmk/app-generique?orgId=1&refresh=5s&var-id=$appIdSlug'
 		},
 		"cloudshell": {
-			"catalogId": "internal",
-			"packageName": "shelly"
-		}
+			"catalogId": 'internal',
+			"packageName": 'shelly'
+		},
+		"initScript": 'https://git.lab.sspcloud.fr/innovation/plateforme-onyxia/services-ressources/-/raw/master/onyxia-init.sh'
 	},
 	"data": {
 		"S3": {

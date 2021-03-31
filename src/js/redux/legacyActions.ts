@@ -1,7 +1,6 @@
 
 import * as myFiles from "./myFiles";
 import * as myLab from "./myLab";
-import * as regions from "./regions";
 import * as user from "./user";
 import * as app from "./app";
 
@@ -10,7 +9,6 @@ export const actions = {
 	...myLab.actions,
 	...app.actions,
 	...user.actions,
-	...regions.actions,
 };
 
 
