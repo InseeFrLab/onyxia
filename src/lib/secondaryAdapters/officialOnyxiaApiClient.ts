@@ -2,8 +2,10 @@
 import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
 import type { OidcClient } from "../ports/OidcClient";
 import axios from "axios";
-import type { AxiosInstance } from "axios";
+import type { AxiosInstance } from "axios";
 import { nonNullable } from "evt";
+import type { AsyncReturnType } from "evt/tools/typeSafety";
+import memoize from "memoizee";
 
 //import type { restApiPaths } from "js/restApiPaths";
 
@@ -41,20 +43,25 @@ export function createOfficialOnyxiaApiClient(
         /** null if user not logged in */
         oidcClient: OidcClient.LoggedIn | null;
     }
-): { 
-    onyxiaApiClient: OnyxiaApiClient; 
+): {
+    onyxiaApiClient: OnyxiaApiClient;
     //TODO: Eventually this should not be returned.
-    axiosInstance: AxiosInstance; 
+    axiosInstance: AxiosInstance;
 } {
 
     const { axiosInstance } = createAxiosInstance(params);
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        "getUserInfo": () => axiosInstance.get<{
-            ip: string;
-            nomComplet: string;
-        }>(restApiPaths.userInfo)
-            .then(({ data }) => data)
+        "getUserInfo": () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getUserInfo"]>>(
+            restApiPaths.userInfo
+        ).then(({ data }) => data),
+        "getConfigurations":
+            memoize(
+                () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getConfigurations"]>>(
+                    restApiPaths.configuration
+                ).then(({ data }) => data),
+                { "async": true }
+            )
     };
 
     return { onyxiaApiClient, axiosInstance };

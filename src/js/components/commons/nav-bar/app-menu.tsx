@@ -18,8 +18,8 @@ import {
 import { getValidatedEnv } from 'app/validatedEnv';
 import D from 'js/i18n';
 
-import type { RootState } from "lib/setup";
-import { useSelector, useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
+
+import { useIsBetaModeEnabled, useSelectedRegion } from "app/interfaceWithLib/hooks";
 
 const env = getValidatedEnv();
 
@@ -45,9 +45,8 @@ export default ({
 
 	const { isBetaModeEnabled } = useIsBetaModeEnabled();
 
-	const selectedRegion = useSelector(
-		(state: RootState) => state.regions.selectedRegion
-	);
+	const selectedRegion = useSelectedRegion();
+
 	return (
 		<Drawer anchor="left" open={open} onClose={handleClose}>
 			<div className="menu" tabIndex={0}>
