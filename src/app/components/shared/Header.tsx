@@ -46,8 +46,6 @@ export declare namespace Props {
 
 }
 
-const logoWidth = 53;
-
 const { useClassNames } = createUseClassNames<Props>()(
     (theme, { logoMaxWidth }) => ({
         "root": {
@@ -57,11 +55,15 @@ const { useClassNames } = createUseClassNames<Props>()(
         },
         "logoContainer": {
             "cursor": "pointer",
-            "width": Math.max(logoMaxWidth, logoWidth),
-            "textAlign": "center"
+            "width": logoMaxWidth,
+            "textAlign": "center",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center"
         },
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main
+            "fill": theme.custom.colors.palette.exuberantOrange.main,
+            "width": 53,
         }
     })
 );
@@ -72,23 +74,17 @@ export const Header = memo((props: Props) => {
 
     const { t } = useTranslation("Header");
 
-    const { domRect: { height }, ref } = useDomRect();
-
-    const { classNames } = useClassNames(props);
+    const { classNames } = useClassNames(props );
 
     const theme = useTheme();
 
     return (
-        <header className={cx(classNames.root, className)} ref={ref}>
+        <header className={cx(classNames.root, className)}>
             <div
                 onClick={onLogoClick}
                 className={classNames.logoContainer}
             >
-                <OnyxiaLogoSvg
-                    className={classNames.svg}
-                    width={logoWidth}
-                    height={height}
-                />
+                <OnyxiaLogoSvg className={classNames.svg} />
             </div>
             <div
                 onClick={onLogoClick}
