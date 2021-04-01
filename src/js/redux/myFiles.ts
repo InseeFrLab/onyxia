@@ -210,7 +210,7 @@ const asyncThunks = {
 			dispatch(
 				syncActions.loadUserBuckets({
 					"buckets":
-						[idep, ...groups].map((id, i) => ({
+						[idep, ...groups.map(g=> `projet-${g}`)].map((id, i) => ({
 							id,
 							"description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
 							"isPublic": false

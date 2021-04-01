@@ -49,6 +49,8 @@ to connect to the services hosted on the sspcloud (INSEE's Data center in Paris)
 The app is configured using [environnement variables](https://gist.github.com/garronej/e0f7485fac23e8aa0ceda6ce82256df6).
 
 ```bash
+# Download the binary files (images, fonts ect, you need git LFS)
+git lfs install && git lfs pull
 yarn install
 wget https://gist.githubusercontent.com/garronej/e0f7485fac23e8aa0ceda6ce82256df6/raw/0cb60c6759d4e3005c15c9ca9706316e08013fc2/.env.local #Setup the var envs to tell the app to connect to INSEE's infra
 yarn start # To launch the app

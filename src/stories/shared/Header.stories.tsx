@@ -45,7 +45,7 @@ const { useIsCloudShellVisible } = (() => {
 })();
 
 
-export const Core = getStory({
+export const Vue1 = getStory({
     "className": css({ width, "height": 64, paddingRight }),
     "isUserLoggedIn": false,
     "type": "core",
@@ -54,7 +54,7 @@ export const Core = getStory({
     ...logCallbacks(["onLogoClick", "onAuthClick"])
 });
 
-export const Keycloak = getStory({
+export const Vue2 = getStory({
     "className": css({ width, "height": 64, paddingRight }),
     "type": "keycloak",
     logoMaxWidth,

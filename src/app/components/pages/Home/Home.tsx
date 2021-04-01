@@ -65,7 +65,8 @@ const { useClassNames } = createUseClassNames()(
 			"margin": theme.spacing(0, 2)
 		},
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main
+            "fill": theme.custom.colors.palette.exuberantOrange.main,
+			"width": 122
         }
 	})
 )
@@ -90,7 +91,7 @@ export function Home() {
 			<div className={classNames.hero} >
 				<div className={classNames.heroTextWrapper}>
 
-					<OnyxiaLogoSvg className={classNames.svg} width={122} height={80} />
+					<OnyxiaLogoSvg className={classNames.svg}/>
 					<Typography variant="h2">
 						{
 							appConstants.isUserLoggedIn ?
