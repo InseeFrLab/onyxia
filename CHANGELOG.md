@@ -1,3 +1,17 @@
+### **0.7.17** (2021-04-01)  
+  
+- Merge pull request #217 from InseeFrLab/develop
+
+Impl #215  
+- Projet prefix for bucket  
+- Use CSS to style inline SVGs  
+- Add note about git LFS in the readme  
+- Use LFS in workflow  
+- Merge remote-tracking branch 'origin/master' into develop  
+- Merge pull request #219 from thieryw/work_on_login
+
+alert messages on login with material-ui    
+  
 
 ### **0.7.16** (2021-03-31)  
   
