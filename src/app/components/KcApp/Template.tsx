@@ -221,7 +221,7 @@ const { Page } = (() => {
         showUsernameNode?: ReactNode;
         formNode: ReactNode;
         infoNode?: ReactNode;
-    } & { kcContext: KcContext.Template; } & KcTemplateProps;
+    } & { kcContext: KcContext; } & KcTemplateProps;
 
 
     const { useClassNames } = createUseClassNames()(
@@ -294,7 +294,7 @@ const { Page } = (() => {
             displayRequiredFields: boolean;
             headerNode: ReactNode;
             showUsernameNode?: ReactNode;
-        } & { kcContext: KcContext.Template; } & KcTemplateProps;
+        } & { kcContext: KcContext; } & KcTemplateProps;
 
         const { useClassNames } = createUseClassNames()(
             theme => ({
@@ -407,7 +407,7 @@ const { Page } = (() => {
             displayWide?: boolean;
             displayInfo?: boolean;
             infoNode?: ReactNode;
-        } & { kcContext: KcContext.Template; } & KcTemplateProps;
+        } & { kcContext: KcContext; } & KcTemplateProps;
 
         const Main = memo((props: Props) => {
 
