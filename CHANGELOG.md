@@ -1,3 +1,10 @@
+### **0.7.18** (2021-04-01)  
+  
+- Merge pull request #222 from InseeFrLab/develop
+
+Develop  
+- Fix 500 errors on login pages    
+  
 ### **0.7.17** (2021-04-01)  
   
 - Merge pull request #217 from InseeFrLab/develop
