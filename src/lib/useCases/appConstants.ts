@@ -11,6 +11,7 @@ import type { OidcClient } from "lib/ports/OidcClient";
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
 import type { Region, Build } from "lib/ports/OnyxiaApiClient";
+import type { KcLanguageTag } from "keycloakify";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -31,6 +32,8 @@ export declare namespace AppConstant {
             idep: string;
             email: string;
             nomComplet: string;
+            locale: KcLanguageTag;
+            
         };
         regions: Region[];
         build: Build;

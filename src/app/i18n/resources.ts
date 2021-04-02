@@ -42,9 +42,7 @@ export type I18nSchemes = typeof reflectedI18nSchemes;
 
 export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
 
-export const supportedLanguages= ["en", "fr"] as const;
-
-export type SupportedLanguage = typeof supportedLanguages[number];
+export type SupportedLanguage =  "en" | "fr";
 
 const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
     "en": {

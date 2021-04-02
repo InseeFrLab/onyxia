@@ -2,6 +2,7 @@
 import type { StatefulReadonlyEvt } from "evt";
 import { nonNullable } from "evt";
 import * as jwtSimple from "jwt-simple";
+import type { KcLanguageTag } from "keycloakify";
 
 
 
@@ -58,6 +59,7 @@ export type ParsedOidcAccessToken = {
     idep: string;
     email: string;
     groups: string[];
+    locale: KcLanguageTag;
 };
 
 export type ParsedJwt = {
@@ -66,6 +68,7 @@ export type ParsedJwt = {
     name: string;
     email: string;
     groups: string[];
+    locale: KcLanguageTag;
 };
 
 export async function parseOidcAccessToken(
@@ -78,16 +81,20 @@ export async function parseOidcAccessToken(
         true
     ) as ParsedJwt;
 
+    console.log(JSON.stringify(parsedJwt, null, 2));
+
     const {
         email,
         preferred_username,
-        groups
+        groups,
+        locale
     } =  parsedJwt;
 
     return {
         "idep": preferred_username,
         email,
-        groups
+        groups,
+        locale
     };
 
 }
