@@ -88,7 +88,8 @@ function createFakeTokenApi(
                     ...parsedJwt,
                     "gitlab_group": null,
                     "name": "",
-                    "groups": [ "sspcloud-admin" ]    
+                    "groups": [ "sspcloud-admin" ],
+                    "locale": "en"
                 }),
                 "xxx"
             ),

@@ -48,9 +48,9 @@ export const privateThunks = {
 
             const { nomComplet } = await getNomCompletAndSetIp();
 
-            const { email, idep } = await parseOidcAccessToken(oidcClient);
+            const { email, idep, locale } = await parseOidcAccessToken(oidcClient);
 
-            return { email, idep, nomComplet };
+            return { email, idep, nomComplet, locale };
 
         }
 };

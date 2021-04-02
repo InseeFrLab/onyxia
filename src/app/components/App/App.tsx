@@ -7,7 +7,12 @@ import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { css, cx } from "tss-react";
-import { useAppConstants, useSelector, useSyncDarkModeWithValueInProfile } from "app/interfaceWithLib/hooks";
+import { 
+    useAppConstants, 
+    useSelector, 
+    useSyncDarkModeWithValueInProfile, 
+    useApplyLanguageSelectedAtLogin 
+} from "app/interfaceWithLib/hooks";
 import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/router";
@@ -86,6 +91,8 @@ export const App = memo((props: Props) => {
     const { className } = props;
 
     useSyncDarkModeWithValueInProfile();
+
+    useApplyLanguageSelectedAtLogin();
 
     const appConstants = useAppConstants();
 

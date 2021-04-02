@@ -9,6 +9,10 @@ import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "evt/tools/typeSafety/assert";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { useEffectOnValueChange } from "powerhooks";
+import { useLng } from "app/i18n/useLng";
+import type { SupportedLanguage } from "app/i18n/resources";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { id } from "evt/tools/typeSafety/id";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -115,6 +119,48 @@ export function useIsBetaModeEnabled(): {
 
 };
 
+/** On the login pages hosted by keycloak the user can select 
+ * a language, we want to use this language on the app.
+ * For example we want that if a user selects english on the 
+ * register page while signing in that the app be set to english
+ * automatically. 
+ * This is what this hook does it look for the language selected 
+ * at login time in the oidc JWT and if it is a language available
+ * on the app, it applies it.
+ */
+export function useApplyLanguageSelectedAtLogin() {
+
+    const appConstants = useAppConstants();
+
+    const { setLng } = useLng();
+
+    useEffect(
+        () => {
+
+            if( !appConstants.isUserLoggedIn ){
+                return;
+            }
+
+            const { locale } = appConstants.userProfile;
+
+            if( 
+                !typeGuard<SupportedLanguage>(
+                    locale, 
+                    locale in id<Record<SupportedLanguage, null>>({ "en": null, "fr": null })
+                )
+            ) {
+                return;
+            }
+
+            setLng(locale);
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
+
+}
+
 
 /**
  * This hook to two things:
@@ -155,7 +201,7 @@ export function useSyncDarkModeWithValueInProfile() {
     useEffectOnValueChange(
         () => {
 
-            if( !isUserLoggedIn ){
+            if (!isUserLoggedIn) {
                 return;
             }
 
