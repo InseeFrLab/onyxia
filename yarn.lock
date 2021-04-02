@@ -9974,18 +9974,18 @@ keycloak-js@^10.0.2:
     base64-js "1.3.1"
     js-sha256 "0.9.0"
 
-keycloakify@^0.3.19:
-  version "0.3.19"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.3.19.tgz#b3a391ba95698726064fc640f540c934fc962b63"
-  integrity sha512-2Ujqoj0eXsv+YJBD+iv3Uy918yqGBuA85Ul1zUtkhU6TI4HWHJf3QPnovLZ7r7g89ifGyg0XnUbohzr4R+Ds3w==
+keycloakify@^0.3.20:
+  version "0.3.20"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.3.20.tgz#be3a17908a090918bb5a38436b152c2fe6b759e7"
+  integrity sha512-YlZoenR7lW34AIhSJJqOEUAqu2KHJzYHjqnwKbjJZIM+HcAwTy1nZT+QZ3Zw6EektbQxo5xNmxf4p3NNnkP7UA==
   dependencies:
     cheerio "^1.0.0-rc.5"
     evt "2.0.0-beta.15"
     minimal-polyfills "^2.1.6"
     path "^0.12.7"
-    powerhooks "^0.0.27"
+    powerhooks "^0.0.32"
     scripting-tools "^0.19.13"
-    tss-react "^0.0.11"
+    tss-react "^0.0.12"
 
 killable@^1.0.1:
   version "1.0.1"
@@ -12425,15 +12425,6 @@ postcss@^8.1.0:
     colorette "^1.2.2"
     nanoid "^3.1.20"
     source-map "^0.6.1"
-
-powerhooks@^0.0.27:
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.27.tgz#e9dc29258860d2f6bf32b249d9cba07c6f53f393"
-  integrity sha512-ohayWhtIEdLqiC2th/GEhaRfOhqekFg2uFo0JZ8Dn7oTnAZybs618QJeq5ag9oy3lFVzl+kbROpVa8Ch5zrkaA==
-  dependencies:
-    evt "2.0.0-beta.15"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
 
 powerhooks@^0.0.32:
   version "0.0.32"
@@ -15207,6 +15198,13 @@ tss-react@^0.0.11:
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-0.0.11.tgz#1cd061927744cd4fc9b7346e2fd1cfcf896a18d5"
   integrity sha512-j8CDpHHIl6S6/mX+AmK08v7waPqwgNA7urHOD3qknCgbY79LRlS7he5DF4NUNE/5B4/Btc3F25w+KqgChNbyGw==
+  dependencies:
+    "@emotion/css" "^11.1.3"
+
+tss-react@^0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-0.0.12.tgz#6463617ae5e7f670742e48e497d8825d59e2a2e9"
+  integrity sha512-oHekukqdaE71uhHx4XEdHy6aMnDYhoHLWB94iy2Fy9X8btH2lJH1joPj0zS1q7+1Xy2TydkLEZsTq3ElVd7ZqA==
   dependencies:
     "@emotion/css" "^11.1.3"
 

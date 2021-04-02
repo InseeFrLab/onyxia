@@ -1,10 +1,9 @@
 import i18n from "i18next";
-import type { SupportedLanguage, supportedLanguages } from "./resources";
+import type { SupportedLanguage } from "./resources";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { id } from "evt/tools/typeSafety/id";
 import { createUseGlobalState } from "powerhooks";
 import { getEvtKcLanguage } from "keycloakify";
-import { kcContext, } from "keycloakify";
 
 export const { useLng, evtLng } = createUseGlobalState(
     "lng",
@@ -25,16 +24,4 @@ export const { useLng, evtLng } = createUseGlobalState(
     }
 );
 
-if (kcContext === undefined) {
-
-    evtLng.attach(lng => getEvtKcLanguage().state = lng);
-
-} else {
-
-    getEvtKcLanguage()
-        .attach(
-            kcLng => id<readonly string[]>(id<typeof supportedLanguages>(["en", "fr"])).includes(kcLng),
-            kcLng => evtLng.state = kcLng as SupportedLanguage
-        );
-
-}
+evtLng.attach(lng => getEvtKcLanguage().state = lng);
