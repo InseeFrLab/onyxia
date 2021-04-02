@@ -1,3 +1,10 @@
+### **0.7.19** (2021-04-02)  
+  
+- Merge pull request #223 from InseeFrLab/develop
+
+Develop  
+- Fix register issues    
+  
 ### **0.7.18** (2021-04-01)  
   
 - Merge pull request #222 from InseeFrLab/develop
