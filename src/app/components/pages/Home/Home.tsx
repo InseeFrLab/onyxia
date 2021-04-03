@@ -95,7 +95,7 @@ export function Home() {
 					<Typography variant="h2">
 						{
 							appConstants.isUserLoggedIn ?
-								t("welcome", { "who": appConstants.userProfile.nomComplet }) :
+								t("welcome", { "who": appConstants.parsedJwt.given_name }) :
 								t("title")
 						}
 					</Typography>

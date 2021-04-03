@@ -34,7 +34,7 @@ interface CloudShellData {
 
 export const CloudShell = memo(() => {
 
-	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
+	const { parsedJwt: { preferred_username } } = useAppConstants({ "assertIsUserLoggedInIs": true });
 	const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(undefined);
 	const [url, setUrl] = useState<string | undefined>(undefined);
 	const { isCloudShellVisible, setIsCloudShellVisible}= useIsCloudShellVisible();
@@ -172,7 +172,7 @@ export const CloudShell = memo(() => {
 						aria-label="delete"
 						onClick={() => {
 							setIsCloudShellVisible(false);
-							(deleteCloudShell as any)(idep);
+							(deleteCloudShell as any)(preferred_username);
 						}}
 						className="close-shell"
 					>

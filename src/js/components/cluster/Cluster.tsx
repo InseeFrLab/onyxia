@@ -22,7 +22,7 @@ const Cluster = () => {
 
 
 	const oidcAccessToken = useSelector(state => state.tokens.oidcTokens.accessToken);
-	const { userProfile: { idep }} = useAppConstants({ "assertIsUserLoggedInIs": true });
+	const { parsedJwt: { preferred_username }} = useAppConstants({ "assertIsUserLoggedInIs": true });
 
 	return (
 		<>
@@ -51,7 +51,7 @@ const Cluster = () => {
 						</>}
 					<CopyableField copy label="Token" value={oidcAccessToken} />
 					<ExportCredentialsField
-						credentials={{ idep, oidcAccessToken }}
+						credentials={{ "idep": preferred_username, oidcAccessToken }}
 						exportTypes={exportKub}
 						text={D.exportKub}
 					/>

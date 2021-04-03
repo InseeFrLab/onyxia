@@ -3,10 +3,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "evt/tools/typeSafety/id";
 import { assert } from "evt/tools/typeSafety/assert";
 import { getValidatedEnv } from "app/validatedEnv";
-import type { AppThunk } from "lib/setup";
-import { parseOidcAccessToken } from "lib/ports/OidcClient";
-import type { AppConstant } from "lib/useCases/appConstants";
-import type { NonPostableEvt } from "evt";
 
 export type S3 = {
     AWS_ACCESS_KEY_ID: string;
@@ -18,48 +14,16 @@ export type S3 = {
 };
 
 export type UserState = {
-    ip: string;
     s3: S3 | undefined;
 };
 
 export const name = "user";
 
-export const privateThunks = {
-    "initializeAndGetUserProfile":
-        (params: { evtBackOnline: NonPostableEvt<void>; }): AppThunk<Promise<AppConstant.LoggedIn["userProfile"]>> => async (...args) => {
-
-            const { evtBackOnline } = params;
-
-            const [dispatch, , { oidcClient, onyxiaApiClient }] = args;
-
-            assert(oidcClient.isUserLoggedIn);
-
-            const getNomCompletAndSetIp = async () => {
-
-                const { ip, nomComplet } = await onyxiaApiClient.getUserInfo();
-
-                dispatch(slice.actions.setIp(ip));
-
-                return { nomComplet };
-
-            };
-
-            evtBackOnline.attach(getNomCompletAndSetIp);
-
-            const { nomComplet } = await getNomCompletAndSetIp();
-
-            const { email, idep, locale } = await parseOidcAccessToken(oidcClient);
-
-            return { email, idep, nomComplet, locale };
-
-        }
-};
 
 const slice = createSlice({
     name,
     "initialState": id<UserState>({
         "s3": undefined,
-        "ip": ""
     }),
     "reducers": {
         /*
@@ -103,12 +67,6 @@ const slice = createSlice({
                 "AWS_S3_ENDPOINT": getValidatedEnv().MINIO.END_POINT
             };
 
-        },
-        "setIp": (
-            state,
-            { payload }: PayloadAction<string>
-        ) => {
-            state.ip = payload;
         }
     }
 });

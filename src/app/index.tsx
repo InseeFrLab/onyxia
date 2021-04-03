@@ -64,7 +64,11 @@ function Root() {
                             "tokenValidityDurationMs": Infinity,
                             "parsedJwt": {
                                 "email": "john.doe@insee.fr",
-                                "preferred_username": "doej"
+                                "preferred_username": "jdoe",
+                                "family_name": "Doe",
+                                "given_name": "John",
+                                "groups": [],
+                                "locale": "fr"
                             }
                         }),
                 "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({

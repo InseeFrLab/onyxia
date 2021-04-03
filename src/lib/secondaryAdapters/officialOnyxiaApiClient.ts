@@ -52,10 +52,11 @@ export function createOfficialOnyxiaApiClient(
     const { axiosInstance } = createAxiosInstance(params);
 
     const onyxiaApiClient: OnyxiaApiClient = {
+        /*
         "getUserInfo": () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getUserInfo"]>>(
             restApiPaths.userInfo
-        // eslint-disable-next-line no-sequences
-        ).then(({ data }) => (console.log("getUserInfo", JSON.stringify(data,null,2)),data)),
+        ).then(({ data }) => data),
+        */
         "getConfigurations":
             memoize(
                 () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getConfigurations"]>>(

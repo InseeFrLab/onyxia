@@ -73,7 +73,6 @@ export const NouveauService: React.FC<Props> = ({
 	const [contract, setContract] = useState<object | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
 	const { isBetaModeEnabled } = useIsBetaModeEnabled();
-	//TODO: This should be private
 	const appConstants = useAppConstants();
 
 	const queryParams = queryString.decode(getCleanParams());
@@ -237,7 +236,7 @@ export const NouveauService: React.FC<Props> = ({
 								</Typography>
 							</div>
 							<Formulaire
-								user={{ "idep": appConstants.isUserLoggedIn ? appConstants.userProfile.idep : "" }}
+								user={{ "idep": appConstants.isUserLoggedIn ? appConstants.parsedJwt.preferred_username : "" }}
 								name={ongletContent.nom}
 								handleChange={handlechangeField}
 								fields={ongletContent.fields}

@@ -55,25 +55,19 @@ export declare namespace OidcClient {
 
 }
 
-export type ParsedOidcAccessToken = {
-    idep: string;
-    email: string;
-    groups: string[];
-    locale: KcLanguageTag;
-};
 
 export type ParsedJwt = {
-    gitlab_group: string[] | null;
-    preferred_username: string;
-    name: string;
     email: string;
+    family_name: string; //Obama
+    given_name: string; //Barack
+    preferred_username: string; //obarack, the idep
     groups: string[];
     locale: KcLanguageTag;
 };
 
 export async function parseOidcAccessToken(
     oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
-): Promise<ParsedOidcAccessToken> {
+): Promise<ParsedJwt> {
 
     const parsedJwt = jwtSimple.decode(
         (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
@@ -81,20 +75,6 @@ export async function parseOidcAccessToken(
         true
     ) as ParsedJwt;
 
-    console.log("parsedJWT", JSON.stringify(parsedJwt, null, 2));
-
-    const {
-        email,
-        preferred_username,
-        groups,
-        locale
-    } =  parsedJwt;
-
-    return {
-        "idep": preferred_username,
-        email,
-        groups,
-        locale
-    };
+    return parsedJwt;
 
 }

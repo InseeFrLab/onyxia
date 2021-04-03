@@ -19,8 +19,9 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 
 export type BuildMustacheViewParams = {
 	s3: NonNullable<RootState["user"]["s3"]>;
-	ip: string;
-	userProfile: AppConstant.LoggedIn["userProfile"];
+	publicIp: string;
+	parsedJwt: Pick<AppConstant.LoggedIn["parsedJwt"], "preferred_username" | "email" | "family_name" | "given_name">;
+	secretExplorerUserHomePath: string;
 	userConfigs: UserConfigs;
 	keycloakConfig: AppConstant["keycloakConfig"];
 	vaultClientConfig: AppConstant["vaultClientConfig"];
@@ -34,19 +35,20 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 	const env = getValidatedEnv();
 
 	const {
-		s3, ip, userProfile,
+		s3, publicIp, parsedJwt,
 		userConfigs,
+		secretExplorerUserHomePath,
 		vaultClientConfig, oidcTokens, vaultToken
 	} = params;
 
 	return {
 		"user": {
-			"idep": userProfile.idep,
-			"name": userProfile.nomComplet,
-			"email": userProfile.email,
+			"idep": parsedJwt.preferred_username,
+			"name": `${parsedJwt.family_name} ${parsedJwt.given_name}`,
+			"email": parsedJwt.email,
 			"password": userConfigs.userServicePassword,
 			"key": "https://example.com/placeholder.gpg",
-			"ip": ip,
+			"ip": publicIp,
 		},
 		"git": {
 			"name": userConfigs.gitName,
@@ -64,12 +66,12 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 			"VAULT_ADDR": vaultClientConfig.baseUri,
 			"VAULT_TOKEN": vaultToken,
 			"VAULT_MOUNT": vaultClientConfig.engine,
-			"VAULT_TOP_DIR": userProfile.idep,
+			"VAULT_TOP_DIR": secretExplorerUserHomePath
 		},
 		"kaggleApiToken": userConfigs.kaggleApiToken,
 		"s3": {
 			...s3,
-			"AWS_BUCKET_NAME": userProfile.idep
+			"AWS_BUCKET_NAME": parsedJwt.preferred_username
 		}
 	};
 
