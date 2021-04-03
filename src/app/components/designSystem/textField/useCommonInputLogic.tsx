@@ -10,16 +10,20 @@ import { useEvt } from "evt/hooks";
 import { useEffectOnValueChange } from "powerhooks";
 import type { ReturnType } from "evt/tools/typeSafety";
 
+//Note for later: https://material-ui.com/components/autocomplete/#limitations password validate
+
 export type Props = {
     className?: string | null;
-    tabIndex?: number | null;
     id?: string | null;
     name?: string | null;
     autoComplete?: "on" | "off";
     type?: "text" | "password";
     /** Will overwrite value when updated */
     defaultValue: string;
-    inputProps: { 'aria-label': string; };
+    inputProps?: { 
+        'aria-label'?: string; 
+        tabIndex?: number;
+    };
     autoFocus?: boolean;
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
@@ -37,7 +41,6 @@ export type Props = {
 
 export const defaultProps: Optional<Props> = {
     "className": null,
-    "tabIndex": null,
     "id": null,
     "name": null,
     "autoComplete": "off",
@@ -46,6 +49,7 @@ export const defaultProps: Optional<Props> = {
     "color": null,
     "disabled": false,
     "multiline": false,
+    "inputProps": {},
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
@@ -62,7 +66,6 @@ export function useCommonInputLogic(props: Props) {
 
     const {
         className,
-        tabIndex,
         id,
         name,
         autoComplete,
@@ -168,7 +171,6 @@ export function useCommonInputLogic(props: Props) {
 
     return {
         "className": className ?? undefined,
-        "tabIndex": tabIndex ?? undefined,
         "id": id ?? undefined,
         "name": name ?? undefined,
         autoComplete,

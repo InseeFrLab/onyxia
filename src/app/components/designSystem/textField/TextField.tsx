@@ -84,5 +84,3 @@ export const TextField = memo((props: TextFieldProps) => {
     );
 
 });
-
-alert("up");
