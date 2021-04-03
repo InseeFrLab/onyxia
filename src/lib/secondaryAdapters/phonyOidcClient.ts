@@ -8,7 +8,7 @@ import * as jwtSimple from "jwt-simple";
 export async function createPhonyOidcClient(
     params: {
         tokenValidityDurationMs: number;
-        parsedJwt: Pick<ParsedJwt, "email" | "preferred_username">;
+        parsedJwt: ParsedJwt;
     }
 ): Promise<OidcClient.LoggedIn> {
 
@@ -84,12 +84,7 @@ function createFakeTokenApi(
 
         const oidcTokens: OidcTokens = {
             "accessToken": jwtSimple.encode(
-                id<ParsedJwt>({
-                    ...parsedJwt,
-                    "gitlab_group": null,
-                    "name": "",
-                    "groups": [ "sspcloud-admin" ]    
-                }),
+                parsedJwt,
                 "xxx"
             ),
             "idToken": `fake id token n°${count}`,

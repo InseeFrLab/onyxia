@@ -4,7 +4,7 @@ import { cx } from "tss-react";
 import { useEffect } from "react";
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import { useSelector, useDispatch, useEvtSecretsManagerTranslation, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { Props as ExplorerProps } from "app/components/shared/Explorer";
 import * as lib from "lib/setup";
@@ -20,6 +20,7 @@ import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 
 
 /*
@@ -104,13 +105,7 @@ export function MySecrets(props: Props) {
     );
 
 
-    const { userHomePath } = (function useClosure() {
-
-        const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
-        const userHomePath = pure.getUserHomePath({ idep });
-        return { userHomePath };
-
-    })();
+    const { secretExplorerUserHomePath: userHomePath } = useSecretExplorerUserHomePath();
 
     useEffect(
         () => {

@@ -68,11 +68,13 @@ function useMonitoringUrl(params: { serviceId: string; }) {
 	const monitoringURLPattern = selectedRegion?.services.monitoring?.URLPattern;
 	const namespacePrefix = selectedRegion?.services.namespacePrefix;
 
+
+
 	const idep = (function useClosure() {
 
 		const appConstants = useAppConstants();
 
-		return appConstants.isUserLoggedIn ? appConstants.userProfile.idep : undefined;
+		return appConstants.isUserLoggedIn ? appConstants.parsedJwt.preferred_username : undefined;
 
 	})();
 

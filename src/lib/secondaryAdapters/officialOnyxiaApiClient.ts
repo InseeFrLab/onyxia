@@ -52,15 +52,17 @@ export function createOfficialOnyxiaApiClient(
     const { axiosInstance } = createAxiosInstance(params);
 
     const onyxiaApiClient: OnyxiaApiClient = {
+        /*
         "getUserInfo": () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getUserInfo"]>>(
             restApiPaths.userInfo
         ).then(({ data }) => data),
+        */
         "getConfigurations":
             memoize(
                 () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getConfigurations"]>>(
                     restApiPaths.configuration
                 ).then(({ data }) => data),
-                { "async": true }
+                { "promise": true }
             )
     };
 

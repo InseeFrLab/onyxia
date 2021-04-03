@@ -26,7 +26,11 @@ const getStoreInitializationParams: StoreProviderProps["getStoreInitializationPa
         "tokenValidityDurationMs": Infinity,
         "parsedJwt": {
             "email": "john.doe@insee.fr",
-            "preferred_username": "doej"
+            "preferred_username": "jdoe",
+            "family_name": "Doe",
+            "given_name": "John",
+            "groups": [ "sspcloud-admin", "dsi-ddc" ],
+            "locale": "en"
         }
     }),
     "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
@@ -41,8 +45,6 @@ const getStoreInitializationParams: StoreProviderProps["getStoreInitializationPa
     }),
     "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Mock>({
         "implementation": "MOCK",
-        "ip": "185.24.1.1",
-        "nomComplet": "John Doe",
         regions,
         build
     })

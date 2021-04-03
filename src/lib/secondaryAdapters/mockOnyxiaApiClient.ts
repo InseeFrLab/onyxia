@@ -5,18 +5,16 @@ import memoize from "memoizee";
 
 export function createMockOnyxiaApiClient(
     params: {
-        ip: string;
-        nomComplet: string;
         regions: Region[];
         build: Build;
     }
 ): { onyxiaApiClient: OnyxiaApiClient; } {
 
-    const { ip, nomComplet, regions, build } = params;
+    const { regions, build } = params;
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        "getUserInfo": () => Promise.resolve({ ip, nomComplet }),
-        "getConfigurations": memoize(()=> Promise.resolve({ regions, build }), { "async": true })
+        //"getUserInfo": () => Promise.resolve({ ip, nomComplet }),
+        "getConfigurations": memoize(()=> Promise.resolve({ regions, build }), { "promise": true })
     };
 
     return { onyxiaApiClient };
