@@ -1,3 +1,12 @@
+### **0.7.20** (2021-04-03)  
+  
+- Merge pull request #224 from InseeFrLab/develop
+
+Develop  
+- stop using user/info endpoint  
+- Implement custom hook for getting public IP  
+- Restore language from login back to app    
+  
 ### **0.7.19** (2021-04-02)  
   
 - Merge pull request #223 from InseeFrLab/develop
