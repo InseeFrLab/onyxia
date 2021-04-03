@@ -12569,10 +12569,10 @@ powerhooks@^0.0.32:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
 
-powerhooks@^0.0.34:
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.34.tgz#9c584599c945e630ba1057966499fb7af2fb765f"
-  integrity sha512-Yoiuzfj6EQaFFI/n6sA9ad6pvPFFaxAiuUKb5tXEhdbTOvYgtyukLoPWdlHe5Qvme8Vi2yaD/t4oJ8ZR11PUNA==
+powerhooks@^0.0.35:
+  version "0.0.35"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.35.tgz#efc5e87475ec35bcfe695ba2da6caf63524aae21"
+  integrity sha512-wCUDQdDawv5txiHKYUIUitqF9p+6sYGL0Fvqzbze3PcGHlyQsvHkODpVWdRwi87Qc4SrRs5xfwdwvpuaEflkAQ==
   dependencies:
     evt "2.0.0-beta.15"
     memoizee "^0.4.15"

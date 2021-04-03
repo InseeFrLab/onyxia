@@ -1,14 +1,14 @@
 
 
 import { useState, useEffect } from "react";
-import { useConstCallback } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { useEffectOnValueChange } from "powerhooks";
-import type { ReturnType } from "evt/tools/typeSafety";
+import type { ReturnType } from "evt/tools/typeSafety";
 
 //Note for later: https://material-ui.com/components/autocomplete/#limitations password validate
 
@@ -17,19 +17,21 @@ export type Props = {
     id?: string | null;
     name?: string | null;
     autoComplete?: "on" | "off";
-    type?: "text" | "password";
+    type?: "text" | "password";
     /** Will overwrite value when updated */
     defaultValue: string;
-    inputProps?: { 
-        'aria-label'?: string; 
+    inputProps?: {
+        'aria-label'?: string;
         tabIndex?: number;
     };
     autoFocus?: boolean;
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
     multiline?: boolean;
-    onEscapeKeyDown?: () => void;
-    onEnterKeyDown?: () => void;
+
+    /** Return false to e.preventDefault() and e.stopPropagation() */
+    onEscapeKeyDown?(params: { preventDefaultAndStopPropagation(): void; }): void;
+    onEnterKeyDown?(params: { preventDefaultAndStopPropagation(): void; }): void;
     onBlur?(): void;
     evtAction?: NonPostableEvt<"TRIGGER SUBMIT" | "RESTORE DEFAULT VALUE"> | null;
     onSubmit?(params: { value: string; isValidValue: boolean; }): void;
@@ -53,8 +55,8 @@ export const defaultProps: Optional<Props> = {
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
-    "onSubmit": ()=> {},
-    "getIsValidValue": ()=> ({ "isValidValue": true }),
+    "onSubmit": () => { },
+    "getIsValidValue": () => ({ "isValidValue": true }),
     "evtAction": null,
     "onValueBeingTypedChange": () => { },
     "transformValueBeingTyped": id,
@@ -159,11 +161,18 @@ export function useCommonInputLogic(props: Props) {
                 return;
             }
 
-            event.preventDefault();
+            const preventDefaultAndStopPropagation = () => {
+                event.preventDefault();
+                event.stopPropagation();
+            };
 
             switch (key) {
-                case "Escape": onEscapeKeyDown(); return;
-                case "Enter": onEnterKeyDown(); return;
+                case "Escape":
+                    onEscapeKeyDown({ preventDefaultAndStopPropagation });
+                    break;
+                case "Enter":
+                    onEnterKeyDown({ preventDefaultAndStopPropagation });
+                    break;
             }
 
         }
@@ -188,4 +197,3 @@ export function useCommonInputLogic(props: Props) {
     };
 
 }
-

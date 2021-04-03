@@ -75,7 +75,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const { classNames } = useClassNames({});
 
 
-    const getUsernameIsValidValue = useConstCallback<NonNullable<TextFieldProps["getIsValidValue"]>>(
+    const getUsernameIsValidValue = useConstCallback<TextFieldProps["getIsValidValue"]>(
         value => {
 
             if (value.includes(" ")) {
@@ -90,7 +90,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const [hasUsernameBlurred, onUsernameBlur] = useReducer(() => true, false);
 
-    const getPasswordIsValidValue = useConstCallback<NonNullable<TextFieldProps["getIsValidValue"]>>(
+    const getPasswordIsValidValue = useConstCallback<TextFieldProps["getIsValidValue"]>(
         value => {
 
             if (value.includes(" ")) {
