@@ -1042,9 +1042,9 @@ export const pure = {
         const { basename } = params;
         return basename !== "" && !basename.includes(" ")
     },
-    "getUserHomePath": (params: { idep: string; }): string => {
-        const { idep } = params;
-        return idep;
+    "getUserHomePath": (params: { preferred_username: string; }): string => {
+        const { preferred_username } = params;
+        return preferred_username;
     }
 };
 

@@ -205,12 +205,12 @@ const asyncThunks = {
 
 			assert(oidcClient.isUserLoggedIn);
 
-			const { idep, groups } = await parseOidcAccessToken(oidcClient);
+			const { preferred_username, groups } = await parseOidcAccessToken(oidcClient);
 
 			dispatch(
 				syncActions.loadUserBuckets({
 					"buckets":
-						[idep, ...groups.map(g=> `projet-${g}`)].map((id, i) => ({
+						[preferred_username, ...groups.map(g=> `projet-${g}`)].map((id, i) => ({
 							id,
 							"description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
 							"isPublic": false

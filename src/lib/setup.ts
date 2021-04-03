@@ -16,8 +16,8 @@ import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrows
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
+import { parseOidcAccessToken } from "./ports/OidcClient";
 import { id } from "evt/tools/typeSafety/id";
-import type { NonPostableEvt } from "evt";
 import type { StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
 import type { AxiosInstance } from "axios";
@@ -50,7 +50,6 @@ export type CreateStoreParams = {
     secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
-    evtBackOnline: NonPostableEvt<void>;
 };
 
 export declare type SecretsManagerClientConfig =
@@ -326,8 +325,7 @@ export async function createStore(params: CreateStoreParams) {
         oidcClientConfig,
         secretsManagerClientConfig,
         getIsDarkModeEnabledValueForProfileInitialization,
-        onyxiaApiClientConfig,
-        evtBackOnline
+        onyxiaApiClientConfig
     } = params;
 
     const oidcClient = await (() => {
@@ -387,18 +385,8 @@ export async function createStore(params: CreateStoreParams) {
                 return oidcClient.isUserLoggedIn ?
                     id<appConstantsUseCase.AppConstant.LoggedIn>({
                         ..._common,
-                        "userProfile": await store.dispatch(
-                            user.privateThunks.initializeAndGetUserProfile(
-                                { evtBackOnline }
-                            )
-                        ),
-                        ...await (async () => {
-
-                            const { build, regions } = await onyxiaApiClient.getConfigurations();
-
-                            return { build, regions };
-
-                        })(),
+                        "parsedJwt": await parseOidcAccessToken(oidcClient),
+                        ...await onyxiaApiClient.getConfigurations(),
                         "getEvtSecretsManagerTranslation": getEvtSecretsManagerTranslation!,
                         ...oidcClient
                     }) :

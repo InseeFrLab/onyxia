@@ -3,7 +3,7 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
@@ -28,8 +28,6 @@ export function NavigationFile(
 	const [bucketName] = useState(route.params.bucketName);
 
 	const { pathname: window_location_pathname } = useLocation();
-
-	const { userProfile: { idep } } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
 	const [pathname, setPathname] = useState(decodeURI(window_location_pathname));
 	const [racine] = useState(`/mes-fichiers/${bucketName}`);
@@ -140,7 +138,7 @@ export function NavigationFile(
 		return () => { isUnmounted = true };
 
 
-	}, [isInitializationCompleted, idep, userBuckets, bucketName, refresh, dispatch]);
+	}, [isInitializationCompleted, userBuckets, bucketName, refresh, dispatch]);
 
 
 	if (!bucketExist) {

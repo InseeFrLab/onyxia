@@ -20,6 +20,7 @@ import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
+import { usePublicIp } from "app/tools/usePublicIp";
 
 MonCompte.routeGroup = createGroup([routes.account]);
 
@@ -37,8 +38,10 @@ export function MonCompte() {
 
 	const dispatch = useDispatch();
 
-	const { userProfile } = useAppConstants({ "assertIsUserLoggedInIs": true });
-	const { s3, ip }= useSelector(state=> state.user);
+	const { publicIp } = usePublicIp();
+
+	const { parsedJwt } = useAppConstants({ "assertIsUserLoggedInIs": true });
+	const { s3 }= useSelector(state=> state.user);
 
 	useEffect(() => {
 		if (!s3loading && (!s3 || !s3.AWS_EXPIRATION)) {
@@ -61,7 +64,7 @@ export function MonCompte() {
 					color="textPrimary"
 					gutterBottom
 				>
-					{D.hello} {userProfile.nomComplet}
+					{D.hello} {parsedJwt.given_name}
 				</Typography>
 			</div>
 			<FilDAriane fil={fil.monCompte} />
@@ -133,19 +136,15 @@ export function MonCompte() {
 				</Paper>
 
 				<Paper className="paragraphe" elevation={1}>
-					{userProfile.idep ? (
 						<>
 							<Typography variant="h3" align="left">
 								{D.user}
 							</Typography>
-							<CopyableField copy label="Idep" value={userProfile.idep} />
-							<CopyableField copy label="Nom complet" value={userProfile.nomComplet} />
-							<CopyableField copy label="Email" value={userProfile.email} />
-							<CopyableField copy label="IP" value={ip} />
+							<CopyableField copy label="Idep" value={parsedJwt.preferred_username} />
+							<CopyableField copy label="Nom complet" value={parsedJwt.family_name + " " + parsedJwt.given_name} />
+							<CopyableField copy label="Email" value={parsedJwt.email} />
+							<CopyableField copy label="IP" value={publicIp} />
 						</>
-					) : (
-							<Loader />
-						)}
 					<CopyableField copy label={D.oidcToken} value={oidcAccessToken} />
 				</Paper>
 

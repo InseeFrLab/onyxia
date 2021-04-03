@@ -2,6 +2,7 @@
 import { useMemo, useEffect, useState } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
+import { pure } from "lib/setup";
 import { thunks } from "lib/setup";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
@@ -13,6 +14,7 @@ import { useLng } from "app/i18n/useLng";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 import { id } from "evt/tools/typeSafety/id";
+import { usePublicIp } from "app/tools/usePublicIp";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -60,25 +62,38 @@ export function useSelectedRegion(){
 
 };
 
+export function useSecretExplorerUserHomePath() {
+
+    const { parsedJwt: { preferred_username } } = useAppConstants({ "assertIsUserLoggedInIs": true });
+    const secretExplorerUserHomePath = pure.secretExplorer.getUserHomePath({ preferred_username });
+    return { secretExplorerUserHomePath };
+
+};
+
 export function useMustacheParams() {
 
     const { oidcTokens, vaultToken } = useSelector(state => state.tokens);
-    const { ip, s3 } = useSelector(state => state.user);
+    const { s3 } = useSelector(state => state.user);
 
     const {
-        userProfile,
+        parsedJwt,
         keycloakConfig,
         vaultClientConfig
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
+
+    const { secretExplorerUserHomePath } = useSecretExplorerUserHomePath();
 
     const userConfigs = useSelector(
         state => userConfigsStateToUserConfigs(state.userConfigs)
     );
 
+    const { publicIp } = usePublicIp();
+
     const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & { s3: BuildMustacheViewParams["s3"] | undefined; } = {
         s3,
-        ip,
-        userProfile,
+        publicIp,
+        parsedJwt,
+        secretExplorerUserHomePath,
         userConfigs,
         keycloakConfig,
         vaultClientConfig,
@@ -137,15 +152,15 @@ export function useApplyLanguageSelectedAtLogin() {
     useEffect(
         () => {
 
-            if( !appConstants.isUserLoggedIn ){
+            if (!appConstants.isUserLoggedIn) {
                 return;
             }
 
-            const { locale } = appConstants.userProfile;
+            const { locale } = appConstants.parsedJwt;
 
-            if( 
+            if (
                 !typeGuard<SupportedLanguage>(
-                    locale, 
+                    locale,
                     locale in id<Record<SupportedLanguage, null>>({ "en": null, "fr": null })
                 )
             ) {

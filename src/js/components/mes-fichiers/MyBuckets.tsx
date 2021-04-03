@@ -3,7 +3,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from '@material-ui/core';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import './myBuckets.scss';
 import { Region } from 'js/model/Region';
-import { useSelector, useDispatch, useAppConstants, useSelectedRegion } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useSelectedRegion } from "app/interfaceWithLib/hooks";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 
@@ -19,19 +19,16 @@ export function MyBuckets() {
 
 	const region = useSelectedRegion();
 
-	const { userProfile: { idep } } = useAppConstants(
-		{ "assertIsUserLoggedInIs": MyBuckets.requireUserLoggedIn }
-	);
-
 	const buckets = useSelector(
 		state => state.myFiles.userBuckets
 	);
 
 	useEffect(() => {
-		if (idep && !buckets) {
+		if (!buckets) {
 			dispatch(myFilesActions.loadUserBuckets());
 		}
-	}, [idep, dispatch, buckets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [buckets]);
 
 	return (
 		<LegacyThemeProvider>
