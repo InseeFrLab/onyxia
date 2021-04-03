@@ -140,11 +140,6 @@ export function useCommonInputLogic(props: Props) {
             transformAndSetValue(target.value)
     );
 
-    const onFocus = useConstCallback(
-        ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-            target.setSelectionRange(0, target.value.length)
-    );
-
     const onKeyDown = useConstCallback(
         (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>) => {
 
@@ -185,12 +180,10 @@ export function useCommonInputLogic(props: Props) {
         multiline,
         "error": !isValidValue,
         onChange,
-        onFocus,
         onKeyDown,
         onBlur,
         value
     };
-
 
 }
 

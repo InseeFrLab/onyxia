@@ -8,7 +8,6 @@ import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
-import { useRef, useEffect } from "react";
 
 export type TextFieldProps = CommonProps & {
     label?: React.ReactNode;
@@ -73,26 +72,8 @@ export const TextField = memo((props: TextFieldProps) => {
         "error": commonMuiProps.error
     });
 
-
-    // See: https://github.com/InseeFrLab/onyxia-ui/issues/215#issuecomment-812895211
-    // this is why we remove the value attribute when empty.
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(
-        () => {
-
-            if (commonMuiProps.value !== "") {
-                return;
-            }
-            ref.current!.querySelector("input")?.removeAttribute("value");
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-    );
-
     return (
         <MuiTextField
-            ref={ref}
             {...commonMuiProps}
             {...{
                 label,
@@ -103,3 +84,5 @@ export const TextField = memo((props: TextFieldProps) => {
     );
 
 });
+
+alert("up");
