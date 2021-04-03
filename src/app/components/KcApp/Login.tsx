@@ -126,10 +126,12 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
                                             defaultValue={login.username ?? ""}
-                                            tabIndex={1}
                                             id="username"
                                             name="username"
-                                            inputProps={{ "aria-label": "username" }}
+                                            inputProps={{ 
+                                                "aria-label": "username",
+                                                "tabIndex": 1
+                                            }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
                                                     msg("username")
@@ -150,10 +152,12 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         <TextField
                                             type="password"
                                             defaultValue={""}
-                                            tabIndex={2}
                                             id="password"
                                             name="password"
-                                            inputProps={{ "aria-label": "password" }}
+                                            inputProps={{ 
+                                                "aria-label": "password",
+                                                "tabIndex": 2
+                                            }}
                                             label={msg("password")}
                                             autoComplete="off"
                                             getIsValidValue={hasPasswordBlurred ? getPasswordIsValidValue : undefined}
@@ -171,7 +175,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
-                                                                tabIndex={3}
                                                                 defaultChecked={true}
                                                                 name="rememberMe"
                                                                 color="primary"
@@ -188,7 +191,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
                                                 realm.resetPasswordAllowed &&
                                                 <Link
-                                                    tabIndex={5}
                                                     href={url.loginResetCredentialsUrl}
                                                 >
                                                     {msg("doForgotPassword")}
@@ -212,7 +214,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             {...(auth?.selectedCredential !== undefined ? { "value": auth.selectedCredential } : {})}
                                         />
                                         <Button
-                                            tabIndex={4}
+                                            tabIndex={3}
                                             className={cx(classNames.buttonSubmit)}
                                             name="login"
                                             id="kc-login"
@@ -255,7 +257,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                 <div className={classNames.linkToRegisterWrapper}>
                     <Typography variant="body2" color="disabled">{msg("noAccount")!}</Typography>
                     <Link 
-                    tabIndex={6} 
                     href={url.registrationUrl}
                     className={classNames.registerLink}
                     >
