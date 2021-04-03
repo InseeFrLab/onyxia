@@ -72,32 +72,18 @@ s3 = boto3.client("s3",endpoint_url = 'http://'+'${c.AWS_S3_ENDPOINT}',
 		label: 'Environment variables',
 		fileName: '.bashrc',
 		text: (c: S3) => `
-export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
-export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
-export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
-export AWS_SESSION_TOKEN= ${c.AWS_SESSION_TOKEN}
-export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
- 		`,
+export AWS_ACCESS_KEY_ID=${c.AWS_ACCESS_KEY_ID}
+export AWS_SECRET_ACCESS_KEY=${c.AWS_SECRET_ACCESS_KEY}
+export AWS_DEFAULT_REGION=${c.AWS_DEFAULT_REGION}
+export AWS_SESSION_TOKEN=${c.AWS_SESSION_TOKEN}
+export AWS_S3_ENDPOINT=${c.AWS_S3_ENDPOINT}
+ 		`
 	},
 	{
 		id: 'mc',
 		label: 'MC client',
 		fileName: '.bashrc',
-		text: (c: S3) => `
-export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}   
-       `,
-	},
-	{
-		id: 'env',
-		label: 'Environment variables',
-		fileName: '.bashrc',
-		text: (c: S3) => `
-export AWS_ACCESS_KEY_ID= ${c.AWS_ACCESS_KEY_ID}
-export AWS_SECRET_ACCESS_KEY= ${c.AWS_SECRET_ACCESS_KEY}
-export AWS_DEFAULT_REGION= ${c.AWS_DEFAULT_REGION}
-export AWS_SESSION_TOKEN= ${c.AWS_SESSION_TOKEN}
-export AWS_S3_ENDPOINT= ${c.AWS_S3_ENDPOINT}
-		`,
+		text: (c: S3) => `export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}`,
 	},
 	{
 		id: 's3cmd',
