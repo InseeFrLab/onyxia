@@ -65,7 +65,7 @@
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
     "path": "^0.12.7",
-    "powerhooks": "^0.0.34",
+    "powerhooks": "^0.0.35",
     "public-ip": "^4.0.3",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",

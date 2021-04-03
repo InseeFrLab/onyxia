@@ -316,8 +316,11 @@ const { EditableRow } = (() => {
             }
         );
 
-        const onEscapeKeyDown = useConstCallback(
-            () => evtInputAction.post("RESTORE DEFAULT VALUE")
+        const onEscapeKeyDown = useConstCallback<TextFieldProps["onEscapeKeyDown"]>(
+            ({ preventDefaultAndStopPropagation }) => {
+                preventDefaultAndStopPropagation();
+                evtInputAction.post("RESTORE DEFAULT VALUE");
+            }
         );
 
         const isSubmitButtonDisabled = isLocked || !isValidValue;
