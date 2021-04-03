@@ -57,12 +57,18 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         "betweenHeaderAndFooter": {
             "flex": 1,
             "overflow": "hidden",
-            "background": `center / contain no-repeat url(${(() => {
+            "backgroundImage": `url(${(() => {
                 switch (theme.palette.type) {
                     case "dark": return onyxiaNeumorphismDarkModeUrl;
                     case "light": return onyxiaNeumorphismLightModeUrl;
                 }
             })()})`,
+            "backgroundSize": "auto 90%",
+            "backgroundPosition": "center",
+            "backgroundRepeat": "no-repeat"
+
+
+
         },
         "page": {
             "height": "100%",
@@ -125,7 +131,7 @@ export const Template = memo((props: TemplateProps) => {
     useEffect(
         () => {
 
-            if ( kcContext.pageId === "login.ftl" ) {
+            if (kcContext.pageId === "login.ftl") {
                 setExtraCssLoaded();
                 return;
             }
@@ -429,7 +435,7 @@ const { Page } = (() => {
 
             const { msg } = useKcMessage();
 
-            const {classNames} = useClassNames({});
+            const { classNames } = useClassNames({});
 
             return (
                 <div id="kc-content">
