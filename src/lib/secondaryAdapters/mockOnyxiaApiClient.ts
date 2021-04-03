@@ -16,7 +16,7 @@ export function createMockOnyxiaApiClient(
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getUserInfo": () => Promise.resolve({ ip, nomComplet }),
-        "getConfigurations": memoize(()=> Promise.resolve({ regions, build }), { "async": true })
+        "getConfigurations": memoize(()=> Promise.resolve({ regions, build }), { "promise": true })
     };
 
     return { onyxiaApiClient };

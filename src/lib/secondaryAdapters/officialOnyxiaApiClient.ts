@@ -54,13 +54,14 @@ export function createOfficialOnyxiaApiClient(
     const onyxiaApiClient: OnyxiaApiClient = {
         "getUserInfo": () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getUserInfo"]>>(
             restApiPaths.userInfo
-        ).then(({ data }) => data),
+        // eslint-disable-next-line no-sequences
+        ).then(({ data }) => (console.log("getUserInfo", JSON.stringify(data,null,2)),data)),
         "getConfigurations":
             memoize(
                 () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getConfigurations"]>>(
                     restApiPaths.configuration
                 ).then(({ data }) => data),
-                { "async": true }
+                { "promise": true }
             )
     };
 
