@@ -8,10 +8,13 @@ export type Build = {
 
 export type OnyxiaApiClient = {
 
+    /*
+    //Implemented on backend but useless for us.
     getUserInfo(): Promise<{
         ip: string;
         nomComplet: string;
     }>;
+    */
 
     getConfigurations: {
         (): Promise<{ regions: Region[]; build: Build; }>;

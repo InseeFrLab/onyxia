@@ -2,6 +2,7 @@
 import type { StatefulReadonlyEvt } from "evt";
 import { nonNullable } from "evt";
 import * as jwtSimple from "jwt-simple";
+import type { KcLanguageTag } from "keycloakify";
 
 
 
@@ -54,23 +55,19 @@ export declare namespace OidcClient {
 
 }
 
-export type ParsedOidcAccessToken = {
-    idep: string;
-    email: string;
-    groups: string[];
-};
 
 export type ParsedJwt = {
-    gitlab_group: string[] | null;
-    preferred_username: string;
-    name: string;
     email: string;
+    family_name: string; //Obama
+    given_name: string; //Barack
+    preferred_username: string; //obarack, the idep
     groups: string[];
+    locale: KcLanguageTag;
 };
 
 export async function parseOidcAccessToken(
     oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired">
-): Promise<ParsedOidcAccessToken> {
+): Promise<ParsedJwt> {
 
     const parsedJwt = jwtSimple.decode(
         (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
@@ -78,16 +75,6 @@ export async function parseOidcAccessToken(
         true
     ) as ParsedJwt;
 
-    const {
-        email,
-        preferred_username,
-        groups
-    } =  parsedJwt;
-
-    return {
-        "idep": preferred_username,
-        email,
-        groups
-    };
+    return parsedJwt;
 
 }

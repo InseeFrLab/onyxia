@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as reactDom from "react-dom";
 import { getValidatedEnv } from "./validatedEnv";
 
@@ -12,6 +12,7 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { SplashScreenProvider } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
+import { PublicIpProvider, getPublicIp } from "app/tools/usePublicIp";
 import { useLng } from "app/i18n/useLng";
 import {
     kcContext as realKcContext,
@@ -19,6 +20,7 @@ import {
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
+
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
@@ -42,6 +44,9 @@ function Root() {
     const { isDarkModeEnabled } = useIsDarkModeEnabled();
     const { lng } = useLng();
 
+    //Pre fetch so it's not blocking
+    useEffect(() => { getPublicIp() }, []);
+
     const getStoreInitializationParams = useConstCallback<StoreProviderProps["getStoreInitializationParams"]>(
         () => {
 
@@ -59,7 +64,11 @@ function Root() {
                             "tokenValidityDurationMs": Infinity,
                             "parsedJwt": {
                                 "email": "john.doe@insee.fr",
-                                "preferred_username": "doej"
+                                "preferred_username": "jdoe",
+                                "family_name": "Doe",
+                                "given_name": "John",
+                                "groups": [],
+                                "locale": "fr"
                             }
                         }),
                 "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
@@ -95,7 +104,9 @@ function Root() {
                             {kcContext !== undefined ?
                                 <KcApp kcContext={kcContext} /> :
                                 <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
-                                    <App />
+                                    <PublicIpProvider>
+                                        <App />
+                                    </PublicIpProvider>
                                 </StoreProvider>
                             }
                         </SplashScreenProvider>

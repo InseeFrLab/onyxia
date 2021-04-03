@@ -6,7 +6,7 @@ import type {
     SecretsManagerClientConfig
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
-import type { OidcClient } from "lib/ports/OidcClient";
+import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
@@ -27,11 +27,7 @@ export declare namespace AppConstant {
     };
 
     export type LoggedIn = _Common & {
-        userProfile: {
-            idep: string;
-            email: string;
-            nomComplet: string;
-        };
+        parsedJwt: ParsedJwt;
         regions: Region[];
         build: Build;
         getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation> };

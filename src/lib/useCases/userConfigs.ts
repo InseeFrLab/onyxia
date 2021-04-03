@@ -90,11 +90,11 @@ export const thunks = {
                 return;
             }
 
-            const { idep } = await parseOidcAccessToken(oidcClient);
+            const { preferred_username } = await parseOidcAccessToken(oidcClient);
 
             dispatch(actions.changeStarted(params));
 
-            const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({ idep });
+            const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({ preferred_username });
 
             await secretsManagerClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
@@ -124,15 +124,15 @@ export const privateThunks = {
 
             assert(oidcClient.isUserLoggedIn);
 
-            const { idep, email } = await parseOidcAccessToken(oidcClient);
+            const { preferred_username, email } = await parseOidcAccessToken(oidcClient);
 
-            const { getConfigKeyPath } = getConfigKeyPathFactory({ idep });
+            const { getConfigKeyPath } = getConfigKeyPathFactory({ preferred_username });
 
             //Default values
             const userConfigs: UserConfigs = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
-                "gitName": idep,
+                "gitName": preferred_username,
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
@@ -188,15 +188,15 @@ export const privateThunks = {
 
 const generatePassword = () => Array(2).fill("").map(() => Math.random().toString(36).slice(-10)).join("");
 
-const getConfigKeyPathFactory = (params: { idep: string; }) => {
+const getConfigKeyPathFactory = (params: { preferred_username: string; }) => {
 
-    const { idep } = params;
+    const { preferred_username } = params;
 
     const getConfigKeyPath = (params: { key: keyof UserConfigs; }) => {
 
         const { key } = params;
 
-        return pathJoin(idep, ".onyxia", key);
+        return pathJoin(preferred_username, ".onyxia", key);
 
     };
 
