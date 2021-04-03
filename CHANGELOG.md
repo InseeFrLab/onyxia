@@ -1,3 +1,12 @@
+### **0.7.22** (2021-04-03)  
+  
+- Merge pull request #225 from InseeFrLab/develop
+
+Develop  
+- #215: Autofill options show again for password on Safari (attempt)  
+- Reduce size of the logo #215  
+- Fix #220: Minio identifiants scripts with spaces    
+  
 ### **0.7.20** (2021-04-03)  
   
 - Merge pull request #224 from InseeFrLab/develop
