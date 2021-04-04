@@ -1,3 +1,12 @@
+### **0.7.23** (2021-04-04)  
+  
+- #215: Click on logo should redirect to the community website.  
+- Do not allow toggling dark mode on login page  
+- #215: Autocomplete suggestion appears before the form is visible on Safari  
+- #215: Hitting enter doesn't validate form  
+- #215: Tab should scip 'cancel' button in login.  
+- #215: Autofill options show again for password on Safari (actual fix, related to autofocus)    
+  
 ### **0.7.22** (2021-04-03)  
   
 - Merge pull request #225 from InseeFrLab/develop
