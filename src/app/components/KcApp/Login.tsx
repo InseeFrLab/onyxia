@@ -69,9 +69,13 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const usernameInputRef= useRef<HTMLInputElement>(null);
 
+    const [disabled, setDisabled] = useState(true);
+
     useSplashScreen({ 
-        "onHidden": () => 
+        "onHidden": () => {
+            setDisabled(false);
             usernameInputRef.current!.focus()
+        }
     });
 
     const onSubmit = useConstCallback(() => {
@@ -133,13 +137,15 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                 <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
+                                            disabled={disabled}
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
+                                            autoFocus={false}
                                             inputProps={{ 
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
-                                                "tabIndex": 1
+                                                "tabIndex": -1
                                             }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
@@ -159,6 +165,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                     </div>
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
+                                            disabled={disabled}
                                             type="password"
                                             defaultValue={""}
                                             id="password"
