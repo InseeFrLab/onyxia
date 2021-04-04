@@ -79,16 +79,30 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
             const usernameInput  = usernameInputRef.current!;
 
             switch( getBrowser() ){
+                case "firefox":
                 case "safari": 
                     setAreTextInputsDisabled(false);
                     usernameInput.focus();
                     break;
-                case "firefox":
                 case "chrome":
+                    console.log("chrome");
                     if (usernameInputRef.current!.value !== "") {
-                        //usernameInput.blur();
+                        console.log("value was not empty");
                         submitButtonRef.current!.focus();
                     }
+
+                    setTimeout(
+                        ()=>{
+
+                            console.log("timeout!");
+                            console.log("empty?", usernameInputRef.current!.value === "" );
+
+                            submitButtonRef.current!.focus();
+
+                        },
+                        10000
+                    );
+
                     break;
             }
 
