@@ -69,18 +69,29 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
     const usernameInputRef= useRef<HTMLInputElement>(null);
+    const submitButtonRef= useRef<HTMLButtonElement>(null);
 
-    const [disabled, setDisabled] = useState(()=> getBrowser() === "safari");
+    const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(()=> getBrowser() === "safari");
 
     useSplashScreen({ 
         "onHidden": () => {
 
-            if( getBrowser() !== "safari" ){
-                return;
+            const usernameInput  = usernameInputRef.current!;
+
+            switch( getBrowser() ){
+                case "safari": 
+                    setAreTextInputsDisabled(false);
+                    usernameInput.focus();
+                    break;
+                case "firefox":
+                case "chrome":
+                    if (usernameInputRef.current!.value !== "") {
+                        //usernameInput.blur();
+                        submitButtonRef.current!.focus();
+                    }
+                    break;
             }
 
-            setDisabled(false);
-            usernameInputRef.current!.focus()
         }
     });
 
@@ -143,7 +154,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                 <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
-                                            disabled={usernameEditDisabled || disabled}
+                                            disabled={usernameEditDisabled || areTextInputsDisabled}
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
@@ -151,7 +162,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": 1,
-                                                "autoFocus": !disabled
+                                                "autoFocus": !areTextInputsDisabled
                                             }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
@@ -171,7 +182,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                     </div>
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
-                                            disabled={disabled}
+                                            disabled={areTextInputsDisabled}
                                             type="password"
                                             defaultValue={""}
                                             id="password"
@@ -236,6 +247,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             {...(auth?.selectedCredential !== undefined ? { "value": auth.selectedCredential } : {})}
                                         />
                                         <Button
+                                            ref={submitButtonRef}
                                             tabIndex={3}
                                             className={cx(classNames.buttonSubmit)}
                                             name="login"
@@ -245,8 +257,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         >
                                             {msgStr("doLogIn")}
                                         </Button>
-
-
                                     </div>
                                 </form>
                             )
