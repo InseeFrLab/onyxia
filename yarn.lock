@@ -10076,16 +10076,16 @@ keycloak-js@^10.0.2:
     base64-js "1.3.1"
     js-sha256 "0.9.0"
 
-keycloakify@^0.3.20:
-  version "0.3.20"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.3.20.tgz#be3a17908a090918bb5a38436b152c2fe6b759e7"
-  integrity sha512-YlZoenR7lW34AIhSJJqOEUAqu2KHJzYHjqnwKbjJZIM+HcAwTy1nZT+QZ3Zw6EektbQxo5xNmxf4p3NNnkP7UA==
+keycloakify@^0.3.21:
+  version "0.3.21"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.3.21.tgz#192a9c271a98e73b7d0f09ac0037a7211d311930"
+  integrity sha512-mYJFw7wDLZ1AFJrkXkJeZiWIWhxZILX6rSFU7gDIhd+ASpXeoaQVaLsCwj+yY+kW7mk0Ykl5wxaQYTuPJKYKAg==
   dependencies:
     cheerio "^1.0.0-rc.5"
     evt "2.0.0-beta.15"
     minimal-polyfills "^2.1.6"
     path "^0.12.7"
-    powerhooks "^0.0.32"
+    powerhooks "^0.0.35"
     scripting-tools "^0.19.13"
     tss-react "^0.0.12"
 
@@ -12559,15 +12559,6 @@ postcss@^8.1.0:
     colorette "^1.2.2"
     nanoid "^3.1.20"
     source-map "^0.6.1"
-
-powerhooks@^0.0.32:
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.32.tgz#a6aa19573b22f38f4f0bb44573c3242116e9eed1"
-  integrity sha512-atxsb/zcN8O72hqtfz6tv4XLlh4X22+iTO96PPKpa//nrdvX8KTpFoGiUTh+RQ9RONdR4hP/RmfsDu1zPp2G8Q==
-  dependencies:
-    evt "2.0.0-beta.15"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
 
 powerhooks@^0.0.35:
   version "0.0.35"
