@@ -1,3 +1,7 @@
+### **0.7.24** (2021-04-04)  
+  
+- #215: Autocomplete suggestion appears before the form is visible on Safari (actual fix)    
+  
 ### **0.7.23** (2021-04-04)  
   
 - #215: Click on logo should redirect to the community website.  
