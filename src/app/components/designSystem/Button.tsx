@@ -1,4 +1,5 @@
 
+import { forwardRef, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { css, cx } from "tss-react";
 import MuiButton from "@material-ui/core/Button";
@@ -122,14 +123,16 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
     }
 );
 
-export function Button(props: Props) {
+export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
     const { 
         className, color, disabled, children, 
         onClick, startIcon, endIcon, autoFocus, 
-        type, tabIndex, name, id
+        type, tabIndex, name, id,
+        //For the forwarding, rest should be empty (typewise)
+        ...rest
     } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
@@ -144,8 +147,8 @@ export function Button(props: Props) {
     );
 
     return (
-
         <MuiButton
+            ref={ref}
             className={cx(classNames.root, className)}
             color={color}
             disabled={disabled}
@@ -157,6 +160,7 @@ export function Button(props: Props) {
             tabIndex={tabIndex??undefined}
             name={name ?? undefined}
             id={id ?? undefined}
+            {...rest}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
             <span className={css({ "paddingTop": 2 })} >
@@ -165,7 +169,7 @@ export function Button(props: Props) {
         </MuiButton>
     );
 
-}
+}));
 
 
 
