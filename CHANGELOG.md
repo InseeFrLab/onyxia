@@ -1,3 +1,7 @@
+### **0.7.26** (2021-04-04)  
+  
+- Clean autofill of login on all browsers    
+  
 ### **0.7.25** (2021-04-04)  
   
 - Implement per browser speficic handling of the loggin page  
