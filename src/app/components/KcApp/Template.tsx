@@ -15,7 +15,6 @@ import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useDomRect } from "powerhooks";
-import { routes } from "app/router";
 import { useWindowInnerSize } from "powerhooks";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
@@ -66,9 +65,6 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
             "backgroundSize": "auto 90%",
             "backgroundPosition": "center",
             "backgroundRepeat": "no-repeat"
-
-
-
         },
         "page": {
             "height": "100%",
@@ -123,7 +119,9 @@ export const Template = memo((props: TemplateProps) => {
         windowInnerHeight
     });
 
-    const onHeaderLogoClick = useConstCallback(() => routes.home().push());
+    const onHeaderLogoClick = useConstCallback(() => 
+        window.location.href = "https://docs.sspcloud.fr"
+    );
 
     const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
 
