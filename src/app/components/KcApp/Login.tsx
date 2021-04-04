@@ -15,6 +15,7 @@ import type { TextFieldProps } from "app/components/designSystem/textField/TextF
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
 import { useSplashScreen }  from "app/components/shared/SplashScreen";
+import { getBrowser } from "app/tools/getBrowser";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -69,10 +70,15 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const usernameInputRef= useRef<HTMLInputElement>(null);
 
-    const [disabled, setDisabled] = useState(true);
+    const [disabled, setDisabled] = useState(()=> getBrowser() === "safari");
 
     useSplashScreen({ 
         "onHidden": () => {
+
+            if( getBrowser() !== "safari" ){
+                return;
+            }
+
             setDisabled(false);
             usernameInputRef.current!.focus()
         }
@@ -137,15 +143,15 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                 <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
                                     <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
-                                            disabled={disabled}
+                                            disabled={usernameEditDisabled || disabled}
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
-                                            autoFocus={false}
                                             inputProps={{ 
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
-                                                "tabIndex": -1
+                                                "tabIndex": 1,
+                                                "autoFocus": !disabled
                                             }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
@@ -157,7 +163,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                             msg("email")
                                                     )
                                             }
-                                            {...(usernameEditDisabled ? { "disabled": true } : { "autoComplete": "off" })}
+                                            autoComplete="off"
                                             getIsValidValue={hasUsernameBlurred ? getUsernameIsValidValue : undefined}
                                             onBlur={onUsernameBlur}
                                         />

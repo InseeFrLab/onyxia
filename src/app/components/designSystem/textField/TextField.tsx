@@ -8,6 +8,7 @@ import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import { useCommonInputLogic } from "./useCommonInputLogic";
 import { Props as CommonProps, defaultProps as defaultCommonProps } from "./useCommonInputLogic";
+import { getBrowser } from "app/tools/getBrowser";
 
 export type TextFieldProps = CommonProps & {
     label?: React.ReactNode;
@@ -29,14 +30,26 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                 "outline": "unset",
             },
             "& input:-webkit-autofill": {
-                "-webkit-text-fill-color":
-                    theme.palette.text[(() => {
-                        switch (theme.palette.type) {
-                            case "dark": return "primary";
-                            case "light": return "secondary";
-                        }
-                    })()],
-                "-webkit-box-shadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surfaces} inset`,
+                ...(() => {
+                    switch (getBrowser()) {
+                        case "chrome":
+                        case "safari":
+                            return {
+                                "WebkitTextFillColor":
+                                    theme.palette.text[(() => {
+                                        switch (theme.palette.type) {
+                                            case "dark": return "primary";
+                                            case "light": return "secondary";
+                                        }
+                                    })()],
+                                "WebkitBoxShadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surfaces} inset`,
+                            };
+                        default: return {}
+                    }
+
+                })()
+
+
             }
 
         }

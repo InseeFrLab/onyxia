@@ -25,8 +25,8 @@ export type Props = {
         ref?: RefObject<HTMLInputElement>;
         'aria-label'?: string;
         tabIndex?: number;
+        autoFocus?: boolean;
     };
-    autoFocus?: boolean;
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
     multiline?: boolean;
@@ -49,7 +49,6 @@ export const defaultProps: Optional<Props> = {
     "name": null,
     "autoComplete": "off",
     "type": "text",
-    "autoFocus": false,
     "color": null,
     "disabled": false,
     "multiline": false,
@@ -76,7 +75,6 @@ export function useCommonInputLogic(props: Props) {
         type,
         defaultValue,
         inputProps,
-        autoFocus,
         color,
         disabled,
         multiline,
@@ -187,7 +185,6 @@ export function useCommonInputLogic(props: Props) {
         autoComplete,
         type,
         inputProps,
-        autoFocus,
         "color": color ?? undefined,
         disabled,
         multiline,
