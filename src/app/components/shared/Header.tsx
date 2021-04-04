@@ -125,9 +125,9 @@ export const Header = memo((props: Props) => {
                 "alignItems": "center",
             })}>
                 <ChangeLanguage />
-                <ToggleDarkMode />
                 {props.type === "core" &&
                     <>
+                        <ToggleDarkMode />
                         {props.isUserLoggedIn && <ToggleCloudShell useIsCloudShellVisible={props.useIsCloudShellVisible} />}
                         <Button
                             onClick={props.onAuthClick}
