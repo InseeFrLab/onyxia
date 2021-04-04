@@ -98,7 +98,7 @@ export const App = memo((props: Props) => {
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffectOnValueChange(
         () => hideSplashScreen(),

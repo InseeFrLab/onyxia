@@ -19,8 +19,9 @@ import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
 import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import {  } from "app/components/shared/SplashScreen";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 
 
 /*
@@ -226,7 +227,7 @@ export function MySecrets(props: Props) {
 
     const { classNames } = useClassNames({});
 
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {

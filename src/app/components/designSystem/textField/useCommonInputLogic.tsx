@@ -1,6 +1,7 @@
 
 
 import { useState, useEffect } from "react";
+import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
@@ -21,6 +22,7 @@ export type Props = {
     /** Will overwrite value when updated */
     defaultValue: string;
     inputProps?: {
+        ref?: RefObject<HTMLInputElement>;
         'aria-label'?: string;
         tabIndex?: number;
     };

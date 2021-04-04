@@ -1,5 +1,5 @@
 
-import { useState, useReducer, memo } from "react";
+import { useState, useReducer, useRef, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
@@ -14,7 +14,7 @@ import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
-
+import { useSplashScreen }  from "app/components/shared/SplashScreen";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -67,6 +67,13 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
+    const usernameInputRef= useRef<HTMLInputElement>(null);
+
+    useSplashScreen({ 
+        "onHidden": () => 
+            usernameInputRef.current!.focus()
+    });
+
     const onSubmit = useConstCallback(() => {
         setIsLoginButtonDisabled(true);
         return true;
@@ -104,6 +111,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const [hasPasswordBlurred, onPasswordBlur] = useReducer(() => true, false);
 
+
     return (
         <Template
             {...{ kcContext, ...props }}
@@ -129,6 +137,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             id="username"
                                             name="username"
                                             inputProps={{ 
+                                                "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": 1
                                             }}
@@ -142,7 +151,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                             msg("email")
                                                     )
                                             }
-                                            {...(usernameEditDisabled ? { "disabled": true } : { "autoFocus": true, "autoComplete": "off" })}
+                                            {...(usernameEditDisabled ? { "disabled": true } : { "autoComplete": "off" })}
                                             getIsValidValue={hasUsernameBlurred ? getUsernameIsValidValue : undefined}
                                             onBlur={onUsernameBlur}
                                         />
