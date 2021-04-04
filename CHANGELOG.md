@@ -1,3 +1,8 @@
+### **0.7.25** (2021-04-04)  
+  
+- Implement per browser speficic handling of the loggin page  
+- Update powerhooks (fix dark mode not persisted)    
+  
 ### **0.7.24** (2021-04-04)  
   
 - #215: Autocomplete suggestion appears before the form is visible on Safari (actual fix)    
