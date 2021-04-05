@@ -21,10 +21,6 @@ import { Evt } from "evt";
 import { keyframes } from "tss-react";
 
 
-const onAutoFillStart = keyframes`
-    from {/**/}
-    to {/**/}
-`;
 const onAutoFillCancel = keyframes`
     from {/**/}
     to {/**/}
@@ -38,23 +34,10 @@ const { useClassNames } = createUseClassNames()(
                 "width": "100%",
                 "marginTop": theme.spacing(4)
             },
-            "& input:-webkit-autofill": {
-                // Expose a hook for JavaScript when auto fill is shown.
-                // JavaScript can capture 'animationstart' events
-                "animationName": onAutoFillStart,
-
-                // Make the backgound color become yellow _really slowly_
-                //"transition": "background-color 50000s ease-in-out 0s"
-
-
-                //"fontSize": "30px",
-                //"transition": "font-size 5000s ease-in-out 0s !important",
-            },
             "& input:not(:-webkit-autofill)": {
                 // Expose a hook for JS onAutoFillCancel
                 // JavaScript can capture 'animationstart' events
                 "animationName": onAutoFillCancel,
-                //"backgroundColor": "purple"
             }
         },
         "rememberMeForgotPasswordWrapper": {
@@ -189,7 +172,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
             }
 
             return { "isValidValue": true };
-
 
         }
     );
