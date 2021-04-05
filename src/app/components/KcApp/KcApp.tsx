@@ -1,6 +1,6 @@
 
-import { useEffect, memo } from "react";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { useEffect, useState, memo } from "react";
+import { useSplashScreen, setSplashScreenFadeOutDuration } from "app/components/shared/SplashScreen";
 import type { KcContext } from "keycloakify";
 import  { defaultKcProps } from "keycloakify";
 import { createUseClassNames } from "app/theme/useClassNames";
@@ -12,6 +12,7 @@ import { Info } from "keycloakify/lib/components/Info"
 import { Error } from "keycloakify/lib/components/Error"
 import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPassword"
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail"
+import { getBrowser }  from "app/tools/getBrowser";
 
 export type Props = {
     kcContext: KcContext;
@@ -83,6 +84,13 @@ const { useClassNames } = createUseClassNames()(
 export const KcApp = memo((props: Props) => {
 
     const { kcContext } = props;
+
+    useState(()=> {
+        if (getBrowser() === "firefox") {
+            setSplashScreenFadeOutDuration(0);
+        }
+    });
+
 
     const { hideSplashScreen } = useSplashScreen();
 

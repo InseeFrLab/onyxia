@@ -10,7 +10,7 @@ import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
-import { SplashScreenProvider, setSplashScreenFadeOutDuration } from "app/components/shared/SplashScreen";
+import { SplashScreenProvider } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
 import { PublicIpProvider, getPublicIp } from "app/tools/usePublicIp";
 import { useLng } from "app/i18n/useLng";
@@ -20,7 +20,6 @@ import {
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
-import { getBrowser }  from "app/tools/getBrowser";
 
 
 
@@ -35,15 +34,12 @@ Object.defineProperty(
 );
 
 const kcContext = realKcContext ?? (
-    true /* Set to true to test the login pages outside of Keycloak */
+    false /* Set to true to test the login pages outside of Keycloak */
         ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
         :
         undefined
 );
 
-if( getBrowser() === "firefox" ){
-    setSplashScreenFadeOutDuration(0);
-}
 
 
 function Root() {
