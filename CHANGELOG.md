@@ -1,3 +1,10 @@
+### **0.7.31** (2021-04-05)  
+  
+- Disabling autofill on chrome  
+- Remove unuser classes and id on login page  
+- Remove spell checks on username input  
+- Remove keyframe method for tacking autofill (dosen't seems to works on https)    
+  
 ### **0.7.30** (2021-04-05)  
   
   
