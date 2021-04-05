@@ -18,14 +18,6 @@ import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { getBrowser } from "app/tools/getBrowser";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
-import { keyframes } from "tss-react";
-
-
-const onAutoFillCancel = keyframes`
-    from {/**/}
-    to {/**/}
-`;
-
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -33,11 +25,6 @@ const { useClassNames } = createUseClassNames()(
             "& .MuiTextField-root": {
                 "width": "100%",
                 "marginTop": theme.spacing(4)
-            },
-            "& input:not(:-webkit-autofill)": {
-                // Expose a hook for JS onAutoFillCancel
-                // JavaScript can capture 'animationstart' events
-                "animationName": onAutoFillCancel,
             }
         },
         "rememberMeForgotPasswordWrapper": {
@@ -131,15 +118,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                     console.log("password input change");
                                     switch(getBrowser()){
                                         case "chrome": 
-
-
-                                            setTimeout(()=> {
-
-                                                console.log("timeout");
-
-                                                submitButtonRef.current?.focus()
-                                            }, 3000);
-
+                                            //NOTE: Only works after user input
                                             submitButtonRef.current?.focus();
                                             break;
                                         case "safari":
@@ -150,16 +129,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                 }
                             );
                         break;
-                    case "firefox":
-                        Evt.from(ctx, passwordInput, "animationstart")
-                            .attach(
-                                ({ animationName }) => animationName === onAutoFillCancel,
-                                () => {
-
-                                    console.log("autofill cancel");
-                                    submitButtonRef.current?.focus()
-                                }
-                            );
                 }
 
             },

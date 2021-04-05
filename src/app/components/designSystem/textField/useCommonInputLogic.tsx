@@ -26,6 +26,7 @@ export type Props = {
         'aria-label'?: string;
         tabIndex?: number;
         autoFocus?: boolean;
+        spellCheck?: boolean;
     };
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
