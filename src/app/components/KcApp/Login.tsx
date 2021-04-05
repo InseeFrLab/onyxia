@@ -183,19 +183,13 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
             displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
             formNode={
-                <div
-                    id="kc-form"
-                    className={cx(realm.password && social.providers !== undefined && props.kcContentWrapperClass, classNames.root)}
-                >
-                    <div
-                        id="kc-form-wrapper"
-                        className={cx(realm.password && social.providers && [props.kcFormSocialAccountContentClass, props.kcFormSocialAccountClass])}
-                    >
+                <div className={classNames.root} >
+                    <div>
                         {
                             realm.password &&
                             (
-                                <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
-                                    <div className={cx(props.kcFormGroupClass)}>
+                                <form onSubmit={onSubmit} action={url.loginAction} method="post">
+                                    <div>
                                         <TextField
                                             disabled={usernameEditDisabled || areTextInputsDisabled}
                                             defaultValue={login.username ?? ""}
@@ -224,7 +218,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         />
 
                                     </div>
-                                    <div className={cx(props.kcFormGroupClass)}>
+                                    <div>
                                         <TextField
                                             disabled={areTextInputsDisabled}
                                             type="password"
@@ -242,8 +236,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             onBlur={onPasswordBlur}
                                         />
                                     </div>
-                                    <div className={cx(props.kcFormGroupClass, props.kcFormSettingClass, classNames.rememberMeForgotPasswordWrapper)}>
-                                        <div id="kc-form-options">
+                                    <div className={classNames.rememberMeForgotPasswordWrapper}>
+                                        <div>
                                             {
                                                 (
                                                     realm.rememberMe &&
@@ -264,7 +258,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 </div>
                                             }
                                         </div>
-                                        <div className={cx(props.kcFormOptionsWrapperClass, classNames.forgotPassword)}>
+                                        <div className={classNames.forgotPassword}>
                                             {
 
                                                 realm.resetPasswordAllowed &&
@@ -278,7 +272,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         </div>
 
                                     </div>
-                                    <div id="kc-form-buttons" className={cx(props.kcFormGroupClass, classNames.buttonsWrapper)}>
+                                    <div className={classNames.buttonsWrapper}>
                                         <Button
                                             color="secondary"
                                             onClick={window.history.back.bind(window.history)}
@@ -309,12 +303,12 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     </div>
                     {
                         (realm.password && social.providers !== undefined) &&
-                        <div id="kc-social-providers" className={cx(props.kcFormSocialAccountContentClass, props.kcFormSocialAccountClass)}>
-                            <ul className={cx(props.kcFormSocialAccountListClass, social.providers.length > 4 && props.kcFormSocialAccountDoubleListClass)}>
+                        <div>
+                            <ul>
                                 {
                                     social.providers.map(p =>
-                                        <li className={cx(props.kcFormSocialAccountListLinkClass)}>
-                                            <a href={p.loginUrl} id={`zocial-${p.alias}`} className={cx("zocial", p.providerId)}>
+                                        <li >
+                                            <a href={p.loginUrl}>
                                                 <span>{p.displayName}</span>
                                             </a>
                                         </li>
