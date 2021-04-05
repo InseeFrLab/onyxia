@@ -1,3 +1,7 @@
+### **0.7.27** (2021-04-05)  
+  
+  
+  
 ### **0.7.26** (2021-04-04)  
   
 - Clean autofill of login on all browsers    
