@@ -205,7 +205,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": 1,
-                                                "autoFocus": !areTextInputsDisabled
+                                                "autoFocus": !areTextInputsDisabled,
+                                                "spellcheck": false
                                             }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
