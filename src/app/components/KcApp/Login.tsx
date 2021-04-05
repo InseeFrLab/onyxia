@@ -97,7 +97,16 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                             console.log("timeout!");
                             console.log("empty?", usernameInputRef.current!.value === "" );
 
-                            submitButtonRef.current!.focus();
+                            usernameInput.value += "ok";
+
+                            //submitButtonRef.current!.focus();
+
+                            setTimeout(()=>{
+
+                                console.log("restore");
+                                usernameInput.value = usernameInput.value.slice(0, -2);
+
+                            },1000);
 
                         },
                         10000
