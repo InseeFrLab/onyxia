@@ -75,7 +75,10 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-        () => getBrowser() === "safari"
+        () => (
+            getBrowser() === "safari" ||
+            getBrowser() === "chrome" //NOTE: it disable autofill but autofill is not pretty
+        )
     );
 
     useSplashScreen({
@@ -116,13 +119,13 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                 () => usernameInputRef.current?.matches(":-webkit-autofill") ?? false,
                                 () => {
                                     console.log("password input change");
-                                    switch(getBrowser()){
-                                        case "chrome": 
+                                    switch (getBrowser()) {
+                                        case "chrome":
                                             //NOTE: Only works after user input
                                             submitButtonRef.current?.focus();
                                             break;
                                         case "safari":
-                                            setTimeout(()=> submitButtonRef.current?.focus(), 100);
+                                            setTimeout(() => submitButtonRef.current?.focus(), 100);
                                             break;
                                     }
 
