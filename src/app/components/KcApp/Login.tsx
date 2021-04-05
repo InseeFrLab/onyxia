@@ -202,7 +202,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": getBrowser() === "chrome" ? -1 : 1,
-                                                "autoFocus": !areTextInputsDisabled,
+                                                "autoFocus": getBrowser() === "chrome" ? undefined : !areTextInputsDisabled,
                                                 "spellCheck": false
                                             }}
                                             label={
