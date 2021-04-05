@@ -65,6 +65,9 @@ const { useClassNames } = createUseClassNames<Props>()(
                 "marginTop": theme.spacing(3),
                 "marginRight": theme.spacing(1)
             }
+        },
+        "tableContainerRoot": {
+            "overflow": "visible"
         }
     })
 );
@@ -292,7 +295,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
     return (
         <div className={classNames.root}>
-            <TableContainer>
+            <TableContainer className={classNames.tableContainerRoot}>
                 <Table aria-label={t("table of secret")}>
                     <TableHead className={classNames.tableHead}>
                         <TableRow>
