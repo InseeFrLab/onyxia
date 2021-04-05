@@ -128,8 +128,18 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                             .attach(
                                 () => usernameInputRef.current?.matches(":-webkit-autofill") ?? false,
                                 () => {
+                                    console.log("password input change");
                                     switch(getBrowser()){
                                         case "chrome": 
+
+
+                                            setTimeout(()=> {
+
+                                                console.log("timeout");
+
+                                                submitButtonRef.current?.focus()
+                                            }, 3000);
+
                                             submitButtonRef.current?.focus();
                                             break;
                                         case "safari":
@@ -144,7 +154,11 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                         Evt.from(ctx, passwordInput, "animationstart")
                             .attach(
                                 ({ animationName }) => animationName === onAutoFillCancel,
-                                () => submitButtonRef.current?.focus()
+                                () => {
+
+                                    console.log("autofill cancel");
+                                    submitButtonRef.current?.focus()
+                                }
                             );
                 }
 
