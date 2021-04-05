@@ -13,7 +13,11 @@ export type Props = {
     className?: string;
 };
 
-const fadeOutDuration = 700;
+let fadeOutDuration = 700;
+
+export function setSplashScreenFadeOutDuration(value: number){
+    fadeOutDuration= value;
+}
 
 export const { useSplashScreen } = (() => {
 

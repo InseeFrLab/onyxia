@@ -1,5 +1,5 @@
 
-import { useState, useReducer, useRef, memo } from "react";
+import { useState, useReducer, useRef, useEffect, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
@@ -14,8 +14,22 @@ import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
-import { useSplashScreen }  from "app/components/shared/SplashScreen";
-import { getBrowser } from "app/tools/getBrowser";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { getBrowser } from "app/tools/getBrowser";
+import { useEvt } from "evt/hooks";
+import { Evt } from "evt";
+import { keyframes } from "tss-react";
+
+
+const onAutoFillStart = keyframes`
+    from {/**/}
+    to {/**/}
+`;
+const onAutoFillCancel = keyframes`
+    from {/**/}
+    to {/**/}
+`;
+
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -23,6 +37,24 @@ const { useClassNames } = createUseClassNames()(
             "& .MuiTextField-root": {
                 "width": "100%",
                 "marginTop": theme.spacing(4)
+            },
+            "& input:-webkit-autofill": {
+                // Expose a hook for JavaScript when auto fill is shown.
+                // JavaScript can capture 'animationstart' events
+                "animationName": onAutoFillStart,
+
+                // Make the backgound color become yellow _really slowly_
+                //"transition": "background-color 50000s ease-in-out 0s"
+
+
+                //"fontSize": "30px",
+                //"transition": "font-size 5000s ease-in-out 0s !important",
+            },
+            "& input:not(:-webkit-autofill)": {
+                // Expose a hook for JS onAutoFillCancel
+                // JavaScript can capture 'animationstart' events
+                "animationName": onAutoFillCancel,
+                //"backgroundColor": "purple"
             }
         },
         "rememberMeForgotPasswordWrapper": {
@@ -68,55 +100,78 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
-    const usernameInputRef= useRef<HTMLInputElement>(null);
-    const submitButtonRef= useRef<HTMLButtonElement>(null);
+    const usernameInputRef = useRef<HTMLInputElement>(null);
+    const passwordInputRef = useRef<HTMLInputElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
-    const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(()=> getBrowser() === "safari");
+    const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
+        () => getBrowser() === "safari"
+    );
 
-    useSplashScreen({ 
+    useSplashScreen({
         "onHidden": () => {
 
-            const usernameInput  = usernameInputRef.current!;
-
-            switch( getBrowser() ){
-                case "firefox":
-                case "safari": 
-                    setAreTextInputsDisabled(false);
-                    usernameInput.focus();
-                    break;
-                case "chrome":
-                    console.log("chrome");
-                    if (usernameInputRef.current!.value !== "") {
-                        console.log("value was not empty");
-                        submitButtonRef.current!.focus();
-                    }
-
-                    setTimeout(
-                        ()=>{
-
-                            console.log("timeout!");
-                            console.log("empty?", usernameInputRef.current!.value === "" );
-
-                            usernameInput.value += "ok";
-
-                            //submitButtonRef.current!.focus();
-
-                            setTimeout(()=>{
-
-                                console.log("restore");
-                                usernameInput.value = usernameInput.value.slice(0, -2);
-
-                            },1000);
-
-                        },
-                        10000
-                    );
-
-                    break;
+            if (!areTextInputsDisabled) {
+                return;
             }
+            setAreTextInputsDisabled(false);
+            usernameInputRef.current!.focus();
 
         }
     });
+
+    //TODO: Export useEvtFromElement to evt
+    {
+
+        const [passwordInput, setPasswordInput] = useState<HTMLInputElement | null>(null);
+
+        useEffect(
+            () => { setPasswordInput(passwordInputRef.current); },
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [passwordInputRef.current ?? {}]
+        );
+
+        useEvt(
+            ctx => {
+
+                if (passwordInput === null) {
+                    return;
+                }
+
+                switch (getBrowser()) {
+                    case "chrome":
+                    case "safari":
+                        Evt.from(ctx, passwordInput, "change")
+                            .attach(
+                                () => usernameInputRef.current?.matches(":-webkit-autofill") ?? false,
+                                () => {
+                                    switch(getBrowser()){
+                                        case "chrome": 
+                                            submitButtonRef.current?.focus();
+                                            break;
+                                        case "safari":
+                                            setTimeout(()=> submitButtonRef.current?.focus(), 100);
+                                            break;
+                                    }
+
+                                }
+                            );
+                        break;
+                    case "firefox":
+                        Evt.from(ctx, passwordInput, "animationstart")
+                            .attach(
+                                ({ animationName }) => animationName === onAutoFillCancel,
+                                () => submitButtonRef.current?.focus()
+                            );
+                }
+
+            },
+            [passwordInput]
+        );
+
+
+    }
+
 
     const onSubmit = useConstCallback(() => {
         setIsLoginButtonDisabled(true);
@@ -181,7 +236,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
-                                            inputProps={{ 
+                                            inputProps={{
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": 1,
@@ -210,7 +265,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             defaultValue={""}
                                             id="password"
                                             name="password"
-                                            inputProps={{ 
+                                            inputProps={{
+                                                "ref": passwordInputRef,
                                                 "aria-label": "password",
                                                 "tabIndex": 2
                                             }}
@@ -311,9 +367,9 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                 ) &&
                 <div className={classNames.linkToRegisterWrapper}>
                     <Typography variant="body2" color="disabled">{msg("noAccount")!}</Typography>
-                    <Link 
-                    href={url.registrationUrl}
-                    className={classNames.registerLink}
+                    <Link
+                        href={url.registrationUrl}
+                        className={classNames.registerLink}
                     >
                         {msg("doRegister")}
                     </Link>
