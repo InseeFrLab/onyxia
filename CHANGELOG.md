@@ -1,3 +1,7 @@
+### **0.7.38** (2021-04-06)  
+  
+- #215: Implement eye icon for the passwork inputs    
+  
 ### **0.7.37** (2021-04-06)  
   
   
