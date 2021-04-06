@@ -31,6 +31,8 @@ import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
 import  { doExtends } from "evt/tools/typeSafety/doExtends";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 
 export type SvgTypes =
@@ -41,7 +43,7 @@ export type MaterialType =
     "delete" | "edit" | "add" | "filterNone" |
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
     "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4" |
-    "translate";
+    "translate" | "visibility" | "visibilityOff";
 
 //NOTE: Ensure there is not overlap between the types
 doExtends<SvgTypes & MaterialType, never>();
@@ -54,7 +56,7 @@ export type Props = {
     type: SvgTypes | MaterialType;
     /** Color of the icon based on the theme */
     color?: "textPrimary" | "textSecondary" | "textDisabled" | "textFocus" | "limeGreen";
-    /** Enable to make the icon larger or smaller */
+    /** TODO: Only works for mui icons!!! Enable to make the icon larger or smaller */
     fontSize?: "default" | "inherit" | "small" | "large";
 
 
@@ -136,6 +138,8 @@ export const Icon = memo((props: Props) => {
                 case "brightness4": return Brightness4;
                 case "translate": return Translate;
                 case "catalog": return CatalogSvg;
+                case "visibility": return Visibility;
+                case "visibilityOff": return VisibilityOff;
             }
         })()}
         fontSize={fontSize}
