@@ -253,9 +253,9 @@ export const ExplorerItem = memo((props: Props) => {
                         <Input
                             className={classNames.input}
                             defaultValue={basename}
-                            autoFocus={true}
                             inputProps={{ 
                                 "aria-label": t("description"),
+                                "autoFocus": true
                             }}
                             color="secondary"
                             disabled={isCircularProgressShown}
