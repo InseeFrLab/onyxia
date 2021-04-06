@@ -1,5 +1,5 @@
 
-import { useState, useReducer, useRef, useEffect, memo } from "react";
+import { useState, useReducer, useRef, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
@@ -14,10 +14,7 @@ import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { getBrowser } from "app/tools/getBrowser";
-import { useEvt } from "evt/hooks";
-import { Evt } from "evt";
+import { useSplashScreen }  from "app/components/shared/SplashScreen";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -70,77 +67,16 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
-    const usernameInputRef = useRef<HTMLInputElement>(null);
-    const passwordInputRef = useRef<HTMLInputElement>(null);
-    const submitButtonRef = useRef<HTMLButtonElement>(null);
+    const usernameInputRef= useRef<HTMLInputElement>(null);
 
-    const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-        () => (
-            (getBrowser() === "safari") ||
-            (getBrowser() === "chrome")
-        )
-    );
+    const [disabled, setDisabled] = useState(true);
 
-    useSplashScreen({
+    useSplashScreen({ 
         "onHidden": () => {
-
-            if (!areTextInputsDisabled) {
-                return;
-            }
-            setAreTextInputsDisabled(false);
-            usernameInputRef.current!.focus();
-
+            setDisabled(false);
+            usernameInputRef.current!.focus()
         }
     });
-
-    //TODO: Export useEvtFromElement to evt
-    {
-
-        const [passwordInput, setPasswordInput] = useState<HTMLInputElement | null>(null);
-
-        useEffect(
-            () => { setPasswordInput(passwordInputRef.current); },
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            [passwordInputRef.current ?? {}]
-        );
-
-        useEvt(
-            ctx => {
-
-                if (passwordInput === null) {
-                    return;
-                }
-
-                switch (getBrowser()) {
-                    case "chrome":
-                    case "safari":
-                        Evt.from(ctx, passwordInput, "change")
-                            .attach(
-                                () => usernameInputRef.current?.matches(":-webkit-autofill") ?? false,
-                                () => {
-                                    console.log("password input change");
-                                    switch (getBrowser()) {
-                                        case "chrome":
-                                            //NOTE: Only works after user input
-                                            submitButtonRef.current?.focus();
-                                            break;
-                                        case "safari":
-                                            setTimeout(() => submitButtonRef.current?.focus(), 100);
-                                            break;
-                                    }
-
-                                }
-                            );
-                        break;
-                }
-
-            },
-            [passwordInput]
-        );
-
-
-    }
-
 
     const onSubmit = useConstCallback(() => {
         setIsLoginButtonDisabled(true);
@@ -158,6 +94,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
             }
 
             return { "isValidValue": true };
+
 
         }
     );
@@ -186,20 +123,26 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
             displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
             formNode={
-                <div className={classNames.root} >
-                    <div>
+                <div
+                    id="kc-form"
+                    className={cx(realm.password && social.providers !== undefined && props.kcContentWrapperClass, classNames.root)}
+                >
+                    <div
+                        id="kc-form-wrapper"
+                        className={cx(realm.password && social.providers && [props.kcFormSocialAccountContentClass, props.kcFormSocialAccountClass])}
+                    >
                         {
                             realm.password &&
                             (
-                                <form onSubmit={onSubmit} action={url.loginAction} method="post">
-                                    <div>
+                                <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
+                                    <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
-                                            disabled={usernameEditDisabled || areTextInputsDisabled}
+                                            disabled={disabled}
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
                                             autoFocus={false}
-                                            inputProps={{
+                                            inputProps={{ 
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
                                                 "tabIndex": -1
@@ -214,21 +157,20 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                             msg("email")
                                                     )
                                             }
-                                            autoComplete="off"
+                                            {...(usernameEditDisabled ? { "disabled": true } : { "autoComplete": "off" })}
                                             getIsValidValue={hasUsernameBlurred ? getUsernameIsValidValue : undefined}
                                             onBlur={onUsernameBlur}
                                         />
 
                                     </div>
-                                    <div>
+                                    <div className={cx(props.kcFormGroupClass)}>
                                         <TextField
-                                            disabled={areTextInputsDisabled}
+                                            disabled={disabled}
                                             type="password"
                                             defaultValue={""}
                                             id="password"
                                             name="password"
-                                            inputProps={{
-                                                "ref": passwordInputRef,
+                                            inputProps={{ 
                                                 "aria-label": "password",
                                                 "tabIndex": 2
                                             }}
@@ -238,8 +180,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             onBlur={onPasswordBlur}
                                         />
                                     </div>
-                                    <div className={classNames.rememberMeForgotPasswordWrapper}>
-                                        <div>
+                                    <div className={cx(props.kcFormGroupClass, props.kcFormSettingClass, classNames.rememberMeForgotPasswordWrapper)}>
+                                        <div id="kc-form-options">
                                             {
                                                 (
                                                     realm.rememberMe &&
@@ -260,7 +202,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                 </div>
                                             }
                                         </div>
-                                        <div className={classNames.forgotPassword}>
+                                        <div className={cx(props.kcFormOptionsWrapperClass, classNames.forgotPassword)}>
                                             {
 
                                                 realm.resetPasswordAllowed &&
@@ -274,7 +216,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         </div>
 
                                     </div>
-                                    <div className={classNames.buttonsWrapper}>
+                                    <div id="kc-form-buttons" className={cx(props.kcFormGroupClass, classNames.buttonsWrapper)}>
                                         <Button
                                             color="secondary"
                                             onClick={window.history.back.bind(window.history)}
@@ -288,7 +230,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             {...(auth?.selectedCredential !== undefined ? { "value": auth.selectedCredential } : {})}
                                         />
                                         <Button
-                                            ref={submitButtonRef}
                                             tabIndex={3}
                                             className={cx(classNames.buttonSubmit)}
                                             name="login"
@@ -298,6 +239,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         >
                                             {msgStr("doLogIn")}
                                         </Button>
+
+
                                     </div>
                                 </form>
                             )
@@ -305,12 +248,12 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     </div>
                     {
                         (realm.password && social.providers !== undefined) &&
-                        <div>
-                            <ul>
+                        <div id="kc-social-providers" className={cx(props.kcFormSocialAccountContentClass, props.kcFormSocialAccountClass)}>
+                            <ul className={cx(props.kcFormSocialAccountListClass, social.providers.length > 4 && props.kcFormSocialAccountDoubleListClass)}>
                                 {
                                     social.providers.map(p =>
-                                        <li >
-                                            <a href={p.loginUrl}>
+                                        <li className={cx(props.kcFormSocialAccountListLinkClass)}>
+                                            <a href={p.loginUrl} id={`zocial-${p.alias}`} className={cx("zocial", p.providerId)}>
                                                 <span>{p.displayName}</span>
                                             </a>
                                         </li>
@@ -329,9 +272,9 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                 ) &&
                 <div className={classNames.linkToRegisterWrapper}>
                     <Typography variant="body2" color="disabled">{msg("noAccount")!}</Typography>
-                    <Link
-                        href={url.registrationUrl}
-                        className={classNames.registerLink}
+                    <Link 
+                    href={url.registrationUrl}
+                    className={classNames.registerLink}
                     >
                         {msg("doRegister")}
                     </Link>
