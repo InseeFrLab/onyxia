@@ -1,3 +1,10 @@
+### **0.7.34** (2021-04-06)  
+  
+- Auto validate secret row when statring editing another  
+- Better styling on secret editor  
+- Textfield display info out of it's box  
+- Fix error text cropped on last row in secret editor    
+  
 ### **0.7.33** (2021-04-05)  
   
   
