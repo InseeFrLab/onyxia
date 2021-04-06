@@ -64,6 +64,34 @@ export const VuePassword = getStory({
     ])
 });
 
+export const VueWithHint = getStory({
+    ...defaultProps,
+    "helperText": "This is an helper text",
+    "className": css({ "width": 500 }),
+    "defaultValue": "",
+    "inputProps": { "aria-label": "input with hint" },
+    "label": "Foo bar",
+    "type": "text",
+    "getIsValidValue": value => {
+        console.log("getIsValidValue invoked: ", value);
+
+        if (value.includes(" ") ) {
+            return { "isValidValue": false, "message": "Can't include spaces" };
+        }
+
+        return { "isValidValue": true };
+
+    },
+    "transformValueBeingTyped": value => {
+        console.log("transformValueBeingTyped invoked: ", value);
+        return value;
+    },
+    ...logCallbacks([
+        "onEscapeKeyDown", "onEnterKeyDown", "onBlur",
+        "onSubmit", "onValueBeingTypedChange"
+    ])
+});
+
 
 /*
     "getIsValidValue": value=> {
