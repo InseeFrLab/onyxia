@@ -3,7 +3,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks";
-import { useConstCallback } from "powerhooks";
+import { useConstCallback } from "powerhooks";
 import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
@@ -92,7 +92,7 @@ export const MySecretsEditor = memo((props: Props) => {
     useArrayDiff({
         "watchFor": "addition or deletion",
         "array": Object.keys(secret),
-        "callback": ({ added, removed })=>{
+        "callback": ({ added, removed }) => {
 
             if (!(
                 added.length === 1 &&
@@ -285,6 +285,8 @@ export const MySecretsEditor = memo((props: Props) => {
                 }
             })();
 
+            onEditorRowStartEditFactory("")();
+
             if (isDialogOpen) {
                 onCopyPath();
             }
@@ -292,6 +294,14 @@ export const MySecretsEditor = memo((props: Props) => {
             setIsDialogOpen(isDialogOpen);
         }
     );
+
+    const onEditorRowStartEditFactory =
+        useCallbackFactory(
+            ([key]: [string]) =>  
+                Object.keys(secret)
+                    .filter(key_i => key_i !== key)
+                    .map(key => getEvtAction(key).post("SUBMIT EDIT"))
+        );
 
     return (
         <div className={classNames.root}>
@@ -354,6 +364,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                 getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(key)}
                                 evtAction={getEvtAction(key)}
                                 isDarker={i % 2 === 1}
+                                onStartEdit={onEditorRowStartEditFactory(key)}
                             />
                         )}
                     </TableBody>
