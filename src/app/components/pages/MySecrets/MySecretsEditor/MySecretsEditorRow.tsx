@@ -9,7 +9,6 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
-import { smartTrim } from "app/tools/smartTrim";
 import { Typography } from "app/components/designSystem/Typography";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { useCallbackFactory } from "powerhooks";
@@ -17,6 +16,7 @@ import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import type { Parameters } from "evt/tools/typeSafety";
+import { useDomRect } from "powerhooks";
 
 
 export type Props = {
@@ -57,6 +57,9 @@ const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolea
             "backgroundColor": isDarker ?
                 theme.custom.colors.useCases.surfaces.background :
                 "transparent",
+            "& .MuiTextField-root": {
+                "width": "100%"
+            }
         },
         "dollarSign": {
             "color": isInEditingState ?
@@ -65,7 +68,7 @@ const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolea
         },
         "valueAndResolvedValue": {
             "padding": theme.spacing(2, 1),
-            "wordBreak": "break-all"
+            //"wordBreak": "break-all"
         },
         "keyAndValueTableCells": {
             "padding": isInEditingState ? theme.spacing(0, 2) : undefined
@@ -218,21 +221,21 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const SmartTrim = useMemo(
         () =>
-            (props: {
+            function SmartTim(props: {
                 className: string;
                 children: string;
-            }) => {
+            }) {
 
                 const { children, className } = props;
 
                 return (
-                    <Typography className={className}>{
-                        smartTrim({
-                            "maxLength": 70,
-                            "minCharAtTheEnd": 10,
-                            "text": children
-                        })
-                    }</Typography>
+                    <Typography className={cx(css({ 
+                        "textOverflow": "ellipsis",
+                        "overflow": "hidden",
+                        "whiteSpace": "nowrap"
+                    }), className)}>
+                        {children}
+                    </Typography>
                 );
 
             },
@@ -241,8 +244,10 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const theme = useTheme();
 
+    const { ref, domRect: { width }}= useDomRect();
+
     return (
-        <TableRow className={classNames.root}>
+        <TableRow ref={ref} className={classNames.root}>
             <TableCell>
                 <Typography
                     variant="body1"
@@ -279,7 +284,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                             transformValueBeingTyped={toUpperCase}
                         />
                 }</TableCell>
-            <TableCell className={classNames.keyAndValueTableCells}>{
+            <TableCell className={cx(classNames.keyAndValueTableCells, css(
+                [width * 0.36].map(width => ({ width, "maxWidth": width }))[0]
+                ))}>{
                 !isInEditingState ?
                     <SmartTrim className={classNames.valueAndResolvedValue}>
                         {strValue}
