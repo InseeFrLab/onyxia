@@ -75,10 +75,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-        () => (
-            getBrowser() === "safari" ||
-            getBrowser() === "chrome" //NOTE: it disable autofill but autofill is not pretty
-        )
+        () => getBrowser() === "safari" 
     );
 
     useSplashScreen({
@@ -201,8 +198,8 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             inputProps={{
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
-                                                "tabIndex": getBrowser() === "chrome" ? -1 : 1,
-                                                "autoFocus": getBrowser() === "chrome" ? undefined : !areTextInputsDisabled,
+                                                "tabIndex": 1,
+                                                "autoFocus": !areTextInputsDisabled,
                                                 "spellCheck": false
                                             }}
                                             label={
