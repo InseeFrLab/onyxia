@@ -32,7 +32,8 @@ const baseParams: Parameters<typeof getStory>[0] = {
     "evtAction": new Evt(),
     ...logCallbacks([
         "onEdit",
-        "onDelete"
+        "onDelete",
+        "onStartEdit"
     ]),
     "isDarker": true
 };

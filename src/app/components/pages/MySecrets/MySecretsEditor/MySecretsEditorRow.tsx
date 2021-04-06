@@ -1,7 +1,7 @@
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useTheme } from "@material-ui/core/styles";
 import { css, cx } from "tss-react";
-import { useMemo, useState, memo } from "react";
+import { useMemo, useState, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { TextField } from "app/components/designSystem/textField/TextField";
 import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
@@ -15,8 +15,8 @@ import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import type { Parameters } from "evt/tools/typeSafety";
-import { useDomRect } from "powerhooks";
+import type { Parameters } from "evt/tools/typeSafety";
+import { useDomRect } from "powerhooks";
 
 
 export type Props = {
@@ -44,8 +44,9 @@ export type Props = {
         isValidAndAvailableKey: false;
         message: string;
     };
+    onStartEdit(): void;
 
-    evtAction: NonPostableEvt<"ENTER EDITING STATE">;
+    evtAction: NonPostableEvt<"ENTER EDITING STATE" | "SUBMIT EDIT">;
 
     isDarker: boolean;
 
@@ -88,19 +89,43 @@ export const MySecretsEditorRow = memo((props: Props) => {
         onDelete,
         getResolvedValue,
         getIsValidAndAvailableKey,
+        onStartEdit,
         evtAction
     } = props;
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
+    useEffect(
+        () => {
+
+            if (!isInEditingState) {
+                return;
+            }
+
+            onStartEdit();
+
+        },
+        [isInEditingState, onStartEdit]
+    );
+
     useEvt(
-        ctx =>
+        ctx => {
             evtAction.attach(
                 action => action === "ENTER EDITING STATE",
                 ctx,
                 () => setIsInEditingState(true)
-            ),
-        [evtAction]
+            );
+            evtAction.attach(
+                action => (
+                    action === "SUBMIT EDIT" &&
+                    isInEditingState
+                ),
+                ctx,
+                () => onSubmitButtonClick()
+            );
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [evtAction, isInEditingState]
     );
 
     const [evtInputAction] = useState(
@@ -229,7 +254,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 const { children, className } = props;
 
                 return (
-                    <Typography className={cx(css({ 
+                    <Typography className={cx(css({
                         "textOverflow": "ellipsis",
                         "overflow": "hidden",
                         "whiteSpace": "nowrap"
@@ -244,7 +269,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const theme = useTheme();
 
-    const { ref, domRect: { width }}= useDomRect();
+    const { ref, domRect: { width } } = useDomRect();
 
     return (
         <TableRow ref={ref} className={classNames.root}>
@@ -271,7 +296,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         :
                         <TextField
                             defaultValue={key}
-                            inputProps={{ 
+                            inputProps={{
                                 "aria-label": t("key input desc"),
                                 "autoFocus": true
                             }}
@@ -286,23 +311,23 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 }</TableCell>
             <TableCell className={cx(classNames.keyAndValueTableCells, css(
                 [width * 0.36].map(width => ({ width, "maxWidth": width }))[0]
-                ))}>{
-                !isInEditingState ?
-                    <SmartTrim className={classNames.valueAndResolvedValue}>
-                        {strValue}
-                    </SmartTrim>
-                    :
-                    <TextField
-                        defaultValue={strValue}
-                        inputProps={{ "aria-label": t("value input desc") }}
-                        onEscapeKeyDown={onEscapeKeyDown}
-                        onEnterKeyDown={onEnterKeyDown}
-                        evtAction={evtInputAction}
-                        onSubmit={onSubmitFactory("editedStrValue")}
-                        getIsValidValue={getIsValidValue_strValue}
-                        onValueBeingTypedChange={onValueBeingTypedChange_strValue}
-                    />
-            }</TableCell>
+            ))}>{
+                    !isInEditingState ?
+                        <SmartTrim className={classNames.valueAndResolvedValue}>
+                            {strValue}
+                        </SmartTrim>
+                        :
+                        <TextField
+                            defaultValue={strValue}
+                            inputProps={{ "aria-label": t("value input desc") }}
+                            onEscapeKeyDown={onEscapeKeyDown}
+                            onEnterKeyDown={onEnterKeyDown}
+                            evtAction={evtInputAction}
+                            onSubmit={onSubmitFactory("editedStrValue")}
+                            getIsValidValue={getIsValidValue_strValue}
+                            onValueBeingTypedChange={onValueBeingTypedChange_strValue}
+                        />
+                }</TableCell>
             <TableCell>{
                 !resolveValueResult.isResolvedSuccessfully ?
                     null :
