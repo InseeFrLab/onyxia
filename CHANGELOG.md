@@ -1,3 +1,7 @@
+### **0.7.35** (2021-04-06)  
+  
+  
+  
 ### **0.7.34** (2021-04-06)  
   
 - Auto validate secret row when statring editing another  
