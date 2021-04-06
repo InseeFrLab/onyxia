@@ -75,7 +75,10 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-        () => getBrowser() === "safari" 
+        () => (
+            (getBrowser() === "safari") ||
+            (getBrowser() === "chrome")
+        )
     );
 
     useSplashScreen({
@@ -195,12 +198,11 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
+                                            autoFocus={false}
                                             inputProps={{
                                                 "ref": usernameInputRef,
                                                 "aria-label": "username",
-                                                "tabIndex": 1,
-                                                "autoFocus": !areTextInputsDisabled,
-                                                "spellCheck": false
+                                                "tabIndex": -1
                                             }}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
