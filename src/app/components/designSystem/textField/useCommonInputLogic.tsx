@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect } from "react";
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useConstCallback } from "powerhooks";
 import { id } from "evt/tools/typeSafety/id";
 import type { Optional } from "evt/tools/typeSafety";
@@ -27,6 +27,9 @@ export type Props = {
         tabIndex?: number;
         spellCheck?: boolean;
         autoFocus?: boolean;
+    };
+    InputProps?: {
+        endAdornment?: ReactNode;
     };
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
@@ -54,6 +57,7 @@ export const defaultProps: Optional<Props> = {
     "disabled": false,
     "multiline": false,
     "inputProps": {},
+    "InputProps": {},
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
@@ -76,6 +80,7 @@ export function useCommonInputLogic(props: Props) {
         type,
         defaultValue,
         inputProps,
+        InputProps,
         color,
         disabled,
         multiline,
@@ -186,6 +191,7 @@ export function useCommonInputLogic(props: Props) {
         autoComplete,
         type,
         inputProps,
+        InputProps,
         "color": color ?? undefined,
         disabled,
         multiline,
