@@ -21,8 +21,8 @@ export const Vue1 = getStory({
     "getIsValidValue": value => {
         console.log("getIsValidValue invoked: ", value);
 
-        if (value === "") {
-            return { "isValidValue": false, "message": "Can't be empty" };
+        if (value.includes(" ") ) {
+            return { "isValidValue": false, "message": "Can't include spaces" };
         }
 
         return { "isValidValue": true };
