@@ -15,10 +15,12 @@ import { IconButton } from "app/components/designSystem/IconButton";
 
 export type TextFieldProps = CommonProps & {
     label?: React.ReactNode;
+    helperText?: string;
 };
 
 export const defaultProps: Optional<TextFieldProps> = {
     "label": null,
+    "helperText": "",
     ...defaultCommonProps,
 };
 
@@ -63,9 +65,9 @@ export const TextField = memo((props: TextFieldProps) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { label, onValueBeingTypedChange, ...completedCommonProps } = completedProps;
+    const { label, onValueBeingTypedChange, helperText, ...completedCommonProps } = completedProps;
 
-    const [helperText, setHelperText] = useState<string | undefined>(undefined);
+    const [errorHelperText, setErrorHelperText] = useState<string | undefined>(undefined);
 
     const {
         className,
@@ -77,7 +79,7 @@ export const TextField = memo((props: TextFieldProps) => {
         "onValueBeingTypedChange": useConstCallback(
             (params: Parameters<NonNullable<CommonProps["onValueBeingTypedChange"]>>[0]) => {
 
-                setHelperText(
+                setErrorHelperText(
                     params.isValidValue ?
                         "" : params.message
                 );
@@ -114,11 +116,9 @@ export const TextField = memo((props: TextFieldProps) => {
                 }),
                 [isPasswordShown, type, InputProps, endAdornment]
             )}
+            label={label}
+            helperText={ commonMuiProps.error ? errorHelperText : helperText}
             {...commonMuiProps}
-            {...{
-                label,
-                helperText
-            }}
             className={cx(classNames.root, className)}
         />
     );
