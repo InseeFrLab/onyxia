@@ -20,12 +20,12 @@ export const defaultProps: Optional<TextFieldProps> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error: boolean; }>()(
-    (theme, { error }) => ({
+    (theme, { error: _error }) => ({
         "root": {
-            ...(error ? {
-                "position": "relative",
-                "top": "8px",
-            } : {}),
+           "& .MuiFormHelperText-root": {
+               "position": "absolute",
+               "bottom": "-20px"
+           },
             "&:focus": {
                 "outline": "unset",
             },
