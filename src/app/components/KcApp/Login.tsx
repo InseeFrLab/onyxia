@@ -115,7 +115,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                             .attach(
                                 () => usernameInputRef.current?.matches(":-webkit-autofill") ?? false,
                                 () => {
-                                    console.log("password input change");
                                     switch (getBrowser()) {
                                         case "chrome":
                                             //NOTE: Only works after user input
@@ -188,7 +187,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                         {
                             realm.password &&
                             (
-                                <form onSubmit={onSubmit} action={url.loginAction} method="post" autoComplete="chrome-off">
+                                <form onSubmit={onSubmit} action={url.loginAction} method="post">
                                     <div>
                                         <TextField
                                             disabled={usernameEditDisabled || areTextInputsDisabled}
