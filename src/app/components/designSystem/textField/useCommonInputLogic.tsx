@@ -21,12 +21,12 @@ export type Props = {
     type?: "text" | "password";
     /** Will overwrite value when updated */
     defaultValue: string;
-    autoFocus?: boolean;
     inputProps?: {
         ref?: RefObject<HTMLInputElement>;
         'aria-label'?: string;
         tabIndex?: number;
         spellCheck?: boolean;
+        autoFocus?: boolean;
     };
     color?: "primary" | "secondary" | null;
     disabled?: boolean;
@@ -51,7 +51,6 @@ export const defaultProps: Optional<Props> = {
     "autoComplete": "off",
     "type": "text",
     "color": null,
-    "autoFocus": false,
     "disabled": false,
     "multiline": false,
     "inputProps": {},
@@ -75,7 +74,6 @@ export function useCommonInputLogic(props: Props) {
         name,
         autoComplete,
         type,
-        autoFocus,
         defaultValue,
         inputProps,
         color,
@@ -186,7 +184,6 @@ export function useCommonInputLogic(props: Props) {
         "id": id ?? undefined,
         "name": name ?? undefined,
         autoComplete,
-        autoFocus,
         type,
         inputProps,
         "color": color ?? undefined,
