@@ -111,17 +111,21 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
 
     const { onCopyPath } = props;
 
-    return <MySecretsEditor
-        {...{
-            isBeingUpdated,
-            onEdit,
-            onCopyPath
-        }}
-        secretWithMetadata={{
-            metadata,
-            secret
-        }}
-    />;
+    return (
+        <div style={{ "width": 1600 }}>
+            <MySecretsEditor
+                {...{
+                    isBeingUpdated,
+                    onEdit,
+                    onCopyPath
+                }}
+                secretWithMetadata={{
+                    metadata,
+                    secret
+                }}
+            />
+        </div>
+    );
 
 }
 
