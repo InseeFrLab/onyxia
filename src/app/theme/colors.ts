@@ -102,8 +102,8 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
             "light": palette.exuberantOrange.light
         },
         "secondary": {
-            "main": palette.midnightBlue.main,
-            "light": palette.midnightBlue.light,
+            "main": useCases.typography.textPrimary,
+            "light": useCases.typography.textSecondary
         },
         "error": {
             "light": palette.error.light,
