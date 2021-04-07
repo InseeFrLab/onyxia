@@ -121,10 +121,13 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                             };
                         default: return {}
                     }
-
                 })()
-
-
+            },
+            "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+                "borderBottomWidth": 1
+            },
+            "& .MuiInput-underline:after": {
+                "borderBottomWidth": 1
             }
 
         }
