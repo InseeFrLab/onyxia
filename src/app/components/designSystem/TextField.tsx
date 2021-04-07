@@ -85,11 +85,21 @@ export const defaultProps: Optional<TextFieldProps> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error: boolean; }>()(
-    (theme, { error: _error }) => ({
+    (theme, { error }) => ({
         "root": {
             "& .MuiFormHelperText-root": {
                 "position": "absolute",
                 "bottom": "-20px"
+            },
+            "& .MuiFormLabel-root, & .MuiFormHelperText-root": {
+                "color": error ?
+                    theme.custom.colors.useCases.alertSeverity.error.main :
+                    (() => {
+                        switch (theme.palette.type) {
+                            case "light": return theme.custom.colors.palette.whiteSnow.greyVariant3
+                            case "dark": return theme.custom.colors.palette.midnightBlue.light3
+                        }
+                    })()
             },
             "&:focus": {
                 "outline": "unset",
