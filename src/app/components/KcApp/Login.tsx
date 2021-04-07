@@ -1,5 +1,5 @@
 
-import { useState, useReducer, useRef, useEffect, memo } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
@@ -10,8 +10,8 @@ import { Button } from "app/components/designSystem/Button";
 import Link from "@material-ui/core/Link";
 import { Typography } from "app/components/designSystem/Typography";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { TextField } from "app/components/designSystem/textField/TextField";
-import type { TextFieldProps } from "app/components/designSystem/textField/TextField";
+import { TextField } from "app/components/designSystem/TextField";
+import type { TextFieldProps } from "app/components/designSystem/TextField";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
@@ -158,7 +158,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
         }
     );
 
-    const [hasUsernameBlurred, onUsernameBlur] = useReducer(() => true, false);
 
     const getPasswordIsValidValue = useConstCallback<TextFieldProps["getIsValidValue"]>(
         value => {
@@ -172,7 +171,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
         }
     );
 
-    const [hasPasswordBlurred, onPasswordBlur] = useReducer(() => true, false);
 
 
     return (
@@ -212,8 +210,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                                     )
                                             }
                                             autoComplete="off"
-                                            getIsValidValue={hasUsernameBlurred ? getUsernameIsValidValue : undefined}
-                                            onBlur={onUsernameBlur}
+                                            getIsValidValue={getUsernameIsValidValue}
                                         />
 
                                     </div>
@@ -231,8 +228,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             }}
                                             label={msg("password")}
                                             autoComplete="off"
-                                            getIsValidValue={hasPasswordBlurred ? getPasswordIsValidValue : undefined}
-                                            onBlur={onPasswordBlur}
+                                            getIsValidValue={getPasswordIsValidValue}
                                         />
                                     </div>
                                     <div className={classNames.rememberMeForgotPasswordWrapper}>

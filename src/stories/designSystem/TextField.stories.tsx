@@ -1,5 +1,5 @@
 
-import { TextField, defaultProps } from "app/components/designSystem/textField/TextField";
+import { TextField, defaultProps } from "app/components/designSystem/TextField";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
