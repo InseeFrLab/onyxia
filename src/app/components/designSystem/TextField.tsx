@@ -23,20 +23,15 @@ export type TextFieldProps = {
     id?: string | null;
     name?: string | null;
     autoComplete?: "on" | "off";
-    type?: "text" | "password";
+    type?: "text" | "password" | "email";
     /** Will overwrite value when updated */
     defaultValue?: string;
-    inputProps?: {
-        ref?: RefObject<HTMLInputElement>;
-        'aria-label'?: string;
-        tabIndex?: number;
-        spellCheck?: boolean;
-        autoFocus?: boolean;
-    };
-    InputProps?: {
-        endAdornment?: ReactNode;
-    };
-    color?: "primary" | "secondary";
+    inputProps_ref?: RefObject<HTMLInputElement> | null;
+    'inputProps_aria-label'?: string | null;
+    inputProps_tabIndex?: number | null;
+    inputProps_spellCheck?: boolean;
+    inputProps_autoFocus?: boolean;
+    InputProps_endAdornment?: ReactNode;
     disabled?: boolean;
     multiline?: boolean;
 
@@ -67,11 +62,8 @@ export const defaultProps: Optional<TextFieldProps> = {
     "name": null,
     "autoComplete": "off",
     "type": "text",
-    "color": "primary",
     "disabled": false,
     "multiline": false,
-    "inputProps": {},
-    "InputProps": {},
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
@@ -81,7 +73,14 @@ export const defaultProps: Optional<TextFieldProps> = {
     "onValueBeingTypedChange": () => { },
     "transformValueBeingTyped": value => value,
     "isCircularProgressShown": false,
-    "selectAllTextOnFocus": false
+    "selectAllTextOnFocus": false,
+
+    "inputProps_ref": null,
+    'inputProps_aria-label': null,
+    "inputProps_tabIndex": null,
+    "inputProps_spellCheck": true,
+    "inputProps_autoFocus": false,
+    "InputProps_endAdornment": null
 
 };
 
@@ -139,14 +138,35 @@ export const TextField = memo((props: TextFieldProps) => {
         onEnterKeyDown,
         className,
         type,
-        InputProps: { endAdornment, ...InputProps },
         isCircularProgressShown,
         helperText,
         id,
         name,
         selectAllTextOnFocus,
+
+        inputProps_ref,
+        "inputProps_aria-label": inputProps_ariaLabel,
+        inputProps_tabIndex,
+        inputProps_spellCheck,
+        inputProps_autoFocus,
+        InputProps_endAdornment,
+
         ...completedPropsRest
     } = completedProps;
+
+    const inputProps = useMemo(
+        () => ({
+            "ref": inputProps_ref ?? undefined,
+            "aria-label": inputProps_ariaLabel ?? undefined,
+            "tabIndex": inputProps_tabIndex ?? undefined,
+            "spellCheck": inputProps_spellCheck,
+            "autoFocus": inputProps_autoFocus
+        }),
+        [
+            inputProps_ref, inputProps_ariaLabel, inputProps_tabIndex,
+            inputProps_spellCheck, inputProps_autoFocus
+        ]
+    );
 
     const { value, transformAndSetValue } = (function useClosure(
         transformValueBeingTyped: typeof completedProps["transformValueBeingTyped"]
@@ -247,6 +267,26 @@ export const TextField = memo((props: TextFieldProps) => {
         }
     );
 
+    const InputProps = useMemo(
+        () => ({
+            "endAdornment":
+                InputProps_endAdornment ??
+                    isCircularProgressShown ?
+                    <InputAdornment position="end">
+                        <CircularProgress color="textPrimary" size={10} />
+                    </InputAdornment> :
+                    type === "password" ?
+                        <InputAdornment position="end">
+                            <IconButton
+                                type={isPasswordShown ? "visibilityOff" : "visibility"}
+                                onClick={toggleIsPasswordShown}
+                            />
+                        </InputAdornment> :
+                        undefined,
+        }),
+        [isPasswordShown, type, InputProps_endAdornment, isCircularProgressShown]
+    );
+
     return (
         <MuiTextField
             type={type !== "password" ? type : isPasswordShown ? "text" : "password"}
@@ -255,29 +295,10 @@ export const TextField = memo((props: TextFieldProps) => {
             error={error}
             helperText={
                 isValidationEnabled && !getIsValidValueResult.isValidValue ?
-                    getIsValidValueResult.message :
+                    getIsValidValueResult.message || helperText :
                     helperText
             }
-            InputProps={useMemo(
-                () => ({
-                    "endAdornment":
-                        endAdornment ??
-                            isCircularProgressShown ?
-                            <InputAdornment position="end">
-                                <CircularProgress color="textPrimary" size={10} />
-                            </InputAdornment> :
-                            type === "password" ?
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        type={isPasswordShown ? "visibilityOff" : "visibility"}
-                                        onClick={toggleIsPasswordShown}
-                                    />
-                                </InputAdornment> :
-                                undefined,
-                    ...InputProps
-                }),
-                [isPasswordShown, type, InputProps, endAdornment, isCircularProgressShown]
-            )}
+            InputProps={InputProps}
             onBlur={useConstCallback(() => {
                 if (!isValidationEnabled) enableValidation();
                 onBlur();
@@ -295,6 +316,7 @@ export const TextField = memo((props: TextFieldProps) => {
             )}
             id={id ?? undefined}
             name={name ?? undefined}
+            inputProps={inputProps}
             {...completedPropsRest}
         />
     );
