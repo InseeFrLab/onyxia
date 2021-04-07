@@ -1,9 +1,10 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "powerhooks";
-import { Input } from "app/components/designSystem/textField/Input";
-import type { InputProps } from "app/components/designSystem/textField/Input";
+import { useConstCallback } from "powerhooks";
+//import { Input } from "app/components/designSystem/textField/Input";
+import { TextField } from "app/components/designSystem/TextField";
+import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { Typography } from "../../designSystem/Typography"
 import { useClick } from "powerhooks";
 import Color from "color";
@@ -15,8 +16,8 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { useWithProps } from "powerhooks";
-import type { Parameters } from "evt/tools/typeSafety";
+import { useWithProps } from "powerhooks";
+import type { Params } from "evt/tools/typeSafety";
 
 
 export type Props = {
@@ -167,10 +168,10 @@ export const ExplorerItem = memo((props: Props) => {
                 { "isValidValue": false, "message": "" } as const
     );
 
-    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<NonNullable<InputProps["evtAction"]>>>());
+    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>());
 
     const onInputSubmit = useConstCallback(
-        ({ value, isValidValue }: Parameters<InputProps["onSubmit"]>[0]) => {
+        ({ value, isValidValue }: Params<TextFieldProps["onSubmit"]>) => {
 
             if (!isValidValue) {
                 return;
@@ -250,16 +251,18 @@ export const ExplorerItem = memo((props: Props) => {
                     </div>
                     :
                     <form className={classNames.root/*TODO*/} noValidate autoComplete="off">
-                        <Input
+                        <TextField
                             className={classNames.input}
                             defaultValue={basename}
-                            inputProps={{ 
+                            inputProps={{
                                 "aria-label": t("description"),
                                 "autoFocus": true
                             }}
                             color="secondary"
+                            doOnlyValidateInputAfterFistFocusLost={false}
                             disabled={isCircularProgressShown}
                             isCircularProgressShown={isCircularProgressShown}
+                            selectAllTextOnFocus={true}
                             multiline={true}
                             onEscapeKeyDown={onEscapeKeyDown}
                             onEnterKeyDown={onEnterKeyDown}
@@ -272,8 +275,6 @@ export const ExplorerItem = memo((props: Props) => {
             }
         </div>
     );
-
-
 
 });
 export declare namespace ExplorerItem {
