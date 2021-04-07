@@ -129,7 +129,7 @@ export const Template = memo((props: TemplateProps) => {
     useEffect(
         () => {
 
-            if (kcContext.pageId === "login.ftl") {
+            if (kcContext.pageId === "login.ftl" || kcContext.pageId === "register.ftl") {
                 setExtraCssLoaded();
                 return;
             }
@@ -237,7 +237,7 @@ const { Page } = (() => {
             },
             "paper": {
                 "padding": theme.spacing(4),
-                "minWidth": 490,
+                "width": 490,
             },
             "alert": {
                 "alignItems": "center"

@@ -14,6 +14,7 @@ import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
 import { Account } from "app/components/pages/Account";
+import { Register } from "app/components/KcApp/Register";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -36,6 +37,7 @@ const reflectedI18nSchemes = {
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
+    [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -71,6 +73,16 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
+        "Register": {
+            "required field": "Required field",
+            "not a valid": "This is not a valid {{what}}",
+            "allowed email domain": "Allowed domain {{list}}",
+            "alphanumerical chars only": "Only alphanumerical characters",
+            "minimum length": "Minimum length: {{n}}",
+            "must be different from username": "Pass can't be the username",
+            "password mismatch": "Passwords mismatch",
+            "go back": "Go back"
+        },
         "Account": {
             "user info": "User infos",
             "onyxia info": "Onyxia Infos",
@@ -182,6 +194,16 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     },
     "fr": {
         /* spell-checker: disable */
+        "Register": {
+            "required field": "Champ requis",
+            "not a valid": "Pas un {{what}} valide",
+            "allowed email domain": "Domaines autorisés: {{list}}",
+            "alphanumerical chars only": "Caractère alphanumérique uniquement",
+            "minimum length": "Longeur minimum {{n}}",
+            "must be different from username": "Ne peut pas être le nom d'utilisateur",
+            "password mismatch": "Les deux mots de passe ne correspondent pas",
+            "go back": "Retour"
+        },
         "Account": {
             "user info": "Informations utilisateur",
             "onyxia info": "Informations Onyxia",

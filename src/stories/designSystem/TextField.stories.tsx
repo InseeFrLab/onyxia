@@ -15,7 +15,7 @@ export default meta;
 export const Vue1 = getStory({
     ...defaultProps,
     "defaultValue": "",
-    "inputProps": { "aria-label": "the aria label" },
+    "inputProps_aria-label": "the aria label",
     "label": "This is the label",
     "getIsValidValue": value => {
         console.log("getIsValidValue invoked: ", value);
@@ -41,7 +41,7 @@ export const VuePassword = getStory({
     ...defaultProps,
     "className": css({ "width": 500 }),
     "defaultValue": "",
-    "inputProps": { "aria-label": "password" },
+    "inputProps_aria-label": "password",
     "label": "Password",
     "type": "password",
     "getIsValidValue": value => {
@@ -69,7 +69,7 @@ export const VueWithHint = getStory({
     "helperText": "This is an helper text",
     "className": css({ "width": 500 }),
     "defaultValue": "",
-    "inputProps": { "aria-label": "input with hint" },
+    "inputProps_aria-label": "input with hint",
     "label": "Foo bar",
     "type": "text",
     "getIsValidValue": value => {

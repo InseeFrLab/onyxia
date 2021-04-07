@@ -75,7 +75,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-        () => getBrowser() === "safari" 
+        () => getBrowser() === "safari"
     );
 
     useSplashScreen({
@@ -192,13 +192,11 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             defaultValue={login.username ?? ""}
                                             id="username"
                                             name="username"
-                                            inputProps={{
-                                                "ref": usernameInputRef,
-                                                "aria-label": "username",
-                                                "tabIndex": 1,
-                                                "autoFocus": !areTextInputsDisabled,
-                                                "spellCheck": false
-                                            }}
+                                            inputProps_ref={usernameInputRef}
+                                            inputProps_aria-label="username"
+                                            inputProps_tabIndex={1}
+                                            inputProps_autoFocus={!areTextInputsDisabled}
+                                            inputProps_spellCheck={false}
                                             label={
                                                 !realm.loginWithEmailAllowed ?
                                                     msg("username")
@@ -221,11 +219,9 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                             defaultValue={""}
                                             id="password"
                                             name="password"
-                                            inputProps={{
-                                                "ref": passwordInputRef,
-                                                "aria-label": "password",
-                                                "tabIndex": 2
-                                            }}
+                                            inputProps_ref={passwordInputRef}
+                                            inputProps_aria-label={"password"}
+                                            inputProps_tabIndex={2}
                                             label={msg("password")}
                                             autoComplete="off"
                                             getIsValidValue={getPasswordIsValidValue}

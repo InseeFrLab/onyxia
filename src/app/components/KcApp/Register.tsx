@@ -1,31 +1,50 @@
 
 
-import { useState, memo } from "react";
-import { Template } from "keycloakify/lib/components/Template";
+import { useState, useMemo, memo } from "react";
+import { Template } from "./Template";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify/lib/KcContext";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { cx } from "tss-react";
-import { capitalize } from "powerhooks/tools/capitalize";
-import { useEffectOnValueChange } from "powerhooks";
+import { TextField } from "app/components/designSystem/TextField";
+import type { TextFieldProps } from "app/components/designSystem/TextField";
+import { useTranslation } from "app/i18n/useTranslations";
+import { useCallbackFactory } from "powerhooks";
+import { emailRegExp } from "app/tools/emailRegExp";
+import type { Params } from "evt/tools/typeSafety";
+import { Button } from "app/components/designSystem/Button";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { useConstCallback } from "powerhooks";
 
 
-function toAlphaNumerical(value: string){
+const allowedEmailDomains = ["insee.fr", "gouv.fr"];
+const allowedEmailDomainsStr = allowedEmailDomains.map(domain => `@${domain}`).join(", ");
+//NOTE: Client side validation only the actual policy is set on the Keycloak server.
+const passwordMinLength = 12
+
+function toAlphaNumerical(value: string) {
     return value.replace(/[^a-zA-Z0-9]/g, "x");
 }
 
-function buildUsername(
-    params: {
-        firstName: string;
-        lastName: string;
-    }
-){
+const { useClassNames } = createUseClassNames()(
+    theme => ({
+        "root": {
+            "& .MuiTextField-root": {
+                "width": "100%",
+                "marginTop": theme.spacing(4)
+            }
+        },
+        "buttonsWrapper": {
+            "marginTop": theme.spacing(3),
+            "display": "flex",
+            "justifyContent": "flex-end"
+        },
+        "buttonSubmit": {
+            "marginLeft": theme.spacing(1)
+        }
+    })
+);
 
-    const { firstName, lastName} = params;
-
-    return toAlphaNumerical(`${firstName[0] ?? ""}${lastName}`).toLowerCase();
-
-}
 
 export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Register; } & KcProps) => {
 
@@ -33,7 +52,6 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
 
     const {
         url,
-        messagesPerField,
         register,
         realm,
         passwordRequired,
@@ -41,103 +59,170 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
         recaptchaSiteKey
     } = kcContext;
 
-    const [firstName, setFirstName] = useState<string>(register.formData.firstName ?? "");
-    const [lastName, setLastName] = useState<string>(register.formData.lastName ?? "");
-    const [username, setUsername] = useState<string>(register.formData.username ?? "");
+    const [firstName, setFirstName] = useState(register.formData.firstName ?? "");
+    const [lastName, setLastName] = useState(register.formData.lastName ?? "");
 
-
-    
-    useEffectOnValueChange(
-        ()=>{ setUsername(buildUsername({ firstName, lastName })); },
+    const usernameDefaultValue = useMemo(
+        () => toAlphaNumerical(`${firstName[0] ?? ""}${lastName}`).toLowerCase(),
         [firstName, lastName]
     );
 
+    console.log({ firstName, lastName, usernameDefaultValue });
 
-    
+    const [username, setUsername] = useState(usernameDefaultValue);
+    const [password, setPassword] = useState("");
 
+    const { t } = useTranslation("Register");
+
+    const getIsValidValueFactory = useCallbackFactory(
+        (
+            [target]: ["firstName" | "lastName" | "email" | "username" | "password" | "passwordConfirm"],
+            [value]: [string]
+        ) => {
+
+            if (value === "") {
+                return {
+                    "isValidValue": false,
+                    "message": t("required field")
+                };
+            }
+
+            switch (target) {
+                case "firstName":
+                case "lastName":
+                    if (!/^[\p{L} ,.'-]+$/u.test(value)) {
+                        return {
+                            "isValidValue": false,
+                            "message": t("not a valid", { "what": msgStr(target) })
+                        };
+                    }
+                    break;
+                case "email":
+                    if (!emailRegExp.test(value)) {
+                        return {
+                            "isValidValue": false,
+                            "message": t("not a valid", { "what": msgStr(target) })
+                        };
+                    }
+                    if (!allowedEmailDomains.includes(value.split("@")[1].toLowerCase())) {
+                        return {
+                            "isValidValue": false,
+                            "message": ""
+                        };
+                    }
+                    break;
+                case "username":
+                    if (!/[a-zA-Z0-9]+/.test(value)) {
+                        return {
+                            "isValidValue": false,
+                            "message": ""
+                        };
+                    }
+                    break;
+                case "password":
+                    if (value.length < passwordMinLength) {
+                        return {
+                            "isValidValue": false,
+                            "message": ""
+                        };
+                    }
+                    if (value === username) {
+                        return {
+                            "isValidValue": false,
+                            "message": t("must be different from username")
+                        };
+                    }
+                    break;
+                case "passwordConfirm":
+                    if (password !== value) {
+                        return {
+                            "isValidValue": false,
+                            "message": t("password mismatch")
+                        };
+                    }
+                    break;
+            }
+
+            return { "isValidValue": true } as const;
+
+        }
+    );
+
+    const onValueBeingTypedChangeFactory = useCallbackFactory(
+        (
+            [target]: ["firstName" | "lastName" | "email" | "username" | "password" | "passwordConfirm"],
+            [params]: [Params<TextFieldProps["onValueBeingTypedChange"]>]
+        ) => {
+            if (params.isValidValue) {
+                return;
+            }
+            const { value } = params;
+            switch (target) {
+                case "firstName": setFirstName(value); break;
+                case "lastName": setLastName(value); break;
+                case "username": setUsername(value); break;
+                case "password": setPassword(value); break;
+            }
+        }
+    );
+
+    const redirectToLogin = useConstCallback(() => window.location.href = url.loginUrl);
+
+    const { classNames } = useClassNames({});
 
     return (
         <Template
             {...{ kcContext, ...props }}
             headerNode={msg("registerTitle")}
             formNode={
-                <form id="kc-register-form" className={cx(props.kcFormClass)} action={url.registrationAction} method="post">
+                <form className={classNames.root} action={url.registrationAction} method="post">
 
-                    <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists('firstName', props.kcFormGroupErrorClass))}>
-                        <div className={cx(props.kcLabelWrapperClass)}>
-                            <label htmlFor="firstName" className={cx(props.kcLabelClass)}>{msg("firstName")}</label>
-                        </div>
-                        <div className={cx(props.kcInputWrapperClass)}>
-                            <input type="text" id="firstName" className={cx(props.kcInputClass)} name="firstName" 
-                                onChange={e => setFirstName(capitalize(toAlphaNumerical(e.target.value)))}
-                                value={firstName}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists("lastName", props.kcFormGroupErrorClass))}>
-                        <div className={cx(props.kcLabelWrapperClass)}>
-                            <label htmlFor="lastName" className={cx(props.kcLabelClass)}>{msg("lastName")}</label>
-                        </div>
-                        <div className={cx(props.kcInputWrapperClass)}>
-                            <input type="text" id="lastName" className={cx(props.kcInputClass)} name="lastName"
-                                onChange={e => setLastName(capitalize(toAlphaNumerical(e.target.value)))}
-                                value={lastName}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists('email', props.kcFormGroupErrorClass))}>
-                        <div className={cx(props.kcLabelWrapperClass)}>
-                            <label htmlFor="email" className={cx(props.kcLabelClass)}>{msg("email")}</label>
-                        </div>
-                        <div className={cx(props.kcInputWrapperClass)}>
-                            <input type="text" id="email" className={cx(props.kcInputClass)} name="email"
-                                defaultValue={register.formData.email ?? ""} autoComplete="email"
-                            />
-                        </div>
-                    </div>
+                    <>
                     {
-                        !realm.registrationEmailAsUsername &&
-
-                        <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists('username', props.kcFormGroupErrorClass))}>
-                            <div className={cx(props.kcLabelWrapperClass)}>
-                                <label htmlFor="username" className={cx(props.kcLabelClass)}>{msg("username")}</label>
-                            </div>
-                            <div className={cx(props.kcInputWrapperClass)}>
-                                <input type="text" id="username" className={cx(props.kcInputClass)} name="username"
-                                    onChange={e => setUsername(toAlphaNumerical(e.target.value))}
-                                    value={username}
-                                    autoComplete="username" 
-                                    />
-                            </div>
-                        </div >
-
+                        (["firstName", "lastName", "email", "username", "password", "passwordConfirm"] as const).map(
+                            (target, i) =>
+                                (
+                                    target === "firstName" ||
+                                    target === "lastName" ||
+                                    target === "email" ||
+                                    (target === "username" && !realm.registrationEmailAsUsername) ||
+                                    ((target === "password" || target === "passwordConfirm") && passwordRequired)
+                                ) &&
+                                <div key={i}>
+                                <TextField
+                                    name={target}
+                                    type={(()=>{
+                                            switch (target) {
+                                                case "email": return "email";
+                                                case "password": 
+                                                case "passwordConfirm": 
+                                                    return "password";
+                                                default: return "text";
+                                            }
+                                    })()}
+                                    inputProps_aria-label={target}
+                                    inputProps_tabIndex={target === "username" ? -1 : i + 1}
+                                    inputProps_autoFocus={i === 0}
+                                    inputProps_spellCheck={false}
+                                    label={msg(target)}
+                                    onValueBeingTypedChange={onValueBeingTypedChangeFactory(target)}
+                                    helperText={
+                                        (() => {
+                                            switch (target) {
+                                                case "email": return t("allowed email domain", { "list": allowedEmailDomainsStr })
+                                                case "username": return t("alphanumerical chars only")
+                                                case "password": return t("minimum length", { "n": `${passwordMinLength}` })
+                                                default: return undefined;
+                                            }
+                                        })()
+                                    }
+                                    defaultValue={target !== "username" ? "" : usernameDefaultValue}
+                                    getIsValidValue={getIsValidValueFactory(target)}
+                                />
+                                </div>
+                        )
                     }
-                    {
-                        passwordRequired &&
-                        <>
-
-                            <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists("password", props.kcFormGroupErrorClass))}>
-                                <div className={cx(props.kcLabelWrapperClass)}>
-                                    <label htmlFor="password" className={cx(props.kcLabelClass)}>{msg("password")}</label>
-                                </div>
-                                <div className={cx(props.kcInputWrapperClass)}>
-                                    <input type="password" id="password" className={cx(props.kcInputClass)} name="password" autoComplete="new-password" />
-                                </div>
-                            </div>
-
-                            <div className={cx(props.kcFormGroupClass, messagesPerField.printIfExists("password-confirm", props.kcFormGroupErrorClass))}>
-                                <div className={cx(props.kcLabelWrapperClass)}>
-                                    <label htmlFor="password-confirm" className={cx(props.kcLabelClass)}>{msg("passwordConfirm")}</label>
-                                </div>
-                                <div className={cx(props.kcInputWrapperClass)}>
-                                    <input type="password" id="password-confirm" className={cx(props.kcInputClass)} name="password-confirm" />
-                                </div>
-                            </div>
-                        </>
-
-                    }
+                    </>
                     {
                         recaptchaRequired &&
                         <div className="form-group">
@@ -146,20 +231,38 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                             </div>
                         </div>
                     }
-                    <div className={cx(props.kcFormGroupClass)}>
-                        <div id="kc-form-options" className={cx(props.kcFormOptionsClass)}>
-                            <div className={cx(props.kcFormOptionsWrapperClass)}>
-                                <span><a href={url.loginUrl}>{msg("backToLogin")}</a></span>
-                            </div>
-                        </div>
-
-                        <div id="kc-form-buttons" className={cx(props.kcFormButtonsClass)}>
-                            <input className={cx(props.kcButtonClass, props.kcButtonPrimaryClass, props.kcButtonBlockClass, props.kcButtonLargeClass)} type="submit"
-                                value={msgStr("doRegister")} />
-                        </div>
+                    <div className={classNames.buttonsWrapper}>
+                        <Button
+                            color="secondary"
+                            onClick={redirectToLogin}
+                        >
+                            {t("go back")}
+                        </Button>
+                        <Button
+                            className={cx(classNames.buttonSubmit)}
+                            name="login"
+                            type="submit"
+                        >
+                            {msgStr("doRegister")}
+                        </Button>
                     </div>
                 </form >
             }
         />
     );
 });
+
+export declare namespace Register {
+
+    export type I18nScheme = {
+        'required field': undefined;
+        'not a valid': { what: string; };
+        'allowed email domain': { list: string; };
+        'alphanumerical chars only': undefined;
+        'minimum length': { n: string; };
+        'must be different from username': undefined;
+        'password mismatch': undefined;
+        'go back': undefined;
+    };
+
+}

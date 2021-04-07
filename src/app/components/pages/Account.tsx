@@ -353,7 +353,7 @@ const { EditableRow } = (() => {
                         :
                         <TextField
                             defaultValue={value}
-                            inputProps={{ "aria-label": `value of ${rowKey}` }}
+                            inputProps_aria-label={`value of ${rowKey}`}
                             onEscapeKeyDown={onEscapeKeyDown}
                             onEnterKeyDown={onEnterKeyDown}
                             evtAction={evtInputAction}
