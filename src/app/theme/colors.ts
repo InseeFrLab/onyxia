@@ -1,5 +1,6 @@
 
 import type { PaletteOptions } from "@material-ui/core/styles/createPalette";
+import Color from "color";
 
 const palette = {
     "exuberantOrange": {
@@ -24,16 +25,25 @@ const palette = {
         "main": "#BAFF29",
         "light": "#E2FFA6"
     },
-    "error": {
-        "main": "#CC0B0B",
-        "light": "#F88078",
-        "background": "#FEECEB"
-    },
-    "success": {
-        "main": "#29CC2F",
-        "light": "#7FCC82",
-        "background": "#EEFAEE"
+    "misc": {
+        "redError": {
+            "main": "#CC0B0B",
+            "light": "#FEECEB"
+        },
+        "greenSuccess": {
+            "main": "#29CC2F",
+            "light": "#EEFAEE"
+        },
+        "orangeWarning": {
+            "main": "#FF8800",
+            "light": "#FFF5E5"
+        },
+        "blueInfo": {
+            "main": "#2196F3",
+            "light": "#E9F5FE"
+        }
     }
+
 };
 
 export function getColors(paletteType: "light" | "dark") {
@@ -57,6 +67,24 @@ export function getColors(paletteType: "light" | "dark") {
         "surfaces": {
             "background": palette.whiteSnow.main,
             "surfaces": palette.whiteSnow.white
+        },
+        "alertSeverity": {
+            "error": {
+                "main": palette.misc.redError.main,
+                "background": palette.misc.redError.light
+            },
+            "success": {
+                "main": palette.misc.greenSuccess.main,
+                "background": palette.misc.greenSuccess.light
+            },
+            "warning": {
+                "main": palette.misc.orangeWarning.main,
+                "background": palette.misc.orangeWarning.light
+            },
+            "info": {
+                "main": palette.misc.blueInfo.main,
+                "background": palette.misc.blueInfo.light
+            }
         }
     };
 
@@ -75,6 +103,24 @@ export function getColors(paletteType: "light" | "dark") {
         "surfaces": {
             "background": palette.midnightBlue.main,
             "surfaces": palette.midnightBlue.light
+        },
+        "alertSeverity": {
+            "error": {
+                "main": palette.misc.redError.main,
+                "background": setOpacity(palette.misc.redError.main, 0.2)
+            },
+            "success": {
+                "main": palette.misc.greenSuccess.main,
+                "background": setOpacity(palette.misc.greenSuccess.main, 0.2)
+            },
+            "warning": {
+                "main": palette.misc.orangeWarning.main,
+                "background": setOpacity(palette.misc.orangeWarning.main, 0.2)
+            },
+            "info": {
+                "main": palette.misc.blueInfo.main,
+                "background": setOpacity(palette.misc.blueInfo.main, 0.2)
+            }
         }
     };
 
@@ -106,12 +152,24 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
             "light": useCases.typography.textSecondary
         },
         "error": {
-            "light": palette.error.light,
-            "main": palette.error.main,
+            "light": useCases.alertSeverity.error.background,
+            "main": useCases.alertSeverity.error.main,
+            "contrastText": useCases.typography.textPrimary
         },
         "success": {
-            "light": palette.success.light,
-            "main": palette.success.main,
+            "light": useCases.alertSeverity.success.background,
+            "main": useCases.alertSeverity.success.main,
+            "contrastText": useCases.typography.textPrimary
+        },
+        "info": {
+            "light": useCases.alertSeverity.info.background,
+            "main": useCases.alertSeverity.info.main,
+            "contrastText": useCases.typography.textPrimary
+        },
+        "warning": {
+            "light": useCases.alertSeverity.warning.background,
+            "main": useCases.alertSeverity.warning.main,
+            "contrastText": useCases.typography.textPrimary
         },
         "text": {
             "primary": useCases.typography.textPrimary,
@@ -138,4 +196,10 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
 
 
 
+function setOpacity(color: string, opacity: number): string {
+    return new Color(color)
+        .rgb()
+        .alpha(opacity)
+        .string();
+}
 

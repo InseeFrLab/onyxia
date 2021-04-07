@@ -1,36 +1,68 @@
 
-import { css } from "tss-react";
-import { useReducer } from "react";
+import { useReducer, memo } from "react";
 import type { ReactNode } from "react";
 import { IconButton } from "./IconButton";
 import MuiAlert from "@material-ui/lab/Alert";
 import { Typography } from "app/components/designSystem/Typography";
+import { createUseClassNames } from "app/theme/useClassNames";
+import type { Optional } from "evt/tools/typeSafety";
+import { noUndefined } from "app/tools/noUndefined";
+import { cx }  from "tss-react";
 
 export type Props = {
-    severity: "warning" | "info" | "error"
+    className?: string | null;
+    severity: "warning" | "info" | "error" | "info" | "success"
     children: NonNullable<ReactNode>;
+    doDisplayCross?: boolean;
 };
 
-export function Alert(props: Props) {
+export const defaultProps: Optional<Props> = {
+    "className": null,
+    "doDisplayCross": false
+};
 
-    const { severity, children } = props;
+const { useClassNames } = createUseClassNames<Required<Props>>()(
+    (theme, { severity }) => ({
+        "root": {
+            "color": theme.custom.colors.useCases.typography.textPrimary,
+            "backgroundColor": theme.custom.colors.useCases.alertSeverity[severity].background,
+            "& $icon": {
+                "color": theme.custom.colors.useCases.alertSeverity[severity].main
+            }
+        },
+        "text": {
+            "paddingTop": 2
+        }
+    })
+);
+
+export const Alert = memo((props: Props) => {
+
+    const completedProps = { ...defaultProps, ...noUndefined(props) };
+
+    const { severity, children, className, doDisplayCross } = completedProps;
 
     const [isClosed, close] = useReducer(() => true, false);
+
+    const { classNames } = useClassNames(completedProps);
 
     return (
         isClosed ? null :
             <MuiAlert
+                className={cx(classNames.root, className)}
                 severity={severity}
                 action={
-                    <IconButton
-                        type="closeSharp"
-                        aria-label="close"
-                        onClick={close}
-                    />
+                    doDisplayCross ?
+                        <IconButton
+                            type="closeSharp"
+                            aria-label="close"
+                            onClick={close}
+                        /> :
+                        undefined
                 }
             >
                 {typeof children === "string" ?
-                    <Typography className={css({ "paddingTop": 2 })}>
+                    <Typography className={classNames.text}>
                         {children}
                     </Typography>
                     :
@@ -39,6 +71,4 @@ export function Alert(props: Props) {
             </MuiAlert>
     );
 
-
-
-}
+});

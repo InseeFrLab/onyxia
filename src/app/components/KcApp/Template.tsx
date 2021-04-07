@@ -20,7 +20,7 @@ import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMo
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Paper } from "app/components/designSystem/Paper";
 import { Typography } from "app/components/designSystem/Typography";
-import Alert from "@material-ui/lab/Alert";
+import { Alert } from "app/components/designSystem/Alert";
 
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";

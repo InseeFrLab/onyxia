@@ -98,7 +98,7 @@ function AlertWrapper(props) {
 	}
 
 	return (
-		<Alert {...rest}  >
+		<Alert {...rest} doDisplayCross={true}  >
 			<ReactMarkdown className={css({ "& p": { "margin": "4px 0 0 0" } })}>
 				{children}
 			</ReactMarkdown>
