@@ -296,10 +296,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         :
                         <TextField
                             defaultValue={key}
-                            inputProps={{
-                                "aria-label": t("key input desc"),
-                                "autoFocus": true
-                            }}
+                            inputProps_aria-label={t("key input desc")}
+                            inputProps_autoFocus={true}
                             onEscapeKeyDown={onEscapeKeyDown}
                             onEnterKeyDown={onEnterKeyDown}
                             evtAction={evtInputAction}
@@ -319,7 +317,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         :
                         <TextField
                             defaultValue={strValue}
-                            inputProps={{ "aria-label": t("value input desc") }}
+                            inputProps_aria-label={t("value input desc")}
                             onEscapeKeyDown={onEscapeKeyDown}
                             onEnterKeyDown={onEnterKeyDown}
                             evtAction={evtInputAction}
