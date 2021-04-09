@@ -1,3 +1,16 @@
+### **0.7.39** (2021-04-09)  
+  
+- Fix logic on register page  
+- Implementing terms  
+- Border width on TextField thiner  
+- Style alerts  
+- RegExp for email  
+- First draft for new register page  
+- Single color variant for TextField  
+- Better default for secondary Mui color  
+- Clean implementation of TextField  
+- Suport non error helper text in TextField    
+  
 ### **0.7.38** (2021-04-06)  
   
 - #215: Implement eye icon for the passwork inputs    
