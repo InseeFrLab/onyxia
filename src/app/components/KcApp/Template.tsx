@@ -11,7 +11,7 @@ import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageT
 import { useConstCallback } from "powerhooks";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
-import { Footer } from "app/components/App/Footer";
+//import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useDomRect } from "powerhooks";
@@ -20,7 +20,7 @@ import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMo
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Paper } from "app/components/designSystem/Paper";
 import { Typography } from "app/components/designSystem/Typography";
-import { Alert } from "app/components/designSystem/Alert";
+import { Alert } from "app/components/designSystem/Alert";
 
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";
@@ -64,14 +64,15 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
             })()})`,
             "backgroundSize": "auto 90%",
             "backgroundPosition": "center",
-            "backgroundRepeat": "no-repeat"
+            "backgroundRepeat": "no-repeat",
         },
         "page": {
             "height": "100%",
+            "overflow": "auto",
         },
         "footer": {
             "height": 34
-        },
+        }
 
 
     })
@@ -119,7 +120,7 @@ export const Template = memo((props: TemplateProps) => {
         windowInnerHeight
     });
 
-    const onHeaderLogoClick = useConstCallback(() => 
+    const onHeaderLogoClick = useConstCallback(() =>
         window.location.href = "https://docs.sspcloud.fr"
     );
 
@@ -129,7 +130,7 @@ export const Template = memo((props: TemplateProps) => {
     useEffect(
         () => {
 
-            if (kcContext.pageId === "login.ftl" || kcContext.pageId === "register.ftl") {
+            if (kcContext.pageId === "login.ftl" || kcContext.pageId === "register.ftl" || kcContext.pageId === "terms.ftl") {
                 setExtraCssLoaded();
                 return;
             }
@@ -206,7 +207,7 @@ export const Template = memo((props: TemplateProps) => {
             <section className={classNames.betweenHeaderAndFooter}>
                 <Page {...props} className={classNames.page} />
             </section>
-            <Footer className={classNames.footer} />
+            {/*<Footer className={classNames.footer} />*/}
         </div>
     );
 
@@ -228,16 +229,18 @@ const { Page } = (() => {
     } & { kcContext: KcContext; } & KcTemplateProps;
 
 
-    const { useClassNames } = createUseClassNames()(
-        (theme) => ({
+    const { useClassNames } = createUseClassNames<{ isPaperBiggerThanContainer: boolean }>()(
+        (theme, { isPaperBiggerThanContainer }) => ({
             "root": {
                 "display": "flex",
                 "justifyContent": "center",
-                "alignItems": "center"
+                "alignItems": isPaperBiggerThanContainer ? undefined : "center"
             },
             "paper": {
                 "padding": theme.spacing(4),
                 "width": 490,
+                "height": "fit-content",
+                "marginBottom": theme.spacing(3)
             },
             "alert": {
                 "alignItems": "center"
@@ -247,7 +250,6 @@ const { Page } = (() => {
 
 
     const Page = memo((props: Props) => {
-
 
         const {
             className,
@@ -265,10 +267,15 @@ const { Page } = (() => {
         } = props;
 
 
-        const { classNames } = useClassNames({});
+        const { ref: containerRef, domRect: { height: containerHeight } } = useDomRect();
+        const { ref: paperRef, domRect: { height: paperHeight } } = useDomRect();
+
+        const { classNames } = useClassNames({
+            "isPaperBiggerThanContainer": paperHeight > containerHeight
+        });
         return (
-            <div className={cx(classNames.root, className)}>
-                <Paper className={classNames.paper}>
+            <div ref={containerRef} className={cx(classNames.root, className)}>
+                <Paper ref={paperRef} className={classNames.paper}>
 
                     <Head
                         {...{ kcContext, ...kcProps }}
@@ -401,6 +408,7 @@ const { Page } = (() => {
 
     })();
 
+
     const { Main } = (() => {
 
 
@@ -412,6 +420,14 @@ const { Page } = (() => {
             displayInfo?: boolean;
             infoNode?: ReactNode;
         } & { kcContext: KcContext; } & KcTemplateProps;
+
+        const { useClassNames } = createUseClassNames()(
+            () => ({
+                "alert": {
+                    "alignItems": "center"
+                }
+            })
+        );
 
         const Main = memo((props: Props) => {
 

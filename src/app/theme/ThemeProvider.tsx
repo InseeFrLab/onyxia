@@ -21,14 +21,15 @@ export function themeProviderFactory(
     function ThemeProvider(
         props: {
             isDarkModeEnabled: boolean;
-            doEnableZoom: boolean;
+            /** set to undefined to disable */
+            zoomProviderReferenceWidth?: number;
             children: React.ReactNode;
         }
     ) {
 
         const {
             isDarkModeEnabled,
-            doEnableZoom,
+            zoomProviderReferenceWidth,
             children
         } = props;
 
@@ -49,7 +50,7 @@ export function themeProviderFactory(
         useEffectOnValueChange(
             () => {
 
-                if (theme.custom.referenceWidth === undefined) {
+                if (zoomProviderReferenceWidth === undefined) {
                     return;
                 }
 
@@ -62,13 +63,17 @@ export function themeProviderFactory(
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 <StylesProvider injectFirst>
-                    <ZoomProvider referenceWidth={
-                        (isLandscape && doEnableZoom) ?
-                            theme.custom.referenceWidth : undefined
+                    {
+                        zoomProviderReferenceWidth !== undefined && !isLandscape ?
+                            <p>
+                                This app isn't compatible with landscape mode yet,
+                                please enable the rotation sensor and flip your phone.
+                            </p>
+                            :
+                            <ZoomProvider referenceWidth={zoomProviderReferenceWidth}>
+                                {children}
+                            </ZoomProvider>
                     }
-                    >
-                        {children}
-                    </ZoomProvider>
                 </StylesProvider>
             </MuiThemeProvider>
         );

@@ -13,11 +13,11 @@ import { Error } from "keycloakify/lib/components/Error"
 import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPassword"
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail"
 import { getBrowser }  from "app/tools/getBrowser";
+import { Terms } from "./Terms";
 
 export type Props = {
     kcContext: KcContext;
 };
-
 
 const { useClassNames } = createUseClassNames()(
     theme=>({
@@ -100,6 +100,7 @@ export const KcApp = memo((props: Props) => {
         []
     );
 
+
     const { classNames } = useClassNames({});
 
     const kcProps = {
@@ -118,6 +119,7 @@ export const KcApp = memo((props: Props) => {
         case "error.ftl": return <Error {...{ kcContext, ...kcProps }} />;
         case "login-reset-password.ftl": return <LoginResetPassword {...{ kcContext, ...kcProps }} />;
         case "login-verify-email.ftl": return <LoginVerifyEmail {...{ kcContext, ...kcProps }} />;
+        case "terms.ftl": return <Terms {...{ kcContext, ...kcProps }} />
     }
 
 });

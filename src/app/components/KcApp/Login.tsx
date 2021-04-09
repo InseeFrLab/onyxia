@@ -3,7 +3,6 @@ import { useState, useRef, useEffect, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
-import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
 import { Template } from "./Template";
 import { Button } from "app/components/designSystem/Button";
@@ -272,16 +271,14 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                                         </Button>
                                         <input
                                             type="hidden"
-                                            id="id-hidden-input"
                                             name="credentialId"
                                             {...(auth?.selectedCredential !== undefined ? { "value": auth.selectedCredential } : {})}
                                         />
                                         <Button
                                             ref={submitButtonRef}
                                             tabIndex={3}
-                                            className={cx(classNames.buttonSubmit)}
+                                            className={classNames.buttonSubmit}
                                             name="login"
-                                            id="kc-login"
                                             type="submit"
                                             disabled={isLoginButtonDisabled}
                                         >
