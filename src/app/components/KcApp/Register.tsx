@@ -32,11 +32,11 @@ const { useClassNames } = createUseClassNames()(
         "root": {
             "& .MuiTextField-root": {
                 "width": "100%",
-                "marginTop": theme.spacing(4)
+                "marginTop": theme.spacing(5)
             }
         },
         "buttonsWrapper": {
-            "marginTop": theme.spacing(3),
+            "marginTop": theme.spacing(7),
             "display": "flex",
             "justifyContent": "flex-end"
         },
