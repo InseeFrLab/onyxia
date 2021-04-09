@@ -15,6 +15,7 @@ import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProv
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/router";
 import type { Region, Build } from "lib/ports/OnyxiaApiClient";
+import "./fonts.scss";
 
 const { ThemeProvider } = themeProviderFactory(
     { "isReactStrictModeEnabled": false }
