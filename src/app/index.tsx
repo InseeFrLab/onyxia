@@ -34,8 +34,8 @@ Object.defineProperty(
 );
 
 const kcContext = realKcContext ?? (
-    false /* Set to true to test the login pages outside of Keycloak */
-        ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
+    true /* Set to true to test the login pages outside of Keycloak */
+        ? kcContextMocks.kcRegisterContext /* Change to .kcRegisterContext for example */
         :
         undefined
 );
