@@ -20,7 +20,6 @@ declare module "@material-ui/core/styles/createMuiTheme" {
             typography: typeof typography;
             colors: ReturnType<typeof getColors>;
             shadows: typeof shadows;
-            referenceWidth?: number;
         }
     }
     // allow configuration using `createMuiTheme`
@@ -52,8 +51,7 @@ export function createTheme(
                 "custom": {
                     typography,
                     "colors": getColors(paletteType),
-                    shadows,
-                    "referenceWidth": 1920
+                    shadows
                 },
             })
         );

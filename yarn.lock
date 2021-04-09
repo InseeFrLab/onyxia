@@ -10076,16 +10076,18 @@ keycloak-js@^10.0.2:
     base64-js "1.3.1"
     js-sha256 "0.9.0"
 
-keycloakify@^0.3.21:
-  version "0.3.21"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.3.21.tgz#192a9c271a98e73b7d0f09ac0037a7211d311930"
-  integrity sha512-mYJFw7wDLZ1AFJrkXkJeZiWIWhxZILX6rSFU7gDIhd+ASpXeoaQVaLsCwj+yY+kW7mk0Ykl5wxaQYTuPJKYKAg==
+keycloakify@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-0.4.0.tgz#7eae72600bee38af0c3b32771f565ae38bba7dfe"
+  integrity sha512-bc5qN9dYg8UUCDPzO7TCQA6qqdxake6CnbCEZbKQmo7KT4+ipwBa5fGph7YRPz+Xr7BXzXhgRJCzoLfuV8AGVQ==
   dependencies:
     cheerio "^1.0.0-rc.5"
     evt "2.0.0-beta.15"
+    markdown "^0.5.0"
     minimal-polyfills "^2.1.6"
     path "^0.12.7"
-    powerhooks "^0.0.35"
+    powerhooks "^0.0.36"
+    react-markdown "^5.0.3"
     scripting-tools "^0.19.13"
     tss-react "^0.0.12"
 
@@ -10462,6 +10464,13 @@ markdown-to-jsx@^6.11.4:
   dependencies:
     prop-types "^15.6.2"
     unquote "^1.1.0"
+
+markdown@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/markdown/-/markdown-0.5.0.tgz#28205b565a8ae7592de207463d6637dc182722b2"
+  integrity sha1-KCBbVlqK51kt4gdGPWY33BgnIrI=
+  dependencies:
+    nopt "~2.1.1"
 
 material-colors@^1.2.1:
   version "1.2.6"
@@ -11119,6 +11128,13 @@ node-sass@^4.14.0:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"
   integrity sha1-xkZdvwirzU2zWTF/eaxopkayj/k=
+  dependencies:
+    abbrev "1"
+
+nopt@~2.1.1:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/nopt/-/nopt-2.1.2.tgz#6cccd977b80132a07731d6e8ce58c2c8303cf9af"
+  integrity sha1-bMzZd7gBMqB3MdbozljCyDA8+a8=
   dependencies:
     abbrev "1"
 
@@ -12564,6 +12580,15 @@ powerhooks@^0.0.35:
   version "0.0.35"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.35.tgz#efc5e87475ec35bcfe695ba2da6caf63524aae21"
   integrity sha512-wCUDQdDawv5txiHKYUIUitqF9p+6sYGL0Fvqzbze3PcGHlyQsvHkODpVWdRwi87Qc4SrRs5xfwdwvpuaEflkAQ==
+  dependencies:
+    evt "2.0.0-beta.15"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+
+powerhooks@^0.0.36:
+  version "0.0.36"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.0.36.tgz#d973d339ad8ca7ce52ea9d288ebe8e138df7d769"
+  integrity sha512-0fEGKLfJmuFeEYDGsAlTuvGKKdqOH059xezosmYRoGurfC1bbUlaNJD+TuzOT5cTGURi88DCLcDnhk/2eLyCyA==
   dependencies:
     evt "2.0.0-beta.15"
     memoizee "^0.4.15"

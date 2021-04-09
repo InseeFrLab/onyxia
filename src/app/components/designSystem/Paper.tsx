@@ -1,5 +1,6 @@
 
 
+import { memo, forwardRef } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import MuiPaper from "@material-ui/core/Paper";
 import type { Optional } from "evt/tools/typeSafety";
@@ -25,19 +26,24 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
         }
     })
 );
-
-export function Paper(props: Props) {
+export const Paper = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { children, className } = completedProps;
+    const { 
+        children, 
+        className ,
+        //For the forwarding, rest should be empty (typewise)
+        elevation,
+        ...rest
+    } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
 
     return (
-        <MuiPaper className={cx(classNames.root, className)} >
+        <MuiPaper ref={ref} className={cx(classNames.root, className)} {...rest}>
             {children}
         </MuiPaper>
     );
 
-}
+}));
