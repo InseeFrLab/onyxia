@@ -241,6 +241,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                         <Button
                             color="secondary"
                             onClick={redirectToLogin}
+                            tabIndex={-1}
                         >
                             {t("go back")}
                         </Button>
@@ -248,6 +249,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                             className={cx(classNames.buttonSubmit)}
                             name="login"
                             type="submit"
+                            tabIndex={6}
                         >
                             {msgStr("doRegister")}
                         </Button>

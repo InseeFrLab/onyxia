@@ -17,6 +17,14 @@ const { useClassNames } = createUseClassNames()(
         "buttonSubmit": {
             "marginLeft": theme.spacing(1)
         },
+        "markdownWrapper": {
+            "& a": {
+                "color": theme.custom.colors.useCases.buttons.actionActive
+            },
+            "& a:hover": {
+                "textDecoration": "underline"
+            }
+        }
     })
 );
 
@@ -58,7 +66,7 @@ export const Terms = memo(({ kcContext, ...props }: { kcContext: KcContext.Terms
             headerNode={null}
             formNode={
                 <>
-                    <div>
+                    <div className={classNames.markdownWrapper}>
                         {msg("termsText")}
                     </div>
 
