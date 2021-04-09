@@ -15,6 +15,7 @@ import type { Params } from "evt/tools/typeSafety";
 import { Button } from "app/components/designSystem/Button";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useConstCallback } from "powerhooks";
+import { capitalize } from "app/tools/capitalize";
 
 
 const allowedEmailDomains = ["insee.fr", "gouv.fr"];
@@ -66,8 +67,6 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
         () => toAlphaNumerical(`${firstName[0] ?? ""}${lastName}`).toLowerCase(),
         [firstName, lastName]
     );
-
-    console.log({ firstName, lastName, usernameDefaultValue });
 
     const [username, setUsername] = useState(usernameDefaultValue);
     const [password, setPassword] = useState("");
@@ -153,9 +152,6 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
             [target]: ["firstName" | "lastName" | "email" | "username" | "password" | "passwordConfirm"],
             [params]: [Params<TextFieldProps["onValueBeingTypedChange"]>]
         ) => {
-            if (params.isValidValue) {
-                return;
-            }
             const { value } = params;
             switch (target) {
                 case "firstName": setFirstName(value); break;
@@ -178,50 +174,60 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                 <form className={classNames.root} action={url.registrationAction} method="post">
 
                     <>
-                    {
-                        (["firstName", "lastName", "email", "username", "password", "passwordConfirm"] as const).map(
-                            (target, i) =>
-                                (
-                                    target === "firstName" ||
-                                    target === "lastName" ||
-                                    target === "email" ||
-                                    (target === "username" && !realm.registrationEmailAsUsername) ||
-                                    ((target === "password" || target === "passwordConfirm") && passwordRequired)
-                                ) &&
-                                <div key={i}>
-                                <TextField
-                                    name={target}
-                                    type={(()=>{
-                                            switch (target) {
-                                                case "email": return "email";
-                                                case "password": 
-                                                case "passwordConfirm": 
-                                                    return "password";
-                                                default: return "text";
+                        {
+                            (["firstName", "lastName", "email", "username", "password", "passwordConfirm"] as const).map(
+                                (target, i) =>
+                                    (
+                                        target === "firstName" ||
+                                        target === "lastName" ||
+                                        target === "email" ||
+                                        (target === "username" && !realm.registrationEmailAsUsername) ||
+                                        ((target === "password" || target === "passwordConfirm") && passwordRequired)
+                                    ) &&
+                                    <div key={i}>
+                                        <TextField
+                                            name={target}
+                                            type={(() => {
+                                                switch (target) {
+                                                    case "email": return "email";
+                                                    case "password":
+                                                    case "passwordConfirm":
+                                                        return "password";
+                                                    default: return "text";
+                                                }
+                                            })()}
+                                            inputProps_aria-label={target}
+                                            inputProps_tabIndex={target === "username" ? -1 : i + 1}
+                                            inputProps_autoFocus={i === 0}
+                                            inputProps_spellCheck={false}
+                                            transformValueBeingTyped={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "firstName":
+                                                        case "lastName":
+                                                            return capitalize;
+                                                        default: return undefined;
+                                                    }
+                                                })()
                                             }
-                                    })()}
-                                    inputProps_aria-label={target}
-                                    inputProps_tabIndex={target === "username" ? -1 : i + 1}
-                                    inputProps_autoFocus={i === 0}
-                                    inputProps_spellCheck={false}
-                                    label={msg(target)}
-                                    onValueBeingTypedChange={onValueBeingTypedChangeFactory(target)}
-                                    helperText={
-                                        (() => {
-                                            switch (target) {
-                                                case "email": return t("allowed email domain", { "list": allowedEmailDomainsStr })
-                                                case "username": return t("alphanumerical chars only")
-                                                case "password": return t("minimum length", { "n": `${passwordMinLength}` })
-                                                default: return undefined;
+                                            label={msg(target)}
+                                            onValueBeingTypedChange={onValueBeingTypedChangeFactory(target)}
+                                            helperText={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "email": return t("allowed email domain", { "list": allowedEmailDomainsStr })
+                                                        case "username": return t("alphanumerical chars only")
+                                                        case "password": return t("minimum length", { "n": `${passwordMinLength}` })
+                                                        default: return undefined;
+                                                    }
+                                                })()
                                             }
-                                        })()
-                                    }
-                                    defaultValue={target !== "username" ? "" : usernameDefaultValue}
-                                    getIsValidValue={getIsValidValueFactory(target)}
-                                />
-                                </div>
-                        )
-                    }
+                                            defaultValue={target !== "username" ? "" : usernameDefaultValue}
+                                            getIsValidValue={getIsValidValueFactory(target)}
+                                        />
+                                    </div>
+                            )
+                        }
                     </>
                     {
                         recaptchaRequired &&
@@ -246,7 +252,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                             {msgStr("doRegister")}
                         </Button>
                     </div>
-                </form >
+                </form>
             }
         />
     );
