@@ -1,3 +1,7 @@
+### **0.7.40** (2021-04-09)  
+  
+- Last ui tweaks    
+  
 ### **0.7.39** (2021-04-09)  
   
 - Fix logic on register page  
