@@ -1,3 +1,7 @@
+### **0.7.42** (2021-04-10)  
+  
+- Final fixes on register page    
+  
 ### **0.7.41** (2021-04-09)  
   
 - First draft for tabs    
