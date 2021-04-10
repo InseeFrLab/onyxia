@@ -1,6 +1,4 @@
-
-
-import { useState, useMemo, memo } from "react";
+import { useCallback, useState, useMemo, memo } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify/lib/KcContext";
@@ -16,7 +14,7 @@ import { Button } from "app/components/designSystem/Button";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
-
+import Tooltip from "@material-ui/core/Tooltip";
 
 const allowedEmailDomains = ["insee.fr", "gouv.fr"];
 const allowedEmailDomainsStr = allowedEmailDomains.map(domain => `@${domain}`).join(", ");
@@ -26,6 +24,8 @@ const passwordMinLength = 12
 function toAlphaNumerical(value: string) {
     return value.replace(/[^a-zA-Z0-9]/g, "x");
 }
+
+const targets = ["firstName", "lastName", "email", "username", "password", "password-confirm"] as const;
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -75,7 +75,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
 
     const getIsValidValueFactory = useCallbackFactory(
         (
-            [target]: ["firstName" | "lastName" | "email" | "username" | "password" | "passwordConfirm"],
+            [target]: ["firstName" | "lastName" | "email" | "username" | "password"],
             [value]: [string]
         ) => {
 
@@ -111,7 +111,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                     }
                     break;
                 case "username":
-                    if (!/[a-zA-Z0-9]+/.test(value)) {
+                    if (!/^[a-zA-Z0-9]+$/.test(value)) {
                         return {
                             "isValidValue": false,
                             "message": ""
@@ -132,14 +132,6 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                         };
                     }
                     break;
-                case "passwordConfirm":
-                    if (password !== value) {
-                        return {
-                            "isValidValue": false,
-                            "message": t("password mismatch")
-                        };
-                    }
-                    break;
             }
 
             return { "isValidValue": true } as const;
@@ -147,12 +139,57 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
         }
     );
 
+    //NOTE: We set it apparat because the reference of the function
+    //has to change when the password changes.
+    const getIsPasswordConfirmValidValue =
+        useCallback(
+            (value: string) => {
+
+                if (password !== value) {
+                    return {
+                        "isValidValue": false,
+                        "message": t("password mismatch")
+                    };
+                }
+
+                return { "isValidValue": true } as const;
+
+            },
+            [password, t]
+        );
+
+    const { areAllTargetsValid, setIsTargetValid } = (function useClosure() {
+
+        const [validTargets, setValidTargets] = useState(new Set<typeof targets[number]>());
+
+        function setIsTargetValid(
+            params: {
+                target: typeof targets[number];
+                isValidValue: boolean;
+            }
+        ) {
+            const { target, isValidValue } = params;
+            setValidTargets((validTargets[isValidValue ? "add" : "delete"](target), new Set(validTargets)));
+        }
+
+        const areAllTargetsValid = validTargets.size === targets.length;
+
+        return { setIsTargetValid, areAllTargetsValid };
+
+
+    })();
+
     const onValueBeingTypedChangeFactory = useCallbackFactory(
         (
-            [target]: ["firstName" | "lastName" | "email" | "username" | "password" | "passwordConfirm"],
+            [target]: [typeof targets[number]],
             [params]: [Params<TextFieldProps["onValueBeingTypedChange"]>]
         ) => {
-            const { value } = params;
+
+
+            const { value, isValidValue } = params;
+
+            setIsTargetValid({ target, isValidValue })
+
             switch (target) {
                 case "firstName": setFirstName(value); break;
                 case "lastName": setLastName(value); break;
@@ -161,6 +198,8 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
             }
         }
     );
+
+
 
     const redirectToLogin = useConstCallback(() => window.location.href = url.loginUrl);
 
@@ -175,14 +214,14 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
 
                     <>
                         {
-                            (["firstName", "lastName", "email", "username", "password", "passwordConfirm"] as const).map(
+                            targets.map(
                                 (target, i) =>
                                     (
                                         target === "firstName" ||
                                         target === "lastName" ||
                                         target === "email" ||
                                         (target === "username" && !realm.registrationEmailAsUsername) ||
-                                        ((target === "password" || target === "passwordConfirm") && passwordRequired)
+                                        ((target === "password" || target === "password-confirm") && passwordRequired)
                                     ) &&
                                     <div key={i}>
                                         <TextField
@@ -191,7 +230,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                                 switch (target) {
                                                     case "email": return "email";
                                                     case "password":
-                                                    case "passwordConfirm":
+                                                    case "password-confirm":
                                                         return "password";
                                                     default: return "text";
                                                 }
@@ -200,6 +239,23 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                             inputProps_tabIndex={target === "username" ? -1 : i + 1}
                                             inputProps_autoFocus={i === 0}
                                             inputProps_spellCheck={false}
+                                            autoComplete={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "password-confirm": return undefined;
+                                                        default: return "on"
+                                                    }
+                                                })()
+                                            }
+                                            doOnlyValidateInputAfterFistFocusLost={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "email": return true;
+                                                        default: return false;
+                                                    }
+                                                })()
+
+                                            }
                                             transformValueBeingTyped={
                                                 (() => {
                                                     switch (target) {
@@ -210,7 +266,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                                     }
                                                 })()
                                             }
-                                            label={msg(target)}
+                                            label={msg(target === "password-confirm" ? "passwordConfirm" : target)}
                                             onValueBeingTypedChange={onValueBeingTypedChangeFactory(target)}
                                             helperText={
                                                 (() => {
@@ -223,7 +279,14 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                                 })()
                                             }
                                             defaultValue={target !== "username" ? "" : usernameDefaultValue}
-                                            getIsValidValue={getIsValidValueFactory(target)}
+                                            getIsValidValue={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "password-confirm": return getIsPasswordConfirmValidValue;
+                                                        default: return getIsValidValueFactory(target)
+                                                    }
+                                                })()
+                                            }
                                         />
                                     </div>
                             )
@@ -245,14 +308,18 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                         >
                             {t("go back")}
                         </Button>
-                        <Button
-                            className={cx(classNames.buttonSubmit)}
-                            name="login"
-                            type="submit"
-                            tabIndex={6}
-                        >
-                            {msgStr("doRegister")}
-                        </Button>
+                        <Tooltip title={areAllTargetsValid?"":t("form not filled properly yet")}>
+                            <span>
+                                <Button
+                                    className={cx(classNames.buttonSubmit)}
+                                    disabled={!areAllTargetsValid}
+                                    type="submit"
+                                    tabIndex={6}
+                                >
+                                    {msgStr("doRegister")}
+                                </Button>
+                            </span>
+                        </Tooltip>
                     </div>
                 </form>
             }
@@ -271,6 +338,7 @@ export declare namespace Register {
         'must be different from username': undefined;
         'password mismatch': undefined;
         'go back': undefined;
+        'form not filled properly yet': undefined;
     };
 
 }

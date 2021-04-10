@@ -81,7 +81,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "minimum length": "Minimum length: {{n}}",
             "must be different from username": "Pass can't be the username",
             "password mismatch": "Passwords mismatch",
-            "go back": "Go back"
+            "go back": "Go back",
+            "form not filled properly yet": "Please make sure the form is properly filled out"
         },
         "Account": {
             "user info": "User infos",
@@ -202,7 +203,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "minimum length": "Longeur minimum {{n}}",
             "must be different from username": "Ne peut pas être le nom d'utilisateur",
             "password mismatch": "Les deux mots de passe ne correspondent pas",
-            "go back": "Retour"
+            "go back": "Retour",
+            "form not filled properly yet": "Veuillez vérifier que vous avez bien rempli le formulaire"
         },
         "Account": {
             "user info": "Informations utilisateur",
