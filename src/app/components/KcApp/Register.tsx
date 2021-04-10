@@ -145,7 +145,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
         useCallback(
             (value: string) => {
 
-                if (password !== value) {
+                if (value !== "" && password !== value) {
                     return {
                         "isValidValue": false,
                         "message": t("password mismatch")
@@ -169,7 +169,8 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
             }
         ) {
             const { target, isValidValue } = params;
-            setValidTargets((validTargets[isValidValue ? "add" : "delete"](target), new Set(validTargets)));
+            validTargets[isValidValue ? "add" : "delete"](target);
+            setValidTargets(new Set(validTargets));
         }
 
         const areAllTargetsValid = validTargets.size === targets.length;
