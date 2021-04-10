@@ -181,21 +181,24 @@ export const TextField = memo((props: TextFieldProps) => {
         ]
     );
 
-    const { value, transformAndSetValue } = (function useClosure(
-        transformValueBeingTyped: typeof completedProps["transformValueBeingTyped"]
-    ) {
+    const { value, transformAndSetValue } = (function useClosure() {
 
         const [value, setValue] = useState(defaultValue);
 
         const transformAndSetValue = useConstCallback(
-            (value: string) => setValue(
-                transformValueBeingTyped(value)
-            )
+            (value: string) => {
+
+                if (!isValidationEnabled && !doOnlyValidateInputAfterFistFocusLost) {
+                    enableValidation();
+                }
+
+                setValue(transformValueBeingTyped(value));
+            }
         );
 
         return { value, transformAndSetValue };
 
-    })(transformValueBeingTyped);
+    })();
 
     useEffectOnValueChange(
         () => transformAndSetValue(defaultValue),
@@ -218,7 +221,7 @@ export const TextField = memo((props: TextFieldProps) => {
 
     const [isValidationEnabled, enableValidation] = useReducer(
         () => true,
-        !doOnlyValidateInputAfterFistFocusLost
+        false
     );
 
     useEvt(
