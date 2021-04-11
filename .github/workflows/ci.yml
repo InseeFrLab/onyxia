@@ -20,7 +20,7 @@ jobs:
     - run: yarn --frozen-lockfile
     #- run: yarn test
     - run: yarn build
-    - run: npx build-keycloak-theme #--external-assets
+    - run: npx build-keycloak-theme --external-assets
     - uses: actions/upload-artifact@v2
       with:
         name: keycloak_theme
