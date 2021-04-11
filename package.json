@@ -1,7 +1,7 @@
 {
-  "homepage": "https://onyxia.lab.sspcloud.fr/",
+  "homepage": "https://datalab.sspcloud.fr",
   "name": "onyxia-ui",
-  "version": "0.7.43",
+  "version": "0.7.44",
   "license": "MIT",
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.11",
