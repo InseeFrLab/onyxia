@@ -1,3 +1,7 @@
+### **0.7.44** (2021-04-11)  
+  
+- Use datalb.sspcloud.fr instead of onyxia.lab.sspcloud.fr    
+  
 ### **0.7.43** (2021-04-11)  
   
 - Enable keycloakify --external-assets  
