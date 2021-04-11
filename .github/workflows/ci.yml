@@ -9,37 +9,28 @@ on:
 
 jobs:
 
-  test:
-    name: Test with on ${{ matrix.os }}
-    runs-on: ${{matrix.os}}
+  build:
+    runs-on: ubuntu-latest
     if: github.event.head_commit.author.name != 'actions'
-    strategy:
-      matrix:
-       #os: [ windows-latest, ubuntu-latest ]
-       os: [ ubuntu-latest ]
     outputs:
-      keycloakify_version: ${{ steps.step1.outputs.out1 }}
       react_envs_version: ${{ steps.step1.outputs.out2 }}
     steps:
     - uses: actions/checkout@v2
-      with:
-        lfs: true
     - uses: actions/setup-node@v1
-    - run: |
-        yarn --frozen-lockfile                                                                                                                                                                                        
-        yarn build
-#       yarn test
+    - run: yarn --frozen-lockfile
+    #- run: yarn test
+    - run: yarn build
+    - run: npx build-keycloak-theme #--external-assets
     - uses: actions/upload-artifact@v2
-      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        name: keycloak_theme
+        path: build_keycloak/target/*keycloak-theme*.jar
+    - uses: actions/upload-artifact@v2
       with:
         name: build
         path: build
     - id: step1
-      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
-        echo ::set-output name=out1::$(
-          node -e 'console.log(require("./node_modules/keycloakify/package.json")["version"])'
-        )
         echo ::set-output name=out2::$(
           node -e 'console.log(require("./node_modules/react-envs/package.json")["version"])'
         )
@@ -47,35 +38,28 @@ jobs:
   check_if_version_upgraded:
     name: Check if version upgrade
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     outputs:
       from_version: ${{ steps.step1.outputs.from_version }}
       to_version: ${{ steps.step1.outputs.to_version }}
-      is_upgraded_version: ${{steps.step1.outputs.is_upgraded_version }}
-      branch: ${{steps.step2.outputs.branch }}
+      is_upgraded_version: ${{ steps.step1.outputs.is_upgraded_version }}
     steps:
-    - uses: garronej/github_actions_toolkit@v2.1
+    - uses: garronej/github_actions_toolkit@v2.2
       id: step1
       with: 
         action_name: is_package_json_version_upgraded
-    - name: Get branch name
-      id: step2
-      run: |
-        echo ::set-output name=branch::$(
-          [ "$GITHUB_EVENT_NAME" == "pull_request" ] &&
-            echo "$GITHUB_HEAD_REF" ||
-            echo "${GITHUB_REF#refs/*/}"
-        )
 
   docker:
-    name: Build Docker image 
     needs: 
-      - test
       - check_if_version_upgraded
+      - build
     runs-on: ubuntu-latest
-    # Build the docker image only if it's a push on master or if it's a PR from a branch (and not a PR from a fork)
-    # It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is defined but GitHub Action don't allow it.
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.owner.login == github.event.pull_request.base.repo.owner.login }}
+    # We publish the the docker image only if it's a push on the default branch or if it's a PR from a 
+    # branch (meaning not a PR from a fork). It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is 
+    # defined but GitHub Action don't allow it.
+    if: |
+      github.event_name == 'push' || 
+      github.event.pull_request.head.repo.owner.login == github.event.pull_request.base.repo.owner.login 
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
@@ -89,9 +73,12 @@ jobs:
         env: 
           IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
           TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
-          BRANCH: ${{ needs.check_if_version_upgraded.outputs.branch }}
         run: |
-          OUT=$GITHUB_REPOSITORY:$BRANCH
+          OUT=$GITHUB_REPOSITORY:$(
+          [ "$GITHUB_EVENT_NAME" == "pull_request" ] &&
+            echo "$GITHUB_HEAD_REF" ||
+            echo "${GITHUB_REF#refs/*/}"
+          )
           if [ "$IS_UPGRADED_VERSION" = "true" ]; then
             OUT=$OUT,$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
           fi
@@ -99,7 +86,7 @@ jobs:
           echo ::set-output name=docker_tags::$OUT
       - run: echo "{\"version\":\"$VER\"}" > re.json
         env: 
-          VER: ${{ needs.test.outputs.react_envs_version }}
+          VER: ${{ needs.build.outputs.react_envs_version }}
       - uses: actions/download-artifact@v2
         with:
           name: build
@@ -112,47 +99,18 @@ jobs:
           tags: ${{ steps.step1.outputs.docker_tags }}
           file: Dockerfile.ci
 
-
-  build_keycloak_theme:
-    name: Build keycloak theme
-    runs-on: ubuntu-latest
-    needs: 
-      - check_if_version_upgraded
-      - test
-    if: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' }}
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '15'
-    - uses: actions/download-artifact@v2
-      with:
-        name: build
-        path: build
-    - run: npx -y -p keycloakify@$VER build-keycloak-theme --external-assets
-      env: 
-        VER: ${{ needs.test.outputs.keycloakify_version }}
-    - name: Upload keycloak theme
-      uses: actions/upload-artifact@v2
-      with:
-        name: keycloak_theme
-        path: build_keycloak/target/*keycloak-theme*.jar
-
   update_changelog:
-    name: Update CHANGELOG.md
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: |
+      github.event_name == 'push' &&
+      needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true'
     needs:
-      - build_keycloak_theme
       - docker
-      - check_if_version_upgraded
     steps:
-    - uses: garronej/github_actions_toolkit@v2.1
+    - uses: garronej/github_actions_toolkit@v2.2
       with:
         action_name: update_changelog
-        branch: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        branch: ${{ github.ref }}
         commit_author_email: actions@github.com
 
   release:
@@ -163,9 +121,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: ${{ needs.check_if_version_upgraded.outputs.branch }}
-    - name: Download keycloak_theme
-      uses: actions/download-artifact@v2
+        ref: ${{ github.ref }}
+    - uses: actions/download-artifact@v2
       with:
         name: keycloak_theme
     - run: mv *keycloak-theme*.jar keycloak-theme.jar
@@ -180,12 +137,11 @@ jobs:
       env: 
         FROM_VERSION: ${{ needs.check_if_version_upgraded.outputs.from_version }}
         TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
-    - name: Create Release
-      uses: garronej/action-gh-release@8eb01d050288728124e879e2e724873f39433141
+    - uses: garronej/action-gh-release@v0.2.0
       with:
         name: Release v${{ needs.check_if_version_upgraded.outputs.to_version }}
         tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
-        target_commitish: ${{ needs.check_if_version_upgraded.outputs.branch }}
+        target_commitish: ${{ github.ref }}
         files: keycloak-theme.jar
         body: ${{ steps.step1.outputs.body }}
         draft: false
