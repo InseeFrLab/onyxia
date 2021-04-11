@@ -1,3 +1,9 @@
+### **0.7.43** (2021-04-11)  
+  
+- Enable keycloakify --external-assets  
+- Refactor CI  
+- Bug fix: Password registration always valid    
+  
 ### **0.7.42** (2021-04-10)  
   
 - Final fixes on register page    
