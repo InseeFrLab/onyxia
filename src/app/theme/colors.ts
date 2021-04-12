@@ -62,7 +62,7 @@ export function getColors(paletteType: "light" | "dark") {
             "actionSelected": palette.whiteSnow.greyVariant1,
             "actionActive": palette.exuberantOrange.main,
             "actionDisabled": palette.whiteSnow.greyVariant2,
-            "actionDisabledBackground": palette.midnightBlue.light2
+            "actionDisabledBackground": palette.midnightBlue.light3
         },
         "surfaces": {
             "background": palette.whiteSnow.main,
