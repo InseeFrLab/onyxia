@@ -146,7 +146,7 @@ const { CustomButton } = (() => {
     };
 
     const { useClassNames } = createUseClassNames<CustomButtonProps>()(
-        (theme, { isSelected, isFirst }) => ({
+        (theme, { isSelected, isFirst, size }) => ({
             "root": {
                 "backgroundColor": (() => {
 
@@ -157,9 +157,18 @@ const { CustomButton } = (() => {
 
                 })(),
                 "boxShadow": [theme.custom.shadows[4], ...((isSelected || isFirst) ? [theme.custom.shadows[5]] : [])].join(", "),
-                "padding": theme.spacing(3, 2),
+                "padding": (()=>{
+                    switch(size){
+                        case "big": return theme.spacing(3, 2);
+                        case "small": return theme.spacing(1, 2);
+                    }
+                })(),
                 "display": "flex",
-                "alignItems": "center"
+                "alignItems": "center",
+                "cursor": "pointer",
+            },
+            "typo": {
+                "fontWeight": isSelected ? 600 : undefined
             }
         })
     );
@@ -184,14 +193,13 @@ const { CustomButton } = (() => {
                             return children;
                         }
                         switch (size) {
-                            case "big": return <Typography variant="h6">
-
+                            case "big": return <Typography variant="h6" className={classNames.typo}>
                                 {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-                                    {children}
+                                {children}
                             </Typography>
-                            case "small": return <Typography variant="body1" className={css({ "marginTop": 2 })}>
+                            case "small": return <Typography variant="body1" className={cx(css({ "marginTop": 2 }), classNames.typo)}>
                                 {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-                                    {children}
+                                {children}
                             </Typography>
                         }
                     })()
