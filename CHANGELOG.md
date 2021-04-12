@@ -1,3 +1,7 @@
+### **0.7.45** (2021-04-12)  
+  
+- Fix bug file icon color    
+  
 ### **0.7.44** (2021-04-11)  
   
 - Use datalb.sspcloud.fr instead of onyxia.lab.sspcloud.fr    
