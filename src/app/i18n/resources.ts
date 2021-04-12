@@ -85,13 +85,73 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "form not filled properly yet": "Please make sure the form is properly filled out"
         },
         "Account": {
-            "user info": "User infos",
-            "onyxia info": "Onyxia Infos",
-            "userServicePassword": "Services password",
-            "gitName": "User name for git",
-            "gitEmail": "Email for git",
-            "kaggleApiToken": "Kaggle API token",
-            "githubPersonalAccessToken": "GitHub Personal Access Token"
+            "account info":"Account informations",
+            //First account section
+            "general info":"General informations",
+            "account username":"Username (IDEP)",
+            "full name":"Full name",
+            "account mail":"Mail address",
+            "change password":"Change account password",
+           
+            "onyxia info": "Onyxia authentication information",
+            "onyxia info helper": `This information allows you to identify yourself 
+            as a user within the platform and the various services.`,
+            "services password":"Password for your services",
+            "services password helper":`This password is used to connect to all services. 
+            It is generated automatically and renewed regularly.`,
+            "oidc token":"OIDC Personal access token",
+            "oidc token helper":`This token is renewed every 24 hours. It is accessible 
+            within your services as the environment variable $ AWS_SESSION_TOKEN. `,
+            "ip adress" : "IP adress",
+            
+             "account setup":"Accounts setup",
+            //second account section
+            "git config":"Git configuration",
+            "git config helper": `This information allows you to identify yourself 
+            in your source code when making changes from the services.`,
+            "git username":"Username for Git",
+            "git mail":"Mail address for Git",
+            "password cache":"Duration of preservation of your password in cache",
+            "accounts api":"Using the GitHub and Kaggle APIs",
+            "accounts api helper":`Connect your services to external accounts without having 
+            to enter your username and password.`,
+            "github token":"Github Personal access token",
+            "github token helper":`Create your Github token. Accessible within your services 
+            as the environment variable $GITHUB_TOKEN.`,
+            "gitlab token":"Gitlab Personal access token",
+            "gitlab token helper":`Create your Gitlab token. Accessible within your services 
+            as the environment variable $GITLAB_TOKEN.`,
+            "kaggle token":"Kaggle Personal access token",
+            "kaggle token helper":`Create your Kaggle token. Accessible within your services 
+            as the environment variable $KAGGLE_TOKEN.`, 
+            
+            "Storage connection": "Storage connection",
+            //third account section
+            "data connection":"Connect your data to your services",
+            "data connection helper":`Amazon-compatible MinIO object storage (AWS S3). 
+            This information is already filled in automatically.`, 
+            "access key":"Access key",
+            "access key helper":`Accessible within your services as the environment variable $AWS_ACCESS_KEY_ID.`,
+            "secret access key":"Secret Access key",
+            "secret access key helper":`Accessible within your services as the environment variable $$AWS_SECRET_ACCESS_KEY.`,
+            "s3 endpoint":"S3 URL",
+            "s3 endpoint helper":`Accessible within your services as the environment variable $AWS_S3_ENDPOINT.`,
+            "s3 token":"Session Token",
+            "s3 token helper":`Accessible within your services as the environment variable $AWS_SESSION_TOKEN.`,
+            "outside storage access":"To access storage outside the datalab", 
+            "outside storage access helper":`Download or copy the init script in the programming language of your choice.`, 
+            "init script":"Init script",
+            
+             
+            "interface modes": "Interface modes",
+            //fourth account section
+            "interface config": "Configure the interface mode",
+            "darkmode":"Activate dark mode",
+            "darkmode helper":"Low light interface theme with dark colored background.",
+            "betatester":"Activate beta-tester mode",
+            "betatester helper":"For advanced platform configurations and features.",
+            "language":"Change the language"
+         
         },
         "MySecrets": {
             ...common.en,
@@ -207,18 +267,83 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "form not filled properly yet": "Veuillez vérifier que vous avez bien rempli le formulaire"
         },
         "Account": {
-            "user info": "Informations utilisateur",
-            "onyxia info": "Informations Onyxia",
-            "userServicePassword": "Mot de passe pour vos services",
-            "gitName": "Nom d'utilisateur pour git",
-            "gitEmail": "Email pour git",
-            "kaggleApiToken": "Kaggle API token",
-            "githubPersonalAccessToken": "GitHub Personal Access Token"
+            "account info":"Informations du compte",
+            //First account section
+            "general info":"Informations générales ",
+            "account username":"Identifiant (IDEP)",
+            "full name":"Nom complet",
+            "account mail":"Adresse mail",
+            "change password":"Modifiez le mot de passe du compte",
+           
+            "onyxia info": "Informations d’authentification Onyxia",
+            "onyxia info helper": `Ces informations vous permettent de vous identifier en temps 
+            qu’utilisateur au sein de la plateforme et des différents services.`,
+            "services password":"Mot de passe pour vos services",
+            "services password helper":`Ce mot de passe est utilisé pour se connecter à tous les services.
+            Il est généré automatiquement et renouvelé régulièrement.`,
+            "oicc token":"Jeton d’accès personnel OIDC",
+            "oidc token helper":`Ce jeton est renouvelé toutes les 24h. Il est accessible au sein 
+            de vos services en tant que la variable d'environnement $AWS_SESSION_TOKEN.`,
+            "ip adress" : "Adresse IP",
+            
+             "account setup":"Configuration des comptes ",
+            //second account section
+            "git config":"Configuration Git",
+            "git config helper": `Ces informations vous permettent de vous identifier dans votre 
+            code source lors des modifications depuis les services.`,
+            "git username":"Nom d’utilisateur pour Git",
+            "git mail":"Adresse mail pour Git",
+            "password cache":"Durée de préservation de votre mot de passe dans le cache",
+            "accounts api":"Utilisation des APIs GitHub et Kaggle",
+            "accounts api helper":`Connectez vos services à des comptes extérieurs sans devoir 
+            renseigner vos identifiants et mots de passe.`,
+            "github token":"Jeton d’accès personnel Github",
+            "github token helper":`Créer votre jeton Github. Accessible au sein de vos services
+            en tant que la variable d'environnement $GITHUB_TOKEN.`,
+            "gitlab token":"Jeton d’accès personnel Gitlab",
+            "gitlab token helper":`Créer votre jeton Github. Accessible au sein de vos services
+            en tant que la variable d'environnement $GITLAB_TOKEN.`,
+            "kaggle token":"Jeton d’accès personnel Kaggle",
+            "kaggle token helper":`Créer votre jeton Github. Accessible au sein de vos services
+            en tant que la variable d'environnement $KAGGLE_TOKEN.`, 
+            
+            "Storage connection": "Connexion au stockage",
+            //third account section
+            "data connection":"Connectez vos données à vos services",
+            "data connection helper":`Stockage object MinIO compatible Amazon (AWS S3). 
+            Ces informations sont déjà renseignés automatiquement.`, 
+            "access key":"Clef d’accès",
+            "access key helper":`Accessible au sein de vos services en tant que la variable 
+            d'environnement $AWS_ACCESS_KEY_ID.`,
+            "secret access key":"Clef d’accès secret",
+            "secret access key helper":`Accessible au sein de vos services en tant que la variable 
+            d'environnement $AWS_SECRET_ACCESS_KEY_ID.`,
+            "s3 endpoint":"S3 URL",
+            "s3 endpoint helper":`Accessible au sein de vos services en tant que la variable 
+            d'environnement $AWS_ENDPOINT.`,
+            "s3 token":"Jeton de session",
+            "s3 token helper":`Accessible au sein de vos services en tant que la variable 
+            d'environnement $AWS_SESSION_TOKEN.`,
+            "outside storage access":"Pour accèder au stockage en dehors du datalab", 
+            "outside storage access helper":`Téléchargez ou copiez le script d'initialisation
+            dans le langage de programmation de votre choix.`, 
+            "init script":"Script d'initialisation ",
+            
+             
+            "interface modes": "Modes d'interface",
+            //fourth account section
+            "interface config": "Configurez le mode d’interface",
+            "darkmode":"Activer le mode sombre",
+            "darkmode helper":`Thème de l’interface à faible luminosité avec un fond de couleur sombre.`,
+            "betatester":"Activer le mode beta-testeur",
+            "betatester helper":`Pour des configurations et fonctionnalités avancées de la plateforme.`,
+            "language":"Changer la langue"
         },
         "MySecrets": {
             ...common.fr,
             "page title": "Mes secrets",
-            "what this page is used for": `Définissez ici des variables qui seront accessibles sous forme de variable d'environnement dans vos services.`,
+            "what this page is used for": `Définissez ici des variables qui seront accessibles 
+            sous forme de variable d'environnement dans vos services.`,
             "watch the video": "Visionner la vidéo de démonstration",
         },
         "ExplorerItem": {
