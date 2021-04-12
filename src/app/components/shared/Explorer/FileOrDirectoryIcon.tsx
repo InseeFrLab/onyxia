@@ -23,13 +23,13 @@ const { useClassNames } = createUseClassNames<Props>()(
             "fill": "currentColor",
             "color": (() => {
                 switch (kind) {
-                    case "directory": return theme.palette.primary.main;
-                    case "file": return theme.palette.secondary[(() => {
+                    case "directory": return theme.custom.colors.palette.exuberantOrange.main;
+                    case "file": return (() => {
                         switch (theme.palette.type) {
-                            case "light": return "main";
-                            case "dark": return "contrastText";
+                            case "light": return theme.custom.colors.palette.midnightBlue.main;
+                            case "dark": return theme.custom.colors.palette.whiteSnow.main;
                         }
-                    })()];
+                    })();
                 }
             })(),
             ...(() => {
@@ -45,7 +45,6 @@ const { useClassNames } = createUseClassNames<Props>()(
                 return { width, "height": ~~(width * 8 / 10) };
 
             })(),
-
             "display": "block"
         }
     })
