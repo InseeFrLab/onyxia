@@ -16,7 +16,15 @@ import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const allowedEmailDomains = ["insee.fr", "gouv.fr"];
+const allowedEmailDomains = [
+    "insee.fr", 
+    "gouv.fr",
+    "casd.eu",
+    "ensai.fr",
+    "ensae.fr",
+    "ars.sante.fr",
+    "cnaf.fr"
+];
 const allowedEmailDomainsStr = allowedEmailDomains.map(domain => `@${domain}`).join(", ");
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12
@@ -103,7 +111,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                             "message": t("not a valid", { "what": msgStr(target) })
                         };
                     }
-                    if (!allowedEmailDomains.includes(value.split("@")[1].toLowerCase())) {
+                    if( !allowedEmailDomains.find(domain => new RegExp(`[@.]${domain}$`, "i").test(value))){
                         return {
                             "isValidValue": false,
                             "message": ""
