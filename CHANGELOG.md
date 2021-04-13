@@ -1,3 +1,10 @@
+### **0.7.46** (2021-04-13)  
+  
+- Remove email whitlisting on frontend  
+- Sync email whitelist with Keycloak policy  
+- AccountTab ok for Marc (refactor left to do)  
+- Fix palette error that shoes for disabled button    
+  
 ### **0.7.45** (2021-04-12)  
   
 - Fix bug file icon color    
