@@ -1,3 +1,8 @@
+### **0.7.48** (2021-04-14)  
+  
+- Update package.json  
+- Spelling correction to Register    
+  
 ### **0.7.47** (2021-04-14)  
   
 - Display the custom name (filled out at the services config step) on My Services page #226    
