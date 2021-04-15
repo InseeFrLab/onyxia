@@ -17,6 +17,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import type { Parameters } from "evt/tools/typeSafety";
 import { useDomRect } from "powerhooks";
+import type { Params } from "evt/tools/typeSafety";
 
 
 export type Props = {
@@ -135,7 +136,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
 
     const onSubmitFactory = useCallbackFactory(
-        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [{ value }]: [Parameters<NonNullable<TextFieldProps["onSubmit"]>>[0]]) =>
+        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [value]: [Params<TextFieldProps["onSubmit"]>]) =>
             evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
     );
 
@@ -180,7 +181,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     const onSubmitButtonClick = useConstCallback(
         () => {
             evtInputAction.post("TRIGGER SUBMIT");
-            setIsInEditingState(false);
+            //setIsInEditingState(false);
         }
     );
 
@@ -305,6 +306,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                             getIsValidValue={getIsValidValue_key}
                             onValueBeingTypedChange={onValueBeingTypedChange_key}
                             transformValueBeingTyped={toUpperCase}
+                            doOnlyValidateInputAfterFistFocusLost={false}
                         />
                 }</TableCell>
             <TableCell className={cx(classNames.keyAndValueTableCells, css(
@@ -324,6 +326,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                             onSubmit={onSubmitFactory("editedStrValue")}
                             getIsValidValue={getIsValidValue_strValue}
                             onValueBeingTypedChange={onValueBeingTypedChange_strValue}
+                            doOnlyValidateInputAfterFistFocusLost={false}
                         />
                 }</TableCell>
             <TableCell>{
