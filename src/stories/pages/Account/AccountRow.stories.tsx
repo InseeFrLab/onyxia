@@ -25,3 +25,17 @@ export const ServicePassword = getStory(id<Props.ServicePassword>({
         "onRequestCopy"
     ])
 }));
+
+export const DownloadS3InitScript = getStory(id<Props.DownloadS3InitScript<string>>({
+    className,
+    "type": "s3 scripts",
+    "scriptList": [ 
+        "R (aws.S3)", 
+        "R (paws)", "Python (s3fs)", 
+        "Environnement variables"
+    ],
+    ...logCallbacks([
+        "onRequestDownloadScript",
+        "onRequestCopyScript"
+    ])
+}));

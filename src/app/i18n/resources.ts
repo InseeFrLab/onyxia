@@ -76,9 +76,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountRow": {
             "editable text": "",
             "language": "",
-            "s3 scripts": "",
+            "s3 scripts": "Init script",
             "service password": "Password for your services",
-            "s3 script helper text": "",
             "service password helper text": "This password is used to connect to all services."
         },
         "Register": {
@@ -197,9 +196,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountRow": {
             "editable text": "",
             "language": "",
-            "s3 scripts": "",
+            "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
-            "s3 script helper text": "",
             "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services."
         },
         "Register": {
