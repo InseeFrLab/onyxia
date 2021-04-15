@@ -17,8 +17,6 @@ import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { useWithProps } from "powerhooks";
-import type { Params } from "evt/tools/typeSafety";
-
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -170,12 +168,8 @@ export const ExplorerItem = memo((props: Props) => {
 
     const [evtInputAction] = useState(() => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>());
 
-    const onInputSubmit = useConstCallback(
-        ({ value, isValidValue }: Params<TextFieldProps["onSubmit"]>) => {
-
-            if (!isValidValue) {
-                return;
-            }
+    const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
+        (value) => {
 
             setIsInEditingState(false);
 

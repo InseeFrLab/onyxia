@@ -13,8 +13,8 @@ import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
-import { Account } from "app/components/pages/Account";
 import { Register } from "app/components/KcApp/Register";
+import { AccountRow } from "app/components/pages/Account/AccountRow";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -36,8 +36,8 @@ const reflectedI18nSchemes = {
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
-    [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
+    [symToStr({ AccountRow })]: Reflect<AccountRow.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -73,6 +73,14 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
+        "AccountRow": {
+            "editable text": "",
+            "language": "",
+            "s3 scripts": "",
+            "service password": "Password for your services",
+            "s3 script helper text": "",
+            "service password helper text": "This password is used to connect to all services."
+        },
         "Register": {
             "required field": "Required field",
             "not a valid": "This is not a valid {{what}}",
@@ -83,15 +91,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "password mismatch": "Passwords mismatch",
             "go back": "Go back",
             "form not filled properly yet": "Please make sure the form is properly filled out"
-        },
-        "Account": {
-            "user info": "User infos",
-            "onyxia info": "Onyxia Infos",
-            "userServicePassword": "Services password",
-            "gitName": "User name for git",
-            "gitEmail": "Email for git",
-            "kaggleApiToken": "Kaggle API token",
-            "githubPersonalAccessToken": "GitHub Personal Access Token"
         },
         "MySecrets": {
             ...common.en,
@@ -176,25 +175,33 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "title": "Welcome ont the SSP Cloud's datalab",
             "start tour": "Start tour",
             "logIn": "Login",
-            "subtitle":"Work with Python or R, enjoy all the computing power you need!",
-            "cardTitle1":"An ergonomic environment and on-demand services",
-            "cardTitle2":"An active and enthusiastic community at your service",
+            "subtitle": "Work with Python or R, enjoy all the computing power you need!",
+            "cardTitle1": "An ergonomic environment and on-demand services",
+            "cardTitle2": "An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",
             "cardText1": "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
             "cardText2": "Use and share the resources available to you: tutorials, training and exchange channels.",
             "cardText3": "To easily access your data and those made available to you from your programs - S3 API implementation",
-            "cardButton1":"Consult the catalog",
-            "cardButton2":"Join the community",
-            "cardButton3":"Consult the data",
-            "projectTitle":"The project in a few words",
-            "projectText":"With INSEE as coordinator, we want to design a shared platform of statistical and data science tool services. One of the objectives of our project is to share tools, knowledge and resources within the official statistical service (SSP). As part of a public collaboration, the project is also available in open-source.",
-            "projectButton":"Contribute to the project",
-            "warningTitle":"Precautions for use",
-            "warningText":"The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",   
+            "cardButton1": "Consult the catalog",
+            "cardButton2": "Join the community",
+            "cardButton3": "Consult the data",
+            "projectTitle": "The project in a few words",
+            "projectText": "With INSEE as coordinator, we want to design a shared platform of statistical and data science tool services. One of the objectives of our project is to share tools, knowledge and resources within the official statistical service (SSP). As part of a public collaboration, the project is also available in open-source.",
+            "projectButton": "Contribute to the project",
+            "warningTitle": "Precautions for use",
+            "warningText": "The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",
         }
     },
     "fr": {
         /* spell-checker: disable */
+        "AccountRow": {
+            "editable text": "",
+            "language": "",
+            "s3 scripts": "",
+            "service password": "Mot de passe pour vos services",
+            "s3 script helper text": "",
+            "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services."
+        },
         "Register": {
             "required field": "Champ requis",
             "not a valid": "Pas un {{what}} valide",
@@ -205,15 +212,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "password mismatch": "Les deux mots de passe ne correspondent pas",
             "go back": "Retour",
             "form not filled properly yet": "Veuillez vérifier que vous avez bien rempli le formulaire"
-        },
-        "Account": {
-            "user info": "Informations utilisateur",
-            "onyxia info": "Informations Onyxia",
-            "userServicePassword": "Mot de passe pour vos services",
-            "gitName": "Nom d'utilisateur pour git",
-            "gitEmail": "Email pour git",
-            "kaggleApiToken": "Kaggle API token",
-            "githubPersonalAccessToken": "GitHub Personal Access Token"
         },
         "MySecrets": {
             ...common.fr,
@@ -296,21 +294,21 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "title": "Bienvenue sur le datalab du SSP Cloud",
             "logIn": "Connexion",
             "start tour": "Visite guidée",
-            "subtitle":"Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
-            "cardTitle1":"Un environnement ergonomique et des services à la demande",
-            "cardTitle2":"Une communauté active et enthousiaste à votre écoute",
+            "subtitle": "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
+            "cardTitle1": "Un environnement ergonomique et des services à la demande",
+            "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
             "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
             "cardText1": "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
             "cardText2": "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
             "cardText3": "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
-            "cardButton1":"Consulter le catalogue",
-            "cardButton2":"Rejoindre la communauté",
-            "cardButton3":"Consulter des données",
-            "projectTitle":"Le projet en quelques mots",
-            "projectText":"Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
-            "projectButton":"Contribuer au projet",
-            "warningTitle":"Précautions d’usage",
-            "warningText":"Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
+            "cardButton1": "Consulter le catalogue",
+            "cardButton2": "Rejoindre la communauté",
+            "cardButton3": "Consulter des données",
+            "projectTitle": "Le projet en quelques mots",
+            "projectText": "Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
+            "projectButton": "Contribuer au projet",
+            "warningTitle": "Précautions d’usage",
+            "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
         }
         /* spell-checker: enable */
     }
