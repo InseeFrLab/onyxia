@@ -46,7 +46,7 @@ export declare namespace Props {
     export type DownloadS3InitScript<T extends string> = Common & {
         type: "s3 scripts";
         scriptList: T[];
-        onRequestDownloadScrip(script: T): void;
+        onRequestDownloadScript(script: T): void;
         onRequestCopyScript(script: T): void;
     };
 
@@ -255,7 +255,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                 props[(() => {
                     switch (action) {
                         case "copy": return "onRequestCopyScript" as const;
-                        case "download": return "onRequestDownloadScrip" as const;
+                        case "download": return "onRequestDownloadScript" as const;
                     }
                 })()](selectedS3Script)
             }
@@ -302,12 +302,10 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
             case "editable text":
             case "toggle":
                 return props.helperText;
-            case "language":
-                return undefined;
-            case "s3 scripts":
-                return t("s3 script helper text");
             case "service password":
                 return t("service password helper text");
+            default: 
+                return undefined;
         }
     })();
 
@@ -480,7 +478,6 @@ export declare namespace AccountRow {
         Exclude<Props["type"], "text" | "editableText" | "toggle">,
         undefined
     > & {
-        's3 script helper text': undefined;
         'service password helper text': undefined;
     };
 
