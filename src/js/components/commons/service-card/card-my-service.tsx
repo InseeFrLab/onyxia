@@ -162,7 +162,7 @@ const getLabel = (label: any) => (how: any) => () => (
 );
 
 const getServiceUrl = (service: Service) =>
-	service.urls ? service.urls[0].split(',')[0] : undefined;
+	service.urls ? service.urls.sort()[0].split(',')[0] : undefined;
 
 export default CarteMonService;
 
