@@ -40,7 +40,17 @@ export const S3Scripts = getStory(id<Props.S3Scripts<string>>({
     ])
 }));
 
-export const SwitchLanguage = getStory(id<Props.Language<string>>({
+export const SwitchLanguage = getStory(id<Props.Language>({
     className,
     "type": "language"
+}));
+
+export const Toggle = getStory(id<Props.Toggle>({
+    className,
+    "type": "toggle",
+    "isOn": true,
+    "isLocked": false,
+    "title": "Enable foo bar",
+    "helperText": "Foo bar is very important for baz",
+    ...logCallbacks([ "onRequestToggle" ])
 }));
