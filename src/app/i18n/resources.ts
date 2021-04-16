@@ -203,7 +203,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not a valid": "Pas un {{what}} valide",
             "allowed email domain": "Domaines autorisés: {{list}}",
             "alphanumerical chars only": "Caractère alphanumérique uniquement",
-            "minimum length": "Longeur minimum {{n}}",
+            "minimum length": "Longueur minimum {{n}}",
             "must be different from username": "Ne peut pas être le nom d'utilisateur",
             "password mismatch": "Les deux mots de passe ne correspondent pas",
             "go back": "Retour",

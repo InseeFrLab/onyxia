@@ -13,7 +13,8 @@ export const getServiceAvatar = (service: Service) => {
 	);
 };
 
-export const getTitle = (service: Service) => (service && service.name) || '';
+export const getTitle = (service: Service) => 
+	(service?.env as any)?.["onyxia.friendlyName"] ?? service?.name ?? "";
 
 export const getSubtitle = (service: Service) =>
 	service.subtitle ||
