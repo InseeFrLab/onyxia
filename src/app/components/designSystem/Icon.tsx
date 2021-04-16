@@ -33,6 +33,8 @@ import Translate from "@material-ui/icons/Translate";
 import  { doExtends } from "evt/tools/typeSafety/doExtends";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import GetApp from "@material-ui/icons/GetApp";
+import Replay from "@material-ui/icons/Replay";
 
 
 export type SvgTypes =
@@ -43,7 +45,7 @@ export type MaterialType =
     "delete" | "edit" | "add" | "filterNone" |
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
     "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4" |
-    "translate" | "visibility" | "visibilityOff";
+    "translate" | "visibility" | "visibilityOff" | "getApp" | "replay";
 
 //NOTE: Ensure there is not overlap between the types
 doExtends<SvgTypes & MaterialType, never>();
@@ -140,6 +142,8 @@ export const Icon = memo((props: Props) => {
                 case "catalog": return CatalogSvg;
                 case "visibility": return Visibility;
                 case "visibilityOff": return VisibilityOff;
+                case "getApp": return GetApp;
+                case "replay": return Replay;
             }
         })()}
         fontSize={fontSize}

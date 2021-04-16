@@ -39,8 +39,8 @@ const props: Props = {
 }
 
 
-export const Vue1 = getStory(props);
-export const Vue2 = getStory({
+export const VueBig = getStory(props);
+export const VueSmall = getStory({
     ...props,
     "size": "small",
     "tabs": [
