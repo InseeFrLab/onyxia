@@ -5,6 +5,7 @@ import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
 import { id } from "evt/tools/typeSafety/id";
+import { Evt }  from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -54,3 +55,29 @@ export const Toggle = getStory(id<Props.Toggle>({
     "helperText": "Foo bar is very important for baz",
     ...logCallbacks([ "onRequestToggle" ])
 }));
+
+export const Text = getStory(id<Props.Text>({
+    className,
+    "type": "text",
+    "text": "This is the actual text",
+    "title": "Enable foo bar",
+    "helperText": "Foo bar is very important for baz",
+    ...logCallbacks(["onRequestCopy"])
+}));
+
+export const EditableText = getStory(id<Props.EditableText>({
+    className,
+    "type": "editable text",
+    "text": "This is the actual text",
+    "title": "Enable foo bar",
+    "helperText": "Foo bar is very important for baz",
+    "evtAction": new Evt(),
+    "isLocked": false,
+    ...logCallbacks([
+        "onRequestCopy",
+        "onRequestEdit",
+        "onStartEdit"
+    ])
+}));
+
+
