@@ -26,7 +26,7 @@ import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 export type Props<T extends string = string> =
     Props.ServicePassword |
     Props.S3Scripts<T> |
-    Props.Language<T> |
+    Props.Language |
     Props.Toggle |
     Props.Text |
     Props.EditableText;
@@ -51,7 +51,7 @@ export declare namespace Props {
         onRequestCopyScript(script: T): void;
     };
 
-    export type Language<T extends string> = Common & {
+    export type Language = Common & {
         type: "language";
     };
 
