@@ -34,13 +34,16 @@ export type TextFieldProps = {
     InputProps_endAdornment?: ReactNode;
     disabled?: boolean;
     multiline?: boolean;
-
     /** Return false to e.preventDefault() and e.stopPropagation() */
     onEscapeKeyDown?(params: { preventDefaultAndStopPropagation(): void; }): void;
     onEnterKeyDown?(params: { preventDefaultAndStopPropagation(): void; }): void;
     onBlur?(): void;
+
+    /** To prevent onSubmit to be invoked (when data is being updated for example ) default true*/
+    isSubmitAllowed?: boolean;
     evtAction?: NonPostableEvt<"TRIGGER SUBMIT" | "RESTORE DEFAULT VALUE"> | null;
-    onSubmit?(params: { value: string; isValidValue: boolean; }): void;
+    /** Submit invoked on evtAction.post("TRIGGER SUBMIT") only if value being typed is valid */
+    onSubmit?(value: string): void;
     getIsValidValue?(value: string): { isValidValue: true } | { isValidValue: false; message: string; };
     /** Invoked on first render */
     onValueBeingTypedChange?(params: { value: string; } & ReturnType<TextFieldProps["getIsValidValue"]>): void;
@@ -67,6 +70,7 @@ export const defaultProps: Optional<TextFieldProps> = {
     "onEscapeKeyDown": () => { },
     "onEnterKeyDown": () => { },
     "onBlur": () => { },
+    "isSubmitAllowed": true,
     "onSubmit": () => { },
     "getIsValidValue": () => ({ "isValidValue": true }),
     "evtAction": null,
@@ -156,7 +160,7 @@ export const TextField = memo((props: TextFieldProps) => {
         id,
         name,
         selectAllTextOnFocus,
-
+        isSubmitAllowed,
         inputProps_ref,
         "inputProps_aria-label": inputProps_ariaLabel,
         inputProps_tabIndex,
@@ -233,12 +237,20 @@ export const TextField = memo((props: TextFieldProps) => {
                         transformAndSetValue(defaultValue);
                         return;
                     case "TRIGGER SUBMIT":
-                        onSubmit({ value, "isValidValue": getIsValidValueResult.isValidValue });
+                        if( 
+                            !getIsValidValueResult.isValidValue || 
+                            !isSubmitAllowed 
+                        ) return;
+                        onSubmit(value);
                         return;
                 }
             }
         ),
-        [defaultValue, value, getIsValidValueResult, onSubmit, evtAction, transformAndSetValue]
+        [
+            defaultValue, value, getIsValidValueResult, 
+            onSubmit, evtAction, transformAndSetValue, 
+            isSubmitAllowed
+        ]
     );
 
     const error = isValidationEnabled ? !getIsValidValueResult.isValidValue : false;
