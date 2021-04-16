@@ -19,13 +19,14 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
-import { cx, keyframes } from "tss-react";
+import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
+import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
-    Props.DownloadS3InitScript<T> |
-    Props.SwitchLanguage<T> |
+    Props.S3Scripts<T> |
+    Props.Language<T> |
     Props.Toggle |
     Props.Text |
     Props.EditableText;
@@ -43,18 +44,16 @@ export declare namespace Props {
         isLocked: boolean;
     } & ICopyable;
 
-    export type DownloadS3InitScript<T extends string> = Common & {
+    export type S3Scripts<T extends string> = Common & {
         type: "s3 scripts";
         scriptList: T[];
         onRequestDownloadScript(script: T): void;
         onRequestCopyScript(script: T): void;
     };
 
-    export type SwitchLanguage<T extends string> = Common & {
+    export type Language<T extends string> = Common & {
         type: "language";
-        languages: T[];
-        onRequestLanguageChange(language: T): void;
-    }
+    };
 
     export type Toggle = Common & {
         type: "toggle";
@@ -118,16 +117,6 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
                 "color": !isFlashing ?
                     undefined :
                     theme.custom.colors.useCases.buttons.actionActive,
-                /*
-                "animation": !isFlashing ? undefined: `${keyframes`
-                0% { }
-                40%, 80% {
-                    opacity: 1;
-
-                }
-                80% { }
-            `} ${flashDurationMs}s ease-in-out`,
-            */
             }
         },
         "helperTextCell": {
@@ -272,29 +261,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
             onS3ScriptSelectChange
         };
 
-    })();
+        })();
 
-    const {
-        selectedLanguage,
-        onLanguageSelectChange
-    } = (function useClosure() {
-
-        const [selectedLanguage, setSelectedLanguage] = useState(
-            props.type === "language" ?
-                props.languages[0] : null as never
-        );
-
-        const onLanguageSelectChange = useConstCallback(
-            (event: React.ChangeEvent<{ value: unknown; }>) =>
-                setSelectedLanguage(event.target.value as T)
-        );
-
-        return {
-            selectedLanguage,
-            onLanguageSelectChange
-        };
-
-    })();
 
     const helperText = (() => {
         switch (props.type) {
@@ -304,7 +272,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                 return props.helperText;
             case "service password":
                 return t("service password helper text");
-            default: 
+            default:
                 return undefined;
         }
     })();
@@ -339,23 +307,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                     </FormControl>
                                 );
                             case "language":
-                                return (
-                                    <FormControl>
-                                        <Select
-                                            value={selectedLanguage}
-                                            onChange={onLanguageSelectChange}
-                                        >
-                                            {
-                                                props.languages.map(
-                                                    language =>
-                                                        <MenuItem value={language}>
-                                                            {language}
-                                                        </MenuItem>
-                                                )
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                );
+                                return <ChangeLanguage doShowIcon={false}/>;
                             case "toggle":
                                 return null;
                             case "service password":
@@ -475,7 +427,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
 export declare namespace AccountRow {
 
     export type I18nScheme = Record<
-        Exclude<Props["type"], "text" | "editableText" | "toggle">,
+        Exclude<Props["type"], "text" | "editable text" | "toggle">,
         undefined
     > & {
         'service password helper text': undefined;
