@@ -74,8 +74,7 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
         "AccountRow": {
-            "editable text": "",
-            "language": "",
+            "language": "Change language",
             "s3 scripts": "Init script",
             "service password": "Password for your services",
             "service password helper text": "This password is used to connect to all services."
@@ -194,8 +193,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     "fr": {
         /* spell-checker: disable */
         "AccountRow": {
-            "editable text": "",
-            "language": "",
+            "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
             "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services."

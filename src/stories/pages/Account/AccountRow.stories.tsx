@@ -26,7 +26,7 @@ export const ServicePassword = getStory(id<Props.ServicePassword>({
     ])
 }));
 
-export const DownloadS3InitScript = getStory(id<Props.DownloadS3InitScript<string>>({
+export const S3Scripts = getStory(id<Props.S3Scripts<string>>({
     className,
     "type": "s3 scripts",
     "scriptList": [ 
@@ -38,4 +38,9 @@ export const DownloadS3InitScript = getStory(id<Props.DownloadS3InitScript<strin
         "onRequestDownloadScript",
         "onRequestCopyScript"
     ])
+}));
+
+export const SwitchLanguage = getStory(id<Props.Language<string>>({
+    className,
+    "type": "language"
 }));
