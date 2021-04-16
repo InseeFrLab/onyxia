@@ -21,7 +21,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
-import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
+import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
+import { useEvt } from "evt/hooks";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -33,7 +34,7 @@ export type Props<T extends string = string> =
 
 export declare namespace Props {
 
-    type Common ={
+    type Common = {
         className?: string;
     };
 
@@ -66,7 +67,6 @@ export declare namespace Props {
     export type Text = Common & {
         type: "text";
         text: string;
-        title: string;
     } & ICopyable & IGeneric;
 
     export type EditableText = Common & {
@@ -74,7 +74,7 @@ export declare namespace Props {
         text: string;
         onRequestEdit(newText: string): void;
         onStartEdit(): void;
-        evtAction: NonPostableEvt<"ENTER EDITING STATE" | "SUBMIT EDIT">;
+        evtAction: NonPostableEvt<"SUBMIT EDIT">;
         getIsValidValue?: TextFieldProps["getIsValidValue"];
         isLocked: boolean;
     } & ICopyable & IGeneric;
@@ -99,6 +99,7 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
             "& .MuiTableCell-root": {
                 "display": "flex",
                 "alignItems": "center",
+                "borderBottom": "unset",
                 "& .MuiTypography-root": {
                     "marginTop": 2 //TODO: address globally
                 }
@@ -117,6 +118,10 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
                 "color": !isFlashing ?
                     undefined :
                     theme.custom.colors.useCases.buttons.actionActive,
+            },
+            "& .MuiTextField-root": {
+                "width": "100%",
+                "top": 2
             }
         },
         "helperTextCell": {
@@ -173,6 +178,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
         isInEditingState,
         evtTextFieldAction,
         isValueBeingTypedValid,
+        onEditableTextRequestCopy,
+        onStartEditButtonClick,
         onTextFieldEscapeKeyDown,
         onSubmitButtonClick,
         onValueBeingTypedChange,
@@ -185,47 +192,118 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
             () => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
         );
 
-        const onTextFieldEscapeKeyDown = useConstCallback(
-            () => evtTextFieldAction.post("RESTORE DEFAULT VALUE")
+        useEvt(
+            ctx => {
+
+                if (props.type !== "editable text") {
+                    return;
+                }
+
+                props.evtAction.attach(
+                    action => action === "SUBMIT EDIT",
+                    ctx,
+                    () => evtTextFieldAction.post("TRIGGER SUBMIT")
+                );
+
+            },
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [props?.type === "editable text" ? props.evtAction : null]
         );
 
-        const onSubmitButtonClick = useConstCallback(
-            () => evtTextFieldAction.post("TRIGGER SUBMIT")
-        );
+        const onStartEditButtonClick = useConstCallback(() => {
+            setIsInEditingState(true);
+            assert(props.type === "editable text");
+            props.onStartEdit();
+        });
 
-        const { isValueBeingTypedValid, onValueBeingTypedChange } = (function useClosure() {
 
-            const [isValueBeingTypedValid, setIsValueBeingTypedValid] = useState(false);
-
-            const onValueBeingTypedChange = useConstCallback(
-                ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
-                    setIsValueBeingTypedValid(isValidValue)
+            const onTextFieldEscapeKeyDown = useConstCallback(
+                () => evtTextFieldAction.post("RESTORE DEFAULT VALUE")
             );
 
-            return { isValueBeingTypedValid, onValueBeingTypedChange };
+            const onSubmitButtonClick = useConstCallback(
+                () => evtTextFieldAction.post("TRIGGER SUBMIT")
+            );
+
+            const { isValueBeingTypedValid, onValueBeingTypedChange } = (function useClosure() {
+
+                const [isValueBeingTypedValid, setIsValueBeingTypedValid] = useState(false);
+
+                const onValueBeingTypedChange = useConstCallback(
+                    ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
+                        setIsValueBeingTypedValid(isValidValue)
+                );
+
+                return { isValueBeingTypedValid, onValueBeingTypedChange };
+
+            })();
+
+            const [isCopyScheduled, setIsCopyScheduled] = useState(false);
+
+            const onTextFieldSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
+                value => {
+                    assert(props.type === "editable text");
+                    if (props.isLocked) return;
+
+                    setIsInEditingState(false);
+
+                    if (value === props.text) {
+
+                        if (isCopyScheduled) {
+
+                            setIsCopyScheduled(false);
+                            onRequestCopy();
+
+                        }
+
+                        return;
+                    }
+
+                    props.onRequestEdit(value);
+
+                }
+            );
+
+            useEffect(
+                () => {
+                    if (!isCopyScheduled) return;
+                    setIsCopyScheduled(false);
+                    onRequestCopy();
+                },
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [props.type === "editable text" ? props.text : null]
+            );
+
+            useEffect(
+                () => {
+                    if (!isCopyScheduled) return;
+                    evtTextFieldAction.post("TRIGGER SUBMIT");
+                },
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [isCopyScheduled]
+            );
+
+            const onEditableTextRequestCopy = useConstCallback(() => {
+                if (isInEditingState) {
+                    setIsCopyScheduled(true);
+                } else {
+                    onRequestCopy();
+                }
+            });
+
+            return {
+                isInEditingState,
+                evtTextFieldAction,
+                isValueBeingTypedValid,
+                onEditableTextRequestCopy,
+                onStartEditButtonClick,
+                onTextFieldEscapeKeyDown,
+                onSubmitButtonClick,
+                onValueBeingTypedChange,
+                onTextFieldSubmit
+            };
 
         })();
-
-        const onTextFieldSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
-            value => {
-                assert(props.type === "editable text");
-                if (props.isLocked) return;
-                setIsInEditingState(false);
-                props.onRequestEdit(value);
-            }
-        );
-
-        return {
-            isInEditingState,
-            evtTextFieldAction,
-            isValueBeingTypedValid,
-            onTextFieldEscapeKeyDown,
-            onSubmitButtonClick,
-            onValueBeingTypedChange,
-            onTextFieldSubmit
-        };
-
-    })();
 
     const {
         onS3ScriptClickFactory,
@@ -261,7 +339,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
             onS3ScriptSelectChange
         };
 
-        })();
+    })();
 
 
     const helperText = (() => {
@@ -307,7 +385,7 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                     </FormControl>
                                 );
                             case "language":
-                                return <ChangeLanguage doShowIcon={false}/>;
+                                return <ChangeLanguage doShowIcon={false} />;
                             case "toggle":
                                 return null;
                             case "service password":
@@ -327,6 +405,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                         onValueBeingTypedChange={onValueBeingTypedChange}
                                         doOnlyValidateInputAfterFistFocusLost={false}
                                         isSubmitAllowed={!props.isLocked}
+                                        inputProps_autoFocus={true}
+                                        selectAllTextOnFocus={true}
                                     />;
                         }
                     })()}
@@ -355,12 +435,12 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                         <IconButton
                                             type={isInEditingState ? "check" : "edit"}
                                             disabled={props.isLocked || (isInEditingState && !isValueBeingTypedValid)}
-                                            onClick={onSubmitButtonClick}
+                                            onClick={isInEditingState ? onSubmitButtonClick : onStartEditButtonClick}
                                             fontSize="small"
                                         />
                                         <IconButton
                                             type="filterNone"
-                                            onClick={onRequestCopy}
+                                            onClick={onEditableTextRequestCopy}
                                             fontSize="small"
                                         />
                                     </>
@@ -391,18 +471,11 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                 );
                             case "text":
                                 return (
-                                    <>
-                                        <IconButton
-                                            type="filterNone"
-                                            onClick={onRequestCopy}
-                                            fontSize="small"
-                                        />
-                                        <IconButton
-                                            type="filterNone"
-                                            onClick={onRequestCopy}
-                                            fontSize="small"
-                                        />
-                                    </>
+                                    <IconButton
+                                        type="filterNone"
+                                        onClick={onRequestCopy}
+                                        fontSize="small"
+                                    />
                                 );
                             case "language":
                                 return null;
