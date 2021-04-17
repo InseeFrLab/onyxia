@@ -68,7 +68,7 @@ function Container(props: { children: React.ReactNode; }) {
                 >
                     <div
                         style={{
-                            "outline": `1px solid ${theme.custom.colors.palette.whiteSnow.greyVariant2}`
+                            "border": `1px dotted ${theme.custom.colors.useCases.typography.textDisabled}`
                         }}
                     >
                         {children}
