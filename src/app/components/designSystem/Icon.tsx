@@ -1,7 +1,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
-import { memo } from "react";
+import { forwardRef, memo } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import { ReactComponent as TourSvg } from "app/assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
@@ -72,11 +72,11 @@ export const defaultProps: Optional<Props> = {
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
-    ({ custom: { colors }}, { color }) => ({
+    (theme, { color }) => ({
         "root": {
             "color": color === "limeGreen" ?
-                colors.palette.limeGreen.main :
-                colors.useCases.typography[color],
+                theme.custom.colors.palette.limeGreen.main :
+                theme.custom.colors.useCases.typography[color],
             // https://stackoverflow.com/a/24626986/3731798
             //"verticalAlign": "top",
             //"display": "inline-block"
@@ -86,11 +86,19 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
 );
 
 
-export const Icon = memo((props: Props) => {
+export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { type, fontSize, className } = completedProps;
+    const { 
+        type, 
+        fontSize, 
+        className,
+        //For the forwarding, rest should be empty (typewise),
+        color,
+        children,
+        ...rest
+    } = completedProps;
 
     const { classNames } = useClassNames(completedProps);
 
@@ -112,14 +120,18 @@ export const Icon = memo((props: Props) => {
         const MuiIcon = svgTypeOrMuiIcon;
 
         return <MuiIcon
+            ref={ref}
             className={cx(classNames.root, className)}
             fontSize={fontSize}
+            children={children}
+            {...rest}
         />;
     }
 
     const svgType = svgTypeOrMuiIcon;
 
     return <SvgIcon
+        ref={ref}
         className={cx(classNames.root, className)}
         component={(() => {
             switch (svgType) {
@@ -149,5 +161,6 @@ export const Icon = memo((props: Props) => {
             }
         })()}
         fontSize={fontSize}
+        {...rest}
     />;
-});
+}));
