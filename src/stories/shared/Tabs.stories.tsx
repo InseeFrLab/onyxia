@@ -1,14 +1,14 @@
 
 
-import { AccountTabs } from "app/components/pages/Account/AccountTabs";
-import type { Props } from "app/components/pages/Account/AccountTabs";
+import { Tabs } from "app/components/shared/Tabs";
+import type { Props } from "app/components/shared/Tabs";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "AccountTabs": AccountTabs as any }
+    "wrappedComponent": { "Tabs": Tabs as any }
 });
 
 export default meta;
@@ -16,7 +16,7 @@ export default meta;
 const props: Props = {
     "size": "big",
     "className": css({ "width": 1278 }),
-    "defaultSelectedTabId": "info",
+    "selectedTabId": "info",
     /* spell-checker: disable */
     "tabs": [
         {
@@ -35,7 +35,7 @@ const props: Props = {
 ],
     /* spell-checker: enable */
     "maxTabCount": 5,
-    ...logCallbacks(["onActiveTab"])
+    ...logCallbacks(["onRequestChangeActiveTab"])
 }
 
 

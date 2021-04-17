@@ -2,23 +2,25 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, memo } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { cx, css } from "tss-react";
-import { useEffectOnValueChange } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
 import { useCallbackFactory } from "powerhooks";
 
-export type Tab = {
-    id: string;
-    title: string;
+
+export type Props<T extends Props.Tab = Props.Tab> = {
+    className?: string;
+    tabs: T[];
+    selectedTabId: T["id"];
+    size?: "big" | "small";
+    maxTabCount: number;
+    onRequestChangeActiveTab(tabId: T["id"]): void;
 };
 
-export type Props<T extends Tab = Tab> = {
-    size?: "big" | "small";
-    className?: string;
-    defaultSelectedTabId?: T["id"];
-    tabs: T[];
-    maxTabCount: number;
-    onActiveTab(tabId: T["id"]): void;
-};
+export declare namespace Props {
+    export type Tab = {
+        id: string;
+        title: string;
+    };
+}
 
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
@@ -34,13 +36,13 @@ const { useClassNames } = createUseClassNames<Props>()(
     })
 );
 
-export function AccountTabs<T extends Tab = Tab>(props: Props<T>) {
+export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
 
     const {
         className,
-        onActiveTab,
         tabs,
-        defaultSelectedTabId = tabs[0].id,
+        selectedTabId,
+        onRequestChangeActiveTab,
         maxTabCount,
         size = "big"
     } = props;
@@ -51,13 +53,6 @@ export function AccountTabs<T extends Tab = Tab>(props: Props<T>) {
 
 
     const [firstTabIndex, setFirstTabIndex] = useState(0);
-
-    const [selectedTabId, setSelectedTabId] = useState(defaultSelectedTabId);
-
-    useEffectOnValueChange(
-        () => { setSelectedTabId(defaultSelectedTabId); },
-        [defaultSelectedTabId]
-    );
 
     const onArrowClickFactory = useCallbackFactory(
         ([direction]: ["left" | "right"]) =>
@@ -70,10 +65,7 @@ export function AccountTabs<T extends Tab = Tab>(props: Props<T>) {
     );
 
     const onTabClickFactory = useCallbackFactory(
-        ([id]: [string]) => {
-            setSelectedTabId(id);
-            onActiveTab(id);
-        }
+        ([id]: [string]) => onRequestChangeActiveTab(id)
     );
 
     return (

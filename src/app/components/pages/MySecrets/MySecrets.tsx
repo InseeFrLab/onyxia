@@ -19,7 +19,6 @@ import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
 import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
-import {  } from "app/components/shared/SplashScreen";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 
@@ -147,7 +146,7 @@ export function MySecrets(props: Props) {
             routes.mySecrets({
                 ...(state.state === "SHOWING SECRET" ? { "isFile": true } : {}),
                 "secretOrDirectoryPath": state.currentPath.replace(/^\//, "")
-            }).push()
+            }).push();
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
