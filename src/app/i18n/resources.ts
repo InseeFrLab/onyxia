@@ -15,6 +15,8 @@ import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
 import { Register } from "app/components/KcApp/Register";
 import { AccountRow } from "app/components/pages/Account/AccountRow";
+import { Account } from "app/components/pages/Account/Account";
+import { AccountInfoTab } from "app/components/pages/Account/AccountInfoTab";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -38,6 +40,8 @@ const reflectedI18nSchemes = {
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
     [symToStr({ AccountRow })]: Reflect<AccountRow.I18nScheme>(),
+    [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
+    [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -73,6 +77,11 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
+        "Account": {
+            "account-info": "Account infos",
+        },
+        "AccountInfoTab": {
+        },
         "AccountRow": {
             "language": "Change language",
             "s3 scripts": "Init script",
@@ -192,6 +201,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     },
     "fr": {
         /* spell-checker: disable */
+        "Account": {
+            "account-info": "Information du compte"
+        },
+        "AccountInfoTab": {
+        },
         "AccountRow": {
             "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",

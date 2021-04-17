@@ -1,10 +1,22 @@
 
-import { createRouter, defineRoute, param } from "type-route";
+import { createRouter, defineRoute, param, noMatch } from "type-route";
+import type { ValueSerializer } from "type-route";
+import { id } from "evt/tools/typeSafety/id";
+import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
+import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
+    "account": defineRoute(
+        {
+            "accountTab": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
+                "parse": raw => !id<readonly string[]>(accountTabIds).includes(raw) ? noMatch : raw as AccountTabId,
+                "stringify": value => value
+            }))
+        },
+        p => `/account/${p.accountTab}`
+    ),
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
-    "account": defineRoute("/account"),
     ...(() => {
 
         const sharedServices = defineRoute("/services");

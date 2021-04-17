@@ -35,7 +35,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import GetApp from "@material-ui/icons/GetApp";
 import Replay from "@material-ui/icons/Replay";
-
+import Help from "@material-ui/icons/Help";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "account" | "home" | "trainings" | "files" |
@@ -45,7 +45,8 @@ export type MaterialType =
     "delete" | "edit" | "add" | "filterNone" |
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
     "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4" |
-    "translate" | "visibility" | "visibilityOff" | "getApp" | "replay";
+    "translate" | "visibility" | "visibilityOff" | "getApp" | "replay" |
+    "help";
 
 //NOTE: Ensure there is not overlap between the types
 doExtends<SvgTypes & MaterialType, never>();
@@ -144,6 +145,7 @@ export const Icon = memo((props: Props) => {
                 case "visibilityOff": return VisibilityOff;
                 case "getApp": return GetApp;
                 case "replay": return Replay;
+                case "help": return Help;
             }
         })()}
         fontSize={fontSize}

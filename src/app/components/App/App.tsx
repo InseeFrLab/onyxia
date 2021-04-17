@@ -24,13 +24,13 @@ import { useWindowInnerSize } from "powerhooks";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
-//import { Account } from "app/components/pages/Account";
+import { Account } from "app/components/pages/Account";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
 import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
-import { MonCompte } from "js/components/mon-compte/mon-compte.component";
+//import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import VisiteGuidee from 'js/components/visite-guidee';
@@ -140,8 +140,8 @@ export const App = memo((props: Props) => {
                 Catalogue,
                 MyServices,
                 MyService,
-                MonCompte,
-                //Account,
+                //MonCompte,
+                Account,
                 MyBuckets,
                 NavigationFile,
                 VisiteGuideeDebut,
@@ -182,10 +182,14 @@ export const App = memo((props: Props) => {
                     return ()=> <Page
                         serviceSelectionne={false}
                     />;
+                case Account:
+                    assert(Page.routeGroup.has(route));
+                    return ()=> <Page
+                        route={route}
+                    />;
                 case Trainings:
                 case Home:
                 case MyServices:
-                case MonCompte:
                 case MyBuckets:
                 case Catalogue:
                 case VisiteGuideeDebut:
