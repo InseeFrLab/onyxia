@@ -7,19 +7,19 @@ import { Typography } from "app/components/designSystem/Typography";
 import { useCallbackFactory } from "powerhooks";
 
 
-export type Props<T extends Props.Tab = Props.Tab> = {
+export type Props<TabId extends string = string> = {
     className?: string;
-    tabs: T[];
-    selectedTabId: T["id"];
+    tabs: Props.Tab<TabId>[];
+    activeTabId: TabId;
     size?: "big" | "small";
     maxTabCount: number;
-    onRequestChangeActiveTab(tabId: T["id"]): void;
+    onRequestChangeActiveTab(tabId: TabId): void;
     children: ReactNode;
 };
 
 export declare namespace Props {
-    export type Tab = {
-        id: string;
+    export type Tab<TabId extends string> = {
+        id: TabId;
         title: string;
     };
 }
@@ -45,12 +45,12 @@ const { useClassNames } = createUseClassNames<Props>()(
     })
 );
 
-export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
+export function Tabs<TabId extends string = string>(props: Props<TabId>) {
 
     const {
         className,
         tabs,
-        selectedTabId,
+        activeTabId,
         onRequestChangeActiveTab,
         maxTabCount,
         size = "big",
@@ -75,7 +75,7 @@ export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
     );
 
     const onTabClickFactory = useCallbackFactory(
-        ([id]: [string]) => onRequestChangeActiveTab(id)
+        ([id]: [TabId]) => onRequestChangeActiveTab(id)
     );
 
     return (
@@ -99,7 +99,7 @@ export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
                     {
                         tabs
                             .filter((...[, i]) => i >= firstTabIndex && i < firstTabIndex + maxTabCount)
-                            .map(({ id, ...rest }) => ({ id, "isSelected": id === selectedTabId, ...rest }))
+                            .map(({ id, ...rest }) => ({ id, "isSelected": id === activeTabId, ...rest }))
                             .map(({ id, title, isSelected }, i) =>
                                 <CustomButton
                                     type="tab"

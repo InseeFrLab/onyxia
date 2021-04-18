@@ -93,7 +93,10 @@ export const AccountInfoTab = memo((props: Props) => {
                 onRequestCopy={onRequestCopyFactory(parsedJwt.email)}
             />
             {keycloakConfig !== undefined &&
-                <Link href={pathJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}>
+                <Link
+                    href={pathJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
+                    target="_blank"
+                >
                     {t("password")}
                 </Link>
             }
@@ -114,13 +117,13 @@ export const AccountInfoTab = memo((props: Props) => {
                 isLocked={tokenState.areTokensBeingRefreshed}
                 remainingValidity={accessTokenRemainingValidity}
                 oidcAccessToken={
-                    smartTrim({ 
+                    smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
                         "text": tokenState.oidcTokens.accessToken
                     })
                 }
-                onRequestOidcAccessTokenRenewal={ onRequestOidcAccessTokenRenewal}
+                onRequestOidcAccessTokenRenewal={onRequestOidcAccessTokenRenewal}
                 onRequestCopy={onRequestCopyFactory(tokenState.oidcTokens.accessToken)}
             />
             <AccountField

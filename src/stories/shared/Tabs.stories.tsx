@@ -16,7 +16,7 @@ export default meta;
 const props: Props = {
     "size": "big",
     "className": css({ "width": 1278 }),
-    "selectedTabId": "info",
+    "activeTabId": "info",
     /* spell-checker: disable */
     "tabs": [
         {

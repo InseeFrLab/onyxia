@@ -374,8 +374,8 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
             case "service password":
                 return t("service password helper text");
             case "OIDC Access token":
-                return t( 
-                    "OIDC Access token helper text", 
+                return t(
+                    "OIDC Access token helper text",
                     { "when": oidcAccessTokenExpiresWhen }
                 );
             default:
@@ -505,14 +505,12 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                             case "OIDC Access token":
                                 return (
                                     <>
-                                        <Tooltip title={t("OIDC Access token renew tooltip")}>
-                                            <IconButton
-                                                type="replay"
-                                                fontSize="small"
-                                                disabled={props.isLocked}
-                                                onClick={props.onRequestOidcAccessTokenRenewal}
-                                            />
-                                        </Tooltip>
+                                        <IconButton
+                                            type="replay"
+                                            fontSize="small"
+                                            disabled={props.isLocked}
+                                            onClick={props.onRequestOidcAccessTokenRenewal}
+                                        />
                                         <IconButtonCopyToClipboard
                                             onClick={onRequestCopy}
                                         />
@@ -543,7 +541,6 @@ export declare namespace AccountField {
         'copy tooltip': undefined;
         'service password helper text': undefined;
         'OIDC Access token helper text': { when: string; };
-        'OIDC Access token renew tooltip': undefined;
     };
 
 }

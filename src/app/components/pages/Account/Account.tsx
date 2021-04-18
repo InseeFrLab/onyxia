@@ -1,19 +1,21 @@
 
 
 import { Tabs } from "../../shared/Tabs";
+import type { Props as TabsProps } from "../../shared/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createGroup } from "type-route";
-import { routes } from "app/router";
+import { routes, useRoute } from "app/router";
 import type { Route } from "type-route";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
-import { useEffectOnValueChange } from "powerhooks";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { PageHeader } from "app/components/shared/PageHeader";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
+import { useEffect } from "react";
+import { useConstCallback } from "powerhooks";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -22,7 +24,7 @@ Account.requireUserLoggedIn = true;
 export type Props = {
     className?: string;
     //We allow route to be undefined to be able to test in storybook
-    route?: Route<typeof Account.routeGroup>;
+    route: Route<typeof Account.routeGroup>;
 };
 
 const { useClassNames } = createUseClassNames()(
@@ -36,34 +38,37 @@ const { useClassNames } = createUseClassNames()(
 
 export function Account(props: Props) {
 
-    const {
-        className,
-        route
-    } = props;
+    const { className } = props;
 
     const { t } = useTranslation("Account");
 
-    const [selectedTabId, setSelectedTabId] = useState<AccountTabId>(() =>
-        route?.params?.accountTab ?? accountTabIds[0]
-    );
+    const route = useRoute() as typeof props.route;
 
-    useEffectOnValueChange(
-        () => {
+    useEffect(() => {
 
-            if (route === undefined) return;
+        if (route.params.tabId !== undefined) {
+            return;
+        }
 
-            routes.account({ accountTab: selectedTabId }).push();
+        routes.account({ "tabId": accountTabIds[0] }).replace();
 
-        },
-        [selectedTabId]
-    );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const tabs = useMemo(
         () => accountTabIds.map(id => ({ id, "title": t(id) })),
         [t]
     );
 
+    const onRequestChangeActiveTab = useConstCallback<TabsProps<AccountTabId>["onRequestChangeActiveTab"]>(
+        tabId => routes.account({ tabId }).push()
+    );
+
     const { classNames } = useClassNames({});
+
+    if (route.params.tabId === undefined) {
+        return null;
+    }
 
     return (
         <div className={className}>
@@ -87,13 +92,13 @@ export function Account(props: Props) {
             <Tabs
                 size="small"
                 tabs={tabs}
-                selectedTabId={selectedTabId}
+                activeTabId={route.params.tabId}
                 maxTabCount={5}
-                onRequestChangeActiveTab={setSelectedTabId}
+                onRequestChangeActiveTab={onRequestChangeActiveTab}
             >
                 {(() => {
-                    switch (selectedTabId) {
-                        case "account-info": return <AccountInfoTab />;
+                    switch (route.params.tabId) {
+                        case "infos": return <AccountInfoTab />;
                         case "third-party-integration": return null;
                         case "storage": return null;
                         case "user-interface": return null;

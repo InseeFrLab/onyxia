@@ -78,7 +78,7 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
         "Account": {
-            "account-info": "Account infos",
+            "infos": "Account infos",
             "third-party-integration": "external services",
             "storage": "Connect to storage",
             "user-interface": "Interface preferences",
@@ -107,9 +107,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "service password": "Password for your services",
             "service password helper text": "This password is used to connect to all services.",
             "OIDC Access token": "OIDC Personal access token",
-            "OIDC Access token helper text": `Valid until {{when}}`,
-            "OIDC Access token renew tooltip": `Be mindful that this action will invalidate your 
-            current $AWS_SESSION_TOKEN and $VAULT_TOKEN.`
+            "OIDC Access token helper text": `Valid until {{when}}`
         },
         "Register": {
             "required field": "Required field",
@@ -225,7 +223,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     "fr": {
         /* spell-checker: disable */
         "Account": {
-            "account-info": "Information du compte",
+            "infos": "Information du compte",
             "third-party-integration": "Services externes",
             "storage": "Connexion au stockage",
             "user-interface": "Modes d'interface",
@@ -254,10 +252,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "service password": "Mot de passe pour vos services",
             "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services.",
             "OIDC Access token": "Jeton d'accès personnel OIDC",
-            "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
-            "OIDC Access token renew tooltip": `Attention, cette action va périmé les valeurs 
-            courantes de $AWS_SESSION_TOKEN et de $VAULT_TOKEN dans vos services actuellement en
-            execution`
+            "OIDC Access token helper text": `Valide jusqu'a {{when}}`
         },
         "Register": {
             "required field": "Champ requis",
