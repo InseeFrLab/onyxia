@@ -58,10 +58,8 @@ export type Props = {
 
 export function MySecrets(props: Props) {
 
-    const {
-        className,
-        route
-    } = props;
+    //TODO: Fix how routes are handled, can't navigate back for example.
+    const { className, route } = props;
 
     const { t } = useTranslation("MySecrets");
 
