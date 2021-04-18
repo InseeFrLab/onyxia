@@ -37,7 +37,7 @@ import VisiteGuidee from 'js/components/visite-guidee';
 import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
 import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { SharedServices } from "js/components/services/home/services";
-import { ServiceDetails } from "js/components/services/details/details-service-async";
+//import { ServiceDetails } from "js/components/services/details/details-service-async";
 import { Trainings } from "js/components/trainings/async-component";
 
 
@@ -147,7 +147,7 @@ export const App = memo((props: Props) => {
                 VisiteGuideeDebut,
                 SharedServices,
                 Trainings,
-                ServiceDetails
+                //ServiceDetails
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
@@ -178,14 +178,14 @@ export const App = memo((props: Props) => {
                     return () => <Page
                         route={route}
                     />;
-                case SharedServices:
-                    return ()=> <Page
-                        serviceSelectionne={false}
-                    />;
                 case Account:
                     assert(Page.routeGroup.has(route));
                     return ()=> <Page
                         route={route}
+                    />;
+                case SharedServices:
+                    return ()=> <Page
+                        serviceSelectionne={false}
                     />;
                 case Trainings:
                 case Home:
@@ -193,8 +193,12 @@ export const App = memo((props: Props) => {
                 case MyBuckets:
                 case Catalogue:
                 case VisiteGuideeDebut:
-                case ServiceDetails:
                     return ()=> <Page/>;
+                    /*
+                case ServiceDetails:
+
+                    return ()=> <Page/>;
+                    */
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");

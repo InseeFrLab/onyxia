@@ -8,12 +8,12 @@ import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 export const { RouteProvider, useRoute, routes } = createRouter({
     "account": defineRoute(
         {
-            "accountTab": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
+            "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
                 "parse": raw => !id<readonly string[]>(accountTabIds).includes(raw) ? noMatch : raw as AccountTabId,
                 "stringify": value => value
             }))
         },
-        p => `/account/${p.accountTab}`
+        p => `/account/${p.tabId}`
     ),
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
