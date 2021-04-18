@@ -101,7 +101,8 @@ function Root() {
                 <RouteProvider>
                     <ThemeProvider
                         isDarkModeEnabled={isDarkModeEnabled}
-                        zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
+                        //zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
+                        zoomProviderReferenceWidth={undefined}
                     >
                         <SplashScreenProvider>
                             {kcContext !== undefined ?
