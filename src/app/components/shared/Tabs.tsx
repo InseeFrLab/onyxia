@@ -1,5 +1,6 @@
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, memo } from "react";
+import type { ReactNode } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { cx, css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
@@ -13,6 +14,7 @@ export type Props<T extends Props.Tab = Props.Tab> = {
     size?: "big" | "small";
     maxTabCount: number;
     onRequestChangeActiveTab(tabId: T["id"]): void;
+    children: ReactNode;
 };
 
 export declare namespace Props {
@@ -27,12 +29,18 @@ const { useClassNames } = createUseClassNames<Props>()(
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[1],
-            "borderRadius": "8px 8px 0 0",
+            //"borderRadius": "8px 8px 0 0",
+            "borderRadius": 8
+        },
+        "tabs": {
             "display": "flex",
             "overflow": "hidden"
         },
         "tab": {
             "flex": 1
+        },
+        "content": {
+            "padding": theme.spacing(1)
         }
     })
 );
@@ -45,7 +53,8 @@ export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
         selectedTabId,
         onRequestChangeActiveTab,
         maxTabCount,
-        size = "big"
+        size = "big",
+        children
     } = props;
 
     const { classNames } = useClassNames(props);
@@ -71,52 +80,60 @@ export function Tabs<Tab extends Props.Tab = Props.Tab>(props: Props<Tab>) {
 
     return (
         <div className={cx(classNames.root, className)}>
-            {
-                areArrowsVisible &&
-                <CustomButton
-                    type="arrow"
-                    direction="left"
-                    size={size}
-                    isFirst={false}
-                    className={css({ "zIndex": 0 })}
-                    isDisabled={firstTabIndex === 0}
-                    isSelected={false}
-                    onClick={onArrowClickFactory("left")}
-                />
-            }
-            <>
+
+            <div className={classNames.tabs}>
                 {
-                    tabs
-                        .filter((...[, i]) => i >= firstTabIndex && i < firstTabIndex + maxTabCount)
-                        .map(({ id, ...rest }) => ({ id, "isSelected": id === selectedTabId, ...rest }))
-                        .map(({ id, title, isSelected }, i) =>
-                            <CustomButton
-                                type="tab"
-                                text={title}
-                                size={size}
-                                isDisabled={false}
-                                isFirst={i === 0}
-                                className={cx(classNames.tab, css({ "zIndex": isSelected ? maxTabCount + 1 : maxTabCount - i }))}
-                                key={id}
-                                onClick={onTabClickFactory(id)}
-                                isSelected={isSelected}
-                            />
-                        )
+                    areArrowsVisible &&
+                    <CustomButton
+                        type="arrow"
+                        direction="left"
+                        size={size}
+                        isFirst={false}
+                        className={css({ "zIndex": 0 })}
+                        isDisabled={firstTabIndex === 0}
+                        isSelected={false}
+                        onClick={onArrowClickFactory("left")}
+                    />
                 }
-            </>
-            {
-                areArrowsVisible &&
-                <CustomButton
-                    type="arrow"
-                    direction="right"
-                    size={size}
-                    isFirst={false}
-                    className={css({ "zIndex": 0 })}
-                    isDisabled={tabs.length - firstTabIndex === maxTabCount}
-                    isSelected={false}
-                    onClick={onArrowClickFactory("right")}
-                />
-            }
+                <>
+                    {
+                        tabs
+                            .filter((...[, i]) => i >= firstTabIndex && i < firstTabIndex + maxTabCount)
+                            .map(({ id, ...rest }) => ({ id, "isSelected": id === selectedTabId, ...rest }))
+                            .map(({ id, title, isSelected }, i) =>
+                                <CustomButton
+                                    type="tab"
+                                    text={title}
+                                    size={size}
+                                    isDisabled={false}
+                                    isFirst={i === 0}
+                                    className={cx(classNames.tab, css({ "zIndex": isSelected ? maxTabCount + 1 : maxTabCount - i }))}
+                                    key={id}
+                                    onClick={onTabClickFactory(id)}
+                                    isSelected={isSelected}
+                                />
+                            )
+                    }
+                </>
+                {
+                    areArrowsVisible &&
+                    <CustomButton
+                        type="arrow"
+                        direction="right"
+                        size={size}
+                        isFirst={false}
+                        className={css({ "zIndex": 0 })}
+                        isDisabled={tabs.length - firstTabIndex === maxTabCount}
+                        isSelected={false}
+                        onClick={onArrowClickFactory("right")}
+                    />
+                }
+            </div>
+
+            <div className={classNames.content}>
+                {children}
+            </div>
+
         </div>
     );
 

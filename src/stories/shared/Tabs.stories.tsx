@@ -20,21 +20,22 @@ const props: Props = {
     /* spell-checker: disable */
     "tabs": [
         {
-        "id": "info",
-        "title": "Information du compte"
-    }, {
-        "id": "configs",
-        "title": "Configuration des comptes"
-    }, {
-        "id": "storage",
-        "title": "Connexion au stockage"
-    }, {
-        "id": "ui",
-        "title": "Mode d'interface"
-    }
-],
+            "id": "info",
+            "title": "Information du compte"
+        }, {
+            "id": "configs",
+            "title": "Configuration des comptes"
+        }, {
+            "id": "storage",
+            "title": "Connexion au stockage"
+        }, {
+            "id": "ui",
+            "title": "Mode d'interface"
+        }
+    ],
     /* spell-checker: enable */
     "maxTabCount": 5,
+    "children": <h1>Content</h1>,
     ...logCallbacks(["onRequestChangeActiveTab"])
 }
 

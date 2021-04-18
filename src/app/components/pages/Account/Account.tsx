@@ -27,9 +27,6 @@ export type Props = {
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
-        "mainContent": {
-            "background": theme.custom.colors.useCases.surfaces.surfaces
-        },
         "helpIcon": {
             "marginTop": 1, //TODO: Address globally
             "marginLeft": theme.spacing(1)
@@ -93,19 +90,16 @@ export function Account(props: Props) {
                 selectedTabId={selectedTabId}
                 maxTabCount={5}
                 onRequestChangeActiveTab={setSelectedTabId}
-            />
-            <div className={classNames.mainContent}>
-                {
-                    (() => {
-                        switch (selectedTabId) {
-                            case "account-info": return <AccountInfoTab />;
-                            case "third-party-integration": return null;
-                            case "storage": return null;
-                            case "user-interface": return null;
-                        }
-                    })()
-                }
-            </div>
+            >
+                {(() => {
+                    switch (selectedTabId) {
+                        case "account-info": return <AccountInfoTab />;
+                        case "third-party-integration": return null;
+                        case "storage": return null;
+                        case "user-interface": return null;
+                    }
+                })()}
+            </Tabs>
         </div>
     );
 
