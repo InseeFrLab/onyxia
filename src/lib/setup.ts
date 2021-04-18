@@ -408,7 +408,6 @@ export const thunks = {
     [userConfigsUseCase.name]: userConfigsUseCase.thunks,
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
     [appConstantsUseCase.name]: appConstantsUseCase.thunks,
-    [tokensUseCase.name]: tokensUseCase.thunks,
     [app.name]: app.thunk
 };
 

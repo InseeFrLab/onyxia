@@ -4,8 +4,6 @@ import { useGuaranteedMemo } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "app/components/designSystem/TextField";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
 import { Typography } from "app/components/designSystem/Typography";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { TextField } from "app/components/designSystem/TextField";
@@ -19,10 +17,11 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
-import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
+import Tooltip from "@material-ui/core/Tooltip";
+import { useValidUntil } from "app/i18n/useMoment";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -30,7 +29,8 @@ export type Props<T extends string = string> =
     Props.Language |
     Props.Toggle |
     Props.Text |
-    Props.EditableText;
+    Props.EditableText |
+    Props.OidcAccessToken;
 
 export declare namespace Props {
 
@@ -55,6 +55,15 @@ export declare namespace Props {
     export type Language = Common & {
         type: "language";
     };
+
+    export type OidcAccessToken = Common & {
+        type: "OIDC Access token";
+        oidcAccessToken: string;
+        onRequestOidcAccessTokenRenewal(): void;
+        isLocked: boolean;
+        /** In seconds */
+        remainingValidity: number;
+    } & ICopyable;
 
     export type Toggle = Common & {
         type: "toggle";
@@ -94,16 +103,16 @@ const flashDurationMs = 600;
 
 const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
     (theme, { isFlashing }) => ({
-        "mainRow": {
+        "mainLine": {
             "display": "flex",
-            "& .MuiTableCell-root": {
+            "& > div": {
                 "display": "flex",
                 "alignItems": "center",
-                "borderBottom": "unset",
                 "& .MuiTypography-root": {
                     "marginTop": 2 //TODO: address globally
                 }
-            }
+            },
+            "marginBottom": theme.spacing(1)
         },
         "cellTitle": {
             "width": 360,
@@ -124,18 +133,16 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
                 "top": 2
             }
         },
-        "helperTextCell": {
-            "paddingTop": 0,
-            "paddingBottom": 0
+        "cellActions": {
+            "marginRight": theme.spacing(1)
         }
-
     })
 );
 
 
-export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<FunctionComponent> => {
+export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType<FunctionComponent> => {
 
-    const { t } = useTranslation("AccountRow");
+    const { t } = useTranslation("AccountField");
 
     const { className } = props;
 
@@ -171,6 +178,18 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
     const TypographyWd = useGuaranteedMemo(() =>
         (props: { children: NonNullable<ReactNode>; }) =>
             <Typography variant="body1">{props.children}</Typography>,
+        []
+    );
+
+    const IconButtonCopyToClipboard = useGuaranteedMemo(() =>
+        (props: { onClick(): void; }) =>
+            <Tooltip title={t("copy tooltip")}>
+                <IconButton
+                    type="filterNone"
+                    onClick={props.onClick}
+                    fontSize="small"
+                />
+            </Tooltip>,
         []
     );
 
@@ -217,93 +236,93 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
         });
 
 
-            const onTextFieldEscapeKeyDown = useConstCallback(
-                () => evtTextFieldAction.post("RESTORE DEFAULT VALUE")
+        const onTextFieldEscapeKeyDown = useConstCallback(
+            () => evtTextFieldAction.post("RESTORE DEFAULT VALUE")
+        );
+
+        const onSubmitButtonClick = useConstCallback(
+            () => evtTextFieldAction.post("TRIGGER SUBMIT")
+        );
+
+        const { isValueBeingTypedValid, onValueBeingTypedChange } = (function useClosure() {
+
+            const [isValueBeingTypedValid, setIsValueBeingTypedValid] = useState(false);
+
+            const onValueBeingTypedChange = useConstCallback(
+                ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
+                    setIsValueBeingTypedValid(isValidValue)
             );
 
-            const onSubmitButtonClick = useConstCallback(
-                () => evtTextFieldAction.post("TRIGGER SUBMIT")
-            );
-
-            const { isValueBeingTypedValid, onValueBeingTypedChange } = (function useClosure() {
-
-                const [isValueBeingTypedValid, setIsValueBeingTypedValid] = useState(false);
-
-                const onValueBeingTypedChange = useConstCallback(
-                    ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
-                        setIsValueBeingTypedValid(isValidValue)
-                );
-
-                return { isValueBeingTypedValid, onValueBeingTypedChange };
-
-            })();
-
-            const [isCopyScheduled, setIsCopyScheduled] = useState(false);
-
-            const onTextFieldSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
-                value => {
-                    assert(props.type === "editable text");
-                    if (props.isLocked) return;
-
-                    setIsInEditingState(false);
-
-                    if (value === props.text) {
-
-                        if (isCopyScheduled) {
-
-                            setIsCopyScheduled(false);
-                            onRequestCopy();
-
-                        }
-
-                        return;
-                    }
-
-                    props.onRequestEdit(value);
-
-                }
-            );
-
-            useEffect(
-                () => {
-                    if (!isCopyScheduled) return;
-                    setIsCopyScheduled(false);
-                    onRequestCopy();
-                },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [props.type === "editable text" ? props.text : null]
-            );
-
-            useEffect(
-                () => {
-                    if (!isCopyScheduled) return;
-                    evtTextFieldAction.post("TRIGGER SUBMIT");
-                },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [isCopyScheduled]
-            );
-
-            const onEditableTextRequestCopy = useConstCallback(() => {
-                if (isInEditingState) {
-                    setIsCopyScheduled(true);
-                } else {
-                    onRequestCopy();
-                }
-            });
-
-            return {
-                isInEditingState,
-                evtTextFieldAction,
-                isValueBeingTypedValid,
-                onEditableTextRequestCopy,
-                onStartEditButtonClick,
-                onTextFieldEscapeKeyDown,
-                onSubmitButtonClick,
-                onValueBeingTypedChange,
-                onTextFieldSubmit
-            };
+            return { isValueBeingTypedValid, onValueBeingTypedChange };
 
         })();
+
+        const [isCopyScheduled, setIsCopyScheduled] = useState(false);
+
+        const onTextFieldSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
+            value => {
+                assert(props.type === "editable text");
+                if (props.isLocked) return;
+
+                setIsInEditingState(false);
+
+                if (value === props.text) {
+
+                    if (isCopyScheduled) {
+
+                        setIsCopyScheduled(false);
+                        onRequestCopy();
+
+                    }
+
+                    return;
+                }
+
+                props.onRequestEdit(value);
+
+            }
+        );
+
+        useEffect(
+            () => {
+                if (!isCopyScheduled) return;
+                setIsCopyScheduled(false);
+                onRequestCopy();
+            },
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [props.type === "editable text" ? props.text : null]
+        );
+
+        useEffect(
+            () => {
+                if (!isCopyScheduled) return;
+                evtTextFieldAction.post("TRIGGER SUBMIT");
+            },
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [isCopyScheduled]
+        );
+
+        const onEditableTextRequestCopy = useConstCallback(() => {
+            if (isInEditingState) {
+                setIsCopyScheduled(true);
+            } else {
+                onRequestCopy();
+            }
+        });
+
+        return {
+            isInEditingState,
+            evtTextFieldAction,
+            isValueBeingTypedValid,
+            onEditableTextRequestCopy,
+            onStartEditButtonClick,
+            onTextFieldEscapeKeyDown,
+            onSubmitButtonClick,
+            onValueBeingTypedChange,
+            onTextFieldSubmit
+        };
+
+    })();
 
     const {
         onS3ScriptClickFactory,
@@ -341,6 +360,10 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
 
     })();
 
+    const oidcAccessTokenExpiresWhen = useValidUntil({
+        "millisecondsLeft": props.type !== "OIDC Access token" ?
+            0 : props.remainingValidity * 1000
+    });
 
     const helperText = (() => {
         switch (props.type) {
@@ -350,20 +373,26 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                 return props.helperText;
             case "service password":
                 return t("service password helper text");
+            case "OIDC Access token":
+                return t( 
+                    "OIDC Access token helper text", 
+                    { "when": oidcAccessTokenExpiresWhen }
+                );
             default:
                 return undefined;
         }
     })();
 
+
     return (
-        <>
-            <TableRow className={cx(classNames.mainRow, className)}>
-                <TableCell className={classNames.cellTitle}>
+        <div className={className}>
+            <div className={classNames.mainLine}>
+                <div className={classNames.cellTitle}>
                     <Typography variant="subtitle1" >
                         {"title" in props ? props.title : t(props.type)}
                     </Typography>
-                </TableCell>
-                <TableCell className={classNames.cellMiddle}>
+                </div>
+                <div className={classNames.cellMiddle}>
                     {(() => {
                         switch (props.type) {
                             case "s3 scripts":
@@ -390,6 +419,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                 return null;
                             case "service password":
                                 return <TypographyWd>{props.servicePassword}</TypographyWd>;
+                            case "OIDC Access token":
+                                return <TypographyWd>{props.oidcAccessToken}</TypographyWd>
                             case "text":
                                 return <TypographyWd>{props.text}</TypographyWd>;
                             case "editable text":
@@ -410,8 +441,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                     />;
                         }
                     })()}
-                </TableCell>
-                <TableCell>
+                </div>
+                <div className={classNames.cellActions}>
                     {(() => {
                         switch (props.type) {
                             case "s3 scripts":
@@ -422,10 +453,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                             onClick={onS3ScriptClickFactory("download")}
                                             fontSize="small"
                                         />
-                                        <IconButton
-                                            type="filterNone"
+                                        <IconButtonCopyToClipboard
                                             onClick={onS3ScriptClickFactory("download")}
-                                            fontSize="small"
                                         />
                                     </>
                                 );
@@ -438,10 +467,8 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                             onClick={isInEditingState ? onSubmitButtonClick : onStartEditButtonClick}
                                             fontSize="small"
                                         />
-                                        <IconButton
-                                            type="filterNone"
+                                        <IconButtonCopyToClipboard
                                             onClick={onEditableTextRequestCopy}
-                                            fontSize="small"
                                         />
                                     </>
                                 );
@@ -462,48 +489,61 @@ export const AccountRow = memo(<T extends string>(props: Props<T>): ReturnType<F
                                             disabled={props.isLocked}
                                             onClick={props.onRequestServicePasswordRenewal}
                                         />
-                                        <IconButton
-                                            type="filterNone"
+                                        <IconButtonCopyToClipboard
                                             onClick={onRequestCopy}
-                                            fontSize="small"
                                         />
                                     </>
                                 );
                             case "text":
                                 return (
-                                    <IconButton
-                                        type="filterNone"
+                                    <IconButtonCopyToClipboard
                                         onClick={onRequestCopy}
-                                        fontSize="small"
                                     />
                                 );
                             case "language":
                                 return null;
+                            case "OIDC Access token":
+                                return (
+                                    <>
+                                        <Tooltip title={t("OIDC Access token renew tooltip")}>
+                                            <IconButton
+                                                type="replay"
+                                                fontSize="small"
+                                                disabled={props.isLocked}
+                                                onClick={props.onRequestOidcAccessTokenRenewal}
+                                            />
+                                        </Tooltip>
+                                        <IconButtonCopyToClipboard
+                                            onClick={onRequestCopy}
+                                        />
+                                    </>
+                                );
                         }
                     })()}
-                </TableCell>
-            </TableRow>
+                </div>
+            </div>
             { helperText !== undefined &&
-                <TableRow className={cx(className)}>
-                    <TableCell className={classNames.helperTextCell}>
-                        <Typography> {helperText} </Typography>
-                    </TableCell>
-                </TableRow>
+                <Typography variant="caption"> {helperText} </Typography>
             }
-        </>
+
+
+        </div>
     );
 
 
 
 });
 
-export declare namespace AccountRow {
+export declare namespace AccountField {
 
     export type I18nScheme = Record<
         Exclude<Props["type"], "text" | "editable text" | "toggle">,
         undefined
     > & {
+        'copy tooltip': undefined;
         'service password helper text': undefined;
+        'OIDC Access token helper text': { when: string; };
+        'OIDC Access token renew tooltip': undefined;
     };
 
 }

@@ -53,6 +53,17 @@ export async function createPhonyOidcClient(
 
             return new Promise<never>(() => { });
 
+        },
+        "getOidcTokensRemandingValidity": () => {
+
+            const oidcTokens = evtOidcTokens.state;
+
+            if (oidcTokens === undefined) {
+                return 0;
+            }
+
+            const wrap = getDelayBeforeTokensExpiration({ oidcTokens });
+            return wrap.isExpired ? 0 : Math.floor(wrap.expiresInMs / 1000);
         }
     });
 

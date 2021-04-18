@@ -12,7 +12,7 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 
-export const Vue1 = getStory({
+export const Vue = getStory({
     ...defaultProps,
     "type": "add",
     ...logCallbacks(["onClick"])

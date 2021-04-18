@@ -7,7 +7,7 @@ import { noUndefined } from "app/tools/noUndefined";
 import { Typography } from "app/components/designSystem/Typography";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { IconButton } from "app/components/designSystem/IconButton"
-import { useFormattedDate } from "app/i18n/useFormattedDate";
+import { useFormattedDate } from "app/i18n/useMoment";
 import { useWithProps } from "powerhooks";
 
 export type Props = {

@@ -1,6 +1,6 @@
 
-import { AccountRow } from "app/components/pages/Account/AccountRow";
-import type { Props } from "app/components/pages/Account/AccountRow";
+import { AccountField } from "app/components/pages/Account/AccountField";
+import type { Props } from "app/components/pages/Account/AccountField";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
@@ -9,7 +9,7 @@ import { Evt }  from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "AccountRow": AccountRow as any }
+    "wrappedComponent": { "AccountField": AccountField as any }
 });
 
 export default meta;
@@ -77,6 +77,18 @@ export const EditableText = getStory(id<Props.EditableText>({
         "onRequestCopy",
         "onRequestEdit",
         "onStartEdit"
+    ])
+}));
+
+export const OidcAccessToken = getStory(id<Props.OidcAccessToken>({
+    className,
+    "type": "OIDC Access token",
+    "oidcAccessToken": "OiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYROiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYR",
+    "isLocked": false,
+    "remainingValidity": 2000,
+    ...logCallbacks([
+        "onRequestOidcAccessTokenRenewal",
+        "onRequestCopy",
     ])
 }));
 

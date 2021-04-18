@@ -37,6 +37,9 @@ export declare namespace OidcClient {
 
         evtOidcTokens: StatefulReadonlyEvt<OidcTokens | undefined>;
 
+        /** Returns number of seconds before the tokens expires */
+        getOidcTokensRemandingValidity(): number;
+
         /**
          * Renew the token if it has less than minValidity seconds left before it expires.
          * 
