@@ -205,7 +205,7 @@ export const App = memo((props: Props) => {
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route.name]
+        [route]
     );
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());

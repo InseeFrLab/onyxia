@@ -11,7 +11,7 @@ export const { RouteProvider, useRoute, routes } = createRouter({
             "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
                 "parse": raw => !id<readonly string[]>(accountTabIds).includes(raw) ? noMatch : raw as AccountTabId,
                 "stringify": value => value
-            }))
+            })).default(accountTabIds[0])
         },
         p => `/account/${p.tabId}`
     ),

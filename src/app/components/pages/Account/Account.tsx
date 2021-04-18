@@ -1,11 +1,10 @@
 
 
 import { Tabs } from "../../shared/Tabs";
-import type { Props as TabsProps } from "../../shared/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
-import { routes, useRoute } from "app/router";
+import { routes } from "app/router";
 import type { Route } from "type-route";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
@@ -14,7 +13,6 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { PageHeader } from "app/components/shared/PageHeader";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
-import { useEffect } from "react";
 import { useConstCallback } from "powerhooks";
 
 Account.routeGroup = createGroup([routes.account]);
@@ -38,37 +36,20 @@ const { useClassNames } = createUseClassNames()(
 
 export function Account(props: Props) {
 
-    const { className } = props;
+    const { className, route } = props;
 
     const { t } = useTranslation("Account");
-
-    const route = useRoute() as typeof props.route;
-
-    useEffect(() => {
-
-        if (route.params.tabId !== undefined) {
-            return;
-        }
-
-        routes.account({ "tabId": accountTabIds[0] }).replace();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const tabs = useMemo(
         () => accountTabIds.map(id => ({ id, "title": t(id) })),
         [t]
     );
 
-    const onRequestChangeActiveTab = useConstCallback<TabsProps<AccountTabId>["onRequestChangeActiveTab"]>(
-        tabId => routes.account({ tabId }).push()
+    const onRequestChangeActiveTab = useConstCallback(
+        (tabId: AccountTabId) => routes.account({ tabId }).push()
     );
 
     const { classNames } = useClassNames({});
-
-    if (route.params.tabId === undefined) {
-        return null;
-    }
 
     return (
         <div className={className}>
