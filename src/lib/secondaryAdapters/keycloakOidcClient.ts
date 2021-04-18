@@ -76,6 +76,8 @@ export async function createKeycloakOidcClient(
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired":
             async params => {
 
+                console.log("renew");
+
                 const { minValidity = 10 } = params ?? {};
 
                 if (evtLocallyStoredOidcAccessToken.state === undefined) {
@@ -87,6 +89,9 @@ export async function createKeycloakOidcClient(
                 }
 
                 evtLocallyStoredOidcAccessToken.state = undefined;
+
+
+                console.log("let's renew now!");
 
                 const error = await keycloakInstance.updateToken(-1)
                     .then(
@@ -113,7 +118,26 @@ export async function createKeycloakOidcClient(
 
             return new Promise<never>(() => { });
 
-        }
+        },
+        "getOidcTokensRemandingValidity": () =>
+            (function callee(
+                low: number,
+                up: number
+            ): number {
+
+                const middle = Math.floor(low + (up - low) / 2);
+
+                if (up - low <= 3) {
+                    return middle;
+                }
+
+                return callee(
+                    ...keycloakInstance.isTokenExpired(middle) ?
+                        [low, middle] as const :
+                        [middle, up] as const
+                );
+
+            })(0, 360 * 12 * 30 * 24 * 60 * 60 /*One year*/)
     });
 
 }

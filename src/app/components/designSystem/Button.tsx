@@ -7,7 +7,7 @@ import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
-import { useWithProps } from "powerhooks";
+import { useGuaranteedMemo } from "powerhooks";
 
 export type Props = {
 
@@ -137,14 +137,19 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
 
     const { classNames } = useClassNames(completedProps);
 
-    const ColoredIcon = useWithProps(
-        Icon,
-        {
-            "color": disabled ? "textDisabled" : "textPrimary",
-            "fontSize": "inherit",
-            "className": classNames.icon
-        }
+    const IconWd = useGuaranteedMemo(
+        () =>
+            (props: { type: IconProps["type"]; }) =>
+                <Icon
+                    color={disabled ? "textDisabled" : "textPrimary"}
+                    fontSize="inherit"
+                    className={classNames.icon}
+                    type={props.type}
+                />
+        ,
+        [disabled, classNames.icon]
     );
+
 
     return (
         <MuiButton
@@ -153,11 +158,11 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
             color={color}
             disabled={disabled}
             onClick={onClick}
-            startIcon={startIcon === null ? undefined : <ColoredIcon type={startIcon} />}
-            endIcon={endIcon === null ? undefined : <ColoredIcon type={endIcon} />}
+            startIcon={startIcon === null ? undefined : <IconWd type={startIcon} />}
+            endIcon={endIcon === null ? undefined : <IconWd type={endIcon} />}
             autoFocus={autoFocus}
             type={type}
-            tabIndex={tabIndex??undefined}
+            tabIndex={tabIndex ?? undefined}
             name={name ?? undefined}
             id={id ?? undefined}
             {...rest}

@@ -14,9 +14,9 @@ import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
 import { Home } from "app/components/pages/Home";
 import { Register } from "app/components/KcApp/Register";
-import { AccountRow } from "app/components/pages/Account/AccountRow";
+import { AccountField } from "app/components/pages/Account/AccountField";
 import { Account } from "app/components/pages/Account/Account";
-import { AccountInfoTab } from "app/components/pages/Account/AccountInfoTab";
+import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -39,7 +39,7 @@ const reflectedI18nSchemes = {
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
-    [symToStr({ AccountRow })]: Reflect<AccountRow.I18nScheme>(),
+    [symToStr({ AccountField })]: Reflect<AccountField.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
 };
@@ -79,14 +79,37 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
         "Account": {
             "account-info": "Account infos",
+            "third-party-integration": "external services",
+            "storage": "Connect to storage",
+            "user-interface": "Interface preferences",
+            "text1": "Account",
+            "text2": "Access and configure your service information",
+            "text3p1": "Your id, e-mails, password and",
+            "personal tokens": "personal tokens",
+            "text3p2": "can be accessed and configured here",
+            "personal tokens tooltip": "Password that are generated for you and that have a given validity period"
         },
         "AccountInfoTab": {
+            "general information": "General information",
+            "user id": "User id (IDEP)",
+            "full name": "Full name",
+            "email": "Email address",
+            "password": "Account password",
+            "auth information": "Onyxia authentication information",
+            "auth information helper": `Theses different values let you authenticate yourself 
+            against the different services offered on the platform`,
+            "ip address": "IP Address"
         },
-        "AccountRow": {
+        "AccountField": {
+            "copy tooltip": "Copy in clipboard",
             "language": "Change language",
             "s3 scripts": "Init script",
             "service password": "Password for your services",
-            "service password helper text": "This password is used to connect to all services."
+            "service password helper text": "This password is used to connect to all services.",
+            "OIDC Access token": "OIDC Personal access token",
+            "OIDC Access token helper text": `Valid until {{when}}`,
+            "OIDC Access token renew tooltip": `Be mindful that this action will invalidate your 
+            current $AWS_SESSION_TOKEN and $VAULT_TOKEN.`
         },
         "Register": {
             "required field": "Required field",
@@ -202,15 +225,39 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
     "fr": {
         /* spell-checker: disable */
         "Account": {
-            "account-info": "Information du compte"
+            "account-info": "Information du compte",
+            "third-party-integration": "Services externes",
+            "storage": "Connexion au stockage",
+            "user-interface": "Modes d'interface",
+            "text1": "Mon Compte",
+            "text2": "Accèdez à vos différentes informations de compte.",
+            "text3p1": "Vos identifiants, e-mails, mots de passe et ",
+            "personal tokens": "Jetons d'accès individuel",
+            "text3p2": "sont accessibles et configurables ici",
+            "personal tokens tooltip": "Ou en anglais \"token\"."
         },
         "AccountInfoTab": {
+            "general information": "Informations générales",
+            "user id": "Identifiant (IDEP)",
+            "full name": "Nom complet",
+            "email": "Address mail",
+            "password": "Mot de passe du compte",
+            "auth information": "Informations d'authentification Onyxia",
+            "auth information helper": `Ces information vous premetent de vous 
+            identifier sur les différents servces offert par la platforme`,
+            "ip address": "Addresse IP"
         },
-        "AccountRow": {
+        "AccountField": {
+            "copy tooltip": "Copier dans le press papier",
             "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
-            "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services."
+            "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services.",
+            "OIDC Access token": "Jeton d'accès personnel OIDC",
+            "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
+            "OIDC Access token renew tooltip": `Attention, cette action va périmé les valeurs 
+            courantes de $AWS_SESSION_TOKEN et de $VAULT_TOKEN dans vos services actuellement en
+            execution`
         },
         "Register": {
             "required field": "Champ requis",

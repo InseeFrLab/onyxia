@@ -24,3 +24,28 @@ export function useFormattedDate(
     );
 
 }
+
+export function useValidUntil(
+    params: {
+        millisecondsLeft: number;
+    }
+): string {
+
+    const { millisecondsLeft } = params;
+
+    const { lng } = useLng();
+
+    const validUntil = useMemo(
+        () => moment()
+            .locale(lng)
+            .add(millisecondsLeft, "milliseconds")
+            .calendar()
+            .toLowerCase(),
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [lng, millisecondsLeft]
+    );
+
+    return validUntil;
+
+}

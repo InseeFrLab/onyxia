@@ -76,20 +76,3 @@ export const privateThunks = {
 
         }
 }
-
-export const thunks = {
-    /** Once this thunk resolves we can assume oidc tokens and Volt token to be valid */
-    "refreshTokenIfExpiresInLessThan8Hours":
-        (): AppThunk => async (...args) => {
-
-            const [, , { oidcClient }] = args;
-
-            assert(oidcClient.isUserLoggedIn);
-
-            oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
-                { "minValidity": 3600 * 8 }
-            );
-
-        }
-
-};
