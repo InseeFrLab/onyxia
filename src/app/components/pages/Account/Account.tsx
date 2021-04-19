@@ -28,8 +28,10 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
     theme => ({
         "helpIcon": {
-            "marginTop": 1, //TODO: Address globally
-            "marginLeft": theme.spacing(1)
+            "marginTop": -1, //TODO: Address globally
+        },
+        "tabs": {
+            "marginRight": theme.spacing(3)
         }
     })
 );
@@ -59,7 +61,9 @@ export function Account(props: Props) {
                 text2={t("text2")}
                 text3={<>
                     {t("text3p1")}
+                    &nbsp;
                     <strong>{t("personal tokens")}</strong>
+                    &nbsp;
                     <Tooltip title={t("personal tokens tooltip")}>
                         <Icon
                             className={classNames.helpIcon}
@@ -67,10 +71,12 @@ export function Account(props: Props) {
                             fontSize="small"
                         />
                     </Tooltip>
+                    &nbsp;
                     {t("text3p2")}
                 </>}
             />
             <Tabs
+                className={classNames.tabs}
                 size="small"
                 tabs={tabs}
                 activeTabId={route.params.tabId}

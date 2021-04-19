@@ -131,7 +131,7 @@ export const App = memo((props: Props) => {
 
     const route = useRoute();
 
-    const Page = useMemo(
+    const page = useMemo(
         () => {
 
             const Page = [
@@ -163,28 +163,26 @@ export const App = memo((props: Props) => {
 
             switch (Page) {
                 case MySecrets:
-                    assert(Page.routeGroup.has(route));
-                    return () => <Page
-                        route={route}
+                    return <Page
                         className={classNameFillBlock}
                     />;
                 case NavigationFile:
                     assert(Page.routeGroup.has(route));
-                    return () => <Page
+                    return <Page
                         route={route}
                     />;
                 case MyService:
                     assert(Page.routeGroup.has(route));
-                    return () => <Page
+                    return <Page
                         route={route}
                     />;
                 case Account:
                     assert(Page.routeGroup.has(route));
-                    return ()=> <Page
+                    return <Page
                         route={route}
                     />;
                 case SharedServices:
-                    return ()=> <Page
+                    return <Page
                         serviceSelectionne={false}
                     />;
                 case Trainings:
@@ -193,12 +191,7 @@ export const App = memo((props: Props) => {
                 case MyBuckets:
                 case Catalogue:
                 case VisiteGuideeDebut:
-                    return ()=> <Page/>;
-                    /*
-                case ServiceDetails:
-
-                    return ()=> <Page/>;
-                    */
+                    return <Page/>;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");
@@ -251,7 +244,7 @@ export const App = memo((props: Props) => {
                 />
 
                 <main className={classNames.main}>
-                    <Page />
+                    {page}
                 </main>
 
             </section>

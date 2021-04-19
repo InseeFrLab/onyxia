@@ -86,7 +86,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text2": "Access and configure your service information",
             "text3p1": "Your id, e-mails, password and",
             "personal tokens": "personal tokens",
-            "text3p2": "can be accessed and configured here",
+            "text3p2": "can be accessed and configured here.",
             "personal tokens tooltip": "Password that are generated for you and that have a given validity period"
         },
         "AccountInfoTab": {
@@ -231,7 +231,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text2": "Accèdez à vos différentes informations de compte.",
             "text3p1": "Vos identifiants, e-mails, mots de passe et ",
             "personal tokens": "Jetons d'accès individuel",
-            "text3p2": "sont accessibles et configurables ici",
+            "text3p2": "sont accessibles et configurables ici.",
             "personal tokens tooltip": "Ou en anglais \"token\"."
         },
         "AccountInfoTab": {

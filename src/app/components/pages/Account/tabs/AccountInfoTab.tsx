@@ -14,10 +14,24 @@ import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks";
 import { usePublicIp } from "app/tools/usePublicIp";
 import { smartTrim } from "app/tools/smartTrim";
+import { createUseClassNames } from "app/theme/useClassNames";
 
 export type Props = {
     className?: string;
 };
+
+const { useClassNames } = createUseClassNames()(
+    theme => ({
+        "divider": {
+            "margin": theme.spacing(3, 0)
+        },
+        "link": {
+            "marginTop": theme.spacing(1),
+            "display": "inline-block"
+        }
+
+    })
+);
 
 export const AccountInfoTab = memo((props: Props) => {
 
@@ -64,12 +78,17 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 
     const onRequestOidcAccessTokenRenewal = useConstCallback(
-        () => appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
+        () => console.log("TODO: Trigger login")
+        /*
+        appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
             { "minValidity": Infinity }
         )
+        */
     );
 
     const { publicIp } = usePublicIp();
+
+    const { classNames } = useClassNames({});
 
     return (
         <div className={className}>
@@ -94,13 +113,14 @@ export const AccountInfoTab = memo((props: Props) => {
             />
             {keycloakConfig !== undefined &&
                 <Link
+                    className={classNames.link}
                     href={pathJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
                     target="_blank"
                 >
                     {t("password")}
                 </Link>
             }
-            <Divider variant="middle" />
+            <Divider className={classNames.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("auth information")}
                 helperText={t("auth information helper")}
