@@ -1,3 +1,13 @@
+### **0.7.49** (2021-04-16)  
+  
+- When multiple service url, take the first in alphabetical order  
+- Account: editable text ok  
+- Account: Toggle  
+- Account: Language  
+- Account S3 init script  
+- First working draft of working Account row  
+- Account tabs done    
+  
 ### **0.7.48** (2021-04-14)  
   
 - Update package.json  
