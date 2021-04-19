@@ -12,6 +12,7 @@ import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
+import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
@@ -86,7 +87,7 @@ export function Account(props: Props) {
                         case "infos": return <AccountInfoTab />;
                         case "third-party-integration": return <AccountIntegrationsTab />;
                         case "storage": return <AccountStorageTab />;
-                        case "user-interface": return null;
+                        case "user-interface": return <AccountUserInterfaceTab />;
                     }
                 })()}
             </Tabs>
