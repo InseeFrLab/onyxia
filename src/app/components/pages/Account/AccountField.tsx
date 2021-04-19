@@ -7,7 +7,6 @@ import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { Typography } from "app/components/designSystem/Typography";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { TextField } from "app/components/designSystem/TextField";
-import { assert } from "evt/tools/typeSafety/assert";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Params } from "evt/tools/typeSafety";
@@ -23,6 +22,7 @@ import { useEvt } from "evt/hooks";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
+import { assert } from "evt/tools/typeSafety/assert";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -48,9 +48,9 @@ export declare namespace Props {
 
     export type S3Scripts<T extends string> = Common & {
         type: "s3 scripts";
-        scriptList: T[];
-        onRequestDownloadScript(script: T): void;
-        onRequestCopyScript(script: T): void;
+        scriptLabels: T[];
+        onRequestDownloadScript(scriptLabel: T): void;
+        onRequestCopyScript(scriptLabelg: T): void;
     };
 
     export type Language = Common & {
@@ -343,7 +343,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
 
         const [selectedS3Script, setSelectedS3Script] = useState(
             props.type === "s3 scripts" ?
-                props.scriptList[0] : null as never
+                props.scriptLabels[0] : null as never
         );
 
         const onS3ScriptClickFactory = useCallbackFactory(
@@ -414,10 +414,10 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                             onChange={onS3ScriptSelectChange}
                                         >
                                             {
-                                                props.scriptList.map(
-                                                    scriptName =>
-                                                        <MenuItem value={scriptName}>
-                                                            {scriptName}
+                                                props.scriptLabels.map(
+                                                    scriptLabel =>
+                                                        <MenuItem value={scriptLabel}>
+                                                            {scriptLabel}
                                                         </MenuItem>
                                                 )
                                             }
@@ -468,7 +468,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                             fontSize="small"
                                         />
                                         <IconButtonCopyToClipboard
-                                            onClick={onS3ScriptClickFactory("download")}
+                                            onClick={onS3ScriptClickFactory("copy")}
                                         />
                                     </>
                                 );

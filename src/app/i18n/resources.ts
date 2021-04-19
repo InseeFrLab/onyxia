@@ -18,6 +18,7 @@ import { AccountField } from "app/components/pages/Account/AccountField";
 import { Account } from "app/components/pages/Account/Account";
 import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
+import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -44,6 +45,7 @@ const reflectedI18nSchemes = {
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
     [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
+    [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -113,6 +115,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "personal token": "{{serviceName}} personal access token",
             "link for token creation": "Create your {{serviceName}} token.",
             "accessible as env": "Accessible withing your services as the environnement variable:"
+        },
+        "AccountStorageTab": {
+            "credentials section title": "Credential to access your S3 storage (Minio)",
+            "credentials section helper": "All theses values are pre configured in your services, the S3 clients works out of the box.",
+            "accessible as env": "Accessible withing your services as the environnement variable:",
+            "init script section title": "To access your storage from your personal computer",
+            "init script section helper": "Download or copy in clipboard the init script in the programing language of your choosing.",
+            "valid until": "Valid until {{when}}"
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
@@ -262,7 +272,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "AccountIntegrationsTab": {
             "git section title": "Configurations Git",
-            //"git section helper": "Ces informations vous permettend de vous identifier dans votre code source lors des modifications depuis les services.",
             "git section helper": "Pour vous assurez que, sur GitHub et GitLab, vous apparaissiez comme l'auteur des contributions faites depuis vos services.",
             "more info": "Plus d'informations",
             "gitName": "Nom d'utilisateur pour Git",
@@ -272,6 +281,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "personal token": "Jeton d'accès personnel {{serviceName}}",
             "link for token creation": "Crée votre jeton {{serviceName}}.",
             "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement"
+        },
+        "AccountStorageTab": {
+            "credentials section title": "Identifiants pour vous connecter à votre stockage objet",
+            "credentials section helper": "Toutes ces valeurs sont préconfigurées dans vos services, les clients s3 sont près à l'emploi.",
+            "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement",
+            "init script section title": "Pour accéder au stockage en dehors de vos services",
+            "init script section helper": "Téléchargez ou copiez dans les presses papier le script d'initialisation dans le langage de programmation de votre choix.",
+            "valid until": "Valides jusqu'a {{when}}"
         },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",
