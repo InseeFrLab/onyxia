@@ -112,7 +112,7 @@ export const Header = memo((props: Props) => {
                 "flex": 1,
                 "display": "flex",
                 "justifyContent": "flex-end",
-                "alignItems": "center",
+                "alignItems": "center"
             })}>
                 <ChangeLanguage />
                 {props.type === "core" &&
