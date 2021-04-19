@@ -101,7 +101,13 @@ export const App = memo((props: Props) => {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffectOnValueChange(
-        () => hideSplashScreen(),
+        () => {
+
+            console.log("regular hide");
+
+            hideSplashScreen()
+
+        },
         [rootWidth === 0]
     );
 
@@ -110,8 +116,14 @@ export const App = memo((props: Props) => {
     useEffectOnValueChange(
         () => {
             if( isWaiting ){
+
+                console.log("show splash");
+
                 showSplashScreen({ "enableTransparency": true });
             }else{
+
+                console.log("hide splash");
+
                 hideSplashScreen();
             }
         },

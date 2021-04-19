@@ -55,16 +55,13 @@ export const { useSplashScreen } = (() => {
 
     })();
 
-    const { useDisplayState } = createUseGlobalState(
+    const { useDisplayState, evtDisplayState } = createUseGlobalState(
         "displayState",
         { "count": 1, "isTransparencyEnabled": false, "prevTime": 0 },
         { "persistance": false }
     );
 
-    function useHideSplashScreen(params: Pick<ReturnType<typeof useDisplayState>, "setDisplayState">) {
-
-        //TODO: test nesting call to useDisplayState
-        const { setDisplayState } = params;
+    function useHideSplashScreen() {
 
         const { getDoUseDelay } = useDelay();
 
@@ -73,27 +70,30 @@ export const { useSplashScreen } = (() => {
         useEffect(
             () => {
 
+                console.log("trigger pulled");
+
                 if (trigger === 0) {
+                    console.log("do nothing it was 0");
                     return;
                 }
 
-                let timer = setTimeout(() => { }, 0);
+                console.log("we will actually hide the splash");
 
                 (async () => {
 
                     if (getDoUseDelay()) {
-                        await new Promise(resolve => timer = setTimeout(resolve, 1000));
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
 
-                    setDisplayState(({ count, ...rest }) => ({
-                        ...rest,
-                        "count": Math.max(count - 1, 0),
+                    console.log("we do it now");
+
+                    evtDisplayState.state= {
+                        ...evtDisplayState.state,
+                        "count": Math.max(evtDisplayState.state.count - 1, 0),
                         "prevTime": Date.now()
-                    }))
+                    };
 
                 })();
-
-                return () => clearTimeout(timer);
 
             },
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,7 +163,7 @@ export const { useSplashScreen } = (() => {
             "prevTime": displayState.prevTime
         });
 
-        const { hideSplashScreen } = useHideSplashScreen({ setDisplayState });
+        const { hideSplashScreen } = useHideSplashScreen();
 
         return {
             isSplashScreenShown,
