@@ -184,7 +184,10 @@ export function getVaultClientTranslator(
 	>
 ): SecretsManagerTranslator {
 
-	const { clientType, engine, baseUri, oidcAccessToken, role } = params;
+	const { 
+		clientType, engine, 
+		//baseUri, oidcAccessToken, role 
+	} = params;
 
 
 	switch (clientType) {
@@ -192,6 +195,8 @@ export function getVaultClientTranslator(
 
 			return {
 				"initialization": [
+					//TODO: Fix and uncomment
+					/*
 					{
 						"cmd": `export VAULT_ADDR='${baseUri}'`,
 						"result": ""
@@ -200,6 +205,7 @@ export function getVaultClientTranslator(
 						"cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
 						"result": "Success! You are now authenticated!"
 					}
+					*/
 				],
 				"methods": {
 					"list": {
