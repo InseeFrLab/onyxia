@@ -51,10 +51,8 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
             "flexDirection": "column",
             "backgroundColor": theme.custom.colors.useCases.surfaces.background,
         },
-
         "header": {
             "width": "100%",
-            "paddingRight": "2%",
             "height": 64
         },
         "betweenHeaderAndFooter": {
@@ -75,6 +73,9 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
             //TODO: See if scroll delegation works if we put auto here instead of "hidden"
             "overflow": "auto",
             "paddingLeft": theme.spacing(3)
+        },
+        "generalPaddingRight": {
+            "paddingRight": "2%",
         }
 
     })
@@ -192,6 +193,7 @@ export const App = memo((props: Props) => {
                     assert(Page.routeGroup.has(route));
                     return <Page
                         route={route}
+                        className={classNames.generalPaddingRight}
                     />;
                 case SharedServices:
                     return <Page
@@ -238,7 +240,7 @@ export const App = memo((props: Props) => {
         <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
                 type="core"
-                className={classNames.header}
+                className={cx(classNames.header, classNames.generalPaddingRight)}
                 logoMaxWidth={logoMaxWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}

@@ -27,12 +27,9 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames()(
-    theme => ({
+    () => ({
         "helpIcon": {
             "marginTop": -1, //TODO: Address globally
-        },
-        "tabs": {
-            "marginRight": theme.spacing(3)
         }
     })
 );
@@ -77,8 +74,7 @@ export function Account(props: Props) {
                 </>}
             />
             <Tabs
-                className={classNames.tabs}
-                size="small"
+                size="big"
                 tabs={tabs}
                 activeTabId={route.params.tabId}
                 maxTabCount={5}

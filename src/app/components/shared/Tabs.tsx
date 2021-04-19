@@ -176,7 +176,7 @@ const { CustomButton } = (() => {
                 "boxShadow": [theme.custom.shadows[4], ...((isSelected || isFirst) ? [theme.custom.shadows[5]] : [])].join(", "),
                 "padding": (() => {
                     switch (size) {
-                        case "big": return theme.spacing(3, 2);
+                        case "big": return theme.spacing(2, 3);
                         case "small": return theme.spacing(1, 2);
                     }
                 })(),
