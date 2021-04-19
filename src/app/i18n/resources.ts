@@ -109,7 +109,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountIntegrationsTab": {
             "git section title": "Git configuration",
             "git section helper": "To make sure that, on GitHub or GitLab, you appear as the author of the commits you make from your services.",
-            "more info": "More info",
             "gitName": "Username for Git",
             "gitEmail": "Email for Git",
             "third party tokens section title": "Credentials for Gitlab, GitHub and Kaggle",
@@ -280,7 +279,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountIntegrationsTab": {
             "git section title": "Configurations Git",
             "git section helper": "Pour vous assurez que, sur GitHub et GitLab, vous apparaissiez comme l'auteur des contributions faites depuis vos services.",
-            "more info": "Plus d'informations",
             "gitName": "Nom d'utilisateur pour Git",
             "gitEmail": "Email pour Git",
             "third party tokens section title": "Utilisation des API Github et Kaggle",

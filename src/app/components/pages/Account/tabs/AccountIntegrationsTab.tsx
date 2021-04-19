@@ -88,16 +88,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
         <div className={className}>
             <AccountSectionHeader
                 title={t("git section title")}
-                helperText={<>{
-                    t("git section helper")}
-                    &nbsp;
-                    <Link
-                        href="https://stackoverflow.com/questions/51859774/commit-anonymous-on-github"
-                        target="_blank"
-                    >
-                        {t("more info")}
-                    </Link>
-                </>}
+                helperText={t("git section helper")}
             />
             {(["gitName", "gitEmail"] as const).map(key => {
 
@@ -183,7 +174,6 @@ export declare namespace AccountIntegrationsTab {
     export type I18nScheme = {
         'git section title': undefined;
         'git section helper': undefined;
-        'more info': undefined;
         'gitName': undefined;
         'gitEmail': undefined;
         'third party tokens section title': undefined;
