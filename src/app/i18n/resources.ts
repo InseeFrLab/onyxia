@@ -109,7 +109,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "gitName": "Username for Git",
             "gitEmail": "Email for Git",
             "third party tokens section title": "Credentials for Gitlab, GitHub and Kaggle",
-            "third party tokens section helper": "Use third party services without having to type in your credentials",
+            "third party tokens section helper": "Have your third party services token always available as environnement variable.",
             "personal token": "{{serviceName}} personal access token",
             "link for token creation": "Create your {{serviceName}} token.",
             "accessible as env": "Accessible withing your services as the environnement variable:"
@@ -267,8 +267,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "more info": "Plus d'informations",
             "gitName": "Nom d'utilisateur pour Git",
             "gitEmail": "Email pour Git",
-            "third party tokens section title": "Utilisation des API Gitlab, Github et Kaggle",
-            "third party tokens section helper": "Utilisez les API de services externes sans devoir renseigner vos identifants et mots de passe.",
+            "third party tokens section title": "Utilisation des API Github et Kaggle",
+            "third party tokens section helper": "Vos jetons de services tiers disponibles comme environnement de variable.",
             "personal token": "Jeton d'accès personnel {{serviceName}}",
             "link for token creation": "Crée votre jeton {{serviceName}}.",
             "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement"
