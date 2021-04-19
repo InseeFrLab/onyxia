@@ -81,7 +81,7 @@ export declare namespace Props {
 
     export type EditableText = Common & {
         type: "editable text";
-        text: string;
+        text: string | undefined;
         onRequestEdit(newText: string): void;
         onStartEdit(): void;
         evtAction: NonPostableEvt<"SUBMIT EDIT">;
@@ -91,7 +91,7 @@ export declare namespace Props {
 
     type IGeneric = Common & {
         title: string;
-        helperText?: string;
+        helperText?: ReactNode;
     };
 
     type ICopyable = Common & {
@@ -139,6 +139,9 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
         },
         "cellActions": {
             "marginRight": theme.spacing(1)
+        },
+        "noText": {
+            "color": theme.custom.colors.useCases.typography.textDisabled
         }
     })
 );
@@ -180,18 +183,22 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
     const { classNames } = useClassNames({ isFlashing });
 
     const TypographyWd = useGuaranteedMemo(() =>
-        (props: { children: NonNullable<ReactNode>; }) =>
-            <Typography variant="body1">{props.children}</Typography>,
+        (props: { children: NonNullable<ReactNode>; className?: string; }) =>
+            <Typography 
+                variant="body1"
+                className={props.className}
+            >{props.children}</Typography>,
         []
     );
 
     const IconButtonCopyToClipboard = useGuaranteedMemo(() =>
-        (props: { onClick(): void; }) =>
+        (props: { onClick(): void; disabled?: boolean; }) =>
             <Tooltip title={t("copy tooltip")}>
                 <IconButton
                     type="filterNone"
                     onClick={props.onClick}
                     fontSize="small"
+                    disabled={props.disabled ?? false}
                 />
             </Tooltip>,
         []
@@ -429,7 +436,10 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                 return <TypographyWd>{props.text}</TypographyWd>;
                             case "editable text":
                                 return !isInEditingState ?
-                                    <TypographyWd>{props.text}</TypographyWd> :
+                                        props.text===undefined ?
+                                            <TypographyWd className={classNames.noText}>{t("not yet defined")}</TypographyWd> :
+                                            <TypographyWd>{props.text}</TypographyWd> 
+                                            :
                                     <TextField
                                         defaultValue={props.text}
                                         onEscapeKeyDown={onTextFieldEscapeKeyDown}
@@ -472,6 +482,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                             fontSize="small"
                                         />
                                         <IconButtonCopyToClipboard
+                                            disabled={props.text === undefined}
                                             onClick={onEditableTextRequestCopy}
                                         />
                                     </>
@@ -547,6 +558,7 @@ export declare namespace AccountField {
         'copy tooltip': undefined;
         'service password helper text': undefined;
         'OIDC Access token helper text': { when: string; };
+        'not yet defined': undefined;
     };
 
 }

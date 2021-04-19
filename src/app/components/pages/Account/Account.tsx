@@ -2,6 +2,7 @@
 
 import { Tabs } from "../../shared/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
+import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
@@ -86,7 +87,7 @@ export function Account(props: Props) {
                 {(() => {
                     switch (route.params.tabId) {
                         case "infos": return <AccountInfoTab />;
-                        case "third-party-integration": return null;
+                        case "third-party-integration": return <AccountIntegrationsTab />;
                         case "storage": return null;
                         case "user-interface": return null;
                     }
