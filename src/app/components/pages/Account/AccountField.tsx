@@ -509,12 +509,14 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                             case "OIDC Access token":
                                 return (
                                     <>
+                                        {/*
                                         <IconButton
                                             type="replay"
                                             fontSize="small"
                                             disabled={props.isLocked}
                                             onClick={props.onRequestOidcAccessTokenRenewal}
                                         />
+                                        */}
                                         <IconButtonCopyToClipboard
                                             onClick={onRequestCopy}
                                         />
