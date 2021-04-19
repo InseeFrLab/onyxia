@@ -30,7 +30,7 @@ export const ServicePassword = getStory(id<Props.ServicePassword>({
 export const S3Scripts = getStory(id<Props.S3Scripts<string>>({
     className,
     "type": "s3 scripts",
-    "scriptList": [ 
+    "scriptLabels": [ 
         "R (aws.S3)", 
         "R (paws)", "Python (s3fs)", 
         "Environnement variables"

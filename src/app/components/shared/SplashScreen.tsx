@@ -70,22 +70,15 @@ export const { useSplashScreen } = (() => {
         useEffect(
             () => {
 
-                console.log("trigger pulled");
-
                 if (trigger === 0) {
-                    console.log("do nothing it was 0");
                     return;
                 }
-
-                console.log("we will actually hide the splash");
 
                 (async () => {
 
                     if (getDoUseDelay()) {
                         await new Promise(resolve => setTimeout(resolve, 1000));
                     }
-
-                    console.log("we do it now");
 
                     evtDisplayState.state= {
                         ...evtDisplayState.state,
