@@ -17,6 +17,7 @@ import { Register } from "app/components/KcApp/Register";
 import { AccountField } from "app/components/pages/Account/AccountField";
 import { Account } from "app/components/pages/Account/Account";
 import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
+import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -42,6 +43,7 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountField })]: Reflect<AccountField.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
+    [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -100,14 +102,27 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             against the different services offered on the platform`,
             "ip address": "IP Address"
         },
+        "AccountIntegrationsTab": {
+            "git section title": "Git configuration",
+            "git section helper": "To make sure that, on GitHub or GitLab, you appear as the author of the commits you make from your services.",
+            "more info": "More info",
+            "gitName": "Username for Git",
+            "gitEmail": "Email for Git",
+            "third party tokens section title": "Credentials for Gitlab, GitHub and Kaggle",
+            "third party tokens section helper": "Use third party services without having to type in your credentials",
+            "personal token": "{{serviceName}} personal access token",
+            "link for token creation": "Create your {{serviceName}} token.",
+            "accessible as env": "Accessible withing your services as the environnement variable:"
+        },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
             "language": "Change language",
             "s3 scripts": "Init script",
             "service password": "Password for your services",
-            "service password helper text": "This password is used to connect to all services.",
+            "service password helper text": "You need this password to connect to your services. It is frequently renewed and generated automatically",
             "OIDC Access token": "OIDC Personal access token",
-            "OIDC Access token helper text": `Valid until {{when}}`
+            "OIDC Access token helper text": `Valid until {{when}}`,
+            "not yet defined": "Not yet defined"
         },
         "Register": {
             "required field": "Required field",
@@ -245,14 +260,29 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             identifier sur les différents servces offert par la platforme`,
             "ip address": "Addresse IP"
         },
+        "AccountIntegrationsTab": {
+            "git section title": "Configurations Git",
+            //"git section helper": "Ces informations vous permettend de vous identifier dans votre code source lors des modifications depuis les services.",
+            "git section helper": "Pour vous assurez que, sur GitHub et GitLab, vous apparaissiez comme l'auteur des contributions faites depuis vos services.",
+            "more info": "Plus d'informations",
+            "gitName": "Nom d'utilisateur pour Git",
+            "gitEmail": "Email pour Git",
+            "third party tokens section title": "Utilisation des API Gitlab, Github et Kaggle",
+            "third party tokens section helper": "Utilisez les API de services externes sans devoir renseigner vos identifants et mots de passe.",
+            "personal token": "Jeton d'accès personnel {{serviceName}}",
+            "link for token creation": "Crée votre jeton {{serviceName}}.",
+            "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement"
+        },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",
             "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
-            "service password helper text": "Ce mot de passe est utilisé pour se connecter à tous les services.",
+            "service password helper text": `Ce mot de passe vous est demander pour vous connecter à tous vos services.
+            Il est généré automatiquent et renouveler régulièrement.`,
             "OIDC Access token": "Jeton d'accès personnel OIDC",
-            "OIDC Access token helper text": `Valide jusqu'a {{when}}`
+            "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
+            "not yet defined": "Non définie"
         },
         "Register": {
             "required field": "Champ requis",

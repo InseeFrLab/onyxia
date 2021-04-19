@@ -1,5 +1,6 @@
 
 import { memo } from "react";
+import type { ReactNode } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
@@ -9,7 +10,7 @@ import { cx } from "tss-react";
 export type Props = {
     className?: string;
     title: string;
-    helperText?: string;
+    helperText?: ReactNode;
     tooltipText?: string;
 };
 
