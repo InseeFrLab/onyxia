@@ -22,6 +22,7 @@ import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useValidUntil } from "app/i18n/useMoment";
+import { cx } from "tss-react";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -103,6 +104,9 @@ const flashDurationMs = 600;
 
 const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
     (theme, { isFlashing }) => ({
+        "root": {
+            "marginBottom": theme.spacing(2)
+        },
         "mainLine": {
             "display": "flex",
             "& > div": {
@@ -385,7 +389,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
 
 
     return (
-        <div className={className}>
+        <div className={cx(classNames.root,className)}>
             <div className={classNames.mainLine}>
                 <div className={classNames.cellTitle}>
                     <Typography variant="subtitle1" >
