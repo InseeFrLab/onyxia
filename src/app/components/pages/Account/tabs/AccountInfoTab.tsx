@@ -9,7 +9,7 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
 import { getValidatedEnv } from "app/validatedEnv";
-import { join as pathJoin } from "path";
+import { urlJoin } from 'url-join-ts';
 import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks";
 import { usePublicIp } from "app/tools/usePublicIp";
@@ -114,7 +114,7 @@ export const AccountInfoTab = memo((props: Props) => {
             {keycloakConfig !== undefined &&
                 <Link
                     className={classNames.link}
-                    href={pathJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
+                    href={urlJoin("https://", keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
                     target="_blank"
                 >
                     {t("password")}

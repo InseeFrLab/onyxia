@@ -1,7 +1,7 @@
 {
   "homepage": "https://datalab.sspcloud.fr",
   "name": "onyxia-ui",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "license": "MIT",
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.11",
@@ -88,7 +88,8 @@
     "shell-quote": "^1.7.2",
     "tss-react": "^0.0.11",
     "type-route": "^0.6.0",
-    "typeface-roboto": "^0.0.75"
+    "typeface-roboto": "^0.0.75",
+    "url-join-ts": "^1.0.5"
   },
   "scripts": {
     "start": "react-app-rewired start",
