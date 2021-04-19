@@ -114,7 +114,7 @@ export const AccountInfoTab = memo((props: Props) => {
             {keycloakConfig !== undefined &&
                 <Link
                     className={classNames.link}
-                    href={urlJoin("https://", keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
+                    href={urlJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
                     target="_blank"
                 >
                     {t("password")}
