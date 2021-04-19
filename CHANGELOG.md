@@ -1,3 +1,12 @@
+## **0.8.0** (2021-04-19)  
+  
+- Release new Account page and fix in minio file explorer  
+- Fix direct url for myfiles  
+- Working draft of account  
+- Make the tooltip work on Icons  
+- Impl AccountSectionHeader  
+- Change border in strories for more confort    
+  
 ### **0.7.49** (2021-04-16)  
   
 - When multiple service url, take the first in alphabetical order  
