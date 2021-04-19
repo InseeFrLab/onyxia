@@ -19,6 +19,7 @@ import { Account } from "app/components/pages/Account/Account";
 import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
+import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -46,6 +47,7 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
     [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
+    [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -123,6 +125,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "init script section title": "To access your storage from your personal computer",
             "init script section helper": "Download or copy in clipboard the init script in the programing language of your choosing.",
             "valid until": "Valid until {{when}}"
+        },
+        "AccountUserInterfaceTab": {
+            "title": "Interface preferences",
+            "enable dark mode": "Enable dark mode",
+            "enable beta": "Enable beta-test mode"
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
@@ -289,6 +296,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "init script section title": "Pour accéder au stockage en dehors de vos services",
             "init script section helper": "Téléchargez ou copiez dans les presses papier le script d'initialisation dans le langage de programmation de votre choix.",
             "valid until": "Valides jusqu'a {{when}}"
+        },
+        "AccountUserInterfaceTab": {
+            "title": "Configurer le mode d'interface",
+            "enable dark mode": "Activer le mode sombre",
+            "enable beta": "Activer le mode béta-testeur",
         },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",
