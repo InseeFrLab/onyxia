@@ -1,3 +1,7 @@
+### **0.8.3** (2021-04-19)  
+  
+- Fix update password link    
+  
 ### **0.8.2** (2021-04-19)  
   
 - Fix url renew password    
