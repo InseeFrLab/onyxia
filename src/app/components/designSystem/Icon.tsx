@@ -2,6 +2,7 @@
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
+import type { MouseEventHandler } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import { ReactComponent as TourSvg } from "app/assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "app/assets/svg/Services.svg";
@@ -36,6 +37,8 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import GetApp from "@material-ui/icons/GetApp";
 import Replay from "@material-ui/icons/Replay";
 import Help from "@material-ui/icons/Help";
+import Search from "@material-ui/icons/Search";
+import Cancel from "@material-ui/icons/Cancel";
 
 export type SvgTypes =
     "tour" | "services" | "secrets" | "account" | "home" | "trainings" | "files" |
@@ -46,7 +49,7 @@ export type MaterialType =
     "check" | "expandMore" | "attachMoney" | "chevronLeft" |
     "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4" |
     "translate" | "visibility" | "visibilityOff" | "getApp" | "replay" |
-    "help";
+    "help" | "search" | "cancel";
 
 //NOTE: Ensure there is not overlap between the types
 doExtends<SvgTypes & MaterialType, never>();
@@ -62,13 +65,16 @@ export type Props = {
     /** TODO: Only works for mui icons!!! Enable to make the icon larger or smaller */
     fontSize?: "default" | "inherit" | "small" | "large";
 
+    onClick?: MouseEventHandler<SVGSVGElement> | null;
 
 };
 
 export const defaultProps: Optional<Props> = {
     "className": null,
     "color": "textPrimary",
-    "fontSize": "default"
+    "fontSize": "default",
+    "onClick": null
+
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -94,6 +100,7 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
         type, 
         fontSize, 
         className,
+        onClick,
         //For the forwarding, rest should be empty (typewise),
         color,
         children,
@@ -124,6 +131,7 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
             className={cx(classNames.root, className)}
             fontSize={fontSize}
             children={children}
+            onClick={onClick ?? undefined}
             {...rest}
         />;
     }
@@ -132,6 +140,7 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
 
     return <SvgIcon
         ref={ref}
+        onClick={onClick ?? undefined}
         className={cx(classNames.root, className)}
         component={(() => {
             switch (svgType) {
@@ -158,6 +167,8 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
                 case "getApp": return GetApp;
                 case "replay": return Replay;
                 case "help": return Help;
+                case "search": return Search;
+                case "cancel": return Cancel;
             }
         })()}
         fontSize={fontSize}

@@ -20,6 +20,7 @@ import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoT
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
+import { SearchBar } from "app/components/pages/Catalog/SearchBar";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -48,6 +49,7 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
     [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
+    [symToStr({ SearchBar })]: Reflect<SearchBar.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -249,6 +251,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "projectButton": "Contribute to the project",
             "warningTitle": "Precautions for use",
             "warningText": "The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",
+        },
+        "SearchBar": {
+            "search": "Search"
         }
     },
     "fr": {
@@ -418,6 +423,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "projectButton": "Contribuer au projet",
             "warningTitle": "Précautions d’usage",
             "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
+        },
+        "SearchBar": {
+            "search": "Rechercher"
         }
         /* spell-checker: enable */
     }
