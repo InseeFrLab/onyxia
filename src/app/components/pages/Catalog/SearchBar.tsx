@@ -8,6 +8,7 @@ import { IconButton } from "app/components/designSystem/IconButton";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
 import { Typography } from "app/components/designSystem/Typography";
+import { typography } from "app/theme/typography";
 
 export type Props = {
     className?: string;
@@ -19,12 +20,12 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "root": {
             "borderRadius": 8,
             "overflow": "hidden",
+            "boxShadow": theme.custom.shadows[1],
             "& > div": {
                 "display": "flex",
                 "alignItems": "center",
                 "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
                 "cursor": isActive ? undefined : "pointer",
-                "boxShadow": theme.custom.shadows[1],
                 "overflow": "hidden",
                 "border": "solid 2px transparent",
                 "&:hover": {
@@ -33,7 +34,13 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
             }
         },
         "input": {
-            "flex": 1
+            "flex": 1,
+            "caretColor": theme.custom.colors.useCases.typography.textFocus,
+            "fontFamily": typography.fontFamily,
+            ...typography.body1,
+            "outline": "none",
+            "borderWidth":0,
+            "border":"none"
         },
         "icon": {
             "margin": `${theme.spacing(1) - 2}px ${theme.spacing(2) - 2}px`,
@@ -97,14 +104,17 @@ export const SearchBar = memo((props: Props) => {
 
             switch (key) {
                 case "Enter":
+                    if (search === "") {
+                        setIsActive(false);
+                    }
                     break;
                 case "Escape":
                     setSearch("");
+                    setIsActive(false);
                     break;
             }
 
-            if (search !== "") return;
-            setIsActive(false);
+            inputRef.current?.blur();
 
         }
     );
@@ -139,12 +149,16 @@ export const SearchBar = memo((props: Props) => {
                                 onChange={onInputChange}
                                 onKeyDown={onInputKeyDown}
                                 spellCheck={false}
+                                placeholder={t("search")}
                             />
+                            {
                             <IconButton
+                                fontSize="small"
                                 type="cancel"
                                 disabled={search === ""}
                                 onClick={onClearButtonClick}
                             />
+                            }
                         </>
                         :
                         <Typography
