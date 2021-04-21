@@ -452,6 +452,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                         isSubmitAllowed={!props.isLocked}
                                         inputProps_autoFocus={true}
                                         selectAllTextOnFocus={true}
+                                        inputProps_spellCheck={false}
                                     />;
                         }
                     })()}
