@@ -11,6 +11,12 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 
+export const VueNoIcon = getStory({
+    ...defaultProps,
+    "children": "Default",
+    ...logCallbacks(["onClick"])
+});
+
 export const Vue1 = getStory({
     ...defaultProps,
     "children": "Foo bar",

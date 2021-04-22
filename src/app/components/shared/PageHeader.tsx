@@ -58,8 +58,7 @@ export const PageHeader = memo((props: Props) => {
         <div className={cx(classNames.root, className)}>
             <Typography variant="h2" className={classNames.text1}>
                 <Icon type={icon} fontSize="large" className={classNames.icon} />
-                {/* //TODO: Address the fact that our font does not have the same box size*/}
-                <span style={{ "paddingTop": "6px", /*"border": "1px solid black"*/ }}>{text1}</span>
+                {text1}
             </Typography>
             <Typography variant="h5" className={classNames.text2}>{text2}</Typography>
             <Typography variant="body1">{text3}</Typography>

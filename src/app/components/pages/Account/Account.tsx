@@ -10,7 +10,6 @@ import type { Route } from "type-route";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "app/i18n/useTranslations";
-import { createUseClassNames } from "app/theme/useClassNames";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
@@ -28,14 +27,6 @@ export type Props = {
     route: Route<typeof Account.routeGroup>;
 };
 
-const { useClassNames } = createUseClassNames()(
-    () => ({
-        "helpIcon": {
-            "marginTop": -1, //TODO: Address globally
-        }
-    })
-);
-
 export function Account(props: Props) {
 
     const { className, route } = props;
@@ -51,8 +42,6 @@ export function Account(props: Props) {
         (tabId: AccountTabId) => routes.account({ tabId }).push()
     );
 
-    const { classNames } = useClassNames({});
-
     return (
         <div className={className}>
             <PageHeader
@@ -66,7 +55,6 @@ export function Account(props: Props) {
                     &nbsp;
                     <Tooltip title={t("personal tokens tooltip")}>
                         <Icon
-                            className={classNames.helpIcon}
                             type="help"
                             fontSize="small"
                         />

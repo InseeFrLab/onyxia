@@ -26,7 +26,6 @@ const { useClassNames } = createUseClassNames()(
             "marginTop": theme.spacing(1)
         },
         "helpIcon": {
-            "marginTop": 1, //TODO: Address globally
             "marginLeft": theme.spacing(1)
         }
     })
