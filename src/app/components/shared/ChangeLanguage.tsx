@@ -88,10 +88,9 @@ export const ChangeLanguage = memo((props: Props) => {
                     data-ga-event-action="language"
                 >
                     {doShowIcon && <Icon type="translate" />}
-                    {/* TODO: See todo in icon button */}
                     <Typography
                         variant="subtitle1"
-                        className={css({ "paddingTop": 3, "marginLeft": theme.spacing(1) })}
+                        className={css({ "marginLeft": theme.spacing(1) })}
                     >
                         {lngPrettyPrintByLng[lng].toUpperCase()}
                     </Typography>

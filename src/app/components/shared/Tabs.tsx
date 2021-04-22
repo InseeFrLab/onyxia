@@ -224,10 +224,7 @@ const { CustomButton } = (() => {
                                             case "small": return "body1";
                                         }
                                     })()}
-                                    className={cx(
-                                        css({ "marginTop": 2 }), //TODO: address globally
-                                        classNames.typo
-                                    )}
+                                    className={classNames.typo}
                                 >
                                     {props.text}
                                 </Typography>

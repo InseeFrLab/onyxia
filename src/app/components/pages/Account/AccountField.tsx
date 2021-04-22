@@ -111,10 +111,7 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
             "display": "flex",
             "& > div": {
                 "display": "flex",
-                "alignItems": "center",
-                "& .MuiTypography-root": {
-                    "marginTop": 2 //TODO: address globally
-                }
+                "alignItems": "center"
             },
             "marginBottom": theme.spacing(1)
         },

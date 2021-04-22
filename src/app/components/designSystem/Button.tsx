@@ -168,10 +168,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
             id={id ?? undefined}
             {...rest}
         >
-            {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-            {/*<span className={css({ "paddingTop": 2 })} >*/}
-                {children}
-            {/*</span>*/}
+            {children}
         </MuiButton>
     );
 
