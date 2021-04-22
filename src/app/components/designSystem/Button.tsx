@@ -1,7 +1,7 @@
 
 import { forwardRef, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { css, cx } from "tss-react";
+import { cx } from "tss-react";
 import MuiButton from "@material-ui/core/Button";
 import type { Optional } from "evt/tools/typeSafety";
 import { noUndefined } from "app/tools/noUndefined";
@@ -95,11 +95,12 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                     "backgroundColor": disabled ?
                         theme.custom.colors.useCases.buttons.actionDisabledBackground :
                         "transparent",
+                    "height": theme.spacing(4),
                     "borderRadius":  20,
                     "borderWidth": "2px",
                     "borderStyle": "solid",
                     "borderColor": disabled ? "transparent" : hoverBackgroundColor,
-                    "padding": theme.spacing(1, 2),
+                    "padding": theme.spacing(0, 2),
                     "&.MuiButton-text": {
                         "color": textColor({ color, disabled })
                     },
@@ -168,9 +169,9 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
             {...rest}
         >
             {/* TODO: Put text in label props or address the problem globally, see the todo in page header */}
-            <span className={css({ "paddingTop": 2 })} >
+            {/*<span className={css({ "paddingTop": 2 })} >*/}
                 {children}
-            </span>
+            {/*</span>*/}
         </MuiButton>
     );
 
