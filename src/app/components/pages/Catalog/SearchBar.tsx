@@ -7,7 +7,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
-import { Typography } from "app/components/designSystem/Typography";
 import { typography } from "app/theme/typography";
 
 export type Props = {
@@ -46,9 +45,9 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
             "margin": `${theme.spacing(1) - 2}px ${theme.spacing(2) - 2}px`,
         },
         "searchLabel": {
+            "display": "block",
             "flex": 1,
-            "textTransform": "uppercase",
-            "margin": 0
+            ...typography.button
         }
     })
 );
@@ -161,12 +160,9 @@ export const SearchBar = memo((props: Props) => {
                             }
                         </>
                         :
-                        <Typography
-                            className={classNames.searchLabel}
-                            variant="h6"
-                        >
+                        <span className={classNames.searchLabel} >
                             {t("search")}
-                        </Typography>
+                        </span>
                 }
             </div>
         </div>
