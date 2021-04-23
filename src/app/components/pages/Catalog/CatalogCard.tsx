@@ -15,7 +15,9 @@ const { useClassNames } = createUseClassNames()(
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "&:hover": {
                 "boxShadow": theme.custom.shadows[5]
-            }
+            },
+            "display": "flex",
+            "flexDirection": "column"
         },
         "aboveDivider": {
             "padding": theme.spacing(2, 3),
@@ -27,10 +29,16 @@ const { useClassNames } = createUseClassNames()(
         },
         "belowDivider": {
             "padding": theme.spacing(3),
-            "paddingTop": theme.spacing(2)
+            "paddingTop": theme.spacing(2),
+            "flex": 1,
+            "display": "flex",
+            "flexDirection": "column",
+            "overflow": "hidden"
         },
         "body": {
-            "margin": 0
+            "margin": 0,
+            "flex": 1,
+            "overflow": "auto"
         },
         "buttonsWrapper": {
             "display": "flex",
@@ -81,18 +89,17 @@ export const CatalogCard = memo((props: Props) => {
 
             </div>
             <div className={classNames.belowDivider}>
-                <Typography
-                    className={classNames.body}
-                    variant="body1"
-                >
-                    {serviceDescription}
-                </Typography>
+                <div className={classNames.body} >
+                    <Typography variant="body1" >
+                        {serviceDescription}
+                    </Typography>
+                </div>
                 <div className={classNames.buttonsWrapper}>
                     {onRequestLearnMore !== undefined &&
                         <Button onClick={onRequestLearnMore}>{t("learn more")}</Button>}
-                    <Button 
+                    <Button
                         className={classNames.launchButton}
-                        color="secondary" 
+                        color="secondary"
                         onClick={onRequestLaunch}
                     >{t("launch")}</Button>
                 </div>
