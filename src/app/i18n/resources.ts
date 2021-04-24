@@ -22,6 +22,7 @@ import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountSt
 import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
 import { SearchBar } from "app/components/pages/Catalog/SearchBar";
 import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
+import { CatalogCards } from "app/components/pages/Catalog/CatalogCards";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -52,6 +53,7 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
     [symToStr({ SearchBar })]: Reflect<SearchBar.I18nScheme>(),
     [symToStr({ CatalogCard })]: Reflect<CatalogCard.I18nScheme>(),
+    [symToStr({ CatalogCards })]: Reflect<CatalogCards.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -260,6 +262,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "CatalogCard": {
             "launch": "Launch",
             "learn more": "Learn more"
+        },
+        "CatalogCards": {
+            "show more": "Show more"
         }
     },
     "fr": {
@@ -436,6 +441,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "CatalogCard": {
             "launch": "Lancer",
             "learn more": "En savoir plus"
+        },
+        "CatalogCards": {
+            "show more": "Afficher tous"
         }
         /* spell-checker: enable */
     }

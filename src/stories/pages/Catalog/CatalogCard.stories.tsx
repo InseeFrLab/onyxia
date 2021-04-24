@@ -5,7 +5,7 @@ import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
-import { css } from "tss-react";
+import { css, cx } from "tss-react";
 
 
 const { meta, getStory } = getStoryFactory({
@@ -52,5 +52,22 @@ export const VueNoLearnMore = getStory({
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
     "onRequestLearnMore": undefined
+});
+
+export const VueScroll = getStory({
+    "className": cx(className, css({ "height": 308 })),
+    "serviceImageUrl": rstudioImg,
+    "serviceTitle": "Service title",
+    /* spell-checker: disable */
+    "serviceDescription": `
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Pellentesque vel bibendum ex. Interdum et malesuada fames 
+    ac ante ipsum primis in faucibus. Donec volutpat sem quis 
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Pellentesque vel bibendum ex. Interdum et malesuada fames 
+    ac ante ipsum primis in faucibus. Donec volutpat sem quis 
+    justo varius`,
+    /* spell-checker: enable */
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
