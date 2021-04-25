@@ -264,7 +264,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "learn more": "Learn more"
         },
         "CatalogCards": {
-            "show more": "Show more"
+            "show more": "Show more",
+            "no service found": "No service found",
+            "no result found": "No result found for {{forWhat}}",
+            "check spelling": "Please check your spelling or try widening your search.",
+            "go back": "Back to main services"
         }
     },
     "fr": {
@@ -443,7 +447,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "learn more": "En savoir plus"
         },
         "CatalogCards": {
-            "show more": "Afficher tous"
+            "show more": "Afficher tous",
+            "no service found": "Service non trouvé",
+            "no result found": "Aucun résultat trouvé pour {{forWhat}}",
+            "check spelling": `Vérifiez que le nom du service est correctement 
+            orthographié ou essayez d'élargir votre recherche.`,
+            "go back": "Retourner aux principaux services"
         }
         /* spell-checker: enable */
     }

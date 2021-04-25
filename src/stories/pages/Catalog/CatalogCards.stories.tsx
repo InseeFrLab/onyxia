@@ -17,9 +17,12 @@ export default meta;
 
 const className = css({ "width": 1550, "height": 700 });
 
+
+const keywords = [ "python", "RStudio", "Elastic search" ];
+
 const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
     "serviceImageUrl": rstudioImg,
-    "serviceTitle": `Service title ${i}`,
+    "serviceTitle": `${keywords[i%keywords.length]} ${i}`,
     /* spell-checker: disable */
     "serviceDescription": 
     "Service description" + (
@@ -42,6 +45,7 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
 export const VueDefault = getStory({
     className,
     cardsContent,
+    "search": "",
     /* spell-checker: enable */
-    ...logCallbacks(["onRequestLaunch", "onRequestLearnMore"])
+    ...logCallbacks(["onRequestLaunch", "onRequestLearnMore", "onClearSearch"])
 });

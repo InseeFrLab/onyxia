@@ -7,6 +7,9 @@ import { CatalogCard } from "./CatalogCard";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Button } from "app/components/designSystem/Button";
 import { useConstCallback } from "powerhooks";
+import Link from "@material-ui/core/Link";
+import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
+import { Typography } from "app/components/designSystem/Typography";
 
 export type Params<ServiceTitle extends string> = {
     className?: string;
@@ -16,9 +19,10 @@ export type Params<ServiceTitle extends string> = {
         serviceDescription: string;
         doDisplayLearnMore: boolean;
     }[];
-    searchTerm: string;
+    search: string;
     onRequestLaunch(serviceTitle: ServiceTitle): void;
     onRequestLearnMore(serviceTitle: ServiceTitle): void;
+    onClearSearch(): void;
 };
 
 const cardCountPerLine = 3;
@@ -34,6 +38,9 @@ const { useClassNames } = createUseClassNames()(
             "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
             "gridAutoRows": "1fr",
             "gap": theme.spacing(3),
+        },
+        "noMatches": {
+            "height": "1OO%"
         }
     })
 );
@@ -41,7 +48,7 @@ const { useClassNames } = createUseClassNames()(
 export const CatalogCards = memo(
     <ServiceTitle extends string = string>(props: Params<ServiceTitle>) => {
 
-        const { className, cardsContent, searchTerm } = props;
+        const { className, cardsContent, search, onClearSearch } = props;
 
         const { classNames } = useClassNames({});
 
@@ -54,51 +61,60 @@ export const CatalogCards = memo(
 
         const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
 
+
         useEffect(
-            () => setIsRevealed(searchTerm !== ""),
-            [searchTerm]
+            () => setIsRevealed(search !== ""),
+            [search]
         );
+
+        const filteredCards = cardsContent
+            .slice(0, isRevealed ? cardsContent.length : 5)
+            .filter(({
+                serviceTitle,
+                serviceDescription,
+            }) =>
+                [
+                    serviceTitle,
+                    serviceDescription
+                ].map(
+                    str => str.toLowerCase()
+                        .includes(search.toLowerCase())
+                ).includes(true)
+            )
+
 
         return (
             <div className={cx(classNames.root, className)}>
                 {
-                    cardsContent
-                        .slice(0, isRevealed ? cardsContent.length : 5)
-                        .filter(({
-                            serviceTitle,
-                            serviceDescription,
-                        }) =>
-                            [
-                                serviceTitle,
-                                serviceDescription
-                            ].map(
-                                str => str.toLowerCase()
-                                    .includes(searchTerm.toLowerCase())
-                            )
-                                .includes(true)
-                        )
-                        .map(
-                            ({
-                                serviceTitle,
-                                serviceImageUrl,
-                                serviceDescription,
-                                doDisplayLearnMore
-                            }) =>
-                                <CatalogCard
-                                    key={serviceTitle}
-                                    serviceImageUrl={serviceImageUrl}
-                                    serviceTitle={serviceTitle}
-                                    serviceDescription={serviceDescription}
-                                    onRequestLaunch={
-                                        onRequestActionFactory(serviceTitle, "onRequestLaunch")
-                                    }
-                                    onRequestLearnMore={
-                                        !doDisplayLearnMore ?
-                                            undefined :
+                    filteredCards.length === 0 ?
+                        <NoMatches
+                            className={classNames.noMatches}
+                            search={search}
+                            onGoBackClick={onClearSearch}
+                        /> :
+                        filteredCards
+                            .map(
+                                ({
+                                    serviceTitle,
+                                    serviceImageUrl,
+                                    serviceDescription,
+                                    doDisplayLearnMore
+                                }) =>
+                                    <CatalogCard
+                                        key={serviceTitle}
+                                        serviceImageUrl={serviceImageUrl}
+                                        serviceTitle={serviceTitle}
+                                        serviceDescription={serviceDescription}
+                                        onRequestLaunch={
                                             onRequestActionFactory(serviceTitle, "onRequestLaunch")
-                                    }
-                                />
-                        )
+                                        }
+                                        onRequestLearnMore={
+                                            !doDisplayLearnMore ?
+                                                undefined :
+                                                onRequestActionFactory(serviceTitle, "onRequestLaunch")
+                                        }
+                                    />
+                            )
                 }
                 {!isRevealed && <CardShowMore
                     leftToShowCount={cardsContent.length - 5}
@@ -113,6 +129,11 @@ export declare namespace CatalogCards {
 
     export type I18nScheme = {
         'show more': undefined;
+        'no service found': undefined;
+        'no result found': { forWhat: string; }
+        'check spelling': undefined;
+        'go back': undefined;
+
     };
 }
 
@@ -156,5 +177,62 @@ const { CardShowMore } = (() => {
 
     return { CardShowMore };
 
+
+})();
+
+const { NoMatches } = (() => {
+
+    type Props = {
+        className: string;
+        search: string;
+        onGoBackClick(): void;
+    };
+
+    const { useClassNames } = createUseClassNames()(
+        () => ({
+            "root": {
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center"
+            },
+            "innerDiv": {
+                "textAlign": "center"
+            },
+            "svg": {
+                "width": 100
+            }
+        })
+    );
+
+    const NoMatches = memo(
+        (props: Props) => {
+
+            const { className, search, onGoBackClick } = props;
+
+            const { classNames } = useClassNames({});
+
+            const { t } = useTranslation("CatalogCards");
+
+
+            return (
+                <div className={cx(classNames.root, className)}>
+
+                    <div className={classNames.innerDiv}>
+                        <ServiceNotFoundSvg className={classNames.svg} />
+                        <Typography>{t("no service found")}</Typography>
+                        <Typography>{t("no result found", { "forWhat": search })}</Typography>
+                        <Typography>{t("check spelling")}</Typography>
+                        <Link onClick={onGoBackClick}>{t("go back")}</Link>
+                    </div>
+
+                </div>
+
+
+            );
+
+        }
+    );
+
+    return { NoMatches };
 
 })();
