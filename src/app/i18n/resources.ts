@@ -268,7 +268,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no service found": "No service found",
             "no result found": "No result found for {{forWhat}}",
             "check spelling": "Please check your spelling or try widening your search.",
-            "go back": "Back to main services"
+            "go back": "Back to main services",
+            "main services": "Main services",
+            "all services": "All services",
+            "search results": "Search result"
         }
     },
     "fr": {
@@ -452,7 +455,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no result found": "Aucun résultat trouvé pour {{forWhat}}",
             "check spelling": `Vérifiez que le nom du service est correctement 
             orthographié ou essayez d'élargir votre recherche.`,
-            "go back": "Retourner aux principaux services"
+            "go back": "Retourner aux principaux services",
+            "main services": "Principaux services",
+            "all services": "Tous les services",
+            "search results": "Résultats de la recherche"
         }
         /* spell-checker: enable */
     }
