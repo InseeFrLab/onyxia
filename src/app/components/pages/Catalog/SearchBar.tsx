@@ -8,10 +8,14 @@ import { IconButton } from "app/components/designSystem/IconButton";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
 import { typography } from "app/theme/typography";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
+
 
 export type Props = {
     className?: string;
     onSearchChange(search: string): void;
+    evtAction: NonPostableEvt<{ action: "SET SEARCH"; search: string; }>;
 };
 
 const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
@@ -54,7 +58,7 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
 
 export const SearchBar = memo((props: Props) => {
 
-    const { className, onSearchChange } = props;
+    const { className, onSearchChange, evtAction } = props;
 
     const [isActive, setIsActive] = useState(false);
 
@@ -123,6 +127,14 @@ export const SearchBar = memo((props: Props) => {
         setIsActive(false)
     });
 
+    useEvt(
+        ctx => evtAction.attach(
+            ctx,
+            ({ search }) => setSearch(search)
+        ),
+        [evtAction]
+    );
+
     return (
         <div
             ref={rootRef}
@@ -151,12 +163,12 @@ export const SearchBar = memo((props: Props) => {
                                 placeholder={t("search")}
                             />
                             {
-                            <IconButton
-                                fontSize="small"
-                                type="cancel"
-                                disabled={search === ""}
-                                onClick={onClearButtonClick}
-                            />
+                                <IconButton
+                                    fontSize="small"
+                                    type="cancel"
+                                    disabled={search === ""}
+                                    onClick={onClearButtonClick}
+                                />
                             }
                         </>
                         :

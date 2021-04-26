@@ -1,5 +1,5 @@
 
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { useCallbackFactory } from "powerhooks";
@@ -27,20 +27,22 @@ export type Params<ServiceTitle extends string> = {
 
 const cardCountPerLine = 3;
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
+const { useClassNames } = createUseClassNames<{ filteredCardCount: number; }>()(
+    (theme, { filteredCardCount }) => ({
         "root": {
             //Or set by the parent,
             //it must be constrained or the scroll will not work
             "height": "100%",
             "overflow": "auto",
-            "display": "grid",
-            "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
-            "gridAutoRows": "1fr",
-            "gap": theme.spacing(3),
+            ...(filteredCardCount === 0 ? {} : {
+                "display": "grid",
+                "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
+                "gridAutoRows": "1fr",
+                "gap": theme.spacing(3),
+            })
         },
         "noMatches": {
-            "height": "1OO%"
+            "height": "100%"
         }
     })
 );
@@ -50,7 +52,6 @@ export const CatalogCards = memo(
 
         const { className, cardsContent, search, onClearSearch } = props;
 
-        const { classNames } = useClassNames({});
 
         const onRequestActionFactory = useCallbackFactory(
             ([serviceTitle, action]: [ServiceTitle, "onRequestLaunch" | "onRequestLearnMore"]) =>
@@ -67,21 +68,27 @@ export const CatalogCards = memo(
             [search]
         );
 
-        const filteredCards = cardsContent
-            .slice(0, isRevealed ? cardsContent.length : 5)
-            .filter(({
-                serviceTitle,
-                serviceDescription,
-            }) =>
-                [
+        const filteredCards = useMemo(
+            () => cardsContent
+                .slice(0, isRevealed ? cardsContent.length : 5)
+                .filter(({
                     serviceTitle,
-                    serviceDescription
-                ].map(
-                    str => str.toLowerCase()
-                        .includes(search.toLowerCase())
-                ).includes(true)
-            )
+                    serviceDescription,
+                }) =>
+                    [
+                        serviceTitle,
+                        serviceDescription
+                    ].map(
+                        str => str.toLowerCase()
+                            .includes(search.toLowerCase())
+                    ).includes(true)
+                ),
+            [cardsContent, isRevealed, search]
+        );
 
+        const { classNames } = useClassNames({ 
+            "filteredCardCount": filteredCards.length 
+        });
 
         return (
             <div className={cx(classNames.root, className)}>
@@ -189,17 +196,27 @@ const { NoMatches } = (() => {
     };
 
     const { useClassNames } = createUseClassNames()(
-        () => ({
+        theme => ({
             "root": {
                 "display": "flex",
                 "alignItems": "center",
                 "justifyContent": "center"
             },
             "innerDiv": {
-                "textAlign": "center"
+                "textAlign": "center",
+                "maxWidth": 500
             },
             "svg": {
-                "width": 100
+                "fill": theme.custom.colors.palette.midnightBlue.light3,
+                "width": 100,
+                "margin": 0
+            },
+            "h2": {
+                "margin": theme.spacing(4, 0)
+            },
+            "typo": {
+                "marginBottom": theme.spacing(1),
+                "color": theme.custom.colors.palette.whiteSnow.greyVariant3
             }
         })
     );
@@ -213,15 +230,23 @@ const { NoMatches } = (() => {
 
             const { t } = useTranslation("CatalogCards");
 
-
             return (
                 <div className={cx(classNames.root, className)}>
 
                     <div className={classNames.innerDiv}>
                         <ServiceNotFoundSvg className={classNames.svg} />
-                        <Typography>{t("no service found")}</Typography>
-                        <Typography>{t("no result found", { "forWhat": search })}</Typography>
-                        <Typography>{t("check spelling")}</Typography>
+                        <Typography
+                            variant="h2"
+                            className={classNames.h2}
+                        >{t("no service found")}</Typography>
+                        <Typography
+                            className={classNames.typo}
+                            variant="body1"
+                        >{t("no result found", { "forWhat": search })}</Typography>
+                        <Typography
+                            className={classNames.typo}
+                            variant="body1"
+                        >{t("check spelling")}</Typography>
                         <Link onClick={onGoBackClick}>{t("go back")}</Link>
                     </div>
 
