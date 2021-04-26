@@ -28,14 +28,7 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
     "Service description" + (
         i === 1 ? `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Pellentesque vel bibendum ex. Interdum et malesuada fames 
-    ac ante ipsum primis in faucibus. Donec volutpat sem quis 
-    lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Pellentesque vel bibendum ex. Interdum et malesuada fames 
-    ac ante ipsum primis in faucibus. Donec volutpat sem quis 
-    lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Pellentesque vel bibendum ex. Interdum et malesuada fames 
-    ac ante ipsum primis in faucibus. Donec volutpat sem quis.
+    Pellentesque vel bibendum ex. Interdum et malesuada fames.
         `: ""
     ),
     /* spell-checker: enable */
@@ -45,7 +38,6 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
 export const VueDefault = getStory({
     className,
     cardsContent,
-    "search": "",
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch", "onRequestLearnMore", "onClearSearch"])
 });

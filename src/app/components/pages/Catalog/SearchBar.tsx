@@ -14,8 +14,9 @@ import { useEvt } from "evt/hooks";
 
 export type Props = {
     className?: string;
+    search: string;
     onSearchChange(search: string): void;
-    evtAction: NonPostableEvt<{ action: "SET SEARCH"; search: string; }>;
+    evtAction: NonPostableEvt<"CLEAR SEARCH">;
 };
 
 const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
@@ -58,7 +59,7 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
 
 export const SearchBar = memo((props: Props) => {
 
-    const { className, onSearchChange, evtAction } = props;
+    const { className, onSearchChange, search, evtAction } = props;
 
     const [isActive, setIsActive] = useState(false);
 
@@ -66,9 +67,8 @@ export const SearchBar = memo((props: Props) => {
 
     const { t } = useTranslation("SearchBar");
 
-    const [search, setSearch] = useState("");
     const onClearButtonClick = useConstCallback(() => {
-        setSearch("")
+        onSearchChange("")
         inputRef.current?.focus();
     });
     const onRootClick = useConstCallback(() => setIsActive(true));
@@ -81,7 +81,7 @@ export const SearchBar = memo((props: Props) => {
     const onInputChange = useConstCallback<ChangeEventHandler<HTMLInputElement>>(
         event => {
             const { value } = event.target;
-            setSearch(value);
+            onSearchChange(value);
             onSearchChange(value);
         }
     );
@@ -90,7 +90,7 @@ export const SearchBar = memo((props: Props) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const onInputKeyDown = useConstCallback(
-        (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>) => {
+        (event: { key: string; }) => {
 
             const key = (() => {
                 switch (event.key) {
@@ -112,7 +112,7 @@ export const SearchBar = memo((props: Props) => {
                     }
                     break;
                 case "Escape":
-                    setSearch("");
+                    onSearchChange("");
                     setIsActive(false);
                     break;
             }
@@ -129,9 +129,11 @@ export const SearchBar = memo((props: Props) => {
 
     useEvt(
         ctx => evtAction.attach(
+            action => action === "CLEAR SEARCH",
             ctx,
-            ({ search }) => setSearch(search)
+            () => onInputKeyDown({ "key": "Escape" })
         ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [evtAction]
     );
 
