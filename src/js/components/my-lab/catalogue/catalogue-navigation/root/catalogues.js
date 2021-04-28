@@ -15,12 +15,7 @@ const Catalogues = () => {
 
 			(await prAxiosInstance)(restApiPaths.catalogue)
 				.then(({ data }) => data)
-				.then((resp) => {
-
-					console.log(JSON.stringify(resp.catalogs, null, 2));
-
-					setCatalogs(resp.catalogs);
-				});
+				.then((resp) => setCatalogs(resp.catalogs));
 
 		})();
 
