@@ -1,3 +1,7 @@
+### **0.9.1** (2021-04-28)  
+  
+- Fix: Point toward new catalog in home    
+  
 ## **0.9.0** (2021-04-28)  
   
 - release new catalog UI  
