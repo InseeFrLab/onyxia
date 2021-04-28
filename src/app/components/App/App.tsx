@@ -4,7 +4,7 @@ import { useMemo, memo } from "react";
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
-import { Footer } from "./Footer";
+//import { Footer } from "./Footer";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { 
