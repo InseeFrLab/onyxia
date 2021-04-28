@@ -44,7 +44,13 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
             ...typography.body1,
             "outline": "none",
             "borderWidth":0,
-            "border":"none"
+            "border":"none",
+            "backgroundColor": "transparent",
+            "color": theme.custom.colors.useCases.typography.textPrimary,
+            "&::placeholder": { 
+                "color": theme.custom.colors.useCases.typography.textDisabled,
+                "opacity": 1
+            }
         },
         "icon": {
             "margin": `${theme.spacing(1) - 2}px ${theme.spacing(2) - 2}px`,
@@ -52,7 +58,8 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "searchLabel": {
             "display": "block",
             "flex": 1,
-            ...typography.button
+            ...typography.button,
+            "color": theme.custom.colors.useCases.typography.textPrimary
         }
     })
 );
