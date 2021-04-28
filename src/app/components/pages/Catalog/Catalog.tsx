@@ -10,7 +10,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
-//import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { useAppConstants }  from "app/interfaceWithLib/hooks";
 import { useAsync } from "react-async-hook";
 
@@ -61,11 +61,26 @@ export function Catalog(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const { result: catalogs } = useAsync(onyxiaApiClient.getCatalogs, []);
 
+    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
+
     useEffect(
-        ()=>{
+        () => {
+            
+            if( cardsContent === undefined ){
+                showSplashScreen({ "enableTransparency": true });
+            }else {
+                hideSplashScreen();
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [cardsContent]
+    );
+
+    useEffect(
+        () => {
 
             if (
-                route.params.catalogId !== undefined || 
+                route.params.catalogId !== undefined ||
                 catalogs === undefined
             ) {
                 return;
@@ -79,22 +94,22 @@ export function Catalog(props: Props) {
     );
 
     useEffect(
-        ()=> {
+        () => {
 
             if (
-                route.params.catalogId === undefined || 
+                route.params.catalogId === undefined ||
                 catalogs === undefined
             ) {
                 return;
             }
 
             setCardContent(
-            catalogs[0].catalog.packages.map(({ icon, description, name }) => ({
-                "serviceImageUrl": icon,
-                "serviceTitle": name,
-                "serviceDescription": description,
-                "doDisplayLearnMore": true
-            }))
+                catalogs[0].catalog.packages.map(({ icon, description, name }) => ({
+                    "serviceImageUrl": icon,
+                    "serviceTitle": name,
+                    "serviceDescription": description,
+                    "doDisplayLearnMore": true
+                }))
             );
 
         },
