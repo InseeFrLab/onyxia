@@ -267,7 +267,7 @@ export const App = memo((props: Props) => {
                 </main>
 
             </section>
-            <Footer className={classNames.footer} />
+            {/*<Footer className={classNames.footer} />*/}
             <VisiteGuidee />
             {appConstants.isUserLoggedIn && <CloudShell />}
 
