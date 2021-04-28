@@ -83,7 +83,7 @@ export function Home() {
 	const { t } = useTranslation("Home");
 
 	const onHeroButtonClick = useConstCallback(() => 
-		routes.catalog({ "optionalTrailingPath": "inseefrlab-helm-charts-datascience" }).push()
+		routes.catalogNew().push()
 	);
 
 	return (
