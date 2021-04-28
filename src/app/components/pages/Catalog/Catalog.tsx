@@ -46,15 +46,20 @@ export function Catalog(props: Props) {
 
     const { classNames } = useClassNames({});
 
+    const [cardsContent, setCardContent] = useState<CatalogCardsParams["cardsContent"] | undefined>(undefined);
+
     const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
-        () => { }
+        serviceTitle =>
+            routes.catalog({
+                "optionalTrailingPath": `${route.params.catalogId}/${serviceTitle}/deploiement`
+            }).push()
     );
 
     const onRequestLearnMore = useConstCallback<CatalogCardsParams["onRequestLearnMore"]>(
-        () => { }
+        () => {
+            alert("todo");
+        }
     );
-
-    const [cardsContent, setCardContent] = useState<CatalogCardsParams["cardsContent"] | undefined>(undefined);
 
     const { onyxiaApiClient } = useAppConstants();
 
