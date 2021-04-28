@@ -15,15 +15,14 @@ import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useAsync } from "react-async-hook";
 
 const { useClassNames } = createUseClassNames<{}>()(
-    theme => ({
+    () => ({
         "root": {
             "display": "flex",
             "flexDirection": "column"
         },
         "cards": {
             "overflow": "hidden",
-            "flex": 1,
-            "marginBottom": theme.spacing(2)
+            "flex": 1
         }
     })
 );

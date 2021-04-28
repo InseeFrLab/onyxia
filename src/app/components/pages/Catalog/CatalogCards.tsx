@@ -30,8 +30,8 @@ export type Params<ServiceTitle extends string = string> = {
 
 const cardCountPerLine = 3;
 
-const { useClassNames } = createUseClassNames<{ filteredCardCount: number; }>()(
-    (theme, { filteredCardCount }) => ({
+const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRevealed: boolean; }>()(
+    (theme, { filteredCardCount, isRevealed }) => ({
         "root": {
             //Or set by the parent,
             //it must be constrained or the scroll will not work
@@ -50,8 +50,9 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; }>()(
                 "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
                 "gridTemplateRows": `repeat(2,1fr)`,
                 //"gridAutoRows": "1fr",
-                "gap": theme.spacing(3)
-            })
+                "gap": theme.spacing(3),
+                "marginBottom": isRevealed ? undefined : theme.spacing(2)
+            }),
         },
         "noMatches": {
             "height": "100%"
@@ -101,7 +102,8 @@ export const CatalogCards = memo(
         );
 
         const { classNames } = useClassNames({
-            "filteredCardCount": filteredCards.length
+            "filteredCardCount": filteredCards.length,
+            isRevealed
         });
 
         const [evtSearchBarAction] = useState(() => 
