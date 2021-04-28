@@ -37,9 +37,12 @@ export function Catalogue(
 	props: Omit<Parameters<typeof Aiguilleur>[0], "location">
 ) {
 	return (
+		<>
+		<h1>Coucou</h1>
 		<Aiguilleur
 			{...props}
 			location={useLocation()}
 		/>
+		</>
 	);
 }

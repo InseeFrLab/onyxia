@@ -2,7 +2,7 @@
 import { createRouter, defineRoute, param, noMatch } from "type-route";
 import type { ValueSerializer } from "type-route";
 import { id } from "evt/tools/typeSafety/id";
-import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
+import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
@@ -13,7 +13,7 @@ export const { RouteProvider, useRoute, routes } = createRouter({
                 "stringify": value => value
             })).default(accountTabIds[0])
         },
-        p => `/account/${p.tabId}`
+        ({ tabId }) => `/account/${tabId}`
     ),
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
@@ -37,6 +37,10 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
         ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
+    ),
+    "catalogNew": defineRoute(
+        { "catalogId": param.path.optional.string },
+        ({ catalogId }) => `/catalog-new/${catalogId}`
     ),
     ...(() => {
 

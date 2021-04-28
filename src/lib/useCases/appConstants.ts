@@ -7,6 +7,7 @@ import type {
 } from "../setup";
 import { assert } from "evt/tools/typeSafety/assert";
 import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
+import type { OnyxiaApiClient } from "lib/ports/OnyxiaApiClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
@@ -24,6 +25,7 @@ export declare namespace AppConstant {
         >>;
         /** NOTE: Convoluted way of pointing to type { KeycloakConfig } from "Keycloak-js" */
         keycloakConfig: Readonly<OidcClientConfig.Keycloak["keycloakConfig"]>;
+        onyxiaApiClient: OnyxiaApiClient;
     };
 
     export type LoggedIn = _Common & {
