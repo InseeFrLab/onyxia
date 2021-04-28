@@ -1,3 +1,13 @@
+## **0.9.0** (2021-04-28)  
+  
+- release new catalog UI  
+- Catalog: Suptile margin changes (changleog ignore)  
+- Catalog: Make launch link work (changleog ignore)  
+- Remove logs (changlog ignore)  
+- Catalog: include splash screen (changlog ignore)  
+- Catalog: Implement search not found  
+- Fix button height    
+  
 ### **0.8.3** (2021-04-19)  
   
 - Fix update password link    
