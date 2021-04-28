@@ -23,6 +23,7 @@ import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/Acc
 import { SearchBar } from "app/components/pages/Catalog/SearchBar";
 import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
 import { CatalogCards } from "app/components/pages/Catalog/CatalogCards";
+import { Catalog } from "app/components/pages/Catalog";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -54,6 +55,7 @@ const reflectedI18nSchemes = {
     [symToStr({ SearchBar })]: Reflect<SearchBar.I18nScheme>(),
     [symToStr({ CatalogCard })]: Reflect<CatalogCard.I18nScheme>(),
     [symToStr({ CatalogCards })]: Reflect<CatalogCards.I18nScheme>(),
+    [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -224,7 +226,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "toggle isExpanded": "Collapse",
             "home": "Home",
             "account": "Account",
-            "catalog": "Catalog",
+            "catalogNew": "Catalog",
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
@@ -272,6 +274,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "main services": "Main services",
             "all services": "All services",
             "search results": "Search result"
+        },
+        "Catalog": {
+            "header text1": "Service catalog",
+            "header text2": "Explore the available services",
+            "header text3": "The catalog enable you to select a service to deploy"
         }
     },
     "fr": {
@@ -410,7 +417,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "toggle isExpanded": "Réduire",
             "home": "Accueil",
             "account": "Mon compte",
-            "catalog": "Catalogue",
+            "catalogNew": "Catalogue",
             "myServices": "Mes Services",
             "mySecrets": "Mes Secrets",
             "myBuckets": "Mes Fichiers",
@@ -459,6 +466,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "main services": "Principaux services",
             "all services": "Tous les services",
             "search results": "Résultats de la recherche"
+        },
+        "Catalog": {
+            "header text1": "Catalogue de services",
+            "header text2": "Explorez, lancez et configurez des services en quelues clics seulement.",
+            "header text3": "Le catalogue vous propose de déployer facilement des services"
         }
         /* spell-checker: enable */
     }

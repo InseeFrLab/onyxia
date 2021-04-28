@@ -23,7 +23,6 @@ Account.requireUserLoggedIn = true;
 
 export type Props = {
     className?: string;
-    //We allow route to be undefined to be able to test in storybook
     route: Route<typeof Account.routeGroup>;
 };
 

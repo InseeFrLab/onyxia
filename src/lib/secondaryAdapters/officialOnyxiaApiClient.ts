@@ -63,7 +63,15 @@ export function createOfficialOnyxiaApiClient(
                     restApiPaths.configuration
                 ).then(({ data }) => data),
                 { "promise": true }
+            ),
+        "getCatalogs":
+            memoize(
+                () => axiosInstance.get<{ catalogs: AsyncReturnType<OnyxiaApiClient["getCatalogs"]> }>(
+                    restApiPaths.catalogue
+                ).then(({ data }) => data.catalogs),
+                { "promise": true }
             )
+
     };
 
     return { onyxiaApiClient, axiosInstance };

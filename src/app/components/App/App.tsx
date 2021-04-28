@@ -6,7 +6,7 @@ import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { css, cx } from "tss-react";
+import { cx } from "tss-react";
 import { 
     useAppConstants, 
     useSelector, 
@@ -28,6 +28,7 @@ import { Account } from "app/components/pages/Account";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
+import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
 //import { MonCompte } from "js/components/mon-compte/mon-compte.component";
@@ -44,7 +45,7 @@ import { Trainings } from "js/components/trainings/async-component";
 export const logoMaxWidthInPercent = 5;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
-    (theme) => ({
+    theme => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -76,12 +77,12 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         },
         "generalPaddingRight": {
             "paddingRight": "2%",
+        },
+        "height100": {
+            "height": "100%"
         }
-
     })
 );
-
-const classNameFillBlock= css({ "height": "100%" });
 
 export type Props = {
     className?: string;
@@ -117,14 +118,8 @@ export const App = memo((props: Props) => {
     useEffectOnValueChange(
         () => {
             if( isWaiting ){
-
-                console.log("show splash");
-
                 showSplashScreen({ "enableTransparency": true });
             }else{
-
-                console.log("hide splash");
-
                 hideSplashScreen();
             }
         },
@@ -151,6 +146,7 @@ export const App = memo((props: Props) => {
                 Home, 
                 MySecrets,
                 Catalogue,
+                Catalog,
                 MyServices,
                 MyService,
                 //MonCompte,
@@ -164,7 +160,7 @@ export const App = memo((props: Props) => {
             ].find(({ routeGroup }) => routeGroup.has(route));
 
             if (Page === undefined) {
-                return () => <FourOhFour className={classNameFillBlock} />;
+                return () => <FourOhFour className={classNames.height100} />;
             }
 
             if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
@@ -177,7 +173,7 @@ export const App = memo((props: Props) => {
             switch (Page) {
                 case MySecrets:
                     return <Page
-                        className={classNameFillBlock}
+                        className={classNames.height100}
                     />;
                 case NavigationFile:
                     assert(Page.routeGroup.has(route));
@@ -199,11 +195,20 @@ export const App = memo((props: Props) => {
                     return <Page
                         serviceSelectionne={false}
                     />;
+                case Catalog:
+                    assert(Page.routeGroup.has(route));
+                    return <Page
+                        route={route}
+                        className={cx(
+                            classNames.height100, 
+                            classNames.generalPaddingRight
+                        )}
+                    />;
+                case Catalogue:
                 case Trainings:
                 case Home:
                 case MyServices:
                 case MyBuckets:
-                case Catalogue:
                 case VisiteGuideeDebut:
                     return <Page/>;
             }

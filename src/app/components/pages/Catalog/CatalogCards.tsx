@@ -16,7 +16,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
 
-export type Params<ServiceTitle extends string> = {
+export type Params<ServiceTitle extends string = string> = {
     className?: string;
     cardsContent: {
         serviceTitle: ServiceTitle;
@@ -50,7 +50,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; }>()(
                 "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
                 "gridTemplateRows": `repeat(2,1fr)`,
                 //"gridAutoRows": "1fr",
-                "gap": theme.spacing(3),
+                "gap": theme.spacing(3)
             })
         },
         "noMatches": {
