@@ -12,7 +12,7 @@ import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotF
 import { Typography } from "app/components/designSystem/Typography";
 import { SearchBar } from "./SearchBar";
 import type { Props as SearchBarProps } from "./SearchBar";
-import { Evt } from "evt";
+import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
 
@@ -40,7 +40,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
             "flexDirection": "column",
         },
         "contextTypo": {
-            "margin": theme.spacing(3,0)
+            "margin": theme.spacing(3, 0)
         },
         "cards": {
             "flex": 1,
@@ -106,7 +106,7 @@ export const CatalogCards = memo(
             isRevealed
         });
 
-        const [evtSearchBarAction] = useState(() => 
+        const [evtSearchBarAction] = useState(() =>
             Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>()
         );
 
@@ -265,6 +265,9 @@ const { NoMatches } = (() => {
             "typo": {
                 "marginBottom": theme.spacing(1),
                 "color": theme.custom.colors.palette.whiteSnow.greyVariant3
+            },
+            "link": {
+                "cursor": "pointer"
             }
         })
     );
@@ -295,7 +298,11 @@ const { NoMatches } = (() => {
                             className={classNames.typo}
                             variant="body1"
                         >{t("check spelling")}</Typography>
-                        <Link onClick={onGoBackClick}>{t("go back")}</Link>
+                        <Link
+                            className={classNames.link}
+                            onClick={onGoBackClick}>
+                            {t("go back")}
+                        </Link>
                     </div>
 
                 </div>
