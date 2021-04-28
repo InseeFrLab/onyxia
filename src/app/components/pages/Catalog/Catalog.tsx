@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { CatalogCards } from "./CatalogCards";
 import type { Params as CatalogCardsParams } from "./CatalogCards";
 import { createGroup } from "type-route";
@@ -10,8 +10,8 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { useAppConstants }  from "app/interfaceWithLib/hooks";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useAsync } from "react-async-hook";
 
 const { useClassNames } = createUseClassNames<{}>()(
@@ -26,7 +26,6 @@ const { useClassNames } = createUseClassNames<{}>()(
         }
     })
 );
-
 
 Catalog.routeGroup = createGroup([routes.catalogNew]);
 
@@ -56,7 +55,7 @@ export function Catalog(props: Props) {
 
     const [cardsContent, setCardContent] = useState<CatalogCardsParams["cardsContent"] | undefined>(undefined);
 
-    const { onyxiaApiClient } = useAppConstants();
+    const { onyxiaApiClient } = useAppConstants();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const { result: catalogs } = useAsync(onyxiaApiClient.getCatalogs, []);
@@ -65,10 +64,10 @@ export function Catalog(props: Props) {
 
     useEffect(
         () => {
-            
-            if( cardsContent === undefined ){
+
+            if (cardsContent === undefined) {
                 showSplashScreen({ "enableTransparency": true });
-            }else {
+            } else {
                 hideSplashScreen();
             }
         },
@@ -110,6 +109,10 @@ export function Catalog(props: Props) {
                     "serviceDescription": description,
                     "doDisplayLearnMore": true
                 }))
+                    .sort((a, b) =>
+                        getHardCodedServiceWeight(b.serviceTitle) -
+                        getHardCodedServiceWeight(a.serviceTitle)
+                    )
             );
 
         },
@@ -117,38 +120,7 @@ export function Catalog(props: Props) {
         [route.params.catalogId, catalogs ?? null]
     );
 
-
-    /*
-
-    useEffect(
-        () => {
-
-            if (catalogs === undefined) {
-                return;
-            }
-
-            catalogs[0].catalog.packages.map(({ icon, description, name }) => ({
-                "serviceImageUrl": icon,
-                "serviceTitle": name,
-                "serviceDescription": description,
-                "doDisplayLearnMore": true
-            }))
-
-            console.log(catalogs);
-
-            //routes.catalogNew({ "catalogId": "inseefrlab-helm-charts-datascience" }).replace();
-            routes.catalogNew({ "catalogId": catalogs[0].id }).replace();
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [catalogs ?? null]
-    );
-    */
-
-    //const { hideSplashScreen, showSplashScreen } = useSplashScreen();
-
     if (cardsContent === undefined) {
-        console.log("yes null");
         return null;
     }
 
@@ -181,3 +153,33 @@ export declare namespace Catalog {
     };
 
 }
+
+const { getHardCodedServiceWeight } = (() => {
+
+    const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
+
+    function getHardCodedServiceWeight(serviceTitle: string) {
+
+        const weight = (()=>{
+
+        for (let i = 0; i < mainServices.length; i++) {
+
+            if (serviceTitle.toLowerCase().includes(mainServices[i])) {
+                return mainServices.length - i;
+            }
+
+        }
+
+        return 0;
+
+        })();
+
+        console.log({ serviceTitle, weight });
+
+        return weight;
+
+    }
+
+    return { getHardCodedServiceWeight };
+
+})();
