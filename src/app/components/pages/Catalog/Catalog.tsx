@@ -15,7 +15,7 @@ import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useAsync } from "react-async-hook";
 
 const { useClassNames } = createUseClassNames<{}>()(
-    () => ({
+    theme => ({
         "root": {
             "display": "flex",
             "flexDirection": "column"
@@ -23,6 +23,7 @@ const { useClassNames } = createUseClassNames<{}>()(
         "cards": {
             "overflow": "hidden",
             "flex": 1,
+            "marginBottom": theme.spacing(2)
         }
     })
 );
@@ -107,7 +108,7 @@ export function Catalog(props: Props) {
                     "serviceImageUrl": icon,
                     "serviceTitle": name,
                     "serviceDescription": description,
-                    "doDisplayLearnMore": true
+                    "doDisplayLearnMore": false
                 }))
                     .sort((a, b) =>
                         getHardCodedServiceWeight(b.serviceTitle) -
@@ -160,8 +161,6 @@ const { getHardCodedServiceWeight } = (() => {
 
     function getHardCodedServiceWeight(serviceTitle: string) {
 
-        const weight = (()=>{
-
         for (let i = 0; i < mainServices.length; i++) {
 
             if (serviceTitle.toLowerCase().includes(mainServices[i])) {
@@ -171,12 +170,6 @@ const { getHardCodedServiceWeight } = (() => {
         }
 
         return 0;
-
-        })();
-
-        console.log({ serviceTitle, weight });
-
-        return weight;
 
     }
 
