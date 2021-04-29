@@ -1,3 +1,8 @@
+### **0.9.2** (2021-04-29)  
+  
+- Register: Sync authorized domain email with backend  
+- Suport extra text in TextField    
+  
 ### **0.9.1** (2021-04-28)  
   
 - Fix: Point toward new catalog in home    
