@@ -17,6 +17,8 @@ import { useEffectOnValueChange } from "powerhooks";
 import { useEvt } from "evt/hooks";
 import type { ReturnType } from "evt/tools/typeSafety";
 import { CircularProgress } from "./CircularProgress";
+import Tooltip from "@material-ui/core/Tooltip";
+import { Icon } from "app/components/designSystem/Icon";
 
 export type TextFieldProps = {
     className?: string | null;
@@ -50,6 +52,7 @@ export type TextFieldProps = {
     transformValueBeingTyped?: (value: string) => string;
     label?: React.ReactNode;
     helperText?: string;
+    questionMarkHelperText?: string;
     doOnlyValidateInputAfterFistFocusLost?: boolean
     isCircularProgressShown?: boolean;
     selectAllTextOnFocus?: boolean;
@@ -58,6 +61,7 @@ export type TextFieldProps = {
 export const defaultProps: Optional<TextFieldProps> = {
     "label": null,
     "helperText": "",
+    "questionMarkHelperText": "",
     "doOnlyValidateInputAfterFistFocusLost": true,
     "defaultValue": "",
     "className": null,
@@ -93,7 +97,7 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
         "root": {
             "& .MuiFormHelperText-root": {
                 "position": "absolute",
-                "bottom": "-20px"
+                "bottom": "-25px"
             },
             "& .MuiFormLabel-root, & .MuiFormHelperText-root": {
                 "color": error ?
@@ -134,6 +138,10 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                 "borderBottomWidth": 1
             }
 
+        },
+        "questionMark": {
+            "verticalAlign": "middle",
+            "color": theme.custom.colors.useCases.typography.textDisabled
         }
     })
 );
@@ -167,7 +175,7 @@ export const TextField = memo((props: TextFieldProps) => {
         inputProps_spellCheck,
         inputProps_autoFocus,
         InputProps_endAdornment,
-
+        questionMarkHelperText,
         ...completedPropsRest
     } = completedProps;
 
@@ -237,9 +245,9 @@ export const TextField = memo((props: TextFieldProps) => {
                         transformAndSetValue(defaultValue);
                         return;
                     case "TRIGGER SUBMIT":
-                        if( 
-                            !getIsValidValueResult.isValidValue || 
-                            !isSubmitAllowed 
+                        if (
+                            !getIsValidValueResult.isValidValue ||
+                            !isSubmitAllowed
                         ) return;
                         onSubmit(value);
                         return;
@@ -247,8 +255,8 @@ export const TextField = memo((props: TextFieldProps) => {
             }
         ),
         [
-            defaultValue, value, getIsValidValueResult, 
-            onSubmit, evtAction, transformAndSetValue, 
+            defaultValue, value, getIsValidValueResult,
+            onSubmit, evtAction, transformAndSetValue,
             isSubmitAllowed
         ]
     );
@@ -322,9 +330,24 @@ export const TextField = memo((props: TextFieldProps) => {
             value={value}
             error={error}
             helperText={
-                isValidationEnabled && !getIsValidValueResult.isValidValue ?
-                    getIsValidValueResult.message || helperText :
-                    helperText
+                <>
+                    {
+                        isValidationEnabled && !getIsValidValueResult.isValidValue ?
+                            getIsValidValueResult.message || helperText :
+                            helperText
+                    }
+                    {questionMarkHelperText !== "" &&
+                        <>
+                            &nbsp;
+                            <Tooltip title={questionMarkHelperText}>
+                                <Icon
+                                    className={classNames.questionMark}
+                                    type="help"
+                                    fontSize="small"
+                                />
+                            </Tooltip>
+                        </>}
+                </>
             }
             InputProps={InputProps}
             onBlur={useConstCallback(() => {
