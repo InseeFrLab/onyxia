@@ -16,19 +16,6 @@ import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import Tooltip from "@material-ui/core/Tooltip";
 
-///* spell-checker: disable */
-//const allowedEmailDomains = [
-//    "insee.fr", 
-//    "gouv.fr",
-//    "casd.eu",
-//    "ensai.fr",
-//    "ensae.fr",
-//    "ars.sante.fr",
-//    "cnaf.fr"
-//];
-///* spell-checker: enable */
-//const allowedEmailDomainsStr = allowedEmailDomains.map(domain => `@${domain}`).join(", ");
-
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12
 
@@ -68,7 +55,8 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
         realm,
         passwordRequired,
         recaptchaRequired,
-        recaptchaSiteKey
+        recaptchaSiteKey,
+        authorizedMailDomains
     } = kcContext;
 
     const [firstName, setFirstName] = useState(register.formData.firstName ?? "");
@@ -114,14 +102,18 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                             "message": t("not a valid", { "what": msgStr(target) })
                         };
                     }
-                    /*
-                    if( !allowedEmailDomains.find(domain => new RegExp(`[@.]${domain}$`, "i").test(value))){
-                        return {
-                            "isValidValue": false,
-                            "message": ""
-                        };
+                    if (authorizedMailDomains !== undefined) {
+                        if (
+                            !authorizedMailDomains
+                                .map(domainWithWildcard=> domainWithWildcard.replace(/\^*.\?/, ""))
+                                .find(domain => new RegExp(`[@.]${domain}$`, "i").test(value))
+                        ) {
+                            return {
+                                "isValidValue": false,
+                                "message": ""
+                            };
+                        }
                     }
-                    */
                     break;
                 case "username":
                     if (!/^[a-zA-Z0-9]+$/.test(value)) {
@@ -285,9 +277,17 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                             helperText={
                                                 (() => {
                                                     switch (target) {
-                                                        //case "email": return t("allowed email domain", { "list": allowedEmailDomainsStr })
-                                                        case "username": return t("alphanumerical chars only")
-                                                        case "password": return t("minimum length", { "n": `${passwordMinLength}` })
+                                                        case "email": return t("allowed email domains");
+                                                        case "username": return t("alphanumerical chars only");
+                                                        case "password": return t("minimum length", { "n": `${passwordMinLength}` });
+                                                        default: return undefined;
+                                                    }
+                                                })()
+                                            }
+                                            questionMarkHelperText={
+                                                (() => {
+                                                    switch (target) {
+                                                        case "email": return authorizedMailDomains?.join(", ");
                                                         default: return undefined;
                                                     }
                                                 })()
@@ -322,7 +322,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                         >
                             {t("go back")}
                         </Button>
-                        <Tooltip title={areAllTargetsValid?"":t("form not filled properly yet")}>
+                        <Tooltip title={areAllTargetsValid ? "" : t("form not filled properly yet")}>
                             <span>
                                 <Button
                                     className={cx(classNames.buttonSubmit)}
@@ -346,7 +346,7 @@ export declare namespace Register {
     export type I18nScheme = {
         'required field': undefined;
         'not a valid': { what: string; };
-        'allowed email domain': { list: string; };
+        'allowed email domains': undefined;
         'alphanumerical chars only': undefined;
         'minimum length': { n: string; };
         'must be different from username': undefined;

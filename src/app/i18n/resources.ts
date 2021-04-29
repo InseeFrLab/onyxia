@@ -151,7 +151,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Register": {
             "required field": "Required field",
             "not a valid": "This is not a valid {{what}}",
-            "allowed email domain": "Allowed domain {{list}}",
+            "allowed email domains": "Allowed domains",
             "alphanumerical chars only": "Only alphanumerical characters",
             "minimum length": "Minimum length: {{n}}",
             "must be different from username": "Pass can't be the username",
@@ -344,7 +344,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Register": {
             "required field": "Champ requis",
             "not a valid": "Pas un {{what}} valide",
-            "allowed email domain": "Domaines autorisés: {{list}}",
+            "allowed email domains": "Domaines autorisés",
             "alphanumerical chars only": "Caractère alphanumérique uniquement",
             "minimum length": "Longueur minimum {{n}}",
             "must be different from username": "Ne peut pas être le nom d'utilisateur",
