@@ -89,10 +89,8 @@ export const SearchBar = memo((props: Props) => {
         event => {
             const { value } = event.target;
             onSearchChange(value);
-            onSearchChange(value);
         }
     );
-
 
     const inputRef = useRef<HTMLInputElement>(null);
 
