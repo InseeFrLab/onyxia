@@ -38,7 +38,8 @@ const { useClassNames } = createUseClassNames()(
         "body": {
             "margin": 0,
             "flex": 1,
-            "overflow": "auto"
+            //TODO: Commented out for mozilla (longer one always have scroll in a grid)
+            //"overflow": "auto"
         },
         "buttonsWrapper": {
             "display": "flex",
