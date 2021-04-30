@@ -24,7 +24,7 @@ export default {
 		render = () => {
 			const bouton = document.getElementById('bouton-service-drawio');
 			return this.state.redirect ? (
-				routes.catalog({ "optionalTrailingPath": "inseefrlab-datascience" }).replace(),
+				routes.catalogNew().replace(),
 				null
 			) : (
 				<>
@@ -46,7 +46,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				anchorProps={routes.catalog({ "optionalTrailingPath": "inseefrlab-datascience" }).link}
+				anchorProps={routes.catalogNew().link}
 				type="add"
 				title={D.btnSelfServiceCreation}
 				onClick={next}

@@ -76,7 +76,7 @@ const Actions = ({
 				</Fab>
 			</Tooltip>
 		)}
-		<a {...routes.catalog().link}>
+		<a {...routes.catalogNew().link}>
 			<Tooltip title="New service">
 				<Fab
 					color="secondary"

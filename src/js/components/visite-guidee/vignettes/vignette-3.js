@@ -29,7 +29,7 @@ export default {
 		<>
 			<Prec prec={prec} />
 			<LinkTo
-				anchorProps={routes.catalog({}).link}
+				anchorProps={routes.catalogNew().link}
 				onClick={next}
 				title={D.btnSelfServiceCatalog}
 				component={() => <CatalogueIcon width={20} height={20} color="#fff" />}
