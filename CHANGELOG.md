@@ -1,3 +1,8 @@
+### **0.9.3** (2021-04-30)  
+  
+- Update keycloakify  
+- Remove links to old catalog    
+  
 ### **0.9.2** (2021-04-29)  
   
 - Register: Sync authorized domain email with backend  
