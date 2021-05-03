@@ -15,7 +15,6 @@ import type { Props as SearchBarProps } from "./SearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
-
 export type Params<ServiceTitle extends string = string> = {
     className?: string;
     cardsContent: {
@@ -72,14 +71,24 @@ export const CatalogCards = memo(
                 props[action](serviceTitle)
         );
 
-        const [isRevealed, setIsRevealed] = useState(false);
+        let [isRevealed, setIsRevealed] = useState(false);
 
         const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
 
         const { t } = useTranslation("CatalogCards");
 
         useEffect(
-            () => setIsRevealed(search !== ""),
+            () => {
+
+                //NOTE: We use setTimeout only because of Safari
+                const timer = setTimeout(
+                    () => setIsRevealed(search !== ""),
+                    0
+                );
+
+                return () => clearTimeout(timer);
+
+            },
             [search]
         );
 
