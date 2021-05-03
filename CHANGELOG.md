@@ -1,3 +1,8 @@
+### **0.9.4** (2021-05-03)  
+  
+- update deps, React 17  
+- fix safary catalog searchbar on Safari    
+  
 ### **0.9.3** (2021-04-30)  
   
 - Update keycloakify  
