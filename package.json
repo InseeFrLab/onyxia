@@ -70,7 +70,7 @@
     "public-ip": "^4.0.3",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-async-hook": "^3.6.1",
     "react-dom": "^16.13.1",
     "react-envs": "^0.1.6",
