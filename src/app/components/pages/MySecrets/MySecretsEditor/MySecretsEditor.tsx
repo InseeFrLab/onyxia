@@ -382,6 +382,7 @@ export const MySecretsEditor = memo((props: Props) => {
                 <Button
                     onClick={dialogCallbackFactory("open")}
                     color="secondary"
+                    startIcon="filterNone"
                 >
                     {t("use this secret")}
                 </Button>
