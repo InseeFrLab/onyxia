@@ -8,6 +8,7 @@ import { Typography } from "app/components/designSystem/Typography";
 export type Props = {
     title: NonNullable<ReactNode>;
     children: ReactElement<any, any>;
+    enterDelay?: number;
 };
 
 const { useClassNames } = createUseClassNames()(
@@ -20,7 +21,7 @@ const { useClassNames } = createUseClassNames()(
 
 export const Tooltip = memo((props: Props) => {
 
-    const { title, children } = props;
+    const { title, children, enterDelay } = props;
 
     const { classNames } = useClassNames({});
 
@@ -34,6 +35,7 @@ export const Tooltip = memo((props: Props) => {
                     {title}
                 </Typography>
             }
+            enterDelay={enterDelay}
         >
             {children}
         </MuiTooltip>
