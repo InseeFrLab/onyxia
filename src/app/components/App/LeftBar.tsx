@@ -21,7 +21,7 @@ const targets = [
             //"tour",
             "trainings",
             "sharedServices",
-            "catalogNew",
+            "catalogExplorer",
             "myServices",
             "mySecrets",
             "myBuckets"
@@ -199,7 +199,7 @@ const { CustomButton } = (() => {
             switch (target) {
                 case "home": return "home";
                 case "account": return "account";
-                case "catalogNew": return "catalog";
+                case "catalogExplorer": return "catalog";
                 case "myBuckets": return "files";
                 case "mySecrets": return "secrets";
                 case "myServices": return "services";

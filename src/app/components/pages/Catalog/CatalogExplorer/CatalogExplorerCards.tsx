@@ -3,15 +3,15 @@ import { useEffect, useState, useMemo, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { useCallbackFactory } from "powerhooks";
-import { CatalogCard } from "./CatalogCard";
+import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Button } from "app/components/designSystem/Button";
 import { useConstCallback } from "powerhooks";
 import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
 import { Typography } from "app/components/designSystem/Typography";
-import { SearchBar } from "./SearchBar";
-import type { Props as SearchBarProps } from "./SearchBar";
+import { CatalogExplorerSearchBar } from "./CatalogExplorerSearchBar";
+import type { Props as SearchBarProps } from "./CatalogExplorerSearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
@@ -59,7 +59,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
     })
 );
 
-export const CatalogCards = memo(
+export const CatalogExplorerCards = memo(
     <ServiceTitle extends string = string>(props: Params<ServiceTitle>) => {
 
         const { className, cardsContent } = props;
@@ -75,7 +75,7 @@ export const CatalogCards = memo(
 
         const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
 
-        const { t } = useTranslation("CatalogCards");
+        const { t } = useTranslation("CatalogExplorerCards");
 
         useEffect(
             () => {
@@ -126,7 +126,7 @@ export const CatalogCards = memo(
 
         return (
             <div className={cx(classNames.root, className)}>
-                <SearchBar
+                <CatalogExplorerSearchBar
                     search={search}
                     evtAction={evtSearchBarAction}
                     onSearchChange={setSearch}
@@ -161,7 +161,7 @@ export const CatalogCards = memo(
                                         serviceDescription,
                                         doDisplayLearnMore
                                     }) =>
-                                        <CatalogCard
+                                        <CatalogExplorerCard
                                             key={serviceTitle}
                                             serviceImageUrl={serviceImageUrl}
                                             serviceTitle={serviceTitle}
@@ -187,7 +187,7 @@ export const CatalogCards = memo(
     }
 );
 
-export declare namespace CatalogCards {
+export declare namespace CatalogExplorerCards {
 
     export type I18nScheme = {
         'main services': undefined;
@@ -223,7 +223,7 @@ const { CardShowMore } = (() => {
 
         const { leftToShowCount, onClick } = props;
 
-        const { t } = useTranslation("CatalogCards");
+        const { t } = useTranslation("CatalogExplorerCards");
 
         const { classNames } = useClassNames({});
 
@@ -288,7 +288,7 @@ const { NoMatches } = (() => {
 
             const { classNames } = useClassNames({});
 
-            const { t } = useTranslation("CatalogCards");
+            const { t } = useTranslation("CatalogExplorerCards");
 
             return (
                 <div className={cx(classNames.root, className)}>

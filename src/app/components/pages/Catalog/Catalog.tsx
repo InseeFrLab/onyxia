@@ -1,18 +1,32 @@
 
-import { useState, useEffect } from "react";
-import { CatalogCards } from "./CatalogCards";
-import type { Params as CatalogCardsParams } from "./CatalogCards";
 import { createGroup } from "type-route";
-import { routes } from "app/router";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
-import { useConstCallback } from "powerhooks";
+import { routes } from "app/router";
 import type { Route } from "type-route";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { useAppConstants } from "app/interfaceWithLib/hooks";
-import { useAsync } from "react-async-hook";
+import { CatalogExplorer } from "./CatalogExplorer/CatalogExplorer";
+import { CatalogLauncher } from "./CatalogLauncher/CatalogLauncher";
+
+Catalog.routeGroup = createGroup([
+    routes.catalogExplorer,
+    routes.catalogLauncher
+]);
+
+type PageRoute = Route<typeof Catalog.routeGroup>;
+
+Catalog.requireUserLoggedIn = (route: PageRoute) => {
+    switch (route.name) {
+        case "catalogExplorer": return false;
+        case "catalogLauncher": return true;
+    }
+};
+
+export type Props = {
+    route: PageRoute;
+    className?: string;
+};
 
 const { useClassNames } = createUseClassNames<{}>()(
     () => ({
@@ -20,22 +34,12 @@ const { useClassNames } = createUseClassNames<{}>()(
             "display": "flex",
             "flexDirection": "column"
         },
-        "cards": {
+        "payload": {
             "overflow": "hidden",
             "flex": 1
         }
     })
 );
-
-Catalog.routeGroup = createGroup([routes.catalogNew]);
-
-Catalog.requireUserLoggedIn = false;
-
-export type Props = {
-    className?: string;
-    route: Route<typeof Catalog.routeGroup>;
-};
-
 
 export function Catalog(props: Props) {
 
@@ -45,90 +49,6 @@ export function Catalog(props: Props) {
 
     const { classNames } = useClassNames({});
 
-    const [cardsContent, setCardContent] = useState<CatalogCardsParams["cardsContent"] | undefined>(undefined);
-
-    const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
-        serviceTitle =>
-            routes.catalog({
-                "optionalTrailingPath": `${route.params.catalogId}/${serviceTitle}/deploiement`
-            }).push()
-    );
-
-    const onRequestLearnMore = useConstCallback<CatalogCardsParams["onRequestLearnMore"]>(
-        () => {
-            alert("todo");
-        }
-    );
-
-    const { onyxiaApiClient } = useAppConstants();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const { result: catalogs } = useAsync(onyxiaApiClient.getCatalogs, []);
-
-    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
-
-    useEffect(
-        () => {
-
-            if (cardsContent === undefined) {
-                showSplashScreen({ "enableTransparency": true });
-            } else {
-                hideSplashScreen();
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [cardsContent]
-    );
-
-    useEffect(
-        () => {
-
-            if (
-                route.params.catalogId !== undefined ||
-                catalogs === undefined
-            ) {
-                return;
-            }
-
-            routes.catalogNew({ "catalogId": catalogs[0].id }).replace();
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route.params.catalogId, catalogs ?? null]
-    );
-
-    useEffect(
-        () => {
-
-            if (
-                route.params.catalogId === undefined ||
-                catalogs === undefined
-            ) {
-                return;
-            }
-
-            setCardContent(
-                catalogs[0].catalog.packages.map(({ icon, description, name }) => ({
-                    "serviceImageUrl": icon,
-                    "serviceTitle": name,
-                    "serviceDescription": description,
-                    "doDisplayLearnMore": false
-                }))
-                    .sort((a, b) =>
-                        getHardCodedServiceWeight(b.serviceTitle) -
-                        getHardCodedServiceWeight(a.serviceTitle)
-                    )
-            );
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route.params.catalogId, catalogs ?? null]
-    );
-
-    if (cardsContent === undefined) {
-        return null;
-    }
-
     return (
         <div className={cx(classNames.root, className)}>
             <PageHeader
@@ -137,18 +57,28 @@ export function Catalog(props: Props) {
                 text2={t("header text2")}
                 text3={t("header text3")}
             />
-            <CatalogCards
-                className={classNames.cards}
-                cardsContent={cardsContent}
-                onRequestLaunch={onRequestLaunch}
-                onRequestLearnMore={onRequestLearnMore}
-            />
+            {(() => {
+                switch (route.name) {
+                    case "catalogExplorer":
+                        return (
+                            <CatalogExplorer
+                                route={route}
+                                className={classNames.payload}
+                            />
+                        );
+                    case "catalogLauncher":
+                        return (
+                            <CatalogLauncher
+                                route={route}
+                                className={classNames.payload}
+                            />
+                        );
+                }
+            })()}
         </div>
     );
 
 }
-
-
 export declare namespace Catalog {
 
     export type I18nScheme = {
@@ -158,25 +88,3 @@ export declare namespace Catalog {
     };
 
 }
-
-const { getHardCodedServiceWeight } = (() => {
-
-    const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
-
-    function getHardCodedServiceWeight(serviceTitle: string) {
-
-        for (let i = 0; i < mainServices.length; i++) {
-
-            if (serviceTitle.toLowerCase().includes(mainServices[i])) {
-                return mainServices.length - i;
-            }
-
-        }
-
-        return 0;
-
-    }
-
-    return { getHardCodedServiceWeight };
-
-})();

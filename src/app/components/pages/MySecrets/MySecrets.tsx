@@ -16,11 +16,24 @@ import { useWithProps } from "powerhooks";
 import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
 import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
-import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import type { Route } from "type-route";
+
+MySecrets.routeGroup = createGroup([
+    routes.mySecrets
+]);
+
+type PageRoute = Route<typeof MySecrets.routeGroup>;
+
+MySecrets.requireUserLoggedIn = ()=> true;
+
+export type Props = {
+    route: PageRoute;
+    className?: string;
+};
 
 
 /*
@@ -45,16 +58,6 @@ const { useClassNames } = createUseClassNames<{}>()(
     })
 );
 
-
-MySecrets.routeGroup = createGroup([routes.mySecrets]);
-
-MySecrets.requireUserLoggedIn = true;
-
-export type Props = {
-    className?: string;
-    //We allow route to be undefined to be able to test in storybook
-    route?: Route<typeof MySecrets.routeGroup>;
-};
 
 export function MySecrets(props: Props) {
 
@@ -112,6 +115,7 @@ export function MySecrets(props: Props) {
                 return;
             }
 
+            //We allow route to be null to be able to test in storybook
             const {
                 secretOrDirectoryPath = userHomePath,
                 isFile = false

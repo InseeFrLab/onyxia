@@ -20,7 +20,6 @@ import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
 import { assert } from "evt/tools/typeSafety/assert";
 import { routes } from "app/router";
-import { useWindowInnerSize } from "powerhooks";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
@@ -28,23 +27,21 @@ import { Account } from "app/components/pages/Account";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
-import { Catalog } from "app/components/pages/Catalog";
+import { Catalog } from "app/components/pages/Catalog/Catalog";
 import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
-//import { MonCompte } from "js/components/mon-compte/mon-compte.component";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import VisiteGuidee from 'js/components/visite-guidee';
 import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
 import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { SharedServices } from "js/components/services/home/services";
-//import { ServiceDetails } from "js/components/services/details/details-service-async";
 import { Trainings } from "js/components/trainings/async-component";
 
 
 export const logoMaxWidthInPercent = 5;
 
-const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
+const { useClassNames } = createUseClassNames()(
     theme => ({
         "root": {
             "height": "100%",
@@ -96,20 +93,13 @@ export const App = memo((props: Props) => {
 
     useApplyLanguageSelectedAtLogin();
 
-    const appConstants = useAppConstants();
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffectOnValueChange(
-        () => {
-
-            console.log("regular hide");
-
-            hideSplashScreen()
-
-        },
+        () => { hideSplashScreen() },
         [rootWidth === 0]
     );
 
@@ -128,99 +118,13 @@ export const App = memo((props: Props) => {
 
     const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
 
-    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
-
-    const { classNames } = useClassNames({
-        windowInnerWidth,
-        "aspectRatio": windowInnerWidth / windowInnerHeight,
-        windowInnerHeight
-    });
-
+    const { classNames } = useClassNames({});
 
     const route = useRoute();
 
-    const page = useMemo(
-        () => {
-
-            const Page = [
-                Home, 
-                MySecrets,
-                Catalogue,
-                Catalog,
-                MyServices,
-                MyService,
-                //MonCompte,
-                Account,
-                MyBuckets,
-                NavigationFile,
-                VisiteGuideeDebut,
-                SharedServices,
-                Trainings,
-                //ServiceDetails
-            ].find(({ routeGroup }) => routeGroup.has(route));
-
-            if (Page === undefined) {
-                return () => <FourOhFour className={classNames.height100} />;
-            }
-
-            if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
-
-                appConstants.login();
-
-                return () => null;
-            }
-
-            switch (Page) {
-                case MySecrets:
-                    return <Page
-                        className={classNames.height100}
-                    />;
-                case NavigationFile:
-                    assert(Page.routeGroup.has(route));
-                    return <Page
-                        route={route}
-                    />;
-                case MyService:
-                    assert(Page.routeGroup.has(route));
-                    return <Page
-                        route={route}
-                    />;
-                case Account:
-                    assert(Page.routeGroup.has(route));
-                    return <Page
-                        route={route}
-                        className={classNames.generalPaddingRight}
-                    />;
-                case SharedServices:
-                    return <Page
-                        serviceSelectionne={false}
-                    />;
-                case Catalog:
-                    assert(Page.routeGroup.has(route));
-                    return <Page
-                        route={route}
-                        className={cx(
-                            classNames.height100, 
-                            classNames.generalPaddingRight
-                        )}
-                    />;
-                case Catalogue:
-                case Trainings:
-                case Home:
-                case MyServices:
-                case MyBuckets:
-                case VisiteGuideeDebut:
-                    return <Page/>;
-            }
-
-            assert(false, "Not all cases have been dealt with in the above switch");
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route]
-    );
-
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
+
+    const appConstants = useAppConstants();
 
     const onHeaderAuthClick = useConstCallback(
         () => (appConstants.isUserLoggedIn ?
@@ -263,7 +167,7 @@ export const App = memo((props: Props) => {
                 />
 
                 <main className={classNames.main}>
-                    {page}
+                    <PageSelector route={route}/>
                 </main>
 
             </section>
@@ -275,3 +179,195 @@ export const App = memo((props: Props) => {
     );
 
 });
+
+const PageSelector = (
+    props: {
+        route: ReturnType<typeof useRoute>;
+    }
+) => {
+
+    const { route } = props;
+
+    const { classNames } = useClassNames({});
+
+    const appConstants = useAppConstants();
+
+    const legacyRoute = useMemo(
+        () => {
+
+            const Page = [
+                Catalogue,
+                MyServices,
+                MyService,
+                MyBuckets,
+                NavigationFile,
+                VisiteGuideeDebut,
+                SharedServices,
+                Trainings,
+            ].find(({ routeGroup }) => routeGroup.has(route));
+
+            if (Page === undefined) {
+                return undefined;
+            }
+
+            if (
+                Page.requireUserLoggedIn &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+            }
+
+            switch (Page) {
+                case NavigationFile:
+                    assert(Page.routeGroup.has(route));
+                    return <Page
+                        route={route}
+                    />;
+                case MyService:
+                    assert(Page.routeGroup.has(route));
+                    return <Page
+                        route={route}
+                    />;
+                case SharedServices:
+                    return <Page
+                        serviceSelectionne={false}
+                    />;
+                case Catalogue:
+                case Trainings:
+                case MyServices:
+                case MyBuckets:
+                case VisiteGuideeDebut:
+                    return <Page/>;
+            }
+
+            assert(false, "Not all cases have been dealt with in the above switch");
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [route]
+    );
+
+
+    {
+
+        const Page = Catalog;
+
+        if (Page.routeGroup.has(route)) {
+
+            if (
+                Page.requireUserLoggedIn(route) &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+
+            }
+
+            return (
+                <Page
+                    route={route}
+                    className={cx(
+                        classNames.height100,
+                        classNames.generalPaddingRight
+                    )}
+                />
+            );
+
+        }
+
+    }
+
+    {
+
+        const Page = Home;
+
+        if (Page.routeGroup.has(route)) {
+
+            if (
+                Page.requireUserLoggedIn() &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+
+            }
+
+            return <Page />;
+
+        }
+
+    }
+
+    {
+
+        const Page = MySecrets;
+
+        if (Page.routeGroup.has(route)) {
+
+            if (
+                Page.requireUserLoggedIn() &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+
+            }
+
+            return (
+                <Page
+                    route={route}
+                    className={classNames.height100}
+                />
+            );
+
+        }
+
+    }
+
+    {
+
+        const Page = Account;
+
+        if (Page.routeGroup.has(route)) {
+
+            if (
+                Page.requireUserLoggedIn() &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+
+            }
+
+            return (
+                <Page
+                    route={route}
+                    className={classNames.generalPaddingRight}
+                />
+            );
+
+        }
+
+    }
+
+
+    if( legacyRoute !== undefined ){
+        return legacyRoute;
+    }
+
+    return <FourOhFour className={classNames.height100} />;
+
+
+
+}

@@ -1,7 +1,7 @@
 
 
 
-import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
+import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
@@ -10,7 +10,7 @@ import { css, cx } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { CatalogCard }
+    "wrappedComponent": { CatalogExplorerCard }
 });
 
 export default meta;

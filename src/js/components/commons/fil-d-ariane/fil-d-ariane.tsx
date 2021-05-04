@@ -7,7 +7,7 @@ import { join as pathJoin } from "path";
 
 const home = { "anchorProps": routes.home().link, "component": <Icon className="home-icone">home</Icon> };
 const catalog = {
-	"anchorProps": routes.catalogNew().link,
+	"anchorProps": routes.catalogExplorer().link,
 	"component": <span>catalogue</span>,
 };
 
@@ -34,7 +34,7 @@ export const fil: any = {
 		home,
 		catalog,
 		{
-			"anchorProps": routes.catalogNew({ "catalogId": idCatalogue }),
+			"anchorProps": routes.catalogExplorer({ "catalogId": idCatalogue }),
 			"component": <span>{idCatalogue}</span>
 		}
 	],
@@ -129,7 +129,7 @@ export const fil: any = {
 		home,
 		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
-			anchorParams: routes.catalogNew({ "catalogId": idCatalogue }).link,
+			anchorParams: routes.catalogExplorer({ "catalogId": idCatalogue }).link,
 			component: <span>{idCatalogue}</span>,
 		},
 		{
@@ -141,7 +141,7 @@ export const fil: any = {
 		home,
 		{ "anchorParams": routes.catalog().link, component: <span>catalogue</span> },
 		{
-			anchorParams: routes.catalogNew({ "catalogId": idCatalogue }).link,
+			anchorParams: routes.catalogExplorer({ "catalogId": idCatalogue }).link,
 			component: <span>{idCatalogue}</span>,
 		},
 		{
