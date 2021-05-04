@@ -58,10 +58,6 @@ const { useClassNames } = createUseClassNames<Props>()(
             "marginRight": theme.spacing(2),
             "overflow": "auto",
             "height": "100%"
-        },
-        "divider": {
-            "marginTop": theme.spacing(1),
-            "backgroundColor": theme.custom.colors.palette.whiteSnow.greyVariant1
         }
     })
 );
@@ -103,34 +99,27 @@ export const LeftBar = memo((props: Props) => {
                 {
                     targets.map(
                         target =>
-                            <>
-                                <CustomButton
-                                    key={target}
-                                    isActive={
-                                        currentPage === target ||
-                                        (currentPage === "myFiles" && target === "myBuckets")
-                                    }
-                                    target={target}
-                                    isExpanded={isExpanded}
-                                    collapsedWidth={collapsedWidth - theme.spacing(4)}
-                                    onClick={onClickFactory(target)}
-                                />
-                                {
-                                    (() => {
-                                        switch (target) {
-                                            case "account":
-                                            case "sharedServices":
-                                            case "myServices":
-                                                return (
-                                                <Divider 
-                                                    className={classNames.divider}
-                                                    variant="middle"
-                                                />
-                                                );
-                                        }
-                                    })()
+                            <CustomButton
+                                key={target}
+                                isActive={
+                                    currentPage === target ||
+                                    (currentPage === "myFiles" && target === "myBuckets")
                                 }
-                            </>
+                                target={target}
+                                isExpanded={isExpanded}
+                                collapsedWidth={collapsedWidth - theme.spacing(4)}
+                                hasDivider={(() => {
+                                    switch (target) {
+                                        case "account":
+                                        case "sharedServices":
+                                        case "myServices":
+                                            return true;
+                                        default:
+                                            return false;
+                                    }
+                                })()}
+                                onClick={onClickFactory(target)}
+                            />
                     )
                 }
             </nav>
@@ -153,6 +142,7 @@ const { CustomButton } = (() => {
         isExpanded: boolean;
         collapsedWidth: number;
         isActive: boolean;
+        hasDivider: boolean;
         onClick(): void;
     };
 
@@ -204,14 +194,17 @@ const { CustomButton } = (() => {
                 "display": "flex",
                 "alignItems": "center",
                 "marginRight": theme.spacing(4)
+            },
+            "divider": {
+                "marginTop": theme.spacing(1),
+                "backgroundColor": theme.custom.colors.palette.whiteSnow.greyVariant1
             }
-
         })
     );
 
     const CustomButton = memo((props: Props) => {
 
-        const { isExpanded, target, onClick } = props;
+        const { isExpanded, target, hasDivider, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -225,42 +218,50 @@ const { CustomButton } = (() => {
                 case "myServices": return "services";
                 case "sharedServices": return "community";
                 case "toggle isExpanded": return "chevronLeft";
-                //case "tour": return "tour";
                 case "trainings": return "trainings";
-                //case "about": return "infoOutlined";
             }
         }, [target]);
 
         const { classNames } = useClassNames(props);
 
         return (
-            <div
-                className={classNames.root}
-                onClick={onClick}
-            >
-                <div className={classNames.iconWrapper} >
+            <>
+                <div
+                    className={classNames.root}
+                    onClick={onClick}
+                >
+                    <div className={classNames.iconWrapper} >
 
-                    <div className={cx(hoverBoxClassName, classNames.iconHoverBox)} />
+                        <div className={cx(hoverBoxClassName, classNames.iconHoverBox)} />
 
-                    <Icon
-                        type={type}
-                        className={classNames.icon}
-                        fontSize="large"
-                    />
+                        <Icon
+                            type={type}
+                            className={classNames.icon}
+                            fontSize="large"
+                        />
 
+                    </div>
+                    {
+                        !isExpanded ?
+                            null
+                            :
+                            <div className={cx(hoverBoxClassName, classNames.typoWrapper)} >
+                                <Typography variant="h6">
+                                    {t(target)}
+                                </Typography>
+                            </div>
+
+                    }
                 </div>
                 {
-                    !isExpanded ?
-                        null
-                        :
-                        <div className={cx(hoverBoxClassName, classNames.typoWrapper)} >
-                            <Typography variant="h6">
-                                {t(target)}
-                            </Typography>
-                        </div>
-
+                    hasDivider &&
+                    <Divider
+                        key={target + "divider"}
+                        className={classNames.divider}
+                        variant="middle"
+                    />
                 }
-            </div>
+            </>
         );
 
     });
