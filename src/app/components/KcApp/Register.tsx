@@ -288,6 +288,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                                                 (() => {
                                                     switch (target) {
                                                         case "email": return authorizedMailDomains?.join(", ");
+                                                        case "username": return t("username question mark helper text");
                                                         default: return undefined;
                                                     }
                                                 })()
@@ -348,6 +349,7 @@ export declare namespace Register {
         'not a valid': { what: string; };
         'allowed email domains': undefined;
         'alphanumerical chars only': undefined;
+        'username question mark helper text': undefined;
         'minimum length': { n: string; };
         'must be different from username': undefined;
         'password mismatch': undefined;
