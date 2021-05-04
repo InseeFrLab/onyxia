@@ -95,7 +95,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                     "backgroundColor": disabled ?
                         theme.custom.colors.useCases.buttons.actionDisabledBackground :
                         "transparent",
-                    "height": theme.spacing(4),
+                    "height": 36,
                     "borderRadius":  20,
                     "borderWidth": "2px",
                     "borderStyle": "solid",
