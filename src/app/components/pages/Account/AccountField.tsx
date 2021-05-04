@@ -19,7 +19,7 @@ import Switch from "@material-ui/core/Switch";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
 import { assert } from "evt/tools/typeSafety/assert";
