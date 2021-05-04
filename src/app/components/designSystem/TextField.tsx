@@ -19,6 +19,7 @@ import type { ReturnType } from "evt/tools/typeSafety";
 import { CircularProgress } from "./CircularProgress";
 import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
+import { Typography } from "app/components/designSystem/Typography";
 
 export type TextFieldProps = {
     className?: string | null;
@@ -138,6 +139,9 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                 "borderBottomWidth": 1
             }
 
+        },
+        "helperText": {
+            "color": theme.custom.colors.useCases.typography.textDisabled
         },
         "questionMark": {
             "verticalAlign": "middle",
@@ -331,11 +335,16 @@ export const TextField = memo((props: TextFieldProps) => {
             error={error}
             helperText={
                 <>
-                    {
-                        isValidationEnabled && !getIsValidValueResult.isValidValue ?
-                            getIsValidValueResult.message || helperText :
-                            helperText
-                    }
+                    <Typography
+                        className={classNames.helperText}
+                        variant="caption"
+                    >
+                        {
+                            isValidationEnabled && !getIsValidValueResult.isValidValue ?
+                                getIsValidValueResult.message || helperText :
+                                helperText
+                        }
+                    </Typography>
                     {questionMarkHelperText !== "" &&
                         <>
                             &nbsp;
