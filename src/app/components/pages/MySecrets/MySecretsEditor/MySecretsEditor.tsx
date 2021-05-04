@@ -16,7 +16,7 @@ import { useArrayDiff } from "powerhooks";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
 import type { Id } from "evt/tools/typeSafety/id";
 import { evaluateShellExpression } from "app/tools/evaluateShellExpression";

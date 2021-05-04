@@ -2,7 +2,7 @@
 import { memo } from "react";
 import type { ReactNode } from "react";
 import { Typography } from "app/components/designSystem/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";

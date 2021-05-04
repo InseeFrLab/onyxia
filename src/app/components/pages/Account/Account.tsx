@@ -12,7 +12,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";

@@ -17,7 +17,7 @@ import { useEffectOnValueChange } from "powerhooks";
 import { useEvt } from "evt/hooks";
 import type { ReturnType } from "evt/tools/typeSafety";
 import { CircularProgress } from "./CircularProgress";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 
 export type TextFieldProps = {

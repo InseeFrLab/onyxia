@@ -14,7 +14,7 @@ import { Button } from "app/components/designSystem/Button";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12
