@@ -15760,6 +15760,11 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
+urlon@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/urlon/-/urlon-3.1.0.tgz#8c0d1f71fa8e22cc3c5f350b600c4f7e973b4fee"
+  integrity sha512-fA/NRmwCLhek9+F2Jgk/OMdOQTzaHIrA4K9pNblSKbbsDR/ZgiwM0hNnz7k9BDmtlUzreIoddBg4ZQkVwdNYcQ==
+
 use-composed-ref@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/use-composed-ref/-/use-composed-ref-1.1.0.tgz#9220e4e94a97b7b02d7d27eaeab0b37034438bbc"

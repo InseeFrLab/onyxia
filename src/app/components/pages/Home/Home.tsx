@@ -21,9 +21,11 @@ import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
 import { Paper } from "app/components/designSystem/Paper"
 
-Home.routeGroup = createGroup([routes.home]);
+Home.routeGroup = createGroup([
+    routes.home
+]);
 
-Home.requireUserLoggedIn = false;
+Home.requireUserLoggedIn = ()=> false;
 
 const { useClassNames } = createUseClassNames()(
 	theme => ({
@@ -73,7 +75,6 @@ const { useClassNames } = createUseClassNames()(
 
 export function Home() {
 
-
 	const theme = useTheme();
 
 	const { classNames } = useClassNames({});
@@ -83,7 +84,7 @@ export function Home() {
 	const { t } = useTranslation("Home");
 
 	const onHeroButtonClick = useConstCallback(() => 
-		routes.catalogNew().push()
+		routes.catalogExplorer().push()
 	);
 
 	return (

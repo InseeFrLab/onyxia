@@ -4,6 +4,11 @@ import type { ValueSerializer } from "type-route";
 import { id } from "evt/tools/typeSafety/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
+import URLON from "urlon";
+
+
+
+
 
 export const { RouteProvider, useRoute, routes } = createRouter({
     "account": defineRoute(
@@ -34,13 +39,25 @@ export const { RouteProvider, useRoute, routes } = createRouter({
         { "courseCode": param.path.optional.string },
         ({ courseCode }) => `/trainings/${courseCode}`
     ),
+    //TODO: Remove, legacy
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
         ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
     ),
-    "catalogNew": defineRoute(
+    "catalogExplorer": defineRoute(
         { "catalogId": param.path.optional.string },
-        ({ catalogId }) => `/catalog-new/${catalogId}`
+        ({ catalogId }) => `/catalog/${catalogId}`
+    ),
+    "catalogLauncher": defineRoute(
+        {
+            "catalogId": param.path.string,
+            "serviceId": param.path.string,
+            "params": param.query.optional.ofType(id<ValueSerializer<Record<string, string>>>({
+                "parse": raw => URLON.parse(raw),
+                "stringify": value => URLON.stringify(value)
+            })).default({})
+        },
+        ({ catalogId, serviceId }) => `/launcher/${catalogId}/${serviceId}`
     ),
     ...(() => {
 

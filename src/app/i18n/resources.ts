@@ -20,10 +20,10 @@ import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoT
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
-import { SearchBar } from "app/components/pages/Catalog/SearchBar";
-import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
-import { CatalogCards } from "app/components/pages/Catalog/CatalogCards";
-import { Catalog } from "app/components/pages/Catalog";
+import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
+import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
+import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
+import { Catalog } from "app/components/pages/Catalog/Catalog";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -52,9 +52,9 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
     [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
-    [symToStr({ SearchBar })]: Reflect<SearchBar.I18nScheme>(),
-    [symToStr({ CatalogCard })]: Reflect<CatalogCard.I18nScheme>(),
-    [symToStr({ CatalogCards })]: Reflect<CatalogCards.I18nScheme>(),
+    [symToStr({ CatalogExplorerSearchBar })]: Reflect<CatalogExplorerSearchBar.I18nScheme>(),
+    [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
+    [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
 };
 
@@ -226,7 +226,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "toggle isExpanded": "Collapse",
             "home": "Home",
             "account": "Account",
-            "catalogNew": "Catalog",
+            "catalogExplorer": "Catalog",
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
@@ -258,14 +258,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "warningTitle": "Precautions for use",
             "warningText": "The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",
         },
-        "SearchBar": {
+        "CatalogExplorerSearchBar": {
             "search": "Search"
         },
-        "CatalogCard": {
+        "CatalogExplorerCard": {
             "launch": "Launch",
             "learn more": "Learn more"
         },
-        "CatalogCards": {
+        "CatalogExplorerCards": {
             "show more": "Show more",
             "no service found": "No service found",
             "no result found": "No result found for {{forWhat}}",
@@ -417,7 +417,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "toggle isExpanded": "Réduire",
             "home": "Accueil",
             "account": "Mon compte",
-            "catalogNew": "Catalogue",
+            "catalogExplorer": "Catalogue",
             "myServices": "Mes Services",
             "mySecrets": "Mes Secrets",
             "myBuckets": "Mes Fichiers",
@@ -449,14 +449,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "warningTitle": "Précautions d’usage",
             "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
         },
-        "SearchBar": {
+        "CatalogExplorerSearchBar": {
             "search": "Rechercher"
         },
-        "CatalogCard": {
+        "CatalogExplorerCard": {
             "launch": "Lancer",
             "learn more": "En savoir plus"
         },
-        "CatalogCards": {
+        "CatalogExplorerCards": {
             "show more": "Afficher tous",
             "no service found": "Service non trouvé",
             "no result found": "Aucun résultat trouvé pour {{forWhat}}",

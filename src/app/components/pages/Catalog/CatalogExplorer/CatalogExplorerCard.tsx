@@ -61,7 +61,7 @@ export type Props = {
     onRequestLearnMore?(): void;
 };
 
-export const CatalogCard = memo((props: Props) => {
+export const CatalogExplorerCard = memo((props: Props) => {
 
     const {
         className,
@@ -74,7 +74,7 @@ export const CatalogCard = memo((props: Props) => {
 
     const { classNames } = useClassNames({});
 
-    const { t } = useTranslation("CatalogCard");
+    const { t } = useTranslation("CatalogExplorerCard");
 
     return (
         <div className={cx(classNames.root, className)}>
@@ -111,7 +111,7 @@ export const CatalogCard = memo((props: Props) => {
 
 });
 
-export declare namespace CatalogCard {
+export declare namespace CatalogExplorerCard {
 
     export type I18nScheme = {
         'learn more': undefined;
