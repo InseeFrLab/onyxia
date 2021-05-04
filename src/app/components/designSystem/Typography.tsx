@@ -8,7 +8,7 @@ import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
     className?: string | null;
-    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "body1" | "body2" | "caption";
+    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "subtitle2" | "body1" | "body2" | "caption";
     color?: "primary" | "secondary" | "disabled" | "focus"
     children: NonNullable<React.ReactNode>;
     onClick?: (() => void) | null;
