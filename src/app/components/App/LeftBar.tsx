@@ -4,12 +4,13 @@ import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { cx } from "tss-react";
+import { cx } from "tss-react";
 import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/router";
-import  { doExtends } from "evt/tools/typeSafety/doExtends";
+import { doExtends } from "evt/tools/typeSafety/doExtends";
+import Divider from "@material-ui/core/Divider";
 
 const targets = [
     "toggle isExpanded" as const,
@@ -18,14 +19,12 @@ const targets = [
         const pageTarget = [
             "home",
             "account",
-            //"tour",
             "trainings",
             "sharedServices",
             "catalogExplorer",
             "myServices",
             "mySecrets",
             "myBuckets"
-            //about
         ] as const;
 
         doExtends<typeof pageTarget[number], keyof typeof routes>();
@@ -59,6 +58,10 @@ const { useClassNames } = createUseClassNames<Props>()(
             "marginRight": theme.spacing(2),
             "overflow": "auto",
             "height": "100%"
+        },
+        "divider": {
+            "marginTop": theme.spacing(1),
+            "backgroundColor": theme.custom.colors.palette.whiteSnow.greyVariant1
         }
     })
 );
@@ -100,17 +103,34 @@ export const LeftBar = memo((props: Props) => {
                 {
                     targets.map(
                         target =>
-                            <CustomButton
-                                key={target}
-                                isActive={
-                                    currentPage === target || 
-                                    (currentPage === "myFiles" && target === "myBuckets")
+                            <>
+                                <CustomButton
+                                    key={target}
+                                    isActive={
+                                        currentPage === target ||
+                                        (currentPage === "myFiles" && target === "myBuckets")
+                                    }
+                                    target={target}
+                                    isExpanded={isExpanded}
+                                    collapsedWidth={collapsedWidth - theme.spacing(4)}
+                                    onClick={onClickFactory(target)}
+                                />
+                                {
+                                    (() => {
+                                        switch (target) {
+                                            case "account":
+                                            case "sharedServices":
+                                            case "myServices":
+                                                return (
+                                                <Divider 
+                                                    className={classNames.divider}
+                                                    variant="middle"
+                                                />
+                                                );
+                                        }
+                                    })()
                                 }
-                                target={target}
-                                isExpanded={isExpanded}
-                                collapsedWidth={collapsedWidth - theme.spacing(4)}
-                                onClick={onClickFactory(target)}
-                            />
+                            </>
                     )
                 }
             </nav>
