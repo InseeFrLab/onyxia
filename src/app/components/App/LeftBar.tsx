@@ -203,7 +203,7 @@ const { CustomButton } = (() => {
                 "borderRadius": "0 10px 10px 0",
                 "display": "flex",
                 "alignItems": "center",
-                "marginRight": theme.spacing(2)
+                "marginRight": theme.spacing(4)
             }
 
         })
