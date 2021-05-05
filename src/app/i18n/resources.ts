@@ -24,6 +24,7 @@ import { SearchBar } from "app/components/pages/Catalog/SearchBar";
 import { CatalogCard } from "app/components/pages/Catalog/CatalogCard";
 import { CatalogCards } from "app/components/pages/Catalog/CatalogCards";
 import { Catalog } from "app/components/pages/Catalog";
+import { Footer } from "app/components/App/Footer";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -56,6 +57,7 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogCard })]: Reflect<CatalogCard.I18nScheme>(),
     [symToStr({ CatalogCards })]: Reflect<CatalogCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
+    [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -279,6 +281,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Service catalog",
             "header text2": "Explore the available services",
             "header text3": "The catalog enable you to select a service to deploy"
+        },
+        "Footer": {
+            "contribute": "Contribute",
+            "terms of service": "Terms of service"
         }
     },
     "fr": {
@@ -471,6 +477,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Catalogue de services",
             "header text2": "Explorez, lancez et configurez des services en quelues clics seulement.",
             "header text3": "Le catalogue vous propose de déployer facilement des services"
+        },
+        "Footer": {
+            "contribute": "Contribuer au projet",
+            "terms of service": "Coditions d'utilisation"
         }
         /* spell-checker: enable */
     }
