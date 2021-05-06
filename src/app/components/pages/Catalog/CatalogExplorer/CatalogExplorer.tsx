@@ -22,9 +22,8 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
         serviceTitle =>
-            routes.catalogLauncher({
-                "catalogId": route.params.catalogId!,
-                "serviceId": serviceTitle
+            routes.catalog({
+                "optionalTrailingPath": `${route.params.catalogId}/${serviceTitle}/deploiement`
             }).push()
     );
 
