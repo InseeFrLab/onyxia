@@ -375,7 +375,6 @@ export const MySecretsEditor = memo((props: Props) => {
                 >
                     {t("add an entry")}
                 </Button>
-
                 <Button
                     onClick={dialogCallbackFactory("open")}
                     color="secondary"
@@ -383,11 +382,10 @@ export const MySecretsEditor = memo((props: Props) => {
                 >
                     {t("use this secret")}
                 </Button>
-
                 <Dialog
-                    title="a"
-                    subtitle="b"
-                    body={t("how to use a secret")}
+                    title={t("use secret dialog title")}
+                    subtitle={t("use secret dialog subtitle")}
+                    body={t("use secret dialog body")}
                     isOpen={isDialogOpen}
                     onClose={dialogCallbackFactory("close")}
 
@@ -395,17 +393,11 @@ export const MySecretsEditor = memo((props: Props) => {
                         () => {  }
                     }
                     buttons={
-                        <>
                         <Button onClick={dialogCallbackFactory("close")}>
-                            {t("ok")}
+                            {t("use secret dialog ok")}
                         </Button>
-                        </>
                     }
-
-
                 />
-
-
             </div>
 
         </div>
@@ -432,8 +424,11 @@ export declare namespace MySecretsEditor {
         'invalid value cannot eval': undefined;
 
         'use this secret': undefined;
-        'how to use a secret': undefined;
-        ok: undefined;
+
+        'use secret dialog title': undefined;
+        'use secret dialog subtitle': undefined;
+        'use secret dialog body': undefined;
+        'use secret dialog ok': undefined;
 
 
     };

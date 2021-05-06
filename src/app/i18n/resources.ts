@@ -198,8 +198,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "empty directory": "This directory is empty",
         },
         "MySecretsEditor": {
-            ...common.en,
-
             "add an entry": "Add a new variable",
             "environnement variable default name": "NEW_VAR",
             "table of secret": "table of secret",
@@ -219,12 +217,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key invalid character": "Invalid character",
             "invalid value cannot eval": "Invalid shell expression",
             "use this secret": `Use in services`,
-            "how to use a secret": `The path of this secret has been copied to you clipboard.
-            Now when you launch a service (RStudio, Jupyter, ect) go to the
-            secret tab and and paste the path of the secret provided for this 
-            purpose.
-            The values will be injected as environnement variable.
-            `
+            "use secret dialog title": "Use in a service",
+            "use secret dialog subtitle": "The path of the secret have been copied",
+            "use secret dialog body": `
+                When you launch a service (RStudio, Jupyter, ect) go to the
+                secret tab and and paste the path of the secret provided for this 
+                purpose.
+                The values will be injected as environnement variable.
+            `,
+            "use secret dialog ok": "Got it"
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -422,12 +423,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid key invalid character": "Caractère non valide",
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
-            "how to use a secret": `
-            Le chemin du secret a été copié dans le presse papier!
-            Au moment de lancer un service (RStudio, Jupyter), rendez-vous
-            dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
-            Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
-            `
+
+            "use secret dialog title": "Utiliser dans un service",
+            "use secret dialog subtitle": "Le chemin du secret a été copié.",
+            "use secret dialog body": `
+                Au moment de lancer un service (RStudio, Jupyter), rendez-vous
+                dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
+                Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
+            `,
+            "use secret dialog ok": "J'ai compris"
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
