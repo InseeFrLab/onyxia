@@ -2,10 +2,9 @@ import { useEffect, memo } from "react";
 import { Template } from "./Template";
 import type { KcContext, KcProps } from "keycloakify";
 import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
-import tos_fr_url from "app/assets/md/tos_fr.md";
-import tos_en_url from "app/assets/md/tos_en.md";
 import { Button } from "app/components/designSystem/Button";
 import { createUseClassNames } from "app/theme/useClassNames";
+import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -43,12 +42,7 @@ export const Terms = memo(({ kcContext, ...props }: { kcContext: KcContext.Terms
                 return;
             }
 
-            fetch((() => {
-                switch (kcLanguageTag) {
-                    case "fr": return tos_fr_url;
-                    default: return tos_en_url;
-                }
-            })())
+            fetch(getTosMarkdownUrl(kcLanguageTag))
                 .then(response => response.text())
                 .then(rawMarkdown => kcMessages[kcLanguageTag].termsText = rawMarkdown);
 
@@ -95,3 +89,4 @@ export const Terms = memo(({ kcContext, ...props }: { kcContext: KcContext.Terms
         />
     );
 });
+
