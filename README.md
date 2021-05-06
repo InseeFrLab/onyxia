@@ -15,6 +15,8 @@
   <a href="https://datalab.sspcloud.fr" title="Instance of Onyxia hosted in INSEE's data center">Onyxia @ INSEE</a>
   -
   <a href="https://docs.sspcloud.fr/" title="A website for the states workers responsible of producing the french official statistics">Community website</a>
+  -
+  <a href="https://inseefrlab.github.io/onyxia-ui/" title="A website for testing the app components in isolation">Storybook</a>
 </p>
 
 ---
@@ -75,7 +77,7 @@ The is four source directories:
 - `*/tools`: All generic code. Everything that could be externalized to a standalone modules independent from the project.
 - `src/js`: Legacy code that hasn't be ported to the new architecture yet.
 
-# OPS
+# Ops
 
 To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
 the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-ui) 
