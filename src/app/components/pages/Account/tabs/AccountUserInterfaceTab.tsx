@@ -36,6 +36,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
             <AccountField
                 type="toggle"
                 title={t("enable dark mode")}
+                helperText={t("dark mode helper")}
                 isLocked={false}
                 isOn={isDarkModeEnabled}
                 onRequestToggle={onRequestToggleIsDarkModeEnabled}
@@ -43,6 +44,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
             <AccountField
                 type="toggle"
                 title={t("enable beta")}
+                helperText={t("beta mode helper")}
                 isLocked={false}
                 isOn={isBetaModeEnabled}
                 onRequestToggle={onRequestToggleIsBetaModeEnabled}
@@ -59,6 +61,8 @@ export declare namespace AccountUserInterfaceTab {
         'title': undefined;
         'enable dark mode': undefined;
         'enable beta': undefined;
+        'dark mode helper': undefined;
+        'beta mode helper': undefined;
     };
 
 }

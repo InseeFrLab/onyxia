@@ -171,6 +171,7 @@ const props: Parameters<typeof getStory>[0] = {
     "browsablePath": ".onyxia",
     "currentPath": ".onyxia/this/is/a/path",
     "evtTranslation": new Evt(),
+    "evtAction": new Evt(),
     "isNavigating": false,
     "showHidden": false,
     "file": null,

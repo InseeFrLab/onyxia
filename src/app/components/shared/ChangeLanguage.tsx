@@ -8,7 +8,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { css } from "tss-react";
 import { useDomRect } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonProps as MuiButtonProps } from "@material-ui/core/Button";
 import { Icon } from "app/components/designSystem/Icon";

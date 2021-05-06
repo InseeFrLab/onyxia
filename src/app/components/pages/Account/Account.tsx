@@ -6,25 +6,30 @@ import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
-import type { Route } from "type-route";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 import { useConstCallback } from "powerhooks";
+import type { Route } from "type-route";
 
-Account.routeGroup = createGroup([routes.account]);
+Account.routeGroup = createGroup([
+    routes.account
+]);
 
-Account.requireUserLoggedIn = true;
+type PageRoute = Route<typeof Account.routeGroup>;
+
+Account.requireUserLoggedIn = ()=> true;
 
 export type Props = {
+    route: PageRoute;
     className?: string;
-    route: Route<typeof Account.routeGroup>;
 };
+
 
 export function Account(props: Props) {
 

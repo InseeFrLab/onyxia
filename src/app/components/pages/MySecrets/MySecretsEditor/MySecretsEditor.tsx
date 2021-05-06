@@ -16,7 +16,7 @@ import { useArrayDiff } from "powerhooks";
 import { Button } from "app/components/designSystem/Button";
 import { Typography } from "app/components/designSystem/Typography";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 import { id } from "evt/tools/typeSafety/id";
 import type { Id } from "evt/tools/typeSafety/id";
 import { evaluateShellExpression } from "app/tools/evaluateShellExpression";
@@ -26,19 +26,15 @@ import Table from "@material-ui/core/Table";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
-
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-
+import { Dialog } from "app/components/designSystem/Dialog";
 
 export type Props = {
     isBeingUpdated: boolean;
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
     onCopyPath(): void;
+    doDisplayUseInServiceDialog: boolean;
+    onDoDisplayUseInServiceDialogValueChange(doDisplayUseInServiceDialog: boolean): void;
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
@@ -68,6 +64,9 @@ const { useClassNames } = createUseClassNames<Props>()(
         },
         "tableContainerRoot": {
             "overflow": "visible"
+        },
+        "dialog": {
+            "backgroundColor": "red"
         }
     })
 );
@@ -75,7 +74,10 @@ const { useClassNames } = createUseClassNames<Props>()(
 
 export const MySecretsEditor = memo((props: Props) => {
 
-    const { secretWithMetadata, onEdit, isBeingUpdated, onCopyPath } = props;
+    const { 
+        secretWithMetadata, onEdit, isBeingUpdated, onCopyPath,
+        doDisplayUseInServiceDialog, onDoDisplayUseInServiceDialogValueChange
+    } = props;
 
     const { secret } = secretWithMetadata;
 
@@ -278,7 +280,7 @@ export const MySecretsEditor = memo((props: Props) => {
     const dialogCallbackFactory = useCallbackFactory(
         ([action]: ["open" | "close"]) => {
 
-            const isDialogOpen = (() => {
+            const isActionOpenDialog = (() => {
                 switch (action) {
                     case "open": return true;
                     case "close": return false;
@@ -287,11 +289,16 @@ export const MySecretsEditor = memo((props: Props) => {
 
             onEditorRowStartEditFactory("")();
 
-            if (isDialogOpen) {
+            if (isActionOpenDialog) {
                 onCopyPath();
             }
 
-            setIsDialogOpen(isDialogOpen);
+            if( !doDisplayUseInServiceDialog && isActionOpenDialog){
+                return;
+            }
+
+            setIsDialogOpen(isActionOpenDialog);
+
         }
     );
 
@@ -378,30 +385,26 @@ export const MySecretsEditor = memo((props: Props) => {
                 >
                     {t("add an entry")}
                 </Button>
-
                 <Button
                     onClick={dialogCallbackFactory("open")}
                     color="secondary"
+                    startIcon="filterNone"
                 >
                     {t("use this secret")}
                 </Button>
                 <Dialog
-                    open={isDialogOpen}
+                    title={t("use secret dialog title")}
+                    subtitle={t("use secret dialog subtitle")}
+                    body={t("use secret dialog body")}
+                    isOpen={isDialogOpen}
                     onClose={dialogCallbackFactory("close")}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            {t("how to use a secret")}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
+                    onDoShowNextTimeValueChange={onDoDisplayUseInServiceDialogValueChange}
+                    buttons={
                         <Button onClick={dialogCallbackFactory("close")}>
-                            {t("ok")}
+                            {t("use secret dialog ok")}
                         </Button>
-                    </DialogActions>
-                </Dialog>
+                    }
+                />
             </div>
 
         </div>
@@ -428,8 +431,11 @@ export declare namespace MySecretsEditor {
         'invalid value cannot eval': undefined;
 
         'use this secret': undefined;
-        'how to use a secret': undefined;
-        ok: undefined;
+
+        'use secret dialog title': undefined;
+        'use secret dialog subtitle': undefined;
+        'use secret dialog body': undefined;
+        'use secret dialog ok': undefined;
 
 
     };

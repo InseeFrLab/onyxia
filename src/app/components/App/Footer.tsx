@@ -22,7 +22,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             "alignItems": "center",
             "padding": theme.spacing(0, 3),
             "& a:hover": {
-                "text-decoration": "underline",
+                "textDecoration": "underline",
                 "textDecorationColor": theme.custom.colors.useCases.typography.textPrimary
             }
         },

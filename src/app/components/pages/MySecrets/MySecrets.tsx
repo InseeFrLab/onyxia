@@ -1,13 +1,12 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { Props as ExplorerProps } from "app/components/shared/Explorer";
-import * as lib from "lib/setup";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { PageHeader } from "app/components/shared/PageHeader";
@@ -15,20 +14,27 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "powerhooks";
 import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
-import type { Route } from "type-route";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
+import type { Route } from "type-route";
+import { thunks, pure } from "lib/setup";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
 
+MySecrets.routeGroup = createGroup([
+    routes.mySecrets
+]);
 
-/*
-const { secretExplorer: thunks } = lib.thunks;
-const { secretExplorer: pure } = lib.pure;
-*/
-const thunks = lib.thunks.secretExplorer;
-const pure = lib.pure.secretExplorer;
+type PageRoute = Route<typeof MySecrets.routeGroup>;
 
+MySecrets.requireUserLoggedIn = ()=> true;
+
+export type Props = {
+    route: PageRoute;
+    className?: string;
+};
 
 const { useClassNames } = createUseClassNames<{}>()(
     () => ({
@@ -45,16 +51,6 @@ const { useClassNames } = createUseClassNames<{}>()(
 );
 
 
-MySecrets.routeGroup = createGroup([routes.mySecrets]);
-
-MySecrets.requireUserLoggedIn = true;
-
-export type Props = {
-    className?: string;
-    //We allow route to be undefined to be able to test in storybook
-    route?: Route<typeof MySecrets.routeGroup>;
-};
-
 export function MySecrets(props: Props) {
 
     //TODO: Fix how routes are handled, can't navigate back for example.
@@ -69,7 +65,7 @@ export function MySecrets(props: Props) {
         SecretOrFileExplorer,
         {
             "type": "secret",
-            "getIsValidBasename": pure.getIsValidBasename
+            "getIsValidBasename": pure.secretExplorer.getIsValidBasename
         }
     );
 
@@ -88,12 +84,12 @@ export function MySecrets(props: Props) {
             dispatch((() => {
                 switch (kind) {
                     case "directory":
-                        return thunks.navigateToDirectory({
+                        return thunks.secretExplorer.navigateToDirectory({
                             "fromCurrentPath": true,
                             "directoryRelativePath": relativePath
                         });
                     case "file":
-                        return thunks.navigateToSecret({
+                        return thunks.secretExplorer.navigateToSecret({
                             "fromCurrentPath": true,
                             "secretRelativePath": relativePath
                         })
@@ -111,6 +107,7 @@ export function MySecrets(props: Props) {
                 return;
             }
 
+            //We allow route to be null to be able to test in storybook
             const {
                 secretOrDirectoryPath = userHomePath,
                 isFile = false
@@ -118,11 +115,11 @@ export function MySecrets(props: Props) {
 
             dispatch(
                 isFile ?
-                    thunks.navigateToSecret({
+                    thunks.secretExplorer.navigateToSecret({
                         "fromCurrentPath": false,
                         "secretPath": secretOrDirectoryPath
                     }) :
-                    thunks.navigateToDirectory({
+                    thunks.secretExplorer.navigateToDirectory({
                         "fromCurrentPath": false,
                         "directoryPath": secretOrDirectoryPath
                     })
@@ -154,7 +151,7 @@ export function MySecrets(props: Props) {
     const onEditedBasename = useConstCallback(
         ({ kind, basename, editedBasename }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
             dispatch(
-                thunks.renameDirectoryOrSecretWithinCurrentDirectory({
+                thunks.secretExplorer.renameDirectoryOrSecretWithinCurrentDirectory({
                     "kind": (() => {
                         switch (kind) {
                             case "file": return "secret";
@@ -173,7 +170,7 @@ export function MySecrets(props: Props) {
             console.log("TODO: Deletion started");
 
             await dispatch(
-                thunks.deleteDirectoryOrSecretWithinCurrentDirectory({
+                thunks.secretExplorer.deleteDirectoryOrSecretWithinCurrentDirectory({
                     "kind": (() => {
                         switch (kind) {
                             case "file": return "secret";
@@ -192,7 +189,7 @@ export function MySecrets(props: Props) {
     const onCreateItem = useConstCallback(
         ({ kind, basename }: Parameters<ExplorerProps["onCreateItem"]>[0]) =>
             dispatch(
-                thunks.createSecretOrDirectory({
+                thunks.secretExplorer.createSecretOrDirectory({
                     "kind": (() => {
                         switch (kind) {
                             case "file": return "secret";
@@ -218,7 +215,7 @@ export function MySecrets(props: Props) {
 
     const onEdit = useConstCallback(
         (params: EditSecretParams) =>
-            dispatch(thunks.editCurrentlyShownSecret(params))
+            dispatch(thunks.secretExplorer.editCurrentlyShownSecret(params))
     );
 
     const { classNames } = useClassNames({});
@@ -237,6 +234,25 @@ export function MySecrets(props: Props) {
         [state.currentPath === ""]
     );
 
+    const doDisplayUseInServiceDialog = useSelector(
+        state => state.userConfigs.doDisplayMySecretsUseInServiceDialog.value
+    );
+
+    const onDoDisplayUseInServiceDialogValueChange = useConstCallback(
+        value => dispatch(
+            thunks.userConfigs.changeValue({
+                "key": "doDisplayMySecretsUseInServiceDialog",
+                value
+            })
+        )
+    );
+
+    const [ evtButtonBarAction ] = useState(()=> Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>());
+
+    const onMySecretEditorCopyPath = useConstCallback(
+        ()=>evtButtonBarAction.post("TRIGGER COPY PATH")
+    );
+
     if (state.currentPath === "") {
         return null;
     }
@@ -248,9 +264,10 @@ export function MySecrets(props: Props) {
                 text1={t("page title")}
                 text2={t("what this page is used for")}
                 text3={<>
-                    {t("watch the video")} 
-                    <Link 
-                        href="https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4" 
+                    {t("watch the video")}
+                    &nbsp;
+                    <Link
+                        href="https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4"
                         target="_blank"
                     >
                         {t("here")}
@@ -263,14 +280,17 @@ export function MySecrets(props: Props) {
                 currentPath={state.currentPath}
                 isNavigating={state.isNavigationOngoing}
                 evtTranslation={evtSecretsManagerTranslation}
+                evtAction={evtButtonBarAction}
                 showHidden={false}
                 file={
                     state.state !== "SHOWING SECRET" ? null :
                         <MySecretsEditor
-                            onCopyPath={onCopyPath}
+                            onCopyPath={onMySecretEditorCopyPath}
                             isBeingUpdated={state.isBeingUpdated}
                             secretWithMetadata={state.secretWithMetadata}
                             onEdit={onEdit}
+                            doDisplayUseInServiceDialog={doDisplayUseInServiceDialog}
+                            onDoDisplayUseInServiceDialogValueChange={onDoDisplayUseInServiceDialogValueChange}
                         />
                 }
                 fileDate={

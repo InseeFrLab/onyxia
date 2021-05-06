@@ -29,6 +29,7 @@ export type UserConfigs = Id<Record<string, string | boolean | number | null>, {
     isDarkModeEnabled: boolean;
     deploymentRegionId: string;
     githubPersonalAccessToken: string | null;
+    doDisplayMySecretsUseInServiceDialog: boolean;
 }>;
 
 export type UserConfigsState = {
@@ -138,7 +139,8 @@ export const privateThunks = {
                 "isBetaModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
                 "deploymentRegionId":  (await onyxiaApiClient.getConfigurations()).regions[0].id,
-                "githubPersonalAccessToken": null
+                "githubPersonalAccessToken": null,
+                "doDisplayMySecretsUseInServiceDialog": true
             };
 
             await Promise.all(
