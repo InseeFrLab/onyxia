@@ -33,6 +33,8 @@ export type Props = {
     secretWithMetadata: SecretWithMetadata;
     onEdit(params: EditSecretParams): void;
     onCopyPath(): void;
+    doDisplayUseInServiceDialog: boolean;
+    onDoDisplayUseInServiceDialogValueChange(doDisplayUseInServiceDialog: boolean): void;
 };
 
 const { useClassNames } = createUseClassNames<Props>()(
@@ -72,7 +74,10 @@ const { useClassNames } = createUseClassNames<Props>()(
 
 export const MySecretsEditor = memo((props: Props) => {
 
-    const { secretWithMetadata, onEdit, isBeingUpdated, onCopyPath } = props;
+    const { 
+        secretWithMetadata, onEdit, isBeingUpdated, onCopyPath,
+        doDisplayUseInServiceDialog, onDoDisplayUseInServiceDialogValueChange
+    } = props;
 
     const { secret } = secretWithMetadata;
 
@@ -275,7 +280,7 @@ export const MySecretsEditor = memo((props: Props) => {
     const dialogCallbackFactory = useCallbackFactory(
         ([action]: ["open" | "close"]) => {
 
-            const isDialogOpen = (() => {
+            const isActionOpenDialog = (() => {
                 switch (action) {
                     case "open": return true;
                     case "close": return false;
@@ -284,11 +289,16 @@ export const MySecretsEditor = memo((props: Props) => {
 
             onEditorRowStartEditFactory("")();
 
-            if (isDialogOpen) {
+            if (isActionOpenDialog) {
                 onCopyPath();
             }
 
-            setIsDialogOpen(isDialogOpen);
+            if( !doDisplayUseInServiceDialog && isActionOpenDialog){
+                return;
+            }
+
+            setIsDialogOpen(isActionOpenDialog);
+
         }
     );
 
@@ -388,10 +398,7 @@ export const MySecretsEditor = memo((props: Props) => {
                     body={t("use secret dialog body")}
                     isOpen={isDialogOpen}
                     onClose={dialogCallbackFactory("close")}
-
-                    onDoNotDisplayAgainValueChange={
-                        () => {  }
-                    }
+                    onDoShowNextTimeValueChange={onDoDisplayUseInServiceDialogValueChange}
                     buttons={
                         <Button onClick={dialogCallbackFactory("close")}>
                             {t("use secret dialog ok")}

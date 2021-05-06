@@ -109,7 +109,7 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
         [secret, metadata]
     );
 
-    const { onCopyPath } = props;
+    const { onCopyPath, onDoDisplayUseInServiceDialogValueChange, doDisplayUseInServiceDialog } = props;
 
     return (
         <div style={{ "width": 1600 }}>
@@ -117,7 +117,9 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
                 {...{
                     isBeingUpdated,
                     onEdit,
-                    onCopyPath
+                    onCopyPath,
+                    doDisplayUseInServiceDialog,
+                    onDoDisplayUseInServiceDialogValueChange
                 }}
                 secretWithMetadata={{
                     metadata,
@@ -137,7 +139,8 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const Vue1 = getStory({
+    "doDisplayUseInServiceDialog": true,
     "isBeingUpdated": false,
-    ...logCallbacks(["onCopyPath"])
+    ...logCallbacks(["onCopyPath", "onDoDisplayUseInServiceDialogValueChange"])
 });
 

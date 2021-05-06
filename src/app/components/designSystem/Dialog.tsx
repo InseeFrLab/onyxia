@@ -21,11 +21,7 @@ export type Props = {
     isOpen: boolean;
     onClose(): void;
 
-    onDoNotDisplayAgainValueChange?(
-        params: {
-            doNotDisplayAgainValue: boolean;
-        }
-    ): void;
+    onDoShowNextTimeValueChange?(doShowNextTime: boolean): void;
 
 };
 
@@ -72,7 +68,7 @@ export const Dialog = memo((props: Props) => {
         body,
         isOpen,
         buttons,
-        onDoNotDisplayAgainValueChange,
+        onDoShowNextTimeValueChange,
         onClose
     } = props;
 
@@ -84,11 +80,12 @@ export const Dialog = memo((props: Props) => {
 
     const onChange = useConstCallback(() => {
 
-        const doNotDisplayAgainValue = !isChecked;
+        const isCheckedNewValue = !isChecked;
 
-        setIsChecked(doNotDisplayAgainValue);
+        setIsChecked(isCheckedNewValue);
 
-        onDoNotDisplayAgainValueChange!({ doNotDisplayAgainValue })
+        onDoShowNextTimeValueChange!(!isCheckedNewValue);
+
     });
 
     return (
@@ -135,7 +132,7 @@ export const Dialog = memo((props: Props) => {
                 <div className={classNames.buttonWrapper}>
                     <div className={classNames.checkBoxWrapper}>
                         {
-                            onDoNotDisplayAgainValueChange !== undefined &&
+                            onDoShowNextTimeValueChange !== undefined &&
                             <FormControlLabel control={
                                 <Checkbox
                                     checked={isChecked}
