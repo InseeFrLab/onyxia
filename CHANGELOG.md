@@ -1,3 +1,23 @@
+### **0.9.6** (2021-05-06)  
+  
+- Update package.json  
+- Merge pull request #232 from InseeFrLab/launcher
+
+Prepare for the new launcher  
+- MySecrets: clicking on use in secret gives copy feedback  
+- MySecrets: Persiste 'do not display again' choice  
+- MySecrets: Add dialog 'use in secret' text  
+- Remove fill color in trainings  
+- Merge remote-tracking branch 'origin/icon_leftbar' into launcher  
+- Add instructions about how to import assets  
+- Merge remote-tracking branch 'origin/icon_leftbar' into launcher  
+- Merge remote-tracking branch 'origin/marchufschmitt-update-textcontent' into launcher  
+- Merge remote-tracking branch 'origin/master' into launcher  
+- Update the CI to publish storybook  
+- Host video in assets  
+- Implement new dialog  
+- Implement dialog    
+  
 ### **0.9.5** (2021-05-05)  
   
 - Implement footer  
