@@ -100,9 +100,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "third-party-integration": "external services",
             "storage": "Connect to storage",
             "user-interface": "Interface preferences",
-            "text1": "Account",
-            "text2": "Access and configure your service information",
-            "text3p1": "Your id, e-mails, password and",
+            "text1": "My account",
+            "text2": "Access your different account informations.",
+            "text3p1": "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
             "personal tokens": "personal tokens",
             "text3p2": "can be accessed and configured here.",
             "personal tokens tooltip": "Password that are generated for you and that have a given validity period"
@@ -112,42 +112,49 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user id": "User id (IDEP)",
             "full name": "Full name",
             "email": "Email address",
-            "password": "Account password",
+            "password": "Change account password",
             "auth information": "Onyxia authentication information",
-            "auth information helper": `Theses different values let you authenticate yourself 
-            against the different services offered on the platform`,
+            "auth information helper": `These informations allows you to identify yourself
+            within the platform and the various services.`,
             "ip address": "IP Address"
         },
         "AccountIntegrationsTab": {
             "git section title": "Git configuration",
-            "git section helper": "To make sure that, on GitHub or GitLab, you appear as the author of the commits you make from your services.",
+            "git section helper": `To ensure that you appear from your services 
+            as the author of Git contributions`,
             "gitName": "Username for Git",
             "gitEmail": "Email for Git",
-            "third party tokens section title": "Credentials for Gitlab, GitHub and Kaggle",
-            "third party tokens section helper": "Have your third party services token always available as environnement variable.",
+            "third party tokens section title": "Connect your Gitlab, Github and Kaggle accounts",
+            "third party tokens section helper": `
+                Connect your services to external accounts using 
+                personal access tokens and environment variables
+            `,
             "personal token": "{{serviceName}} personal access token",
             "link for token creation": "Create your {{serviceName}} token.",
-            "accessible as env": "Accessible withing your services as the environnement variable:"
+            "accessible as env": "Accessible withing your services as the environnement variable"
         },
         "AccountStorageTab": {
-            "credentials section title": "Credential to access your S3 storage (Minio)",
-            "credentials section helper": "All theses values are pre configured in your services, the S3 clients works out of the box.",
+            "credentials section title": "Connect your data to your services",
+            "credentials section helper": "Amazon-compatible MinIO object storage (AWS S3). This information is already filled in automatically.",
             "accessible as env": "Accessible withing your services as the environnement variable:",
-            "init script section title": "To access your storage from your personal computer",
-            "init script section helper": "Download or copy in clipboard the init script in the programing language of your choosing.",
+            "init script section title": "To access your storage outside of datalab services",
+            "init script section helper": "Download or copy the init script in the programming language of your choice.",
             "valid until": "Valid until {{when}}"
         },
         "AccountUserInterfaceTab": {
             "title": "Interface preferences",
             "enable dark mode": "Enable dark mode",
-            "enable beta": "Enable beta-test mode"
+            "dark mode helper": "Low light interface theme with dark colored background.",
+            "enable beta": "Enable beta-test mode",
+            "beta mode helper": "For advanced platform configurations and features.",
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
             "language": "Change language",
             "s3 scripts": "Init script",
             "service password": "Password for your services",
-            "service password helper text": "You need this password to connect to your services. It is frequently renewed and generated automatically",
+            "service password helper text": `This password is required to log in to all of your services. 
+            It is generated automatically and renews itself regularly.`,
             "OIDC Access token": "OIDC Personal access token",
             "OIDC Access token helper text": `Valid until {{when}}`,
             "not yet defined": "Not yet defined"
@@ -157,7 +164,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not a valid": "This is not a valid {{what}}",
             "allowed email domains": "Allowed domains",
             "alphanumerical chars only": "Only alphanumerical characters",
-            "username question mark helper text":"No spaces or special characters (#,*,é,...)",
+            "username question mark helper text": "No spaces or special characters (#,*,é,...)",
             "minimum length": "Minimum length: {{n}}",
             "must be different from username": "Pass can't be the username",
             "password mismatch": "Passwords mismatch",
@@ -228,10 +235,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "logout": "Logout"
         },
         "LeftBar": {
-            "toggle isExpanded": "Collapse",
+            "toggle isExpanded": "Reduce",
             "home": "Home",
-            "account": "Account",
-            "catalogExplorer": "Catalog",
+            "account": "My account",
+            "catalogExplorer": "Services catalog",
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
@@ -281,8 +288,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "search results": "Search result"
         },
         "Catalog": {
-            "header text1": "Service catalog",
-            "header text2": "Explore the available services",
+            "header text1": "Services catalog",
+            "header text2": "Explore, launch and configure services with just a few clicks.",
             "header text3": "The catalog enable you to select a service to deploy"
         },
         "Dialog": {
@@ -300,9 +307,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "third-party-integration": "Services externes",
             "storage": "Connexion au stockage",
             "user-interface": "Modes d'interface",
-            "text1": "Mon Compte",
+            "text1": "Mon compte",
             "text2": "Accèdez à vos différentes informations de compte.",
-            "text3p1": "Vos identifiants, e-mails, mots de passe et ",
+            "text3p1": "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
             "personal tokens": "Jetons d'accès individuel",
             "text3p2": "sont accessibles et configurables ici.",
             "personal tokens tooltip": "Ou en anglais \"token\"."
@@ -311,44 +318,48 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "general information": "Informations générales",
             "user id": "Identifiant (IDEP)",
             "full name": "Nom complet",
-            "email": "Address mail",
+            "email": "Adresse mail",
             "password": "Mot de passe du compte",
             "auth information": "Informations d'authentification Onyxia",
-            "auth information helper": `Ces information vous premetent de vous 
-            identifier sur les différents servces offert par la platforme`,
-            "ip address": "Addresse IP"
+            "auth information helper": `Ces informations vous permettent de vous identifier 
+            au sein de la plateforme et des différents services.`,
+            "ip address": "Adresse IP"
         },
         "AccountIntegrationsTab": {
             "git section title": "Configurations Git",
-            "git section helper": "Pour vous assurez que, sur GitHub et GitLab, vous apparaissiez comme l'auteur des contributions faites depuis vos services.",
+            "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
+            services comme l'auteur des contributions Git`,
             "gitName": "Nom d'utilisateur pour Git",
             "gitEmail": "Email pour Git",
-            "third party tokens section title": "Utilisation des API Github et Kaggle",
-            "third party tokens section helper": "Vos jetons de services tiers disponibles comme environnement de variable.",
+            "third party tokens section title": "Connecter vos comptes Gitlab, Github et Kaggle",
+            "third party tokens section helper": `Connectez vos services à des comptes extérieurs à l'aide
+            de jetons d'accès personnel et de variables d'environnement.`,
             "personal token": "Jeton d'accès personnel {{serviceName}}",
-            "link for token creation": "Crée votre jeton {{serviceName}}.",
+            "link for token creation": "Créer votre jeton {{serviceName}}.",
             "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement"
         },
         "AccountStorageTab": {
-            "credentials section title": "Identifiants pour vous connecter à votre stockage objet",
-            "credentials section helper": "Toutes ces valeurs sont préconfigurées dans vos services, les clients s3 sont près à l'emploi.",
+            "credentials section title": "Connecter vos données à vos services",
+            "credentials section helper": "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
             "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement",
-            "init script section title": "Pour accéder au stockage en dehors de vos services",
-            "init script section helper": "Téléchargez ou copiez dans les presses papier le script d'initialisation dans le langage de programmation de votre choix.",
+            "init script section title": "Pour accèder au stockage en dehors des services du datalab",
+            "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
             "valid until": "Valides jusqu'a {{when}}"
         },
         "AccountUserInterfaceTab": {
             "title": "Configurer le mode d'interface",
             "enable dark mode": "Activer le mode sombre",
+            "dark mode helper": "Thème de l’interface à faible luminosité avec un fond de couleur sombre.",
             "enable beta": "Activer le mode béta-testeur",
+            "beta mode helper": "Pour des configurations et fonctionnalités avancées de la plateforme.",
         },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",
             "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
-            "service password helper text": `Ce mot de passe vous est demander pour vous connecter à tous vos services.
-            Il est généré automatiquent et renouveler régulièrement.`,
+            "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
+            Il est généré automatiquement et se renouvelle régulièrement.`,
             "OIDC Access token": "Jeton d'accès personnel OIDC",
             "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
             "not yet defined": "Non définie"
@@ -430,13 +441,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "toggle isExpanded": "Réduire",
             "home": "Accueil",
             "account": "Mon compte",
-            "catalogExplorer": "Catalogue",
+            "catalogExplorer": "Catalogue de services",
             "myServices": "Mes Services",
             "mySecrets": "Mes Secrets",
             "myBuckets": "Mes Fichiers",
             "trainings": "Formations",
             "sharedServices": "Services partagés"
-            //"tour": "Visite Guidée"
         },
         "FourOhFour": {
             "not found": "Page non trouvée"
@@ -482,7 +492,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Catalog": {
             "header text1": "Catalogue de services",
-            "header text2": "Explorez, lancez et configurez des services en quelues clics seulement.",
+            "header text2": "Explorez, lancez et configurez des services en quelques clics seulement.",
             "header text3": "Le catalogue vous propose de déployer facilement des services"
         },
         "Dialog": {
