@@ -32,6 +32,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 
 export type Props = {
@@ -68,6 +70,9 @@ const { useClassNames } = createUseClassNames<Props>()(
         },
         "tableContainerRoot": {
             "overflow": "visible"
+        },
+        "dialog": {
+            "backgroundColor": "red"
         }
     })
 );
@@ -386,6 +391,7 @@ export const MySecretsEditor = memo((props: Props) => {
                 >
                     {t("use this secret")}
                 </Button>
+                {/*
                 <Dialog
                     open={isDialogOpen}
                     onClose={dialogCallbackFactory("close")}
@@ -403,6 +409,31 @@ export const MySecretsEditor = memo((props: Props) => {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                */}
+
+
+
+                <Dialog
+                    open={isDialogOpen}
+                    onClose={dialogCallbackFactory("close")}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className={classNames.dialog}
+                >
+                  <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+                  <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {t("how to use a secret")}
+                        </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                        <Button onClick={dialogCallbackFactory("close")}>
+                            {t("ok")}
+                        </Button>
+                  </DialogActions>
+                </Dialog>
+
+
             </div>
 
         </div>
