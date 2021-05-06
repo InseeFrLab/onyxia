@@ -15,7 +15,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "powerhooks";
 import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
-import videoUrl from "app/assets/videos/Demo_My_Secrets.mp4";
 import { routes } from "app/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
@@ -252,7 +251,15 @@ export function MySecrets(props: Props) {
                 icon="secrets"
                 text1={t("page title")}
                 text2={t("what this page is used for")}
-                text3={<>{t("watch the video")} <Link href={videoUrl} target="_blank">{t("here")}</Link></>}
+                text3={<>
+                    {t("watch the video")} 
+                    <Link 
+                        href="https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4" 
+                        target="_blank"
+                    >
+                        {t("here")}
+                    </Link>
+                </>}
             />
             <Explorer
                 className={classNames.explorer}

@@ -1,3 +1,9 @@
+### **0.9.5** (2021-05-05)  
+  
+- Implement footer  
+- Fix: Cors error with terms of service  
+- Rollback to React 16, not compatible with suspence    
+  
 ### **0.9.4** (2021-05-03)  
   
 - update deps, React 17  

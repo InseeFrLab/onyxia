@@ -1,6 +1,6 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
-import { cx } from "tss-react";
+import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import type { MouseEventHandler } from "react";
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -13,10 +13,8 @@ import { ReactComponent as TrainingsSvg } from "app/assets/svg/Trainings.svg";
 import { ReactComponent as FilesSvg } from "app/assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "app/assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "app/assets/svg/Bash.svg";
-import { ReactComponent as CommunitySvg } from "app/assets/svg/Community.svg";
-import { ReactComponent as CatalogSvg } from "app/assets/svg/Catalog.svg";
-import type { Optional } from "evt/tools/typeSafety";
-import { noUndefined } from "app/tools/noUndefined";
+import { ReactComponent as CommunitySvg } from "app/assets/svg/Community.svg";
+import { ReactComponent as CatalogSvg } from "app/assets/svg/Catalog.svg";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
@@ -31,7 +29,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
-import  { doExtends } from "evt/tools/typeSafety/doExtends";
+import { doExtends } from "evt/tools/typeSafety/doExtends";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import GetApp from "@material-ui/icons/GetApp";
@@ -40,16 +38,27 @@ import Help from "@material-ui/icons/Help";
 import Search from "@material-ui/icons/Search";
 import Cancel from "@material-ui/icons/Cancel";
 
-export type SvgTypes =
-    "tour" | "services" | "secrets" | "account" | "home" | "trainings" | "files" |
-    "collaborationTools" | "bash" | "community"| "catalog";
+import { noUndefined } from "app/tools/noUndefined";
+import type { Optional } from "evt/tools/typeSafety";
+import { typeGuard } from "evt/tools/typeSafety/typeGuard";
 
-export type MaterialType = 
-    "delete" | "edit" | "add" | "filterNone" |
-    "check" | "expandMore" | "attachMoney" | "chevronLeft" |
-    "cached" | "closeSharp" | "infoOutlined" | "brightness7"  | "brightness4" |
-    "translate" | "visibility" | "visibilityOff" | "getApp" | "replay" |
-    "help" | "search" | "cancel";
+
+const svgTypes = [
+    "tour", "services", "secrets", "account", "home", "trainings", "files",
+    "collaborationTools", "bash", "community", "catalog"
+] as const;
+
+export type SvgTypes = typeof svgTypes[number];
+
+const materialType = [
+    "delete", "edit", "add", "filterNone",
+    "check", "expandMore", "attachMoney", "chevronLeft",
+    "cached", "closeSharp", "infoOutlined", "brightness7", "brightness4",
+    "translate", "visibility", "visibilityOff", "getApp", "replay",
+    "help", "search", "cancel"
+] as const;
+
+export type MaterialType = typeof materialType[number];
 
 //NOTE: Ensure there is not overlap between the types
 doExtends<SvgTypes & MaterialType, never>();
@@ -96,9 +105,9 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { 
-        type, 
-        fontSize, 
+    const {
+        type,
+        fontSize,
         className,
         onClick,
         //For the forwarding, rest should be empty (typewise),
@@ -110,6 +119,11 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
     const { classNames } = useClassNames(completedProps);
 
     const svgTypeOrMuiIcon = (() => {
+
+        if (!typeGuard<MaterialType>(type, !!materialType.find(t => t === type))) {
+            return type;
+        }
+
         switch (type) {
             case "delete": return DeleteIcon;
             case "edit": return EditIcon;
@@ -118,8 +132,22 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
             case "check": return CheckIcon;
             case "closeSharp": return CloseSharp;
             case "infoOutlined": return InfoOutlined;
-            default: return type;
+            case "expandMore": return ExpandMore;
+            case "attachMoney": return AttachMoney;
+            case "chevronLeft": return ChevronLeft;
+            case "cached": return Cached;
+            case "visibility": return Visibility;
+            case "visibilityOff": return VisibilityOff;
+            case "getApp": return GetApp;
+            case "replay": return Replay;
+            case "help": return Help;
+            case "search": return Search;
+            case "cancel": return Cancel;
+            case "brightness7": return Brightness7;
+            case "brightness4": return Brightness4;
+            case "translate": return Translate;
         }
+
     })();
 
     if (typeof svgTypeOrMuiIcon !== "string") {
@@ -147,28 +175,14 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
                 case "tour": return TourSvg;
                 case "services": return ServicesSvg;
                 case "secrets": return SecretsSvg;
-                case "account": return AccountSvg;
-                case "home": return HomeSvg;
-                case "trainings": return TrainingsSvg;
                 case "files": return FilesSvg;
                 case "collaborationTools": return CollaborationToolsSvg;
                 case "bash": return BashSvg;
-                case "expandMore": return ExpandMore;
-                case "attachMoney": return AttachMoney;
-                case "chevronLeft": return ChevronLeft;
-                case "cached": return Cached;
                 case "community": return CommunitySvg;
-                case "brightness7": return Brightness7;
-                case "brightness4": return Brightness4;
-                case "translate": return Translate;
                 case "catalog": return CatalogSvg;
-                case "visibility": return Visibility;
-                case "visibilityOff": return VisibilityOff;
-                case "getApp": return GetApp;
-                case "replay": return Replay;
-                case "help": return Help;
-                case "search": return Search;
-                case "cancel": return Cancel;
+                case "account": return AccountSvg;
+                case "home": return HomeSvg;
+                case "trainings": return TrainingsSvg;
             }
         })()}
         fontSize={fontSize}

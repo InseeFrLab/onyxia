@@ -23,8 +23,9 @@ import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/Acc
 import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
 import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
-import { Catalog } from "app/components/pages/Catalog/Catalog";
+import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
+import { Footer } from "app/components/App/Footer";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -58,6 +59,7 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
+    [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -285,6 +287,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Dialog": {
             "do not display again": "Don't display again"
+        },
+        "Footer": {
+            "contribute": "Contribute",
+            "terms of service": "Terms of service"
         }
     },
     "fr": {
@@ -481,6 +487,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Dialog": {
             "do not display again": "Ne plus afficher"
+        },
+        "Footer": {
+            "contribute": "Contribuer au projet",
+            "terms of service": "Coditions d'utilisation"
         }
         /* spell-checker: enable */
     }

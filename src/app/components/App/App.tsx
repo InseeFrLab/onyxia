@@ -4,7 +4,9 @@ import { useMemo, memo } from "react";
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
-//import { Footer } from "./Footer";
+import { Footer } from "./Footer";
+import { useLng } from "app/i18n/useLng";
+import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { 
@@ -59,7 +61,7 @@ const { useClassNames } = createUseClassNames()(
             "display": "flex"
         },
         "footer": {
-            "height": 34
+            "height": 32
         },
 
         "leftBar": {
@@ -145,6 +147,15 @@ export const App = memo((props: Props) => {
         }
     );
 
+    const { tosHref } = (function useClosure() {
+
+        const { lng } = useLng();
+        const tosHref = getTosMarkdownUrl(lng)
+        return { tosHref };
+
+
+    })();
+
     return (
         <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
@@ -171,7 +182,13 @@ export const App = memo((props: Props) => {
                 </main>
 
             </section>
-            {/*<Footer className={classNames.footer} />*/}
+            <Footer
+                className={classNames.footer}
+                //NOTE: Defined in ./config-overrides.js
+                onyxiaUiVersion={process.env.VERSION!}
+                contributeHref={"https://github.com/InseeFrLab/onyxia"}
+                tosHref={tosHref}
+            />
             <VisiteGuidee />
             {appConstants.isUserLoggedIn && <CloudShell />}
 
@@ -249,6 +266,7 @@ const PageSelector = (
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [route]
     );
+
 
 
     {
