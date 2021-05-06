@@ -24,6 +24,7 @@ import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/Catalog
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
 import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { Catalog } from "app/components/pages/Catalog/Catalog";
+import { Dialog } from "app/components/designSystem/Dialog";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -56,6 +57,7 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
+    [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -280,6 +282,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Service catalog",
             "header text2": "Explore the available services",
             "header text3": "The catalog enable you to select a service to deploy"
+        },
+        "Dialog": {
+            "do not display again": "Don't display again"
         }
     },
     "fr": {
@@ -473,6 +478,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Catalogue de services",
             "header text2": "Explorez, lancez et configurez des services en quelues clics seulement.",
             "header text3": "Le catalogue vous propose de déployer facilement des services"
+        },
+        "Dialog": {
+            "do not display again": "Ne plus afficher"
         }
         /* spell-checker: enable */
     }
