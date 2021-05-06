@@ -38,7 +38,7 @@ Core feature set:
 
 # Contributing
 
-## DEV
+## Development
 
 Onyxia-ui relies following open sources backend technologies:  
 - [Onyxia API](https://github.com/inseefrlab/onyxia-api): For starting containers (RStudio, Jupyter) on demand on a Kubernetes cluster.
@@ -73,9 +73,13 @@ The is four source directories:
   We chose to not make `appConstant` a slice of the store but rather an [object returned by a thunk](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
   because it stores all the values and functions that never changes (for a specific execution of the app, they changes in between reload of the app though, they are not constant as the environnement variables that are hard codded in the bundle.). 
 - `src/app/`: The react code.
+- `src/app/assets`: Here should be placed the small assets [imported directly from the code](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/shared/Header.tsx#L7).  
+  For bigger assets like video, you should upload them [here](https://github.com/InseeFrLab/onyxia-ui/releases/tag/assets) and [hard code the url in the code](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/pages/MySecrets/MySecrets.tsx#L253).  
+  To be able to import other kind of files as urls [like here for example with `.md`](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/KcApp/getTosMarkdownUrl.ts#L3-L4) you should declare the file extension like it has been done here [here](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/react-app-env.d.ts#L6-L9)
 - `src/stories/`: [Storybook](https://storybook.js.org) stories, to develop the react component in isolation.
 - `*/tools`: All generic code. Everything that could be externalized to a standalone modules independent from the project.
 - `src/js`: Legacy code that hasn't be ported to the new architecture yet.
+
 
 # Ops
 

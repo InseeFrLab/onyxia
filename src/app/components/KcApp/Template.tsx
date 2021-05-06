@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import { useReducer, useEffect, memo } from "react";
+import { useEffect, memo } from "react";
 import type { ReactNode } from "react";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useKcLanguageTag } from "keycloakify/lib/i18n/useKcLanguageTag";
@@ -21,10 +21,6 @@ import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLight
 import { Paper } from "app/components/designSystem/Paper";
 import { Typography } from "app/components/designSystem/Typography";
 import { Alert } from "app/components/designSystem/Alert";
-
-import { appendHead } from "keycloakify/lib/tools/appendHead";
-import { join as pathJoin } from "path";
-
 
 export type TemplateProps = {
     className?: string;
@@ -123,78 +119,6 @@ export const Template = memo((props: TemplateProps) => {
     const onHeaderLogoClick = useConstCallback(() =>
         window.location.href = "https://docs.sspcloud.fr"
     );
-
-    const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
-
-
-    useEffect(
-        () => {
-
-            if (kcContext.pageId === "login.ftl" || kcContext.pageId === "register.ftl" || kcContext.pageId === "terms.ftl") {
-                setExtraCssLoaded();
-                return;
-            }
-
-            let isUnmounted = false;
-            const cleanups: (() => void)[] = [];
-
-            const toArr = (x: string | readonly string[] | undefined) =>
-                typeof x === "string" ? x.split(" ") : x ?? [];
-
-            Promise.all(
-                [
-                    ...toArr(props.stylesCommon).map(relativePath => pathJoin(kcContext.url.resourcesCommonPath, relativePath)),
-                    ...toArr(props.styles).map(relativePath => pathJoin(kcContext.url.resourcesPath, relativePath))
-                ].map(href => appendHead({
-                    "type": "css",
-                    href
-                }))).then(() => {
-
-                    if (isUnmounted) {
-                        return;
-                    }
-
-                    setExtraCssLoaded();
-
-                });
-
-            toArr(props.scripts).forEach(
-                relativePath => appendHead({
-                    "type": "javascript",
-                    "src": pathJoin(kcContext.url.resourcesPath, relativePath)
-                })
-            );
-
-            if (props.kcHtmlClass !== undefined) {
-
-                const htmlClassList =
-                    document.getElementsByTagName("html")[0]
-                        .classList;
-
-                const tokens = cx(props.kcHtmlClass).split(" ")
-
-                htmlClassList.add(...tokens);
-
-                cleanups.push(() => htmlClassList.remove(...tokens));
-
-            }
-
-            return () => {
-
-                isUnmounted = true;
-
-                cleanups.forEach(f => f());
-
-            };
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [props.kcHtmlClass]
-    );
-
-    if (!isExtraCssLoaded) {
-        return null;
-    }
 
     return (
         <div ref={rootRef} className={cx(classNames.root, className)} >
@@ -465,7 +389,7 @@ const { Page } = (() => {
                                 )
                             ) &&
                             <Alert className={classNames.alert} severity={kcContext.message.type}>
-                                {kcContext.message.summary}
+                                <Typography variant="subtitle2"> {kcContext.message.summary}</Typography>
                             </Alert>
                         }
                         {formNode}

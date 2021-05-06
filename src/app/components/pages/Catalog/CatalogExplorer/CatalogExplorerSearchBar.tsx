@@ -64,7 +64,7 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
     })
 );
 
-export const SearchBar = memo((props: Props) => {
+export const CatalogExplorerSearchBar = memo((props: Props) => {
 
     const { className, onSearchChange, search, evtAction } = props;
 
@@ -72,7 +72,7 @@ export const SearchBar = memo((props: Props) => {
 
     const { classNames } = useClassNames({ isActive });
 
-    const { t } = useTranslation("SearchBar");
+    const { t } = useTranslation("CatalogExplorerSearchBar");
 
     const onClearButtonClick = useConstCallback(() => {
         onSearchChange("")
@@ -190,7 +190,7 @@ export const SearchBar = memo((props: Props) => {
 
 });
 
-export declare namespace SearchBar {
+export declare namespace CatalogExplorerSearchBar {
 
     export type I18nScheme = {
         search: undefined;

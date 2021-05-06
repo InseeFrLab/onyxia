@@ -16,6 +16,7 @@ function Component(props: Omit<Props, "className" | "route" | "splashScreen"> & 
     const { width, height } = props;
 
     return <MySecrets
+        route={null as any}
         className={css({
             width,
             height

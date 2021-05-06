@@ -92,6 +92,35 @@ export const VueWithHint = getStory({
     ])
 });
 
+export const VueWithHintAndQuestionMark = getStory({
+    ...defaultProps,
+    "helperText": "This is an helper text",
+    "questionMarkHelperText": "This is an extra helper text",
+    "className": css({ "width": 500 }),
+    "defaultValue": "",
+    "inputProps_aria-label": "input with hint",
+    "label": "Foo bar",
+    "type": "text",
+    "getIsValidValue": value => {
+        console.log("getIsValidValue invoked: ", value);
+
+        if (value.includes(" ") ) {
+            return { "isValidValue": false, "message": "Can't include spaces" };
+        }
+
+        return { "isValidValue": true };
+
+    },
+    "transformValueBeingTyped": value => {
+        console.log("transformValueBeingTyped invoked: ", value);
+        return value;
+    },
+    ...logCallbacks([
+        "onEscapeKeyDown", "onEnterKeyDown", "onBlur",
+        "onSubmit", "onValueBeingTypedChange"
+    ])
+});
+
 
 /*
     "getIsValidValue": value=> {
