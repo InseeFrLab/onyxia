@@ -257,6 +257,7 @@ export function MySecrets(props: Props) {
                 text2={t("what this page is used for")}
                 text3={<>
                     {t("watch the video")}
+                    &nbsp;
                     <Link
                         href="https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4"
                         target="_blank"
