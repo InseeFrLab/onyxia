@@ -18,6 +18,8 @@ import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUni
 import { assert } from "evt/tools/typeSafety/assert";
 import { id } from "evt/tools/typeSafety/id";
 import { Paper } from "app/components/designSystem/Paper";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
@@ -39,6 +41,8 @@ export type Props = {
     className: string;
 
     evtTranslation: CmdTranslationProps["evtTranslation"];
+
+    evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
 
     /**
      * To provide user from browsing to ride to far up in the tree.
@@ -108,6 +112,7 @@ export function Explorer(props: Props) {
         file,
         fileDate,
         showHidden,
+        evtAction,
         onNavigate,
         onEditBasename,
         onCopyPath,
@@ -295,6 +300,18 @@ export function Explorer(props: Props) {
             }
 
         }
+    );
+
+    useEvt(
+        ctx =>
+            evtAction
+                .attach(
+                    action=> action === "TRIGGER COPY PATH",
+                    ctx,
+                    () => buttonBarCallback({ "action": "copy path" })
+                ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [evtAction]
     );
 
     const {

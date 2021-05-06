@@ -1,7 +1,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { useSelector, useDispatch, useEvtSecretsManagerTranslation } from "app/interfaceWithLib/hooks";
@@ -20,6 +20,8 @@ import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
 
 MySecrets.routeGroup = createGroup([
     routes.mySecrets
@@ -245,6 +247,12 @@ export function MySecrets(props: Props) {
         )
     );
 
+    const [ evtButtonBarAction ] = useState(()=> Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>());
+
+    const onMySecretEditorCopyPath = useConstCallback(
+        ()=>evtButtonBarAction.post("TRIGGER COPY PATH")
+    );
+
     if (state.currentPath === "") {
         return null;
     }
@@ -272,11 +280,12 @@ export function MySecrets(props: Props) {
                 currentPath={state.currentPath}
                 isNavigating={state.isNavigationOngoing}
                 evtTranslation={evtSecretsManagerTranslation}
+                evtAction={evtButtonBarAction}
                 showHidden={false}
                 file={
                     state.state !== "SHOWING SECRET" ? null :
                         <MySecretsEditor
-                            onCopyPath={onCopyPath}
+                            onCopyPath={onMySecretEditorCopyPath}
                             isBeingUpdated={state.isBeingUpdated}
                             secretWithMetadata={state.secretWithMetadata}
                             onEdit={onEdit}
