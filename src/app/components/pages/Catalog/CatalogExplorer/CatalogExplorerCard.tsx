@@ -14,7 +14,7 @@ const { useClassNames } = createUseClassNames()(
             "boxShadow": theme.custom.shadows[1],
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "&:hover": {
-                "boxShadow": theme.custom.shadows[5]
+                "boxShadow": theme.custom.shadows[6]
             },
             "display": "flex",
             "flexDirection": "column"

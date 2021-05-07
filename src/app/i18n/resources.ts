@@ -26,6 +26,7 @@ import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExpl
 import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
+import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -60,6 +61,7 @@ const reflectedI18nSchemes = {
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
+    [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -299,6 +301,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Footer": {
             "contribute": "Contribute",
             "terms of service": "Terms of service"
+        },
+        "CatalogLauncherMainCard": {
+            "card title": "Create your personal services",
+            "friendly name": "Friendly name",
+            "launch": "Launch",
+            "cancel": "Cancel"
         }
     },
     "fr": {
@@ -505,6 +513,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Footer": {
             "contribute": "Contribuer au projet",
             "terms of service": "Coditions d'utilisation"
+        },
+        "CatalogLauncherMainCard": {
+            "card title": "Crée votre propre service",
+            "friendly name": "Nom personalisé",
+            "launch": "Lancer",
+            "cancel": "Annuler"
         }
         /* spell-checker: enable */
     }
