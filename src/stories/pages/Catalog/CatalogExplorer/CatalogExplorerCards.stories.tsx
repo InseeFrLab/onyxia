@@ -31,6 +31,7 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
     Pellentesque vel bibendum ex. Interdum et malesuada fames.
         `: ""
     ),
+    "learnMoreUrl": "https://example.com",
     /* spell-checker: enable */
     "doDisplayLearnMore": true
 }));

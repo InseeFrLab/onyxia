@@ -42,7 +42,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "paper": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
-            "boxShadow": theme.custom.shadows[3],
+            "boxShadow": theme.custom.shadows[7],
             "borderRadius": 5,
             "maxWidth": 573
         },

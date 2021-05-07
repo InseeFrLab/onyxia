@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import type { AppThunk, Dependencies } from "../setup";
 import type { SecretWithMetadata, SecretsManagerClient, Secret } from "lib/ports/SecretsManagerClient";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { basename as pathBasename, join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
 import memoize from "memoizee";
 import { crawlFactory } from "lib/tools/crawl";

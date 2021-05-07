@@ -1,8 +1,8 @@
 
-import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
+import type { ReturnType } from "tsafe/ReturnType";
 import type { NonPostableEvt } from "evt";
 import { Evt } from "evt";
-import type { MethodNames } from "evt/tools/typeSafety/MethodNames";
+import type { MethodNames } from "tsafe/MethodNames";
 
 export declare type Secret = { [key: string]: Secret.Value; };
 
@@ -64,7 +64,7 @@ export type SecretsManagerTranslator = {
             fmtResult(
                 params: {
                     inputs: Parameters<SecretsManagerClient[K]>;
-                    result: AsyncReturnType<SecretsManagerClient[K]>;
+                    result: ReturnType<SecretsManagerClient[K]>;
                 }
             ): string;
         };

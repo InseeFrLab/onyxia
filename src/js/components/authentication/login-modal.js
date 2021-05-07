@@ -11,7 +11,7 @@ import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
 import { prOidcClient } from "lib/setup";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 
 class LogMe extends React.Component {
 	handleClose = () => {};

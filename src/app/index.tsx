@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import { getValidatedEnv } from "./validatedEnv";
 
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./router";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";

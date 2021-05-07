@@ -20,7 +20,7 @@ import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/router";
 import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { routes } from "app/router";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";

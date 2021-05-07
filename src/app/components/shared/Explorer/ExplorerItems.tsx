@@ -9,7 +9,7 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { useEffectOnValueChange } from "powerhooks";
 import { useArrayDiff } from "powerhooks";
 import { Typography } from "app/components/designSystem/Typography";

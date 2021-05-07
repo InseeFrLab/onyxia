@@ -1,7 +1,7 @@
 
 import { createRouter, defineRoute, param, noMatch } from "type-route";
 import type { ValueSerializer } from "type-route";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 import URLON from "urlon";

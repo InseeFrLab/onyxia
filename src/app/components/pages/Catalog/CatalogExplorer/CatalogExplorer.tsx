@@ -27,16 +27,21 @@ export const CatalogExplorer = memo((props: Props) => {
             }).push()
     );
 
-    const onRequestLearnMore = useConstCallback<CatalogCardsParams["onRequestLearnMore"]>(
-        () => {
-            alert("todo");
-        }
-    );
-
     const { onyxiaApiClient } = useAppConstants();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const { result: catalogs } = useAsync(onyxiaApiClient.getCatalogs, []);
+
+    const onRequestLearnMore = useConstCallback<CatalogCardsParams["onRequestLearnMore"]>(
+        serviceTitle =>
+            window.location.href =
+            catalogs!
+                .find(({ id }) => route.params.catalogId === id)!
+                .catalog
+                .packages
+                .find(({ name }) => name === serviceTitle)!
+                .home!
+    );
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
@@ -74,11 +79,11 @@ export const CatalogExplorer = memo((props: Props) => {
                         .find(({ id }) => route.params.catalogId === id)!
                         .catalog
                         .packages
-                        .map(({ icon, description, name }) => ({
+                        .map(({ icon, description, name, home }) => ({
                             "serviceImageUrl": icon,
                             "serviceTitle": name,
                             "serviceDescription": description,
-                            "doDisplayLearnMore": false
+                            "learnMoreUrl": home
                         }))
                         .sort((a, b) =>
                             getHardCodedServiceWeight(b.serviceTitle) -
