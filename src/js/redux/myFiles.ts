@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { id } from "evt/tools/typeSafety/id";
-import { assert } from "evt/tools/typeSafety/assert";
+import { id } from "tsafe/id";
+import { assert } from "tsafe/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 import type { AppThunk } from "lib/setup";

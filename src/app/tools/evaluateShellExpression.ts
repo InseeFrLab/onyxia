@@ -1,6 +1,6 @@
 
 import { parse as shellQuoteParse } from "shell-quote";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 
 /** Can throw! */
 export function evaluateShellExpression(

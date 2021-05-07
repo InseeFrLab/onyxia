@@ -9,15 +9,15 @@ import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
-import type { AsyncReturnType } from "evt/tools/typeSafety/AsyncReturnType";
+import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import { parseOidcAccessToken } from "./ports/OidcClient";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import type { StatefulReadonlyEvt } from "evt";
 import { Evt } from "evt";
 import type { AxiosInstance } from "axios";
@@ -291,7 +291,7 @@ async function createStoreForNonLoggedUser(
         dAxiosInstance.resolve(axiosInstance);
     }
 
-    const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
+    const store: ReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
@@ -416,7 +416,7 @@ export const pure = {
     [secretExplorerUseCase.name]: secretExplorerUseCase.pure
 };
 
-export type Store = AsyncReturnType<typeof createStore>;
+export type Store = ReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
 

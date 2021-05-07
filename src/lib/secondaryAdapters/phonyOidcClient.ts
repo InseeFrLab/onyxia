@@ -2,7 +2,7 @@
 
 import type { OidcClient, OidcTokens, ParsedJwt } from "../ports/OidcClient";
 import { Evt } from "evt";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import * as jwtSimple from "jwt-simple";
 
 export async function createPhonyOidcClient(

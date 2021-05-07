@@ -1,10 +1,10 @@
 import type { OidcClient } from "../ports/OidcClient";
 import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { Evt } from "evt";
 import { getLocalStorage } from "../tools/safeLocalStorage";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks";
 

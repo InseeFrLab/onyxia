@@ -14,7 +14,7 @@ const { useClassNames } = createUseClassNames()(
             "boxShadow": theme.custom.shadows[1],
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "&:hover": {
-                "boxShadow": theme.custom.shadows[5]
+                "boxShadow": theme.custom.shadows[6]
             },
             "display": "flex",
             "flexDirection": "column"
@@ -58,7 +58,7 @@ export type Props = {
     serviceTitle: string;
     serviceDescription: string;
     onRequestLaunch(): void;
-    onRequestLearnMore?(): void;
+    learnMoreUrl: string | undefined;
 };
 
 export const CatalogExplorerCard = memo((props: Props) => {
@@ -68,7 +68,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
         serviceImageUrl,
         serviceTitle,
         serviceDescription,
-        onRequestLearnMore,
+        learnMoreUrl,
         onRequestLaunch
     } = props;
 
@@ -96,8 +96,13 @@ export const CatalogExplorerCard = memo((props: Props) => {
                     </Typography>
                 </div>
                 <div className={classNames.buttonsWrapper}>
-                    {onRequestLearnMore !== undefined &&
-                        <Button onClick={onRequestLearnMore}>{t("learn more")}</Button>}
+                    {learnMoreUrl !== undefined &&
+                        <Button
+                            href={learnMoreUrl}
+                            color="ternary"
+                        >
+                            {t("learn more")}
+                        </Button>}
                     <Button
                         className={classNames.launchButton}
                         color="secondary"

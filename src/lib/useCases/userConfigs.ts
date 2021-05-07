@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
-import { Id } from "evt/tools/typeSafety/id";
-import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+import { Id } from "tsafe/id";
+import { objectKeys } from "tsafe/objectKeys";
 import { parseOidcAccessToken } from "../ports/OidcClient";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
 import "minimal-polyfills/Object.fromEntries";
 

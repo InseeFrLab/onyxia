@@ -11,7 +11,7 @@ import {
 import { prStore, prAxiosInstance } from "lib/setup";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { getServices } from "js/api/my-lab";
 
 const { creerNouveauService } = actions;

@@ -28,6 +28,7 @@ export const VueDefault = getStory({
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
     justo varius`,
     /* spell-checker: enable */
+    "learnMoreUrl": "https://example.com",
     ...logCallbacks(["onRequestLaunch"])
 });
 
@@ -36,6 +37,7 @@ export const VueNoDesc = getStory({
     "serviceImageUrl": rstudioImg,
     "serviceTitle": "Service title",
     "serviceDescription": "",
+    "learnMoreUrl": "https://example.com",
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
@@ -51,7 +53,7 @@ export const VueNoLearnMore = getStory({
     justo varius`,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "onRequestLearnMore": undefined
+    "learnMoreUrl": undefined
 });
 
 export const VueScroll = getStory({
@@ -68,6 +70,7 @@ export const VueScroll = getStory({
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
     justo varius`,
     /* spell-checker: enable */
+    "learnMoreUrl": undefined,
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 

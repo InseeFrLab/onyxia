@@ -21,7 +21,7 @@ export type Params<ServiceTitle extends string = string> = {
         serviceTitle: ServiceTitle;
         serviceImageUrl?: string;
         serviceDescription: string;
-        doDisplayLearnMore: boolean;
+        learnMoreUrl: string | undefined;
     }[];
     onRequestLaunch(serviceTitle: ServiceTitle): void;
     onRequestLearnMore(serviceTitle: ServiceTitle): void;
@@ -62,13 +62,13 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
 export const CatalogExplorerCards = memo(
     <ServiceTitle extends string = string>(props: Params<ServiceTitle>) => {
 
-        const { className, cardsContent } = props;
+        const { className, cardsContent, onRequestLaunch } = props;
 
         const [search, setSearch] = useState("");
 
-        const onRequestActionFactory = useCallbackFactory(
-            ([serviceTitle, action]: [ServiceTitle, "onRequestLaunch" | "onRequestLearnMore"]) =>
-                props[action](serviceTitle)
+        const onRequestLaunchFactory = useCallbackFactory(
+            ([serviceTitle]: [ServiceTitle]) =>
+                onRequestLaunch(serviceTitle)
         );
 
         let [isRevealed, setIsRevealed] = useState(false);
@@ -159,21 +159,15 @@ export const CatalogExplorerCards = memo(
                                         serviceTitle,
                                         serviceImageUrl,
                                         serviceDescription,
-                                        doDisplayLearnMore
+                                        learnMoreUrl
                                     }) =>
                                         <CatalogExplorerCard
                                             key={serviceTitle}
                                             serviceImageUrl={serviceImageUrl}
                                             serviceTitle={serviceTitle}
                                             serviceDescription={serviceDescription}
-                                            onRequestLaunch={
-                                                onRequestActionFactory(serviceTitle, "onRequestLaunch")
-                                            }
-                                            onRequestLearnMore={
-                                                !doDisplayLearnMore ?
-                                                    undefined :
-                                                    onRequestActionFactory(serviceTitle, "onRequestLaunch")
-                                            }
+                                            onRequestLaunch={onRequestLaunchFactory(serviceTitle)}
+                                            learnMoreUrl={learnMoreUrl}
                                         />
                                 )
                     }

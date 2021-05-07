@@ -29,7 +29,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
-import { doExtends } from "evt/tools/typeSafety/doExtends";
+import { doExtends } from "tsafe/doExtends";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import GetApp from "@material-ui/icons/GetApp";
@@ -37,10 +37,12 @@ import Replay from "@material-ui/icons/Replay";
 import Help from "@material-ui/icons/Help";
 import Search from "@material-ui/icons/Search";
 import Cancel from "@material-ui/icons/Cancel";
+import Bookmark from "@material-ui/icons/Bookmark";
+import BookmarkBorder from "@material-ui/icons/BookmarkBorder";
 
 import { noUndefined } from "app/tools/noUndefined";
 import type { Optional } from "evt/tools/typeSafety";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { typeGuard } from "tsafe/typeGuard";
 
 
 const svgTypes = [
@@ -55,7 +57,7 @@ const materialType = [
     "check", "expandMore", "attachMoney", "chevronLeft",
     "cached", "closeSharp", "infoOutlined", "brightness7", "brightness4",
     "translate", "visibility", "visibilityOff", "getApp", "replay",
-    "help", "search", "cancel"
+    "help", "search", "cancel", "bookmark", "bookmarkBorder"
 ] as const;
 
 export type MaterialType = typeof materialType[number];
@@ -146,6 +148,8 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
             case "brightness7": return Brightness7;
             case "brightness4": return Brightness4;
             case "translate": return Translate;
+            case "bookmark": return Bookmark;
+            case "bookmarkBorder": return BookmarkBorder;
         }
 
     })();

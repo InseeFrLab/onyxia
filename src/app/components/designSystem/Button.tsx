@@ -13,7 +13,7 @@ export type Props = {
 
     className?: string | null;
 
-    color?: "primary" | "secondary";
+    color?: "primary" | "secondary" | "ternary";
     /** can be optional with an icon */
     children?: React.ReactNode;
     disabled?: boolean;
@@ -31,8 +31,7 @@ export type Props = {
     name?: string | null;
     id?: string | null;
 
-
-
+    href?: string | null;
 };
 
 export const defaultProps: Optional<Props> = {
@@ -47,7 +46,8 @@ export const defaultProps: Optional<Props> = {
     "onClick": ()=>{},
     "tabIndex": null,
     "name": null,
-    "id": null
+    "id": null,
+    "href": null
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -60,7 +60,9 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                 (() => {
                     switch (color) {
                         case "primary": return "textFocus";
-                        case "secondary": return "textPrimary";
+                        case "secondary":
+                        case "ternary":
+                            return "textPrimary";
                     }
                 })()
             ];
@@ -71,7 +73,9 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                     return theme.custom.colors.palette[(() => {
                         switch (color) {
                             case "primary": return "whiteSnow";
-                            case "secondary": return "midnightBlue";
+                            case "secondary": 
+                            case "ternary":
+                                return "midnightBlue";
                         }
                     })()].main;
                 case "light": return theme.custom.colors.palette.whiteSnow.main;
@@ -86,18 +90,37 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                     (() => {
                         switch (color) {
                             case "primary": return "actionHoverPrimary";
-                            case "secondary": return "actionHoverSecondary";
+                            case "secondary":
+                            case "ternary":
+                                return "actionHoverSecondary";
                         }
                     })()
                 ];
 
                 return {
-                    "backgroundColor": disabled ?
-                        theme.custom.colors.useCases.buttons.actionDisabledBackground :
-                        "transparent",
+                    "backgroundColor":
+                        disabled ?
+                            theme.custom.colors.useCases.buttons.actionDisabledBackground :
+                            (() => {
+                                switch (color) {
+                                    case "primary":
+                                    case "secondary":
+                                        return "transparent";
+                                    case "ternary":
+                                        return theme.custom.colors.useCases.surfaces.background;
+                                }
+                            })(),
                     "height": 36,
-                    "borderRadius":  20,
-                    "borderWidth": "2px",
+                    "borderRadius": 20,
+                    "borderWidth": (()=>{
+                        switch(color){
+                            case "primary":
+                            case "secondary":
+                                    return 2;
+                            case "ternary":
+                                    return 0;
+                        }
+                    })(),
                     "borderStyle": "solid",
                     "borderColor": disabled ? "transparent" : hoverBackgroundColor,
                     "padding": theme.spacing(0, 2),
@@ -128,10 +151,10 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
 
     const completedProps = { ...defaultProps, ...noUndefined(props) };
 
-    const { 
-        className, color, disabled, children, 
-        onClick, startIcon, endIcon, autoFocus, 
-        type, tabIndex, name, id,
+    const {
+        className, color, disabled, children,
+        onClick, startIcon, endIcon, autoFocus,
+        type, tabIndex, name, id, href,
         //For the forwarding, rest should be empty (typewise)
         ...rest
     } = completedProps;
@@ -156,7 +179,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
         <MuiButton
             ref={ref}
             className={cx(classNames.root, className)}
-            color={color}
+            {...(href === undefined ? {} : { href, "target": "_blank" }) as any}
             disabled={disabled}
             onClick={onClick}
             startIcon={startIcon === null ? undefined : <IconWd type={startIcon} />}

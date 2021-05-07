@@ -5,7 +5,7 @@ import type {
     OidcClientConfig,
     SecretsManagerClientConfig
 } from "../setup";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
 import type { OnyxiaApiClient } from "lib/ports/OnyxiaApiClient";
 
