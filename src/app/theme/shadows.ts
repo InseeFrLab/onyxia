@@ -12,4 +12,6 @@ export const shadows = [
     "4px 0px 10px 0px rgba(0,0,0,0.07)",
     /** AccountTab active */
     "-4px 0px 10px 0px rgba(0,0,0,0.07)",
+    /** Card over */
+    "0px 6px 10px 0px rgba(0,0,0,0.14)",
  ] as const;
