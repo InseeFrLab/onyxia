@@ -20,7 +20,7 @@ import { restApiPaths } from 'js/restApiPaths';
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { typeGuard } from "tsafe/typeGuard";
-import type { AsyncReturnType } from "tsafe/AsyncReturnType";
+import type { ReturnType } from "tsafe/ReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/interfaceWithLib/hooks";
@@ -37,7 +37,7 @@ type Service = {
 	config: { properties: Record<string, Onglet>; };
 };
 
-type MinioCredentials = AsyncReturnType<typeof getMinioToken>;
+type MinioCredentials = ReturnType<typeof getMinioToken>;
 
 export type Props = {
 	idCatalogue: string;

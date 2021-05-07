@@ -37,6 +37,7 @@ export type Package = {
     config: unknown;
     type: string;
     dependencies?: unknown[];
+    home?: string;
 };
 
 

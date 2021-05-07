@@ -58,7 +58,7 @@ export type Props = {
     serviceTitle: string;
     serviceDescription: string;
     onRequestLaunch(): void;
-    onRequestLearnMore?(): void;
+    learnMoreUrl: string | undefined;
 };
 
 export const CatalogExplorerCard = memo((props: Props) => {
@@ -68,7 +68,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
         serviceImageUrl,
         serviceTitle,
         serviceDescription,
-        onRequestLearnMore,
+        learnMoreUrl,
         onRequestLaunch
     } = props;
 
@@ -96,8 +96,13 @@ export const CatalogExplorerCard = memo((props: Props) => {
                     </Typography>
                 </div>
                 <div className={classNames.buttonsWrapper}>
-                    {onRequestLearnMore !== undefined &&
-                        <Button onClick={onRequestLearnMore}>{t("learn more")}</Button>}
+                    {learnMoreUrl !== undefined &&
+                        <Button
+                            href={learnMoreUrl}
+                            color="ternary"
+                        >
+                            {t("learn more")}
+                        </Button>}
                     <Button
                         className={classNames.launchButton}
                         color="secondary"

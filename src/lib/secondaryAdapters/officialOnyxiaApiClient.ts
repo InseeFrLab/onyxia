@@ -4,7 +4,7 @@ import type { OidcClient } from "../ports/OidcClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { nonNullable } from "evt";
-import type { AsyncReturnType } from "evt/tools/typeSafety";
+import type { ReturnType } from "evt/tools/typeSafety";
 import memoize from "memoizee";
 
 //import type { restApiPaths } from "js/restApiPaths";
@@ -53,20 +53,20 @@ export function createOfficialOnyxiaApiClient(
 
     const onyxiaApiClient: OnyxiaApiClient = {
         /*
-        "getUserInfo": () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getUserInfo"]>>(
+        "getUserInfo": () => axiosInstance.get<ReturnType<OnyxiaApiClient["getUserInfo"]>>(
             restApiPaths.userInfo
         ).then(({ data }) => data),
         */
         "getConfigurations":
             memoize(
-                () => axiosInstance.get<AsyncReturnType<OnyxiaApiClient["getConfigurations"]>>(
+                () => axiosInstance.get<ReturnType<OnyxiaApiClient["getConfigurations"]>>(
                     restApiPaths.configuration
                 ).then(({ data }) => data),
                 { "promise": true }
             ),
         "getCatalogs":
             memoize(
-                () => axiosInstance.get<{ catalogs: AsyncReturnType<OnyxiaApiClient["getCatalogs"]> }>(
+                () => axiosInstance.get<{ catalogs: ReturnType<OnyxiaApiClient["getCatalogs"]> }>(
                     restApiPaths.catalogue
                 ).then(({ data }) => data.catalogs),
                 { "promise": true }
