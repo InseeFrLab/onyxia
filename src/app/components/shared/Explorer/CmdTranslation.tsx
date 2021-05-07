@@ -3,13 +3,13 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, useReducer, useRef, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import memoize from "memoizee";
 import { useDomRect } from "powerhooks";
 import { CircularProgress } from "app/components/designSystem/CircularProgress";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Icon } from "app/components/designSystem/Icon";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 
 export type Props = {
 	className: string;

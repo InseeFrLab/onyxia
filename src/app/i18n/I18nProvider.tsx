@@ -5,7 +5,7 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { resources } from "./resources";
 import type { SupportedLanguage } from "./resources";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";

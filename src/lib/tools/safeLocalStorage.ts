@@ -1,5 +1,5 @@
 
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import memoizee from "memoizee";
 
 /** 

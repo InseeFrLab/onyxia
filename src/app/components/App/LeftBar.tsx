@@ -9,7 +9,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/router";
-import { doExtends } from "evt/tools/typeSafety/doExtends";
+import { doExtends } from "tsafe/doExtends";
 import Divider from "@material-ui/core/Divider";
 
 const targets = [

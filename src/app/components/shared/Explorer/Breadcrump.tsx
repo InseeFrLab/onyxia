@@ -8,7 +8,7 @@ import { useEvt } from "evt/hooks";
 import { join as pathJoin } from "path";
 import { Evt } from "evt";
 import { useCallbackFactory } from "powerhooks";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     path: string;

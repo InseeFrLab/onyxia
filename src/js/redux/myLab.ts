@@ -2,12 +2,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { restApiPaths } from "js/restApiPaths";
 import { PUSHER } from "js/components/notifications";
 import * as messages from "js/components/messages";
 import * as api from 'js/api/my-lab';
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { actions as appActions } from "./app";
 import memoize from "memoizee";
 

@@ -4,7 +4,7 @@ import type { Props } from "app/components/pages/Account/AccountField";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { Evt }  from "evt";
 
 const { meta, getStory } = getStoryFactory({

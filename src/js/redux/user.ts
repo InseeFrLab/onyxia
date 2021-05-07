@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { id } from "evt/tools/typeSafety/id";
-import { assert } from "evt/tools/typeSafety/assert";
+import { id } from "tsafe/id";
+import { assert } from "tsafe/assert";
 import { getValidatedEnv } from "app/validatedEnv";
 
 export type S3 = {

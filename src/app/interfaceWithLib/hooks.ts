@@ -7,13 +7,13 @@ import { thunks } from "lib/setup";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import type { AppConstant } from "lib/useCases/appConstants";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { useEffectOnValueChange } from "powerhooks";
 import { useLng } from "app/i18n/useLng";
 import type { SupportedLanguage } from "app/i18n/resources";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
-import { id } from "evt/tools/typeSafety/id";
+import { typeGuard } from "tsafe/typeGuard";
+import { id } from "tsafe/id";
 import { usePublicIp } from "app/tools/usePublicIp";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */

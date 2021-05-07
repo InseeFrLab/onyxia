@@ -6,7 +6,7 @@ import type { Story } from "@storybook/react";
 import { themeProviderFactory } from "app/theme/ThemeProvider";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";

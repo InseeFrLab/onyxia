@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Minio from 'minio';
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { getValidatedEnv } from "app/validatedEnv";
 //import { prKeycloakClient } from "lib/setup";

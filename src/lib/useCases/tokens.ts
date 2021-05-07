@@ -2,8 +2,8 @@
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { assert } from "evt/tools/typeSafety/assert";
-import { id } from "evt/tools/typeSafety/id";
+import { assert } from "tsafe/assert";
+import { id } from "tsafe/id";
 import { Evt, nonNullable } from "evt";
 
 export const name = "tokens";

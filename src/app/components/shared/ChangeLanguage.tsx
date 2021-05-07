@@ -16,7 +16,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { useLng } from "app/i18n/useLng";
-import { objectKeys } from "evt/tools/typeSafety/objectKeys";
+import { objectKeys } from "tsafe/objectKeys";
 
 const menuId = "language-menu";
 

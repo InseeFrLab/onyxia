@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useKcLanguageTag } from "keycloakify/lib/i18n/useKcLanguageTag";
 import type { KcContext } from "keycloakify/lib/KcContext";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { cx } from "tss-react";
 import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageTag";
 import { useConstCallback } from "powerhooks";
