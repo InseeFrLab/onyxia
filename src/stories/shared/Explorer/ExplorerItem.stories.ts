@@ -5,7 +5,7 @@ import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import withEvents from "@storybook/addon-events";
 import { EventEmitter } from "events";
 

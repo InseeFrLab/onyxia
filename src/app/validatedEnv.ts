@@ -1,6 +1,6 @@
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import memoizee from "memoizee";
-import { assert as _assert } from "evt/tools/typeSafety/assert";
+import { assert as _assert } from "tsafe/assert";
 import { getEnv } from "env";
 
 const assert: typeof _assert = process.env["NODE_ENV"] === "test" ?

@@ -10,7 +10,7 @@ import Divider from "@material-ui/core/Divider";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { getMinioToken } from "js/minio-client/minio-client";
 import exportMinio from "js/components/mon-compte/export-credentials-minio";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "app/tools/smartTrim";
 import { useValidUntil } from "app/i18n/useMoment";

@@ -6,7 +6,7 @@ import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/tools/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { Evt } from "evt";
 
 function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "onDeleteItem" | "className"> & {

@@ -11,7 +11,7 @@ import * as minioPolicy from "js/minio-client/minio-policy";
 import { MyPolicy } from '../my-policy.component';
 import { getValidatedEnv } from 'app/validatedEnv';
 import './my-file.scss';
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "app/router";

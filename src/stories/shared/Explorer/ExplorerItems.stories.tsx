@@ -8,7 +8,7 @@ import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { symToStr } from "app/tools/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
-import { id } from "evt/tools/typeSafety/id";
+import { id } from "tsafe/id";
 import { EventEmitter } from "events";
 import withEvents from "@storybook/addon-events";
 import type { UnpackEvt } from "evt";

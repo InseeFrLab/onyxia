@@ -29,7 +29,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import Brightness7 from "@material-ui/icons/Brightness7";
 import Brightness4 from "@material-ui/icons/Brightness4";
 import Translate from "@material-ui/icons/Translate";
-import { doExtends } from "evt/tools/typeSafety/doExtends";
+import { doExtends } from "tsafe/doExtends";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import GetApp from "@material-ui/icons/GetApp";
@@ -40,7 +40,7 @@ import Cancel from "@material-ui/icons/Cancel";
 
 import { noUndefined } from "app/tools/noUndefined";
 import type { Optional } from "evt/tools/typeSafety";
-import { typeGuard } from "evt/tools/typeSafety/typeGuard";
+import { typeGuard } from "tsafe/typeGuard";
 
 
 const svgTypes = [

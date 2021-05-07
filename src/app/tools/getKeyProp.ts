@@ -1,5 +1,5 @@
-import { objectKeys } from "evt/tools/typeSafety/objectKeys";
-import { assert } from "evt/tools/typeSafety/assert";
+import { objectKeys } from "tsafe/objectKeys";
+import { assert } from "tsafe/assert";
 
 export function getKeyPropFactory<T extends Record<string, string>>() {
 

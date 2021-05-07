@@ -22,7 +22,7 @@ import { useEvt } from "evt/hooks";
 import { Tooltip } from "app/components/designSystem/Tooltip";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
-import { assert } from "evt/tools/typeSafety/assert";
+import { assert } from "tsafe/assert";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
