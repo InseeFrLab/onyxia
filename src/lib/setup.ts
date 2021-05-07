@@ -9,7 +9,7 @@ import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
-import type { AsyncReturnType } from "tsafe/AsyncReturnType";
+import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
@@ -291,7 +291,7 @@ async function createStoreForNonLoggedUser(
         dAxiosInstance.resolve(axiosInstance);
     }
 
-    const store: AsyncReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
+    const store: ReturnType<typeof createStoreForLoggedUser>["store"] = configureStore({
         reducer,
         ...getMiddleware({
             "dependencies": {
@@ -416,7 +416,7 @@ export const pure = {
     [secretExplorerUseCase.name]: secretExplorerUseCase.pure
 };
 
-export type Store = AsyncReturnType<typeof createStore>;
+export type Store = ReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
 
