@@ -14,4 +14,7 @@ export const shadows = [
     "-4px 0px 10px 0px rgba(0,0,0,0.07)",
     /** Card over */
     "0px 6px 10px 0px rgba(0,0,0,0.14)",
+    /** Dialog **/
+    "0px 8px 10px -7px rgba(0,0,0,0.07)"
+
  ] as const;
