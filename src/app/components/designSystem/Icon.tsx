@@ -39,6 +39,7 @@ import Search from "@material-ui/icons/Search";
 import Cancel from "@material-ui/icons/Cancel";
 import Bookmark from "@material-ui/icons/Bookmark";
 import BookmarkBorder from "@material-ui/icons/BookmarkBorder";
+import Code from "@material-ui/icons/Code";
 
 import { noUndefined } from "app/tools/noUndefined";
 import type { Optional } from "evt/tools/typeSafety";
@@ -57,7 +58,7 @@ const materialType = [
     "check", "expandMore", "attachMoney", "chevronLeft",
     "cached", "closeSharp", "infoOutlined", "brightness7", "brightness4",
     "translate", "visibility", "visibilityOff", "getApp", "replay",
-    "help", "search", "cancel", "bookmark", "bookmarkBorder"
+    "help", "search", "cancel", "bookmark", "bookmarkBorder", "code"
 ] as const;
 
 export type MaterialType = typeof materialType[number];
@@ -150,6 +151,7 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
             case "translate": return Translate;
             case "bookmark": return Bookmark;
             case "bookmarkBorder": return BookmarkBorder;
+            case "code": return Code;
         }
 
     })();
