@@ -27,6 +27,7 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
+import { CatalogLauncherAdvancedConfigurationHeader } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherAdvancedConfigurationHeader";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -61,7 +62,8 @@ const reflectedI18nSchemes = {
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
-    [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>()
+    [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherAdvancedConfigurationHeader })]: Reflect<CatalogLauncherAdvancedConfigurationHeader.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -307,6 +309,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "friendly name": "Friendly name",
             "launch": "Launch",
             "cancel": "Cancel"
+        },
+        "CatalogLauncherAdvancedConfigurationHeader": {
+            "title": "Advanced configuration"
         }
     },
     "fr": {
@@ -519,6 +524,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "friendly name": "Nom personalisé",
             "launch": "Lancer",
             "cancel": "Annuler"
+        },
+        "CatalogLauncherAdvancedConfigurationHeader": {
+            "title": "Configuration avancée"
         }
         /* spell-checker: enable */
     }

@@ -27,11 +27,6 @@ const { useClassNames } = createUseClassNames<Props>()(
             }
         },
         "icon": {
-            //"verticalAlign": "middle"
-            //"display":"block"
-
-
-
             "fill": theme.custom.colors.useCases.typography.textPrimary
         },
         "contribute": {
