@@ -39,11 +39,9 @@ export async function createKeycloakOidcClient(
         throw isAuthenticated;
     }
 
-    const login: OidcClient.NotLoggedIn["login"] = async params => {
+    const login: OidcClient.NotLoggedIn["login"] = async () => {
 
-        const { redirectHref = `${window.location.pathname}${window.location.search}` } = params ?? {};
-
-        await keycloakInstance.login({ "redirectUri": `${origin}${redirectHref}` });
+        await keycloakInstance.login({ "redirectUri": window.location.href });
 
         return new Promise<never>(() => { });
 
@@ -107,9 +105,12 @@ export async function createKeycloakOidcClient(
 
 
             },
-        "logout": async () => {
+        "logout": async ({ redirectToOrigin }) => {
 
-            await keycloakInstance.logout({ "redirectUri": origin });
+            await keycloakInstance.logout({ 
+                "redirectUri": redirectToOrigin ? 
+                    origin : window.location.href
+            });
 
             return new Promise<never>(() => { });
 

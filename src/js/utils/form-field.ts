@@ -23,7 +23,6 @@ export type BuildMustacheViewParams = {
 	parsedJwt: Pick<AppConstant.LoggedIn["parsedJwt"], "preferred_username" | "email" | "family_name" | "given_name">;
 	secretExplorerUserHomePath: string;
 	userConfigs: UserConfigs;
-	keycloakConfig: AppConstant["keycloakConfig"];
 	vaultClientConfig: AppConstant["vaultClientConfig"];
 	oidcTokens: OidcTokens;
 	vaultToken: string;
