@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import * as reactDom from "react-dom";
 import { getValidatedEnv } from "./validatedEnv";
 
@@ -12,7 +12,6 @@ import { themeProviderFactory } from "app/theme/ThemeProvider";
 import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
 import { SplashScreenProvider } from "app/components/shared/SplashScreen";
 import { App } from "app/components/App";
-import { PublicIpProvider, getPublicIp } from "app/tools/usePublicIp";
 import { useLng } from "app/i18n/useLng";
 import {
     kcContext as realKcContext,
@@ -46,9 +45,6 @@ function Root() {
 
     const { isDarkModeEnabled } = useIsDarkModeEnabled();
     const { lng } = useLng();
-
-    //Pre fetch so it's not blocking
-    useEffect(() => { getPublicIp() }, []);
 
     const getStoreInitializationParams = useConstCallback<StoreProviderProps["getStoreInitializationParams"]>(
         () => {
@@ -108,9 +104,7 @@ function Root() {
                             {kcContext !== undefined ?
                                 <KcApp kcContext={kcContext} /> :
                                 <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
-                                    <PublicIpProvider>
-                                        <App />
-                                    </PublicIpProvider>
+                                    <App />
                                 </StoreProvider>
                             }
                         </SplashScreenProvider>

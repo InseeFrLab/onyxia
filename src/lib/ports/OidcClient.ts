@@ -23,12 +23,7 @@ export declare namespace OidcClient {
 
         isUserLoggedIn: false;
 
-        login(
-            /** The href of the route to redirect to without domain but including path, query string, and hash. */
-            params?: {
-                redirectHref: string;
-            }
-        ): Promise<never>;
+        login(): Promise<never>;
     };
 
     export type LoggedIn = {
@@ -51,7 +46,11 @@ export declare namespace OidcClient {
             }
         ): Promise<void>;
 
-        logout(): Promise<never>;
+        logout(
+            params: {
+                redirectToOrigin: boolean;
+            }
+        ): Promise<never>;
 
     };
 

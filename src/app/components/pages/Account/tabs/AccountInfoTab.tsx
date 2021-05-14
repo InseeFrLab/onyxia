@@ -12,9 +12,10 @@ import { getValidatedEnv } from "app/validatedEnv";
 import { urlJoin } from 'url-join-ts';
 import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks";
-import { usePublicIp } from "app/tools/usePublicIp";
+import { getPublicIp } from "lib/tools/getPublicIp";
 import { smartTrim } from "app/tools/smartTrim";
 import { createUseClassNames } from "app/theme/useClassNames";
+import { useAsync } from "react-async-hook";
 
 export type Props = {
     className?: string;
@@ -86,7 +87,14 @@ export const AccountInfoTab = memo((props: Props) => {
         */
     );
 
-    const { publicIp } = usePublicIp();
+    const publicIp = (function useClosure(){
+
+        const { result } = useAsync(getPublicIp, []);
+
+        return result ?? "Loading..."
+
+    })();
+
 
     const { classNames } = useClassNames({});
 

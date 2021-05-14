@@ -77,7 +77,6 @@ export function useMustacheParams() {
 
     const {
         parsedJwt,
-        keycloakConfig,
         vaultClientConfig
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
@@ -95,7 +94,6 @@ export function useMustacheParams() {
         parsedJwt,
         secretExplorerUserHomePath,
         userConfigs,
-        keycloakConfig,
         vaultClientConfig,
         oidcTokens,
         vaultToken

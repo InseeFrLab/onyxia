@@ -15370,6 +15370,11 @@ tsafe@^0.1.0:
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.1.0.tgz#a6137766d73493968a91cc13c024210c6185636c"
   integrity sha512-4dGSi8y2baxWYVKp/hdlCFf2QahNtPOs4/7ZikbWOwHyWpk2IfdbY8Ef8A/8ZSOelSuV8CPUjdrS3oPPuQ1mvg==
 
+tsafe@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.2.2.tgz#f2bd5333d22894199eefd200b9f645ca5b41e25c"
+  integrity sha512-t/W8qNk2L8/QMPokGgYmCc8Y42QItDIm6JTvX+JrBbE3Qnd/v7q19qwSmcC3t1qo5JhhzedE6YYg724kp0Iv/Q==
+
 tsconfig-paths@^3.9.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.9.0.tgz#098547a6c4448807e8fcb8eae081064ee9a3c90b"
