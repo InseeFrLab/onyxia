@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
@@ -21,53 +22,41 @@ export const CatalogExplorer = memo((props: Props) => {
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
     const dispatch = useDispatch();
 
-    useEffect(
-        () => {
-
-            if (catalogExplorerState.stateDescription !== "not fetched") {
-                return;
-            }
-
-            dispatch(thunks.catalogExplorer.fetchCatalogs());
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-    );
+    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {
 
-            if (catalogExplorerState.stateDescription === "not fetched") {
-                return;
+            switch (catalogExplorerState.stateDescription) {
+                case "not fetched":
+                    showSplashScreen({ "enableTransparency": true });
+                    dispatch(thunks.catalogExplorer.fetchCatalogs());
+                    break;
+                case "not selected":
+                    dispatch(thunks.catalogExplorer.selectCatalog({
+                        "catalogId":
+                            route.params.catalogId ??
+                            catalogExplorerState.availableCatalogsId[0]
+                    }));
+                    break;
+                case "ready":
+                    hideSplashScreen();
+                    if (route.params.catalogId !== catalogExplorerState.selectedCatalogId) {
+                        routes
+                            .catalogExplorer({ "catalogId": catalogExplorerState.selectedCatalogId })
+                        [route.params.catalogId === undefined ? "replace" : "push"]();
+                    }
+                    break;
             }
 
-            dispatch(thunks.catalogExplorer.selectCatalog({
-                "catalogId":
-                    route.params.catalogId ??
-                    catalogExplorerState.availableCatalogsId[0]
-            }));
-
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route.params.catalogId ?? ""]
+        [
+            catalogExplorerState.stateDescription,
+            route.params.catalogId ?? "",
+            catalogExplorerState.stateDescription !== "ready" ? "" : catalogExplorerState.selectedCatalogId
+        ]
     );
 
-    useEffect(
-        () => {
-
-            if (catalogExplorerState.stateDescription !== "ready") {
-                return;
-            }
-
-            routes
-                .catalogExplorer({ "catalogId": catalogExplorerState.selectedCatalogId })
-                .replace();
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [catalogExplorerState.stateDescription !== "ready" ? "" : catalogExplorerState.selectedCatalogId]
-    );
 
     const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
         packageName =>
@@ -75,22 +64,6 @@ export const CatalogExplorer = memo((props: Props) => {
                 "optionalTrailingPath": `${route.params.catalogId}/${packageName}/deploiement`
             }).push()
     );
-
-    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
-
-    useEffect(
-        () => {
-
-            if (catalogExplorerState.stateDescription !== "ready") {
-                showSplashScreen({ "enableTransparency": true });
-            } else {
-                hideSplashScreen();
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [catalogExplorerState.stateDescription]
-    );
-
 
     if (catalogExplorerState.stateDescription !== "ready") {
         return null;
