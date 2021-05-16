@@ -33,6 +33,7 @@ export type LauncherState = {
         packageName: string;
     };
     formFieldValuesDifferentFromDefault: Pick<FormField, "path" | "value">[];
+    contract?: Record<string, unknown>;
 } | null;
 
 
@@ -40,8 +41,8 @@ const { reducer, actions } = createSlice({
     name,
     "initialState": id<LauncherState>(null),
     "reducers": {
-        "packageLaunchOptionLoaded": (state, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
-            Object.assign(state, payload),
+        "packageLaunchOptionLoaded": (_, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
+            payload,
         "formFieldValueChanged": (state, { payload }: PayloadAction<Pick<FormField, "path" | "value">>) => {
 
             const { path, value } = payload;
@@ -73,11 +74,93 @@ const { reducer, actions } = createSlice({
 
             }
 
-        }
+        },
+        "contractLoaded": (state, { payload }: PayloadAction<{ contract: Record<string, unknown>; }>) => {
+            const { contract } = payload;
+            assert(state !== null);
+            state.contract= contract;
+        },
+        "launched": () => null
     }
 });
 
 export { reducer };
+
+const privateThunks = {
+    "launchOrPreviewContract":
+        (
+            params: {
+                isForContractPreview: boolean;
+            }
+        ): AppThunk => async (...args) => {
+
+            const { isForContractPreview } = params;
+
+            const [dispatch, getState, dependencies] = args;
+
+            const state = getState().launcher;
+
+            assert(state !== null);
+
+            const { contract } = await dependencies.onyxiaApiClient.launchPackage({
+                "catalogId": state["~internal"].catalogId,
+                "packageName": state["~internal"].packageName,
+                "options":
+                    [
+                        ...state.formFields,
+                        ...state["~internal"].hiddenFormFields
+                    ].reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
+
+                        (function callee(
+                            props: {
+                                launchRequestOptions: Record<string, unknown>;
+                                formField: Pick<FormField, "path" | "value">;
+                            }
+                        ): void {
+
+                            const { launchRequestOptions, formField } = props;
+
+                            const [key, ...rest] = formField.path
+
+                            if (rest.length === 0) {
+
+                                launchRequestOptions[key] = formField.value;
+
+                            } else {
+
+                                const launchRequestSubOptions = {};
+
+                                launchRequestOptions[key] = launchRequestSubOptions;
+
+                                callee({
+                                    "launchRequestOptions": launchRequestSubOptions,
+                                    "formField": {
+                                        "path": rest,
+                                        "value": formField.value
+                                    }
+                                })
+
+                            }
+
+                        })({
+                            launchRequestOptions,
+                            formField
+                        });
+
+                        return launchRequestOptions
+
+                    }, {}),
+                "isDryRun": isForContractPreview
+            });
+
+            dispatch(
+                isForContractPreview ?
+                    actions.contractLoaded({ contract }) :
+                    actions.launched()
+            );
+
+        },
+};
 
 export const thunks = {
     "loadPackageLaunchOptions":
@@ -259,69 +342,12 @@ export const thunks = {
         (
             params: Pick<FormField, "path" | "value">
         ): AppThunk<void> => dispatch => dispatch(actions.formFieldValueChanged(params)),
-    "launch":
-        (): AppThunk => async (...args) => {
-
-            const [, getState, dependencies] = args;
-
-            const state = getState().launcher;
-
-            assert(state !== null);
-
-            await dependencies.onyxiaApiClient.launchPackage({
-                "catalogId": state["~internal"].catalogId,
-                "packageName": state["~internal"].packageName,
-                "options":
-                    [
-                        ...state.formFields,
-                        ...state["~internal"].hiddenFormFields
-                    ].reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
-
-                        (function callee(
-                            props: {
-                                launchRequestOptions: Record<string, unknown>;
-                                formField: Pick<FormField, "path" | "value">;
-                            }
-                        ): void {
-
-                            const { launchRequestOptions, formField } = props;
-
-                            const [key, ...rest] = formField.path
-
-                            if (rest.length === 0) {
-
-                                launchRequestOptions[key] = formField.value;
-
-                            } else {
-
-                                const launchRequestSubOptions = {};
-
-                                launchRequestOptions[key] = launchRequestSubOptions;
-
-                                callee({
-                                    "launchRequestOptions": launchRequestSubOptions,
-                                    "formField": {
-                                        "path": rest,
-                                        "value": formField.value
-                                    }
-                                })
-
-                            }
-
-                        })({
-                            launchRequestOptions,
-                            formField
-                        });
-
-                        return launchRequestOptions
-
-                    }, {})
-            });
-
-
-
-
-        }
+    "launch": 
+        (): AppThunk => async dispatch => 
+             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
+    "previewContract":
+        (): AppThunk => async dispatch => 
+             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true }))
 };
 
 
