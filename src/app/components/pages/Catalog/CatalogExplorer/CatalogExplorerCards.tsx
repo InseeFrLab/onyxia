@@ -15,7 +15,7 @@ import type { Props as SearchBarProps } from "./CatalogExplorerSearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
-export type Params<PackageName extends string = string> = {
+export type Props<PackageName extends string = string> = {
     className?: string;
     packages: {
         packageName: PackageName;
@@ -59,14 +59,14 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
 );
 
 export const CatalogExplorerCards = memo(
-    <ServiceTitle extends string = string>(props: Params<ServiceTitle>) => {
+    <PackageName extends string = string>(props: Props<PackageName>) => {
 
         const { className, packages: cardsContent, onRequestLaunch } = props;
 
         const [search, setSearch] = useState("");
 
         const onRequestLaunchFactory = useCallbackFactory(
-            ([packageName]: [ServiceTitle]) =>
+            ([packageName]: [PackageName]) =>
                 onRequestLaunch(packageName)
         );
 

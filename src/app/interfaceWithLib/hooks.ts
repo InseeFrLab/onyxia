@@ -14,7 +14,8 @@ import { useLng } from "app/i18n/useLng";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
-import { usePublicIp } from "app/tools/usePublicIp";
+import { getPublicIp } from "lib/tools/getPublicIp";
+import { useAsync } from "react-async-hook";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -86,11 +87,11 @@ export function useMustacheParams() {
         state => userConfigsStateToUserConfigs(state.userConfigs)
     );
 
-    const { publicIp } = usePublicIp();
+    const { result: publicIp } = useAsync(getPublicIp, []);
 
     const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & { s3: BuildMustacheViewParams["s3"] | undefined; } = {
         s3,
-        publicIp,
+        "publicIp": publicIp ?? "0.0.0.0",
         parsedJwt,
         secretExplorerUserHomePath,
         userConfigs,

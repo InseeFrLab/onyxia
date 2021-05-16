@@ -14,8 +14,7 @@ import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfi
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/router";
-import type { Region, Build } from "lib/ports/OnyxiaApiClient";
-import { PublicIpProvider } from "app/tools/usePublicIp";
+import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
 import "./fonts.scss";
 
 const { ThemeProvider } = themeProviderFactory(
@@ -31,7 +30,7 @@ const getStoreInitializationParams: StoreProviderProps["getStoreInitializationPa
             "preferred_username": "jdoe",
             "family_name": "Doe",
             "given_name": "John",
-            "groups": [ "sspcloud-admin", "dsi-ddc" ],
+            "groups": ["sspcloud-admin", "dsi-ddc"],
             "locale": "en"
         }
     }),
@@ -111,9 +110,7 @@ export function getStoryFactory<Props>(params: {
                     <ThemeProvider isDarkModeEnabled={darkMode} zoomProviderReferenceWidth={undefined}>
                         <StoreProviderOrFragment>
                             <Container>
-                                <PublicIpProvider>
-                                    <Component {...props} />
-                                </PublicIpProvider>
+                                <Component {...props} />
                             </Container>
                         </StoreProviderOrFragment>
                     </ThemeProvider>
@@ -165,7 +162,7 @@ export function logCallbacks<T extends string>(propertyNames: readonly T[]): Rec
 }
 
 
-const regions: Region[] =
+const regions: Public_Configuration["regions"] =
     [
         {
             "id": 'datalab',
@@ -232,7 +229,7 @@ const regions: Region[] =
         }
     ];
 
-const build: Build = {
+const build: Public_Configuration["build"] = {
     "version": "0.7.3",
     "timestamp": Date.now()
 };

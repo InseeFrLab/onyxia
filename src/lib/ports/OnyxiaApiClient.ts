@@ -1,6 +1,8 @@
 
+import type { Region } from 'js/model/Region';
+
 export type Public_Configuration = {
-    regions: Record<string, never>[];
+    regions: Region[];
     build: {
         version: string;
         timestamp: number;
