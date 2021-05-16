@@ -1,12 +1,15 @@
 
 
-import type { OnyxiaApiClient, Region, Build } from "../ports/OnyxiaApiClient";
+import type { OnyxiaApiClient, Public_Configuration } from "../ports/OnyxiaApiClient";
+import Mustache from "mustache";
+
 import memoize from "memoizee";
+
 
 export function createMockOnyxiaApiClient(
     params: {
-        regions: Region[];
-        build: Build;
+        regions: Public_Configuration["regions"];
+        build: Public_Configuration["build"]
     }
 ): { onyxiaApiClient: OnyxiaApiClient; } {
 
@@ -15,14 +18,24 @@ export function createMockOnyxiaApiClient(
     const onyxiaApiClient: OnyxiaApiClient = {
         //"getUserInfo": () => Promise.resolve({ ip, nomComplet }),
         "getConfigurations": memoize(() => Promise.resolve({ regions, build }), { "promise": true }),
-        "getCatalogs": memoize(() => Promise.resolve(catalogs), { "promise": true })
+        "getCatalogs": memoize(() => Promise.resolve(data1), { "promise": true }),
+        "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
+            () => Promise.resolve().then(() => ({
+                "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams }) => JSON.parse(
+                    Mustache.render(
+                        JSON.stringify(data2.config),
+                        mustacheParams
+                    )
+                ) as any
+            })),
+        "launchPackage": ()=> Promise.resolve()
     };
 
     return { onyxiaApiClient };
 
 }
 
-const catalogs = [
+const data1 = [
     {
         "catalog": {
             "packages": [
@@ -4608,3 +4621,364 @@ const catalogs = [
         "type": "helm"
     }
 ];
+
+
+const data2= {
+    "apiVersion": "v2",
+    "created": "2021-04-30T08:58:48.076364018Z",
+    "description": "R Studio is the reference environment / IDE for programming with R, a programming language used for data processing and statistical analysis.",
+    "digest": "f7afc72b18e474ee9acf7d17cfeb9885c152e39505e28bdc26ce61883752b133",
+    "home": "https://www.rstudio.com/",
+    "icon": "https://minio.lab.sspcloud.fr/projet-onyxia/assets/servicesImg/rstudio.png",
+    "name": "rstudio",
+    "sources": [
+        "https://github.com/InseeFrLab/rstudio",
+        "https://github.com/InseeFrLab/helm-charts-datascience/tree/master/charts/rstudio",
+        "https://github.com/rocker-org/rocker"
+    ],
+    "urls": [
+        "https://github.com/InseeFrLab/helm-charts-datascience/releases/download/rstudio-1.0.1/rstudio-1.0.1.tgz"
+    ],
+    "version": "1.0.1",
+    "config": {
+        "type": "object",
+        "properties": {
+            "s3": {
+                "type": "object",
+                "description": "Configuration of temporary identity",
+                "properties": {
+                    "accessKeyId": {
+                        "type": "string",
+                        "description": "AWS Access Key",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_ACCESS_KEY_ID}}"
+                        }
+                    },
+                    "endpoint": {
+                        "type": "string",
+                        "description": "AWS S3 Endpoint",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_S3_ENDPOINT}}"
+                        }
+                    },
+                    "defaultRegion": {
+                        "type": "string",
+                        "description": "AWS S3 default region",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_DEFAULT_REGION}}"
+                        }
+                    },
+                    "secretAccessKey": {
+                        "type": "string",
+                        "description": "AWS S3 secret access key",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_SECRET_ACCESS_KEY}}"
+                        }
+                    },
+                    "sessionToken": {
+                        "type": "string",
+                        "description": "AWS S3 session Token",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_SESSION_TOKEN}}"
+                        }
+                    }
+                }
+            },
+            "kubernetes": {
+                "type": "object",
+                "description": "configuration of your kubernetes access",
+                "properties": {
+                    "enable": {
+                        "type": "boolean",
+                        "description": "allow your service to access your namespace ressources",
+                        "default": true
+                    },
+                    "role": {
+                        "type": "string",
+                        "description": "bind your service account to this kubernetes default role",
+                        "default": "view",
+                        "enum": [
+                            "view",
+                            "edit",
+                            "admin"
+                        ]
+                    }
+                }
+            },
+            "ingress": {
+                "type": "object",
+                "title": "Ingress Details",
+                "properties": {
+                    "hostname": {
+                        "type": "string",
+                        "title": "Hostname",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false
+                        },
+                        "x-generated": {
+                            "type": "externalDNS",
+                            "scope": "rstudio",
+                            "name": "ihm"
+                        }
+                    }
+                }
+            },
+            "init": {
+                "type": "object",
+                "description": "Init parameters",
+                "properties": {
+                    "standardInit": {
+                        "type": "string",
+                        "description": "initialization script",
+                        "default": "",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false
+                        },
+                        "x-generated": {
+                            "type": "initScript",
+                            "scope": "rstudio"
+                        }
+                    },
+                    "personnalInit": {
+                        "type": "string",
+                        "description": "initialization script",
+                        "default": ""
+                    }
+                }
+            },
+            "r": {
+                "type": "object",
+                "description": "rstudio specific configuration",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "description": "r version",
+                        "default": "inseefrlab/rstudio:4.0.4",
+                        "enum": [
+                            "inseefrlab/rstudio:3.6.3",
+                            "inseefrlab/rstudio:4.0.4",
+                            "inseefrlab/utilitr:latest"
+                        ]
+                    }
+                }
+            },
+            "security": {
+                "type": "object",
+                "description": "RStudio specific configuration",
+                "properties": {
+                    "password": {
+                        "type": "string",
+                        "description": "Password",
+                        "default": "changeme",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{user.password}}"
+                        }
+                    },
+                    "whitelist": {
+                        "type": "object",
+                        "description": "IP protection",
+                        "properties": {
+                            "enable": {
+                                "type": "boolean",
+                                "description": "Only the configured set of IPs will be able to reach the service",
+                                "title": "Enable IP protection",
+                                "default": true
+                            },
+                            "ip": {
+                                "type": "string",
+                                "description": "the white list of IP is whitespace",
+                                "title": "Whitelist of IP",
+                                "x-form": {
+                                    "hidden": false,
+                                    "readonly": false,
+                                    "value": "{{user.ip}}"
+                                }
+                            }
+                        }
+                    },
+                    "networkPolicy": {
+                        "type": "object",
+                        "description": "Define access policy to the service",
+                        "properties": {
+                            "enable": {
+                                "type": "boolean",
+                                "description": "Only pod from the same namespace will be allowed",
+                                "title": "Enable network policy",
+                                "default": true
+                            }
+                        }
+                    }
+                }
+            },
+            "environment": {
+                "type": "object",
+                "description": "configuration of your environment variables",
+                "properties": {
+                    "s3": {
+                        "type": "boolean",
+                        "description": "Add S3 temporary identity inside your environment",
+                        "default": true
+                    },
+                    "vault": {
+                        "type": "boolean",
+                        "description": "Add vault temporary identity inside your environment",
+                        "default": true
+                    },
+                    "git": {
+                        "type": "boolean",
+                        "description": "Add git config inside your environment",
+                        "default": true
+                    }
+                }
+            },
+            "git": {
+                "type": "object",
+                "description": "Git user configuration",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "user name for git",
+                        "default": "",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": true,
+                            "value": "{{git.name}}"
+                        }
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "user email for git",
+                        "default": "",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": true,
+                            "value": "{{git.email}}"
+                        }
+                    },
+                    "cache": {
+                        "type": "string",
+                        "description": "duration in seconds of the credentials cache duration",
+                        "default": "",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{git.credentials_cache_duration}}"
+                        }
+                    }
+                }
+            },
+            "onyxia": {
+                "type": "object",
+                "description": "Onyxia specific configuration",
+                "properties": {
+                    "friendlyName": {
+                        "type": "string",
+                        "description": "Service custom name",
+                        "title": "Custom name",
+                        "default": "rstudio"
+                    }
+                }
+            },
+            "resources": {
+                "type": "object",
+                "description": "Your service will have at least the requested resources and never more than its limits. No limit for a resource and you can consume everything left on the host machine.",
+                "properties": {
+                    "requests": {
+                        "type": "object",
+                        "description": "Guaranteed resources",
+                        "properties": {
+                            "cpu": {
+                                "type": "string",
+                                "description": "The amount of cpu guaranteed",
+                                "default": "0.1"
+                            },
+                            "memory": {
+                                "type": "string",
+                                "description": "The amount of cpu guaranteed",
+                                "default": "512Mi"
+                            }
+                        }
+                    }
+                }
+            },
+            "persistence": {
+                "type": "object",
+                "description": "Configuration for persistence",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Create a persistent volume",
+                        "default": true
+                    },
+                    "size": {
+                        "type": "string",
+                        "description": "Size of the persistent volume",
+                        "default": "10Gi"
+                    }
+                }
+            },
+            "vault": {
+                "type": "object",
+                "description": "Configuration of vault client",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "description": "token vault",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{vault.VAULT_TOKEN}}"
+                        }
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "url of vault server",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{vault.VAULT_ADDR}}"
+                        }
+                    },
+                    "mount": {
+                        "type": "string",
+                        "description": "mount of the v2 secret engine",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{vault.VAULT_MOUNT}}"
+                        }
+                    },
+                    "directory": {
+                        "type": "string",
+                        "description": "top level directory",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "{{vault.VAULT_TOP_DIR}}"
+                        }
+                    },
+                    "secret": {
+                        "type": "string",
+                        "description": "the path of the secret to convert into a list of environment variables",
+                        "default": ""
+                    }
+                }
+            }
+        }
+    },
+    "type": "application"
+}

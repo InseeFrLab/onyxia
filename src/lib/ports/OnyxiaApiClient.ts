@@ -1,74 +1,45 @@
 
-import type { Region } from "js/model/Region";
-export type { Region };
-
-//TODO: Remove unused properties in type declaration
-
-export type Build = {
-    version: string;
-    timestamp: number;
+export type Public_Configuration = {
+    regions: Record<string, never>[];
+    build: {
+        version: string;
+        timestamp: number;
+    };
 };
 
-export type Catalog = {
-    catalog: Packages;
-    id: string;
-    name: string;
-    description: string;
-    maintainer: string;
-    location: string;
-    status: string;
-    lastUpdateTime: number;
-    type: string;
+export type Public_Catalog = {
+    catalogs: {
+        id: string;
+        catalog: {
+            packages: {
+                description: string;
+                icon?: string;
+                name: string;
+                home?: string;
+            }[]
+        };
+    }[];
 };
 
-export type Packages = {
-    packages: Package[]
-    apiVersion: string;
-    generated: string;
+export type Public_Catalog_CatalogId_PackageName = {
+    config: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
 };
 
-
-export type Package = {
-    apiVersion: string;
-    appVersion?: string;
-    created: string;
-    description: string;
-    digest: string;
-    icon?: string;
-    name: string;
-    urls: string[];
-    version: string;
-    config: unknown;
-    type: string;
-    dependencies?: unknown[];
-    home?: string;
-};
-
-export type PackageConfig = {
-    name: string;
-    urls: string[];
-    sources: string[];
-    icon?: string;
-    home: string;
-    description: string;
-    config: PackageConfig.JSONSchemaObject;
-};
-
-export declare namespace PackageConfig {
+export namespace Public_Catalog_CatalogId_PackageName {
 
     export type JSONSchemaObject = {
-        description: string;
-        properties: Record<string, JSONSchemaObject | FormFieldDescription>;
+        description?: string;
+        properties: Record<string, JSONSchemaObject | JSONSchemaFormFieldDescription>;
         type: "object";
     };
 
-    export type FormFieldDescription =
-        FormFieldDescription.String |
-        FormFieldDescription.Boolean;
-    export namespace FormFieldDescription {
+    export type JSONSchemaFormFieldDescription =
+        JSONSchemaFormFieldDescription.String |
+        JSONSchemaFormFieldDescription.Boolean;
+    export namespace JSONSchemaFormFieldDescription {
 
         type Common<T> = {
-            description: string;
+            description?: string;
             default?: T;
             'x-form'?: {
                 hidden: boolean;
@@ -122,30 +93,31 @@ export declare namespace PackageConfig {
 }
 
 
+
 export type OnyxiaApiClient = {
 
     getConfigurations: {
-        (): Promise<{ regions: Region[]; build: Build; }>;
+        (): Promise<Public_Configuration>;
         /* Result is memoized, clear the cache with this method */
         clear(): void;
     };
 
     getCatalogs: {
-        (): Promise<Catalog[]>;
+        (): Promise<Public_Catalog["catalogs"]>;
         clear(): void;
     };
 
-    getPackageConfigFactory(
+    getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory(
         params: {
             catalogId: string;
             packageName: string;
         }
     ): Promise<{
-        getPackageConfig(
+        getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
             params: {
-                mustacheParams: PackageConfig.MustacheParams;
+                mustacheParams: Public_Catalog_CatalogId_PackageName.MustacheParams;
             }
-        ): PackageConfig;
+        ): Public_Catalog_CatalogId_PackageName["config"];
     }>;
 
     launchPackage(

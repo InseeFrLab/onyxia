@@ -15,16 +15,15 @@ import type { Props as SearchBarProps } from "./CatalogExplorerSearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
-export type Params<ServiceTitle extends string = string> = {
+export type Params<PackageName extends string = string> = {
     className?: string;
-    cardsContent: {
-        serviceTitle: ServiceTitle;
-        serviceImageUrl?: string;
-        serviceDescription: string;
-        learnMoreUrl: string | undefined;
+    packages: {
+        packageName: PackageName;
+        packageIconUrl?: string;
+        packageDescription: string;
+        packageHomeUrl?: string;
     }[];
-    onRequestLaunch(serviceTitle: ServiceTitle): void;
-    onRequestLearnMore(serviceTitle: ServiceTitle): void;
+    onRequestLaunch(packageName: PackageName): void;
 };
 
 const cardCountPerLine = 3;
@@ -62,13 +61,13 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
 export const CatalogExplorerCards = memo(
     <ServiceTitle extends string = string>(props: Params<ServiceTitle>) => {
 
-        const { className, cardsContent, onRequestLaunch } = props;
+        const { className, packages: cardsContent, onRequestLaunch } = props;
 
         const [search, setSearch] = useState("");
 
         const onRequestLaunchFactory = useCallbackFactory(
-            ([serviceTitle]: [ServiceTitle]) =>
-                onRequestLaunch(serviceTitle)
+            ([packageName]: [ServiceTitle]) =>
+                onRequestLaunch(packageName)
         );
 
         let [isRevealed, setIsRevealed] = useState(false);
@@ -96,12 +95,12 @@ export const CatalogExplorerCards = memo(
             () => cardsContent
                 .slice(0, isRevealed ? cardsContent.length : 5)
                 .filter(({
-                    serviceTitle,
-                    serviceDescription,
+                    packageName,
+                    packageDescription,
                 }) =>
                     [
-                        serviceTitle,
-                        serviceDescription
+                        packageName,
+                        packageDescription
                     ].map(
                         str => str.toLowerCase()
                             .includes(search.toLowerCase())
@@ -156,18 +155,18 @@ export const CatalogExplorerCards = memo(
                             filteredCards
                                 .map(
                                     ({
-                                        serviceTitle,
-                                        serviceImageUrl,
-                                        serviceDescription,
-                                        learnMoreUrl
+                                        packageName,
+                                        packageIconUrl,
+                                        packageDescription,
+                                        packageHomeUrl
                                     }) =>
                                         <CatalogExplorerCard
-                                            key={serviceTitle}
-                                            serviceImageUrl={serviceImageUrl}
-                                            serviceTitle={serviceTitle}
-                                            serviceDescription={serviceDescription}
-                                            onRequestLaunch={onRequestLaunchFactory(serviceTitle)}
-                                            learnMoreUrl={learnMoreUrl}
+                                            key={packageName}
+                                            packageIconUrl={packageIconUrl}
+                                            packageName={packageName}
+                                            packageDescription={packageDescription}
+                                            onRequestLaunch={onRequestLaunchFactory(packageName)}
+                                            packageHomeUrl={packageHomeUrl}
                                         />
                                 )
                     }
