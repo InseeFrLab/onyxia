@@ -127,7 +127,8 @@ export type OnyxiaApiClient = {
             catalogId: string;
             packageName: string;
             options: Record<string, unknown>;
+            isDryRun: boolean;
         }
-    ): Promise<void>;
+    ): Promise<{ contract: Record<string, unknown>; }>;
 
 };

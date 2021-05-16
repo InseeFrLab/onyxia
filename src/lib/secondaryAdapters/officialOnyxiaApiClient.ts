@@ -60,11 +60,10 @@ export function createOfficialOnyxiaApiClient(
                         )
                     ) as typeof data.config
                 })),
-        "launchPackage": ({ catalogId, packageName, options }) => axiosInstance.put<void>(
+        "launchPackage": ({ catalogId, packageName, options, isDryRun }) => axiosInstance.put<Record<string, unknown>>(
             `/my-lab/app`,
-            { catalogId, packageName, options }
-        ).then(() => undefined)
-
+            { catalogId, packageName, options, "dryRun": isDryRun }
+        ).then(({ data }) => ({ "contract": data }))
     };
 
     return { onyxiaApiClient, axiosInstance };

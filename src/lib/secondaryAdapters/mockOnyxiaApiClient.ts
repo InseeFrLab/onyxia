@@ -28,7 +28,7 @@ export function createMockOnyxiaApiClient(
                     )
                 ) as any
             })),
-        "launchPackage": ()=> Promise.resolve()
+        "launchPackage": ()=> Promise.resolve().then(()=> ({ "contract": { "foo": "bar" } }))
     };
 
     return { onyxiaApiClient };
