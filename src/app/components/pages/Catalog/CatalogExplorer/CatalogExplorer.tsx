@@ -1,11 +1,11 @@
 
-import { memo, useState, useEffect } from "react";
+import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Params as CatalogCardsParams } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
-import { useAppConstants } from "app/interfaceWithLib/hooks";
-import { useAsync } from "react-async-hook";
+import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
+import { thunks } from "lib/setup";
 import { routes } from "app/router";
 import type { Route } from "type-route";
 
@@ -18,29 +18,62 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const { className, route } = props;
 
-    const [cardsContent, setCardContent] = useState<CatalogCardsParams["cardsContent"] | undefined>(undefined);
+    const catalogExplorerState = useSelector(state => state.catalogExplorer);
+    const dispatch = useDispatch();
 
-    const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
-        serviceTitle =>
-            routes.catalog({
-                "optionalTrailingPath": `${route.params.catalogId}/${serviceTitle}/deploiement`
-            }).push()
+    useEffect(
+        () => {
+
+            if (catalogExplorerState.stateDescription !== "not fetched") {
+                return;
+            }
+
+            dispatch(thunks.catalogExplorer.fetchCatalogs());
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
     );
 
-    const { onyxiaApiClient } = useAppConstants();
+    useEffect(
+        () => {
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const { result: catalogs } = useAsync(onyxiaApiClient.getCatalogs, []);
+            if (catalogExplorerState.stateDescription === "not fetched") {
+                return;
+            }
 
-    const onRequestLearnMore = useConstCallback<CatalogCardsParams["onRequestLearnMore"]>(
-        serviceTitle =>
-            window.location.href =
-            catalogs!
-                .find(({ id }) => route.params.catalogId === id)!
-                .catalog
-                .packages
-                .find(({ name }) => name === serviceTitle)!
-                .home!
+            dispatch(thunks.catalogExplorer.selectCatalog({
+                "catalogId":
+                    route.params.catalogId ??
+                    catalogExplorerState.availableCatalogsId[0]
+            }));
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [route.params.catalogId ?? ""]
+    );
+
+    useEffect(
+        () => {
+
+            if (catalogExplorerState.stateDescription !== "ready") {
+                return;
+            }
+
+            routes
+                .catalogExplorer({ "catalogId": catalogExplorerState.selectedCatalogId })
+                .replace();
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [catalogExplorerState.stateDescription !== "ready" ? "" : catalogExplorerState.selectedCatalogId]
+    );
+
+    const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
+        packageName =>
+            routes.catalog({
+                "optionalTrailingPath": `${route.params.catalogId}/${packageName}/deploiement`
+            }).push()
     );
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
@@ -48,88 +81,26 @@ export const CatalogExplorer = memo((props: Props) => {
     useEffect(
         () => {
 
-            if (cardsContent === undefined) {
+            if (catalogExplorerState.stateDescription !== "ready") {
                 showSplashScreen({ "enableTransparency": true });
             } else {
                 hideSplashScreen();
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [cardsContent]
+        [catalogExplorerState.stateDescription]
     );
 
 
-    useEffect(
-        () => {
-
-            if (route.params.catalogId === undefined) {
-
-                if (catalogs === undefined) {
-                    return;
-                }
-
-                routes.catalogExplorer({ "catalogId": catalogs[0].id }).replace();
-
-            }
-
-            if (catalogs !== undefined && route.params.catalogId !== undefined) {
-
-                setCardContent(
-                    catalogs
-                        .find(({ id }) => route.params.catalogId === id)!
-                        .catalog
-                        .packages
-                        .map(({ icon, description, name, home }) => ({
-                            "serviceImageUrl": icon,
-                            "serviceTitle": name,
-                            "serviceDescription": description,
-                            "learnMoreUrl": home
-                        }))
-                        .sort((a, b) =>
-                            getHardCodedServiceWeight(b.serviceTitle) -
-                            getHardCodedServiceWeight(a.serviceTitle)
-                        )
-                );
-
-            }
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route.params.catalogId, catalogs ?? Object]
-    );
-
-    if (cardsContent === undefined) {
+    if (catalogExplorerState.stateDescription !== "ready") {
         return null;
     }
 
     return (
         <CatalogExplorerCards
             className={className}
-            cardsContent={cardsContent}
+            packages={catalogExplorerState.packages}
             onRequestLaunch={onRequestLaunch}
-            onRequestLearnMore={onRequestLearnMore}
         />
     );
 });
-
-const { getHardCodedServiceWeight } = (() => {
-
-    const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
-
-    function getHardCodedServiceWeight(serviceTitle: string) {
-
-        for (let i = 0; i < mainServices.length; i++) {
-
-            if (serviceTitle.toLowerCase().includes(mainServices[i])) {
-                return mainServices.length - i;
-            }
-
-        }
-
-        return 0;
-
-    }
-
-    return { getHardCodedServiceWeight };
-
-})();

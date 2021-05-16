@@ -38,7 +38,7 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => ({
 
 export const VueDefault = getStory({
     className,
-    cardsContent,
+    packages: cardsContent,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch", "onRequestLearnMore", "onClearSearch"])
 });

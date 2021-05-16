@@ -8,6 +8,7 @@ import * as userConfigsUseCase from "./useCases/userConfigs";
 import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import * as launcherUseCase from "./useCases/launcher";
+import * as catalogExplorerUseCase from "./useCases/catalogExplorer";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
@@ -124,7 +125,8 @@ const reducer = {
     [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
     [userConfigsUseCase.name]: userConfigsUseCase.reducer,
     [tokensUseCase.name]: tokensUseCase.reducer,
-    [launcherUseCase.name]: launcherUseCase.reducer
+    [launcherUseCase.name]: launcherUseCase.reducer,
+    [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -412,6 +414,7 @@ export const thunks = {
     [secretExplorerUseCase.name]: secretExplorerUseCase.thunks,
     [appConstantsUseCase.name]: appConstantsUseCase.thunks,
     [launcherUseCase.name]: launcherUseCase.thunks,
+    [catalogExplorerUseCase.name]: catalogExplorerUseCase.thunks,
     [app.name]: app.thunk,
 };
 

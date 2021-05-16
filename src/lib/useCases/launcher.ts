@@ -8,15 +8,15 @@ import { assert } from "tsafe/assert";
 import { thunks as appConstantsThunks } from "./appConstants";
 import { pure as secretExplorerPure } from "./secretExplorer";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
-import type { PackageConfig } from "../ports/OnyxiaApiClient";
 import { same } from "evt/tools/inDepth/same";
 import { arrPartition } from "evt/tools/reducers/partition";
+import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
 
 export const name = "launcher";
 
 export type FormField = {
     path: string[];
-    description: string;
+    description?: string;
     isReadonly: boolean;
     value: string | boolean;
     /** May only be defined when typeof value is string */
@@ -42,7 +42,7 @@ const { reducer, actions } = createSlice({
     "reducers": {
         "packageLaunchOptionLoaded": (state, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
             Object.assign(state, payload),
-        "updated": (state, { payload }: PayloadAction<Pick<FormField, "path" | "value">>) => {
+        "formFieldValueChanged": (state, { payload }: PayloadAction<Pick<FormField, "path" | "value">>) => {
 
             const { path, value } = payload;
 
@@ -97,11 +97,12 @@ export const thunks = {
 
             const [dispatch, getState, dependencies] = args;
 
-            const { getPackageConfig } = await dependencies.onyxiaApiClient
-                .getPackageConfigFactory({
-                    catalogId,
-                    packageName
-                });
+            const { getPackageConfigJSONSchemaObjectWithRenderedMustachParams } =
+                await dependencies.onyxiaApiClient
+                    .getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory({
+                        catalogId,
+                        packageName
+                    });
 
             assert(dependencies.oidcClient.isUserLoggedIn);
 
@@ -135,8 +136,7 @@ export const thunks = {
                     getState().userConfigs
                 );
 
-                const mustacheParams: PackageConfig.MustacheParams =
-                {
+                const mustacheParams: Public_Catalog_CatalogId_PackageName.MustacheParams = {
                     "user": {
                         "idep": parsedJwt.preferred_username,
                         "name": `${parsedJwt.family_name} ${parsedJwt.given_name}`,
@@ -166,7 +166,7 @@ export const thunks = {
 
             })();
 
-            const packageConfig = getPackageConfig({ mustacheParams });
+
 
             const { formFields, hiddenFormFields } = (() => {
 
@@ -174,7 +174,7 @@ export const thunks = {
 
                 (function callee(
                     params: {
-                        jsonSchemaObject: PackageConfig.JSONSchemaObject;
+                        jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
                         currentPath: string[];
                         formFields: (FormField & { isHidden: boolean; })[];
                     }
@@ -212,7 +212,9 @@ export const thunks = {
                 })({
                     "formFields": allFormFields,
                     "currentPath": [],
-                    "jsonSchemaObject": packageConfig.config
+                    "jsonSchemaObject": getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
+                        { mustacheParams }
+                    )
                 });
 
                 const [formFields, hiddenFormFields] =
@@ -228,7 +230,15 @@ export const thunks = {
 
             dispatch(
                 actions.packageLaunchOptionLoaded({
-                    "icon": packageConfig.icon,
+                    "icon": await dependencies.onyxiaApiClient.getCatalogs()
+                        .then(
+                            o => o
+                                .find(({ id }) => id === catalogId)!
+                                .catalog
+                                .packages
+                                .find(({ name }) => name === packageName)!
+                                .icon
+                        ),
                     formFields,
                     "~internal": {
                         hiddenFormFields,
@@ -241,14 +251,14 @@ export const thunks = {
             );
 
             formFieldValuesDifferentFromDefault.forEach(
-                formFields => dispatch(thunks.update(formFields))
+                formFields => dispatch(thunks.changeFormFieldValue(formFields))
             );
 
         },
-    "update":
+    "changeFormFieldValue":
         (
             params: Pick<FormField, "path" | "value">
-        ): AppThunk<void> => dispatch => dispatch(actions.updated(params)),
+        ): AppThunk<void> => dispatch => dispatch(actions.formFieldValueChanged(params)),
     "launch":
         (): AppThunk => async (...args) => {
 

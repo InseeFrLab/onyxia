@@ -4,32 +4,15 @@ import type { OidcClient } from "../ports/OidcClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { nonNullable } from "evt";
-import type { ReturnType } from "evt/tools/typeSafety";
 import memoize from "memoizee";
+import type { 
+    Public_Configuration, 
+    Public_Catalog,
+    Public_Catalog_CatalogId_PackageName
+} from "lib/ports/OnyxiaApiClient";
+import Mustache from "mustache";
 
-//import type { restApiPaths } from "js/restApiPaths";
 
-//TODO: This should disappear eventually.
-const restApiPaths: typeof import("js/restApiPaths")["restApiPaths"] = {
-    "catalogue": "/public/catalog",
-    "services": "/public/our-lab/apps",
-    "mesServices": "/my-lab/group",
-    "userInfo": "/user/info",
-    "nouveauService": "/my-lab/app",
-    "nouveauGroupe": "/my-lab/group",
-    "changerEtatService": "/my-lab/app",
-    "myLab": {
-        "app": "/my-lab/app"
-    },
-    "task": "/my-lab/task",
-    "cloudShell": "/cloudshell",
-    "servicesV2": "/my-lab/services",
-    "myServices": '/my-lab/services',
-    "getService": '/my-lab/app',
-    "deleteService": '/my-lab/app',
-    "getLogs": '/my-lab/app/logs',
-    "configuration": '/public/configuration',
-};
 
 
 
@@ -52,25 +35,35 @@ export function createOfficialOnyxiaApiClient(
     const { axiosInstance } = createAxiosInstance(params);
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        /*
-        "getUserInfo": () => axiosInstance.get<ReturnType<OnyxiaApiClient["getUserInfo"]>>(
-            restApiPaths.userInfo
-        ).then(({ data }) => data),
-        */
         "getConfigurations":
             memoize(
-                () => axiosInstance.get<ReturnType<OnyxiaApiClient["getConfigurations"]>>(
-                    restApiPaths.configuration
+                () => axiosInstance.get<Public_Configuration>(
+                    "/public/configuration"
                 ).then(({ data }) => data),
                 { "promise": true }
             ),
         "getCatalogs":
             memoize(
-                () => axiosInstance.get<{ catalogs: ReturnType<OnyxiaApiClient["getCatalogs"]> }>(
-                    restApiPaths.catalogue
+                () => axiosInstance.get<Public_Catalog>(
+                    "/public/catalog"
                 ).then(({ data }) => data.catalogs),
                 { "promise": true }
-            )
+            ),
+        "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
+                ({ catalogId, packageName})=> axiosInstance.get<Public_Catalog_CatalogId_PackageName>(
+                    `/public/catalog/${catalogId}/${packageName}`
+                ).then(({ data })=> ({
+                    "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams })=> JSON.parse(
+                        Mustache.render(
+                            JSON.stringify(data.config),
+                            mustacheParams
+                        )
+                    ) as typeof data.config
+                })),
+        "launchPackage": ({ catalogId, packageName, options }) => axiosInstance.put<void>(
+            `/my-lab/app`,
+            { catalogId, packageName, options }
+        ).then(() => undefined)
 
     };
 
@@ -103,9 +96,7 @@ function createAxiosInstance(
                     ...(config as any),
                     "headers": {
                         ...config.headers,
-                        //"Authorization": `Bearer ${keycloakClient.evtOidcTokens.state!.accessToken}`
                         "Authorization": `Bearer ${accessToken}`
-
                     },
                     "Content-Type": 'application/json;charset=utf-8',
                     "Accept": 'application/json;charset=utf-8',

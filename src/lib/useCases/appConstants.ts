@@ -7,11 +7,10 @@ import type {
 } from "../setup";
 import { assert } from "tsafe/assert";
 import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
-import type { OnyxiaApiClient } from "lib/ports/OnyxiaApiClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
-import type { Region, Build } from "lib/ports/OnyxiaApiClient";
+import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -25,13 +24,12 @@ export declare namespace AppConstant {
         >>;
         /** NOTE: Convoluted way of pointing to type { KeycloakConfig } from "Keycloak-js" */
         keycloakConfig: Readonly<OidcClientConfig.Keycloak["keycloakConfig"]>;
-        onyxiaApiClient: OnyxiaApiClient;
     };
 
     export type LoggedIn = _Common & {
         parsedJwt: ParsedJwt;
-        regions: Region[];
-        build: Build;
+        regions: Public_Configuration["regions"];
+        build: Public_Configuration["build"];
         getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation> };
     } & Omit<OidcClient.LoggedIn, "evtOidcTokens">;
 

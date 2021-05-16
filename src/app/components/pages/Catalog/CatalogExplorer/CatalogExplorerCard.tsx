@@ -54,21 +54,21 @@ const { useClassNames } = createUseClassNames()(
 
 export type Props = {
     className?: string;
-    serviceImageUrl?: string;
-    serviceTitle: string;
-    serviceDescription: string;
+    packageIconUrl?: string;
+    packageName: string;
+    packageDescription: string;
     onRequestLaunch(): void;
-    learnMoreUrl: string | undefined;
+    packageHomeUrl: string | undefined;
 };
 
 export const CatalogExplorerCard = memo((props: Props) => {
 
     const {
         className,
-        serviceImageUrl,
-        serviceTitle,
-        serviceDescription,
-        learnMoreUrl,
+        packageIconUrl: packageIcon,
+        packageName,
+        packageDescription,
+        packageHomeUrl,
         onRequestLaunch
     } = props;
 
@@ -79,26 +79,26 @@ export const CatalogExplorerCard = memo((props: Props) => {
     return (
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
-                {serviceImageUrl !== undefined &&
-                    <Avatar src={serviceImageUrl} />}
+                {packageIcon !== undefined &&
+                    <Avatar src={packageIcon} />}
                 <Typography
                     className={classNames.title}
                     variant="h5"
                 >
-                    {serviceTitle}
+                    {packageName}
                 </Typography>
 
             </div>
             <div className={classNames.belowDivider}>
                 <div className={classNames.body} >
                     <Typography variant="body1" >
-                        {serviceDescription}
+                        {packageDescription}
                     </Typography>
                 </div>
                 <div className={classNames.buttonsWrapper}>
-                    {learnMoreUrl !== undefined &&
+                    {packageHomeUrl !== undefined &&
                         <Button
-                            href={learnMoreUrl}
+                            href={packageHomeUrl}
                             color="ternary"
                         >
                             {t("learn more")}
