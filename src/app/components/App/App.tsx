@@ -129,9 +129,9 @@ export const App = memo((props: Props) => {
     const appConstants = useAppConstants();
 
     const onHeaderAuthClick = useConstCallback(
-        () => (appConstants.isUserLoggedIn ?
-            appConstants.logout : appConstants.login
-        )()
+        () => appConstants.isUserLoggedIn ?
+            appConstants.logout({ "redirectToOrigin": true }) :
+            appConstants.login()
     );
 
     const onLeftBarClick = useConstCallback(
@@ -178,7 +178,7 @@ export const App = memo((props: Props) => {
                 />
 
                 <main className={classNames.main}>
-                    <PageSelector route={route}/>
+                    <PageSelector route={route} />
                 </main>
 
             </section>
@@ -257,7 +257,7 @@ const PageSelector = (
                 case MyServices:
                 case MyBuckets:
                 case VisiteGuideeDebut:
-                    return <Page/>;
+                    return <Page />;
             }
 
             assert(false, "Not all cases have been dealt with in the above switch");
@@ -380,7 +380,7 @@ const PageSelector = (
     }
 
 
-    if( legacyRoute !== undefined ){
+    if (legacyRoute !== undefined) {
         return legacyRoute;
     }
 

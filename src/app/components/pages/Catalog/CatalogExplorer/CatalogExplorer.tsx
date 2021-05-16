@@ -1,7 +1,7 @@
 
 import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
-import type { Params as CatalogCardsParams } from "./CatalogExplorerCards";
+import type { Props as CatalogCardsParams } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";

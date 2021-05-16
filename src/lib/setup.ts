@@ -383,8 +383,7 @@ export async function createStore(params: CreateStoreParams) {
                                 return { "clientId": message, "realm": message };
                             case "KEYCLOAK": return oidcClientConfig.keycloakConfig;
                         }
-                    })(),
-                    onyxiaApiClient
+                    })()
                 };
 
                 return oidcClient.isUserLoggedIn ?

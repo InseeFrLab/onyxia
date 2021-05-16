@@ -33,12 +33,12 @@ export type LauncherState = {
         packageName: string;
     };
     formFieldValuesDifferentFromDefault: Pick<FormField, "path" | "value">[];
-} | undefined;
+} | null;
 
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": id<LauncherState>(undefined),
+    "initialState": id<LauncherState>(null),
     "reducers": {
         "packageLaunchOptionLoaded": (state, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
             Object.assign(state, payload),
@@ -46,7 +46,7 @@ const { reducer, actions } = createSlice({
 
             const { path, value } = payload;
 
-            assert(state !== undefined);
+            assert(state !== null);
 
             state
                 .formFields
@@ -266,7 +266,7 @@ export const thunks = {
 
             const state = getState().launcher;
 
-            assert(state !== undefined);
+            assert(state !== null);
 
             await dependencies.onyxiaApiClient.launchPackage({
                 "catalogId": state["~internal"].catalogId,

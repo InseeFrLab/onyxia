@@ -4,7 +4,7 @@
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
-import rstudioImg from "stories/assets/img/rstudio.png";
+import rstudioImgUrl from "stories/assets/img/rstudio.png";
 import { css, cx } from "tss-react";
 
 
@@ -19,49 +19,49 @@ const className = css({ "maxWidth": 450 });
 
 export const VueDefault = getStory({
     className,
-    "serviceImageUrl": rstudioImg,
-    "serviceTitle": "Service title",
+    "packageIconUrl": rstudioImgUrl,
+    "packageName": "package_name",
     /* spell-checker: disable */
-    "serviceDescription": `
+    "packageDescription": `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
     Pellentesque vel bibendum ex. Interdum et malesuada fames 
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
     justo varius`,
     /* spell-checker: enable */
-    "learnMoreUrl": "https://example.com",
+    "packageHomeUrl": "https://example.com",
     ...logCallbacks(["onRequestLaunch"])
 });
 
 export const VueNoDesc = getStory({
     className,
-    "serviceImageUrl": rstudioImg,
-    "serviceTitle": "Service title",
-    "serviceDescription": "",
-    "learnMoreUrl": "https://example.com",
+    "packageIconUrl": rstudioImgUrl,
+    "packageName": "package_name",
+    "packageDescription": "",
+    "packageHomeUrl": "https://example.com",
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
 export const VueNoLearnMore = getStory({
     className,
-    "serviceImageUrl": rstudioImg,
-    "serviceTitle": "Service title",
+    "packageIconUrl": rstudioImgUrl,
+    "packageName": "package_name",
     /* spell-checker: disable */
-    "serviceDescription": `
+    "packageDescription": `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
     Pellentesque vel bibendum ex. Interdum et malesuada fames 
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
     justo varius`,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "learnMoreUrl": undefined
+    "packageHomeUrl": undefined
 });
 
 export const VueScroll = getStory({
     "className": cx(className, css({ "height": 308 })),
-    "serviceImageUrl": rstudioImg,
-    "serviceTitle": "Service title",
+    "packageIconUrl": rstudioImgUrl,
+    "packageName": "Service title",
     /* spell-checker: disable */
-    "serviceDescription": `
+    "packageDescription": `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
     Pellentesque vel bibendum ex. Interdum et malesuada fames 
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
@@ -70,7 +70,7 @@ export const VueScroll = getStory({
     ac ante ipsum primis in faucibus. Donec volutpat sem quis 
     justo varius`,
     /* spell-checker: enable */
-    "learnMoreUrl": undefined,
+    "packageHomeUrl": undefined,
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 

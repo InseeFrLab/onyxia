@@ -19,7 +19,7 @@ import { mustacheRender, filterOnglets } from 'js/utils';
 import { restApiPaths } from 'js/restApiPaths';
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { typeGuard } from "tsafe/typeGuard";
+import { is } from "tsafe/is";
 import type { ReturnType } from "tsafe/ReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
@@ -80,7 +80,7 @@ export const NouveauService: React.FC<Props> = ({
 	const handleClickCreer = useCallback(
 		(preview = false) => {
 
-			assert(typeGuard<Extract<typeof service, { name: string; }>>(service));
+			assert(is<Extract<typeof service, { name: string; }>>(service));
 
 			dispatch(
 				actions.creerNouveauService({

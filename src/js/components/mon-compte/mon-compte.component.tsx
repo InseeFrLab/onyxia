@@ -20,7 +20,8 @@ import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "app/router";
-import { usePublicIp } from "app/tools/usePublicIp";
+import { getPublicIp } from "lib/tools/getPublicIp";
+import { useAsync } from "react-async-hook";
 
 MonCompte.routeGroup = createGroup([routes.account]);
 
@@ -38,7 +39,7 @@ export function MonCompte() {
 
 	const dispatch = useDispatch();
 
-	const { publicIp } = usePublicIp();
+	const { result: publicIp }= useAsync( getPublicIp, []);
 
 	const { parsedJwt } = useAppConstants({ "assertIsUserLoggedInIs": true });
 	const { s3 }= useSelector(state=> state.user);
@@ -143,7 +144,7 @@ export function MonCompte() {
 							<CopyableField copy label="Idep" value={parsedJwt.preferred_username} />
 							<CopyableField copy label="Nom complet" value={parsedJwt.family_name + " " + parsedJwt.given_name} />
 							<CopyableField copy label="Email" value={parsedJwt.email} />
-							<CopyableField copy label="IP" value={publicIp} />
+							<CopyableField copy label="IP" value={publicIp ?? "0.0.0.0"} />
 						</>
 					<CopyableField copy label={D.oidcToken} value={oidcAccessToken} />
 				</Paper>
