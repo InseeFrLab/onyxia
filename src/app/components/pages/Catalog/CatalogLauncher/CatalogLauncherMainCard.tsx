@@ -11,6 +11,7 @@ import { IconButton } from "app/components/designSystem/IconButton";
 import { useConstCallback } from "powerhooks";
 import { TextField } from "app/components/designSystem/TextField";
 import type { TextFieldProps } from "app/components/designSystem/TextField";
+import { Tooltip } from "app/components/designSystem/Tooltip";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -69,18 +70,20 @@ const { useClassNames } = createUseClassNames()(
 
 export type Props = {
     className?: string;
-    serviceTitle: string;
-    serviceImageUrl?: string;
+    packageName: string;
+    packageIconUrl?: string;
     isBookmarked: boolean;
     onIsBookmarkedValueChange(isBookmarked: boolean): void;
 
     friendlyName: string;
     onFriendlyNameChange(friendlyName: string): void;
+    getIsValidFriendlyName: NonNullable<TextFieldProps["getIsValidValue"]>
 
     onRequestLaunch(): void;
     onRequestCancel(): void;
 
-    getIsValidFriendlyName: NonNullable<TextFieldProps["getIsValidValue"]>
+    //Undefined when the configuration is the default one
+    onRequestCopyLaunchUrl: (()=> void) | undefined;
 
     isLocked: boolean;
 
@@ -90,8 +93,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
     const {
         className,
-        serviceImageUrl,
-        serviceTitle,
+        packageIconUrl,
+        packageName,
         isBookmarked,
         friendlyName,
         onIsBookmarkedValueChange,
@@ -99,7 +102,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onRequestLaunch,
         onRequestCancel,
         getIsValidFriendlyName,
-        isLocked
+        isLocked,
+        onRequestCopyLaunchUrl
     } = props;
 
     const { classNames } = useClassNames({});
@@ -129,6 +133,13 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
             <div className={classNames.aboveDivider}>
                 <Typography variant="h5" className={classNames.cardTitle}>{t("card title")}</Typography>
                 <div style={{ "flex": 1 }} />
+                <Tooltip title={t("copy url helper text")}>
+                    <IconButton
+                        type="link"
+                        onClick={onRequestCopyLaunchUrl}
+                        disabled={onRequestCopyLaunchUrl === undefined}
+                    />
+                </Tooltip>
                 <IconButton
                     type={isBookmarked ? "bookmarkBorder" : "bookmark"}
                     onClick={onBookmarkIconButtonClick}
@@ -140,13 +151,13 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
                 <div className={classNames.avatarAndTitleWrapper}>
 
-                    {serviceImageUrl !== undefined &&
-                        <Avatar src={serviceImageUrl} />}
+                    {packageIconUrl !== undefined &&
+                        <Avatar src={packageIconUrl} />}
                     <Typography
                         variant="h5"
                         className={classNames.title}
                     >
-                        {serviceTitle}
+                        {packageName}
                     </Typography>
                 </div>
                 <div className={classNames.textFieldAndButtonWrapper}>
@@ -197,5 +208,6 @@ export declare namespace CatalogLauncherMainCard {
         cancel: undefined;
         launch: undefined
         'friendly name': undefined;
+        'copy url helper text': undefined;
     };
 }

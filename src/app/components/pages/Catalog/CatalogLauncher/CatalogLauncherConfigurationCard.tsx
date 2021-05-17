@@ -6,7 +6,10 @@ import {
 } from "./CatalogLauncherAdvancedConfigurationHeader";
 import { Tabs } from "app/components/shared/Tabs";
 import {
-    CatalogLauncherAdvancedConfigurationTab,
+    CatalogLauncherAdvancedConfigurationTab
+} from "./CatalogLauncherAdvancedConfigurationTab";
+
+import type {
     Props as CatalogLauncherAdvancedConfigurationTabProps
 } from "./CatalogLauncherAdvancedConfigurationTab";
 import { useCallbackFactory } from "powerhooks";
@@ -28,7 +31,7 @@ export type Props = {
         }
     ): void;
     contract: undefined | Record<string, unknown>;
-    loadOrRefreshContract(): void;
+    previewContract(): void;
 };
 
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
@@ -36,7 +39,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const { 
         className, formFieldsByTab, 
         onFormValueChange, contract,
-        loadOrRefreshContract
+        previewContract
     } = props;
 
 
@@ -45,7 +48,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     useEffect(
         ()=> {
             if( state === "contract"){
-                loadOrRefreshContract();
+                previewContract();
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps

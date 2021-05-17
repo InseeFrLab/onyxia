@@ -17,7 +17,7 @@ export type Props = {
     className?: string;
     formFields: {
         label: string;
-        description: string;
+        description?: string;
         value: string | boolean;
         isReadonly: boolean;
         /** May only be defined when typeof value is string */
