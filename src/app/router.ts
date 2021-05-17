@@ -5,10 +5,7 @@ import { id } from "tsafe/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 import URLON from "urlon";
-
-
-
-
+import type { FormField } from "lib/useCases/launcher";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
     "account": defineRoute(
@@ -51,13 +48,13 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     "catalogLauncher": defineRoute(
         {
             "catalogId": param.path.string,
-            "serviceId": param.path.string,
-            "params": param.query.optional.ofType(id<ValueSerializer<Record<string, string>>>({
+            "packageName": param.path.string,
+            "p": param.query.optional.ofType(id<ValueSerializer<Pick<FormField, "path" | "value">[]>>({
                 "parse": raw => URLON.parse(raw),
                 "stringify": value => URLON.stringify(value)
-            })).default({})
+            })).default([])
         },
-        ({ catalogId, serviceId }) => `/launcher/${catalogId}/${serviceId}`
+        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`
     ),
     ...(() => {
 

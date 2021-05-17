@@ -308,7 +308,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "card title": "Create your personal services",
             "friendly name": "Friendly name",
             "launch": "Launch",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "copy url helper text": "Copy url to restore this configuration"
         },
         "CatalogLauncherAdvancedConfigurationHeader": {
             "title": "Advanced configuration"
@@ -523,7 +524,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "card title": "Crée votre propre service",
             "friendly name": "Nom personalisé",
             "launch": "Lancer",
-            "cancel": "Annuler"
+            "cancel": "Annuler",
+            "copy url helper text": "Copier l'URL permettant de restaurer cette configuration"
         },
         "CatalogLauncherAdvancedConfigurationHeader": {
             "title": "Configuration avancée"

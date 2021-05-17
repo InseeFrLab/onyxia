@@ -25,6 +25,8 @@ export type FormField = {
 
 export type LauncherState = {
     icon: string | undefined;
+    catalogId: string;
+    packageName: string;
     formFields: FormField[];
     '~internal': {
         hiddenFormFields: FormField[];
@@ -41,7 +43,7 @@ const { reducer, actions } = createSlice({
     name,
     "initialState": id<LauncherState>(null),
     "reducers": {
-        "packageLaunchOptionLoaded": (_, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
+        "initialized": (_, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
             payload,
         "formFieldValueChanged": (state, { payload }: PayloadAction<Pick<FormField, "path" | "value">>) => {
 
@@ -76,9 +78,9 @@ const { reducer, actions } = createSlice({
 
         },
         "contractLoaded": (state, { payload }: PayloadAction<{ contract: Record<string, unknown>; }>) => {
-            const { contract } = payload;
+            const { contract } = payload;
             assert(state !== null);
-            state.contract= contract;
+            state.contract = contract;
         },
         "launched": () => null
     }
@@ -163,7 +165,7 @@ const privateThunks = {
 };
 
 export const thunks = {
-    "loadPackageLaunchOptions":
+    "initialize":
         (
             params: {
                 catalogId: string;
@@ -179,6 +181,26 @@ export const thunks = {
             } = params;
 
             const [dispatch, getState, dependencies] = args;
+
+            //Optimization to save time is nothing has changed
+            {
+
+                const launcherState = getState().launcher;
+
+                if (
+                    launcherState !== null &&
+                    launcherState.catalogId === catalogId &&
+                    launcherState.packageName === packageName &&
+                    same(
+                        launcherState.formFieldValuesDifferentFromDefault,
+                        formFieldValuesDifferentFromDefault
+                    )
+                ) {
+                    return;
+                }
+
+            }
+
 
             const { getPackageConfigJSONSchemaObjectWithRenderedMustachParams } =
                 await dependencies.onyxiaApiClient
@@ -312,7 +334,9 @@ export const thunks = {
             })();
 
             dispatch(
-                actions.packageLaunchOptionLoaded({
+                actions.initialized({
+                    catalogId,
+                    packageName,
                     "icon": await dependencies.onyxiaApiClient.getCatalogs()
                         .then(
                             o => o
@@ -342,12 +366,12 @@ export const thunks = {
         (
             params: Pick<FormField, "path" | "value">
         ): AppThunk<void> => dispatch => dispatch(actions.formFieldValueChanged(params)),
-    "launch": 
-        (): AppThunk => async dispatch => 
-             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
+    "launch":
+        (): AppThunk => async dispatch =>
+            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
     "previewContract":
-        (): AppThunk => async dispatch => 
-             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true }))
+        (): AppThunk => async dispatch =>
+            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true }))
 };
 
 

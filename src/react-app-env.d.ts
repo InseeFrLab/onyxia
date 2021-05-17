@@ -6,8 +6,8 @@ declare module '*.md' {
 
 declare module "urlon" {
     const URLON:{
-        parse<T extends Record<string, unknown>>(raw: string): T;
-        stringify(obj: Record<string,unknown>): string;
+        parse<T>(raw: string): T;
+        stringify(obj: any): string;
     };
     export default URLON;
 }

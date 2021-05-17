@@ -14,7 +14,7 @@ export type Props = {
     className?: string | null;
 
     disabled?: boolean;
-    onClick: () => void;
+    onClick: (() => void) | undefined;
 
     type: IconProps["type"];
     fontSize?: IconProps["fontSize"];
