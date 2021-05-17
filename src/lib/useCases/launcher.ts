@@ -52,8 +52,10 @@ const { reducer, actions } = createSlice({
 
             assert(state !== null);
 
-            state
-                .formFields
+            [
+                ...state.formFields,
+                ...state["~internal"].hiddenFormFields
+            ]
                 .find(formField => same(formField.path, path))!
                 .value = value;
 
@@ -88,6 +90,8 @@ const { reducer, actions } = createSlice({
 });
 
 export { reducer };
+
+const onyxiaFriendlyNamePath = ["onyxia", "friendlyName"];
 
 const privateThunks = {
     "launchOrPreviewContract":
@@ -324,10 +328,12 @@ export const thunks = {
                     )
                 });
 
-                const [formFields, hiddenFormFields] =
+                const [hiddenFormFields, formFields] =
                     arrPartition(
                         allFormFields,
-                        ({ isHidden }) => !isHidden
+                        ({ isHidden, path }) =>
+                            isHidden ||
+                            same(onyxiaFriendlyNamePath, path)
                     );
 
 
@@ -373,7 +379,26 @@ export const thunks = {
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
     "previewContract":
         (): AppThunk => async dispatch =>
-            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true }))
+            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
+    "onFriendlyNameChange":
+        (
+            friendlyName: string
+        ): AppThunk<void> => dispatch => dispatch(thunks.changeFormFieldValue({
+            "path": onyxiaFriendlyNamePath,
+            "value": friendlyName
+        })),
+    /** Extracted from ~internal state, we avoid duplication */
+    "getFriendlyName":
+        (): AppThunk<string> => (...args) => {
+            const [, getState] = args;
+            const friendlyName = getState()
+                .launcher!["~internal"]
+                .hiddenFormFields
+                .find(({ path }) => same(path, onyxiaFriendlyNamePath))!
+                .value;
+            assert(typeof friendlyName !== "boolean");
+            return friendlyName;
+        }
 };
 
 

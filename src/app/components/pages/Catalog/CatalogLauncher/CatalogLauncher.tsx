@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, memo } from "react";
+import { useMemo, useEffect, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { routes } from "app/router";
 import type { Route } from "type-route";
@@ -64,9 +64,6 @@ export const CatalogLauncher = memo((props: Props) => {
         [launcherState?.formFieldValuesDifferentFromDefault ?? Object]
     );
 
-    const [friendlyName, setFriendlyName] = useState(route.params.packageName);
-
-
     const { classNames } = useClassNames({});
 
     const onRequestLaunch = useConstCallback(() =>
@@ -116,6 +113,11 @@ export const CatalogLauncher = memo((props: Props) => {
         () => copyToClipboard(window.location.href)
     );
 
+    const onFriendlyNameChange= useConstCallback(
+        (friendlyName: string)=> 
+            dispatch(thunks.onFriendlyNameChange(friendlyName))
+    );
+
     if (launcherState === null) {
         return null;
     }
@@ -128,9 +130,8 @@ export const CatalogLauncher = memo((props: Props) => {
                 isBookmarked={false}
                 onIsBookmarkedValueChange={() => { }}
 
-                friendlyName={friendlyName}
-                onFriendlyNameChange={setFriendlyName}
-                getIsValidFriendlyName={() => ({ "isValidValue": true })}
+                friendlyName={dispatch(thunks.getFriendlyName())}
+                onFriendlyNameChange={onFriendlyNameChange}
 
                 onRequestLaunch={onRequestLaunch}
                 onRequestCancel={onRequestCancel}

@@ -77,7 +77,6 @@ export type Props = {
 
     friendlyName: string;
     onFriendlyNameChange(friendlyName: string): void;
-    getIsValidFriendlyName: NonNullable<TextFieldProps["getIsValidValue"]>
 
     onRequestLaunch(): void;
     onRequestCancel(): void;
@@ -101,7 +100,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onFriendlyNameChange,
         onRequestLaunch,
         onRequestCancel,
-        getIsValidFriendlyName,
         isLocked,
         onRequestCopyLaunchUrl
     } = props;
@@ -165,7 +163,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                     <TextField
                         disabled={isLocked}
                         label={t("friendly name")}
-                        getIsValidValue={getIsValidFriendlyName}
                         defaultValue={friendlyName}
                         doOnlyValidateInputAfterFistFocusLost={false}
                         selectAllTextOnFocus={true}
