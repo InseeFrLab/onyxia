@@ -31,13 +31,15 @@ export type LauncherState = {
     formFields: FormField[];
     '~internal': {
         hiddenFormFields: FormField[];
-        defaultFormFieldValues: Pick<FormField, "path" | "value">[];
+        defaultFormFieldsValue: Pick<FormField, "path" | "value">[];
         catalogId: string;
         packageName: string;
     };
-    formFieldValuesDifferentFromDefault: Pick<FormField, "path" | "value">[];
+    formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
     contract?: Record<string, unknown>;
 } | null;
+
+
 
 
 const { reducer, actions } = createSlice({
@@ -61,21 +63,27 @@ const { reducer, actions } = createSlice({
 
             if (
                 !!state["~internal"]
-                    .defaultFormFieldValues
+                    .defaultFormFieldsValue
                     .find(formField => same(formField.path, path))!
                     .value
                 !==
                 value
             ) {
 
-                const formField = state.formFieldValuesDifferentFromDefault
+                const formField = state.formFieldsValueDifferentFromDefault
                     .find(formField => same(formField.path, path));
 
                 if (formField === undefined) {
-                    state.formFieldValuesDifferentFromDefault.push({ path, value });
+                    state.formFieldsValueDifferentFromDefault.push({ path, value });
                 } else {
                     formField.value = value;
                 }
+
+            } else {
+
+                state.formFieldsValueDifferentFromDefault =
+                    state.formFieldsValueDifferentFromDefault
+                        .filter(formField => !same(formField.path, path));
 
             }
 
@@ -112,51 +120,10 @@ const privateThunks = {
             const { contract } = await dependencies.onyxiaApiClient.launchPackage({
                 "catalogId": state["~internal"].catalogId,
                 "packageName": state["~internal"].packageName,
-                "options":
-                    [
-                        ...state.formFields,
-                        ...state["~internal"].hiddenFormFields
-                    ].reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
-
-                        (function callee(
-                            props: {
-                                launchRequestOptions: Record<string, unknown>;
-                                formField: Pick<FormField, "path" | "value">;
-                            }
-                        ): void {
-
-                            const { launchRequestOptions, formField } = props;
-
-                            const [key, ...rest] = formField.path
-
-                            if (rest.length === 0) {
-
-                                launchRequestOptions[key] = formField.value;
-
-                            } else {
-
-                                const launchRequestSubOptions = {};
-
-                                launchRequestOptions[key] = launchRequestSubOptions;
-
-                                callee({
-                                    "launchRequestOptions": launchRequestSubOptions,
-                                    "formField": {
-                                        "path": rest,
-                                        "value": formField.value
-                                    }
-                                })
-
-                            }
-
-                        })({
-                            launchRequestOptions,
-                            formField
-                        });
-
-                        return launchRequestOptions
-
-                    }, {}),
+                "options": pure.formFieldsValueToObject([
+                    ...state.formFields,
+                    ...state["~internal"].hiddenFormFields
+                ]),
                 "isDryRun": isForContractPreview
             });
 
@@ -175,14 +142,14 @@ export const thunks = {
             params: {
                 catalogId: string;
                 packageName: string;
-                formFieldValuesDifferentFromDefault: Pick<FormField, "path" | "value">[];
+                formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
             }
         ): AppThunk => async (...args) => {
 
             const {
                 catalogId,
                 packageName,
-                formFieldValuesDifferentFromDefault
+                formFieldsValueDifferentFromDefault
             } = params;
 
             const [dispatch, getState, dependencies] = args;
@@ -197,8 +164,12 @@ export const thunks = {
                     launcherState.catalogId === catalogId &&
                     launcherState.packageName === packageName &&
                     same(
-                        launcherState.formFieldValuesDifferentFromDefault,
-                        formFieldValuesDifferentFromDefault
+                        pure.formFieldsValueToObject(
+                            launcherState.formFieldsValueDifferentFromDefault
+                        ),
+                        pure.formFieldsValueToObject(
+                            formFieldsValueDifferentFromDefault
+                        )
                     )
                 ) {
                     return;
@@ -286,14 +257,12 @@ export const thunks = {
                     params: {
                         jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
                         currentPath: string[];
-                        formFields: (FormField & { isHidden: boolean; })[];
                     }
                 ): void {
 
                     const {
                         jsonSchemaObject: { properties },
-                        currentPath,
-                        formFields
+                        currentPath
                     } = params;
 
                     Object.entries(properties).forEach(([key, value]) => {
@@ -304,10 +273,9 @@ export const thunks = {
                             callee({
                                 "currentPath": newCurrentPath,
                                 "jsonSchemaObject": value,
-                                formFields
                             });
                         } else {
-                            formFields.push({
+                            allFormFields.push({
                                 "path": newCurrentPath,
                                 "title": value.title,
                                 "description": value.description,
@@ -319,9 +287,7 @@ export const thunks = {
 
                     });
 
-
                 })({
-                    "formFields": allFormFields,
                     "currentPath": [],
                     "jsonSchemaObject": getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
                         { mustacheParams }
@@ -357,15 +323,15 @@ export const thunks = {
                     formFields,
                     "~internal": {
                         hiddenFormFields,
-                        "defaultFormFieldValues": formFields,
+                        "defaultFormFieldsValue": formFields,
                         catalogId,
                         packageName
                     },
-                    "formFieldValuesDifferentFromDefault": []
+                    "formFieldsValueDifferentFromDefault": []
                 })
             );
 
-            formFieldValuesDifferentFromDefault.forEach(
+            formFieldsValueDifferentFromDefault.forEach(
                 formFields => dispatch(thunks.changeFormFieldValue(formFields))
             );
 
@@ -400,6 +366,104 @@ export const thunks = {
             return friendlyName;
         }
 };
+
+export const pure = {
+    "formFieldsValueToObject": (
+        formFieldsValue: Pick<FormField, "path" | "value">[]
+    ): Record<string, unknown> =>
+        [...formFieldsValue]
+            .sort(
+                (a, b) => JSON.stringify(a.path)
+                    .localeCompare(JSON.stringify(b.path))
+            )
+            .reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
+
+                (function callee(
+                    props: {
+                        launchRequestOptions: Record<string, unknown>;
+                        formField: Pick<FormField, "path" | "value">;
+                    }
+                ): void {
+
+                    const { launchRequestOptions, formField } = props;
+
+                    const [key, ...rest] = formField.path
+
+                    if (rest.length === 0) {
+
+                        launchRequestOptions[key] = formField.value;
+
+                    } else {
+
+                        const launchRequestSubOptions = {};
+
+                        launchRequestOptions[key] = launchRequestSubOptions;
+
+                        callee({
+                            "launchRequestOptions": launchRequestSubOptions,
+                            "formField": {
+                                "path": rest,
+                                "value": formField.value
+                            }
+                        })
+
+                    }
+
+                })({
+                    launchRequestOptions,
+                    formField
+                });
+
+                return launchRequestOptions
+
+            }, {}),
+    "objectToFormFieldsValue": (
+        obj: Record<string, unknown>
+    ): Pick<FormField, "path" | "value">[] => {
+
+        const formFieldsValue: Pick<FormField, "path" | "value">[] = [];
+
+        (function callee(
+            params: {
+                obj: Record<string, unknown>;
+                currentPath: string[];
+            }
+        ): void {
+
+            const {
+                obj,
+                currentPath
+            } = params;
+
+            Object.entries(obj).forEach(([key, value]) => {
+
+                const newCurrentPath = [...currentPath, key];
+
+                if (value instanceof Object) {
+                    callee({
+                        "currentPath": newCurrentPath,
+                        "obj": value as Record<string, unknown>,
+                    });
+                } else {
+                    formFieldsValue.push({
+                        "path": newCurrentPath,
+                        "value": value as FormField["value"]
+                    });
+                }
+
+            });
+
+
+        })({
+            "currentPath": [],
+            obj
+        });
+
+        return formFieldsValue
+
+    }
+};
+
 
 
 
