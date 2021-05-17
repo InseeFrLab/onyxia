@@ -84,9 +84,10 @@ export const CatalogLauncher = memo((props: Props) => {
 
             if (launcherState !== null) {
 
-                launcherState.formFields.forEach(formField =>
-                    (formFieldsByTab[formField.path[0]] ??= []).push({
-                        "label": pathToLabel(formField.path),
+                launcherState.formFields.forEach(({ path, ...formField }) =>
+                    (formFieldsByTab[path[0]] ??= []).push({
+                        "path": path,
+                        "title": formField.title ?? path.slice(1).join("."),
                         "description": formField.description,
                         "value": formField.value,
                         "isReadonly": formField.isReadonly,
@@ -104,16 +105,7 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 
     const onFormValueChange = useConstCallback<CatalogLauncherConfigurationCardProps["onFormValueChange"]>(
-        ({ tabId, label, value }) =>
-            dispatch(
-                thunks.changeFormFieldValue({
-                    "path": launcherState!
-                        .formFields.filter(({ path }) => path[0] === tabId)
-                        .find(({ path }) => pathToLabel(path) === label)!
-                        .path,
-                    value
-                })
-            )
+        ({ path, value }) => dispatch(thunks.changeFormFieldValue({ path, value }))
     );
 
     const previewContract = useConstCallback(
@@ -162,7 +154,3 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 
 });
-
-function pathToLabel(path: string[]) {
-    return path.slice(1).join(".");
-}
