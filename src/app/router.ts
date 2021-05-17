@@ -6,6 +6,7 @@ import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
 import URLON from "urlon";
 import type { FormField } from "lib/useCases/launcher";
+import { pure } from "lib/useCases/launcher";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
     "account": defineRoute(
@@ -50,8 +51,8 @@ export const { RouteProvider, useRoute, routes } = createRouter({
             "catalogId": param.path.string,
             "packageName": param.path.string,
             "p": param.query.optional.ofType(id<ValueSerializer<Pick<FormField, "path" | "value">[]>>({
-                "parse": raw => URLON.parse(raw),
-                "stringify": value => URLON.stringify(value)
+                "parse": raw => pure.objectToFormFieldsValue(URLON.parse(raw)),
+                "stringify": formFieldsValue => URLON.stringify(pure.formFieldsValueToObject(formFieldsValue))
             })).default([])
         },
         ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`

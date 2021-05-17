@@ -418,7 +418,8 @@ export const thunks = {
 };
 
 export const pure = {
-    [secretExplorerUseCase.name]: secretExplorerUseCase.pure
+    [secretExplorerUseCase.name]: secretExplorerUseCase.pure,
+    [launcherUseCase.name]: launcherUseCase.pure
 };
 
 export type Store = ReturnType<typeof createStore>;

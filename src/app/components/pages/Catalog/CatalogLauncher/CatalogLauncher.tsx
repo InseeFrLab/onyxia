@@ -39,14 +39,14 @@ export const CatalogLauncher = memo((props: Props) => {
             const {
                 catalogId,
                 packageName,
-                p: formFieldValuesDifferentFromDefault
+                p: formFieldsValueDifferentFromDefault
             } = route.params;
 
 
             dispatch(thunks.initialize({
                 catalogId,
                 packageName,
-                formFieldValuesDifferentFromDefault
+                formFieldsValueDifferentFromDefault
             }));
 
         },
@@ -58,10 +58,10 @@ export const CatalogLauncher = memo((props: Props) => {
         () => routes.catalogLauncher({
             "catalogId": route.params.catalogId,
             "packageName": route.params.packageName,
-            "p": launcherState?.formFieldValuesDifferentFromDefault
+            "p": launcherState?.formFieldsValueDifferentFromDefault
         }).replace(),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [launcherState?.formFieldValuesDifferentFromDefault ?? Object]
+        [launcherState?.formFieldsValueDifferentFromDefault ?? Object]
     );
 
     const { classNames } = useClassNames({});
@@ -139,7 +139,7 @@ export const CatalogLauncher = memo((props: Props) => {
                 isLocked={false}
 
                 onRequestCopyLaunchUrl={
-                    launcherState.formFieldValuesDifferentFromDefault.length !== 0 ?
+                    launcherState.formFieldsValueDifferentFromDefault.length !== 0 ?
                         onRequestCopyLaunchUrl :
                         undefined
                 }
