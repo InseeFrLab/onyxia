@@ -29,7 +29,6 @@ const { useClassNames } = createUseClassNames<Props>()(
         "root": {
             "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
             "boxShadow": theme.custom.shadows[1],
-            //"borderRadius": "8px 8px 0 0",
             "borderRadius": 8,
             "overflow": "hidden"
         },
