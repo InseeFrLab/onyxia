@@ -16,6 +16,7 @@ export const name = "launcher";
 
 export type FormField = {
     path: string[];
+    title?: string;
     description?: string;
     isReadonly: boolean;
     value: string | boolean;
@@ -304,6 +305,7 @@ export const thunks = {
                         } else {
                             formFields.push({
                                 "path": newCurrentPath,
+                                "title": value.title,
                                 "description": value.description,
                                 "isReadonly": value["x-form"]?.readonly ?? false,
                                 "value": value["x-form"]?.value ?? value.default ?? null as any as never,

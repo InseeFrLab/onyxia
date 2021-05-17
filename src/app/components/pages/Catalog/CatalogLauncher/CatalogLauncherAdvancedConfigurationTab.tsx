@@ -12,11 +12,13 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { same } from "evt/tools/inDepth/same";
 
 export type Props = {
     className?: string;
     formFields: {
-        label: string;
+        path: string[];
+        title: string;
         description?: string;
         value: string | boolean;
         isReadonly: boolean;
@@ -25,7 +27,7 @@ export type Props = {
     }[];
     onFormValueChange(
         params: {
-            label: string;
+            path: string[];
             value: string | boolean;
         }
     ): void;
@@ -44,29 +46,29 @@ export const CatalogLauncherAdvancedConfigurationTab = memo((props: Props) => {
 
     const onValueBeingTypedChangeFactory = useCallbackFactory(
         (
-            [label]: [string],
+            [path]: [string[]],
             [{ value }]: [{ value: string | boolean; }]
         ) =>
-            onFormValueChange({ label, value })
+            onFormValueChange({ path, value })
     );
 
     const onCheckboxChangeFactory = useCallbackFactory(
-        ([label]: [string]) =>
+        ([path]: [string[]]) =>
             onFormValueChange({
-                label,
+                path,
                 "value": !formFields
-                    .find(formField => formField.label === label)!
+                    .find(formField => same(formField.path, path))!
                     .value
             })
     );
 
     const onSelectChangeFactory = useCallbackFactory(
         (
-            [label]: [string],
+            [path]: [string[]],
             [event]: [React.ChangeEvent<{ value: unknown; }>]
         ) =>
             onFormValueChange({
-                label,
+                path,
                 "value": event.target.value as string
             })
     );
@@ -77,17 +79,17 @@ export const CatalogLauncherAdvancedConfigurationTab = memo((props: Props) => {
     return (
         <div className={cx(classNames.root, className)}>
             { formFields.map(formField =>
-                <div key={formField.label}>{(() => {
+                <div key={formField.path.join("-")}>{(() => {
                     switch (typeof formField.value) {
                         case "string":
-                            const labelId = `label-${formField.label}`;
+                            const labelId = `label_${formField.path.join("-")}`;
                             return formField.enum !== undefined ?
                                 <FormControl>
                                     <InputLabel id={labelId}>Age</InputLabel>
                                     <Select
                                         labelId={labelId}
                                         value={formField.value}
-                                        onChange={onSelectChangeFactory(formField.label)}
+                                        onChange={onSelectChangeFactory(formField.path)}
                                     >
                                         {formField.enum.map(value =>
                                             <MenuItem
@@ -106,9 +108,9 @@ export const CatalogLauncherAdvancedConfigurationTab = memo((props: Props) => {
                                     disabled={formField.isReadonly}
                                     helperText={formField.description}
                                     inputProps_spellCheck={false}
-                                    label={formField.label}
+                                    label={formField.title}
                                     defaultValue={formField.value}
-                                    onValueBeingTypedChange={onValueBeingTypedChangeFactory(formField.label)}
+                                    onValueBeingTypedChange={onValueBeingTypedChangeFactory(formField.path)}
                                 />;
                         case "boolean":
                             return (
@@ -116,10 +118,10 @@ export const CatalogLauncherAdvancedConfigurationTab = memo((props: Props) => {
                                     control={
                                         <Checkbox
                                             checked={formField.value}
-                                            onChange={onCheckboxChangeFactory(formField.label)}
+                                            onChange={onCheckboxChangeFactory(formField.path)}
                                         />
                                     }
-                                    label={formField.label}
+                                    label={formField.title}
                                 />
                             );
                     }

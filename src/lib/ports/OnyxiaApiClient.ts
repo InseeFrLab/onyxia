@@ -42,6 +42,7 @@ export namespace Public_Catalog_CatalogId_PackageName {
 
         type Common<T> = {
             description?: string;
+            title?: string;
             default?: T;
             'x-form'?: {
                 hidden: boolean;

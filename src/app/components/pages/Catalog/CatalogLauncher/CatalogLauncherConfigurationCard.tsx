@@ -12,8 +12,6 @@ import {
 import type {
     Props as CatalogLauncherAdvancedConfigurationTabProps
 } from "./CatalogLauncherAdvancedConfigurationTab";
-import { useCallbackFactory } from "powerhooks";
-import type { Param0 } from "tsafe";
 import { JsonEditor } from "jsoneditor-react";
 import "jsoneditor-react/es/editor.min.css";
 
@@ -23,13 +21,7 @@ export type Props = {
         string,
         CatalogLauncherAdvancedConfigurationTabProps["formFields"]
     >;
-    onFormValueChange(
-        params: {
-            tabId: string;
-            label: string;
-            value: string | boolean;
-        }
-    ): void;
+    onFormValueChange: CatalogLauncherAdvancedConfigurationTabProps["onFormValueChange"];
     contract: undefined | Record<string, unknown>;
     previewContract(): void;
 };
@@ -61,25 +53,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
         [formFieldsByTab]
     );
 
-    const [activeTabId, setActiveTabId] = useState(
-        () => tabs[0].id
-    );
-
-    const onFormValueChangeFactory = useCallbackFactory(
-        (
-            [tabId]: [string],
-            [{ label, value }]: [
-                Param0<
-                    CatalogLauncherAdvancedConfigurationTabProps["onFormValueChange"]
-                >
-            ]
-        ) =>
-            onFormValueChange({
-                tabId,
-                label,
-                value
-            })
-    );
+    const [activeTabId, setActiveTabId] = useState(tabs[0].id);
 
     return (
         <div className={className}>
@@ -104,7 +78,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                             return (
                                 <CatalogLauncherAdvancedConfigurationTab
                                     formFields={formFieldsByTab[activeTabId]}
-                                    onFormValueChange={onFormValueChangeFactory(activeTabId)}
+                                    onFormValueChange={onFormValueChange}
                                 />
                             );
                     }
