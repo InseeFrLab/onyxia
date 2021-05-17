@@ -39,9 +39,6 @@ export type LauncherState = {
     contract?: Record<string, unknown>;
 } | null;
 
-
-
-
 const { reducer, actions } = createSlice({
     name,
     "initialState": id<LauncherState>(null),

@@ -29,8 +29,10 @@ export const CatalogExplorer = memo((props: Props) => {
 
             switch (catalogExplorerState.stateDescription) {
                 case "not fetched":
-                    showSplashScreen({ "enableTransparency": true });
-                    dispatch(thunks.catalogExplorer.fetchCatalogs());
+                    if (!catalogExplorerState.isFetching) {
+                        showSplashScreen({ "enableTransparency": true });
+                        dispatch(thunks.catalogExplorer.fetchCatalogs());
+                    }
                     break;
                 case "not selected":
                     dispatch(thunks.catalogExplorer.selectCatalog({
@@ -53,7 +55,8 @@ export const CatalogExplorer = memo((props: Props) => {
         [
             catalogExplorerState.stateDescription,
             route.params.catalogId ?? "",
-            catalogExplorerState.stateDescription !== "ready" ? "" : catalogExplorerState.selectedCatalogId
+            catalogExplorerState.stateDescription !== "ready" ? 
+                "" : catalogExplorerState.selectedCatalogId
         ]
     );
 
