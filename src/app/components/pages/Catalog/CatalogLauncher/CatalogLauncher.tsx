@@ -55,11 +55,19 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 
     useEffect(
-        () => routes.catalogLauncher({
-            "catalogId": route.params.catalogId,
-            "packageName": route.params.packageName,
-            "p": launcherState?.formFieldsValueDifferentFromDefault
-        }).replace(),
+        () => {
+
+            if( launcherState === null ){
+                return;
+            }
+
+            routes.catalogLauncher({
+                "catalogId": route.params.catalogId,
+                "packageName": route.params.packageName,
+                "p": launcherState?.formFieldsValueDifferentFromDefault
+            }).replace();
+
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [launcherState?.formFieldsValueDifferentFromDefault ?? Object]
     );
@@ -113,8 +121,8 @@ export const CatalogLauncher = memo((props: Props) => {
         () => copyToClipboard(window.location.href)
     );
 
-    const onFriendlyNameChange= useConstCallback(
-        (friendlyName: string)=> 
+    const onFriendlyNameChange = useConstCallback(
+        (friendlyName: string) =>
             dispatch(thunks.onFriendlyNameChange(friendlyName))
     );
 

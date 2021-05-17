@@ -25,6 +25,7 @@ export namespace CatalogExplorerState {
 
     export type NotFetched = {
         stateDescription: "not fetched"
+        isFetching: boolean;
     };
 
     export type NotSelected = Common & {
@@ -47,9 +48,14 @@ export namespace CatalogExplorerState {
 const { reducer, actions } = createSlice({
     name,
     "initialState": id<CatalogExplorerState>(id<CatalogExplorerState.NotFetched>({
-        "stateDescription": "not fetched"
+        "stateDescription": "not fetched",
+        "isFetching": false
     })),
     "reducers": {
+        "catalogsFetching": state =>{
+            assert(state.stateDescription === "not fetched");
+            state.isFetching= true;
+        },
         "catalogsFetched": (_, { payload }: PayloadAction<NonNullable<CatalogExplorerState.NotSelected>>) =>
             payload,
         "catalogSelected": (state, { payload }: PayloadAction<{ catalogId: string; }>) => {
@@ -89,6 +95,8 @@ export const thunks = {
         (): AppThunk => async (...args) => {
 
             const [dispatch, , dependencies] = args;
+
+            dispatch(actions.catalogsFetching());
 
             const apiRequestResult = await dependencies.onyxiaApiClient
                 .getCatalogs();
