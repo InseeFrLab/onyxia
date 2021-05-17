@@ -24,24 +24,40 @@ export type FormField = {
     enum?: string[];
 };
 
-export type LauncherState = {
-    icon: string | undefined;
-    catalogId: string;
-    packageName: string;
-    formFields: FormField[];
-    '~internal': {
-        hiddenFormFields: FormField[];
-        defaultFormFieldsValue: Pick<FormField, "path" | "value">[];
+export type LauncherState =
+    LauncherState.NotInitialized |
+    LauncherState.Ready;
+
+export declare namespace LauncherState {
+
+    export type NotInitialized = {
+        stateDescription: "not initialized";
+    };
+
+    export type Ready = {
+        stateDescription: "ready";
+        icon: string | undefined;
         catalogId: string;
         packageName: string;
+        formFields: FormField[];
+        '~internal': {
+            hiddenFormFields: FormField[];
+            defaultFormFieldsValue: Pick<FormField, "path" | "value">[];
+            catalogId: string;
+            packageName: string;
+        };
+        formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
+        contract?: Record<string, unknown>;
     };
-    formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
-    contract?: Record<string, unknown>;
-} | null;
+
+}
+
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": id<LauncherState>(null),
+    "initialState": id<LauncherState>(id<LauncherState.NotInitialized>({
+        "stateDescription": "not initialized",
+    })),
     "reducers": {
         "initialized": (_, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
             payload,
@@ -49,7 +65,7 @@ const { reducer, actions } = createSlice({
 
             const { path, value } = payload;
 
-            assert(state !== null);
+            assert(state.stateDescription === "ready");
 
             [
                 ...state.formFields,
@@ -87,10 +103,12 @@ const { reducer, actions } = createSlice({
         },
         "contractLoaded": (state, { payload }: PayloadAction<{ contract: Record<string, unknown>; }>) => {
             const { contract } = payload;
-            assert(state !== null);
+            assert(state.stateDescription === "ready");
             state.contract = contract;
         },
-        "launched": () => null
+        "launched": () => id<LauncherState.NotInitialized>({
+            "stateDescription": "not initialized",
+        })
     }
 });
 
@@ -112,7 +130,7 @@ const privateThunks = {
 
             const state = getState().launcher;
 
-            assert(state !== null);
+            assert(state.stateDescription === "ready");
 
             const { contract } = await dependencies.onyxiaApiClient.launchPackage({
                 "catalogId": state["~internal"].catalogId,
@@ -157,7 +175,7 @@ export const thunks = {
                 const launcherState = getState().launcher;
 
                 if (
-                    launcherState !== null &&
+                    launcherState.stateDescription === "ready" &&
                     launcherState.catalogId === catalogId &&
                     launcherState.packageName === packageName &&
                     same(
@@ -306,6 +324,7 @@ export const thunks = {
 
             dispatch(
                 actions.initialized({
+                    "stateDescription": "ready",
                     catalogId,
                     packageName,
                     "icon": await dependencies.onyxiaApiClient.getCatalogs()
@@ -354,8 +373,9 @@ export const thunks = {
     "getFriendlyName":
         (): AppThunk<string> => (...args) => {
             const [, getState] = args;
-            const friendlyName = getState()
-                .launcher!["~internal"]
+            const state = getState().launcher;
+            assert(state.stateDescription === "ready");
+            const friendlyName = state["~internal"]
                 .hiddenFormFields
                 .find(({ path }) => same(path, onyxiaFriendlyNamePath))!
                 .value;
