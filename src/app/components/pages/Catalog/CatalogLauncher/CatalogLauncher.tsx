@@ -42,7 +42,6 @@ export const CatalogLauncher = memo((props: Props) => {
                 p: formFieldsValueDifferentFromDefault
             } = route.params;
 
-
             dispatch(thunks.initialize({
                 catalogId,
                 packageName,
@@ -57,7 +56,7 @@ export const CatalogLauncher = memo((props: Props) => {
     useEffect(
         () => {
 
-            if( launcherState === null ){
+            if( launcherState.stateDescription !== "ready" ){
                 return;
             }
 
@@ -69,7 +68,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [launcherState?.formFieldsValueDifferentFromDefault ?? Object]
+        [ launcherState.stateDescription === "ready" ? launcherState.formFieldsValueDifferentFromDefault : Object ]
     );
 
     const { classNames } = useClassNames({});
@@ -87,7 +86,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
             const formFieldsByTab: CatalogLauncherConfigurationCardProps["formFieldsByTab"] = {};
 
-            if (launcherState !== null) {
+            if (launcherState.stateDescription === "ready") {
 
                 launcherState.formFields.forEach(({ path, ...formField }) =>
                     (formFieldsByTab[path[0]] ??= []).push({
@@ -106,7 +105,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [launcherState?.formFields ?? Object]
+        [launcherState.stateDescription === "ready" ? launcherState.formFields : Object]
     );
 
     const onFormValueChange = useConstCallback<CatalogLauncherConfigurationCardProps["onFormValueChange"]>(
@@ -126,7 +125,7 @@ export const CatalogLauncher = memo((props: Props) => {
             dispatch(thunks.onFriendlyNameChange(friendlyName))
     );
 
-    if (launcherState === null) {
+    if (launcherState.stateDescription !== "ready") {
         return null;
     }
 
