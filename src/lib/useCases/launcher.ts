@@ -11,6 +11,8 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { arrPartition } from "evt/tools/reducers/partition";
 import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
+import { allEquals } from "evt/tools/reducers/allEquals";
+import { thunks as userConfigsThunks } from "./userConfigs";
 
 export const name = "launcher";
 
@@ -48,6 +50,7 @@ export declare namespace LauncherState {
         };
         formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
         contract?: Record<string, unknown>;
+        isBookmarked: boolean;
     };
 
 }
@@ -67,12 +70,24 @@ const { reducer, actions } = createSlice({
 
             assert(state.stateDescription === "ready");
 
-            [
-                ...state.formFields,
-                ...state["~internal"].hiddenFormFields
-            ]
-                .find(formField => same(formField.path, path))!
-                .value = value;
+            {
+
+                const formField =
+                    [
+                        ...state.formFields,
+                        ...state["~internal"].hiddenFormFields
+                    ]
+                        .find(formField => same(formField.path, path))!;
+
+                if (formField.value === value) {
+                    return;
+                }
+
+                formField.value = value;
+
+                state.isBookmarked = false;
+
+            }
 
             if (
                 !!state["~internal"]
@@ -108,7 +123,11 @@ const { reducer, actions } = createSlice({
         },
         "launched": () => id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
-        })
+        }),
+        "bookmarked": state => {
+            assert(state.stateDescription === "ready");
+            state.isBookmarked = true;
+        }
     }
 });
 
@@ -343,7 +362,8 @@ export const thunks = {
                         catalogId,
                         packageName
                     },
-                    "formFieldsValueDifferentFromDefault": []
+                    "formFieldsValueDifferentFromDefault": [],
+                    "isBookmarked": false
                 })
             );
 
@@ -381,8 +401,89 @@ export const thunks = {
                 .value;
             assert(typeof friendlyName !== "boolean");
             return friendlyName;
+        },
+    "bookmark":
+        (): AppThunk => async (...args) => {
+
+            const [dispatch, getState] = args;
+
+            const bookmarkedServiceConfigurations: BookmarkedServiceConfiguration[] = (() => {
+
+                const { value } = getState().userConfigs.bookmarkedServiceConfigurationStr;
+
+                return value === null ? [] : JSON.parse(value);
+
+            })();
+
+            const bookmarkedServiceConfiguration: BookmarkedServiceConfiguration = (() => {
+
+                const state = getState().launcher;
+
+                assert(state.stateDescription === "ready");
+
+                return state;
+
+            })();
+
+            if (
+                isConfigurationAlreadyBookmarked({
+                    bookmarkedServiceConfigurations,
+                    bookmarkedServiceConfiguration
+                })
+            ) {
+                return;
+            }
+
+            await dispatch(
+                userConfigsThunks.changeValue({
+                    "key": "bookmarkedServiceConfigurationStr",
+                    "value": JSON.stringify([
+                        ...bookmarkedServiceConfigurations,
+                        bookmarkedServiceConfiguration
+                    ])
+                })
+            );
+
         }
 };
+
+type BookmarkedServiceConfiguration = {
+    catalogId: string;
+    packageName: string;
+    formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
+};
+
+function isConfigurationAlreadyBookmarked(
+    params: {
+        bookmarkedServiceConfigurations: BookmarkedServiceConfiguration[];
+        bookmarkedServiceConfiguration: BookmarkedServiceConfiguration;
+    }
+): boolean {
+
+    const {
+        bookmarkedServiceConfigurations,
+        bookmarkedServiceConfiguration
+    } = params;
+
+    return !!bookmarkedServiceConfigurations.find(
+        bookmarkedServiceConfiguration_i =>
+            [
+                bookmarkedServiceConfiguration,
+                bookmarkedServiceConfiguration_i
+            ]
+                .map(({
+                    catalogId,
+                    packageName,
+                    formFieldsValueDifferentFromDefault
+                }) => [
+                        catalogId,
+                        packageName,
+                        pure.formFieldsValueToObject(formFieldsValueDifferentFromDefault)
+                    ])
+                .reduce(...allEquals(same))
+    );
+
+}
 
 export const pure = {
     "formFieldsValueToObject": (
