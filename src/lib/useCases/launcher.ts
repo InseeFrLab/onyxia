@@ -407,6 +407,8 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
+            dispatch(actions.bookmarked());
+
             const bookmarkedServiceConfigurations: BookmarkedServiceConfiguration[] = (() => {
 
                 const { value } = getState().userConfigs.bookmarkedServiceConfigurationStr;
