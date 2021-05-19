@@ -11,17 +11,22 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { arrPartition } from "evt/tools/reducers/partition";
 import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
-import { allEquals } from "evt/tools/reducers/allEquals";
-import { thunks as userConfigsThunks } from "./userConfigs";
+import { thunks as restorablePackageConfigsThunks  } from "./restorablePackageConfigs";
+import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
+import { 
+    formFieldsValueToObject, 
+} from "./sharedDataModel/FormFieldValue";
+import { 
+    onyxiaFriendlyNameFormFieldPath,
+    areSameRestorablePackageConfig
+} from "./restorablePackageConfigs";
 
 export const name = "launcher";
 
-export type FormField = {
-    path: string[];
+export type FormField = FormFieldValue & {
     title?: string;
     description?: string;
     isReadonly: boolean;
-    value: string | boolean;
     /** May only be defined when typeof value is string */
     enum?: string[];
 };
@@ -44,13 +49,13 @@ export declare namespace LauncherState {
         formFields: FormField[];
         '~internal': {
             hiddenFormFields: FormField[];
-            defaultFormFieldsValue: Pick<FormField, "path" | "value">[];
+            defaultFormFieldsValue: FormFieldValue[];
             catalogId: string;
             packageName: string;
         };
-        formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
+        formFieldsValueDifferentFromDefault: FormFieldValue[];
         contract?: Record<string, unknown>;
-        isBookmarked: boolean;
+        isSaved: boolean;
     };
 
 }
@@ -62,9 +67,9 @@ const { reducer, actions } = createSlice({
         "stateDescription": "not initialized",
     })),
     "reducers": {
-        "initialized": (_, { payload }: PayloadAction<NonNullable<LauncherState>>) =>
+        "initialized": (_, { payload }: PayloadAction<LauncherState.Ready>) =>
             payload,
-        "formFieldValueChanged": (state, { payload }: PayloadAction<Pick<FormField, "path" | "value">>) => {
+        "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
 
             const { path, value } = payload;
 
@@ -84,8 +89,6 @@ const { reducer, actions } = createSlice({
                 }
 
                 formField.value = value;
-
-                state.isBookmarked = false;
 
             }
 
@@ -124,16 +127,16 @@ const { reducer, actions } = createSlice({
         "launched": () => id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
         }),
-        "bookmarked": state => {
+        "valueOfIsSavedUpdated": (state, { payload }: PayloadAction<{ isSaved: boolean; }>) => {
+            const { isSaved } = payload;
             assert(state.stateDescription === "ready");
-            state.isBookmarked = true;
+            state.isSaved = isSaved;
         }
     }
 });
 
 export { reducer };
 
-const onyxiaFriendlyNamePath = ["onyxia", "friendlyName"];
 
 const privateThunks = {
     "launchOrPreviewContract":
@@ -154,7 +157,7 @@ const privateThunks = {
             const { contract } = await dependencies.onyxiaApiClient.launchPackage({
                 "catalogId": state["~internal"].catalogId,
                 "packageName": state["~internal"].packageName,
-                "options": pure.formFieldsValueToObject([
+                "options": formFieldsValueToObject([
                     ...state.formFields,
                     ...state["~internal"].hiddenFormFields
                 ]),
@@ -168,6 +171,19 @@ const privateThunks = {
             );
 
         },
+    "updateSavedStatus": (): AppThunk<void> => async (dispatch, getState) =>
+        dispatch(actions.valueOfIsSavedUpdated({
+            "isSaved": dispatch(
+                restorablePackageConfigsThunks.isRestorablePackageConfigAlreadyInStore({
+                    "restorablePackageConfig": (() => {
+                        const state = getState().launcher;
+                        assert(state.stateDescription === "ready");
+                        return state;
+                    })()
+                })
+            )
+        }))
+
 };
 
 export const thunks = {
@@ -176,7 +192,7 @@ export const thunks = {
             params: {
                 catalogId: string;
                 packageName: string;
-                formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
+                formFieldsValueDifferentFromDefault: FormFieldValue[];
             }
         ): AppThunk => async (...args) => {
 
@@ -195,15 +211,9 @@ export const thunks = {
 
                 if (
                     launcherState.stateDescription === "ready" &&
-                    launcherState.catalogId === catalogId &&
-                    launcherState.packageName === packageName &&
-                    same(
-                        pure.formFieldsValueToObject(
-                            launcherState.formFieldsValueDifferentFromDefault
-                        ),
-                        pure.formFieldsValueToObject(
-                            formFieldsValueDifferentFromDefault
-                        )
+                    areSameRestorablePackageConfig(
+                        launcherState,
+                        params
                     )
                 ) {
                     return;
@@ -281,8 +291,6 @@ export const thunks = {
 
             })();
 
-
-
             const { formFields, hiddenFormFields } = (() => {
 
                 const allFormFields: (FormField & { isHidden: boolean; })[] = [];
@@ -333,7 +341,7 @@ export const thunks = {
                         allFormFields,
                         ({ isHidden, path }) =>
                             isHidden ||
-                            same(onyxiaFriendlyNamePath, path)
+                            same(onyxiaFriendlyNameFormFieldPath, path)
                     );
 
 
@@ -348,7 +356,7 @@ export const thunks = {
                     packageName,
                     "icon": await dependencies.onyxiaApiClient.getCatalogs()
                         .then(
-                            o => o
+                            apiRequestResult => apiRequestResult
                                 .find(({ id }) => id === catalogId)!
                                 .catalog
                                 .packages
@@ -363,7 +371,7 @@ export const thunks = {
                         packageName
                     },
                     "formFieldsValueDifferentFromDefault": [],
-                    "isBookmarked": false
+                    "isSaved": false
                 })
             );
 
@@ -371,22 +379,27 @@ export const thunks = {
                 formFields => dispatch(thunks.changeFormFieldValue(formFields))
             );
 
+            dispatch(privateThunks.updateSavedStatus());
+
         },
     "changeFormFieldValue":
         (
-            params: Pick<FormField, "path" | "value">
-        ): AppThunk<void> => dispatch => dispatch(actions.formFieldValueChanged(params)),
+            params: FormFieldValue
+        ): AppThunk<void> => dispatch => { 
+            dispatch(actions.formFieldValueChanged(params)); 
+            dispatch(privateThunks.updateSavedStatus());
+        },
     "launch":
         (): AppThunk => async dispatch =>
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
     "previewContract":
         (): AppThunk => async dispatch =>
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
-    "onFriendlyNameChange":
+    "changeFriendlyName":
         (
             friendlyName: string
         ): AppThunk<void> => dispatch => dispatch(thunks.changeFormFieldValue({
-            "path": onyxiaFriendlyNamePath,
+            "path": onyxiaFriendlyNameFormFieldPath,
             "value": friendlyName
         })),
     /** Extracted from ~internal state, we avoid duplication */
@@ -397,193 +410,22 @@ export const thunks = {
             assert(state.stateDescription === "ready");
             const friendlyName = state["~internal"]
                 .hiddenFormFields
-                .find(({ path }) => same(path, onyxiaFriendlyNamePath))!
+                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
                 .value;
             assert(typeof friendlyName !== "boolean");
             return friendlyName;
         },
-    "bookmark":
-        (): AppThunk => async (...args) => {
+    "saveConfiguration":
+        (): AppThunk => (dispatch, getState) =>
+            dispatch(restorablePackageConfigsThunks.saveRestorablePackageConfig({
+                "restorablePackageConfig": (() => {
 
-            const [dispatch, getState] = args;
+                    const state = getState().launcher;
 
-            dispatch(actions.bookmarked());
+                    assert(state.stateDescription === "ready");
 
-            const bookmarkedServiceConfigurations: BookmarkedServiceConfiguration[] = (() => {
+                    return state;
 
-                const { value } = getState().userConfigs.bookmarkedServiceConfigurationStr;
-
-                return value === null ? [] : JSON.parse(value);
-
-            })();
-
-            const bookmarkedServiceConfiguration: BookmarkedServiceConfiguration = (() => {
-
-                const state = getState().launcher;
-
-                assert(state.stateDescription === "ready");
-
-                return state;
-
-            })();
-
-            if (
-                isConfigurationAlreadyBookmarked({
-                    bookmarkedServiceConfigurations,
-                    bookmarkedServiceConfiguration
-                })
-            ) {
-                return;
-            }
-
-            await dispatch(
-                userConfigsThunks.changeValue({
-                    "key": "bookmarkedServiceConfigurationStr",
-                    "value": JSON.stringify([
-                        ...bookmarkedServiceConfigurations,
-                        bookmarkedServiceConfiguration
-                    ])
-                })
-            );
-
-        }
+                })()
+            }))
 };
-
-type BookmarkedServiceConfiguration = {
-    catalogId: string;
-    packageName: string;
-    formFieldsValueDifferentFromDefault: Pick<FormField, "path" | "value">[];
-};
-
-function isConfigurationAlreadyBookmarked(
-    params: {
-        bookmarkedServiceConfigurations: BookmarkedServiceConfiguration[];
-        bookmarkedServiceConfiguration: BookmarkedServiceConfiguration;
-    }
-): boolean {
-
-    const {
-        bookmarkedServiceConfigurations,
-        bookmarkedServiceConfiguration
-    } = params;
-
-    return !!bookmarkedServiceConfigurations.find(
-        bookmarkedServiceConfiguration_i =>
-            [
-                bookmarkedServiceConfiguration,
-                bookmarkedServiceConfiguration_i
-            ]
-                .map(({
-                    catalogId,
-                    packageName,
-                    formFieldsValueDifferentFromDefault
-                }) => [
-                        catalogId,
-                        packageName,
-                        pure.formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-                    ])
-                .reduce(...allEquals(same))
-    );
-
-}
-
-export const pure = {
-    "formFieldsValueToObject": (
-        formFieldsValue: Pick<FormField, "path" | "value">[]
-    ): Record<string, unknown> =>
-        [...formFieldsValue]
-            .sort(
-                (a, b) => JSON.stringify(a.path)
-                    .localeCompare(JSON.stringify(b.path))
-            )
-            .reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
-
-                (function callee(
-                    props: {
-                        launchRequestOptions: Record<string, unknown>;
-                        formField: Pick<FormField, "path" | "value">;
-                    }
-                ): void {
-
-                    const { launchRequestOptions, formField } = props;
-
-                    const [key, ...rest] = formField.path
-
-                    if (rest.length === 0) {
-
-                        launchRequestOptions[key] = formField.value;
-
-                    } else {
-
-                        const launchRequestSubOptions = {};
-
-                        launchRequestOptions[key] = launchRequestSubOptions;
-
-                        callee({
-                            "launchRequestOptions": launchRequestSubOptions,
-                            "formField": {
-                                "path": rest,
-                                "value": formField.value
-                            }
-                        })
-
-                    }
-
-                })({
-                    launchRequestOptions,
-                    formField
-                });
-
-                return launchRequestOptions
-
-            }, {}),
-    "objectToFormFieldsValue": (
-        obj: Record<string, unknown>
-    ): Pick<FormField, "path" | "value">[] => {
-
-        const formFieldsValue: Pick<FormField, "path" | "value">[] = [];
-
-        (function callee(
-            params: {
-                obj: Record<string, unknown>;
-                currentPath: string[];
-            }
-        ): void {
-
-            const {
-                obj,
-                currentPath
-            } = params;
-
-            Object.entries(obj).forEach(([key, value]) => {
-
-                const newCurrentPath = [...currentPath, key];
-
-                if (value instanceof Object) {
-                    callee({
-                        "currentPath": newCurrentPath,
-                        "obj": value as Record<string, unknown>,
-                    });
-                } else {
-                    formFieldsValue.push({
-                        "path": newCurrentPath,
-                        "value": value as FormField["value"]
-                    });
-                }
-
-            });
-
-
-        })({
-            "currentPath": [],
-            obj
-        });
-
-        return formFieldsValue
-
-    }
-};
-
-
-
-
