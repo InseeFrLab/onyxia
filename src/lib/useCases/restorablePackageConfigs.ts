@@ -9,6 +9,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
+import memoize from "memoizee";
 
 export const name = "restorablePackageConfig";
 
@@ -171,50 +172,105 @@ export const thunks = {
         dispatch(actions.iconsFetched({ iconsUrl }));
 
     },
-    "getFriendlyName": (
-        params: {
-            catalogId: string;
-            packageName: string;
-        }
-    ): AppThunk<string> => (...args) => {
-        const [, getState] = args;
+    "getFriendlyName": (() => {
 
-        const { catalogId, packageName } = params;
+        const memoizee = memoize(
+            (
+                restorablePackageConfigs: RestorablePackageConfig[],
+                catalogId: string,
+                packageName: string
+            ) => {
 
-        const friendlyName =
-            getState()
-                .restorablePackageConfig
-                .restorablePackageConfigs.find(restorablePackageConfig => restorablePackageConfig.catalogId === catalogId)!
-                .formFieldsValueDifferentFromDefault
-                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
-            packageName;
+                const friendlyName =
+                    restorablePackageConfigs.find(restorablePackageConfig => restorablePackageConfig.catalogId === catalogId)!
+                        .formFieldsValueDifferentFromDefault
+                        .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
+                    packageName;
 
-        assert(typeof friendlyName !== "boolean");
+                assert(typeof friendlyName !== "boolean");
 
-        return friendlyName;
+                return friendlyName;
 
-    },
-    "isRestorablePackageConfigAlreadyInStore": (
-        params: {
-            restorablePackageConfig: RestorablePackageConfig;
-        }
-    ): AppThunk<boolean> => (...args) => {
+            },
+            { "maxAge": 6000 }
+        );
 
-        const { restorablePackageConfig } = params;
 
-        const [, getState] = args;
+        return (
+            params: {
+                catalogId: string;
+                packageName: string;
+            }
+        ): AppThunk<string> => (...args) => {
 
-        return !!getState()
-            .restorablePackageConfig
-            .restorablePackageConfigs
-            .find(restorablePackageConfig_i =>
-                areSameRestorablePackageConfig(
-                    restorablePackageConfig_i,
-                    restorablePackageConfig
-                )
+            const [, getState] = args;
+
+            const { catalogId, packageName } = params;
+
+            return memoizee(
+                getState()
+                    .restorablePackageConfig
+                    .restorablePackageConfigs,
+                catalogId,
+                packageName
             );
 
-    },
+        };
+
+
+    })(),
+    /** For getter implemented as thunk user can't know when it's necessary
+     * to update the value because it don't know which states is used internally
+     * to compute the value.
+     * In consequence the implementation must memoize as much as possible
+     * because this will be called every render (without dependency array)
+     */
+
+    "isRestorablePackageConfigAlreadyInStore": (() => {
+
+        const memoizee = memoize(
+            (
+                restorablePackageConfigs: RestorablePackageConfig[],
+                catalogId: string,
+                packageName: string,
+                formFieldsValueDifferentFromDefault: FormFieldValue[]
+            ): boolean =>
+                !!restorablePackageConfigs
+                    .find(restorablePackageConfig_i =>
+                        areSameRestorablePackageConfig(
+                            restorablePackageConfig_i,
+                            {
+                                catalogId,
+                                packageName,
+                                formFieldsValueDifferentFromDefault
+                            }
+                        )
+                    ),
+            { "maxAge": 6000 }
+        );
+
+        return (
+            params: {
+                restorablePackageConfig: RestorablePackageConfig;
+            }
+        ): AppThunk<boolean> => (...args) => {
+
+            const { restorablePackageConfig } = params;
+
+            const [, getState] = args;
+
+            return memoizee(
+                getState()
+                    .restorablePackageConfig
+                    .restorablePackageConfigs,
+                restorablePackageConfig.catalogId,
+                restorablePackageConfig.packageName,
+                restorablePackageConfig.formFieldsValueDifferentFromDefault
+            );
+
+        };
+
+    })(),
     "saveRestorablePackageConfig": (
         params: {
             restorablePackageConfig: RestorablePackageConfig;
@@ -260,6 +316,7 @@ export const thunks = {
 
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
+
 export function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
     restorablePackageConfiguration2: RestorablePackageConfig
@@ -281,5 +338,7 @@ export function areSameRestorablePackageConfig(
         .reduce(...allEquals(same))
 
 }
+
+
 
 
