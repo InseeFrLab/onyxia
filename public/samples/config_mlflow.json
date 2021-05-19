@@ -1,0 +1,181 @@
+{
+    "apiVersion": "v2",
+    "appVersion": "1",
+    "created": "2021-04-30T08:58:47.304140851Z",
+    "description": "MLflow is an open source platform to manage the ML lifecycle, including experimentation, reproducibility, deployment, and a central model registry.",
+    "digest": "ce6c8cf38a063d8ef842b3105cfdf60deeb8ec08dea1a94f3b3ca0b494e7e280",
+    "home": "https://jupyter.org/",
+    "icon": "https://minio.lab.sspcloud.fr/projet-onyxia/assets/servicesImg/mlflow.png",
+    "name": "mlflow",
+    "sources": [
+        "https://github.com/InseeFrLab/mlflow",
+        "https://github.com/InseeFrLab/helm-charts-datascience/tree/master/charts/mlflow"
+    ],
+    "urls": [
+        "https://github.com/InseeFrLab/helm-charts-datascience/releases/download/mlflow-1.0.1/mlflow-1.0.1.tgz"
+    ],
+    "version": "1.0.1",
+    "config": {
+        "type": "object",
+        "properties": {
+            "s3": {
+                "type": "object",
+                "description": "Configuration of temporary identity",
+                "properties": {
+                    "accessKeyId": {
+                        "type": "string",
+                        "description": "AWS Access Key",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_ACCESS_KEY_ID}}"
+                        }
+                    },
+                    "endpoint": {
+                        "type": "string",
+                        "description": "AWS S3 Endpoint",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_S3_ENDPOINT}}"
+                        }
+                    },
+                    "defaultRegion": {
+                        "type": "string",
+                        "description": "AWS S3 default region",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_DEFAULT_REGION}}"
+                        }
+                    },
+                    "secretAccessKey": {
+                        "type": "string",
+                        "description": "AWS S3 secret access key",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_SECRET_ACCESS_KEY}}"
+                        }
+                    },
+                    "sessionToken": {
+                        "type": "string",
+                        "description": "AWS S3 session Token",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false,
+                            "value": "{{s3.AWS_SESSION_TOKEN}}"
+                        }
+                    }
+                }
+            },
+            "ingress": {
+                "type": "object",
+                "title": "Ingress Details",
+                "properties": {
+                    "hostname": {
+                        "type": "string",
+                        "title": "Hostname",
+                        "x-form": {
+                            "hidden": true,
+                            "readonly": false
+                        },
+                        "x-generated": {
+                            "type": "externalDNS",
+                            "scope": "mlflow",
+                            "name": "ihm"
+                        }
+                    }
+                }
+            },
+            "environment": {
+                "type": "object",
+                "description": "configuration of your environment variables",
+                "properties": {
+                    "s3": {
+                        "type": "boolean",
+                        "description": "Add S3 temporary identity inside your environment",
+                        "default": true
+                    }
+                }
+            },
+            "service": {
+                "type": "object",
+                "description": "mlflow artifact repository configuration",
+                "properties": {
+                    "directory": {
+                        "type": "string",
+                        "description": "directory of artifact root repository",
+                        "default": "/tmp/mlflow/artifacts/",
+                        "x-form": {
+                            "hidden": false,
+                            "readonly": false,
+                            "value": "s3://{{user.idep}}/mlflow-artifacts"
+                        }
+                    }
+                }
+            },
+            "onyxia": {
+                "type": "object",
+                "description": "Onyxia specific configuration",
+                "properties": {
+                    "friendlyName": {
+                        "type": "string",
+                        "description": "Service custom name",
+                        "title": "Custom name",
+                        "default": "mlflow"
+                    }
+                }
+            },
+            "global": {
+                "type": "object",
+                "description": "postgres specific configuration",
+                "title": "Database",
+                "properties": {
+                    "postgresql": {
+                        "type": "object",
+                        "description": "postgres specific configuration",
+                        "title": "Database",
+                        "properties": {
+                            "postgresqlUsername": {
+                                "type": "string",
+                                "title": "Admin user",
+                                "default": "admin",
+                                "x-form": {
+                                    "hidden": false,
+                                    "readonly": false,
+                                    "value": "{{user.idep}}"
+                                }
+                            },
+                            "postgresqlPassword": {
+                                "type": "string",
+                                "title": "Password",
+                                "default": "changeme",
+                                "x-form": {
+                                    "hidden": false,
+                                    "readonly": false,
+                                    "value": "{{user.password}}"
+                                }
+                            },
+                            "postgresqlDatabase": {
+                                "type": "string",
+                                "description": "Name for the default database that is created when the image is first started.",
+                                "title": "Database",
+                                "default": "mlflow"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "type": "application",
+    "dependencies": [
+        {
+            "enabled": true,
+            "name": "postgresql",
+            "repository": "https://charts.bitnami.com/bitnami",
+            "version": "10.3.14"
+        }
+    ]
+}

@@ -9,7 +9,6 @@ import { thunks as appConstantsThunks } from "./appConstants";
 import { pure as secretExplorerPure } from "./secretExplorer";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
-import { arrPartition } from "evt/tools/reducers/partition";
 import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
 import { thunks as restorablePackageConfigsThunks  } from "./restorablePackageConfigs";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
@@ -20,6 +19,8 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     areSameRestorablePackageConfig
 } from "./restorablePackageConfigs";
+import memoize from "memoizee";
+import { clone } from "lib/tools/clone";
 
 export const name = "launcher";
 
@@ -46,19 +47,23 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
-        formFields: FormField[];
-        '~internal': {
-            hiddenFormFields: FormField[];
-            defaultFormFieldsValue: FormFieldValue[];
-            catalogId: string;
-            packageName: string;
-        };
         formFieldsValueDifferentFromDefault: FormFieldValue[];
         contract?: Record<string, unknown>;
         isSaved: boolean;
+        '~internal': {
+            formFields: (FormField & { isHidden: boolean })[];
+            defaultFormFieldsValue: FormFieldValue[];
+            dependencies: string[];
+        };
     };
 
 }
+
+export type IndexedFormFields = {
+    [dependencyNamePackageNameOrGlobal: string]: {
+        [tabName: string]: FormField[];
+    }
+};
 
 
 const { reducer, actions } = createSlice({
@@ -77,11 +82,7 @@ const { reducer, actions } = createSlice({
 
             {
 
-                const formField =
-                    [
-                        ...state.formFields,
-                        ...state["~internal"].hiddenFormFields
-                    ]
+                const formField = state["~internal"].formFields
                         .find(formField => same(formField.path, path))!;
 
                 if (formField.value === value) {
@@ -155,12 +156,9 @@ const privateThunks = {
             assert(state.stateDescription === "ready");
 
             const { contract } = await dependencies.onyxiaApiClient.launchPackage({
-                "catalogId": state["~internal"].catalogId,
-                "packageName": state["~internal"].packageName,
-                "options": formFieldsValueToObject([
-                    ...state.formFields,
-                    ...state["~internal"].hiddenFormFields
-                ]),
+                "catalogId": state.catalogId,
+                "packageName": state.packageName,
+                "options": formFieldsValueToObject(state["~internal"].formFields),
                 "isDryRun": isForContractPreview
             });
 
@@ -202,7 +200,7 @@ export const thunks = {
                 formFieldsValueDifferentFromDefault
             } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
             //Optimization to save time is nothing has changed
             {
@@ -222,14 +220,17 @@ export const thunks = {
             }
 
 
-            const { getPackageConfigJSONSchemaObjectWithRenderedMustachParams } =
-                await dependencies.onyxiaApiClient
+            const { 
+                getPackageConfigJSONSchemaObjectWithRenderedMustachParams,
+                dependencies
+             } =
+                await onyxiaApiClient
                     .getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory({
                         catalogId,
                         packageName
                     });
 
-            assert(dependencies.oidcClient.isUserLoggedIn);
+            assert(oidcClient.isUserLoggedIn);
 
             //TODO: Renew VAULT and MINIO token
 
@@ -291,9 +292,9 @@ export const thunks = {
 
             })();
 
-            const { formFields, hiddenFormFields } = (() => {
+            const { formFields  } = (() => {
 
-                const allFormFields: (FormField & { isHidden: boolean; })[] = [];
+                const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
 
                 (function callee(
                     params: {
@@ -317,13 +318,15 @@ export const thunks = {
                                 "jsonSchemaObject": value,
                             });
                         } else {
-                            allFormFields.push({
+                            formFields.push({
                                 "path": newCurrentPath,
                                 "title": value.title,
                                 "description": value.description,
                                 "isReadonly": value["x-form"]?.readonly ?? false,
                                 "value": value["x-form"]?.value ?? value.default ?? null as any as never,
-                                "isHidden": value["x-form"]?.hidden ?? false
+                                "isHidden": 
+                                    same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) || 
+                                    (value["x-form"]?.hidden ?? false)
                             });
                         }
 
@@ -336,16 +339,7 @@ export const thunks = {
                     )
                 });
 
-                const [hiddenFormFields, formFields] =
-                    arrPartition(
-                        allFormFields,
-                        ({ isHidden, path }) =>
-                            isHidden ||
-                            same(onyxiaFriendlyNameFormFieldPath, path)
-                    );
-
-
-                return { formFields, hiddenFormFields };
+                return { formFields };
 
             })();
 
@@ -354,7 +348,7 @@ export const thunks = {
                     "stateDescription": "ready",
                     catalogId,
                     packageName,
-                    "icon": await dependencies.onyxiaApiClient.getCatalogs()
+                    "icon": await onyxiaApiClient.getCatalogs()
                         .then(
                             apiRequestResult => apiRequestResult
                                 .find(({ id }) => id === catalogId)!
@@ -363,12 +357,12 @@ export const thunks = {
                                 .find(({ name }) => name === packageName)!
                                 .icon
                         ),
-                    formFields,
                     "~internal": {
-                        hiddenFormFields,
+                        formFields,
                         "defaultFormFieldsValue": formFields,
-                        catalogId,
-                        packageName
+                        "dependencies": dependencies
+                            .filter(({ enabled }) => enabled)
+                            .map(({ name }) => name)
                     },
                     "formFieldsValueDifferentFromDefault": [],
                     "isSaved": false
@@ -395,6 +389,78 @@ export const thunks = {
     "previewContract":
         (): AppThunk => async dispatch =>
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
+
+    "getIndexedFormFields": (() => {
+
+        const memoizee = memoize(
+            (
+                formFields: LauncherState.Ready["~internal"]["formFields"],
+                packageName: string,
+                dependencies: LauncherState.Ready["~internal"]["dependencies"]
+            ) => {
+
+                const indexedFormFields: IndexedFormFields = {};
+
+                const formFieldsRest = formFields
+                    .filter(({ isHidden }) => !isHidden);
+
+                [...dependencies, "global"].forEach(
+                    dependencyOrGlobal => {
+
+                        const formFieldsByTabName: IndexedFormFields[string] = {};
+
+                        formFieldsRest
+                            .filter(({ path }) => path[0] === dependencyOrGlobal)
+                            .forEach(
+                                formField => {
+
+                                    (formFieldsByTabName[formField.path[1]] ??= []).push(clone(formField));
+
+                                    formFieldsRest.splice(formFieldsRest.indexOf(formField), 1);
+
+                                }
+                            );
+
+                        indexedFormFields[dependencyOrGlobal] = formFieldsByTabName;
+
+                    }
+                );
+
+                formFieldsRest
+                    .forEach(
+                        formField => {
+
+                            const formFieldsByTabName: IndexedFormFields[string] = {};
+
+                            (formFieldsByTabName[formField.path[0]] ??= []).push(clone(formField));
+
+                            indexedFormFields[packageName] = formFieldsByTabName;
+
+                        }
+                    );
+
+                return indexedFormFields;
+
+            }
+        );
+
+        return (): AppThunk<IndexedFormFields> => (...args) => {
+
+            const [, getState] = args;
+
+            const state = getState().launcher;
+
+            assert(state.stateDescription === "ready");
+
+            return memoizee(
+                state["~internal"].formFields,
+                state.packageName,
+                state["~internal"].dependencies
+            );
+
+        };
+
+    })(),
     "changeFriendlyName":
         (
             friendlyName: string
@@ -402,19 +468,27 @@ export const thunks = {
             "path": onyxiaFriendlyNameFormFieldPath,
             "value": friendlyName
         })),
-    /** Extracted from ~internal state, we avoid duplication */
-    "getFriendlyName":
-        (): AppThunk<string> => (...args) => {
+    "getFriendlyName": (() => {
+
+        const memoizee = memoize(
+            (formFields: LauncherState.Ready["~internal"]["formFields"]) => {
+                const friendlyName = formFields
+                    .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
+                    .value;
+                assert(typeof friendlyName !== "boolean");
+                return friendlyName;
+            },
+            { "maxAge": 6000 }
+        );
+
+        return (): AppThunk<string> => (...args) => {
             const [, getState] = args;
             const state = getState().launcher;
             assert(state.stateDescription === "ready");
-            const friendlyName = state["~internal"]
-                .hiddenFormFields
-                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
-                .value;
-            assert(typeof friendlyName !== "boolean");
-            return friendlyName;
-        },
+            return memoizee(state["~internal"].formFields);
+        };
+
+    })(),
     "saveConfiguration":
         (): AppThunk => (dispatch, getState) =>
             dispatch(restorablePackageConfigsThunks.saveRestorablePackageConfig({
