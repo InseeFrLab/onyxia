@@ -426,6 +426,10 @@ export const pure = {
     [secretExplorerUseCase.name]: secretExplorerUseCase.pure
 };
 
+export const selectors = {
+    [launcherUseCase.name]: launcherUseCase.selectors
+}
+
 export type Store = ReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
