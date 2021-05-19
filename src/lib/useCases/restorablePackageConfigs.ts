@@ -9,7 +9,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
-import memoize from "memoizee";
+import memoize from "memoizee";
 
 export const name = "restorablePackageConfig";
 
@@ -315,7 +315,6 @@ export const thunks = {
 };
 
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
-
 
 export function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
