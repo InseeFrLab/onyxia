@@ -1,4 +1,4 @@
-import { useEffect, useState ,memo } from "react";
+import { useEffect, useState, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { routes } from "app/router";
 import type { Route } from "type-route";
@@ -6,7 +6,7 @@ import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import {
     CatalogLauncherConfigurationCard,
     Props as CatalogLauncherConfigurationCardProps
-} from "./CatalogLauncherConfigurationCard";
+} from "./CatalogLauncherConfigurationCard/CatalogLauncherConfigurationCard";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { thunks, selectors } from "lib/useCases/launcher";
 import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorablePackageConfigs";
@@ -14,8 +14,6 @@ import { useConstCallback } from "powerhooks";
 import { cx } from "tss-react";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
-
-
 
 export type Props = {
     className?: string;
@@ -57,7 +55,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const restorablePackageConfig = useSelector(selectors.restorablePackageConfigSelector);
 
-    const [ isBookmarked, setIsBookmarked ] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(
         () => {
