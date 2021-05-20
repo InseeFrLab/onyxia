@@ -1,9 +1,5 @@
 
-import { useState, useMemo, useEffect, memo } from "react";
-import {
-    CatalogLauncherAdvancedConfigurationHeader,
-    Props as CatalogLauncherAdvancedConfigurationHeaderProps
-} from "./CatalogLauncherAdvancedConfigurationHeader";
+import { useState, useMemo, memo } from "react";
 import { Tabs } from "app/components/shared/Tabs";
 import {
     CatalogLauncherAdvancedConfigurationTab
@@ -12,8 +8,12 @@ import {
 import type {
     Props as CatalogLauncherAdvancedConfigurationTabProps
 } from "./CatalogLauncherAdvancedConfigurationTab";
-import { JsonEditor } from "jsoneditor-react";
-import "jsoneditor-react/es/editor.min.css";
+import { createUseClassNames } from "app/theme/useClassNames";
+import { IconButton } from "app/components/designSystem/IconButton";
+import { Typography } from "app/components/designSystem/Typography";
+import { useTranslation } from "app/i18n/useTranslations";
+import { cx } from "tss-react";
+import { useConstCallback } from "powerhooks";
 
 export type Props = {
     className?: string;
@@ -22,30 +22,17 @@ export type Props = {
         CatalogLauncherAdvancedConfigurationTabProps["formFields"]
     >;
     onFormValueChange: CatalogLauncherAdvancedConfigurationTabProps["onFormValueChange"];
-    contract: undefined | Record<string, unknown>;
-    previewContract(): void;
 };
 
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
 
-    const { 
-        className, formFieldsByTab, 
-        onFormValueChange, contract,
-        previewContract
+    const {
+        className, formFieldsByTab,
+        onFormValueChange
     } = props;
 
 
-    const [state, setState] = useState<CatalogLauncherAdvancedConfigurationHeaderProps["state"]>("collapsed");
-
-    useEffect(
-        ()=> {
-            if( state === "contract"){
-                previewContract();
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [state]
-    );
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const tabs = useMemo(
         () => Object.keys(formFieldsByTab)
@@ -53,40 +40,108 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
         [formFieldsByTab]
     );
 
+    const onIsCollapsedValueChange = useConstCallback(
+        () => setIsCollapsed(!isCollapsed)
+    );
+
     const [activeTabId, setActiveTabId] = useState(tabs[0].id);
 
     return (
         <div className={className}>
-            <CatalogLauncherAdvancedConfigurationHeader
-                state={state}
-                onStateChange={setState}
+            <Header
+                isCollapsed={isCollapsed}
+                onIsCollapsedValueChange={onIsCollapsedValueChange}
             />
-            <Tabs
-                tabs={tabs}
-                activeTabId={activeTabId}
-                onRequestChangeActiveTab={setActiveTabId}
-                size="small"
-                maxTabCount={5}
-            >
-                {(() => {
-                    switch (state) {
-                        case "collapsed":
-                            return null;
-                        case "contract":
-                            return <JsonEditor value={contract}/>;
-                        case "form":
-                            return (
-                                <CatalogLauncherAdvancedConfigurationTab
-                                    formFields={formFieldsByTab[activeTabId]}
-                                    onFormValueChange={onFormValueChange}
-                                />
-                            );
-                    }
-                })()}
-            </Tabs>
+            {!isCollapsed &&
+                <Tabs
+                    tabs={tabs}
+                    activeTabId={activeTabId}
+                    onRequestChangeActiveTab={setActiveTabId}
+                    size="small"
+                    maxTabCount={5}
+                >
+                    <CatalogLauncherAdvancedConfigurationTab
+                        formFields={formFieldsByTab[activeTabId]}
+                        onFormValueChange={onFormValueChange}
+                    />
+                </Tabs>
+            }
         </div>
     );
 
 });
 
+export declare namespace CatalogLauncherConfigurationCard {
 
+    export type I18nScheme = {
+        title: undefined;
+    };
+}
+
+
+const { Header } = (() => {
+
+
+    type Props = {
+        className?: string;
+        isCollapsed: boolean;
+        onIsCollapsedValueChange(): void;
+    };
+
+    const { useClassNames } = createUseClassNames<{ isCollapsed: boolean; }>()(
+        (theme, { isCollapsed }) => ({
+            "root": {
+                "display": "flex",
+                "padding": theme.spacing(1, 3),
+                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces
+            },
+            "expandIcon": {
+                "& svg": {
+                    "transition": theme.transitions.create(
+                        ["transform"],
+                        { "duration": theme.transitions.duration.short }
+                    ),
+                    "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`
+                }
+            },
+            "title": {
+                "display": "flex",
+                "alignItems": "center"
+            }
+        })
+    );
+
+    const Header = memo(
+        (props: Props) => {
+
+            const { className, isCollapsed, onIsCollapsedValueChange } = props;
+
+            const { t } = useTranslation("CatalogLauncherConfigurationCard");
+
+            const { classNames } = useClassNames({ isCollapsed });
+
+
+            return (
+                <div className={cx(classNames.root, className)}>
+                    <Typography
+                        variant="h5"
+                        className={classNames.title}
+                    >
+                        {t("title")}
+                    </Typography>
+                    <div style={{ "flex": 1 }} />
+                    <IconButton
+                        onClick={onIsCollapsedValueChange}
+                        type="expandMore"
+                        className={classNames.expandIcon}
+                    />
+                </div>
+            );
+
+        }
+    );
+
+    return { Header };
+
+
+})();

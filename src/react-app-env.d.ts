@@ -11,7 +11,3 @@ declare module "urlon" {
     };
     export default URLON;
 }
-
-declare module "jsoneditor-react" {
-    export const JsonEditor: (props: { value: any; }) => JSX.Element;
-}

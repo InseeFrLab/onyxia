@@ -35,7 +35,6 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const dispatch = useDispatch();
 
-
     useEffect(
         () => {
 
@@ -105,10 +104,6 @@ export const CatalogLauncher = memo((props: Props) => {
         ({ path, value }) => dispatch(thunks.changeFormFieldValue({ path, value }))
     );
 
-    const previewContract = useConstCallback(
-        () => dispatch(thunks.previewContract())
-    );
-
     const onRequestCopyLaunchUrl = useConstCallback(
         () => copyToClipboard(window.location.href)
     );
@@ -116,6 +111,21 @@ export const CatalogLauncher = memo((props: Props) => {
     const onFriendlyNameChange = useConstCallback(
         (friendlyName: string) =>
             dispatch(thunks.changeFriendlyName(friendlyName))
+    );
+
+    const onIsBookmarkedValueChange = useConstCallback(
+        (isBookmarked: boolean) => {
+            assert(restorablePackageConfig !== undefined);
+            dispatch(
+                restorablePackageConfigsThunks[
+                    isBookmarked ?
+                        "saveRestorablePackageConfig" :
+                        "deleteRestorablePackageConfig"
+                ](
+                    { restorablePackageConfig }
+                )
+            );
+        }
     );
 
     const friendlyName = useSelector(selectors.friendlyNameSelector);
@@ -137,7 +147,7 @@ export const CatalogLauncher = memo((props: Props) => {
                 packageName={state.packageName}
                 packageIconUrl={state.icon}
                 isBookmarked={isBookmarked}
-                onIsBookmarkedValueChange={() => { }}
+                onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                 friendlyName={friendlyName!}
                 onFriendlyNameChange={onFriendlyNameChange}
                 onRequestLaunch={onRequestLaunch}
@@ -155,8 +165,6 @@ export const CatalogLauncher = memo((props: Props) => {
                         <CatalogLauncherConfigurationCard
                             formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
                             onFormValueChange={onFormValueChange}
-                            contract={state.contract}
-                            previewContract={previewContract}
                         />
                 )
             }

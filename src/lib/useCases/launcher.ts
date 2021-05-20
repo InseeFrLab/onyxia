@@ -48,7 +48,6 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
-        contract?: Record<string, unknown>;
         isSaved: boolean;
         '~internal': {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: { path: string[]; }[];
@@ -135,11 +134,6 @@ const { reducer, actions } = createSlice({
             }
 
         },
-        "contractLoaded": (state, { payload }: PayloadAction<{ contract: Record<string, unknown>; }>) => {
-            const { contract } = payload;
-            assert(state.stateDescription === "ready");
-            state.contract = contract;
-        },
         "launched": () => id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
         }),
@@ -160,11 +154,11 @@ const privateThunks = {
             params: {
                 isForContractPreview: boolean;
             }
-        ): AppThunk => async (...args) => {
+        ): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async (...args) => {
 
             const { isForContractPreview } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [, getState, dependencies] = args;
 
             const state = getState().launcher;
 
@@ -177,11 +171,7 @@ const privateThunks = {
                 "isDryRun": isForContractPreview
             });
 
-            dispatch(
-                isForContractPreview ?
-                    actions.contractLoaded({ contract }) :
-                    actions.launched()
-            );
+            return { contract };
 
         },
     "updateSavedStatus": (): AppThunk<void> => async (dispatch, getState) =>
@@ -399,10 +389,11 @@ export const thunks = {
             dispatch(privateThunks.updateSavedStatus());
         },
     "launch":
-        (): AppThunk => async dispatch =>
-            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false })),
-    "previewContract":
-        (): AppThunk => async dispatch =>
+        (): AppThunk => async dispatch => {
+            dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false }));
+        },
+    "getContract":
+        (): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async dispatch => 
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
     "changeFriendlyName":
         (
