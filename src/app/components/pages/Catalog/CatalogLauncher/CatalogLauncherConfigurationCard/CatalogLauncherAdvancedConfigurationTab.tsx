@@ -13,18 +13,11 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { same } from "evt/tools/inDepth/same";
+import type { FormField } from "lib/useCases/launcher";
 
 export type Props = {
     className?: string;
-    formFields: {
-        path: string[];
-        title: string;
-        description?: string;
-        value: string | boolean;
-        isReadonly: boolean;
-        /** May only be defined when typeof value is string */
-        enum?: string[];
-    }[];
+    formFields: FormField[];
     onFormValueChange(
         params: {
             path: string[];
