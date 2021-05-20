@@ -27,7 +27,7 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
-import { CatalogLauncherAdvancedConfigurationHeader } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherAdvancedConfigurationHeader";
+import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -63,7 +63,7 @@ const reflectedI18nSchemes = {
     [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
     [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
-    [symToStr({ CatalogLauncherAdvancedConfigurationHeader })]: Reflect<CatalogLauncherAdvancedConfigurationHeader.I18nScheme>()
+    [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -311,7 +311,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Cancel",
             "copy url helper text": "Copy url to restore this configuration"
         },
-        "CatalogLauncherAdvancedConfigurationHeader": {
+        "CatalogLauncherConfigurationCard": {
             "title": "Advanced configuration"
         }
     },
@@ -527,7 +527,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Annuler",
             "copy url helper text": "Copier l'URL permettant de restaurer cette configuration"
         },
-        "CatalogLauncherAdvancedConfigurationHeader": {
+        "CatalogLauncherConfigurationCard": {
             "title": "Configuration avancée"
         }
         /* spell-checker: enable */
