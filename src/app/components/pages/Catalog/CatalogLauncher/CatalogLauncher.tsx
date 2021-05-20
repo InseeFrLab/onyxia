@@ -1,4 +1,4 @@
-import { useMemo, useEffect, memo } from "react";
+import { useEffect, useState ,memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { routes } from "app/router";
 import type { Route } from "type-route";
@@ -8,10 +8,14 @@ import {
     Props as CatalogLauncherConfigurationCardProps
 } from "./CatalogLauncherConfigurationCard";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
-import { thunks } from "lib/useCases/launcher";
+import { thunks, selectors } from "lib/useCases/launcher";
+import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorablePackageConfigs";
 import { useConstCallback } from "powerhooks";
 import { cx } from "tss-react";
 import { copyToClipboard } from "app/tools/copyToClipboard";
+import { assert } from "tsafe/assert";
+
+
 
 export type Props = {
     className?: string;
@@ -31,7 +35,6 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const dispatch = useDispatch();
 
-    const launcherState = useSelector(state => state.launcher);
 
     useEffect(
         () => {
@@ -53,22 +56,39 @@ export const CatalogLauncher = memo((props: Props) => {
         [route]
     );
 
+    const restorablePackageConfig = useSelector(selectors.restorablePackageConfigSelector);
+
+    const [ isBookmarked, setIsBookmarked ] = useState(false);
+
     useEffect(
         () => {
 
-            if( launcherState.stateDescription !== "ready" ){
+            if (!restorablePackageConfig) {
                 return;
             }
 
+            setIsBookmarked(
+                dispatch(
+                    restorablePackageConfigsThunks.isRestorablePackageConfigInStore({
+                        restorablePackageConfig
+                    })
+                )
+            );
+
+            const { catalogId, packageName, formFieldsValueDifferentFromDefault } = restorablePackageConfig;
+
             routes.catalogLauncher({
-                "catalogId": route.params.catalogId,
-                "packageName": route.params.packageName,
-                "p": launcherState?.formFieldsValueDifferentFromDefault
+                catalogId,
+                packageName,
+                "p":
+                    formFieldsValueDifferentFromDefault.length === 0 ?
+                        undefined :
+                        formFieldsValueDifferentFromDefault
             }).replace();
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [ launcherState.stateDescription === "ready" ? launcherState.formFieldsValueDifferentFromDefault : Object ]
+        [restorablePackageConfig ?? Object]
     );
 
     const { classNames } = useClassNames({});
@@ -79,33 +99,6 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const onRequestCancel = useConstCallback(() =>
         routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
-    );
-
-    const { formFieldsByTab } = useMemo(
-        () => {
-
-            const formFieldsByTab: CatalogLauncherConfigurationCardProps["formFieldsByTab"] = {};
-
-            if (launcherState.stateDescription === "ready") {
-
-                launcherState.formFields.forEach(({ path, ...formField }) =>
-                    (formFieldsByTab[path[0]] ??= []).push({
-                        "path": path,
-                        "title": formField.title ?? path.slice(1).join("."),
-                        "description": formField.description,
-                        "value": formField.value,
-                        "isReadonly": formField.isReadonly,
-                        "enum": formField.enum
-                    })
-                );
-
-            }
-
-            return { formFieldsByTab };
-
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [launcherState.stateDescription === "ready" ? launcherState.formFields : Object]
     );
 
     const onFormValueChange = useConstCallback<CatalogLauncherConfigurationCardProps["onFormValueChange"]>(
@@ -122,41 +115,51 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const onFriendlyNameChange = useConstCallback(
         (friendlyName: string) =>
-            dispatch(thunks.onFriendlyNameChange(friendlyName))
+            dispatch(thunks.changeFriendlyName(friendlyName))
     );
 
-    if (launcherState.stateDescription !== "ready") {
+    const friendlyName = useSelector(selectors.friendlyNameSelector);
+
+    const state = useSelector(state => state.launcher);
+
+    const indexedFormFields = useSelector(selectors.indexedFormFieldsSelector);
+
+    if (state.stateDescription !== "ready") {
         return null;
     }
+
+    assert(restorablePackageConfig !== undefined);
+    assert(indexedFormFields !== undefined);
 
     return (
         <div className={cx(classNames.root, className)}>
             <CatalogLauncherMainCard
-                packageName={launcherState.packageName}
-                packageIconUrl={launcherState.icon}
-                isBookmarked={false}
+                packageName={state.packageName}
+                packageIconUrl={state.icon}
+                isBookmarked={isBookmarked}
                 onIsBookmarkedValueChange={() => { }}
-
-                friendlyName={dispatch(thunks.getFriendlyName())}
+                friendlyName={friendlyName!}
                 onFriendlyNameChange={onFriendlyNameChange}
-
                 onRequestLaunch={onRequestLaunch}
                 onRequestCancel={onRequestCancel}
-
                 isLocked={false}
-
                 onRequestCopyLaunchUrl={
-                    launcherState.formFieldsValueDifferentFromDefault.length !== 0 ?
+                    restorablePackageConfig.formFieldsValueDifferentFromDefault.length !== 0 ?
                         onRequestCopyLaunchUrl :
                         undefined
                 }
             />
-            <CatalogLauncherConfigurationCard
-                formFieldsByTab={formFieldsByTab}
-                onFormValueChange={onFormValueChange}
-                contract={launcherState.contract}
-                previewContract={previewContract}
-            />
+            {
+                Object.keys(indexedFormFields!).map(
+                    dependencyNamePackageNameOrGlobal =>
+                        <CatalogLauncherConfigurationCard
+                            formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
+                            onFormValueChange={onFormValueChange}
+                            contract={state.contract}
+                            previewContract={previewContract}
+                        />
+                )
+            }
 
         </div>
     );

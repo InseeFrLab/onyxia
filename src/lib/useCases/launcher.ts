@@ -187,8 +187,8 @@ const privateThunks = {
     "updateSavedStatus": (): AppThunk<void> => async (dispatch, getState) =>
         dispatch(actions.valueOfIsSavedUpdated({
             "isSaved": dispatch(
-                restorablePackageConfigsThunks.isRestorablePackageConfigAlreadyInStore({
-                    "restorablePackageConfig": selectors.restorablePackageConfigSelector(getState())
+                restorablePackageConfigsThunks.isRestorablePackageConfigInStore({
+                    "restorablePackageConfig": selectors.restorablePackageConfigSelector(getState())!
                 })
             )
         }))
@@ -216,12 +216,12 @@ export const thunks = {
             //Optimization to save time is nothing has changed
             {
 
-                const rootState = getState();
+                const restorablePackageConfig = selectors.restorablePackageConfigSelector(getState());
 
                 if (
-                    rootState.launcher.stateDescription === "ready" &&
+                    !!restorablePackageConfig &&
                     areSameRestorablePackageConfig(
-                        selectors.restorablePackageConfigSelector(rootState),
+                        restorablePackageConfig,
                         {
                             catalogId,
                             packageName,
@@ -410,49 +410,41 @@ export const thunks = {
         ): AppThunk<void> => dispatch => dispatch(thunks.changeFormFieldValue({
             "path": onyxiaFriendlyNameFormFieldPath,
             "value": friendlyName
-        })),
-    "saveConfiguration":
-        (): AppThunk => (dispatch, getState) =>
-            dispatch(restorablePackageConfigsThunks.saveRestorablePackageConfig({
-                "restorablePackageConfig": selectors.restorablePackageConfigSelector(getState())
-            }))
+        }))
 };
 
 export const selectors = (() => {
 
-    const readyLauncherSelector = (rootState: RootState) => {
+
+    const readyLauncherSelector = (rootState: RootState): LauncherState.Ready | undefined => {
         const state = rootState.launcher;
-        assert(state.stateDescription === "ready");
-        return state;
+        switch (state.stateDescription) {
+            case "ready": return state;
+            default: return undefined;
+        }
     };
 
     const packageNameSelector = createSelector(
         readyLauncherSelector,
-        ({ packageName }) => ({ packageName })
+        state => state?.packageName
     );
 
-    const formFieldSelector = createSelector(
+    const formFieldsSelector = createSelector(
         readyLauncherSelector,
-        state => {
-            const { formFields } = state["~internal"];
-            return { formFields };
-        }
+        state => state?.["~internal"].formFields
     );
 
     const dependenciesSelector = createSelector(
         readyLauncherSelector,
-        state => {
-            const { dependencies } = state["~internal"];
-            return { dependencies };
-        }
+        state => state?.["~internal"].dependencies
     );
 
     const friendlyNameSelector = createSelector(
-        formFieldSelector,
-        ({ formFields }) => {
+        formFieldsSelector,
+        formFields => {
 
             const friendlyName = formFields
-                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
+                ?.find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
                 .value;
 
             assert(typeof friendlyName !== "boolean");
@@ -463,10 +455,18 @@ export const selectors = (() => {
     );
 
     const indexedFormFieldsSelector = createSelector(
-        formFieldSelector,
+        formFieldsSelector,
         packageNameSelector,
         dependenciesSelector,
-        ({ formFields }, { packageName }, { dependencies }) => {
+        (formFields, packageName, dependencies) => {
+
+            if (
+                !formFields ||
+                !packageName ||
+                !dependencies
+            ) {
+                return undefined;
+            }
 
             const indexedFormFields: IndexedFormFields = {};
 
@@ -515,38 +515,42 @@ export const selectors = (() => {
 
     const pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector = createSelector(
         readyLauncherSelector,
-        state => {
-            const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
-            return { pathOfFormFieldsWhoseValuesAreDifferentFromDefault };
-        }
+        state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault
     );
 
     const catalogIdSelector = createSelector(
         readyLauncherSelector,
-        ({ catalogId }) => ({ catalogId })
+        state => state?.catalogId
     );
 
     const restorablePackageConfigSelector = createSelector(
         catalogIdSelector,
         packageNameSelector,
-        formFieldSelector,
+        formFieldsSelector,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector,
         (
-            { catalogId },
-            { packageName },
-            { formFields },
-            { pathOfFormFieldsWhoseValuesAreDifferentFromDefault }
-        ): RestorablePackageConfig => ({
             catalogId,
             packageName,
-            "formFieldsValueDifferentFromDefault":
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(
-                    ({ path }) => ({
-                        path,
-                        "value": formFields.find(formField => same(formField.path, path))!.value
-                    })
-                )
-        })
+            formFields,
+            pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+        ) =>
+            (
+                !catalogId ||
+                !packageName ||
+                !formFields ||
+                !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+            ) ? undefined :
+                id<RestorablePackageConfig>({
+                    catalogId,
+                    packageName,
+                    "formFieldsValueDifferentFromDefault":
+                        pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(
+                            ({ path }) => ({
+                                path,
+                                "value": formFields.find(formField => same(formField.path, path))!.value
+                            })
+                        )
+                })
     );
 
     return {

@@ -226,7 +226,7 @@ export const thunks = {
      * because this will be called every render (without dependency array)
      */
 
-    "isRestorablePackageConfigAlreadyInStore": (() => {
+    "isRestorablePackageConfigInStore": (() => {
 
         const memoizee = memoize(
             (
@@ -280,7 +280,7 @@ export const thunks = {
         const { restorablePackageConfig } = params;
 
         if (
-            dispatch(thunks.isRestorablePackageConfigAlreadyInStore({
+            dispatch(thunks.isRestorablePackageConfigInStore({
                 restorablePackageConfig
             }))
         ) {
