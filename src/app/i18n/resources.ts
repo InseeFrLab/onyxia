@@ -27,7 +27,7 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
-import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
+import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard/CatalogLauncherConfigurationCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -118,7 +118,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "email": "Email address",
             "password": "Change account password",
             "auth information": "Onyxia authentication information",
-            "auth information helper": `These informations allows you to identify yourself
+            "auth information helper": `Theses information allows you to identify yourself
             within the platform and the various services.`,
             "ip address": "IP Address"
         },
