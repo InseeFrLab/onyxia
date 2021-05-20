@@ -26,7 +26,7 @@ import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 export const name = "launcher";
 
 export type FormField = FormFieldValue & {
-    title?: string;
+    title: string;
     description?: string;
     isReadonly: boolean;
     /** May only be defined when typeof value is string */
@@ -325,7 +325,7 @@ export const thunks = {
                         } else {
                             formFields.push({
                                 "path": newCurrentPath,
-                                "title": value.title,
+                                "title": value.title ?? newCurrentPath.slice(-1)[0],
                                 "description": value.description,
                                 "isReadonly": value["x-form"]?.readonly ?? false,
                                 "value": value["x-form"]?.value ?? value.default ?? null as any as never,

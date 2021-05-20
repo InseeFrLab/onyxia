@@ -14,13 +14,11 @@ import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
+import type { FormField } from "lib/useCases/launcher";
 
 export type Props = {
     className?: string;
-    formFieldsByTab: Record<
-        string,
-        CatalogLauncherAdvancedConfigurationTabProps["formFields"]
-    >;
+    formFieldsByTab: { [tabName: string]: FormField[]; };
     onFormValueChange: CatalogLauncherAdvancedConfigurationTabProps["onFormValueChange"];
 };
 
