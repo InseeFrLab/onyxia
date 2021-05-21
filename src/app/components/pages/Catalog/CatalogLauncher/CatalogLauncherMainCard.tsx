@@ -1,6 +1,6 @@
 
 
-import { useState, memo } from "react";
+import { memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "app/components/designSystem/Typography";
@@ -82,10 +82,7 @@ export type Props = {
     onRequestCancel(): void;
 
     //Undefined when the configuration is the default one
-    onRequestCopyLaunchUrl: (()=> void) | undefined;
-
-    isLocked: boolean;
-
+    onRequestCopyLaunchUrl: (() => void) | undefined;
 };
 
 export const CatalogLauncherMainCard = memo((props: Props) => {
@@ -100,7 +97,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onFriendlyNameChange,
         onRequestLaunch,
         onRequestCancel,
-        isLocked,
         onRequestCopyLaunchUrl
     } = props;
 
@@ -112,18 +108,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         () => onIsBookmarkedValueChange(!isBookmarked)
     );
 
-    const [isFriendlyNameBeingTypedValid, setIsFriendlyNameBeingTypedValid] = useState(true);
-
     const onValueBeingTypedChange = useConstCallback<TextFieldProps["onValueBeingTypedChange"]>(
-        params => {
-
-            setIsFriendlyNameBeingTypedValid(params.isValidValue);
-
-            if (params.isValidValue) {
-                onFriendlyNameChange(params.value);
-            }
-
-        }
+        ({ value }) => onFriendlyNameChange(value)
     );
 
     return (
@@ -141,7 +127,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 <IconButton
                     type={isBookmarked ? "bookmarkBorder" : "bookmark"}
                     onClick={onBookmarkIconButtonClick}
-                    disabled={isLocked && !isFriendlyNameBeingTypedValid}
                 />
             </div>
             <div className={classNames.belowDivider}>
@@ -161,7 +146,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 <div className={classNames.textFieldAndButtonWrapper}>
 
                     <TextField
-                        disabled={isLocked}
                         label={t("friendly name")}
                         defaultValue={friendlyName}
                         doOnlyValidateInputAfterFistFocusLost={false}
@@ -173,25 +157,19 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                     <div style={{ "flex": 1 }} />
 
                     <Button
-                        disabled={isLocked}
                         color="secondary"
                         onClick={onRequestCancel}
                     >
                         {t("cancel")}
                     </Button>
                     <Button
-                        disabled={isLocked}
                         color="primary"
                         onClick={onRequestLaunch}
                         className={classNames.launchButton}
                     >
                         {t("launch")}
                     </Button>
-
                 </div>
-
-
-
             </div>
         </div>
     );
