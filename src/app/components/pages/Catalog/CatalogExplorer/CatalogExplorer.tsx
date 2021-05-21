@@ -60,11 +60,11 @@ export const CatalogExplorer = memo((props: Props) => {
         ]
     );
 
-
     const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
         packageName =>
-            routes.catalog({
-                "optionalTrailingPath": `${route.params.catalogId}/${packageName}/deploiement`
+            routes.catalogLauncher({
+                "catalogId": route.params.catalogId!,
+                packageName,
             }).push()
     );
 

@@ -117,13 +117,14 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
             <div className={classNames.aboveDivider}>
                 <Typography variant="h5" className={classNames.cardTitle}>{t("card title")}</Typography>
                 <div style={{ "flex": 1 }} />
-                <Tooltip title={t("copy url helper text")}>
-                    <IconButton
-                        type="link"
-                        onClick={onRequestCopyLaunchUrl}
-                        disabled={onRequestCopyLaunchUrl === undefined}
-                    />
-                </Tooltip>
+
+                {onRequestCopyLaunchUrl !== undefined &&
+                    <Tooltip title={t("copy url helper text")}>
+                        <IconButton
+                            type="link"
+                            onClick={onRequestCopyLaunchUrl}
+                        />
+                    </Tooltip>}
                 <IconButton
                     type={isBookmarked ? "bookmarkBorder" : "bookmark"}
                     onClick={onBookmarkIconButtonClick}

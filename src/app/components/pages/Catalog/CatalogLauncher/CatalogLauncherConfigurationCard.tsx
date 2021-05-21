@@ -16,14 +16,15 @@ import { Tabs } from "app/components/shared/Tabs";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Typography } from "app/components/designSystem/Typography";
-import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
 import type { FormField } from "lib/useCases/launcher";
 import { useCallbackFactory } from "powerhooks";
+import { capitalize } from "app/tools/capitalize";
 
 export type Props = {
     className?: string;
+    dependencyNamePackageNameOrGlobal: string;
     formFieldsByTab: { [tabName: string]: FormField[]; };
     onFormValueChange(
         params: {
@@ -50,11 +51,13 @@ const { useClassNames } = createUseClassNames()(
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
 
     const {
-        className, formFieldsByTab,
+        className, 
+        dependencyNamePackageNameOrGlobal,
+        formFieldsByTab,
         onFormValueChange
     } = props;
 
-    const { classNames } = useClassNames({});
+    const { classNames } = useClassNames({});
 
 
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -69,45 +72,41 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
         () => setIsCollapsed(!isCollapsed)
     );
 
-    const [activeTabId, setActiveTabId] = useState(tabs[0].id);
+    const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
     return (
         <div className={className}>
             <Header
+                text={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}
                 onIsCollapsedValueChange={onIsCollapsedValueChange}
             />
-            <Tabs
-                className={classNames[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
-                tabs={tabs}
-                activeTabId={activeTabId}
-                onRequestChangeActiveTab={setActiveTabId}
-                size="small"
-                maxTabCount={5}
-            >
-                <TabContent
-                    formFields={formFieldsByTab[activeTabId]}
-                    onFormValueChange={onFormValueChange}
-                />
-            </Tabs>
+            {activeTabId !== undefined &&
+                <Tabs
+                    className={classNames[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
+                    tabs={tabs}
+                    activeTabId={activeTabId}
+                    onRequestChangeActiveTab={setActiveTabId}
+                    size="small"
+                    maxTabCount={5}
+                >
+                    <TabContent
+                        formFields={formFieldsByTab[activeTabId]}
+                        onFormValueChange={onFormValueChange}
+                    />
+                </Tabs>
+            }
         </div>
     );
 });
-
-export declare namespace CatalogLauncherConfigurationCard {
-
-    export type I18nScheme = {
-        title: undefined;
-    };
-}
-
 
 const { Header } = (() => {
 
     type Props = {
         className?: string;
+        text: string;
         isCollapsed: boolean;
-        onIsCollapsedValueChange(): void;
+        onIsCollapsedValueChange?(): void;
     };
 
     const { useClassNames } = createUseClassNames<{ isCollapsed: boolean; }>()(
@@ -136,9 +135,7 @@ const { Header } = (() => {
     const Header = memo(
         (props: Props) => {
 
-            const { className, isCollapsed, onIsCollapsedValueChange } = props;
-
-            const { t } = useTranslation("CatalogLauncherConfigurationCard");
+            const { className, text, isCollapsed, onIsCollapsedValueChange } = props;
 
             const { classNames } = useClassNames({ isCollapsed });
 
@@ -149,14 +146,16 @@ const { Header } = (() => {
                         variant="h5"
                         className={classNames.title}
                     >
-                        {t("title")}
+                        {capitalize(text)}
                     </Typography>
                     <div style={{ "flex": 1 }} />
-                    <IconButton
-                        onClick={onIsCollapsedValueChange}
-                        type="expandMore"
-                        className={classNames.expandIcon}
-                    />
+                    {onIsCollapsedValueChange !== undefined &&
+                        <IconButton
+                            onClick={onIsCollapsedValueChange}
+                            type="expandMore"
+                            className={classNames.expandIcon}
+                        />
+                    }
                 </div>
             );
 
