@@ -126,4 +126,5 @@ export default meta;
 
 export const VueDefault = getStory({
     "className": css({ "width": 700 }),
+    "dependencyNamePackageNameOrGlobal": "rstudio"
 });

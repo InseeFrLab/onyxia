@@ -21,8 +21,11 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames()(
-    () => ({
+    theme => ({
         "root": {
+            "& > *": {
+                "marginBottom": theme.spacing(2)
+            }
         }
     })
 );
@@ -160,6 +163,8 @@ export const CatalogLauncher = memo((props: Props) => {
                 Object.keys(indexedFormFields!).map(
                     dependencyNamePackageNameOrGlobal =>
                         <CatalogLauncherConfigurationCard
+                            key={dependencyNamePackageNameOrGlobal}
+                            dependencyNamePackageNameOrGlobal={dependencyNamePackageNameOrGlobal}
                             formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
                             onFormValueChange={onFormValueChange}
                         />
