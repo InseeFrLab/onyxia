@@ -16,11 +16,63 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
             "description": "The amount of cpu guaranteed",
             "value": "0.1"
         },{
-            "path": ["resources", "ram"],
-            "title": "ram",
+            "path": ["resources", "memory"],
+            "title": "memory",
             "isReadonly": false,
             "description": "The amount of memory guaranteed",
-            "value": "256Mi"
+            "value": "512Mi"
+        },{
+            "path": ["resources", "memory2"],
+            "title": "memory2",
+            "isReadonly": false,
+            "description": "The amount of memory guaranteed",
+            "value": "512Mi"
+        }, {
+            "path": ["environnement", "s3"],
+            "title": "s3",
+            "isReadonly": false, 
+            "description": "Add S3 temporary identity inside your environment",
+            "value": true
+        },
+        {
+            "path": ["environnement", "vault"],
+            "title": "vault",
+            "isReadonly": false, 
+            "description": "Add vault temporary identity inside your environment",
+            "value": true
+        },
+        {
+            "path": ["environnement", "git"],
+            "title": "git",
+            "isReadonly": false, 
+            "description": "Add git config inside your environment",
+            "value": true
+        },
+        {
+            "path": ["environnement", "git2"],
+            "title": "git",
+            "isReadonly": false, 
+            "description": "Add git config inside your environment",
+            "value": true
+        },
+        {
+            "path": ["environnement", "git3"],
+            "title": "git",
+            "isReadonly": false, 
+            "description": "Add git config inside your environment",
+            "value": true
+        },
+        {
+            "path": ["r", "version"],
+            "title": "version",
+            "isReadonly": false,
+            "description": "r version",
+            "value": "inseefrlab/rstudio:3.6.3",
+            "enum": [ 
+                "inseefrlab/rstudio:3.6.3", 
+                "inseefrlab/rstudio:4.0.4", 
+                "inseefrlab/utilitr:0.7.0"
+            ]
         }
     ]);
 

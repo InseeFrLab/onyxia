@@ -168,8 +168,16 @@ const { TabContent } = (() => {
     };
 
     const { useClassNames } = createUseClassNames()(
-        () => ({
+        theme => ({
             "root": {
+                "display": "grid",
+                "gridTemplateColumns": "repeat(2, 1fr)",
+                "gap": theme.spacing(2)
+            },
+            "textField": {
+                "width": "100%",
+                //Hacky... to accommodate the helper text
+                "marginBottom": 32
             }
         })
     );
@@ -213,7 +221,7 @@ const { TabContent } = (() => {
         return (
             <div className={cx(classNames.root, className)}>
                 { formFields.map(formField =>
-                    <div key={formField.path.join("-")}>{(() => {
+                    <div key={formField.path.join("-")} >{(() => {
                         switch (typeof formField.value) {
                             case "string":
                                 const labelId = `label_${formField.path.join("-")}`;
@@ -238,7 +246,9 @@ const { TabContent } = (() => {
                                     </FormControl>
                                     :
                                     <TextField
+                                        className={classNames.textField}
                                         autoComplete="off"
+                                        selectAllTextOnFocus={true}
                                         disabled={formField.isReadonly}
                                         helperText={formField.description}
                                         inputProps_spellCheck={false}
@@ -248,15 +258,19 @@ const { TabContent } = (() => {
                                     />;
                             case "boolean":
                                 return (
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={formField.value}
-                                                onChange={onCheckboxChangeFactory(formField.path)}
-                                            />
-                                        }
-                                        label={formField.title}
-                                    />
+                                    <FormControl>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={formField.value}
+                                                    onChange={onCheckboxChangeFactory(formField.path)}
+                                                />
+                                            }
+                                            label={formField.title}
+                                        />
+                                        <FormHelperText>{formField.description}</FormHelperText>
+                                    </FormControl>
                                 );
                         }
                     })()}
