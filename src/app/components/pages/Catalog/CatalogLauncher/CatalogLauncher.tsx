@@ -6,7 +6,7 @@ import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import {
     CatalogLauncherConfigurationCard,
     Props as CatalogLauncherConfigurationCardProps
-} from "./CatalogLauncherConfigurationCard/CatalogLauncherConfigurationCard";
+} from "./CatalogLauncherConfigurationCard";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { thunks, selectors } from "lib/useCases/launcher";
 import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorablePackageConfigs";

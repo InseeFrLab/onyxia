@@ -27,7 +27,7 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
-import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard/CatalogLauncherConfigurationCard";
+import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
