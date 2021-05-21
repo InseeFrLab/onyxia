@@ -6,11 +6,6 @@ import { css } from "tss-react";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks";
 
-const { meta, getStory } = getStoryFactory({
-    sectionName,
-    "wrappedComponent": { "CatalogLauncherConfigurationCard": Container }
-});
-
 function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) {
 
     const [formFields, setFormFields] = useState<Props["formFieldsByTab"][string]>([
@@ -36,7 +31,9 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
 
             formFields.forEach(
                 formField =>
-                    (out[formField.path[0]] ??= []).push(formField)
+                    //(out[formField.path[0]] ??= []).push(formField)
+                    (out[formField.path[0]] ?? (out[formField.path[0]] = [])).push(formField)
+
             );
 
             return out;
@@ -67,6 +64,11 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
 
 
 }
+
+const { meta, getStory } = getStoryFactory({
+    sectionName,
+    "wrappedComponent": { "CatalogLauncherConfigurationCard": Container }
+});
 
 export default meta;
 

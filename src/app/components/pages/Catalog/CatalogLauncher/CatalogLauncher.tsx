@@ -150,7 +150,6 @@ export const CatalogLauncher = memo((props: Props) => {
                 onFriendlyNameChange={onFriendlyNameChange}
                 onRequestLaunch={onRequestLaunch}
                 onRequestCancel={onRequestCancel}
-                isLocked={false}
                 onRequestCopyLaunchUrl={
                     restorablePackageConfig.formFieldsValueDifferentFromDefault.length !== 0 ?
                         onRequestCopyLaunchUrl :
