@@ -33,12 +33,28 @@ export type Props = {
     ): void;
 };
 
+const { useClassNames } = createUseClassNames()(
+    () => ({
+        "collapsedPanel": {
+            "maxHeight": 0,
+            "transform": "scaleY(0)"
+        },
+        "expandedPanel": {
+            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "transform": "scaleY(1)",
+            "transformOrigin": "top"
+        }
+    })
+);
+
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
 
     const {
         className, formFieldsByTab,
         onFormValueChange
     } = props;
+
+    const { classNames } = useClassNames({});
 
 
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -61,23 +77,21 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                 isCollapsed={isCollapsed}
                 onIsCollapsedValueChange={onIsCollapsedValueChange}
             />
-            {!isCollapsed &&
-                <Tabs
-                    tabs={tabs}
-                    activeTabId={activeTabId}
-                    onRequestChangeActiveTab={setActiveTabId}
-                    size="small"
-                    maxTabCount={5}
-                >
-                    <TabContent
-                        formFields={formFieldsByTab[activeTabId]}
-                        onFormValueChange={onFormValueChange}
-                    />
-                </Tabs>
-            }
+            <Tabs
+                className={classNames[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
+                tabs={tabs}
+                activeTabId={activeTabId}
+                onRequestChangeActiveTab={setActiveTabId}
+                size="small"
+                maxTabCount={5}
+            >
+                <TabContent
+                    formFields={formFieldsByTab[activeTabId]}
+                    onFormValueChange={onFormValueChange}
+                />
+            </Tabs>
         </div>
     );
-
 });
 
 export declare namespace CatalogLauncherConfigurationCard {
