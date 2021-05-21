@@ -53,7 +53,7 @@ export function createOfficialOnyxiaApiClient(
                 ({ catalogId, packageName})=> axiosInstance.get<Public_Catalog_CatalogId_PackageName>(
                     `/public/catalog/${catalogId}/${packageName}`
                 ).then(({ data })=> ({
-                    "dependencies": data.dependencies,
+                    "dependencies": data.dependencies ?? [],
                     "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams })=> JSON.parse(
                         Mustache.render(
                             JSON.stringify(data.config),

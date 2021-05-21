@@ -474,7 +474,9 @@ export const selectors = (() => {
                         .forEach(
                             formField => {
 
-                                (formFieldsByTabName[formField.path[1]] ??= []).push(formField);
+                                //TODO: Restore: (formFieldsByTabName[formField.path[1]] ??= []).push(formField); when ??= supported
+                                (formFieldsByTabName[formField.path[1]] ?? (formFieldsByTabName[formField.path[1]] = [])).push(formField);
+
 
                                 formFieldsRest.splice(formFieldsRest.indexOf(formField), 1);
 
@@ -492,7 +494,9 @@ export const selectors = (() => {
 
                         const formFieldsByTabName: IndexedFormFields[string] = {};
 
-                        (formFieldsByTabName[formField.path[0]] ??= []).push(formField);
+                        //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
+                        (formFieldsByTabName[formField.path[0]] ?? (formFieldsByTabName[formField.path[0]] = [])).push(formField);
+
 
                         indexedFormFields[packageName] = formFieldsByTabName;
 

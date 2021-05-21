@@ -21,6 +21,7 @@ export function createMockOnyxiaApiClient(
         "getCatalogs": memoize(() => Promise.resolve(data1), { "promise": true }),
         "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
             () => Promise.resolve().then(() => ({
+                "dependencies": [],
                 "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams }) => JSON.parse(
                     Mustache.render(
                         JSON.stringify(data2.config),
