@@ -483,25 +483,33 @@ export const selectors = (() => {
                             }
                         );
 
+                    if( 
+                        dependencyOrGlobal === "global" && 
+                        Object.keys(formFieldsByTabName).length === 0 
+                    ) {
+                        return;
+                    }
+
                     indexedFormFields[dependencyOrGlobal] = formFieldsByTabName;
 
                 }
             );
 
-            formFieldsRest
-                .forEach(
-                    formField => {
+            {
 
-                        const formFieldsByTabName: IndexedFormFields[string] = {};
+                const formFieldsByTabName: IndexedFormFields[string] = {};
 
-                        //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
-                        (formFieldsByTabName[formField.path[0]] ?? (formFieldsByTabName[formField.path[0]] = [])).push(formField);
+                formFieldsRest
+                    .forEach(
+                        formField => 
+                            //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
+                            (formFieldsByTabName[formField.path[0]] ?? (formFieldsByTabName[formField.path[0]] = [])).push(formField)
+                    );
 
 
-                        indexedFormFields[packageName] = formFieldsByTabName;
+                indexedFormFields[packageName] = formFieldsByTabName;
 
-                    }
-                );
+            }
 
             return indexedFormFields;
 
