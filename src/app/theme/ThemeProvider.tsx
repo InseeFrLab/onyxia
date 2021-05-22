@@ -1,11 +1,10 @@
 
-import { useState } from "react";
+import { useMemo } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ZoomProvider } from "powerhooks";
 import { useWindowInnerSize } from "powerhooks";
 
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
-import memoize from "memoizee";
 import { createTheme } from "./theme";
 
 import { useEffectOnValueChange } from "powerhooks";
@@ -33,15 +32,13 @@ export function themeProviderFactory(
             children
         } = props;
 
-        const { theme } = useState(
-            () => memoize(
-                (isDarkModeEnabled: boolean) =>
-                    createTheme({
-                        isReactStrictModeEnabled,
-                        isDarkModeEnabled
-                    })
-            )
-        )[0](isDarkModeEnabled);
+        const { theme } = useMemo(
+            () => createTheme({
+                    isReactStrictModeEnabled,
+                    isDarkModeEnabled
+                }),
+            [isDarkModeEnabled]
+        );
 
         const { windowInnerHeight, windowInnerWidth } = useWindowInnerSize();
 
