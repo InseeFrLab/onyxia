@@ -114,7 +114,8 @@ const { Header } = (() => {
             "root": {
                 "display": "flex",
                 "padding": theme.spacing(1, 3),
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces
+                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+                "cursor": "pointer"
             },
             "expandIcon": {
                 "& svg": {
@@ -138,10 +139,11 @@ const { Header } = (() => {
             const { className, text, isCollapsed, onIsCollapsedValueChange } = props;
 
             const { classNames } = useClassNames({ isCollapsed });
-
-
             return (
-                <div className={cx(classNames.root, className)}>
+                <div 
+                    className={cx(classNames.root, className)}
+                    onClick={onIsCollapsedValueChange}
+                >
                     <Typography
                         variant="h5"
                         className={classNames.title}
