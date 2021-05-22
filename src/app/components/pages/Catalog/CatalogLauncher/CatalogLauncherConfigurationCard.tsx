@@ -187,12 +187,11 @@ const { TabContent } = (() => {
             "root": {
                 "display": "grid",
                 "gridTemplateColumns": "repeat(2, 1fr)",
-                "gap": theme.spacing(8)
+                "gap": theme.spacing(2)
             },
             "textField": {
                 //Hacky... to accommodate the helper text
                 "marginBottom": 32,
-                //"width": "50%"
             }
         })
     );
