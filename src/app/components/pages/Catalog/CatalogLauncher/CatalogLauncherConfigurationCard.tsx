@@ -233,6 +233,8 @@ const { TabContent } = (() => {
         const { classNames } = useClassNames({});
 
 
+        console.log(JSON.stringify({ formFields },null,2));
+
         return (
             <div className={cx(classNames.root, className)}>
                 { formFields.map(formField =>
