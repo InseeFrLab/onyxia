@@ -185,7 +185,7 @@ const { TabContent } = (() => {
             "root": {
                 "display": "grid",
                 "gridTemplateColumns": "repeat(2, 1fr)",
-                "gap": theme.spacing(2)
+                "gap": theme.spacing(8)
             },
             "textField": {
                 "width": "100%",
