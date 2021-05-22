@@ -22,6 +22,7 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
     theme => ({
         "wrapperForScroll": {
+            "maxWidth": 1200,
             "height": "100%",
             "overflow": "auto",
             "& > *": {
