@@ -99,14 +99,13 @@ const { reducer, actions } = createSlice({
                 const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
 
                 if (
-                    !!state["~internal"]
+                    state["~internal"]
                         .defaultFormFieldsValue
                         .find(formField => same(formField.path, path))!
                         .value
                     !==
                     value
                 ) {
-
 
                     if (
                         !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
@@ -118,7 +117,6 @@ const { reducer, actions } = createSlice({
                     }
 
                 } else {
-
 
                     const index =
                         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
@@ -172,7 +170,7 @@ const privateThunks = {
                 "isDryRun": isForContractPreview
             });
 
-            return { contract };
+            return { contract };
 
         },
     "updateSavedStatus": (): AppThunk<void> => async (dispatch, getState) =>
@@ -395,7 +393,7 @@ export const thunks = {
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false }));
         },
     "getContract":
-        (): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async dispatch => 
+        (): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async dispatch =>
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
     "changeFriendlyName":
         (
@@ -485,9 +483,9 @@ export const selectors = (() => {
                             }
                         );
 
-                    if( 
-                        dependencyOrGlobal === "global" && 
-                        Object.keys(formFieldsByTabName).length === 0 
+                    if (
+                        dependencyOrGlobal === "global" &&
+                        Object.keys(formFieldsByTabName).length === 0
                     ) {
                         return;
                     }
@@ -503,7 +501,7 @@ export const selectors = (() => {
 
                 formFieldsRest
                     .forEach(
-                        formField => 
+                        formField =>
                             //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
                             (formFieldsByTabName[formField.path[0]] ?? (formFieldsByTabName[formField.path[0]] = [])).push(formField)
                     );
