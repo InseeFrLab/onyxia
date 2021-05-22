@@ -191,7 +191,8 @@ const { TabContent } = (() => {
             },
             "textField": {
                 //Hacky... to accommodate the helper text
-                "marginBottom": 32
+                "marginBottom": 32,
+                //"width": "50%"
             }
         })
     );
@@ -240,7 +241,7 @@ const { TabContent } = (() => {
                                 const labelId = `label_${formField.path.join("-")}`;
                                 return formField.enum !== undefined ?
                                     <FormControl>
-                                        <InputLabel id={labelId}>Age</InputLabel>
+                                        <InputLabel id={labelId}>{formField.title}</InputLabel>
                                         <Select
                                             labelId={labelId}
                                             value={formField.value}
@@ -255,7 +256,7 @@ const { TabContent } = (() => {
                                                 </MenuItem>
                                             )}
                                         </Select>
-                                        <FormHelperText>Some important helper text</FormHelperText>
+                                        <FormHelperText>{formField.description}</FormHelperText>
                                     </FormControl>
                                     :
                                     <TextField

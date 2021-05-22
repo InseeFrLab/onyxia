@@ -100,6 +100,9 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                 "position": "absolute",
                 "bottom": "-25px"
             },
+            "& .MuiTypography-caption": {
+                "whiteSpace": "nowrap"
+            },
             "& .MuiFormLabel-root, & .MuiFormHelperText-root": {
                 "color": error ?
                     theme.custom.colors.useCases.alertSeverity.error.main :
