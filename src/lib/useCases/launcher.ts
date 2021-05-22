@@ -331,7 +331,8 @@ export const thunks = {
                                 "value": value["x-form"]?.value ?? value.default ?? null as any as never,
                                 "isHidden":
                                     same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
-                                    (value["x-form"]?.hidden ?? false)
+                                    (value["x-form"]?.hidden ?? false),
+                                "enum": value.type === "string" ? value.enum : undefined
                             });
                         }
 
