@@ -1,4 +1,5 @@
 
+import "minimal-polyfills/Object.fromEntries";
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
@@ -498,7 +499,7 @@ export const selectors = (() => {
 
             {
 
-                const formFieldsByTabName: IndexedFormFields[string] = {};
+                const formFieldsByTabName: IndexedFormFields[string] = indexedFormFields[packageName] ?? {};
 
                 formFieldsRest
                     .forEach(
@@ -512,7 +513,11 @@ export const selectors = (() => {
 
             }
 
-            return indexedFormFields;
+            //Resign packageName so it appears before other cards
+            return Object.fromEntries(
+                Object.entries(indexedFormFields)
+                    .sort(([key]) => key === packageName ? -1 : 0)
+            );
 
         }
     );
