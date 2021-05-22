@@ -190,7 +190,6 @@ const { TabContent } = (() => {
                 "gap": theme.spacing(8)
             },
             "textField": {
-                "width": "100%",
                 //Hacky... to accommodate the helper text
                 "marginBottom": 32
             }
@@ -231,9 +230,6 @@ const { TabContent } = (() => {
         );
 
         const { classNames } = useClassNames({});
-
-
-        console.log(JSON.stringify({ formFields },null,2));
 
         return (
             <div className={cx(classNames.root, className)}>
