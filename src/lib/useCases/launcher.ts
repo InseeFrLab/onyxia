@@ -11,7 +11,6 @@ import { pure as secretExplorerPure } from "./secretExplorer";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
-import { thunks as restorablePackageConfigsThunks } from "./restorablePackageConfigs";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import {
     formFieldsValueToObject,
@@ -23,6 +22,7 @@ import {
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
+import type { WritableDraft } from "immer/dist/types/types-external";
 
 export const name = "launcher";
 
@@ -49,7 +49,6 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
-        isSaved: boolean;
         '~internal': {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: { path: string[]; }[];
             formFields: (FormField & { isHidden: boolean })[];
@@ -73,74 +72,62 @@ const { reducer, actions } = createSlice({
         "stateDescription": "not initialized",
     })),
     "reducers": {
-        "initialized": (_, { payload }: PayloadAction<LauncherState.Ready>) =>
-            payload,
-        "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
+        "initialized": (
+            state,
+            { payload }: PayloadAction<{
+                catalogId: string;
+                packageName: string;
+                icon: string | undefined;
+                defaultFormFieldsValue: LauncherState.Ready["~internal"]["formFields"];
+                dependencies: string[];
+                formFieldsValueDifferentFromDefault: FormFieldValue[];
+            }>
+        ) => {
 
-            const { path, value } = payload;
+            const {
+                catalogId,
+                packageName,
+                icon,
+                defaultFormFieldsValue,
+                dependencies,
+                formFieldsValueDifferentFromDefault
+            } = payload;
+
+            Object.assign(
+                state,
+                id<LauncherState.Ready>({
+                    "stateDescription": "ready",
+                    catalogId,
+                    packageName,
+                    icon,
+                    "~internal": {
+                        "formFields": defaultFormFieldsValue,
+                        defaultFormFieldsValue,
+                        dependencies,
+                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": []
+                    }
+                })
+            );
 
             assert(state.stateDescription === "ready");
 
-            {
+            formFieldsValueDifferentFromDefault.forEach(
+                formFieldValue => formFieldValueChangedReducer({ state, formFieldValue })
+            );
 
-                const formField = state["~internal"].formFields
-                    .find(formField => same(formField.path, path))!;
+            return state;
 
-                if (formField.value === value) {
-                    return;
-                }
+        },
+        "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
 
-                formField.value = value;
+            assert(state.stateDescription === "ready");
 
-            }
-
-            {
-
-                const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
-
-                if (
-                    state["~internal"]
-                        .defaultFormFieldsValue
-                        .find(formField => same(formField.path, path))!
-                        .value
-                    !==
-                    value
-                ) {
-
-                    if (
-                        !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-                            .find(({ path: path_i }) => same(path_i, path))
-                    ) {
-
-                        pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({ path });
-
-                    }
-
-                } else {
-
-                    const index =
-                        pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-                            .findIndex(({ path: path_i }) => same(path_i, path));
-
-                    if (index >= 0) {
-
-                        pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(index, 1);
-
-                    }
-
-                }
-
-            }
+            formFieldValueChangedReducer({ state, "formFieldValue": payload });
 
         },
         "launched": () => id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
-        }),
-        "valueOfIsSavedUpdated": (state, { payload }: PayloadAction<{ isSaved: boolean; }>) => {
-            const { isSaved } = payload;
-            assert(state.stateDescription === "ready");
-            state.isSaved = isSaved;
-        }
+        })
     }
 });
 
@@ -172,16 +159,7 @@ const privateThunks = {
 
             return { contract };
 
-        },
-    "updateSavedStatus": (): AppThunk<void> => async (dispatch, getState) =>
-        dispatch(actions.valueOfIsSavedUpdated({
-            "isSaved": dispatch(
-                restorablePackageConfigsThunks.isRestorablePackageConfigInStore({
-                    "restorablePackageConfig": selectors.restorablePackageConfigSelector(getState())!
-                })
-            )
-        }))
-
+        }
 };
 
 export const thunks = {
@@ -222,7 +200,6 @@ export const thunks = {
                 }
 
             }
-
 
             const {
                 getPackageConfigJSONSchemaObjectWithRenderedMustachParams,
@@ -348,9 +325,9 @@ export const thunks = {
 
             })();
 
+
             dispatch(
                 actions.initialized({
-                    "stateDescription": "ready",
                     catalogId,
                     packageName,
                     "icon": await onyxiaApiClient.getCatalogs()
@@ -362,32 +339,20 @@ export const thunks = {
                                 .find(({ name }) => name === packageName)!
                                 .icon
                         ),
-                    "~internal": {
-                        formFields,
-                        "defaultFormFieldsValue": formFields,
-                        "dependencies": dependencies
-                            .filter(({ enabled }) => enabled)
-                            .map(({ name }) => name),
-                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": []
-                    },
-                    "isSaved": false
+                    "defaultFormFieldsValue": formFields,
+                    "dependencies": dependencies
+                        .filter(({ enabled }) => enabled)
+                        .map(({ name }) => name),
+                    formFieldsValueDifferentFromDefault
                 })
             );
-
-            formFieldsValueDifferentFromDefault.forEach(
-                formFields => dispatch(thunks.changeFormFieldValue(formFields))
-            );
-
-            dispatch(privateThunks.updateSavedStatus());
 
         },
     "changeFormFieldValue":
         (
             params: FormFieldValue
-        ): AppThunk<void> => dispatch => {
-            dispatch(actions.formFieldValueChanged(params));
-            dispatch(privateThunks.updateSavedStatus());
-        },
+        ): AppThunk<void> => dispatch => 
+            dispatch(actions.formFieldValueChanged(params)),
     "launch":
         (): AppThunk => async dispatch => {
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false }));
@@ -568,3 +533,65 @@ export const selectors = (() => {
 
 })();
 
+
+function formFieldValueChangedReducer(
+    params: {
+        state: WritableDraft<LauncherState.Ready>;
+        formFieldValue: FormFieldValue;
+    }
+): void {
+
+    const { state, formFieldValue: { path, value } } = params;
+
+    {
+
+        const formField = state["~internal"].formFields
+            .find(formField => same(formField.path, path))!;
+
+        if (formField.value === value) {
+            return;
+        }
+
+        formField.value = value;
+
+    }
+
+    {
+
+        const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
+
+        if (
+            state["~internal"]
+                .defaultFormFieldsValue
+                .find(formField => same(formField.path, path))!
+                .value
+            !==
+            value
+        ) {
+
+            if (
+                !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+                    .find(({ path: path_i }) => same(path_i, path))
+            ) {
+
+                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({ path });
+
+            }
+
+        } else {
+
+            const index =
+                pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+                    .findIndex(({ path: path_i }) => same(path_i, path));
+
+            if (index >= 0) {
+
+                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(index, 1);
+
+            }
+
+        }
+
+    }
+
+}
