@@ -65,7 +65,7 @@ export const CatalogLauncher = memo((props: Props) => {
     useEffect(
         () => {
 
-            if (!restorablePackageConfig) {
+            if (restorablePackageConfig === undefined) {
                 return;
             }
 
