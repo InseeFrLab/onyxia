@@ -4,7 +4,7 @@ import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer/CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher/CatalogLauncher";

@@ -1,13 +1,10 @@
-import "minimal-polyfills/Object.fromEntries";
-import { createRouter, defineRoute, param, noMatch } from "type-route";
-import type { ValueSerializer } from "type-route";
-import { id } from "tsafe/id";
-import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
-import { accountTabIds } from "app/components/pages/Account/accountTabIds";
+
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
 import type { QueryStringSerializer } from "type-route";
 import { arrPartition } from "evt/tools/reducers/partition";
 import { assert } from "tsafe/assert";
+import type { ValueSerializer, RouterOpts } from "type-route";
+import { param } from "type-route";
 
 const formFieldsValueDifferentFromDefault = "formFieldsValueDifferentFromDefault";
 
@@ -112,89 +109,9 @@ const queryStringSerializer: QueryStringSerializer = {
             .join("&")
 }
 
-//const config: RouterOpts = { queryStringSerializer };
+export const routerOpts: RouterOpts = { queryStringSerializer };
 
-export const { RouteProvider, useRoute, routes } = createRouter({ queryStringSerializer }, {
-    "account": defineRoute(
-        {
-            "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
-                "parse": raw => !id<readonly string[]>(accountTabIds).includes(raw) ? noMatch : raw as AccountTabId,
-                "stringify": value => value
-            })).default(accountTabIds[0])
-        },
-        ({ tabId }) => `/account/${tabId}`
-    ),
-    "home": defineRoute(["/home", "/"]),
-    "tour": defineRoute("/visite-guidee"),
-    ...(() => {
-
-        const sharedServices = defineRoute("/services");
-
-        return {
-            sharedServices,
-            "sharedServicesDetails": sharedServices.extend(
-                { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`
-            )
-        };
-
-    })(),
-    "trainings": defineRoute(
-        { "courseCode": param.path.optional.string },
-        ({ courseCode }) => `/trainings/${courseCode}`
-    ),
-    //TODO: Remove, legacy
-    "catalog": defineRoute(
-        { "optionalTrailingPath": param.path.trailing.optional.string },
-        ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
-    ),
-    "catalogExplorer": defineRoute(
-        { "catalogId": param.path.optional.string },
-        ({ catalogId }) => `/catalog/${catalogId}`
-    ),
-    "catalogLauncher": defineRoute(
-        {
-            "catalogId": param.path.string,
-            "packageName": param.path.string,
-            [formFieldsValueDifferentFromDefault]: param.query.optional.ofType(formFieldsValueSerializer).default([])
-        },
-        ({ catalogId, packageName }) => `/x/${catalogId}/${packageName}`
-    ),
-    ...(() => {
-
-        const myServices = defineRoute("/my-service");
-
-        return {
-            myServices,
-            "myService": myServices.extend(
-                { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`
-            )
-        };
-
-    })(),
-    "mySecrets": defineRoute(
-        {
-            "secretOrDirectoryPath": param.path.trailing.optional.string,
-            "isFile": param.query.optional.boolean
-        },
-        ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`
-    ),
-    ...(() => {
-
-        const myBuckets = defineRoute("/mes-fichiers");
-
-        return {
-            myBuckets,
-            "myFiles": myBuckets.extend(
-                {
-                    "bucketName": param.path.string,
-                    "fileOrDirectoryPath": param.path.trailing.optional.string
-                },
-                ({ bucketName, fileOrDirectoryPath }) => `/${bucketName}/${fileOrDirectoryPath}`
-            )
-        };
-
-
-    })()
-});
+export const formFieldsDefineRouteParam = {
+    [formFieldsValueDifferentFromDefault]: 
+        param.query.optional.ofType(formFieldsValueSerializer).default([])
+};

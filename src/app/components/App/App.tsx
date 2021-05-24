@@ -17,11 +17,11 @@ import {
 } from "app/interfaceWithLib/hooks";
 import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
-import { useRoute } from "app/router";
+import { useRoute } from "app/routes/router";
 import { Home } from "app/components/pages/Home";
 import { FourOhFour }  from "./FourOhFour";
 import { assert } from "tsafe/assert";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";

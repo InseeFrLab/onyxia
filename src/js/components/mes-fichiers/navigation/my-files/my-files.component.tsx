@@ -28,7 +28,7 @@ import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import { assert } from "tsafe/assert";
 import type { HandleThunkActionCreator } from "react-redux";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 
 import { MyPolicy } from '../my-policy.component';

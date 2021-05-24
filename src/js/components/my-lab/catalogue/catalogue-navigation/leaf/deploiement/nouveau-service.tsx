@@ -26,7 +26,7 @@ import { actions } from "js/redux/legacyActions";
 import { useDispatch, useMustacheParams, useIsBetaModeEnabled, useAppConstants } from "app/interfaceWithLib/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prOidcClient, prAxiosInstance } from "lib/setup";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 type Service = {
 	category: "group" | "service";

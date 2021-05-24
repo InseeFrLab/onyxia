@@ -14,7 +14,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "powerhooks";
 import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";

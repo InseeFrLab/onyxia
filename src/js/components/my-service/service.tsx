@@ -5,7 +5,7 @@ import { getService, deleteServices } from 'js/api/my-lab';
 import { Service } from 'js/model';
 import Toolbar from './toolbar';
 import { useAppConstants, useSelectedRegion } from "app/interfaceWithLib/hooks";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 interface Props {
 	serviceId: string;

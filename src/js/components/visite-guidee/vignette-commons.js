@@ -4,7 +4,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Fab, Icon } from '@material-ui/core';
 import { ArrowIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 export const LinkTo = ({
 	disabled = false,

@@ -1,6 +1,6 @@
 
 import { assert } from "tsafe/assert";
-import { useRoute } from "app/router";
+import { useRoute } from "app/routes/router";
 
 
 function typeRouteRouteToDomLocation(route: { href: string; }): Location {

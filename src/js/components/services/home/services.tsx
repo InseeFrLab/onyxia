@@ -4,7 +4,7 @@ import Content from './content';
 import DetailsService from '../details';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { createGroup } from "type-route";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 type Props = {
 	serviceSelectionne: boolean;

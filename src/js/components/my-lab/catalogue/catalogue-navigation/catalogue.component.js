@@ -7,7 +7,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardActions from '@material-ui/core/CardActions';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 const Catalogue = ({ catalogue: { id, name, description } }) => (
 	<Grid item sm={12} lg={4} classes={{ item: 'carte' }}>

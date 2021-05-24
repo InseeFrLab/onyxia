@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Icon } from '@material-ui/core';
 import './fil-d-ariane.scss';
 import D from 'js/i18n';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { join as pathJoin } from "path";
 
 const home = { "anchorProps": routes.home().link, "component": <Icon className="home-icone">home</Icon> };

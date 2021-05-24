@@ -5,7 +5,7 @@ import TrainingCard from 'js/components/commons/training-card';
 import { wrapPromise } from 'js/utils';
 import { axiosURL } from "js/utils/axios-config";
 import { getValidatedEnv } from "app/validatedEnv";
-import { useRoute } from "app/router";
+import { useRoute } from "app/routes/router";
 
 const env = getValidatedEnv();
 

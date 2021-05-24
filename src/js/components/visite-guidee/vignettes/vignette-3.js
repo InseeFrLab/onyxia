@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { Prec, LinkTo } from './../vignette-commons';
 import { CatalogueIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
  
 export default {

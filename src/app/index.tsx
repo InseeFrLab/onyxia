@@ -5,7 +5,7 @@ import { getValidatedEnv } from "./validatedEnv";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "tsafe/id";
 import { I18nProvider } from "./i18n/I18nProvider";
-import { RouteProvider } from "./router";
+import { RouteProvider } from "./routes/router";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { themeProviderFactory } from "app/theme/ThemeProvider";

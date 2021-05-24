@@ -5,7 +5,7 @@ import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "app/i18n/useTranslations";
