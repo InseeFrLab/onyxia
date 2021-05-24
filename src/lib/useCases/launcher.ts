@@ -78,7 +78,7 @@ const { reducer, actions } = createSlice({
                 catalogId: string;
                 packageName: string;
                 icon: string | undefined;
-                defaultFormFieldsValue: LauncherState.Ready["~internal"]["formFields"];
+                formFields: LauncherState.Ready["~internal"]["formFields"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
             }>
@@ -88,7 +88,7 @@ const { reducer, actions } = createSlice({
                 catalogId,
                 packageName,
                 icon,
-                defaultFormFieldsValue,
+                formFields,
                 dependencies,
                 formFieldsValueDifferentFromDefault
             } = payload;
@@ -101,8 +101,9 @@ const { reducer, actions } = createSlice({
                     packageName,
                     icon,
                     "~internal": {
-                        "formFields": defaultFormFieldsValue,
-                        defaultFormFieldsValue,
+                        formFields,
+                        "defaultFormFieldsValue": formFields
+                            .map(({ path, value }) => ({ path, value })),
                         dependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": []
                     }
@@ -114,8 +115,6 @@ const { reducer, actions } = createSlice({
             formFieldsValueDifferentFromDefault.forEach(
                 formFieldValue => formFieldValueChangedReducer({ state, formFieldValue })
             );
-
-            return state;
 
         },
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
@@ -325,7 +324,6 @@ export const thunks = {
 
             })();
 
-
             dispatch(
                 actions.initialized({
                     catalogId,
@@ -339,7 +337,7 @@ export const thunks = {
                                 .find(({ name }) => name === packageName)!
                                 .icon
                         ),
-                    "defaultFormFieldsValue": formFields,
+                    formFields,
                     "dependencies": dependencies
                         .filter(({ enabled }) => enabled)
                         .map(({ name }) => name),
@@ -351,8 +349,8 @@ export const thunks = {
     "changeFormFieldValue":
         (
             params: FormFieldValue
-        ): AppThunk<void> => dispatch => 
-            dispatch(actions.formFieldValueChanged(params)),
+        ): AppThunk<void> => dispatch =>
+                dispatch(actions.formFieldValueChanged(params)),
     "launch":
         (): AppThunk => async dispatch => {
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false }));
@@ -552,7 +550,16 @@ function formFieldValueChangedReducer(
             return;
         }
 
-        formField.value = value;
+        /* If we don't do formField.value = value;
+        * because we can possibly mistake "true" from 
+        * the url to be a boolean */
+        formField.value =
+            (
+                typeof formField.value === "boolean" &&
+                typeof value === "string"
+            ) ?
+                value === "true" :
+                value;
 
     }
 
