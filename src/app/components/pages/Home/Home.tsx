@@ -4,7 +4,7 @@ import { Button } from "app/components/designSystem/Button";
 import "./style.scss";
 import { useTheme } from "@material-ui/core/styles";
 import { createGroup } from "type-route";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import {  css } from "tss-react";

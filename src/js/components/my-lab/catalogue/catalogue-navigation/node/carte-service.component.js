@@ -9,7 +9,7 @@ import Fab from '@material-ui/core/Fab';
 import Icon from '@material-ui/core/Icon';
 import { getAvatar } from 'js/utils';
 import { WorkInProgress } from 'js/components/commons/icons';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 const Carte = ({ idCatalogue, service, setServiceSelected }) => {
 	const down = service.disable;

@@ -19,7 +19,7 @@ import { useDispatch, useSelector, useIsBetaModeEnabled, useAppConstants } from 
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { getPublicIp } from "lib/tools/getPublicIp";
 import { useAsync } from "react-async-hook";
 

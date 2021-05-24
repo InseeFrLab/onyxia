@@ -11,7 +11,7 @@ import {
 	Icon,
 } from '@material-ui/core';
 import './training-card.scss';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 interface Props {
 	training: Training;

@@ -13,7 +13,7 @@ import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { useTheme } from "@material-ui/core/styles";
-import { RouteProvider } from "app/router";
+import { RouteProvider } from "app/routes/router";
 import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
 import "./fonts.scss";
 

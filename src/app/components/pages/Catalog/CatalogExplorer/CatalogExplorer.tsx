@@ -7,7 +7,7 @@ import { useConstCallback } from "powerhooks";
 import { useSplashScreen } from "app/components/shared/SplashScreen";
 import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { thunks } from "lib/setup";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 
 export type Props = {

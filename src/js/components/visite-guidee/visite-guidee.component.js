@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import './visite-guidee.scss';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 class VisiteGuidee extends React.Component {
 	state = { step: 0, redirect: false };

@@ -8,7 +8,7 @@ import { cx } from "tss-react";
 import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseGlobalState, useCallbackFactory } from "powerhooks";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import { doExtends } from "tsafe/doExtends";
 import Divider from "@material-ui/core/Divider";
 

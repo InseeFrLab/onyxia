@@ -6,7 +6,7 @@ import D from 'js/i18n';
 import * as clipboard from 'clipboard-polyfill';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
 interface Props {
 	hasService: Boolean;

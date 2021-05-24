@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import {

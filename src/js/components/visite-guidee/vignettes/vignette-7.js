@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import { LinkTo } from './../vignette-commons';
 import { BecherIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
-import { routes } from "app/router";
+import { routes } from "app/routes/router";
 
  
 export default {
