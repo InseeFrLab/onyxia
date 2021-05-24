@@ -41,7 +41,8 @@ export namespace Public_Catalog_CatalogId_PackageName {
 
     export type JSONSchemaFormFieldDescription =
         JSONSchemaFormFieldDescription.String |
-        JSONSchemaFormFieldDescription.Boolean;
+        JSONSchemaFormFieldDescription.Boolean |
+        JSONSchemaFormFieldDescription.Integer;
     export namespace JSONSchemaFormFieldDescription {
 
         type Common<T> = {
@@ -63,6 +64,11 @@ export namespace Public_Catalog_CatalogId_PackageName {
         export type Boolean = {
             type: "boolean";
         } & Common<boolean>;
+
+        export type Integer = {
+            type: "number";
+            minimum?: string;
+        } & Common<number>;
 
     }
 

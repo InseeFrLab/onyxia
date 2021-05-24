@@ -1,7 +1,7 @@
 
 export type FormFieldValue = {
     path: string[];
-    value: string | boolean;
+    value: string | boolean | number;
 };
 
 export function formFieldsValueToObject(

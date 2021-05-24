@@ -20,6 +20,8 @@ const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
 const queryStringSerializer: QueryStringSerializer = {
     "parse": raw => {
 
+        console.log("the raw: ", raw);
+
         const allEntries =
             raw.split("&")
                 .map(part => part.split("="));
@@ -44,19 +46,28 @@ const queryStringSerializer: QueryStringSerializer = {
                                 []
                             )
                             .map(s => s.replace(/\\\./g, ".")),
-                    //WARNING: We can misinterpret the string "true" with the boolean true,
-                    //we handle this when we update the form fields
                     "value": (()=>{
-                        switch(valueStr){
-                            case "true": return true;
-                            case "false": return false;
-                            default: return valueStr;
+
+                        if( ["true", "false"].includes(valueStr) ){
+                            return "true" === valueStr;
                         }
+
+                        {
+                            const x = parseFloat(valueStr);
+                            if( !isNaN(x) ){
+                                return x;
+                            }
+                        }
+
+                        return decodeURIComponent( valueStr)
+                            .replace(/^«/, "")
+                            .replace(/»$/, "");
+
                     })()
+                    
                 }));
 
-
-        const out= Object.fromEntries(
+        return Object.fromEntries(
             [
                 ...otherEntries,
                 [
@@ -66,26 +77,12 @@ const queryStringSerializer: QueryStringSerializer = {
             ]
         );
 
-        /*
-        console.log(
-            "parse",
-            JSON.stringify(
-                { raw, out },
-                null,
-                2
-            )
-        );
-        */
-
-        return out;
-
     },
-    "stringify": queryParams => {
-
-        const out = Object.keys(queryParams)
+    "stringify": queryParams =>
+        Object.keys(queryParams)
             .map(name => {
 
-                if( name === formFieldsValueDifferentFromDefault) {
+                if (name === formFieldsValueDifferentFromDefault) {
 
                     const formFieldsValue = formFieldsValueSerializer.parse(queryParams[name].value!);
 
@@ -97,7 +94,13 @@ const queryStringSerializer: QueryStringSerializer = {
                                 path
                                     .map(part => part.replace(/\./g, "\\."))
                                     .join("."),
-                                    `${value}`
+                                (() => {
+                                    switch (typeof value) {
+                                        case "boolean": return value ? "true" : "false";
+                                        case "number": return value.toString(10);
+                                        case "string": return `«${encodeURIComponent(value)}»`;
+                                    }
+                                })()
                             ].join("=")
                         )
                         .join("&");
@@ -108,27 +111,12 @@ const queryStringSerializer: QueryStringSerializer = {
 
             })
             .filter(part => part !== "")
-            .join("&");
-
-            /*
-        console.log(
-            "stringify",
-            JSON.stringify(
-                { queryParams, out },
-                null,
-                2
-            )
-        );
-        */
-
-
-        return out;
-    },
+            .join("&")
 }
 
 //const config: RouterOpts = { queryStringSerializer };
 
-export const { RouteProvider, useRoute, routes } = createRouter({ queryStringSerializer },{
+export const { RouteProvider, useRoute, routes } = createRouter({ queryStringSerializer }, {
     "account": defineRoute(
         {
             "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
