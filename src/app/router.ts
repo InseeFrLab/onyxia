@@ -1,14 +1,134 @@
-
+import "minimal-polyfills/Object.fromEntries";
 import { createRouter, defineRoute, param, noMatch } from "type-route";
 import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
-import URLON from "urlon";
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
-import { formFieldsValueToObject, objectToFormFieldsValue } from "lib/useCases/sharedDataModel/FormFieldValue";
+import type { QueryStringSerializer } from "type-route";
+import { arrPartition } from "evt/tools/reducers/partition";
+import { assert } from "tsafe/assert";
 
-export const { RouteProvider, useRoute, routes } = createRouter({
+const formFieldsValueDifferentFromDefault = "formFieldsValueDifferentFromDefault";
+
+const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
+    "urlEncode": false,
+    "stringify": JSON.stringify,
+    "parse": JSON.parse
+};
+
+const queryStringSerializer: QueryStringSerializer = {
+    "parse": raw => {
+
+        const allEntries =
+            raw.split("&")
+                .map(part => part.split("="));
+
+        const [formFieldsEntries, otherEntries] = arrPartition(
+            allEntries,
+            ([key]) => key.includes(".")
+        );
+
+        const formFieldsValue =
+            formFieldsEntries
+                .map(([pathStr, valueStr]): FormFieldValue => ({
+                    "path":
+                        pathStr
+                            //NOTE the two next pipe mean "split all non escaped dots"
+                            //the regular expression 'look behind' is not supported by Safari.
+                            .split(".")
+                            .reduce<string[]>((prev, curr) =>
+                                prev[prev.length - 1]?.endsWith("\\") ?
+                                    (prev[prev.length - 1] += `.${curr}`, prev) :
+                                    [...prev, curr],
+                                []
+                            )
+                            .map(s => s.replace(/\\\./g, ".")),
+                    //WARNING: We can misinterpret the string "true" with the boolean true,
+                    //we handle this when we update the form fields
+                    "value": (()=>{
+                        switch(valueStr){
+                            case "true": return true;
+                            case "false": return false;
+                            default: return valueStr;
+                        }
+                    })()
+                }));
+
+
+        const out= Object.fromEntries(
+            [
+                ...otherEntries,
+                [
+                    formFieldsValueDifferentFromDefault,
+                    formFieldsValueSerializer.stringify(formFieldsValue)
+                ]
+            ]
+        );
+
+        /*
+        console.log(
+            "parse",
+            JSON.stringify(
+                { raw, out },
+                null,
+                2
+            )
+        );
+        */
+
+        return out;
+
+    },
+    "stringify": queryParams => {
+
+        const out = Object.keys(queryParams)
+            .map(name => {
+
+                if( name === formFieldsValueDifferentFromDefault) {
+
+                    const formFieldsValue = formFieldsValueSerializer.parse(queryParams[name].value!);
+
+                    assert(!("__noMatch" in formFieldsValue));
+
+                    return formFieldsValue
+                        .map(
+                            ({ path, value }) => [
+                                path
+                                    .map(part => part.replace(/\./g, "\\."))
+                                    .join("."),
+                                    `${value}`
+                            ].join("=")
+                        )
+                        .join("&");
+
+                }
+
+                return `${name}=${queryParams[name].value}`;
+
+            })
+            .filter(part => part !== "")
+            .join("&");
+
+            /*
+        console.log(
+            "stringify",
+            JSON.stringify(
+                { queryParams, out },
+                null,
+                2
+            )
+        );
+        */
+
+
+        return out;
+    },
+}
+
+//const config: RouterOpts = { queryStringSerializer };
+
+export const { RouteProvider, useRoute, routes } = createRouter({ queryStringSerializer },{
     "account": defineRoute(
         {
             "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
@@ -50,13 +170,9 @@ export const { RouteProvider, useRoute, routes } = createRouter({
         {
             "catalogId": param.path.string,
             "packageName": param.path.string,
-            /** formFieldsValueDifferentFromDefault */
-            "p": param.query.optional.ofType(id<ValueSerializer<FormFieldValue[]>>({
-                "parse": raw => objectToFormFieldsValue(URLON.parse(raw)),
-                "stringify": formFieldsValue => URLON.stringify(formFieldsValueToObject(formFieldsValue))
-            })).default([])
+            [formFieldsValueDifferentFromDefault]: param.query.optional.ofType(formFieldsValueSerializer).default([])
         },
-        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`
+        ({ catalogId, packageName }) => `/x/${catalogId}/${packageName}`
     ),
     ...(() => {
 

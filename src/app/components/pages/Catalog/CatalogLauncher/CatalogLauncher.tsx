@@ -44,7 +44,7 @@ export const CatalogLauncher = memo((props: Props) => {
             const {
                 catalogId,
                 packageName,
-                p: formFieldsValueDifferentFromDefault
+                formFieldsValueDifferentFromDefault
             } = route.params;
 
             dispatch(thunks.initialize({
@@ -82,10 +82,7 @@ export const CatalogLauncher = memo((props: Props) => {
             routes.catalogLauncher({
                 catalogId,
                 packageName,
-                "p":
-                    formFieldsValueDifferentFromDefault.length === 0 ?
-                        undefined :
-                        formFieldsValueDifferentFromDefault
+                formFieldsValueDifferentFromDefault
             }).replace();
 
         },
