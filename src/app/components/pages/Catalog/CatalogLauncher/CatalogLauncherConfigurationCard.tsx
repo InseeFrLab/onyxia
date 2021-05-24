@@ -240,9 +240,6 @@ const { TabContent } = (() => {
                 { formFields.map((formField, i) =>
                     <div key={i} >
                         {(() => {
-
-                            console.log(JSON.stringify(formField, null, 2));
-
                             switch (typeof formField.value) {
                                 case "string":
                                     return formField.enum !== undefined ?

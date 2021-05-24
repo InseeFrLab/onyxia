@@ -20,8 +20,6 @@ const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
 const queryStringSerializer: QueryStringSerializer = {
     "parse": raw => {
 
-        console.log("the raw: ", raw);
-
         const allEntries =
             raw.split("&")
                 .map(part => part.split("="));
