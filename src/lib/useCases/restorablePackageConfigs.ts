@@ -187,7 +187,7 @@ export const thunks = {
                         .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
                     packageName;
 
-                assert(typeof friendlyName !== "boolean");
+                assert(typeof friendlyName === "string");
 
                 return friendlyName;
 

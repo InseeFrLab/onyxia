@@ -32,6 +32,8 @@ export type FormField = FormFieldValue & {
     isReadonly: boolean;
     /** May only be defined when typeof value is string */
     enum?: string[];
+    /** May only be defined when typeof value is number */
+    minimum?: string;
 };
 
 export type LauncherState =
@@ -307,7 +309,8 @@ export const thunks = {
                                 "isHidden":
                                     same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
                                     (value["x-form"]?.hidden ?? false),
-                                "enum": value.type === "string" ? value.enum : undefined
+                                "enum": value.type === "string" ? value.enum : undefined,
+                                "minimum": value.type === "number" ? value.minimum : undefined
                             });
                         }
 
@@ -397,11 +400,15 @@ export const selectors = (() => {
         formFieldsSelector,
         formFields => {
 
+            if( formFields === undefined ){
+                return undefined;
+            }
+
             const friendlyName = formFields
-                ?.find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
+                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))!
                 .value;
 
-            assert(typeof friendlyName !== "boolean");
+            assert(typeof friendlyName === "string");
 
             return friendlyName;
 
@@ -550,16 +557,7 @@ function formFieldValueChangedReducer(
             return;
         }
 
-        /* If we don't do formField.value = value;
-        * because we can possibly mistake "true" from 
-        * the url to be a boolean */
-        formField.value =
-            (
-                typeof formField.value === "boolean" &&
-                typeof value === "string"
-            ) ?
-                value === "true" :
-                value;
+        formField.value = value;
 
     }
 
