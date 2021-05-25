@@ -264,13 +264,13 @@ export function MySecrets(props: Props) {
                 text1={t("page title")}
                 text2={t("what this page is used for")}
                 text3={<>
-                    {t("watch the video")}
+                    {t("to learn more")}
                     &nbsp;
                     <Link
-                        href="https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4"
+                        href="https://docs.sspcloud.fr/onyxia-guide-avance/utiliser-des-variables-denvironnement"
                         target="_blank"
                     >
-                        {t("here")}
+                        {t("read our documentation")}
                     </Link>
                 </>}
             />
@@ -333,8 +333,8 @@ export declare namespace MySecrets {
     export type I18nScheme = {
         'page title': undefined;
         'what this page is used for': undefined;
-        'watch the video': undefined;
-        'here': undefined;
+        'to learn more': undefined;
+        'read our documentation': undefined;
     };
 
 }

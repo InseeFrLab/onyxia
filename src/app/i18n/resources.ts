@@ -179,9 +179,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecrets": {
             ...common.en,
             "page title": "My Secrets",
-            "what this page is used for": `
-            Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
-            "watch the video": "Watch the video demonstration",
+            "what this page is used for": 
+                `Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
+            "to learn more": "To learn more about secrets management,",
+            "read our documentation": "read our documentation."
         },
         "ExplorerItem": {
             "description": "description"
@@ -395,8 +396,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecrets": {
             ...common.fr,
             "page title": "Mes secrets",
-            "what this page is used for": `Définissez ici des variables qui seront accessibles sous forme de variable d'environnement dans vos services.`,
-            "watch the video": "Visionner la vidéo de démonstration",
+            "what this page is used for": `Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.`,
+            "to learn more": "Pour en savoir plus sur l’utilisation de secrets,",
+            "read our documentation": "lisez notre documentation."
         },
         "ExplorerItem": {
             "description": "description"
