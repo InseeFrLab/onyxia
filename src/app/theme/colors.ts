@@ -64,7 +64,7 @@ export function getColors(paletteType: "light" | "dark") {
             "actionHoverTernary": palette.whiteSnow.main,
             "actionSelected": palette.whiteSnow.greyVariant1,
             "actionActive": palette.exuberantOrange.main,
-            "actionDisabled": palette.whiteSnow.greyVariant2,
+            "actionDisabled": palette.whiteSnow.greyVariant3,
             "actionDisabledBackground": palette.whiteSnow.greyVariant1
         },
         "surfaces": {
@@ -102,7 +102,9 @@ export function getColors(paletteType: "light" | "dark") {
         "buttons": {
             ...useCasesLight.buttons,
             "actionHoverSecondary": palette.whiteSnow.light,
-            "actionSelected": palette.midnightBlue.light
+            "actionSelected": palette.midnightBlue.light,
+            "actionDisabled": palette.midnightBlue.greyVariant3,
+            "actionDisabledBackground": palette.midnightBlue.greyVariant1
         },
         "surfaces": {
             "background": palette.midnightBlue.main,
