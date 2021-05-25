@@ -51,8 +51,8 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 					"& svg": {
 						"color": (()=>{
 						switch (theme.palette.type) {
-							case "light": return theme.custom.colors.palette.whiteSnow.white;
-							case "dark": return theme.custom.colors.palette.midnightBlue.light2;
+							case "light": return theme.custom.colors.palette.whiteSnow.light;
+							case "dark": return theme.custom.colors.palette.midnightBlue.greyVariant2;
 						}
 						})()
 					}
@@ -128,7 +128,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 					"marginTop": 2
 				},
 				"& pre:nth-of-type(2)": {
-					"color": theme.custom.colors.palette.whiteSnow.white
+					"color": theme.custom.colors.palette.whiteSnow.light
 				}
 
 			}

@@ -257,7 +257,7 @@ const { NoMatches } = (() => {
                 "maxWidth": 500
             },
             "svg": {
-                "fill": theme.custom.colors.palette.midnightBlue.light3,
+                "fill": theme.custom.colors.palette.midnightBlue.greyVariant2,
                 "width": 100,
                 "margin": 0
             },

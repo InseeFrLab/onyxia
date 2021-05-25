@@ -46,7 +46,7 @@ const { useClassNames } = createUseClassNames<Props>()(
                 "border": "unset"
             },
             "& .MuiTableHead-root": {
-                "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.light2}`
+                "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.greyVariant2}`
             },
             //So the error on the input of the last row is not cropped.
             "overflow": "visible"
