@@ -33,7 +33,7 @@ const { useClassNames } = createUseClassNames<{ isDateProvided: boolean; }>()(
             "display": "flex",
             "alignItems": "center",
             "gap": `0 ${theme.spacing(2)}px`,
-            "borderBottom": `1px solid ${theme.custom.colors.palette.midnightBlue.greyVariant2}`,
+            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`,
             "padding": theme.spacing(3, 0)
         },
         "basename": {

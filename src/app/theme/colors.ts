@@ -54,7 +54,8 @@ export function getColors(paletteType: "light" | "dark") {
     const useCasesLight = {
         "typography": {
             "textPrimary": palette.midnightBlue.main,
-            "textSecondary": palette.midnightBlue.greyVariant4,
+            "textSecondary": palette.whiteSnow.greyVariant4,
+            "textTertiary": palette.whiteSnow.greyVariant2,
             "textDisabled": palette.whiteSnow.greyVariant2,
             "textFocus": palette.exuberantOrange.main
         },
@@ -95,8 +96,9 @@ export function getColors(paletteType: "light" | "dark") {
     const useCasesDark: typeof useCasesLight = {
         "typography": {
             ...useCasesLight.typography,
-            "textPrimary": palette.whiteSnow.light,
+            "textPrimary": palette.whiteSnow.main,
             "textSecondary": palette.midnightBlue.greyVariant4,
+            "textTertiary": palette.midnightBlue.greyVariant2,
             "textDisabled": palette.midnightBlue.greyVariant2
         },
         "buttons": {

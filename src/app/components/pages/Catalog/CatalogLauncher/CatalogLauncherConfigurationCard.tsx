@@ -118,7 +118,7 @@ const { Header } = (() => {
                 "cursor": "pointer",
                 "borderBottom": isCollapsed ?
                     undefined :
-                    `1px solid ${theme.custom.colors.useCases.typography.textSecondary}`
+                    `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`
             },
             "expandIcon": {
                 "& svg": {

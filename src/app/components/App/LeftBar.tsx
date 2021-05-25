@@ -197,7 +197,7 @@ const { CustomButton } = (() => {
             },
             "divider": {
                 "marginTop": theme.spacing(1),
-                "backgroundColor": theme.custom.colors.palette.whiteSnow.greyVariant1
+                "backgroundColor": theme.custom.colors.useCases.typography.textTertiary
             }
         })
     );
