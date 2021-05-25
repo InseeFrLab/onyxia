@@ -21,7 +21,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "aboveDivider": {
             "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.custom.colors.palette.whiteSnow.greyVariant1}`,
+            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textSecondary}`,
             "boxSizing": "border-box"
         },
         "title": {
