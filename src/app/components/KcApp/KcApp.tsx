@@ -71,7 +71,7 @@ const { useClassNames } = createUseClassNames()(
             "borderRadius": "unset !important",
             "border": "unset !important",
             "boxShadow": "unset !important",
-            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textDisabled} !important`,
+            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary} !important`,
             "&:focus": {
                 "borderColor": `unset !important`,
                 "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textFocus} !important`,
