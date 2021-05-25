@@ -70,7 +70,7 @@ export function getColors(paletteType: "light" | "dark") {
         "surfaces": {
             "background": palette.whiteSnow.main,
             "surface1": palette.whiteSnow.light,
-            "surface2": palette.whiteSnow.greyVariant2
+            "surface2": palette.whiteSnow.greyVariant1
         },
         "alertSeverity": {
             "error": {
@@ -97,7 +97,7 @@ export function getColors(paletteType: "light" | "dark") {
             ...useCasesLight.typography,
             "textPrimary": palette.whiteSnow.light,
             "textSecondary": palette.whiteSnow.main,
-            "textDisabled": palette.whiteSnow.greyVariant2
+            "textDisabled": palette.midnightBlue.greyVariant2
         },
         "buttons": {
             ...useCasesLight.buttons,
@@ -107,7 +107,7 @@ export function getColors(paletteType: "light" | "dark") {
         "surfaces": {
             "background": palette.midnightBlue.main,
             "surface1": palette.midnightBlue.light,
-            "surface2": palette.midnightBlue.greyVariant2
+            "surface2": palette.midnightBlue.greyVariant1
         },
         "alertSeverity": {
             "error": {

@@ -1,6 +1,6 @@
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useState, memo } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { cx, css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
@@ -159,19 +159,7 @@ const { CustomButton } = (() => {
     const { useClassNames } = createUseClassNames<CustomButtonProps>()(
         (theme, { isSelected, isFirst, size, isDisabled }) => ({
             "root": {
-                "backgroundColor": (() => {
-
-                    if (isSelected) {
-                        return theme.custom.colors.useCases.surfaces.surface1;
-                    }
-
-                    if (isDisabled) {
-                        return theme.custom.colors.useCases.buttons.actionDisabledBackground;
-                    }
-
-                    return theme.custom.colors.useCases.buttons.actionSelected;
-
-                })(),
+                "backgroundColor": theme.custom.colors.useCases.surfaces[isSelected ? "surface1" : "surface2"],
                 "boxShadow": [theme.custom.shadows[4], ...((isSelected || isFirst) ? [theme.custom.shadows[5]] : [])].join(", "),
                 "padding": (() => {
                     switch (size) {
@@ -206,6 +194,7 @@ const { CustomButton } = (() => {
                         switch (props.type) {
                             case "arrow": return (
                                 <Icon
+                                    color={isDisabled ? "textDisabled" : undefined}
                                     className={(() => {
                                         switch (props.direction) {
                                             case "right": return css({ "transform": "rotate(180deg)" });
@@ -217,6 +206,7 @@ const { CustomButton } = (() => {
                             );
                             case "tab": return (
                                 <Typography
+                                    color={isDisabled ? "disabled" : undefined}
                                     variant={(() => {
                                         switch (size) {
                                             case "big": return "h6";
