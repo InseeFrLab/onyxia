@@ -1,7 +1,6 @@
 
 /* eslint-disable array-callback-return */
 
-import { TextField } from "app/components/designSystem/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControl from "@material-ui/core/FormControl";
@@ -13,8 +12,6 @@ import { same } from "evt/tools/inDepth/same";
 import { useState, useMemo, memo } from "react";
 import { Tabs } from "app/components/shared/Tabs";
 import MuiTextField from "@material-ui/core/TextField";
-
-
 import { createUseClassNames } from "app/theme/useClassNames";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Typography } from "app/components/designSystem/Typography";
@@ -78,7 +75,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
     return (
-        <div className={cx(classNames.root,className)}>
+        <div className={cx(classNames.root, className)}>
             <Header
                 text={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}
@@ -184,12 +181,13 @@ const { TabContent } = (() => {
         theme => ({
             "root": {
                 "display": "grid",
-                "gridTemplateColumns": "repeat(2, 1fr)",
-                "gap": theme.spacing(2)
+                "gridTemplateColumns": "repeat(3, 1fr)",
+                "gap": theme.spacing(8)
             },
             "textField": {
                 //Hacky... to accommodate the helper text
-                "marginBottom": 32,
+                //"marginBottom": 32,
+                "width": "100%"
             }
         })
     );
@@ -198,12 +196,17 @@ const { TabContent } = (() => {
 
         const { className, formFields, onFormValueChange } = props;
 
-        const onValueBeingTypedChangeFactory = useCallbackFactory(
+        const onTextFieldChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ value }]: [{ value: string | boolean; }]
+                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>]
             ) =>
-                onFormValueChange({ path, value })
+                onFormValueChange({ path, "value": target.value })
+        );
+
+        const onTextFieldFocus = useConstCallback(
+            ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                target.setSelectionRange(0, target.value.length)
         );
 
         const onCheckboxChangeFactory = useCallbackFactory(
@@ -275,16 +278,16 @@ const { TabContent } = (() => {
 
                                         })()
                                         :
-                                        <TextField
+                                        <MuiTextField
                                             className={classNames.textField}
-                                            autoComplete="off"
-                                            selectAllTextOnFocus={true}
-                                            disabled={formField.isReadonly}
-                                            helperText={formField.description}
-                                            inputProps_spellCheck={false}
                                             label={formField.title}
-                                            defaultValue={formField.value}
-                                            onValueBeingTypedChange={onValueBeingTypedChangeFactory(formField.path)}
+                                            value={formField.value}
+                                            helperText={formField.description}
+                                            disabled={formField.isReadonly}
+                                            onChange={onTextFieldChangeFactory(formField.path)}
+                                            autoComplete="off"
+                                            inputProps={{ "spellCheck": false }}
+                                            onFocus={onTextFieldFocus}
                                         />;
                                 case "boolean":
                                     return (
