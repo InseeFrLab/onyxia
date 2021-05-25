@@ -159,7 +159,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             It is generated automatically and renews itself regularly.`,
             "OIDC Access token": "OIDC Personal access token",
             "OIDC Access token helper text": `Valid until {{when}}`,
-            "not yet defined": "Not yet defined"
+            "not yet defined": "Not yet defined",
+            "reset helper dialogs": "Reset instructions windows",
+            "reset": "Reset",
+            "reset helper dialogs helper text": "Reset message windows that have been requested not to be shown again"
         },
         "Register": {
             "required field": "Required field",
@@ -372,7 +375,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             Il est généré automatiquement et se renouvelle régulièrement.`,
             "OIDC Access token": "Jeton d'accès personnel OIDC",
             "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
-            "not yet defined": "Non définie"
+            "not yet defined": "Non définie",
+            "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
+            "reset": "Réinitialiser",
+            "reset helper dialogs helper text": "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
         },
         "Register": {
             "required field": "Champ requis",

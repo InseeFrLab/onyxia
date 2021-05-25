@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, useReducer, memo } from "react";
 import type { ReactNode, FunctionComponent } from "react";
 import { useGuaranteedMemo } from "powerhooks";
 import { useConstCallback } from "powerhooks";
@@ -23,6 +23,7 @@ import { Tooltip } from "app/components/designSystem/Tooltip";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
 import { assert } from "tsafe/assert";
+import { Button } from "app/components/designSystem/Button";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -31,7 +32,8 @@ export type Props<T extends string = string> =
     Props.Toggle |
     Props.Text |
     Props.EditableText |
-    Props.OidcAccessToken;
+    Props.OidcAccessToken |
+    Props.ResetHelperDialogs;
 
 export declare namespace Props {
 
@@ -88,6 +90,11 @@ export declare namespace Props {
         getIsValidValue?: TextFieldProps["getIsValidValue"];
         isLocked: boolean;
     } & ICopyable & IGeneric;
+
+    export type ResetHelperDialogs = Common & {
+        type: "reset helper dialogs";
+        onResetHelperDialogsClick(): void;
+    };
 
     type IGeneric = Common & {
         title: string;
@@ -386,11 +393,22 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                     "OIDC Access token helper text",
                     { "when": oidcAccessTokenExpiresWhen }
                 );
+            case "reset helper dialogs":
+                return t("reset helper dialogs helper text");
             default:
                 return undefined;
         }
     })();
 
+    const [isResetHelperDialogClicked, setIsResetHelperDialogClickedToTrue] = useReducer(() => true, false);
+
+    const onResetHelperDialogsClick = useConstCallback(
+        ()=>{
+            assert(props.type === "reset helper dialogs");
+            setIsResetHelperDialogClickedToTrue();
+            props.onResetHelperDialogsClick();
+        }
+    );
 
     return (
         <div className={cx(classNames.root,className)}>
@@ -531,6 +549,16 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                         />
                                     </>
                                 );
+                            case "reset helper dialogs":
+                                return (
+                                    <Button
+                                        disabled={isResetHelperDialogClicked}
+                                        color="secondary"
+                                        onClick={onResetHelperDialogsClick}
+                                    >
+                                        {t("reset")}
+                                    </Button>
+                                );
                         }
                     })()}
                 </div>
@@ -557,6 +585,9 @@ export declare namespace AccountField {
         'service password helper text': undefined;
         'OIDC Access token helper text': { when: string; };
         'not yet defined': undefined;
+        'reset helper dialogs helper text': undefined;
+        'reset': undefined;
+
     };
 
 }

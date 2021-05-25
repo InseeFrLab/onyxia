@@ -3,10 +3,11 @@ import { memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
-import { useConstCallback } from "powerhooks";
-import { useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
-
+import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
+import { useConstCallback } from "powerhooks";
+import { useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
+import { thunks } from "lib/setup";
+import { useDispatch } from "app/interfaceWithLib/hooks";
 
 export type Props = {
     className?: string;
@@ -18,16 +19,22 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
     const { t } = useTranslation("AccountUserInterfaceTab");
 
-    const { isDarkModeEnabled, setIsDarkModeEnabled} = useIsDarkModeEnabled();
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
-    const onRequestToggleIsDarkModeEnabled=useConstCallback(
-        ()=> setIsDarkModeEnabled(!isDarkModeEnabled)
+    const onRequestToggleIsDarkModeEnabled = useConstCallback(
+        () => setIsDarkModeEnabled(!isDarkModeEnabled)
     );
 
-	const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
+    const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
 
-    const onRequestToggleIsBetaModeEnabled=useConstCallback(
-        ()=> setIsBetaModeEnabled(!isBetaModeEnabled)
+    const onRequestToggleIsBetaModeEnabled = useConstCallback(
+        () => setIsBetaModeEnabled(!isBetaModeEnabled)
+    );
+
+    const dispatch = useDispatch();
+
+    const onResetHelperDialogsClick = useConstCallback(
+        () => dispatch(thunks.userConfigs.resetHelperDialogs())
     );
 
     return (
@@ -48,6 +55,10 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 isLocked={false}
                 isOn={isBetaModeEnabled}
                 onRequestToggle={onRequestToggleIsBetaModeEnabled}
+            />
+            <AccountField
+                type="reset helper dialogs"
+                onResetHelperDialogsClick={onResetHelperDialogsClick}
             />
             <AccountField type="language" />
         </div>
