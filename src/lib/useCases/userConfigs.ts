@@ -113,7 +113,15 @@ export const thunks = {
                     "key": "userServicePassword",
                     "value": generatePassword()
                 })
-            )
+            ),
+    "resetHelperDialogs": 
+        (): AppThunk => dispatch =>
+            dispatch(
+                thunks.changeValue({
+                    "key": "doDisplayMySecretsUseInServiceDialog",
+                    "value": true
+                })
+            ),
 };
 
 export const privateThunks = {
