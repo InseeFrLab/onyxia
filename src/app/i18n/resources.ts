@@ -519,7 +519,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Footer": {
             "contribute": "Contribuer au projet",
-            "terms of service": "Coditions d'utilisation"
+            "terms of service": "Conditions d'utilisation"
         },
         "CatalogLauncherMainCard": {
             "card title": "Crée votre propre service",
