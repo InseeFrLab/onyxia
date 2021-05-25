@@ -41,6 +41,9 @@ const { useClassNames } = createUseClassNames()(
             //TODO: Commented out for mozilla (longer one always have scroll in a grid)
             //"overflow": "auto"
         },
+        "bodyTypo": {
+            "color": theme.custom.colors.useCases.typography.textSecondary
+        },
         "buttonsWrapper": {
             "display": "flex",
             "justifyContent": "flex-end",
@@ -91,7 +94,10 @@ export const CatalogExplorerCard = memo((props: Props) => {
             </div>
             <div className={classNames.belowDivider}>
                 <div className={classNames.body} >
-                    <Typography variant="body1" >
+                    <Typography 
+                        variant="body1" 
+                        className={classNames.bodyTypo}
+                    >
                         {packageDescription}
                     </Typography>
                 </div>
