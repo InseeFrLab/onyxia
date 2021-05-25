@@ -129,7 +129,7 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                                             case "light": return "secondary";
                                         }
                                     })()],
-                                "WebkitBoxShadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surfaces} inset`,
+                                "WebkitBoxShadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surface1} inset`,
                             };
                         default: return {}
                     }

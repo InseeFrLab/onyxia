@@ -12,7 +12,7 @@ const { useClassNames } = createUseClassNames()(
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.custom.shadows[1],
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "&:hover": {
                 "boxShadow": theme.custom.shadows[6]
             },

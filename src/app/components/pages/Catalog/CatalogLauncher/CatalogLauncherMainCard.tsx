@@ -18,7 +18,7 @@ const { useClassNames } = createUseClassNames()(
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.custom.shadows[7],
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "display": "flex",
             "flexDirection": "column"
         },
