@@ -103,15 +103,10 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
             "& .MuiTypography-caption": {
                 "whiteSpace": "nowrap"
             },
-            "& .MuiFormLabel-root, & .MuiFormHelperText-root": {
+            "& .MuiFormLabel-root, & .MuiTypography-caption": {
                 "color": error ?
                     theme.custom.colors.useCases.alertSeverity.error.main :
-                    (() => {
-                        switch (theme.palette.type) {
-                            case "light": return theme.custom.colors.palette.whiteSnow.greyVariant3
-                            case "dark": return theme.custom.colors.palette.midnightBlue.greyVariant2
-                        }
-                    })()
+                    theme.custom.colors.useCases.typography.textSecondary
             },
             "&:focus": {
                 "outline": "unset",
