@@ -64,7 +64,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
 
     const tabs = useMemo(
         () => Object.keys(formFieldsByTab)
-            .map(title => ({ "id": title, title })),
+            .map(title => ({ "id": title, "title": capitalize(title) })),
         [formFieldsByTab]
     );
 
@@ -246,11 +246,17 @@ const { TabContent } = (() => {
 
         const { classNames } = useClassNames({});
 
+
         return (
             <div className={cx(classNames.root, className)}>
                 { formFields.map((formField, i) =>
                     <div key={i} >
                         {(() => {
+
+                            const label = capitalize(formField.title);
+                            const helperText = formField.description === undefined ? 
+                                undefined : capitalize(formField.description);
+
                             switch (typeof formField.value) {
                                 case "string":
                                     return formField.enum !== undefined ?
@@ -260,7 +266,7 @@ const { TabContent } = (() => {
 
                                             return (
                                                 <FormControl>
-                                                    <InputLabel id={labelId}>{formField.title}</InputLabel>
+                                                    <InputLabel id={labelId}>{label}</InputLabel>
                                                     <Select
                                                         labelId={labelId}
                                                         value={formField.value}
@@ -275,7 +281,7 @@ const { TabContent } = (() => {
                                                             </MenuItem>
                                                         )}
                                                     </Select>
-                                                    <FormHelperText>{formField.description}</FormHelperText>
+                                                    <FormHelperText>{helperText}</FormHelperText>
                                                 </FormControl>
                                             );
 
@@ -283,9 +289,9 @@ const { TabContent } = (() => {
                                         :
                                         <MuiTextField
                                             className={classNames.textField}
-                                            label={formField.title}
+                                            label={label}
                                             value={formField.value}
-                                            helperText={formField.description}
+                                            helperText={helperText}
                                             disabled={formField.isReadonly}
                                             onChange={onTextFieldChangeFactory(formField.path)}
                                             autoComplete="off"
@@ -303,9 +309,9 @@ const { TabContent } = (() => {
                                                         onChange={onCheckboxChangeFactory(formField.path)}
                                                     />
                                                 }
-                                                label={formField.title}
+                                                label={label}
                                             />
-                                            <FormHelperText>{formField.description}</FormHelperText>
+                                            <FormHelperText>{helperText}</FormHelperText>
                                         </FormControl>
                                     );
                                 case "number":
@@ -314,10 +320,10 @@ const { TabContent } = (() => {
                                             value={formField.value}
                                             onChange={onNumberTextFieldChangeFactory(formField.path)}
                                             inputProps={{ "min": formField.minimum }}
-                                            label={formField.title}
+                                            label={label}
                                             type="number"
                                             InputLabelProps={{ "shrink": true }}
-                                            helperText={formField.description}
+                                            helperText={helperText}
                                         />
                                     );
                             }

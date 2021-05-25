@@ -12,6 +12,7 @@ import { useConstCallback } from "powerhooks";
 import { TextField } from "app/components/designSystem/TextField";
 import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { Tooltip } from "app/components/designSystem/Tooltip";
+import { capitalize } from "app/tools/capitalize";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -138,7 +139,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         variant="h5"
                         className={classNames.title}
                     >
-                        {packageName}
+                        {capitalize(packageName)}
                     </Typography>
                 </div>
                 <div className={classNames.textFieldAndButtonWrapper}>

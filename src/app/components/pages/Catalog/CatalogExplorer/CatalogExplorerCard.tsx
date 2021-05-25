@@ -6,6 +6,7 @@ import { Typography } from "app/components/designSystem/Typography";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
+import { capitalize } from "app/tools/capitalize";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -88,7 +89,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
                     className={classNames.title}
                     variant="h5"
                 >
-                    {packageName}
+                    {capitalize(packageName)}
                 </Typography>
 
             </div>
