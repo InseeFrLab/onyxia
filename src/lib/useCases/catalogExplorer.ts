@@ -35,6 +35,7 @@ export namespace CatalogExplorerState {
     export type Ready = Common & {
         stateDescription: "ready";
         selectedCatalogId: string;
+        locationUrl: string;
         packages: {
             packageName: string;
             packageDescription: string;
@@ -64,12 +65,16 @@ const { reducer, actions } = createSlice({
 
             assert(state.stateDescription !== "not fetched");
 
+            const apiRequestResultResultForCatalog = 
+                state["~internal"].apiRequestResult.find(({ id }) => id === catalogId)!;
+
             return id<CatalogExplorerState.Ready>({
                 "stateDescription": "ready",
                 "availableCatalogsId": state.availableCatalogsId,
                 "selectedCatalogId": catalogId,
+                "locationUrl": apiRequestResultResultForCatalog.location,
                 "~internal": state["~internal"],
-                "packages": state["~internal"].apiRequestResult.find(({ id }) => id === catalogId)!
+                "packages": apiRequestResultResultForCatalog
                     .catalog
                     .packages
                     .map(o => ({

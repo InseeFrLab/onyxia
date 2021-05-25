@@ -8,6 +8,8 @@ import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer/CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher/CatalogLauncher";
+import Link from "@material-ui/core/Link";
+import { useSelector } from "app/interfaceWithLib/hooks";
 
 Catalog.routeGroup = createGroup([
     routes.catalogExplorer,
@@ -49,13 +51,25 @@ export function Catalog(props: Props) {
 
     const { classNames } = useClassNames({});
 
+    const locationUrl = useSelector(
+        ({ catalogExplorer })=> catalogExplorer.stateDescription !== "ready" ? 
+            undefined : catalogExplorer.locationUrl
+    );
+
     return (
         <div className={cx(classNames.root, className)}>
             <PageHeader
                 icon="services"
                 text1={t("header text1")}
                 text2={t("header text2")}
-                text3={t("header text3")}
+                text3={<>
+                    {t("all services are open sources")}
+                    {
+                        locationUrl === undefined ?
+                            null :
+                            <Link href={locationUrl} target="_blank"> {t("contribute to the catalog")} </Link>
+                    }
+                </>}
             />
             {(() => {
                 switch (route.name) {
@@ -84,7 +98,8 @@ export declare namespace Catalog {
     export type I18nScheme = {
         'header text1': undefined;
         'header text2': undefined;
-        'header text3': undefined;
+        'all services are open sources': undefined;
+        'contribute to the catalog': undefined;
     };
 
 }

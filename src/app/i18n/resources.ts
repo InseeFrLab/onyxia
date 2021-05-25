@@ -297,7 +297,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Catalog": {
             "header text1": "Services catalog",
             "header text2": "Explore, launch and configure services with just a few clicks.",
-            "header text3": "The catalog enable you to select a service to deploy"
+            "all services are open sources": "All services offered are open source, ",
+            "contribute to the catalog": "contribute to the catalog."
         },
         "Dialog": {
             "do not display again": "Don't display again"
@@ -514,7 +515,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Catalog": {
             "header text1": "Catalogue de services",
             "header text2": "Explorez, lancez et configurez des services en quelques clics seulement.",
-            "header text3": "Le catalogue vous propose de déployer facilement des services"
+            "all services are open sources": "Tous les services proposés sont open source, ",
+            "contribute to the catalog": "consulter et contribuer au catalogue."
         },
         "Dialog": {
             "do not display again": "Ne plus afficher"
