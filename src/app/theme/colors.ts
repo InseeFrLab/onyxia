@@ -11,15 +11,18 @@ const palette = {
     "midnightBlue": {
         "main": "#2C323F",
         "light": "#373E4F",
-        "light2": "#525966",
-        "light3": "#C9C9C9"
+        "greyVariant1": "#242C39",
+        "greyVariant2": "#5A6270",
+        "greyVariant3": "#8A9099",
+        "greyVariant4": "#B8BABF"
     },
     "whiteSnow": {
         "main": "#F1F0EB",
-        "white": "#FDFDFC",
+        "light": "#FDFDFC",
         "greyVariant1": "#E6E6E6",
-        "greyVariant2": "#9E9E9E",
-        "greyVariant3": "#747474"
+        "greyVariant2": "#C9C9C9",
+        "greyVariant3": "#9E9E9E",
+        "greyVariant4": "#747474"
     },
     "limeGreen": {
         "main": "#BAFF29",
@@ -66,7 +69,7 @@ export function getColors(paletteType: "light" | "dark") {
         },
         "surfaces": {
             "background": palette.whiteSnow.main,
-            "surfaces": palette.whiteSnow.white
+            "surfaces": palette.whiteSnow.light
         },
         "alertSeverity": {
             "error": {
@@ -91,13 +94,13 @@ export function getColors(paletteType: "light" | "dark") {
     const useCasesDark: typeof useCasesLight = {
         "typography": {
             ...useCasesLight.typography,
-            "textPrimary": palette.whiteSnow.white,
+            "textPrimary": palette.whiteSnow.light,
             "textSecondary": palette.whiteSnow.main,
             "textDisabled": palette.whiteSnow.greyVariant2
         },
         "buttons": {
             ...useCasesLight.buttons,
-            "actionHoverSecondary": palette.whiteSnow.white,
+            "actionHoverSecondary": palette.whiteSnow.light,
             "actionSelected": palette.midnightBlue.light
         },
         "surfaces": {

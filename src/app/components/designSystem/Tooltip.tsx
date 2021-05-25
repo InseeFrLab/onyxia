@@ -14,7 +14,7 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
     theme => ({
         "root": {
-            "color": theme.custom.colors.palette.whiteSnow.white
+            "color": theme.custom.colors.palette.whiteSnow.light
         }
     })
 );

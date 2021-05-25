@@ -109,7 +109,7 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                     (() => {
                         switch (theme.palette.type) {
                             case "light": return theme.custom.colors.palette.whiteSnow.greyVariant3
-                            case "dark": return theme.custom.colors.palette.midnightBlue.light3
+                            case "dark": return theme.custom.colors.palette.midnightBlue.greyVariant2
                         }
                     })()
             },
