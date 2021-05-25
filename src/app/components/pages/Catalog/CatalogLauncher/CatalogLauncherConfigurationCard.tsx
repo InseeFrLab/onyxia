@@ -115,7 +115,10 @@ const { Header } = (() => {
                 "display": "flex",
                 "padding": theme.spacing(1, 3),
                 "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
-                "cursor": "pointer"
+                "cursor": "pointer",
+                "borderBottom": isCollapsed ?
+                    undefined :
+                    `1px solid ${theme.custom.colors.useCases.typography.textSecondary}`
             },
             "expandIcon": {
                 "& svg": {

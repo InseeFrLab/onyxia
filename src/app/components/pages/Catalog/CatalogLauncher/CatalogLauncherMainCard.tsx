@@ -24,7 +24,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "aboveDivider": {
             "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.custom.colors.palette.whiteSnow.greyVariant1}`,
+            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textSecondary}`,
             "boxSizing": "border-box",
             "display": "flex"
         },
@@ -131,10 +131,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 />
             </div>
             <div className={classNames.belowDivider}>
-
-
                 <div className={classNames.avatarAndTitleWrapper}>
-
                     {packageIconUrl !== undefined &&
                         <Avatar src={packageIconUrl} />}
                     <Typography
