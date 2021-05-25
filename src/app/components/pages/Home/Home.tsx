@@ -20,6 +20,8 @@ import dotsDarkSvgUrl from "app/assets/svg/dotsDark.svg";
 import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
 import { Paper } from "app/components/designSystem/Paper"
+import { assert } from "tsafe/assert";
+import type { Link } from "type-route";
 
 Home.routeGroup = createGroup([
     routes.home
@@ -83,16 +85,17 @@ export function Home() {
 
 	const { t } = useTranslation("Home");
 
-	const onHeroButtonClick = useConstCallback(() => 
-		routes.catalogExplorer().push()
-	);
+	const onHeroButtonClick = useConstCallback(() => {
+		assert( !appConstants.isUserLoggedIn );
+		appConstants.login();
+	});
 
 	return (
 		<div className={cx("home", classNames.root)}>
 			<div className={classNames.hero} >
 				<div className={classNames.heroTextWrapper}>
 
-					<OnyxiaLogoSvg className={classNames.svg}/>
+					<OnyxiaLogoSvg className={classNames.svg} />
 					<Typography variant="h2">
 						{
 							appConstants.isUserLoggedIn ?
@@ -103,15 +106,16 @@ export function Home() {
 					<Typography variant="h3">
 						{t("subtitle")}
 					</Typography>
-
-					<Button onClick={onHeroButtonClick}>
-						{
-							appConstants.isUserLoggedIn ?
-								t("start tour") :
-								t("logIn")
-						}
-					</Button>
-
+					{
+						!appConstants.isUserLoggedIn ?
+							<Button onClick={onHeroButtonClick}>
+								{t("logIn")}
+							</Button>
+							:
+							<Button href="https://docs.sspcloud.fr/" >
+								{t("start tour")}
+							</Button>
+					}
 				</div>
 
 			</div>
@@ -121,7 +125,8 @@ export function Home() {
 					title={t("cardTitle1")}
 					text={t("cardText1")}
 					buttonText={t("cardButton1")}
-					onClick={onHeroButtonClick}
+					link={routes.catalogExplorer().link}
+					doOpenNewTab={false}
 				/>
 				<Card
 					className={classNames.middleCard}
@@ -129,20 +134,17 @@ export function Home() {
 					title={t("cardTitle2")}
 					text={t("cardText2")}
 					buttonText={t("cardButton2")}
-					onClick={onHeroButtonClick}
+					link={{ "href": "https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr" }}
+					doOpenNewTab={true}
 				/>
 				<Card
 					Icon={IconStorageSvg}
 					title={t("cardTitle3")}
 					text={t("cardText3")}
 					buttonText={t("cardButton3")}
-					onClick={onHeroButtonClick}
+					link={routes.myBuckets().link}
+					doOpenNewTab={false}
 				/>
-
-
-
-
-
 			</div>
 
 			<div className={css({
@@ -223,13 +225,14 @@ const { Card } = (() => {
 		text: string;
 		buttonText: string;
 		Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
-		onClick(): void;
+		link: Partial<Link>;
+		doOpenNewTab: boolean;
 	};
 
 
 	const Card = memo((props: Props) => {
 
-		const { title, text, buttonText, Icon, className, onClick } = props;
+		const { title, text, buttonText, Icon, className, link, doOpenNewTab } = props;
 
 		const theme = useTheme();
 
@@ -283,7 +286,7 @@ const { Card } = (() => {
 						<Typography>{text}</Typography>
 					</div>
 					<div className={css({ "marginTop": theme.spacing(4) })} >
-						<Button onClick={onClick}>{buttonText}</Button>
+						<Button {...link} doOpenNewTabIfHref={doOpenNewTab}>{buttonText}</Button>
 					</div>
 				</div>
 

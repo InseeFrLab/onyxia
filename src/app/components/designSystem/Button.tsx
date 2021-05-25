@@ -32,6 +32,7 @@ export type Props = {
     id?: string | null;
 
     href?: string | null;
+    doOpenNewTabIfHref?: boolean;
 };
 
 export const defaultProps: Optional<Props> = {
@@ -47,7 +48,8 @@ export const defaultProps: Optional<Props> = {
     "tabIndex": null,
     "name": null,
     "id": null,
-    "href": null
+    "href": null,
+    "doOpenNewTabIfHref": true
 };
 
 const { useClassNames } = createUseClassNames<Required<Props>>()(
@@ -154,7 +156,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
     const {
         className, color, disabled, children,
         onClick, startIcon, endIcon, autoFocus,
-        type, tabIndex, name, id, href,
+        type, tabIndex, name, id, href, doOpenNewTabIfHref,
         //For the forwarding, rest should be empty (typewise)
         ...rest
     } = completedProps;
@@ -179,7 +181,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
         <MuiButton
             ref={ref}
             className={cx(classNames.root, className)}
-            {...(href === undefined ? {} : { href, "target": "_blank" }) as any}
+            {...(href === undefined ? {} : { href, "target": doOpenNewTabIfHref ? "_blank" : undefined }) as any}
             disabled={disabled}
             onClick={onClick}
             startIcon={startIcon === null ? undefined : <IconWd type={startIcon} />}
