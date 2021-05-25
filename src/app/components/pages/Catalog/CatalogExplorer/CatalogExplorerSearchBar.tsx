@@ -28,7 +28,7 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
             "& > div": {
                 "display": "flex",
                 "alignItems": "center",
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
                 "cursor": isActive ? undefined : "pointer",
                 "overflow": "hidden",
                 "border": "solid 2px transparent",

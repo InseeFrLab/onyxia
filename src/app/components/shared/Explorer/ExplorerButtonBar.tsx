@@ -25,7 +25,7 @@ export type Props = {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "boxShadow": theme.custom.shadows[1],
             "borderRadius": "8px 0 0 8px",
             "overflow": "hidden"

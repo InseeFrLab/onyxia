@@ -33,7 +33,7 @@ const { useClassNames } = createUseClassNames<{ buttonWidth: number; }>()(
     (theme, { buttonWidth }) => ({
         "menu": {
             "& .Mui-selected": {
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces
+                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1
             },
             "& .MuiPaper-root": {
                 "backgroundColor": theme.custom.colors.useCases.surfaces.background,

@@ -41,7 +41,7 @@ const { useClassNames } = createUseClassNames()(
             "flex": 1
         },
         "paper": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "boxShadow": theme.custom.shadows[7],
             "borderRadius": 5,
             "maxWidth": 573

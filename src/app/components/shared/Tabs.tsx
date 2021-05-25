@@ -27,7 +27,7 @@ export declare namespace Props {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "boxShadow": theme.custom.shadows[1],
             "borderRadius": 8,
             "overflow": "hidden"
@@ -162,7 +162,7 @@ const { CustomButton } = (() => {
                 "backgroundColor": (() => {
 
                     if (isSelected) {
-                        return theme.custom.colors.useCases.surfaces.surfaces;
+                        return theme.custom.colors.useCases.surfaces.surface1;
                     }
 
                     if (isDisabled) {

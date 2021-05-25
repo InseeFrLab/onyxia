@@ -50,7 +50,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             "overflow": "visible"
         },
         "nav": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
             "borderRadius": 16,
             "boxShadow": theme.custom.shadows[3],
             "paddingTop": theme.spacing(1),

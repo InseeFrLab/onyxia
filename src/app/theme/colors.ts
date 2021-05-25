@@ -69,7 +69,7 @@ export function getColors(paletteType: "light" | "dark") {
         },
         "surfaces": {
             "background": palette.whiteSnow.main,
-            "surfaces": palette.whiteSnow.light
+            "surface1": palette.whiteSnow.light
         },
         "alertSeverity": {
             "error": {
@@ -105,7 +105,7 @@ export function getColors(paletteType: "light" | "dark") {
         },
         "surfaces": {
             "background": palette.midnightBlue.main,
-            "surfaces": palette.midnightBlue.light
+            "surface1": palette.midnightBlue.light
         },
         "alertSeverity": {
             "error": {
@@ -182,7 +182,7 @@ export function getMuiPaletteOption(paletteType: "light" | "dark"): PaletteOptio
         },
         "divider": useCases.buttons.actionDisabledBackground,
         "background": {
-            "paper": useCases.surfaces.surfaces,
+            "paper": useCases.surfaces.surface1,
             "default": useCases.surfaces.background
         },
         "action": {

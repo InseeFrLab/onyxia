@@ -112,7 +112,7 @@ const { Header } = (() => {
             "root": {
                 "display": "flex",
                 "padding": theme.spacing(1, 3),
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surfaces,
+                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
                 "cursor": "pointer"
             },
             "expandIcon": {
