@@ -33,7 +33,12 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames()(
-    () => ({
+    theme => ({
+        "root": {
+            "borderRadius": 8,
+            "overflow": "hidden",
+            "boxShadow": theme.custom.shadows[1]
+        },
         "collapsedPanel": {
             "maxHeight": 0,
             "transform": "scaleY(0)"
@@ -73,7 +78,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
     return (
-        <div className={className}>
+        <div className={cx(classNames.root,className)}>
             <Header
                 text={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}

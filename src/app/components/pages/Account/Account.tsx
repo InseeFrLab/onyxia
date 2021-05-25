@@ -16,6 +16,7 @@ import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
+import { createUseClassNames } from "app/theme/useClassNames";
 
 Account.routeGroup = createGroup([
     routes.account
@@ -29,6 +30,16 @@ export type Props = {
     route: PageRoute;
     className?: string;
 };
+
+const { useClassNames } = createUseClassNames()(
+    theme=> ({
+        "tabs": {
+            "borderRadius": 8,
+            "overflow": "hidden",
+            "boxShadow": theme.custom.shadows[1]
+        }
+    })
+);
 
 
 export function Account(props: Props) {
@@ -45,6 +56,8 @@ export function Account(props: Props) {
     const onRequestChangeActiveTab = useConstCallback(
         (tabId: AccountTabId) => routes.account({ tabId }).push()
     );
+
+    const { classNames } = useClassNames({});
 
     return (
         <div className={className}>
@@ -68,6 +81,7 @@ export function Account(props: Props) {
                 </>}
             />
             <Tabs
+                className={classNames.tabs}
                 size="big"
                 tabs={tabs}
                 activeTabId={route.params.tabId}
