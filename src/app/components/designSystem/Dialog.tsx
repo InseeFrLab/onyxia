@@ -51,7 +51,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "body": {
             "marginTop": theme.spacing(1),
-            "color": theme.custom.colors.useCases.typography.textDisabled
+            "color": theme.custom.colors.useCases.typography.textSecondary
         }
 
     })
