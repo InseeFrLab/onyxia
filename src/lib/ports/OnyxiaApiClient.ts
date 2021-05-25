@@ -12,6 +12,7 @@ export type Public_Configuration = {
 export type Public_Catalog = {
     catalogs: {
         id: string;
+        location: string;
         catalog: {
             packages: {
                 description: string;
