@@ -15,9 +15,9 @@ import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import type { Parameters } from "evt/tools/typeSafety";
+import type { Parameters } from "tsafe";
 import { useDomRect } from "powerhooks";
-import type { Params } from "evt/tools/typeSafety";
+import type { Param0 } from "tsafe";
 
 
 export type Props = {
@@ -136,7 +136,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
 
     const onSubmitFactory = useCallbackFactory(
-        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [value]: [Params<TextFieldProps["onSubmit"]>]) =>
+        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [value]: [Param0<TextFieldProps["onSubmit"]>]) =>
             evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
     );
 

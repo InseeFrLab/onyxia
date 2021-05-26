@@ -4,7 +4,7 @@ import { cx } from "tss-react";
 
 import { memo } from "react";
 import MuiCircularProgress from "@material-ui/core/CircularProgress";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
@@ -13,7 +13,7 @@ export type Props = {
     color?: "primary" | "textPrimary"
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "size": 40,
     "color": "primary"

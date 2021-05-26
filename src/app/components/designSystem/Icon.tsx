@@ -43,7 +43,7 @@ import Code from "@material-ui/icons/Code";
 import Link from "@material-ui/icons/Link";
 
 import { noUndefined } from "app/tools/noUndefined";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { typeGuard } from "tsafe/typeGuard";
 
 
@@ -83,7 +83,7 @@ export type Props = {
 
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "color": "textPrimary",
     "fontSize": "default",

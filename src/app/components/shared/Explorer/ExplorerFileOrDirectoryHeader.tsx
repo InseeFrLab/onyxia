@@ -2,7 +2,7 @@
 
 import { createUseClassNames } from "app/theme/useClassNames";
 import { memo } from "react";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import { Typography } from "app/components/designSystem/Typography";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
@@ -23,7 +23,7 @@ export type Props = {
 
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "date": new Date(0)
 };
 

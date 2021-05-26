@@ -5,7 +5,7 @@ import { memo } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { Props as AppIconProps } from "../designSystem/Icon";
 import { Icon } from "../designSystem/Icon";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
@@ -17,7 +17,7 @@ export type Props = {
 
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null
 };
 

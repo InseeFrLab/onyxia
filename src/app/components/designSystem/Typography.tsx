@@ -3,7 +3,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import MuiTypography from "@material-ui/core/Typography";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
@@ -15,7 +15,7 @@ export type Props = {
     onClick?: (() => void) | null;
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "id": null,
     "variant": "body1",
