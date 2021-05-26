@@ -1,6 +1,6 @@
 
 import { useEffect, useState, memo } from "react";
-import { useSplashScreen, setSplashScreenFadeOutDuration } from "app/components/shared/SplashScreen";
+import { hideSplashScreen, setSplashScreenFadeOutDuration } from "app/components/shared/SplashScreen";
 import type { KcContext } from "keycloakify";
 import  { defaultKcProps } from "keycloakify";
 import { createUseClassNames } from "app/theme/useClassNames";
@@ -90,9 +90,6 @@ export const KcApp = memo((props: Props) => {
             setSplashScreenFadeOutDuration(0);
         }
     });
-
-
-    const { hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => { hideSplashScreen(); },

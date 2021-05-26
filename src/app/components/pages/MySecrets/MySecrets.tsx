@@ -17,7 +17,7 @@ import Link from "@material-ui/core/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { showSplashScreen, hideSplashScreen } from "app/components/shared/SplashScreen";
 import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";
 import { Evt } from "evt";
@@ -219,8 +219,6 @@ export function MySecrets(props: Props) {
     );
 
     const { classNames } = useClassNames({});
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {
