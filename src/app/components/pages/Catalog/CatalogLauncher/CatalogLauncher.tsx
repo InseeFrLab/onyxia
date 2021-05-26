@@ -10,7 +10,7 @@ import {
 } from "./CatalogLauncherConfigurationCard";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { thunks, selectors } from "lib/useCases/launcher";
-import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorablePackageConfigs";
+import { thunks as restorablePackageConfigsThunks, pure as restorablePackageConfigsPure } from "lib/useCases/restorablePackageConfigs";
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
@@ -64,7 +64,6 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const restorablePackageConfig = useSelector(selectors.restorablePackageConfigSelector);
 
-    const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(
         () => {
@@ -72,14 +71,6 @@ export const CatalogLauncher = memo((props: Props) => {
             if (restorablePackageConfig === undefined) {
                 return;
             }
-
-            setIsBookmarked(
-                dispatch(
-                    restorablePackageConfigsThunks.isRestorablePackageConfigInStore({
-                        restorablePackageConfig
-                    })
-                )
-            );
 
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } = restorablePackageConfig;
 
@@ -91,6 +82,28 @@ export const CatalogLauncher = memo((props: Props) => {
 
         },
         [restorablePackageConfig ?? Object]
+    );
+
+    const restorablePackageConfigs = useSelector(state => state.restorablePackageConfig.restorablePackageConfigs);
+
+    const [isBookmarked, setIsBookmarked] = useState(false);
+
+    useEffect(
+        () => {
+
+            if (restorablePackageConfig === undefined) {
+                return;
+            }
+
+            setIsBookmarked(
+                restorablePackageConfigsPure.isRestorablePackageConfigInStore({
+                    restorablePackageConfigs,
+                    restorablePackageConfig
+                })
+            );
+
+        },
+        [restorablePackageConfigs, restorablePackageConfig]
     );
 
     const { classNames } = useClassNames({});

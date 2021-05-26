@@ -219,71 +219,20 @@ export const thunks = {
 
 
     })(),
-    /** For getter implemented as thunk user can't know when it's necessary
-     * to update the value because it don't know which states is used internally
-     * to compute the value.
-     * In consequence the implementation must memoize as much as possible
-     * because this will be called every render (without dependency array)
-     */
-
-    "isRestorablePackageConfigInStore": (() => {
-
-
-        const memoizee = memoize(
-            (
-                restorablePackageConfigs: RestorablePackageConfig[],
-                catalogId: string,
-                packageName: string,
-                formFieldsValueDifferentFromDefault: FormFieldValue[]
-            ): boolean =>
-                !!restorablePackageConfigs
-                    .find(restorablePackageConfig_i =>
-                        areSameRestorablePackageConfig(
-                            restorablePackageConfig_i,
-                            {
-                                catalogId,
-                                packageName,
-                                formFieldsValueDifferentFromDefault
-                            }
-                        )
-                    ),
-            { "maxAge": 6000 }
-        );
-
-        return (
-            params: {
-                restorablePackageConfig: RestorablePackageConfig;
-            }
-        ): AppThunk<boolean> => (...args) => {
-
-            const { restorablePackageConfig } = params;
-
-            const [, getState] = args;
-
-            return memoizee(
-                getState()
-                    .restorablePackageConfig
-                    .restorablePackageConfigs,
-                restorablePackageConfig.catalogId,
-                restorablePackageConfig.packageName,
-                restorablePackageConfig.formFieldsValueDifferentFromDefault
-            );
-
-        };
-
-    })(),
     "saveRestorablePackageConfig": (
         params: {
             restorablePackageConfig: RestorablePackageConfig;
         }
-    ): AppThunk => async dispatch => {
+    ): AppThunk => async (dispatch, getState) => {
 
         const { restorablePackageConfig } = params;
 
         if (
-            dispatch(thunks.isRestorablePackageConfigInStore({
+            pure.isRestorablePackageConfigInStore({
+                "restorablePackageConfigs":
+                    getState().restorablePackageConfig.restorablePackageConfigs,
                 restorablePackageConfig
-            }))
+            })
         ) {
             return;
         }
@@ -316,6 +265,27 @@ export const thunks = {
 };
 
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
+
+export const pure = {
+    "isRestorablePackageConfigInStore": (
+        params: {
+            restorablePackageConfigs: RestorablePackageConfig[];
+            restorablePackageConfig: RestorablePackageConfig;
+        }
+    ) => {
+
+        const { restorablePackageConfig, restorablePackageConfigs } = params;
+
+        return !!restorablePackageConfigs
+            .find(restorablePackageConfig_i =>
+                areSameRestorablePackageConfig(
+                    restorablePackageConfig_i,
+                    restorablePackageConfig
+                )
+            );
+
+    }
+};
 
 function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,

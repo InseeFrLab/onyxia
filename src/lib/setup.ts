@@ -423,7 +423,8 @@ export const thunks = {
 };
 
 export const pure = {
-    [secretExplorerUseCase.name]: secretExplorerUseCase.pure
+    [secretExplorerUseCase.name]: secretExplorerUseCase.pure,
+    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.pure
 };
 
 export const selectors = {
