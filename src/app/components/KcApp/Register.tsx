@@ -9,7 +9,7 @@ import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { emailRegExp } from "app/tools/emailRegExp";
-import type { Params } from "evt/tools/typeSafety";
+import type { Param0 } from "tsafe";
 import { Button } from "app/components/designSystem/Button";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { useConstCallback } from "powerhooks";
@@ -188,7 +188,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
     const onValueBeingTypedChangeFactory = useCallbackFactory(
         (
             [target]: [typeof targets[number]],
-            [params]: [Params<TextFieldProps["onValueBeingTypedChange"]>]
+            [params]: [Param0<TextFieldProps["onValueBeingTypedChange"]>]
         ) => {
 
 

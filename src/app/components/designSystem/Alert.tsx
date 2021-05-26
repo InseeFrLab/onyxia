@@ -5,7 +5,7 @@ import { IconButton } from "./IconButton";
 import MuiAlert from "@material-ui/lab/Alert";
 import { Typography } from "app/components/designSystem/Typography";
 import { createUseClassNames } from "app/theme/useClassNames";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import { cx }  from "tss-react";
 
@@ -16,7 +16,7 @@ export type Props = {
     doDisplayCross?: boolean;
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "doDisplayCross": false
 };

@@ -3,7 +3,7 @@
 import { memo, forwardRef } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import MuiPaper from "@material-ui/core/Paper";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import { cx } from "tss-react";
 
@@ -13,7 +13,7 @@ export type Props = {
     className?: string | null;
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "elevation": 1
 };

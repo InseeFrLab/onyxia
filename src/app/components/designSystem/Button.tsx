@@ -3,7 +3,7 @@ import { forwardRef, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import MuiButton from "@material-ui/core/Button";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
@@ -35,7 +35,7 @@ export type Props = {
     doOpenNewTabIfHref?: boolean;
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "color": "primary",
     "disabled": false,

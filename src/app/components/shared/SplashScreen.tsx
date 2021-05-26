@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useReducer, memo } from "react";
+import { useState, useEffect,  memo } from "react";
 import type { ReactNode } from "react";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { createUseClassNames } from "app/theme/useClassNames";
@@ -7,7 +7,7 @@ import { css, cx, keyframes } from "tss-react";
 import { useDomRect } from "powerhooks";
 import Color from "color";
 import { createUseGlobalState } from "powerhooks";
-import { useConstCallback } from "powerhooks";
+import { useRerenderOnStateChange } from "evt/hooks";
 
 export type Props = {
     className?: string;
@@ -21,83 +21,39 @@ export function setSplashScreenFadeOutDuration(value: number){
 
 export const { useSplashScreen } = (() => {
 
+    const { getDoUseDelay } = (() => {
 
-    const { useDelay } = (() => {
-
-        const { useLastDelayedTime } = createUseGlobalState(
+        const { evtLastDelayedTime } = createUseGlobalState(
             "lastDelayedTime",
             0,
             { "persistance": "localStorage" }
         );
 
-        function useDelay() {
 
-            const { lastDelayedTime, setLastDelayedTime } = useLastDelayedTime();
+        function getDoUseDelay() {
 
-            return {
-                "getDoUseDelay": useConstCallback(() => {
+            const doUseDelay = Date.now() - evtLastDelayedTime.state > 30000;
 
-                    const doUseDelay = Date.now() - lastDelayedTime > 30000;
+            if (doUseDelay) {
+                evtLastDelayedTime.state = Date.now();
+            }
 
-                    if (doUseDelay) {
-                        setLastDelayedTime(Date.now());
-                    }
-
-                    return doUseDelay;
-
-                })
-            };
+            return doUseDelay;
 
         }
 
-        return { useDelay };
+        return { getDoUseDelay };
 
 
     })();
 
-    const { useDisplayState, evtDisplayState } = createUseGlobalState(
+    const { evtDisplayState } = createUseGlobalState(
         "displayState",
         { "count": 1, "isTransparencyEnabled": false, "prevTime": 0 },
         { "persistance": false }
     );
 
-    function useHideSplashScreen() {
 
-        const { getDoUseDelay } = useDelay();
-
-        const [trigger, pullTrigger] = useReducer((counter: number) => counter + 1, 0);
-
-        useEffect(
-            () => {
-
-                if (trigger === 0) {
-                    return;
-                }
-
-                (async () => {
-
-                    if (getDoUseDelay()) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                    }
-
-                    evtDisplayState.state= {
-                        ...evtDisplayState.state,
-                        "count": Math.max(evtDisplayState.state.count - 1, 0),
-                        "prevTime": Date.now()
-                    };
-
-                })();
-
-            },
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            [trigger]
-        );
-
-        const hideSplashScreen = useConstCallback(() => pullTrigger());
-
-        return { hideSplashScreen };
-
-    }
 
     function useOnSplashScreenHidden(
         params: {
@@ -140,40 +96,49 @@ export const { useSplashScreen } = (() => {
 
     }
 
+    async function hideSplashScreen() {
+
+        if (getDoUseDelay()) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        evtDisplayState.state = {
+            ...evtDisplayState.state,
+            "count": Math.max(evtDisplayState.state.count - 1, 0),
+            "prevTime": Date.now()
+        };
+
+    }
+
+    function showSplashScreen(params: { enableTransparency: boolean; }) {
+        evtDisplayState.state = {
+            "count": evtDisplayState.state.count + 1,
+            "isTransparencyEnabled": params.enableTransparency,
+            "prevTime": Date.now()
+        }
+    }
+
     function useSplashScreen(
         params?: { onHidden?(): void }
     ) {
 
         const { onHidden } = params ?? {};
 
-        const { displayState, setDisplayState } = useDisplayState();
+        useRerenderOnStateChange(evtDisplayState);
 
-        const isSplashScreenShown = displayState.count > 0;
+        const isSplashScreenShown = evtDisplayState.state.count > 0;
 
         useOnSplashScreenHidden({
             onHidden,
             isSplashScreenShown,
-            "prevTime": displayState.prevTime
+            "prevTime": evtDisplayState.state.prevTime
         });
-
-        const { hideSplashScreen } = useHideSplashScreen();
 
         return {
             isSplashScreenShown,
-            "isTransparencyEnabled": displayState.isTransparencyEnabled,
-            "showSplashScreen":
-                useConstCallback((params: { enableTransparency: boolean; }) => {
-
-                    console.log("=====> show");
-
-                    const { enableTransparency } = params;
-                    setDisplayState(({ count }) => ({
-                        "count": count + 1,
-                        "isTransparencyEnabled": enableTransparency,
-                        "prevTime": Date.now()
-                    }));
-                }),
+            "isTransparencyEnabled": evtDisplayState.state.isTransparencyEnabled,
             hideSplashScreen,
+            showSplashScreen
         };
 
     }
@@ -257,32 +222,32 @@ const SplashScreen = memo((props: Props) => {
     });
 
     useEffect(
-        ()=>{
+        () => {
 
             let timer = setTimeout(() => { }, 0);
 
-            (async ()=>{
+            (async () => {
 
-                    if (isSplashScreenShown) {
+                if (isSplashScreenShown) {
 
-                        setIsFadingOut(false);
-                        setIsVisible(true);
+                    setIsFadingOut(false);
+                    setIsVisible(true);
 
-                    } else {
+                } else {
 
 
-                        setIsFadingOut(true);
+                    setIsFadingOut(true);
 
-                        await new Promise(resolve => timer = setTimeout(resolve, fadeOutDuration));
+                    await new Promise(resolve => timer = setTimeout(resolve, fadeOutDuration));
 
-                        setIsFadingOut(false);
-                        setIsVisible(false);
+                    setIsFadingOut(false);
+                    setIsVisible(false);
 
-                    }
+                }
 
             })();
 
-            return ()=> clearTimeout(timer);
+            return () => clearTimeout(timer);
 
         },
         [isSplashScreenShown]

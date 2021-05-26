@@ -9,7 +9,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { TextField } from "app/components/designSystem/TextField";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
-import type { Params } from "evt/tools/typeSafety";
+import type { Param0 } from "tsafe";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { useCallbackFactory } from "powerhooks";
 import Select from "@material-ui/core/Select";
@@ -264,7 +264,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
             const [isValueBeingTypedValid, setIsValueBeingTypedValid] = useState(false);
 
             const onValueBeingTypedChange = useConstCallback(
-                ({ isValidValue }: Params<TextFieldProps["onValueBeingTypedChange"]>) =>
+                ({ isValidValue }: Param0<TextFieldProps["onValueBeingTypedChange"]>) =>
                     setIsValueBeingTypedValid(isValidValue)
             );
 

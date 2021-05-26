@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { actions as appActions } from "js/redux/app";
 import { ONYXIA_FAVICON } from 'js/components/commons/favicon';
 import { assert } from "tsafe/assert";
-import type { UnpackPromise } from "evt/tools/typeSafety";
+import type { UnpackPromise } from "tsafe";
 import { prOidcClient } from "lib/setup";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) => (

@@ -4,7 +4,7 @@ import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import MuiIconButton from "@material-ui/core/IconButton";
-import type { Optional } from "evt/tools/typeSafety";
+import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
@@ -23,7 +23,7 @@ export type Props = {
 
 };
 
-export const defaultProps: Optional<Props> = {
+export const defaultProps: PickOptionals<Props> = {
     "className": null,
     "disabled": false,
     "fontSize": "default",
