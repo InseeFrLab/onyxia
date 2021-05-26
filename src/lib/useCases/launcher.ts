@@ -15,10 +15,7 @@ import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import {
     formFieldsValueToObject,
 } from "./sharedDataModel/FormFieldValue";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    areSameRestorablePackageConfig
-} from "./restorablePackageConfigs";
+import { onyxiaFriendlyNameFormFieldPath } from "./restorablePackageConfigs";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
@@ -57,6 +54,7 @@ export declare namespace LauncherState {
             defaultFormFieldsValue: FormFieldValue[];
             dependencies: string[];
         };
+        launchState: "not launching" | "launching" | "launched";
     };
 
 }
@@ -108,7 +106,8 @@ const { reducer, actions } = createSlice({
                             .map(({ path, value }) => ({ path, value })),
                         dependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": []
-                    }
+                    },
+                    "launchState": "not launching"
                 })
             );
 
@@ -119,6 +118,9 @@ const { reducer, actions } = createSlice({
             );
 
         },
+        "reset": ()=> id<LauncherState.NotInitialized>({
+            "stateDescription": "not initialized"
+        }),
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
 
             assert(state.stateDescription === "ready");
@@ -126,9 +128,14 @@ const { reducer, actions } = createSlice({
             formFieldValueChangedReducer({ state, "formFieldValue": payload });
 
         },
-        "launched": () => id<LauncherState.NotInitialized>({
-            "stateDescription": "not initialized",
-        })
+        "launchStarted": state => {
+            assert(state.stateDescription === "ready");
+            state.launchState = "launching";
+        },
+        "launchCompleted": state => {
+            assert(state.stateDescription === "ready");
+            state.launchState = "launched";
+        }
     }
 });
 
@@ -145,7 +152,11 @@ const privateThunks = {
 
             const { isForContractPreview } = params;
 
-            const [, getState, dependencies] = args;
+            const [dispatch, getState, dependencies] = args;
+
+            if( !isForContractPreview ){
+                dispatch(actions.launchStarted());
+            }
 
             const state = getState().launcher;
 
@@ -157,6 +168,10 @@ const privateThunks = {
                 "options": formFieldsValueToObject(state["~internal"].formFields),
                 "isDryRun": isForContractPreview
             });
+
+            if( !isForContractPreview ){
+                dispatch(actions.launchCompleted());
+            }
 
             return { contract };
 
@@ -181,26 +196,10 @@ export const thunks = {
 
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
-            //Optimization to save time is nothing has changed
-            {
-
-                const restorablePackageConfig = selectors.restorablePackageConfigSelector(getState());
-
-                if (
-                    !!restorablePackageConfig &&
-                    areSameRestorablePackageConfig(
-                        restorablePackageConfig,
-                        {
-                            catalogId,
-                            packageName,
-                            formFieldsValueDifferentFromDefault
-                        }
-                    )
-                ) {
-                    return;
-                }
-
-            }
+            assert(
+                getState().launcher.stateDescription === "not initialized", 
+                "the reset thunk need to be called before initializing again"
+            );
 
             const {
                 getPackageConfigJSONSchemaObjectWithRenderedMustachParams,
@@ -349,6 +348,7 @@ export const thunks = {
             );
 
         },
+    "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
     "changeFormFieldValue":
         (
             params: FormFieldValue
@@ -400,7 +400,7 @@ export const selectors = (() => {
         formFieldsSelector,
         formFields => {
 
-            if( formFields === undefined ){
+            if (formFields === undefined) {
                 return undefined;
             }
 

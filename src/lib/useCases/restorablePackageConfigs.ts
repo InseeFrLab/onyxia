@@ -7,7 +7,7 @@ import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
-import { thunks as userConfigsThunks } from "./userConfigs";
+import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
 import memoize from "memoizee";
 
@@ -126,8 +126,8 @@ export const privateThunks = {
                 })()
             })
         ),
-    "syncWithUserConfig": (): AppThunk => async (dispatch, getState)=> 
-         dispatch(
+    "syncWithUserConfig": (): AppThunk => async (dispatch, getState) =>
+        dispatch(
             userConfigsThunks.changeValue({
                 "key": "bookmarkedServiceConfigurationStr",
                 "value": JSON.stringify(
@@ -228,6 +228,7 @@ export const thunks = {
 
     "isRestorablePackageConfigInStore": (() => {
 
+
         const memoizee = memoize(
             (
                 restorablePackageConfigs: RestorablePackageConfig[],
@@ -316,7 +317,7 @@ export const thunks = {
 
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
-export function areSameRestorablePackageConfig(
+function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
     restorablePackageConfiguration2: RestorablePackageConfig
 ): boolean {
@@ -334,10 +335,9 @@ export function areSameRestorablePackageConfig(
                 packageName,
                 formFieldsValueToObject(formFieldsValueDifferentFromDefault)
             ])
-        .reduce(...allEquals(same))
+        .reduce(...allEquals(same));
 
 }
-
 
 
 

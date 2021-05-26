@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { routes } from "app/routes/router";
@@ -13,6 +14,7 @@ import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorabl
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
+import { useSplashScreen } from "app/components/shared/SplashScreen";
 
 export type Props = {
     className?: string;
@@ -53,10 +55,12 @@ export const CatalogLauncher = memo((props: Props) => {
                 formFieldsValueDifferentFromDefault
             }));
 
+            return () => dispatch(thunks.reset());
+
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route]
+        []
     );
+
 
     const restorablePackageConfig = useSelector(selectors.restorablePackageConfigSelector);
 
@@ -86,7 +90,6 @@ export const CatalogLauncher = memo((props: Props) => {
             }).replace();
 
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [restorablePackageConfig ?? Object]
     );
 
@@ -131,6 +134,37 @@ export const CatalogLauncher = memo((props: Props) => {
     const friendlyName = useSelector(selectors.friendlyNameSelector);
 
     const state = useSelector(state => state.launcher);
+
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+
+    useEffect(
+        () => {
+            switch (state.stateDescription) {
+                case "not initialized":
+                    showSplashScreen({ "enableTransparency": true });
+                    break;
+                case "ready":
+                    switch (state.launchState) {
+                        case "not launching":
+                            hideSplashScreen();
+                            break;
+                        case "launching":
+                            showSplashScreen({ "enableTransparency": true });
+                            break;
+                        case "launched":
+                            hideSplashScreen();
+                            routes.myServices().push();
+                            break;
+                    }
+                    break;
+            }
+        },
+        [
+            state.stateDescription === "not initialized" ?
+                state.stateDescription :
+                state.launchState
+        ]
+    );
 
     const indexedFormFields = useSelector(selectors.indexedFormFieldsSelector);
 

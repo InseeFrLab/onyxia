@@ -163,6 +163,9 @@ export const { useSplashScreen } = (() => {
             "isTransparencyEnabled": displayState.isTransparencyEnabled,
             "showSplashScreen":
                 useConstCallback((params: { enableTransparency: boolean; }) => {
+
+                    console.log("=====> show");
+
                     const { enableTransparency } = params;
                     setDisplayState(({ count }) => ({
                         "count": count + 1,
