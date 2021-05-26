@@ -14,7 +14,7 @@ import { thunks as restorablePackageConfigsThunks } from "lib/useCases/restorabl
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { showSplashScreen, hideSplashScreen } from "app/components/shared/SplashScreen";
 
 export type Props = {
     className?: string;
@@ -134,8 +134,6 @@ export const CatalogLauncher = memo((props: Props) => {
     const friendlyName = useSelector(selectors.friendlyNameSelector);
 
     const state = useSelector(state => state.launcher);
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {

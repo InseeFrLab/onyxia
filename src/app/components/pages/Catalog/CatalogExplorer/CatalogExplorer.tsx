@@ -4,7 +4,7 @@ import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogCardsParams } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { hideSplashScreen, showSplashScreen } from "app/components/shared/SplashScreen";
 import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { thunks } from "lib/setup";
 import { routes } from "app/routes/router";
@@ -21,8 +21,6 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
     const dispatch = useDispatch();
-
-    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {

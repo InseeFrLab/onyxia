@@ -24,7 +24,7 @@ import { assert } from "tsafe/assert";
 import { routes } from "app/routes/router";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
-import { useSplashScreen } from "app/components/shared/SplashScreen";
+import { hideSplashScreen, showSplashScreen } from "app/components/shared/SplashScreen";
 import { Account } from "app/components/pages/Account";
 
 //Legacy
@@ -97,8 +97,6 @@ export const App = memo((props: Props) => {
 
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffectOnValueChange(
         () => { hideSplashScreen() },
