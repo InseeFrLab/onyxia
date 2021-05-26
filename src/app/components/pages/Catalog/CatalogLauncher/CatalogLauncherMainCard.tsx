@@ -127,7 +127,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         />
                     </Tooltip>}
                 <IconButton
-                    type={isBookmarked ? "bookmarkBorder" : "bookmark"}
+                    type={isBookmarked ? "bookmark" : "bookmarkBorder"}
                     onClick={onBookmarkIconButtonClick}
                 />
             </div>
