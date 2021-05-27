@@ -213,7 +213,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 <CatalogLauncherConfigurationCard
                                     key={dependencyNamePackageNameOrGlobal}
                                     dependencyNamePackageNameOrGlobal={dependencyNamePackageNameOrGlobal}
-                                    formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
+                                    {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
                                     onFormValueChange={onFormValueChange}
                                 />
                         )

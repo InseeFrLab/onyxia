@@ -21,11 +21,13 @@ import type { FormField } from "lib/useCases/launcher";
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
 import { useCallbackFactory } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
+import { Icon } from "app/components/designSystem/Icon";
 
 export type Props = {
     className?: string;
     dependencyNamePackageNameOrGlobal: string;
-    formFieldsByTab: {
+    isDependency: boolean;
+    formFieldsByTabName: {
         [tabName: string]: {
             formFields: FormField[];
             description?: string;
@@ -58,7 +60,8 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const {
         className,
         dependencyNamePackageNameOrGlobal,
-        formFieldsByTab,
+        formFieldsByTabName,
+        isDependency,
         onFormValueChange
     } = props;
 
@@ -68,9 +71,9 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const tabs = useMemo(
-        () => Object.keys(formFieldsByTab)
+        () => Object.keys(formFieldsByTabName)
             .map(title => ({ "id": title, "title": capitalize(title) })),
-        [formFieldsByTab]
+        [formFieldsByTabName]
     );
 
     const onIsCollapsedValueChange = useConstCallback(
@@ -83,6 +86,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
         <div className={cx(classNames.root, className)}>
             <Header
                 text={dependencyNamePackageNameOrGlobal}
+                isDependency={isDependency}
                 isCollapsed={isCollapsed}
                 onIsCollapsedValueChange={tabs.length === 0 ? undefined : onIsCollapsedValueChange}
             />
@@ -96,7 +100,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                     maxTabCount={5}
                 >
                     <TabContent
-                        {...formFieldsByTab[activeTabId]}
+                        {...formFieldsByTabName[activeTabId]}
                         onFormValueChange={onFormValueChange}
                     />
                 </Tabs>
@@ -111,11 +115,16 @@ const { Header } = (() => {
         className?: string;
         text: string;
         isCollapsed: boolean;
+        isDependency: boolean;
         onIsCollapsedValueChange?(): void;
     };
 
-    const { useClassNames } = createUseClassNames<{ isCollapsed: boolean; isExpandIconVisible: boolean; }>()(
-        (theme, { isCollapsed, isExpandIconVisible }) => ({
+    const { useClassNames } = createUseClassNames<{
+        isCollapsed: boolean;
+        isExpandIconVisible: boolean;
+        isDependency: boolean;
+    }>()(
+        (theme, { isCollapsed, isExpandIconVisible, isDependency }) => ({
             "root": {
                 "display": "flex",
                 "padding": theme.spacing(1, 3),
@@ -138,6 +147,9 @@ const { Header } = (() => {
             "title": {
                 "display": "flex",
                 "alignItems": "center"
+            },
+            "dependencyIcon": {
+                "visibility": isDependency ? undefined : "hidden"
             }
         })
     );
@@ -145,11 +157,12 @@ const { Header } = (() => {
     const Header = memo(
         (props: Props) => {
 
-            const { className, text, isCollapsed, onIsCollapsedValueChange } = props;
+            const { className, text, isCollapsed, isDependency, onIsCollapsedValueChange } = props;
 
-            const { classNames } = useClassNames({ 
-                isCollapsed, 
-                "isExpandIconVisible": onIsCollapsedValueChange !== undefined 
+            const { classNames } = useClassNames({
+                isCollapsed,
+                "isExpandIconVisible": onIsCollapsedValueChange !== undefined,
+                isDependency
             });
 
             return (
@@ -161,6 +174,11 @@ const { Header } = (() => {
                         variant="h5"
                         className={classNames.title}
                     >
+                        <Icon
+                            type="subdirectoryArrowRight"
+                            className={classNames.dependencyIcon}
+                        />
+                        {isDependency && <>&nbsp;</>}
                         {capitalize(text)}
                     </Typography>
                     <div style={{ "flex": 1 }} />
