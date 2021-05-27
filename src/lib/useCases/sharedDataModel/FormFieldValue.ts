@@ -31,12 +31,9 @@ export function formFieldsValueToObject(
 
                 } else {
 
-                    const launchRequestSubOptions = {};
-
-                    launchRequestOptions[key] = launchRequestSubOptions;
-
                     callee({
-                        "launchRequestOptions": launchRequestSubOptions,
+                        //"launchRequestOptions": launchRequestOptions[key] ??= {} as any,
+                        "launchRequestOptions": launchRequestOptions[key] ?? (launchRequestOptions[key] = {} as any),
                         "formFieldValue": {
                             "path": rest,
                             "value": formField.value
