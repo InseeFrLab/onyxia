@@ -25,7 +25,12 @@ import { capitalize } from "app/tools/capitalize";
 export type Props = {
     className?: string;
     dependencyNamePackageNameOrGlobal: string;
-    formFieldsByTab: { [tabName: string]: FormField[]; };
+    formFieldsByTab: {
+        [tabName: string]: {
+            formFields: FormField[];
+            description?: string;
+        }
+    };
     onFormValueChange(params: FormFieldValue): void;
 };
 
@@ -91,7 +96,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                     maxTabCount={5}
                 >
                     <TabContent
-                        formFields={formFieldsByTab[activeTabId]}
+                        {...formFieldsByTab[activeTabId]}
                         onFormValueChange={onFormValueChange}
                     />
                 </Tabs>
@@ -175,6 +180,7 @@ const { Header } = (() => {
 const { TabContent } = (() => {
 
     type Props = {
+        description?: string;
         className?: string;
         formFields: FormField[];
         onFormValueChange(params: FormFieldValue): void;
@@ -191,13 +197,17 @@ const { TabContent } = (() => {
                 //Hacky... to accommodate the helper text
                 //"marginBottom": 32,
                 "width": "100%"
+            },
+            "tabDescription": {
+                "marginTop": theme.spacing(1),
+                "marginBottom": theme.spacing(4)
             }
         })
     );
 
     const TabContent = memo((props: Props) => {
 
-        const { className, formFields, onFormValueChange } = props;
+        const { className, formFields, onFormValueChange, description } = props;
 
         const onTextFieldChangeFactory = useCallbackFactory(
             (
@@ -246,92 +256,97 @@ const { TabContent } = (() => {
 
         const { classNames } = useClassNames({});
 
-
         return (
-            <div className={cx(classNames.root, className)}>
-                { formFields.map((formField, i) =>
-                    <div key={i} >
-                        {(() => {
+            <>
+                {description !== undefined &&
+                    <Typography variant="subtitle1" className={classNames.tabDescription}>
+                        {capitalize(description)}
+                    </Typography>}
+                <div className={cx(classNames.root, className)}>
+                    {formFields.map((formField, i) =>
+                        <div key={i} >
+                            {(() => {
 
-                            const label = capitalize(formField.title);
-                            const helperText = formField.description === undefined ? 
-                                undefined : capitalize(formField.description);
+                                const label = capitalize(formField.title);
+                                const helperText = formField.description === undefined ?
+                                    undefined : capitalize(formField.description);
 
-                            switch (typeof formField.value) {
-                                case "string":
-                                    return formField.enum !== undefined ?
-                                        (() => {
+                                switch (typeof formField.value) {
+                                    case "string":
+                                        return formField.enum !== undefined ?
+                                            (() => {
 
-                                            const labelId = `select_label_${i}`;
+                                                const labelId = `select_label_${i}`;
 
-                                            return (
-                                                <FormControl>
-                                                    <InputLabel id={labelId}>{label}</InputLabel>
-                                                    <Select
-                                                        labelId={labelId}
-                                                        value={formField.value}
-                                                        onChange={onSelectChangeFactory(formField.path)}
-                                                    >
-                                                        {formField.enum.map(value =>
-                                                            <MenuItem
-                                                                key={value}
-                                                                value={value}
-                                                            >
-                                                                {value}
-                                                            </MenuItem>
-                                                        )}
-                                                    </Select>
-                                                    <FormHelperText>{helperText}</FormHelperText>
-                                                </FormControl>
-                                            );
+                                                return (
+                                                    <FormControl>
+                                                        <InputLabel id={labelId}>{label}</InputLabel>
+                                                        <Select
+                                                            labelId={labelId}
+                                                            value={formField.value}
+                                                            onChange={onSelectChangeFactory(formField.path)}
+                                                        >
+                                                            {formField.enum.map(value =>
+                                                                <MenuItem
+                                                                    key={value}
+                                                                    value={value}
+                                                                >
+                                                                    {value}
+                                                                </MenuItem>
+                                                            )}
+                                                        </Select>
+                                                        <FormHelperText>{helperText}</FormHelperText>
+                                                    </FormControl>
+                                                );
 
-                                        })()
-                                        :
-                                        <MuiTextField
-                                            className={classNames.textField}
-                                            label={label}
-                                            value={formField.value}
-                                            helperText={helperText}
-                                            disabled={formField.isReadonly}
-                                            onChange={onTextFieldChangeFactory(formField.path)}
-                                            autoComplete="off"
-                                            inputProps={{ "spellCheck": false }}
-                                            onFocus={onTextFieldFocus}
-                                        />;
-                                case "boolean":
-                                    return (
-                                        <FormControl>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        color="primary"
-                                                        checked={formField.value}
-                                                        onChange={onCheckboxChangeFactory(formField.path)}
-                                                    />
-                                                }
+                                            })()
+                                            :
+                                            <MuiTextField
+                                                className={classNames.textField}
                                                 label={label}
+                                                value={formField.value}
+                                                helperText={helperText}
+                                                disabled={formField.isReadonly}
+                                                onChange={onTextFieldChangeFactory(formField.path)}
+                                                autoComplete="off"
+                                                inputProps={{ "spellCheck": false }}
+                                                onFocus={onTextFieldFocus}
+                                            />;
+                                    case "boolean":
+                                        return (
+                                            <FormControl>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            color="primary"
+                                                            checked={formField.value}
+                                                            onChange={onCheckboxChangeFactory(formField.path)}
+                                                        />
+                                                    }
+                                                    label={label}
+                                                />
+                                                <FormHelperText>{helperText}</FormHelperText>
+                                            </FormControl>
+                                        );
+                                    case "number":
+                                        return (
+                                            <MuiTextField
+                                                value={formField.value}
+                                                onChange={onNumberTextFieldChangeFactory(formField.path)}
+                                                inputProps={{ "min": formField.minimum }}
+                                                label={label}
+                                                type="number"
+                                                InputLabelProps={{ "shrink": true }}
+                                                helperText={helperText}
                                             />
-                                            <FormHelperText>{helperText}</FormHelperText>
-                                        </FormControl>
-                                    );
-                                case "number":
-                                    return (
-                                        <MuiTextField
-                                            value={formField.value}
-                                            onChange={onNumberTextFieldChangeFactory(formField.path)}
-                                            inputProps={{ "min": formField.minimum }}
-                                            label={label}
-                                            type="number"
-                                            InputLabelProps={{ "shrink": true }}
-                                            helperText={helperText}
-                                        />
-                                    );
-                            }
-                        })()}
-                    </div>
-                )}
+                                        );
+                                }
+                            })()}
+                        </div>
+                    )}
 
-            </div>
+                </div>
+            </>
         );
 
 
