@@ -84,7 +84,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
             <Header
                 text={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}
-                onIsCollapsedValueChange={onIsCollapsedValueChange}
+                onIsCollapsedValueChange={tabs.length === 0 ? undefined : onIsCollapsedValueChange}
             />
             {activeTabId !== undefined &&
                 <Tabs
@@ -114,8 +114,8 @@ const { Header } = (() => {
         onIsCollapsedValueChange?(): void;
     };
 
-    const { useClassNames } = createUseClassNames<{ isCollapsed: boolean; }>()(
-        (theme, { isCollapsed }) => ({
+    const { useClassNames } = createUseClassNames<{ isCollapsed: boolean; isExpandIconVisible: boolean; }>()(
+        (theme, { isCollapsed, isExpandIconVisible }) => ({
             "root": {
                 "display": "flex",
                 "padding": theme.spacing(1, 3),
@@ -131,7 +131,8 @@ const { Header } = (() => {
                         ["transform"],
                         { "duration": theme.transitions.duration.short }
                     ),
-                    "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`
+                    "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
+                    "visibility": isExpandIconVisible ? undefined : "hidden"
                 }
             },
             "title": {
@@ -146,7 +147,11 @@ const { Header } = (() => {
 
             const { className, text, isCollapsed, onIsCollapsedValueChange } = props;
 
-            const { classNames } = useClassNames({ isCollapsed });
+            const { classNames } = useClassNames({ 
+                isCollapsed, 
+                "isExpandIconVisible": onIsCollapsedValueChange !== undefined 
+            });
+
             return (
                 <div
                     className={cx(classNames.root, className)}
@@ -159,13 +164,11 @@ const { Header } = (() => {
                         {capitalize(text)}
                     </Typography>
                     <div style={{ "flex": 1 }} />
-                    {onIsCollapsedValueChange !== undefined &&
-                        <IconButton
-                            onClick={onIsCollapsedValueChange}
-                            type="expandMore"
-                            className={classNames.expandIcon}
-                        />
-                    }
+                    <IconButton
+                        onClick={onIsCollapsedValueChange}
+                        type="expandMore"
+                        className={classNames.expandIcon}
+                    />
                 </div>
             );
 
