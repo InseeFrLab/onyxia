@@ -1,3 +1,84 @@
+## **0.10.0** (2021-05-27)  
+  
+- GHA: Use cache for yarn install  
+- Launcher: Add tooltip for 'save this configuratioin'  
+- Laucher: Notify dependency with icon  
+- Launcher: Replace scrolling bar  
+- Launcher: No tab => no expand button  
+- Add tab description  
+- Add source link in the header  
+- Launcher: Fix bookmarking  
+- SplashScreen: hide and show do not need to be provided by a hook  
+- Splash screen issue fixed  
+- Launcher: Implement correct flow  
+- Catalog: Link to helm charts sources in the header  
+- Secrets: Update the header  
+- Launcher: Capitalization  
+- Divider with lighter color  
+- Launcher: Add divider to configuration cards  
+- Launcher: Use built in TextField  
+-  Correct a spelling error in the footer  
+- Launcher: Improved style of card  
+- Home: Fix links  
+- CatalogExplorer: Change body color  
+- DesignSystem: Fix dialog body color  
+- DesignSystem: fix disabled button color  
+- Account: Add options to restore dialogs  
+- Design system: fix text fields colors  
+- Tabs: fix colors  
+- theme: Add new surface color  
+- theme: rename useCases.survaces.surfaces by xxx.surface1  
+- theme: tweak colors  
+- Routes: implements separation of consern for form fields querry parameters  
+- Launcher: Implement human readable url  
+- Launcher: Implement readable urls  
+- Launcher: do states update all at once  
+- Launcher: fix url bug  
+- Launcher: set max width  
+- Unoptimize drkmode switching to cope with poor memoization of MUI  
+- fmt  
+- TextField: Let label break out of container  
+- Launcher: Remove unused cx  
+- Launcher: implement scroll  
+- Launcher: Reorder  
+- Do not contrain width of TextField  
+- Launcher: Fix enum  
+- Launcher: Click on header toggles  
+- Launcher: Correctly display tabs  
+- Launcher: renders  
+- Lancher: Opening animation for tabs  
+- Laucher: Form ui component OK  
+- Fix babel not compatible with latest TypeScript features  
+- update stories  
+- Launcher: Compiles  
+- Launcher: Refactor dir structure  
+- Remove contract preview for now  
+- Launcher: Connecting logic and UI  
+- Catalogs/Launcher: Refactor selectors  
+- Launcher: take into account dependencies  
+- implemente memoization for getter thunks  
+- Implement choerent model for restoring configurations  
+- Launcher: First draft for bookmarked package config  
+- Better state management  
+- CatalogExplorer: Fix transilitant states  
+- Launcher: Serialization of params  
+- Special case for service friendlyName  
+- Launcher: use title in the form  
+- Laucher: mooving on  
+- Launcher: Controller  
+- Launcher: Main form  
+- Acommodate contract preview  
+- Catalog Explorer: prepare for easy catalog switching  
+- Fix build  
+- Launcher: Implement lib part, CatalogExplorer: refactor  
+- Implement usecase launcher  
+- Launcher: Advanced configuration header  
+- Merge pull request #233 from InseeFrLab/launcher
+
+Launcher  
+- Add learn more link in catalog  
+- Implement Launcher card    
+  
 ### **0.9.6** (2021-05-06)  
   
 - Update package.json  
