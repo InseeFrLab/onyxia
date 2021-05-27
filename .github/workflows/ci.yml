@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
-    - run: yarn --frozen-lockfile
+    - uses: bahmutov/npm-install@v1
     #- run: yarn test
     - run: yarn build
     - run: npx build-keycloak-theme --external-assets
@@ -43,9 +43,8 @@ jobs:
     - uses: actions/setup-node@v2.1.3
       with:
         node-version: '15'
-    - run: |
-        yarn install --frozen-lockfile
-        yarn build-storybook -o ./build_storybook
+    - uses: bahmutov/npm-install@v1
+    - run: yarn build-storybook -o ./build_storybook
     - run: git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${{github.repository}}.git
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
