@@ -50,7 +50,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             "packageName": param.path.string,
             ...formFieldsDefineRouteParam
         },
-        ({ catalogId, packageName }) => `/x/${catalogId}/${packageName}`
+        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`
     ),
     ...(() => {
 
