@@ -314,7 +314,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "friendly name": "Friendly name",
             "launch": "Launch",
             "cancel": "Cancel",
-            "copy url helper text": "Copy url to restore this configuration"
+            "copy url helper text": "Copy url to restore this configuration",
+            "save configuration": "Save this configuration"
         }
     },
     "fr": {
@@ -534,7 +535,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "friendly name": "Nom personalisé",
             "launch": "Lancer",
             "cancel": "Annuler",
-            "copy url helper text": "Copier l'URL permettant de restaurer cette configuration"
+            "copy url helper text": "Copier l'URL permettant de restaurer cette configuration",
+            "save configuration": "Enregistrer cette configuration"
         }
         /* spell-checker: enable */
     }
