@@ -54,6 +54,7 @@ export function createOfficialOnyxiaApiClient(
                     `/public/catalog/${catalogId}/${packageName}`
                 ).then(({ data })=> ({
                     "dependencies": data.dependencies ?? [],
+                    "sources": data.sources,
                     "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams })=> JSON.parse(
                         Mustache.render(
                             JSON.stringify(data.config),

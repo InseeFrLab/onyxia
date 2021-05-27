@@ -26,6 +26,7 @@ export type Public_Catalog = {
 
 export type Public_Catalog_CatalogId_PackageName = {
     config: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+    sources: string[];
     dependencies?: {
         enabled: boolean;
         name: string;
@@ -133,6 +134,7 @@ export type OnyxiaApiClient = {
             }
         ): Public_Catalog_CatalogId_PackageName["config"];
         dependencies: NonNullable<Public_Catalog_CatalogId_PackageName["dependencies"]>;
+        sources: Public_Catalog_CatalogId_PackageName["sources"];
     }>;
 
     launchPackage(

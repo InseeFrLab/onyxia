@@ -2,14 +2,16 @@
 import { createGroup } from "type-route";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
+import { useLng } from "app/i18n/useLng";
 import { createUseClassNames } from "app/theme/useClassNames";
 import { cx } from "tss-react";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer/CatalogExplorer";
-import { CatalogLauncher } from "./CatalogLauncher/CatalogLauncher";
+import { CatalogLauncher } from "./CatalogLauncher/CatalogLauncher";
 import Link from "@material-ui/core/Link";
-import { useSelector } from "app/interfaceWithLib/hooks";
+import { useSelector } from "app/interfaceWithLib/hooks";
+import { elementsToSentence } from "app/tools/elementsToSentence";
 
 Catalog.routeGroup = createGroup([
     routes.catalogExplorer,
@@ -51,10 +53,24 @@ export function Catalog(props: Props) {
 
     const { classNames } = useClassNames({});
 
-    const locationUrl = useSelector(
-        ({ catalogExplorer })=> catalogExplorer.stateDescription !== "ready" ? 
-            undefined : catalogExplorer.locationUrl
+    const sourcesUrls = useSelector(
+        ({ catalogExplorer, launcher }) =>
+            launcher.stateDescription === "ready" ?
+                {
+                    "type": "package",
+                    "sources": launcher.sources,
+                    "packageName": launcher.packageName
+                } as const :
+                catalogExplorer.stateDescription !== "ready" ?
+                    undefined :
+                    {
+                        "type": "catalog",
+                        "locationUrl": catalogExplorer.locationUrl,
+                        "catalogId": catalogExplorer.selectedCatalogId
+                    } as const
     );
+
+    const { lng } = useLng();
 
     return (
         <div className={cx(classNames.root, className)}>
@@ -65,9 +81,42 @@ export function Catalog(props: Props) {
                 text3={<>
                     {t("all services are open sources")}
                     {
-                        locationUrl === undefined ?
+                        sourcesUrls === undefined ?
                             null :
-                            <Link href={locationUrl} target="_blank"> {t("contribute to the catalog")} </Link>
+                            (() => {
+                                switch (sourcesUrls.type) {
+                                    case "catalog":
+                                        return (
+                                            <>
+                                                <Link
+                                                    href={sourcesUrls.locationUrl}
+                                                    target="_blank"
+                                                >
+                                                    {t("contribute to the catalog", { "catalogId": sourcesUrls.catalogId })}
+                                                </Link>
+                                            .
+                                            </>
+                                        );
+                                    case "package":
+                                        return (
+                                            <>
+                                                {t("contribute to the package", { "packageName": sourcesUrls.packageName })}
+                                                {elementsToSentence({
+                                                    "elements": sourcesUrls.sources.map(source =>
+                                                        <Link
+                                                            href={source}
+                                                            target="_blank"
+                                                        >
+                                                            {t("here")}
+                                                        </Link>
+                                                    ),
+                                                    "language": lng
+                                                })}
+                                            .
+                                            </>
+                                        );
+                                }
+                            })()
                     }
                 </>}
             />
@@ -99,7 +148,9 @@ export declare namespace Catalog {
         'header text1': undefined;
         'header text2': undefined;
         'all services are open sources': undefined;
-        'contribute to the catalog': undefined;
+        'contribute to the catalog': { catalogId: string; };
+        'contribute to the package': { packageName: string; };
+        'here': undefined;
     };
 
 }
