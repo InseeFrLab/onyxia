@@ -12,7 +12,7 @@ import { useConstCallback } from "powerhooks";
 import { TextField } from "app/components/designSystem/TextField";
 import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { Tooltip } from "app/components/designSystem/Tooltip";
-import { capitalize } from "app/tools/capitalize";
+import { capitalize } from "app/tools/capitalize";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -126,10 +126,12 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                             onClick={onRequestCopyLaunchUrl}
                         />
                     </Tooltip>}
-                <IconButton
-                    type={isBookmarked ? "bookmark" : "bookmarkBorder"}
-                    onClick={onBookmarkIconButtonClick}
-                />
+                <Tooltip title={t("save configuration")}>
+                    <IconButton
+                        type={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                        onClick={onBookmarkIconButtonClick}
+                    />
+                </Tooltip>
             </div>
             <div className={classNames.belowDivider}>
                 <div className={classNames.avatarAndTitleWrapper}>
@@ -183,5 +185,6 @@ export declare namespace CatalogLauncherMainCard {
         launch: undefined
         'friendly name': undefined;
         'copy url helper text': undefined;
+        'save configuration': undefined;
     };
 }
