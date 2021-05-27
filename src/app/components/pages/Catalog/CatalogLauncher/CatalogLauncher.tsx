@@ -24,9 +24,11 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
     theme => ({
         "wrapperForScroll": {
-            "maxWidth": 1200,
             "height": "100%",
             "overflow": "auto",
+        },
+        "wrapperForMawWidth": {
+            "maxWidth": 1200,
             "& > *": {
                 "marginBottom": theme.spacing(2)
             }
@@ -189,34 +191,34 @@ export const CatalogLauncher = memo((props: Props) => {
     return (
         <div className={className}>
             <div className={classNames.wrapperForScroll}>
-
-                <CatalogLauncherMainCard
-                    packageName={state.packageName}
-                    packageIconUrl={state.icon}
-                    isBookmarked={isBookmarked}
-                    onIsBookmarkedValueChange={onIsBookmarkedValueChange}
-                    friendlyName={friendlyName!}
-                    onFriendlyNameChange={onFriendlyNameChange}
-                    onRequestLaunch={onRequestLaunch}
-                    onRequestCancel={onRequestCancel}
-                    onRequestCopyLaunchUrl={
-                        restorablePackageConfig.formFieldsValueDifferentFromDefault.length !== 0 ?
-                            onRequestCopyLaunchUrl :
-                            undefined
+                <div className={classNames.wrapperForMawWidth}>
+                    <CatalogLauncherMainCard
+                        packageName={state.packageName}
+                        packageIconUrl={state.icon}
+                        isBookmarked={isBookmarked}
+                        onIsBookmarkedValueChange={onIsBookmarkedValueChange}
+                        friendlyName={friendlyName!}
+                        onFriendlyNameChange={onFriendlyNameChange}
+                        onRequestLaunch={onRequestLaunch}
+                        onRequestCancel={onRequestCancel}
+                        onRequestCopyLaunchUrl={
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault.length !== 0 ?
+                                onRequestCopyLaunchUrl :
+                                undefined
+                        }
+                    />
+                    {
+                        Object.keys(indexedFormFields!).map(
+                            dependencyNamePackageNameOrGlobal =>
+                                <CatalogLauncherConfigurationCard
+                                    key={dependencyNamePackageNameOrGlobal}
+                                    dependencyNamePackageNameOrGlobal={dependencyNamePackageNameOrGlobal}
+                                    formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
+                                    onFormValueChange={onFormValueChange}
+                                />
+                        )
                     }
-                />
-                {
-                    Object.keys(indexedFormFields!).map(
-                        dependencyNamePackageNameOrGlobal =>
-                            <CatalogLauncherConfigurationCard
-                                key={dependencyNamePackageNameOrGlobal}
-                                dependencyNamePackageNameOrGlobal={dependencyNamePackageNameOrGlobal}
-                                formFieldsByTab={indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                                onFormValueChange={onFormValueChange}
-                            />
-                    )
-                }
-
+                </div>
             </div>
         </div>
     );
