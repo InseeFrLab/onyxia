@@ -8,7 +8,7 @@ import { useConstCallback } from "powerhooks";
 
 function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) {
 
-    const [formFields, setFormFields] = useState<Props["formFieldsByTab"][string]>([
+    const [formFields, setFormFields] = useState<Props["formFieldsByTab"][string]["formFields"]>([
         {
             "path": ["resources", "cpu"],
             "title": "cpu",
@@ -84,7 +84,8 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
             formFields.forEach(
                 formField =>
                     //(out[formField.path[0]] ??= []).push(formField)
-                    (out[formField.path[0]] ?? (out[formField.path[0]] = [])).push(formField)
+                    (out[formField.path[0]] ?? (out[formField.path[0]] = { "formFields": [], "description": "tab description"}))
+                    .formFields.push(formField)
 
             );
 

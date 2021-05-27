@@ -51,9 +51,10 @@ export declare namespace LauncherState {
         sources: string[];
         '~internal': {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: { path: string[]; }[];
-            formFields: (FormField & { isHidden: boolean })[];
+            formFields: (FormField & { isHidden: boolean; })[];
             defaultFormFieldsValue: FormFieldValue[];
             dependencies: string[];
+            config: Public_Catalog_CatalogId_PackageName["config"];
         };
         launchState: "not launching" | "launching" | "launched";
     };
@@ -62,7 +63,10 @@ export declare namespace LauncherState {
 
 export type IndexedFormFields = {
     [dependencyNamePackageNameOrGlobal: string]: {
-        [tabName: string]: FormField[];
+        [tabName: string]: {
+            description?: string;
+            formFields: FormField[];
+        }
     }
 };
 
@@ -81,6 +85,7 @@ const { reducer, actions } = createSlice({
                 icon: string | undefined;
                 sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
+                config: LauncherState.Ready["~internal"]["config"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
             }>
@@ -92,6 +97,7 @@ const { reducer, actions } = createSlice({
                 icon,
                 sources,
                 formFields,
+                config,
                 dependencies,
                 formFieldsValueDifferentFromDefault
             } = payload;
@@ -109,7 +115,8 @@ const { reducer, actions } = createSlice({
                         "defaultFormFieldsValue": formFields
                             .map(({ path, value }) => ({ path, value })),
                         dependencies,
-                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": []
+                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
+                        config
                     },
                     "launchState": "not launching"
                 })
@@ -276,84 +283,87 @@ export const thunks = {
 
                 return { mustacheParams };
 
-            })();
+                })();
 
-            const { formFields } = (() => {
+                const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
+                    { mustacheParams }
+                );
 
-                const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
+                const { formFields } = (() => {
 
-                (function callee(
-                    params: {
-                        jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
-                        currentPath: string[];
-                    }
-                ): void {
+                    const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
 
-                    const {
-                        jsonSchemaObject: { properties },
-                        currentPath
-                    } = params;
-
-                    Object.entries(properties).forEach(([key, value]) => {
-
-                        const newCurrentPath = [...currentPath, key];
-
-                        if (value.type === "object") {
-                            callee({
-                                "currentPath": newCurrentPath,
-                                "jsonSchemaObject": value,
-                            });
-                        } else {
-                            formFields.push({
-                                "path": newCurrentPath,
-                                "title": value.title ?? newCurrentPath.slice(-1)[0],
-                                "description": value.description,
-                                "isReadonly": value["x-form"]?.readonly ?? false,
-                                "value": value["x-form"]?.value ?? value.default ?? null as any as never,
-                                "isHidden":
-                                    same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
-                                    (value["x-form"]?.hidden ?? false),
-                                "enum": value.type === "string" ? value.enum : undefined,
-                                "minimum": value.type === "number" ? value.minimum : undefined
-                            });
+                    (function callee(
+                        params: {
+                            jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+                            currentPath: string[];
                         }
+                    ): void {
 
+                        const {
+                            jsonSchemaObject: { properties },
+                            currentPath
+                        } = params;
+
+                        Object.entries(properties).forEach(([key, value]) => {
+
+                            const newCurrentPath = [...currentPath, key];
+
+                            if (value.type === "object") {
+                                callee({
+                                    "currentPath": newCurrentPath,
+                                    "jsonSchemaObject": value,
+                                });
+                            } else {
+                                formFields.push({
+                                    "path": newCurrentPath,
+                                    "title": value.title ?? newCurrentPath.slice(-1)[0],
+                                    "description": value.description,
+                                    "isReadonly": value["x-form"]?.readonly ?? false,
+                                    "value": value["x-form"]?.value ?? value.default ?? null as any as never,
+                                    "isHidden":
+                                        same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
+                                        (value["x-form"]?.hidden ?? false),
+                                    "enum": value.type === "string" ? value.enum : undefined,
+                                    "minimum": value.type === "number" ? value.minimum : undefined
+                                });
+                            }
+
+                        });
+
+                    })({
+                        "currentPath": [],
+                        "jsonSchemaObject": config
                     });
 
-                })({
-                    "currentPath": [],
-                    "jsonSchemaObject": getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
-                        { mustacheParams }
-                    )
-                });
+                    return { formFields };
 
-                return { formFields };
+                })();
 
-            })();
+                dispatch(
+                    actions.initialized({
+                        catalogId,
+                        packageName,
+                        "icon": await onyxiaApiClient.getCatalogs()
+                            .then(
+                                apiRequestResult => apiRequestResult
+                                    .find(({ id }) => id === catalogId)!
+                                    .catalog
+                                    .packages
+                                    .find(({ name }) => name === packageName)!
+                                    .icon
+                            ),
+                        sources,
+                        formFields,
+                        config,
+                        "dependencies": dependencies
+                            .filter(({ enabled }) => enabled)
+                            .map(({ name }) => name),
+                        formFieldsValueDifferentFromDefault
+                    })
+                );
 
-            dispatch(
-                actions.initialized({
-                    catalogId,
-                    packageName,
-                    "icon": await onyxiaApiClient.getCatalogs()
-                        .then(
-                            apiRequestResult => apiRequestResult
-                                .find(({ id }) => id === catalogId)!
-                                .catalog
-                                .packages
-                                .find(({ name }) => name === packageName)!
-                                .icon
-                        ),
-                    sources,
-                    formFields,
-                    "dependencies": dependencies
-                        .filter(({ enabled }) => enabled)
-                        .map(({ name }) => name),
-                    formFieldsValueDifferentFromDefault
-                })
-            );
-
-        },
+            },
     "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
     "changeFormFieldValue":
         (
@@ -421,11 +431,17 @@ export const selectors = (() => {
         }
     );
 
+    const configSelector = createSelector(
+        readyLauncherSelector,
+        state => state?.["~internal"].config
+    );
+
     const indexedFormFieldsSelector = createSelector(
+        configSelector,
         formFieldsSelector,
         packageNameSelector,
         dependenciesSelector,
-        (formFields, packageName, dependencies) => {
+        (config, formFields, packageName, dependencies) => {
 
             if (
                 !formFields ||
@@ -451,8 +467,24 @@ export const selectors = (() => {
                             formField => {
 
                                 //TODO: Restore: (formFieldsByTabName[formField.path[1]] ??= []).push(formField); when ??= supported
-                                (formFieldsByTabName[formField.path[1]] ?? (formFieldsByTabName[formField.path[1]] = [])).push(formField);
+                                (
+                                    formFieldsByTabName[formField.path[1]] ??
+                                    (
+                                        formFieldsByTabName[formField.path[1]] = {
+                                            "description": (() => {
 
+                                                const o = config?.properties[formField.path[0]];
+
+                                                assert(o?.type === "object");
+
+                                                return o.properties[formField.path[1]].description;
+
+                                            })(),
+                                            "formFields": []
+                                        }
+                                    )
+                                )
+                                    .formFields.push(formField);
 
                                 formFieldsRest.splice(formFieldsRest.indexOf(formField), 1);
 
@@ -479,7 +511,15 @@ export const selectors = (() => {
                     .forEach(
                         formField =>
                             //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
-                            (formFieldsByTabName[formField.path[0]] ?? (formFieldsByTabName[formField.path[0]] = [])).push(formField)
+                            (
+                                formFieldsByTabName[formField.path[0]] ??
+                                (
+                                    formFieldsByTabName[formField.path[0]] = {
+                                        "description": config?.properties[formField.path[0]].description,
+                                        "formFields": []
+                                    }
+                                )
+                            ).formFields.push(formField)
                     );
 
 
