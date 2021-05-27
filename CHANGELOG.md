@@ -1,3 +1,8 @@
+### **0.10.1** (2021-05-27)  
+  
+- Launcher: Fix broken 0.10 release  
+- Replace /x/ by /launcher/ in the url    
+  
 ## **0.10.0** (2021-05-27)  
   
 - GHA: Use cache for yarn install  
