@@ -103,7 +103,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "storage": "Connect to storage",
             "user-interface": "Interface preferences",
             "text1": "My account",
-            "text2": "Access your different account informations.",
+            "text2": "Access your different account information.",
             "text3p1": "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
             "personal tokens": "personal tokens",
             "text3p2": "can be accessed and configured here.",
@@ -297,8 +297,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Catalog": {
             "header text1": "Services catalog",
             "header text2": "Explore, launch and configure services with just a few clicks.",
-            "all services are open sources": "All services offered are open source, ",
-            "contribute to the catalog": "contribute to the catalog."
+            "all services are open sources": "All services are open source, ",
+            "contribute to the catalog": "contribute to the {{catalogId}} catalog",
+            "contribute to the package": "Find the sources of the {{packageName}} package ",
+            "here": "here"
         },
         "Dialog": {
             "do not display again": "Don't display again"
@@ -516,7 +518,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Catalogue de services",
             "header text2": "Explorez, lancez et configurez des services en quelques clics seulement.",
             "all services are open sources": "Tous les services proposés sont open source, ",
-            "contribute to the catalog": "consulter et contribuer au catalogue."
+            "contribute to the catalog": "contribuer au catalogue {{catalogId}}",
+            "contribute to the package": "Accéder aux sources du package {{packageName}} ",
+            "here": "ici"
         },
         "Dialog": {
             "do not display again": "Ne plus afficher"

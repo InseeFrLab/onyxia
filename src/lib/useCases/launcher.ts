@@ -48,6 +48,7 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
+        sources: string[];
         '~internal': {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: { path: string[]; }[];
             formFields: (FormField & { isHidden: boolean })[];
@@ -78,6 +79,7 @@ const { reducer, actions } = createSlice({
                 catalogId: string;
                 packageName: string;
                 icon: string | undefined;
+                sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
@@ -88,6 +90,7 @@ const { reducer, actions } = createSlice({
                 catalogId,
                 packageName,
                 icon,
+                sources,
                 formFields,
                 dependencies,
                 formFieldsValueDifferentFromDefault
@@ -100,6 +103,7 @@ const { reducer, actions } = createSlice({
                     catalogId,
                     packageName,
                     icon,
+                    sources,
                     "~internal": {
                         formFields,
                         "defaultFormFieldsValue": formFields
@@ -203,7 +207,8 @@ export const thunks = {
 
             const {
                 getPackageConfigJSONSchemaObjectWithRenderedMustachParams,
-                dependencies
+                dependencies,
+                sources
             } =
                 await onyxiaApiClient
                     .getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory({
@@ -339,6 +344,7 @@ export const thunks = {
                                 .find(({ name }) => name === packageName)!
                                 .icon
                         ),
+                    sources,
                     formFields,
                     "dependencies": dependencies
                         .filter(({ enabled }) => enabled)

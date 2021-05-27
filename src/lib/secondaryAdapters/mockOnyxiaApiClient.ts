@@ -22,6 +22,7 @@ export function createMockOnyxiaApiClient(
         "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
             () => Promise.resolve().then(() => ({
                 "dependencies": [],
+                "sources": ["https://example.com"],
                 "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams }) => JSON.parse(
                     Mustache.render(
                         JSON.stringify(data2.config),
