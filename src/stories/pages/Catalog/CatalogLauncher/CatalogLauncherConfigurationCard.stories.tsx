@@ -6,9 +6,9 @@ import { css } from "tss-react";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks";
 
-function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) {
+function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange">) {
 
-    const [formFields, setFormFields] = useState<Props["formFieldsByTab"][string]["formFields"]>([
+    const [formFields, setFormFields] = useState<Props["formFieldsByTabName"][string]["formFields"]>([
         {
             "path": ["resources", "cpu"],
             "title": "cpu",
@@ -76,10 +76,10 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
         }
     ]);
 
-    const formFieldsByTab = useMemo(
+    const formFieldsByTabName = useMemo(
         () => {
 
-            const out: Props["formFieldsByTab"] = {};
+            const out: Props["formFieldsByTabName"] = {};
 
             formFields.forEach(
                 formField =>
@@ -109,7 +109,7 @@ function Container(props: Omit<Props, "formFieldsByTab" | "onFormValueChange">) 
 
     return (
         <CatalogLauncherConfigurationCard
-            formFieldsByTab={formFieldsByTab}
+            formFieldsByTabName={formFieldsByTabName}
             onFormValueChange={onFormValueChange}
             {...props}
         />
@@ -127,5 +127,6 @@ export default meta;
 
 export const VueDefault = getStory({
     "className": css({ "width": 700 }),
+    "isDependency": true,
     "dependencyNamePackageNameOrGlobal": "rstudio"
 });

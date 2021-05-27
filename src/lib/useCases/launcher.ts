@@ -63,9 +63,12 @@ export declare namespace LauncherState {
 
 export type IndexedFormFields = {
     [dependencyNamePackageNameOrGlobal: string]: {
-        [tabName: string]: {
-            description?: string;
-            formFields: FormField[];
+        isDependency: boolean;
+        formFieldsByTabName: {
+            [tabName: string]: {
+                description?: string;
+                formFields: FormField[];
+            }
         }
     }
 };
@@ -129,7 +132,7 @@ const { reducer, actions } = createSlice({
             );
 
         },
-        "reset": ()=> id<LauncherState.NotInitialized>({
+        "reset": () => id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized"
         }),
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
@@ -165,7 +168,7 @@ const privateThunks = {
 
             const [dispatch, getState, dependencies] = args;
 
-            if( !isForContractPreview ){
+            if (!isForContractPreview) {
                 dispatch(actions.launchStarted());
             }
 
@@ -180,7 +183,7 @@ const privateThunks = {
                 "isDryRun": isForContractPreview
             });
 
-            if( !isForContractPreview ){
+            if (!isForContractPreview) {
                 dispatch(actions.launchCompleted());
             }
 
@@ -208,7 +211,7 @@ export const thunks = {
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
             assert(
-                getState().launcher.stateDescription === "not initialized", 
+                getState().launcher.stateDescription === "not initialized",
                 "the reset thunk need to be called before initializing again"
             );
 
@@ -283,87 +286,87 @@ export const thunks = {
 
                 return { mustacheParams };
 
-                })();
+            })();
 
-                const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
-                    { mustacheParams }
-                );
+            const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
+                { mustacheParams }
+            );
 
-                const { formFields } = (() => {
+            const { formFields } = (() => {
 
-                    const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
+                const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
 
-                    (function callee(
-                        params: {
-                            jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
-                            currentPath: string[];
+                (function callee(
+                    params: {
+                        jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+                        currentPath: string[];
+                    }
+                ): void {
+
+                    const {
+                        jsonSchemaObject: { properties },
+                        currentPath
+                    } = params;
+
+                    Object.entries(properties).forEach(([key, value]) => {
+
+                        const newCurrentPath = [...currentPath, key];
+
+                        if (value.type === "object") {
+                            callee({
+                                "currentPath": newCurrentPath,
+                                "jsonSchemaObject": value,
+                            });
+                        } else {
+                            formFields.push({
+                                "path": newCurrentPath,
+                                "title": value.title ?? newCurrentPath.slice(-1)[0],
+                                "description": value.description,
+                                "isReadonly": value["x-form"]?.readonly ?? false,
+                                "value": value["x-form"]?.value ?? value.default ?? null as any as never,
+                                "isHidden":
+                                    same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
+                                    (value["x-form"]?.hidden ?? false),
+                                "enum": value.type === "string" ? value.enum : undefined,
+                                "minimum": value.type === "number" ? value.minimum : undefined
+                            });
                         }
-                    ): void {
 
-                        const {
-                            jsonSchemaObject: { properties },
-                            currentPath
-                        } = params;
-
-                        Object.entries(properties).forEach(([key, value]) => {
-
-                            const newCurrentPath = [...currentPath, key];
-
-                            if (value.type === "object") {
-                                callee({
-                                    "currentPath": newCurrentPath,
-                                    "jsonSchemaObject": value,
-                                });
-                            } else {
-                                formFields.push({
-                                    "path": newCurrentPath,
-                                    "title": value.title ?? newCurrentPath.slice(-1)[0],
-                                    "description": value.description,
-                                    "isReadonly": value["x-form"]?.readonly ?? false,
-                                    "value": value["x-form"]?.value ?? value.default ?? null as any as never,
-                                    "isHidden":
-                                        same(onyxiaFriendlyNameFormFieldPath, newCurrentPath) ||
-                                        (value["x-form"]?.hidden ?? false),
-                                    "enum": value.type === "string" ? value.enum : undefined,
-                                    "minimum": value.type === "number" ? value.minimum : undefined
-                                });
-                            }
-
-                        });
-
-                    })({
-                        "currentPath": [],
-                        "jsonSchemaObject": config
                     });
 
-                    return { formFields };
+                })({
+                    "currentPath": [],
+                    "jsonSchemaObject": config
+                });
 
-                })();
+                return { formFields };
 
-                dispatch(
-                    actions.initialized({
-                        catalogId,
-                        packageName,
-                        "icon": await onyxiaApiClient.getCatalogs()
-                            .then(
-                                apiRequestResult => apiRequestResult
-                                    .find(({ id }) => id === catalogId)!
-                                    .catalog
-                                    .packages
-                                    .find(({ name }) => name === packageName)!
-                                    .icon
-                            ),
-                        sources,
-                        formFields,
-                        config,
-                        "dependencies": dependencies
-                            .filter(({ enabled }) => enabled)
-                            .map(({ name }) => name),
-                        formFieldsValueDifferentFromDefault
-                    })
-                );
+            })();
 
-            },
+            dispatch(
+                actions.initialized({
+                    catalogId,
+                    packageName,
+                    "icon": await onyxiaApiClient.getCatalogs()
+                        .then(
+                            apiRequestResult => apiRequestResult
+                                .find(({ id }) => id === catalogId)!
+                                .catalog
+                                .packages
+                                .find(({ name }) => name === packageName)!
+                                .icon
+                        ),
+                    sources,
+                    formFields,
+                    config,
+                    "dependencies": dependencies
+                        .filter(({ enabled }) => enabled)
+                        .map(({ name }) => name),
+                    formFieldsValueDifferentFromDefault
+                })
+            );
+
+        },
     "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
     "changeFormFieldValue":
         (
@@ -459,7 +462,7 @@ export const selectors = (() => {
             [...dependencies, "global"].forEach(
                 dependencyOrGlobal => {
 
-                    const formFieldsByTabName: IndexedFormFields[string] = {};
+                    const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] = {};
 
                     formFieldsRest
                         .filter(({ path }) => path[0] === dependencyOrGlobal)
@@ -498,14 +501,18 @@ export const selectors = (() => {
                         return;
                     }
 
-                    indexedFormFields[dependencyOrGlobal] = formFieldsByTabName;
+                    indexedFormFields[dependencyOrGlobal] = { 
+                        formFieldsByTabName, 
+                        "isDependency": dependencyOrGlobal !== "global",
+                    };
 
                 }
             );
 
             {
 
-                const formFieldsByTabName: IndexedFormFields[string] = indexedFormFields[packageName] ?? {};
+                const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] = 
+                    indexedFormFields[packageName]?.formFieldsByTabName ?? {};
 
                 formFieldsRest
                     .forEach(
@@ -522,8 +529,10 @@ export const selectors = (() => {
                             ).formFields.push(formField)
                     );
 
-
-                indexedFormFields[packageName] = formFieldsByTabName;
+                indexedFormFields[packageName] = {
+                    formFieldsByTabName,
+                    "isDependency": false
+                };
 
             }
 

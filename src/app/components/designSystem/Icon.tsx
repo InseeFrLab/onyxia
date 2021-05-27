@@ -41,6 +41,7 @@ import Bookmark from "@material-ui/icons/Bookmark";
 import BookmarkBorder from "@material-ui/icons/BookmarkBorder";
 import Code from "@material-ui/icons/Code";
 import Link from "@material-ui/icons/Link";
+import SubdirectoryArrowRight from "@material-ui/icons/SubdirectoryArrowRight";
 
 import { noUndefined } from "app/tools/noUndefined";
 import type { PickOptionals } from "tsafe";
@@ -60,7 +61,7 @@ const materialType = [
     "cached", "closeSharp", "infoOutlined", "brightness7", "brightness4",
     "translate", "visibility", "visibilityOff", "getApp", "replay",
     "help", "search", "cancel", "bookmark", "bookmarkBorder", "code",
-    "link"
+    "link", "subdirectoryArrowRight"
 ] as const;
 
 export type MaterialType = typeof materialType[number];
@@ -155,6 +156,7 @@ export const Icon = memo(forwardRef<SVGSVGElement, Props>((props, ref) => {
             case "bookmarkBorder": return BookmarkBorder;
             case "code": return Code;
             case "link": return Link;
+            case "subdirectoryArrowRight": return SubdirectoryArrowRight;
         }
 
     })();
