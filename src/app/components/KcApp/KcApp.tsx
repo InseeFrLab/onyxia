@@ -12,6 +12,7 @@ import { Info } from "keycloakify/lib/components/Info"
 import { Error } from "keycloakify/lib/components/Error"
 import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPassword"
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail"
+import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { getBrowser }  from "app/tools/getBrowser";
 import { Terms } from "./Terms";
 
@@ -116,7 +117,8 @@ export const KcApp = memo((props: Props) => {
         case "error.ftl": return <Error {...{ kcContext, ...kcProps }} />;
         case "login-reset-password.ftl": return <LoginResetPassword {...{ kcContext, ...kcProps }} />;
         case "login-verify-email.ftl": return <LoginVerifyEmail {...{ kcContext, ...kcProps }} />;
-        case "terms.ftl": return <Terms {...{ kcContext, ...kcProps }} />
+        case "terms.ftl": return <Terms {...{ kcContext, ...kcProps }} />;
+        case "login-otp.ftl": return <LoginOtp {...{ kcContext, ...kcProps }}/>;
     }
 
 });
