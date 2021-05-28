@@ -8,6 +8,7 @@ import { noUndefined } from "app/tools/noUndefined";
 import type { Props as IconProps } from "./Icon";
 import { Icon } from "./Icon";
 import { useGuaranteedMemo } from "powerhooks";
+import { capitalize } from "app/tools/capitalize";
 
 export type Props = {
 
@@ -100,6 +101,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                 ];
 
                 return {
+                    "textTransform": "unset" as const,
                     "backgroundColor":
                         disabled ?
                             theme.custom.colors.useCases.buttons.actionDisabledBackground :
@@ -193,7 +195,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, Props>((props, ref) => 
             id={id ?? undefined}
             {...rest}
         >
-            {children}
+            {typeof children === "string" ? capitalize(children): children}
         </MuiButton>
     );
 

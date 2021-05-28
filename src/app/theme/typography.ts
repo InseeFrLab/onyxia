@@ -13,32 +13,32 @@ export const typography = {
 
     "h2": {
         "fontWeight": "bold",
-        "fontSize": "48px",
-        "lineHeight": 1.2
+        "fontSize": "36px",
+        "lineHeight": 1.11
     },
 
     "h3": {
         "fontWeight": 500,
-        "fontSize": "34px",
-        "lineHeight": 1.2
+        "fontSize": "28px",
+        "lineHeight": 1.29
     },
 
     "h4": {
         "fontWeight": "bold",
-        "fontSize": "28px",
-        "lineHeight": 1.15
+        "fontSize": "24px",
+        "lineHeight": 1.33
     },
 
     "h5": {
         "fontWeight": 600,
-        "fontSize": "22px",
-        "lineHeight": 1.1
+        "fontSize": "20px",
+        "lineHeight": 1.2
     },
 
     "h6": {
         "fontWeight": 500,
         "fontSize": "20px",
-        "lineHeight": 1.1
+        "lineHeight": 1.2
     },
 
     "subtitle1": {
@@ -66,10 +66,9 @@ export const typography = {
     },
 
     "button": {
-        "fontWeight": 500,
-        "fontSize": "18px",
-        "lineHeight": 1.10,
-        "textTransform": "uppercase"
+        "fontWeight": 600,
+        "fontSize": "20px",
+        "lineHeight": 1.2
     },
 
     "caption": {

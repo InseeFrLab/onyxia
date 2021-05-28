@@ -46,7 +46,7 @@ export type Props = {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "padding": theme.spacing(2, 0),
+            "paddingBottom": theme.spacing(2),
             "overflow": "visible"
         },
         "nav": {
