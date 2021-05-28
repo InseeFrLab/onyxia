@@ -1,3 +1,7 @@
+### **0.10.2** (2021-05-28)  
+  
+- Multiple ui fixes    
+  
 ### **0.10.1** (2021-05-27)  
   
 - Launcher: Fix broken 0.10 release  
