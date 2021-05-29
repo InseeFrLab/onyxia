@@ -53,7 +53,7 @@ export declare namespace LauncherState {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: { path: string[]; }[];
             formFields: (FormField & { isHidden: boolean; })[];
             defaultFormFieldsValue: FormFieldValue[];
-            dependencies: string[];
+            dependencies?: string[];
             config: Public_Catalog_CatalogId_PackageName["config"];
         };
         launchState: "not launching" | "launching" | "launched";
@@ -63,7 +63,14 @@ export declare namespace LauncherState {
 
 export type IndexedFormFields = {
     [dependencyNamePackageNameOrGlobal: string]: {
-        isDependency: boolean;
+        meta: {
+            type: "dependency";
+        } | {
+            type: "package";
+        } | {
+            type: "global";
+            description?: string;
+        };
         formFieldsByTabName: {
             [tabName: string]: {
                 description?: string;
@@ -501,9 +508,16 @@ export const selectors = (() => {
                         return;
                     }
 
-                    indexedFormFields[dependencyOrGlobal] = { 
-                        formFieldsByTabName, 
-                        "isDependency": dependencyOrGlobal !== "global",
+                    indexedFormFields[dependencyOrGlobal] = {
+                        formFieldsByTabName,
+                        "meta":
+                            dependencyOrGlobal === "global" ?
+                                {
+                                    "type": "global",
+                                    "description": config?.properties["global"].description,
+                                } : {
+                                    "type": "dependency",
+                                }
                     };
 
                 }
@@ -511,7 +525,7 @@ export const selectors = (() => {
 
             {
 
-                const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] = 
+                const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] =
                     indexedFormFields[packageName]?.formFieldsByTabName ?? {};
 
                 formFieldsRest
@@ -531,7 +545,7 @@ export const selectors = (() => {
 
                 indexedFormFields[packageName] = {
                     formFieldsByTabName,
-                    "isDependency": false
+                    "meta": { "type": "package" }
                 };
 
             }
