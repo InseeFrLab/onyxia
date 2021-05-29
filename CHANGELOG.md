@@ -1,3 +1,7 @@
+### **0.10.3** (2021-05-28)  
+  
+- Upgrate keycloakify    
+  
 ### **0.10.2** (2021-05-28)  
   
 - Multiple ui fixes    
