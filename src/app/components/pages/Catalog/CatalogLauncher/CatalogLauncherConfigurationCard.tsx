@@ -22,17 +22,14 @@ import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue
 import { useCallbackFactory } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import { Icon } from "app/components/designSystem/Icon";
+import { useTranslation } from "app/i18n/useTranslations";
+import type { IndexedFormFields } from "lib/useCases/launcher";
 
 export type Props = {
     className?: string;
     dependencyNamePackageNameOrGlobal: string;
-    isDependency: boolean;
-    formFieldsByTabName: {
-        [tabName: string]: {
-            formFields: FormField[];
-            description?: string;
-        }
-    };
+    meta: IndexedFormFields[string]["meta"];
+    formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"];
     onFormValueChange(params: FormFieldValue): void;
 };
 
@@ -60,8 +57,8 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const {
         className,
         dependencyNamePackageNameOrGlobal,
+        meta,
         formFieldsByTabName,
-        isDependency,
         onFormValueChange
     } = props;
 
@@ -82,13 +79,29 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
 
     const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
+
     return (
         <div className={cx(classNames.root, className)}>
             <Header
-                text={dependencyNamePackageNameOrGlobal}
-                isDependency={isDependency}
+                packageName={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}
                 onIsCollapsedValueChange={tabs.length === 0 ? undefined : onIsCollapsedValueChange}
+                {...(() => {
+                    switch (meta.type) {
+                        case "dependency": return {
+                            "type": "dependency",
+                            "dependencyName": dependencyNamePackageNameOrGlobal
+                        } as const;
+                        case "global": return {
+                            "type": "global",
+                            "description": meta.description
+                        } as const;
+                        case "package": return {
+                            "type": "package",
+                            "packageName": dependencyNamePackageNameOrGlobal
+                        } as const;
+                    }
+                })()}
             />
             {activeTabId !== undefined &&
                 <Tabs
@@ -109,25 +122,42 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     );
 });
 
+export declare namespace CatalogLauncherConfigurationCard {
+
+    export type I18nScheme = {
+        'global config': undefined;
+        'configuration': { packageName: string; };
+        'dependency': { dependencyName: string; };
+        'launch of a service': { dependencyName: string; };
+    };
+
+}
+
 const { Header } = (() => {
 
     type Props = {
         className?: string;
-        text: string;
         isCollapsed: boolean;
-        isDependency: boolean;
         onIsCollapsedValueChange?(): void;
-    };
+    } & ({
+        type: "dependency";
+        dependencyName: string;
+    } | {
+        type: "package"
+        packageName: string;
+    } | {
+        type: "global"
+        description?: string;
+    });
 
     const { useClassNames } = createUseClassNames<{
         isCollapsed: boolean;
         isExpandIconVisible: boolean;
-        isDependency: boolean;
     }>()(
-        (theme, { isCollapsed, isExpandIconVisible, isDependency }) => ({
+        (theme, { isCollapsed, isExpandIconVisible }) => ({
             "root": {
                 "display": "flex",
-                "padding": theme.spacing(1, 3),
+                "padding": theme.spacing(0, 3),
                 "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
                 "cursor": "pointer",
                 "borderBottom": isCollapsed ?
@@ -148,8 +178,14 @@ const { Header } = (() => {
                 "display": "flex",
                 "alignItems": "center"
             },
-            "dependencyIcon": {
-                "visibility": isDependency ? undefined : "hidden"
+            "titleWrapper": {
+                "display": "flex",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "margin": theme.spacing(2, 0)
+            },
+            "subtitle": {
+                "marginTop": theme.spacing(1)
             }
         })
     );
@@ -157,30 +193,64 @@ const { Header } = (() => {
     const Header = memo(
         (props: Props) => {
 
-            const { className, text, isCollapsed, isDependency, onIsCollapsedValueChange } = props;
+            const { className, isCollapsed, onIsCollapsedValueChange } = props;
 
             const { classNames } = useClassNames({
                 isCollapsed,
-                "isExpandIconVisible": onIsCollapsedValueChange !== undefined,
-                isDependency
+                "isExpandIconVisible": onIsCollapsedValueChange !== undefined
             });
+
+            const { t } = useTranslation("CatalogLauncherConfigurationCard");
 
             return (
                 <div
                     className={cx(classNames.root, className)}
                     onClick={onIsCollapsedValueChange}
                 >
-                    <Typography
-                        variant="h5"
-                        className={classNames.title}
-                    >
-                        <Icon
-                            type="subdirectoryArrowRight"
-                            className={classNames.dependencyIcon}
-                        />
-                        {isDependency && <>&nbsp;</>}
-                        {capitalize(text)}
-                    </Typography>
+                    <div className={classNames.titleWrapper}>
+                        <Typography
+                            variant="h5"
+                            className={classNames.title}
+                        >
+                            {(() => {
+                                switch (props.type) {
+                                    case "dependency": return (
+                                        <>
+                                            <Icon type="subdirectoryArrowRight" />
+                                            &nbsp;
+                                            {t("dependency", { "dependencyName": capitalize(props.dependencyName) })}
+                                        </>
+                                    );
+                                    case "global": return t("global config");
+                                    case "package": return t(
+                                        "configuration",
+                                        { "packageName": capitalize(props.packageName) }
+                                    );
+                                }
+                            })()}
+                        </Typography>
+                        {(() => {
+                            switch (props.type) {
+                                case "dependency":
+                                    return (
+                                        <Typography variant="body2" className={classNames.subtitle}>
+                                            {t(
+                                                "launch of a service",
+                                                {
+                                                    "dependencyName": capitalize(props.dependencyName)
+                                                })}
+                                        </Typography>
+                                    );
+                                case "global":
+                                    return props.description === undefined ? null :
+                                        <Typography variant="body2" className={classNames.subtitle}>
+                                            {capitalize(props.description)}
+                                        </Typography>;
+                                case "package":
+                                    return null;
+                            }
+                        })()}
+                    </div>
                     <div style={{ "flex": 1 }} />
                     <IconButton
                         onClick={onIsCollapsedValueChange}

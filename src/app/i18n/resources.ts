@@ -27,6 +27,7 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
+import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -62,6 +63,7 @@ const reflectedI18nSchemes = {
     [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
     [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -316,6 +318,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Cancel",
             "copy url helper text": "Copy url to restore this configuration",
             "save configuration": "Save this configuration"
+        },
+        "CatalogLauncherConfigurationCard": {
+            "global config": "Global configuration",
+            "configuration": "{{packageName}} configurations",
+            "dependency": "{{dependencyName}} dependency",
+            "launch of a service": "A {{dependencyName}} service will be launched",
         }
     },
     "fr": {
@@ -537,6 +545,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Annuler",
             "copy url helper text": "Copier l'URL permettant de restaurer cette configuration",
             "save configuration": "Enregistrer cette configuration"
+        },
+        "CatalogLauncherConfigurationCard": {
+            "global config": "Configurations globales",
+            "configuration": "Configuration {{packageName}}",
+            "dependency": "Dépendance {{dependencyName}}",
+            "launch of a service": "Lancement d'un service {{dependencyName}}",
         }
         /* spell-checker: enable */
     }
