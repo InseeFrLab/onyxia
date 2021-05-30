@@ -19,6 +19,7 @@ import {
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
+import { ZoomProvider } from "app/theme/ZoomProvider";
 
 
 
@@ -91,23 +92,22 @@ function Root() {
         }
     );
 
+
     return (
         <React.StrictMode>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider
-                        isDarkModeEnabled={isDarkModeEnabled}
-                        zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
-                        //zoomProviderReferenceWidth={undefined}
-                    >
-                        <SplashScreenProvider>
-                            {kcContext !== undefined ?
-                                <KcApp kcContext={kcContext} /> :
-                                <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
-                                    <App />
-                                </StoreProvider>
-                            }
-                        </SplashScreenProvider>
+                    <ThemeProvider isDarkModeEnabled={isDarkModeEnabled} >
+                        <ZoomProvider zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}>
+                            <SplashScreenProvider>
+                                {kcContext !== undefined ?
+                                    <KcApp kcContext={kcContext} /> :
+                                    <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
+                                        <App />
+                                    </StoreProvider>
+                                }
+                            </SplashScreenProvider>
+                        </ZoomProvider>
                     </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>
