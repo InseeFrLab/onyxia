@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useState, memo } from "react";
 import MuiDialog from '@material-ui/core/Dialog';
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { Typography } from "app/components/designSystem/Typography";
 import Checkbox from "@material-ui/core/Checkbox";
 import { useConstCallback } from "powerhooks";
@@ -41,8 +41,8 @@ const { useClassNames } = createUseClassNames()(
             "flex": 1
         },
         "paper": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.custom.shadows[7],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[7],
             "borderRadius": 5,
             "maxWidth": 573
         },
@@ -51,7 +51,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "body": {
             "marginTop": theme.spacing(1),
-            "color": theme.custom.colors.useCases.typography.textSecondary
+            "color": theme.colors.useCases.typography.textSecondary
         }
 
     })

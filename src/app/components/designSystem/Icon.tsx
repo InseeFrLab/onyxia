@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import type { MouseEventHandler } from "react";
@@ -96,8 +96,8 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
     (theme, { color }) => ({
         "root": {
             "color": color === "limeGreen" ?
-                theme.custom.colors.palette.limeGreen.main :
-                theme.custom.colors.useCases.typography[color],
+                theme.colors.palette.limeGreen.main :
+                theme.colors.useCases.typography[color],
             // https://stackoverflow.com/a/24626986/3731798
             //"verticalAlign": "top",
             //"display": "inline-block"

@@ -1,7 +1,7 @@
 
 
 import { memo, forwardRef } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import MuiPaper from "@material-ui/core/Paper";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
@@ -21,8 +21,8 @@ export const defaultProps: PickOptionals<Props> = {
 const { useClassNames } = createUseClassNames<Required<Props>>()(
     (theme, { elevation }) => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.custom.shadows[elevation]
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[elevation]
         }
     })
 );

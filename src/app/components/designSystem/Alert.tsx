@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { IconButton } from "./IconButton";
 import MuiAlert from "@material-ui/lab/Alert";
 import { Typography } from "app/components/designSystem/Typography";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import { cx }  from "tss-react";
@@ -24,10 +24,10 @@ export const defaultProps: PickOptionals<Props> = {
 const { useClassNames } = createUseClassNames<Required<Props>>()(
     (theme, { severity }) => ({
         "root": {
-            "color": theme.custom.colors.useCases.typography.textPrimary,
-            "backgroundColor": theme.custom.colors.useCases.alertSeverity[severity].background,
+            "color": theme.colors.useCases.typography.textPrimary,
+            "backgroundColor": theme.colors.useCases.alertSeverity[severity].background,
             "& $icon": {
-                "color": theme.custom.colors.useCases.alertSeverity[severity].main
+                "color": theme.colors.useCases.alertSeverity[severity].main
             }
         },
         "text": {

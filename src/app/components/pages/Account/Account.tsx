@@ -16,7 +16,7 @@ import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 
 Account.routeGroup = createGroup([
     routes.account
@@ -36,7 +36,7 @@ const { useClassNames } = createUseClassNames()(
         "tabs": {
             "borderRadius": 8,
             "overflow": "hidden",
-            "boxShadow": theme.custom.shadows[1]
+            "boxShadow": theme.shadows[1]
         }
     })
 );

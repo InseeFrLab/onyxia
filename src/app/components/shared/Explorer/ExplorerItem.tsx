@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useState, useEffect, useMemo, memo } from "react";
 import { useConstCallback } from "powerhooks";
 //import { Input } from "app/components/designSystem/textField/Input";
@@ -76,7 +76,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
             "color": (() => {
 
-                const color = new Color(theme.palette.text.primary).rgb();
+                const color = new Color(theme.colors.useCases.typography.textPrimary).rgb();
 
                 return color
                     .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))

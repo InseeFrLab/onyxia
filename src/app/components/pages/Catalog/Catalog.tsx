@@ -3,7 +3,7 @@ import { createGroup } from "type-route";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useLng } from "app/i18n/useLng";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";

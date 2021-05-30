@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useMemo, memo } from "react";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
@@ -23,11 +23,11 @@ const { useClassNames } = createUseClassNames<Props>()(
             "fill": "currentColor",
             "color": (() => {
                 switch (kind) {
-                    case "directory": return theme.custom.colors.palette.exuberantOrange.main;
+                    case "directory": return theme.colors.palette.exuberantOrange.main;
                     case "file": return (() => {
-                        switch (theme.palette.type) {
-                            case "light": return theme.custom.colors.palette.midnightBlue.main;
-                            case "dark": return theme.custom.colors.palette.whiteSnow.main;
+                        switch (theme.paletteType) {
+                            case "light": return theme.colors.palette.midnightBlue.main;
+                            case "dark": return theme.colors.palette.whiteSnow.main;
                         }
                     })();
                 }

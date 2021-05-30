@@ -8,9 +8,9 @@ import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes/router";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
-import { themeProviderFactory } from "app/theme/ThemeProvider";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
-import { SplashScreenProvider } from "app/components/shared/SplashScreen";
+import { onyxiaThemeProviderFactory } from "onyxia-design/OnyxiaThemeProvider";
+import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
+import { SplashScreenProvider } from "onyxia-design/splashScreen";
 import { App } from "app/components/App";
 import { useLng } from "app/i18n/useLng";
 import {
@@ -19,11 +19,11 @@ import {
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
-import { ZoomProvider } from "app/theme/ZoomProvider";
+import { ZoomProvider } from "app/tools/ZoomProvider";
 
 
 
-const { ThemeProvider } = themeProviderFactory(
+const { OnyxiaThemeProvider } = onyxiaThemeProviderFactory(
     { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
 );
 
@@ -97,7 +97,7 @@ function Root() {
         <React.StrictMode>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={isDarkModeEnabled} >
+                    <OnyxiaThemeProvider isDarkModeEnabled={isDarkModeEnabled} >
                         <ZoomProvider zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}>
                             <SplashScreenProvider>
                                 {kcContext !== undefined ?
@@ -108,7 +108,7 @@ function Root() {
                                 }
                             </SplashScreenProvider>
                         </ZoomProvider>
-                    </ThemeProvider>
+                    </OnyxiaThemeProvider>
                 </RouteProvider>
             </I18nProvider>
         </React.StrictMode>

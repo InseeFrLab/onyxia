@@ -1,7 +1,7 @@
 
 
 
-import { createMuiTheme as muiCreateMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
+import { createMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
 import { responsiveFontSizes } from "@material-ui/core/styles";
 
 // @ts-ignore: unused
@@ -28,7 +28,7 @@ declare module "@material-ui/core/styles/createMuiTheme" {
     }
 }
 
-export function createMuiTheme(
+export function createTheme(
     params: {
         isReactStrictModeEnabled: boolean;
         isDarkModeEnabled: boolean;
@@ -43,7 +43,7 @@ export function createMuiTheme(
         responsiveFontSizes( //https://material-ui.com/customization/theming/#responsivefontsizes-theme-options-theme
             (isReactStrictModeEnabled ?
                 unstable_createMuiStrictModeTheme :
-                muiCreateMuiTheme
+                createMuiTheme
             )({ // https://material-ui.com/customization/palette/#using-a-color-object
                 "typography": muiTypographyOptions,
                 "palette": getMuiPaletteOption(paletteType),

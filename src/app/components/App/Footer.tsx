@@ -1,7 +1,7 @@
 
 
 import { memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -17,17 +17,17 @@ export type Props = {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background,
             "display": "flex",
             "alignItems": "center",
             "padding": theme.spacing(0, 3),
             "& a:hover": {
                 "textDecoration": "underline",
-                "textDecorationColor": theme.custom.colors.useCases.typography.textPrimary
+                "textDecorationColor": theme.colors.useCases.typography.textPrimary
             }
         },
         "icon": {
-            "fill": theme.custom.colors.useCases.typography.textPrimary
+            "fill": theme.colors.useCases.typography.textPrimary
         },
         "contribute": {
             "display": "flex",

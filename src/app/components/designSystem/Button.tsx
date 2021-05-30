@@ -1,6 +1,6 @@
 
 import { forwardRef, memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import MuiButton from "@material-ui/core/Button";
 import type { PickOptionals } from "tsafe";
@@ -57,7 +57,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
     (theme, { color, disabled }) => {
 
         const textColor = ({ color, disabled }: Pick<Required<Props>, "color" | "disabled">) =>
-            theme.custom.colors.useCases.typography[
+            theme.colors.useCases.typography[
             disabled ?
                 "textDisabled" :
                 (() => {
@@ -71,9 +71,9 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
             ];
 
         const hoverTextColor = ({ color }: Pick<Required<Props>, "color" | "disabled">) => {
-            switch (theme.palette.type) {
+            switch (theme.paletteType) {
                 case "dark":
-                    return theme.custom.colors.palette[(() => {
+                    return theme.colors.palette[(() => {
                         switch (color) {
                             case "primary": return "whiteSnow";
                             case "secondary": 
@@ -81,7 +81,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                                 return "midnightBlue";
                         }
                     })()].main;
-                case "light": return theme.custom.colors.palette.whiteSnow.main;
+                case "light": return theme.colors.palette.whiteSnow.main;
             }
         };
 
@@ -89,7 +89,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
         return {
             "root": (() => {
 
-                const hoverBackgroundColor = theme.custom.colors.useCases.buttons[
+                const hoverBackgroundColor = theme.colors.useCases.buttons[
                     (() => {
                         switch (color) {
                             case "primary": return "actionHoverPrimary";
@@ -104,14 +104,14 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
                     "textTransform": "unset" as const,
                     "backgroundColor":
                         disabled ?
-                            theme.custom.colors.useCases.buttons.actionDisabledBackground :
+                            theme.colors.useCases.buttons.actionDisabledBackground :
                             (() => {
                                 switch (color) {
                                     case "primary":
                                     case "secondary":
                                         return "transparent";
                                     case "ternary":
-                                        return theme.custom.colors.useCases.surfaces.background;
+                                        return theme.colors.useCases.surfaces.background;
                                 }
                             })(),
                     "height": 36,

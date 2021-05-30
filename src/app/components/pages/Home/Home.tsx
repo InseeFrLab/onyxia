@@ -5,7 +5,7 @@ import "./style.scss";
 import { useTheme } from "@material-ui/core/styles";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import {  css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
@@ -37,7 +37,7 @@ const { useClassNames } = createUseClassNames()(
 		"hero": {
 			"paddingBottom": theme.spacing(4),
 			"backgroundImage": `url(${(() => {
-					switch (theme.palette.type) {
+					switch (theme.paletteType) {
 						case "dark": return dotsDarkSvgUrl;
 						case "light": return dotsLightSvgUrl;
 					}
@@ -56,8 +56,8 @@ const { useClassNames } = createUseClassNames()(
 			},
 		},
 		"cardsWrapper": {
-			"borderTop": `1px solid ${theme.custom.colors.useCases.typography.textPrimary}`,
-			"borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`,
+			"borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
+			"borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
 			"marginRight": theme.spacing(3),
 			"display": "flex",
 			"padding": theme.spacing(3, 0),
@@ -69,7 +69,7 @@ const { useClassNames } = createUseClassNames()(
 			"margin": theme.spacing(0, 2)
 		},
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main,
+            "fill": theme.colors.palette.exuberantOrange.main,
 			"width": 122
         }
 	})

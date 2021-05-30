@@ -3,7 +3,7 @@ import { Template } from "./Template";
 import type { KcContext, KcProps } from "keycloakify";
 import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
 import { Button } from "app/components/designSystem/Button";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 
 const { useClassNames } = createUseClassNames()(
@@ -18,7 +18,7 @@ const { useClassNames } = createUseClassNames()(
         },
         "markdownWrapper": {
             "& a": {
-                "color": theme.custom.colors.useCases.buttons.actionActive
+                "color": theme.colors.useCases.buttons.actionActive
             },
             "& a:hover": {
                 "textDecoration": "underline"

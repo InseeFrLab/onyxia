@@ -1,6 +1,6 @@
 import { useRef, useState, memo } from "react";
 import type { ChangeEventHandler } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { Icon } from "app/components/designSystem/Icon";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -23,31 +23,31 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "root": {
             "borderRadius": 8,
             "overflow": "hidden",
-            "boxShadow": theme.custom.shadows[1],
+            "boxShadow": theme.shadows[1],
             "& > div": {
                 "display": "flex",
                 "alignItems": "center",
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
+                "backgroundColor": theme.colors.useCases.surfaces.surface1,
                 "cursor": isActive ? undefined : "pointer",
                 "overflow": "hidden",
                 "border": "solid 2px transparent",
                 "&:hover": {
-                    "borderBottomColor": theme.custom.colors.useCases.buttons.actionActive,
+                    "borderBottomColor": theme.colors.useCases.buttons.actionActive,
                 }
             }
         },
         "input": {
             "flex": 1,
-            "caretColor": theme.custom.colors.useCases.typography.textFocus,
-            "fontFamily": theme.custom.typography.fontFamily,
-            ...theme.custom.typography.body1,
+            "caretColor": theme.colors.useCases.typography.textFocus,
+            "fontFamily": theme.typography.fontFamily,
+            ...theme.typography.body1,
             "outline": "none",
             "borderWidth":0,
             "border":"none",
             "backgroundColor": "transparent",
-            "color": theme.custom.colors.useCases.typography.textPrimary,
+            "color": theme.colors.useCases.typography.textPrimary,
             "&::placeholder": { 
-                "color": theme.custom.colors.useCases.typography.textDisabled,
+                "color": theme.colors.useCases.typography.textDisabled,
                 "opacity": 1
             }
         },
@@ -57,8 +57,8 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "searchLabel": {
             "display": "block",
             "flex": 1,
-            ...theme.custom.typography.button,
-            "color": theme.custom.colors.useCases.typography.textPrimary
+            ...theme.typography.button,
+            "color": theme.colors.useCases.typography.textPrimary
         }
     })
 );

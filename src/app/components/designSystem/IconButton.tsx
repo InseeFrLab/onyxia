@@ -1,6 +1,6 @@
 
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import MuiIconButton from "@material-ui/core/IconButton";
@@ -37,7 +37,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
             "&:hover": {
                 "backgroundColor": "unset",
                 "& svg": {
-                    "color": theme.custom.colors.useCases.buttons.actionHoverPrimary,
+                    "color": theme.colors.useCases.buttons.actionHoverPrimary,
                 }
             }
         }

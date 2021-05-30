@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks";
 import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "app/components/designSystem/TextField";
 import { Typography } from "app/components/designSystem/Typography";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { TextField } from "app/components/designSystem/TextField";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
@@ -134,7 +134,7 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
                 "textOverflow": "ellipsis",
                 "color": !isFlashing ?
                     undefined :
-                    theme.custom.colors.useCases.buttons.actionActive,
+                    theme.colors.useCases.buttons.actionActive,
             },
             "& .MuiTextField-root": {
                 "width": "100%",
@@ -145,7 +145,7 @@ const { useClassNames } = createUseClassNames<{ isFlashing: boolean; }>()(
             "marginRight": theme.spacing(1)
         },
         "noText": {
-            "color": theme.custom.colors.useCases.typography.textDisabled
+            "color": theme.colors.useCases.typography.textDisabled
         }
     })
 );

@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { forwardRef, memo } from "react";
 import MuiTypography from "@material-ui/core/Typography";
@@ -27,7 +27,7 @@ export const defaultProps: PickOptionals<Props> = {
 const { useClassNames } = createUseClassNames<Required<Props>>()(
     (theme, { color, onClick }) => ({
         "root": {
-            "color": theme.custom.colors.useCases.typography[(() => {
+            "color": theme.colors.useCases.typography[(() => {
                 switch (color) {
                     case "primary": return "textPrimary";
                     case "secondary": return "textSecondary";

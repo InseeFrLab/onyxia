@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { Tooltip } from "app/components/designSystem/Tooltip";
 import { Icon } from "app/components/designSystem/Icon";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 
 export type Props = {

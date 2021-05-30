@@ -12,7 +12,7 @@ import { same } from "evt/tools/inDepth/same";
 import { useState, useMemo, memo } from "react";
 import { Tabs } from "app/components/shared/Tabs";
 import MuiTextField from "@material-ui/core/TextField";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { Typography } from "app/components/designSystem/Typography";
 import { cx } from "tss-react";
@@ -38,7 +38,7 @@ const { useClassNames } = createUseClassNames()(
         "root": {
             "borderRadius": 8,
             "overflow": "hidden",
-            "boxShadow": theme.custom.shadows[1]
+            "boxShadow": theme.shadows[1]
         },
         "collapsedPanel": {
             "maxHeight": 0,
@@ -158,17 +158,17 @@ const { Header } = (() => {
             "root": {
                 "display": "flex",
                 "padding": theme.spacing(0, 3),
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
+                "backgroundColor": theme.colors.useCases.surfaces.surface1,
                 "cursor": "pointer",
                 "borderBottom": isCollapsed ?
                     undefined :
-                    `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`
+                    `1px solid ${theme.colors.useCases.typography.textTertiary}`
             },
             "expandIcon": {
                 "& svg": {
-                    "transition": theme.transitions.create(
+                    "transition": theme.muiTheme.transitions.create(
                         ["transform"],
-                        { "duration": theme.transitions.duration.short }
+                        { "duration": theme.muiTheme.transitions.duration.short }
                     ),
                     "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
                     "visibility": isExpandIconVisible ? undefined : "hidden"

@@ -2,7 +2,7 @@
 import { memo } from "react";
 import type { ReactNode, ReactElement } from "react";
 import MuiTooltip from "@material-ui/core/Tooltip";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { Typography } from "app/components/designSystem/Typography";
 
 export type Props = {
@@ -14,7 +14,7 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
     theme => ({
         "root": {
-            "color": theme.custom.colors.palette.whiteSnow.light
+            "color": theme.colors.palette.whiteSnow.light
         }
     })
 );

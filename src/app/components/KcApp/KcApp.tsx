@@ -1,9 +1,9 @@
 
 import { useEffect, useState, memo } from "react";
-import { hideSplashScreen, setSplashScreenFadeOutDuration } from "app/components/shared/SplashScreen";
+import { hideSplashScreen, setSplashScreenFadeOutDuration } from "onyxia-design/splashScreen";
 import type { KcContext } from "keycloakify";
 import  { defaultKcProps } from "keycloakify";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Login } from "./Login"
@@ -30,23 +30,23 @@ const { useClassNames } = createUseClassNames()(
         "kcHtmlClass": {
             "& body": {
                 "background": `url(${(()=>{
-                    switch(theme.palette.type){
+                    switch(theme.paletteType){
                         case "dark": return onyxiaNeumorphismDarkModeUrl;
                         case "light": return onyxiaNeumorphismLightModeUrl;
                     }
                 })()}) no-repeat center center fixed !important`,
                 "fontFamily": theme.typography.fontFamily,
             },
-            "background": `${theme.custom.colors.useCases.surfaces.background} !important`,
+            "background": `${theme.colors.useCases.surfaces.background} !important`,
             "& a": {
-                "color": `${theme.custom.colors.palette.exuberantOrange.main} !important`
+                "color": `${theme.colors.palette.exuberantOrange.main} !important`
             },
             "& #kc-current-locale-link": {
-                "color": `${theme.custom.colors.palette.whiteSnow.greyVariant3} !important`
+                "color": `${theme.colors.palette.whiteSnow.greyVariant3} !important`
             },
             "& label": {
                 "fontSize": 14,
-                "color": theme.custom.colors.palette.whiteSnow.greyVariant3,
+                "color": theme.colors.palette.whiteSnow.greyVariant3,
                 "fontWeight": "normal"
             },
             "& #kc-page-title": theme.typography.h2 as any,
@@ -61,10 +61,10 @@ const { useClassNames } = createUseClassNames()(
         "kcButtonPrimaryClass": {
             "backgroundColor": "unset !important",
             "backgroundImage": "unset !important",
-            "borderColor": `${theme.custom.colors.palette.exuberantOrange.main} !important`,
+            "borderColor": `${theme.colors.palette.exuberantOrange.main} !important`,
             "borderWidth": "2px !important",
             "borderRadius": `20px !important`,
-            "color": `${theme.custom.colors.palette.exuberantOrange.main} !important`,
+            "color": `${theme.colors.palette.exuberantOrange.main} !important`,
             "textTransform": "uppercase"
 
         },
@@ -72,10 +72,10 @@ const { useClassNames } = createUseClassNames()(
             "borderRadius": "unset !important",
             "border": "unset !important",
             "boxShadow": "unset !important",
-            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary} !important`,
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary} !important`,
             "&:focus": {
                 "borderColor": `unset !important`,
-                "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textFocus} !important`,
+                "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus} !important`,
             }
 
         }

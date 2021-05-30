@@ -10,7 +10,7 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
 import { thunks } from "lib/setup";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import memoize from "memoizee";
@@ -34,7 +34,7 @@ const { useClassNames } = createUseClassNames()(
             "display": "inline-block"
         },
         "envVar": {
-            "color": theme.custom.colors.useCases.typography.textFocus
+            "color": theme.colors.useCases.typography.textFocus
         }
 
     })

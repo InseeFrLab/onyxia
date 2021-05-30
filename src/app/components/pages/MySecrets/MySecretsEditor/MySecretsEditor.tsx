@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks";
@@ -46,7 +46,7 @@ const { useClassNames } = createUseClassNames<Props>()(
                 "border": "unset"
             },
             "& .MuiTableHead-root": {
-                "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`
+                "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`
             },
             //So the error on the input of the last row is not cropped.
             "overflow": "visible"

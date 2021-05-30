@@ -1,7 +1,7 @@
 
 
 import { memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "app/components/designSystem/Typography";
 import { Button } from "app/components/designSystem/Button";
@@ -18,14 +18,14 @@ const { useClassNames } = createUseClassNames()(
     theme => ({
         "root": {
             "borderRadius": 8,
-            "boxShadow": theme.custom.shadows[7],
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[7],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "display": "flex",
             "flexDirection": "column"
         },
         "aboveDivider": {
             "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`,
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
             "boxSizing": "border-box",
             "display": "flex"
         },

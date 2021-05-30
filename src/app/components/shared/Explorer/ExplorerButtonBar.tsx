@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { memo } from "react";
 import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -25,8 +25,8 @@ export type Props = {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.custom.shadows[1],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[1],
             "borderRadius": "8px 0 0 8px",
             "overflow": "hidden"
         }
@@ -120,21 +120,21 @@ const { CustomButton } = (() => {
     };
 
     const { useClassNames } = createUseClassNames<CustomButtonProps>()(
-        ({ custom: { colors: { useCases } } }) => ({
+        theme => ({
             "root": {
                 "backgroundColor": "transparent",
                 "borderRadius": "unset",
                 "borderColor": "transparent",
                 "&.Mui-disabled .MuiButton-label": {
-                    "color": useCases.typography.textDisabled
+                    "color": theme.colors.useCases.typography.textDisabled
                 },
                 "& .MuiButton-label": {
-                    "color": useCases.typography.textPrimary
+                    "color": theme.colors.useCases.typography.textPrimary
                 },
                 "&:active .MuiButton-label": {
-                    "color": useCases.typography.textFocus,
+                    "color": theme.colors.useCases.typography.textFocus,
                     "& .MuiSvgIcon-root": {
-                        "color": useCases.typography.textFocus
+                        "color": theme.colors.useCases.typography.textFocus
                     }
                 },
                 "& .MuiTouchRipple-root": {
@@ -145,11 +145,11 @@ const { CustomButton } = (() => {
                     "transition": "none"
                 },
                 "&:hover": {
-                    "borderBottomColor": useCases.buttons.actionActive,
+                    "borderBottomColor": theme.colors.useCases.buttons.actionActive,
                     "boxSizing": "border-box",
                     "backgroundColor": "unset",
                     "& .MuiSvgIcon-root": {
-                        "color": useCases.typography.textPrimary
+                        "color": theme.colors.useCases.typography.textPrimary
                     }
                 }
             }
