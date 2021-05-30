@@ -1,3 +1,7 @@
+### **0.10.4** (2021-05-29)  
+  
+- Launcher: Display more informations    
+  
 ### **0.10.3** (2021-05-28)  
   
 - Upgrate keycloakify    
