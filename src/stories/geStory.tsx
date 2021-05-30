@@ -15,6 +15,7 @@ import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProv
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/routes/router";
 import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
+import { ZoomProvider } from "app/theme/ZoomProvider";
 import "./fonts.scss";
 
 const { ThemeProvider } = themeProviderFactory(
@@ -107,12 +108,14 @@ export function getStoryFactory<Props>(params: {
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={darkMode} zoomProviderReferenceWidth={undefined}>
-                        <StoreProviderOrFragment>
-                            <Container>
-                                <Component {...props} />
-                            </Container>
-                        </StoreProviderOrFragment>
+                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                        <ZoomProvider zoomProviderReferenceWidth={undefined}>
+                            <StoreProviderOrFragment>
+                                <Container>
+                                    <Component {...props} />
+                                </Container>
+                            </StoreProviderOrFragment>
+                        </ZoomProvider>
                     </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>;
