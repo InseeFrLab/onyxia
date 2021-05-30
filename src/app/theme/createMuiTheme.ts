@@ -1,14 +1,14 @@
 
 
 
-import { createMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
+import { createMuiTheme as muiCreateMuiTheme, unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
 import { responsiveFontSizes } from "@material-ui/core/styles";
 
 // @ts-ignore: unused
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Theme, ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
 
-import { typography, muiTypographyOptions } from "./typography";
+import { muiTypographyOptions, typography } from "./typography";
 import { getColors, getMuiPaletteOption } from "./colors";
 import { shadows } from "./shadows";
 
@@ -17,9 +17,9 @@ declare module "@material-ui/core/styles/createMuiTheme" {
     interface Theme {
         /** https://www.figma.com/file/vYJVgJU2OZQ96MkhRwNlMZ/NEW-UI-V2?node-id=1%3A1711 */
         custom: {
-            typography: typeof typography;
             colors: ReturnType<typeof getColors>;
             shadows: typeof shadows;
+            typography: typeof typography;
         }
     }
     // allow configuration using `createMuiTheme`
@@ -28,7 +28,7 @@ declare module "@material-ui/core/styles/createMuiTheme" {
     }
 }
 
-export function createTheme(
+export function createMuiTheme(
     params: {
         isReactStrictModeEnabled: boolean;
         isDarkModeEnabled: boolean;
@@ -43,15 +43,15 @@ export function createTheme(
         responsiveFontSizes( //https://material-ui.com/customization/theming/#responsivefontsizes-theme-options-theme
             (isReactStrictModeEnabled ?
                 unstable_createMuiStrictModeTheme :
-                createMuiTheme
+                muiCreateMuiTheme
             )({ // https://material-ui.com/customization/palette/#using-a-color-object
                 "typography": muiTypographyOptions,
                 "palette": getMuiPaletteOption(paletteType),
                 "spacing": factor => 8 * factor,
                 "custom": {
-                    typography,
                     "colors": getColors(paletteType),
-                    shadows
+                    shadows,
+                    typography
                 },
             })
         );

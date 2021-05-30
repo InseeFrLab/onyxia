@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
-import { createTheme } from "./theme";
+import { createMuiTheme } from "./createMuiTheme";
 
 export function themeProviderFactory(
     params: {
@@ -25,7 +25,7 @@ export function themeProviderFactory(
         } = props;
 
         const { theme } = useMemo(
-            () => createTheme({
+            () => createMuiTheme({
                 isReactStrictModeEnabled,
                 isDarkModeEnabled
             }),
