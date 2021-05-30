@@ -7,7 +7,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/components/designSystem/IconButton";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
-import { typography } from "app/theme/typography";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
@@ -40,8 +39,8 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "input": {
             "flex": 1,
             "caretColor": theme.custom.colors.useCases.typography.textFocus,
-            "fontFamily": typography.fontFamily,
-            ...typography.body1,
+            "fontFamily": theme.custom.typography.fontFamily,
+            ...theme.custom.typography.body1,
             "outline": "none",
             "borderWidth":0,
             "border":"none",
@@ -58,7 +57,7 @@ const { useClassNames } = createUseClassNames<{ isActive: boolean; }>()(
         "searchLabel": {
             "display": "block",
             "flex": 1,
-            ...typography.button,
+            ...theme.custom.typography.button,
             "color": theme.custom.colors.useCases.typography.textPrimary
         }
     })
