@@ -1,6 +1,6 @@
 
 import { memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "app/components/designSystem/Typography";
 import { Button } from "app/components/designSystem/Button";
@@ -12,17 +12,17 @@ const { useClassNames } = createUseClassNames()(
     theme => ({
         "root": {
             "borderRadius": 8,
-            "boxShadow": theme.custom.shadows[1],
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[1],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "&:hover": {
-                "boxShadow": theme.custom.shadows[6]
+                "boxShadow": theme.shadows[6]
             },
             "display": "flex",
             "flexDirection": "column"
         },
         "aboveDivider": {
             "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`,
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
             "boxSizing": "border-box"
         },
         "title": {
@@ -43,7 +43,7 @@ const { useClassNames } = createUseClassNames()(
             //"overflow": "auto"
         },
         "bodyTypo": {
-            "color": theme.custom.colors.useCases.typography.textSecondary
+            "color": theme.colors.useCases.typography.textSecondary
         },
         "buttonsWrapper": {
             "display": "flex",

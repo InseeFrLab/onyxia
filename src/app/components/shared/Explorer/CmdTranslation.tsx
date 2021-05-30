@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useState, useReducer, useRef, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -28,9 +28,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 		const borderRadius = `0 0 0 30px`;
 
 		const textColor = (() => {
-						switch (theme.palette.type) {
-							case "light": return theme.custom.colors.palette.limeGreen.main;
-							case "dark": return theme.custom.colors.palette.midnightBlue.main;
+						switch (theme.paletteType) {
+							case "light": return theme.colors.palette.limeGreen.main;
+							case "dark": return theme.colors.palette.midnightBlue.main;
 						}
 					})();
 
@@ -39,9 +39,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				"& svg": {
 
 					"color": textColor,
-					"transition": theme.transitions.create(
+					"transition": theme.muiTheme.transitions.create(
 						["transform"],
-						{ "duration": theme.transitions.duration.short }
+						{ "duration": theme.muiTheme.transitions.duration.short }
 					),
 					"transform": isExpended ?
 						"rotate(-180deg)" :
@@ -50,9 +50,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				"&:hover": {
 					"& svg": {
 						"color": (()=>{
-						switch (theme.palette.type) {
-							case "light": return theme.custom.colors.palette.whiteSnow.light;
-							case "dark": return theme.custom.colors.palette.midnightBlue.greyVariant2;
+						switch (theme.paletteType) {
+							case "light": return theme.colors.palette.whiteSnow.light;
+							case "dark": return theme.colors.palette.midnightBlue.greyVariant2;
 						}
 						})()
 					}
@@ -62,7 +62,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				},
 			}),
 			"circularLoading": {
-				"color": theme.custom.colors.palette.whiteSnow.main
+				"color": theme.colors.palette.whiteSnow.main
 			},
 			"collapsedPanel": {
 				"maxHeight": 0,
@@ -72,7 +72,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 			},
 			"expandedPanel": {
 				"maxHeight": maxHeight - headerHeight,
-				"backgroundColor": theme.custom.colors.palette.midnightBlue.light,
+				"backgroundColor": theme.colors.palette.midnightBlue.light,
 				"overflow": "auto",
 				"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
 				"& pre": {
@@ -86,9 +86,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 			},
 			"header": {
 				"backgroundColor": (() => {
-					switch (theme.palette.type) {
-						case "light": return theme.custom.colors.palette.midnightBlue.main;
-						case "dark": return theme.custom.colors.palette.limeGreen.main;
+					switch (theme.paletteType) {
+						case "light": return theme.colors.palette.midnightBlue.main;
+						case "dark": return theme.colors.palette.limeGreen.main;
 					}
 				})(),
 				...(!isExpended ? {} : { borderRadius }),
@@ -124,11 +124,11 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 			"preWrapper": {
 				"flex": 1,
 				"& pre:nth-of-type(1)": {
-					"color": theme.custom.colors.palette.limeGreen.main,
+					"color": theme.colors.palette.limeGreen.main,
 					"marginTop": 2
 				},
 				"& pre:nth-of-type(2)": {
-					"color": theme.custom.colors.palette.whiteSnow.light
+					"color": theme.colors.palette.whiteSnow.light
 				}
 
 			}

@@ -5,12 +5,12 @@ import { Button } from "app/components/designSystem/Button";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useTheme } from "@material-ui/core/styles";
 import { cx, css } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { useIsDarkModeEnabled } from "app/theme/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
 import { ChangeLanguage } from "./ChangeLanguage";
 
 export type Props = Props.Core | Props.Keycloak;
@@ -39,7 +39,7 @@ export declare namespace Props {
 const { useClassNames } = createUseClassNames<Props>()(
     (theme, { logoMaxWidth }) => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
             "display": "flex"
         },
@@ -52,7 +52,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             "justifyContent": "center"
         },
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main,
+            "fill": theme.colors.palette.exuberantOrange.main,
             "width": 53,
         }
     })

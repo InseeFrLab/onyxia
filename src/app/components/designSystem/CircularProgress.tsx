@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 
 import { memo } from "react";
@@ -24,7 +24,7 @@ const { useClassNames } = createUseClassNames<Required<Props>>()(
         "root": {
             "color": color !== "textPrimary" ?
                 undefined :
-                theme.palette.text.primary
+                theme.colors.useCases.typography.textPrimary
         }
     })
 );

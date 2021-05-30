@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useMemo, useState, useEffect, memo } from "react";
 import { Typography } from "app/components/designSystem/Typography";
 import { basename as pathBasename, relative as pathRelative } from "path";
@@ -160,10 +160,10 @@ const { Section } = (() => {
                 ...(!isClickable ? {} : {
                     "&:hover": {
                         "fontWeight": hoverFontWeight,
-                        "color": theme.custom.colors.useCases.typography.textPrimary
+                        "color": theme.colors.useCases.typography.textPrimary
                     },
                     "&:active": {
-                        "color": theme.custom.colors.useCases.typography.textFocus
+                        "color": theme.colors.useCases.typography.textFocus
                     }
                 }),
                 "display": "inline-flex",

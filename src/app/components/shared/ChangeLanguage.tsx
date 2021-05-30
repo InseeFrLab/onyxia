@@ -3,7 +3,7 @@
 import { useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useTheme } from "@material-ui/core/styles";
 import { css } from "tss-react";
 import { useDomRect } from "powerhooks";
@@ -33,14 +33,14 @@ const { useClassNames } = createUseClassNames<{ buttonWidth: number; }>()(
     (theme, { buttonWidth }) => ({
         "menu": {
             "& .Mui-selected": {
-                "backgroundColor": theme.custom.colors.useCases.surfaces.surface1
+                "backgroundColor": theme.colors.useCases.surfaces.surface1
             },
             "& .MuiPaper-root": {
-                "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                "backgroundColor": theme.colors.useCases.surfaces.background,
                 "width": buttonWidth
             },
             "& a": {
-                "color": theme.custom.colors.useCases.typography.textPrimary
+                "color": theme.colors.useCases.typography.textPrimary
             }
         }
     })

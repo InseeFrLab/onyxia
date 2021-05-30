@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { memo } from "react";
 import { Typography } from "app/components/designSystem/Typography";

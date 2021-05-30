@@ -1,6 +1,6 @@
 
 import { useTranslation } from "app/i18n/useTranslations";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { Typography } from "app/components/designSystem/Typography";
 
@@ -9,12 +9,12 @@ export type Props = {
 };
 
 const { useClassNames } = createUseClassNames()(
-    (theme)=>({
+    theme=>({
         "root": {
             "display": "flex",
             "alignItems": "center",
             "justifyContent": "center",
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background,
         }
     })
 );

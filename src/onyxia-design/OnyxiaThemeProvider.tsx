@@ -1,10 +1,9 @@
-
 import { useMemo } from "react";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider as MuiThemeProvider, StylesProvider } from "@material-ui/core/styles";
-import { createMuiTheme } from "./createMuiTheme";
+import { createTheme } from "./createTheme";
 
-export function themeProviderFactory(
+export function onyxiaThemeProviderFactory(
     params: {
         isReactStrictModeEnabled: boolean;
     }
@@ -12,7 +11,7 @@ export function themeProviderFactory(
 
     const { isReactStrictModeEnabled } = params;
 
-    function ThemeProvider(
+    function OnyxiaThemeProvider(
         props: {
             isDarkModeEnabled: boolean;
             children: React.ReactNode;
@@ -25,7 +24,7 @@ export function themeProviderFactory(
         } = props;
 
         const { theme } = useMemo(
-            () => createMuiTheme({
+            () => createTheme({
                 isReactStrictModeEnabled,
                 isDarkModeEnabled
             }),
@@ -43,8 +42,6 @@ export function themeProviderFactory(
 
     }
 
-    return { ThemeProvider };
+    return { OnyxiaThemeProvider };
 
 }
-
-

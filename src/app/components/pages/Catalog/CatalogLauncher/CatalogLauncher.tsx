@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
@@ -14,7 +14,7 @@ import { thunks as restorablePackageConfigsThunks, pure as restorablePackageConf
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
-import { showSplashScreen, hideSplashScreen } from "app/components/shared/SplashScreen";
+import { showSplashScreen, hideSplashScreen } from "onyxia-design/splashScreen";
 
 export type Props = {
     className?: string;

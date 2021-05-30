@@ -1,6 +1,6 @@
 
 import { useEffect, useState, useMemo, memo } from "react";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { useCallbackFactory } from "powerhooks";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
@@ -257,7 +257,7 @@ const { NoMatches } = (() => {
                 "maxWidth": 500
             },
             "svg": {
-                "fill": theme.custom.colors.palette.midnightBlue.greyVariant2,
+                "fill": theme.colors.palette.midnightBlue.greyVariant2,
                 "width": 100,
                 "margin": 0
             },
@@ -266,7 +266,7 @@ const { NoMatches } = (() => {
             },
             "typo": {
                 "marginBottom": theme.spacing(1),
-                "color": theme.custom.colors.palette.whiteSnow.greyVariant3
+                "color": theme.colors.palette.whiteSnow.greyVariant3
             },
             "link": {
                 "cursor": "pointer"

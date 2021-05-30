@@ -1,7 +1,7 @@
 
 
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { useState, useEffect, useMemo, useReducer, memo } from "react";
 import type { ReactNode, RefObject } from "react";
@@ -105,8 +105,8 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
             },
             "& .MuiFormLabel-root, & .MuiTypography-caption": {
                 "color": error ?
-                    theme.custom.colors.useCases.alertSeverity.error.main :
-                    theme.custom.colors.useCases.typography.textSecondary
+                    theme.colors.useCases.alertSeverity.error.main :
+                    theme.colors.useCases.typography.textSecondary
             },
             "&:focus": {
                 "outline": "unset",
@@ -118,13 +118,13 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
                         case "safari":
                             return {
                                 "WebkitTextFillColor":
-                                    theme.palette.text[(() => {
-                                        switch (theme.palette.type) {
-                                            case "dark": return "primary";
-                                            case "light": return "secondary";
+                                    theme.colors.useCases.typography[(() => {
+                                        switch (theme.paletteType) {
+                                            case "dark": return "textPrimary";
+                                            case "light": return "textSecondary";
                                         }
                                     })()],
-                                "WebkitBoxShadow": `0 0 0 1000px ${theme.custom.colors.useCases.surfaces.surface1} inset`,
+                                "WebkitBoxShadow": `0 0 0 1000px ${theme.colors.useCases.surfaces.surface1} inset`,
                             };
                         default: return {}
                     }
@@ -139,11 +139,11 @@ const { useClassNames } = createUseClassNames<Required<TextFieldProps> & { error
 
         },
         "helperText": {
-            "color": theme.custom.colors.useCases.typography.textDisabled
+            "color": theme.colors.useCases.typography.textDisabled
         },
         "questionMark": {
             "verticalAlign": "middle",
-            "color": theme.custom.colors.useCases.typography.textDisabled
+            "color": theme.colors.useCases.typography.textDisabled
         }
     })
 );

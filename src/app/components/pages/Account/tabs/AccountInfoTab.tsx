@@ -14,7 +14,7 @@ import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks";
 import { getPublicIp } from "lib/tools/getPublicIp";
 import { smartTrim } from "app/tools/smartTrim";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useAsync } from "react-async-hook";
 
 export type Props = {

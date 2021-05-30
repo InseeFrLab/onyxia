@@ -7,7 +7,7 @@ import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { 
     useAppConstants, 
@@ -24,7 +24,7 @@ import { assert } from "tsafe/assert";
 import { routes } from "app/routes/router";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "powerhooks";
-import { hideSplashScreen, showSplashScreen } from "app/components/shared/SplashScreen";
+import { hideSplashScreen, showSplashScreen } from "onyxia-design/splashScreen";
 import { Account } from "app/components/pages/Account";
 
 //Legacy
@@ -49,7 +49,7 @@ const { useClassNames } = createUseClassNames()(
             "height": "100%",
             "display": "flex",
             "flexDirection": "column",
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background,
         },
         "header": {
             "width": "100%",

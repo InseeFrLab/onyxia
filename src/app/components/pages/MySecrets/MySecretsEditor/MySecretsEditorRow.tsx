@@ -1,4 +1,4 @@
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useTheme } from "@material-ui/core/styles";
 import { css, cx } from "tss-react";
 import { useMemo, useState, useEffect, memo } from "react";
@@ -57,7 +57,7 @@ const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolea
     (theme, { isInEditingState, isDarker }) => ({
         "root": {
             "backgroundColor": isDarker ?
-                theme.custom.colors.useCases.surfaces.background :
+                theme.colors.useCases.surfaces.background :
                 "transparent",
             "& .MuiTextField-root": {
                 "width": "100%"
@@ -65,8 +65,8 @@ const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolea
         },
         "dollarSign": {
             "color": isInEditingState ?
-                theme.custom.colors.useCases.typography.textDisabled :
-                theme.custom.colors.useCases.typography.textFocus
+                theme.colors.useCases.typography.textDisabled :
+                theme.colors.useCases.typography.textFocus
         },
         "valueAndResolvedValue": {
             "padding": theme.spacing(2, 1),

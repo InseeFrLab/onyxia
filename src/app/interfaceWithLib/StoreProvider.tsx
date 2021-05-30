@@ -4,7 +4,7 @@ import { Provider as ReactReduxProvider } from "react-redux";
 import { useAsync } from "react-async-hook";
 import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
-import { getIsDarkModeEnabledOsDefault } from "app/theme/useIsDarkModeEnabled";
+import { getIsDarkModeEnabledOsDefault } from "onyxia-design/hooks/useIsDarkModeEnabled";
 
 export type Props = {
     /** 

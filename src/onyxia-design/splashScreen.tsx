@@ -1,17 +1,14 @@
 
 import { useState, useEffect, memo } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, FC } from "react";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "./hooks/useClassNames";
 import { css, cx, keyframes } from "tss-react";
 import { useDomRect } from "powerhooks";
 import Color from "color";
 import { createUseGlobalState } from "powerhooks";
 import { useRerenderOnStateChange } from "evt/hooks";
-
-export type Props = {
-    className?: string;
-};
+import { useOnyxiaTheme } from "./hooks/useOnyxiaTheme";
 
 let fadeOutDuration = 700;
 
@@ -175,12 +172,13 @@ const { useClassNames } = createUseClassNames<{
     isVisible: boolean;
     isFadingOut: boolean;
     isTransparencyEnabled: boolean;
+    fillColor: string;
 }>()(
-    (theme, { isVisible, isFadingOut, isTransparencyEnabled }) => ({
+    (theme, { isVisible, isFadingOut, isTransparencyEnabled, fillColor }) => ({
         "root": {
             "backgroundColor": (() => {
 
-                const color = new Color(theme.custom.colors.useCases.surfaces.background).rgb();
+                const color = new Color(theme.colors.useCases.surfaces.background).rgb();
 
                 return color
                     .alpha(isTransparencyEnabled ? 0.6 : (color as any).valpha)
@@ -209,16 +207,22 @@ const { useClassNames } = createUseClassNames<{
             }
         },
         "svg": {
-            "fill": theme.custom.colors.palette.exuberantOrange.main,
+            "fill": fillColor,
             "height": "20%"
         }
 
     })
 );
 
+export type Props = {
+    className?: string;
+    Logo(props: { className?: string; }): ReturnType<FC>;
+    fillColor: string;
+};
+
 const SplashScreen = memo((props: Props) => {
 
-    const { className } = props;
+    const { className, Logo, fillColor } = props;
 
     const { isSplashScreenShown, isTransparencyEnabled } = useSplashScreen();
 
@@ -228,7 +232,8 @@ const SplashScreen = memo((props: Props) => {
     const { classNames } = useClassNames({
         isVisible,
         isFadingOut,
-        isTransparencyEnabled
+        isTransparencyEnabled,
+        fillColor
     });
 
     useEffect(
@@ -265,26 +270,37 @@ const SplashScreen = memo((props: Props) => {
 
     return (
         <div className={cx(classNames.root, className)}>
-            <OnyxiaLogoSvg
-                className={classNames.svg}
-            />
+            <Logo className={classNames.svg} />
         </div>
     );
 
 });
 
 export function SplashScreenProvider(
-    params: {
+    props: {
+        Logo?(props: { className?: string; }): ReturnType<FC>;
+        fillColor?: string;
         children: ReactNode;
     }
 ) {
-    const { children } = params;
+
+    const onyxiaTheme = useOnyxiaTheme();
+
+    const {
+        children,
+        Logo = OnyxiaLogoSvg,
+        fillColor = onyxiaTheme.colors.palette.exuberantOrange.main
+    } = props;
 
     const { ref, domRect: { width, height } } = useDomRect();
 
     return (
         <div ref={ref} className={css({ "height": "100%" })}>
-            <SplashScreen className={css({ width, "position": "absolute", height, "zIndex": 10 })} />
+            <SplashScreen
+                className={css({ width, "position": "absolute", height, "zIndex": 10 })}
+                Logo={Logo}
+                fillColor={fillColor}
+            />
             {children}
         </div>
     );

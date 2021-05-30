@@ -13,7 +13,7 @@ import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
 //import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useDomRect } from "powerhooks";
 import { useWindowInnerSize } from "powerhooks";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -36,12 +36,12 @@ export type TemplateProps = {
 } & { kcContext: KcContext; } & KcTemplateProps;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
-    (theme) => ({
+    theme => ({
         "root": {
             "height": "100%",
             "display": "flex",
             "flexDirection": "column",
-            "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background,
         },
 
         "header": {
@@ -53,7 +53,7 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
             "flex": 1,
             "overflow": "hidden",
             "backgroundImage": `url(${(() => {
-                switch (theme.palette.type) {
+                switch (theme.paletteType) {
                     case "dark": return onyxiaNeumorphismDarkModeUrl;
                     case "light": return onyxiaNeumorphismLightModeUrl;
                 }

@@ -3,7 +3,7 @@ import { useMemo, memo } from "react";
 import { Icon } from "app/components/designSystem/Icon";
 import { Typography } from "app/components/designSystem/Typography";
 import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { cx } from "tss-react";
 import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -50,9 +50,9 @@ const { useClassNames } = createUseClassNames<Props>()(
             "overflow": "visible"
         },
         "nav": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1,
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "borderRadius": 16,
-            "boxShadow": theme.custom.shadows[3],
+            "boxShadow": theme.shadows[3],
             "paddingTop": theme.spacing(1),
             "marginLeft": theme.spacing(2),
             "marginRight": theme.spacing(2),
@@ -155,14 +155,14 @@ const { CustomButton } = (() => {
                 "cursor": "pointer",
                 "marginTop": theme.spacing(1),
                 [`&:hover .${hoverBoxClassName}`]: {
-                    "backgroundColor": theme.custom.colors.useCases.surfaces.background,
+                    "backgroundColor": theme.colors.useCases.surfaces.background,
                 },
                 [
                     [".MuiSvgIcon-root", ".MuiTypography-root"]
                         .map(name => `&${!isActive ? ":active" : ""} ${name}`)
                         .join(", ")
                 ]: {
-                    "color": theme.custom.colors.useCases.typography.textFocus
+                    "color": theme.colors.useCases.typography.textFocus
                 }
             },
             "iconWrapper": {
@@ -197,7 +197,7 @@ const { CustomButton } = (() => {
             },
             "divider": {
                 "marginTop": theme.spacing(1),
-                "backgroundColor": theme.custom.colors.useCases.typography.textTertiary
+                "backgroundColor": theme.colors.useCases.typography.textTertiary
             }
         })
     );

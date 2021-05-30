@@ -1,4 +1,4 @@
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useState, memo } from "react";
 import type { ReactNode } from "react";
 import { Icon } from "app/components/designSystem/Icon";
@@ -27,7 +27,7 @@ export declare namespace Props {
 const { useClassNames } = createUseClassNames<Props>()(
     theme => ({
         "root": {
-            "backgroundColor": theme.custom.colors.useCases.surfaces.surface1
+            "backgroundColor": theme.colors.useCases.surfaces.surface1
         },
         "tabs": {
             "display": "flex",
@@ -156,8 +156,8 @@ const { CustomButton } = (() => {
     const { useClassNames } = createUseClassNames<CustomButtonProps>()(
         (theme, { isSelected, isFirst, size, isDisabled }) => ({
             "root": {
-                "backgroundColor": theme.custom.colors.useCases.surfaces[isSelected ? "surface1" : "surface2"],
-                "boxShadow": [theme.custom.shadows[4], ...((isSelected || isFirst) ? [theme.custom.shadows[5]] : [])].join(", "),
+                "backgroundColor": theme.colors.useCases.surfaces[isSelected ? "surface1" : "surface2"],
+                "boxShadow": [theme.shadows[4], ...((isSelected || isFirst) ? [theme.shadows[5]] : [])].join(", "),
                 "padding": (() => {
                     switch (size) {
                         case "big": return theme.spacing(2, 3);

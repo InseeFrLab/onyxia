@@ -3,7 +3,7 @@
 import type { Meta } from "@storybook/react";
 import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
-import { themeProviderFactory } from "app/theme/ThemeProvider";
+import { onyxiaThemeProviderFactory } from "onyxia-design";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "tsafe/id";
@@ -15,10 +15,10 @@ import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProv
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/routes/router";
 import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
-import { ZoomProvider } from "app/theme/ZoomProvider";
+import { ZoomProvider } from "app/tools/ZoomProvider";
 import "./fonts.scss";
 
-const { ThemeProvider } = themeProviderFactory(
+const { OnyxiaThemeProvider } = onyxiaThemeProviderFactory(
     { "isReactStrictModeEnabled": false }
 );
 
@@ -108,7 +108,7 @@ export function getStoryFactory<Props>(params: {
         ({ darkMode, lng, ...props }) =>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider isDarkModeEnabled={darkMode}>
+                    <OnyxiaThemeProvider isDarkModeEnabled={darkMode}>
                         <ZoomProvider zoomProviderReferenceWidth={undefined}>
                             <StoreProviderOrFragment>
                                 <Container>
@@ -116,7 +116,7 @@ export function getStoryFactory<Props>(params: {
                                 </Container>
                             </StoreProviderOrFragment>
                         </ZoomProvider>
-                    </ThemeProvider>
+                    </OnyxiaThemeProvider>
                 </RouteProvider>
             </I18nProvider>;
 

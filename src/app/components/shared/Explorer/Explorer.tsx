@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { useTheme } from "@material-ui/core/styles";
 import { cx, css } from "tss-react";
 import { useState, useEffect, useMemo } from "react";

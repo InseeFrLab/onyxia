@@ -1,6 +1,6 @@
 
 
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { memo } from "react";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
@@ -33,14 +33,14 @@ const { useClassNames } = createUseClassNames<{ isDateProvided: boolean; }>()(
             "display": "flex",
             "alignItems": "center",
             "gap": `0 ${theme.spacing(2)}px`,
-            "borderBottom": `1px solid ${theme.custom.colors.useCases.typography.textTertiary}`,
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
             "padding": theme.spacing(3, 0)
         },
         "basename": {
             "marginBottom": isDateProvided ? theme.spacing(1) : undefined
         },
         "date": {
-            "color": theme.custom.colors.useCases.typography.textSecondary,
+            "color": theme.colors.useCases.typography.textSecondary,
             "textTransform": "capitalize"
         }
     })

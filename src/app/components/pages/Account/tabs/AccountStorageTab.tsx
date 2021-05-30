@@ -7,7 +7,7 @@ import { useSelector } from "app/interfaceWithLib/hooks";
 import { useCallbackFactory } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
-import { createUseClassNames } from "app/theme/useClassNames";
+import { createUseClassNames } from "onyxia-design";
 import { getMinioToken } from "js/minio-client/minio-client";
 import exportMinio from "js/components/mon-compte/export-credentials-minio";
 import { assert } from "tsafe/assert";
@@ -30,7 +30,7 @@ const { useClassNames } = createUseClassNames()(
             "display": "inline-block"
         },
         "envVar": {
-            "color": theme.custom.colors.useCases.typography.textFocus
+            "color": theme.colors.useCases.typography.textFocus
         }
 
     })
