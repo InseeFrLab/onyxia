@@ -19,7 +19,7 @@ papers:
 - title: An opensource project with a growing community
   image: "/images/bullet-point-2.svg"
   button:
-    url: "https://github.com/inseefrlab/onyxia-ui"
+    url: "https://github.com/inseefrlab/onyxia-web"
     label: View on github
   body: |
     Feel free to contribute, report bugs or ask for help !

@@ -45,6 +45,7 @@ jobs:
         node-version: '15'
     - uses: bahmutov/npm-install@v1
     - run: yarn build-storybook -o ./build_storybook
+    - run: echo "storybook.onyxia.dev" > build_storybook/CNAME
     - run: git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${{github.repository}}.git
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -123,11 +124,10 @@ jobs:
     needs:
       - docker
     steps:
-    - uses: garronej/github_actions_toolkit@v2.2
+    - uses: garronej/github_actions_toolkit@v2.4
       with:
         action_name: update_changelog
         branch: ${{ github.ref }}
-        commit_author_email: actions@github.com
 
   release:
     runs-on: ubuntu-latest

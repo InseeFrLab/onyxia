@@ -1,6 +1,6 @@
 {
   "homepage": "https://datalab.sspcloud.fr",
-  "name": "onyxia-ui",
+  "name": "onyxia-web",
   "version": "0.10.4",
   "license": "MIT",
   "devDependencies": {

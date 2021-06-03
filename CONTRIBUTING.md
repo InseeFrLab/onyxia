@@ -2,13 +2,13 @@
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
-The following is a set of guidelines for contributing to [Onyxia UI](https://github.com/InseeFrLab/onyxia-ui), which are hosted in the [InseeFrLab organization](https://github.com/InseeFrLab) on GitHub. These are mostly guidelines, not rules.
+The following is a set of guidelines for contributing to [Onyxia UI](https://github.com/InseeFrLab/onyxia-web), which are hosted in the [InseeFrLab organization](https://github.com/InseeFrLab) on GitHub. These are mostly guidelines, not rules.
 
 **Feel free to propose issues, fixes or features by submitting pull requests.**
 
 ### Table Of Contents
 
-- [Contributing to Onyxia UI](#contributing-to-onyxia-ui)
+- [Contributing to Onyxia UI](#contributing-to-onyxia-web)
     - [Table Of Contents](#table-of-contents)
   - [Bug report](#bug-report)
   - [Code proposal](#code-proposal)
@@ -16,7 +16,7 @@ The following is a set of guidelines for contributing to [Onyxia UI](https://git
 
 ## Bug report
 
-You find a bug? Sure or not, let's open an [issue](https://github.com/InseeFrLab/onyxia-ui/issues) to describe it.
+You find a bug? Sure or not, let's open an [issue](https://github.com/InseeFrLab/onyxia-web/issues) to describe it.
 
 You are in to fix it? See [Code proposal](#code-proposal) section.
 
@@ -24,7 +24,7 @@ You are in to fix it? See [Code proposal](#code-proposal) section.
 
 ### How to contribute?
 
-Simplest way to contribute to [Onyxia UI](https://github.com/InseeFrLab/onyxia-ui) is refering to [issues](https://github.com/InseeFrLab/onyxia-ui/issues).
+Simplest way to contribute to [Onyxia UI](https://github.com/InseeFrLab/onyxia-web) is refering to [issues](https://github.com/InseeFrLab/onyxia-web/issues).
 
 Opened by the core team or by contributors, issues are the place to describe and discuss about future works.
 

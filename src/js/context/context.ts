@@ -10,7 +10,7 @@ let user: RootState["user"] = {
 	"USERMAIL": "",
 	"USERKEY": "https://example.com/placeholder.gpg",
 	"STATUS": "",
-	"GIT": "https://github.com/inseefrlab/onyxia-ui",
+	"GIT": "https://github.com/inseefrlab/onyxia-web",
 	"DNS": "example.com",
 	"UUID": "",
 	"IP": "",
