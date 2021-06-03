@@ -9,7 +9,7 @@ import { ReactComponent as GitHubSvg } from "app/assets/svg/GitHub.svg";
 
 export type Props = {
     className?: string;
-    onyxiaUiVersion: string;
+    packageJsonVersion: string;
     contributeHref: string;
     tosHref: string;
 }
@@ -47,7 +47,7 @@ export const Footer = memo((props: Props) => {
     const { 
         contributeHref,
         tosHref,
-        onyxiaUiVersion, 
+        packageJsonVersion, 
         className
     } = props;
 
@@ -70,8 +70,8 @@ export const Footer = memo((props: Props) => {
             <div className={classNames.sep}/>
             <a href={tosHref} target="_blank" rel="noreferrer"> <Typography variant="body2">{t("terms of service")}</Typography> </a>
             {spacing}
-            <a href={`https://github.com/InseeFrLab/onyxia-ui/tree/v${onyxiaUiVersion}`} target="_blank" rel="noreferrer"> 
-                <Typography variant="body2">v{onyxiaUiVersion} </Typography>
+            <a href={`https://github.com/InseeFrLab/onyxia-web/tree/v${packageJsonVersion}`} target="_blank" rel="noreferrer"> 
+                <Typography variant="body2">v{packageJsonVersion} </Typography>
             </a>
         </footer>
     );

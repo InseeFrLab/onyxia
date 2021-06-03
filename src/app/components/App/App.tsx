@@ -183,7 +183,7 @@ export const App = memo((props: Props) => {
             <Footer
                 className={classNames.footer}
                 //NOTE: Defined in ./config-overrides.js
-                onyxiaUiVersion={process.env.VERSION!}
+                packageJsonVersion={process.env.VERSION!}
                 contributeHref={"https://github.com/InseeFrLab/onyxia"}
                 tosHref={tosHref}
             />

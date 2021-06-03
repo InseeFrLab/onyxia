@@ -6,7 +6,7 @@
     <i>A data science oriented container launcher</i>
     <br>
     <br>
-    <img src="https://github.com/InseeFrLab/onyxia-ui/workflows/ci/badge.svg?branch=master">
+    <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=master">
     <img src="https://img.shields.io/npm/l/evt">
 </p>
 
@@ -16,7 +16,7 @@
   -
   <a href="https://docs.sspcloud.fr/" title="A website for the states workers responsible of producing the french official statistics">Community website</a>
   -
-  <a href="https://inseefrlab.github.io/onyxia-ui/" title="A website for testing the app components in isolation">Storybook</a>
+  <a href="https://storybook.onyxia.dev/" title="A website for testing the app components in isolation">Storybook</a>
 </p>
 
 ---
@@ -40,7 +40,7 @@ Core feature set:
 
 ## Development
 
-Onyxia-ui relies following open sources backend technologies:  
+onyxia-web relies following open sources backend technologies:  
 - [Onyxia API](https://github.com/inseefrlab/onyxia-api): For starting containers (RStudio, Jupyter) on demand on a Kubernetes cluster.
 - [keycloak](https://www.keycloak.org): For managing user's authentication.
 - [Minio](http://minio.lab.sspcloud.fr): For storing user's datasets.
@@ -64,18 +64,18 @@ yarn keycloak # To spin up Keycloak container and test the login/register page. 
 The is four source directories:  
 - `src/lib/`: Where lies the code for **the logic** of the application. 
   It this directory there must be **no reference to React** and it is not allowed to import things from `src/app`.
-  `src/app/setup.ts` exposes a function that takes as argument all the params of the app: [address of the keycloak server, url of Onyxia-UI, ect...](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89)
-  This store [is to be be provided at the root of the React application in `src/app/index.tsx`](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89).
-  The only way `src/app` (the UI) should interact with `src/lib` (the logic) is by [dispatching thunk](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/pages/MySecrets/MySecrets.tsx#L200-L210) [exposed in `src/app/setup.ts`](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/lib/setup.ts#L412-L418)
-  any by using selector to access states. All the access to the `src/lib` from `src/app` have been gathered int a single directory [`src/app/interfaceWithLib/hooks`](https://github.com/InseeFrLab/onyxia-ui/blob/master/src/app/interfaceWithLib/hooks.ts). 
-  The store have two very distinct states: When the user is authenticated and when it is not. To test if the user is authenticated use [`appConstants.isUserLogin`](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
- if `isUserLogin` is true then you have access to `store.appConstants.logout()` else `store.appConstants.login()` is defined. [See example](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/App/App.tsx#L194-L209).
-  We chose to not make `appConstant` a slice of the store but rather an [object returned by a thunk](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
+  `src/app/setup.ts` exposes a function that takes as argument all the params of the app: [address of the keycloak server, url of onyxia-web, ect...](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89)
+  This store [is to be be provided at the root of the React application in `src/app/index.tsx`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89).
+  The only way `src/app` (the UI) should interact with `src/lib` (the logic) is by [dispatching thunk](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/pages/MySecrets/MySecrets.tsx#L200-L210) [exposed in `src/app/setup.ts`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/lib/setup.ts#L412-L418)
+  any by using selector to access states. All the access to the `src/lib` from `src/app` have been gathered int a single directory [`src/app/interfaceWithLib/hooks`](https://github.com/InseeFrLab/onyxia-web/blob/master/src/app/interfaceWithLib/hooks.ts). 
+  The store have two very distinct states: When the user is authenticated and when it is not. To test if the user is authenticated use [`appConstants.isUserLogin`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
+ if `isUserLogin` is true then you have access to `store.appConstants.logout()` else `store.appConstants.login()` is defined. [See example](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/App/App.tsx#L194-L209).
+  We chose to not make `appConstant` a slice of the store but rather an [object returned by a thunk](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
   because it stores all the values and functions that never changes (for a specific execution of the app, they changes in between reload of the app though, they are not constant as the environnement variables that are hard codded in the bundle.). 
 - `src/app/`: The react code.
-- `src/app/assets`: Here should be placed the small assets [imported directly from the code](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/shared/Header.tsx#L7).  
-  For bigger assets like video, you should upload them [here](https://github.com/InseeFrLab/onyxia-ui/releases/tag/assets) and [hard code the url in the code](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/pages/MySecrets/MySecrets.tsx#L253).  
-  To be able to import other kind of files as urls [like here for example with `.md`](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/KcApp/getTosMarkdownUrl.ts#L3-L4) you should declare the file extension like it has been done here [here](https://github.com/InseeFrLab/onyxia-ui/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/react-app-env.d.ts#L6-L9)
+- `src/app/assets`: Here should be placed the small assets [imported directly from the code](https://github.com/InseeFrLab/onyxia-web/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/shared/Header.tsx#L7).  
+  For bigger assets like video, you should upload them [here](https://github.com/InseeFrLab/onyxia-web/releases/tag/assets) and [hard code the url in the code](https://github.com/InseeFrLab/onyxia-web/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/pages/MySecrets/MySecrets.tsx#L253).  
+  To be able to import other kind of files as urls [like here for example with `.md`](https://github.com/InseeFrLab/onyxia-web/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/app/components/KcApp/getTosMarkdownUrl.ts#L3-L4) you should declare the file extension like it has been done here [here](https://github.com/InseeFrLab/onyxia-web/blob/adf6de0a991fa63e70af17b3fa41849306808dc4/src/react-app-env.d.ts#L6-L9)
 - `src/stories/`: [Storybook](https://storybook.js.org) stories, to develop the react component in isolation.
 - `*/tools`: All generic code. Everything that could be externalized to a standalone modules independent from the project.
 - `src/js`: Legacy code that hasn't be ported to the new architecture yet.
@@ -83,8 +83,8 @@ The is four source directories:
 
 # Ops
 
-To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-ui/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
-the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-ui) 
+To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
+the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-web) 
 and creating a GitHub release.  
 - A docker image with the tag `:main` is published on DockerHub for every new commit on the `main` branch.  
 - When the commit correspond to a new release (the version have changed) the image will also be tagged `:vX.Y.Z`
