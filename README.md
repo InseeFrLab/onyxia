@@ -6,7 +6,7 @@
     <i>A data science oriented container launcher</i>
     <br>
     <br>
-    <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=master">
+    <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
     <img src="https://img.shields.io/npm/l/evt">
 </p>
 
@@ -67,7 +67,7 @@ The is four source directories:
   `src/app/setup.ts` exposes a function that takes as argument all the params of the app: [address of the keycloak server, url of onyxia-web, ect...](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89)
   This store [is to be be provided at the root of the React application in `src/app/index.tsx`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/index.tsx#L59-L89).
   The only way `src/app` (the UI) should interact with `src/lib` (the logic) is by [dispatching thunk](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/pages/MySecrets/MySecrets.tsx#L200-L210) [exposed in `src/app/setup.ts`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/lib/setup.ts#L412-L418)
-  any by using selector to access states. All the access to the `src/lib` from `src/app` have been gathered int a single directory [`src/app/interfaceWithLib/hooks`](https://github.com/InseeFrLab/onyxia-web/blob/master/src/app/interfaceWithLib/hooks.ts). 
+  any by using selector to access states. All the access to the `src/lib` from `src/app` have been gathered int a single directory [`src/app/interfaceWithLib/hooks`](https://github.com/InseeFrLab/onyxia-web/blob/main/src/app/interfaceWithLib/hooks.ts). 
   The store have two very distinct states: When the user is authenticated and when it is not. To test if the user is authenticated use [`appConstants.isUserLogin`](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
  if `isUserLogin` is true then you have access to `store.appConstants.logout()` else `store.appConstants.login()` is defined. [See example](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/components/App/App.tsx#L194-L209).
   We chose to not make `appConstant` a slice of the store but rather an [object returned by a thunk](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/src/app/interfaceWithLib/hooks.ts#L28-L31)
@@ -93,7 +93,7 @@ and `:latest`.
 tagged `:<name-of-the-feature-branch>`.  
 
 
-You can find [here](https://github.com/InseeFrLab/paris-sspcloud/blob/master/apps/onyxia/values.yaml) the Helm chart
+You can find [here](https://github.com/InseeFrLab/paris-sspcloud/blob/main/apps/onyxia/values.yaml) the Helm chart
 we use to put the docker image of the app in production.
 
 # Screenshots
