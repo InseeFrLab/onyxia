@@ -12,7 +12,7 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { useEffectOnValueChange } from "powerhooks";
 import { useArrayDiff } from "powerhooks";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";

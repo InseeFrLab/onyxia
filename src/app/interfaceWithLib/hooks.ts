@@ -8,7 +8,7 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import type { AppConstant } from "lib/useCases/appConstants";
 import { assert } from "tsafe/assert";
-import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useEffectOnValueChange } from "powerhooks";
 import { useLng } from "app/i18n/useLng";
 import type { SupportedLanguage } from "app/i18n/resources";

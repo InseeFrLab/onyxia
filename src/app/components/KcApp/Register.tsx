@@ -4,17 +4,17 @@ import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify/lib/KcContext";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { cx } from "tss-react";
-import { TextField } from "app/components/designSystem/TextField";
-import type { TextFieldProps } from "app/components/designSystem/TextField";
+import { TextField } from "onyxia-ui";
+import type { TextFieldProps } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { emailRegExp } from "app/tools/emailRegExp";
 import type { Param0 } from "tsafe";
-import { Button } from "app/components/designSystem/Button";
-import { createUseClassNames } from "onyxia-design";
+import { Button } from "onyxia-ui";
+import { createUseClassNames } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
-import { Tooltip } from "app/components/designSystem/Tooltip";
+import { Tooltip } from "onyxia-ui";
 
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12

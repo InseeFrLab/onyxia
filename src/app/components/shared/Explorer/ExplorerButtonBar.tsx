@@ -1,9 +1,9 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { memo } from "react";
-import { Button } from "app/components/designSystem/Button";
+import { Button } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
-import type { Props as IconProps } from "app/components/designSystem/Icon";
+import type { IconProps } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 
 

@@ -1,17 +1,17 @@
 
 
 import { memo } from "react";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import Avatar from "@material-ui/core/Avatar";
-import { Typography } from "app/components/designSystem/Typography";
-import { Button } from "app/components/designSystem/Button";
+import { Typography } from "onyxia-ui";
+import { Button } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
-import { IconButton } from "app/components/designSystem/IconButton";
+import { IconButton } from "onyxia-ui";
 import { useConstCallback } from "powerhooks";
-import { TextField } from "app/components/designSystem/TextField";
-import type { TextFieldProps } from "app/components/designSystem/TextField";
-import { Tooltip } from "app/components/designSystem/Tooltip";
+import { TextField } from "onyxia-ui";
+import type { TextFieldProps } from "onyxia-ui";
+import { Tooltip } from "onyxia-ui";
 import { capitalize } from "app/tools/capitalize";
 
 const { useClassNames } = createUseClassNames()(

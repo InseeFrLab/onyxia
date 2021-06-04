@@ -1,14 +1,13 @@
 
 import { useEffect, useRef, memo } from "react";
-import { Button } from "app/components/designSystem/Button";
+import { Button } from "onyxia-ui";
 import "./style.scss";
-import { useTheme } from "@material-ui/core/styles";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames, useTheme } from "app/theme";
 import { cx } from "tss-react";
 import {  css } from "tss-react";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -19,7 +18,7 @@ import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg
 import dotsDarkSvgUrl from "app/assets/svg/dotsDark.svg";
 import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
-import { Paper } from "app/components/designSystem/Paper"
+import { Paper } from "onyxia-ui"
 import { assert } from "tsafe/assert";
 import type { Link } from "type-route";
 
@@ -36,12 +35,7 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"hero": {
 			"paddingBottom": theme.spacing(4),
-			"backgroundImage": `url(${(() => {
-					switch (theme.paletteType) {
-						case "dark": return dotsDarkSvgUrl;
-						case "light": return dotsLightSvgUrl;
-					}
-				})()})`,
+			"backgroundImage": `url(${theme.isDarkModeEnabled?dotsDarkSvgUrl:dotsLightSvgUrl})`,
 			"backgroundPosition": "right",
 			"backgroundRepeat": "no-repeat",
 			"backgroundSize": "50%",
@@ -69,7 +63,7 @@ const { useClassNames } = createUseClassNames()(
 			"margin": theme.spacing(0, 2)
 		},
         "svg": {
-            "fill": theme.colors.palette.exuberantOrange.main,
+            "fill": theme.colors.palette.focus.main,
 			"width": 122
         }
 	})
@@ -180,7 +174,7 @@ export function Home() {
 
 
 			<div className="warning">
-				<div style={{ "backgroundColor": theme.palette.primary.main }}>
+				<div style={{ "backgroundColor": theme.colors.palette.focus.main }}>
 					<h1>{t("warningTitle")}</h1>
 					<p>{t("warningText")}</p>
 				</div>
@@ -245,8 +239,8 @@ const { Card } = (() => {
 					.forEach(g =>
 						g.setAttribute("fill",
 							g.classList.contains("colorPrimary") ?
-								theme.custom.colors.palette.exuberantOrange.main :
-								theme.custom.colors.useCases.typography.textPrimary
+								theme.colors.palette.focus.main :
+								theme.colors.useCases.typography.textPrimary
 						)
 					);
 			},
@@ -258,12 +252,7 @@ const { Card } = (() => {
 				"display": "flex",
 				"flexDirection": "column",
 				"padding": theme.spacing(2),
-				"backgroundColor": (() => {
-					switch (theme.palette.type) {
-						case "dark": return "#383E50";
-						case "light": return undefined;
-					}
-				})()
+				"backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
 			}), className)}>
 				<div className={css({ "display": "flex", })}>
 					<Icon ref={iconRef} width={120} height={120} />

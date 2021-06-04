@@ -2,8 +2,8 @@ import { useEffect, memo } from "react";
 import { Template } from "./Template";
 import type { KcContext, KcProps } from "keycloakify";
 import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
-import { Button } from "app/components/designSystem/Button";
-import { createUseClassNames } from "onyxia-design";
+import { Button } from "onyxia-ui";
+import { createUseClassNames } from "app/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 
 const { useClassNames } = createUseClassNames()(

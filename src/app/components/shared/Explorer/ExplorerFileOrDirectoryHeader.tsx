@@ -1,12 +1,12 @@
 
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { memo } from "react";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { IconButton } from "app/components/designSystem/IconButton"
+import { IconButton } from "onyxia-ui"
 import { useFormattedDate } from "app/i18n/useMoment";
 import { useWithProps } from "powerhooks";
 

@@ -1,10 +1,10 @@
 import { useRef, useState, memo } from "react";
 import type { ChangeEventHandler } from "react";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
-import { Icon } from "app/components/designSystem/Icon";
+import { Icon } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
-import { IconButton } from "app/components/designSystem/IconButton";
+import { IconButton } from "onyxia-ui";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
 import type { NonPostableEvt } from "evt";

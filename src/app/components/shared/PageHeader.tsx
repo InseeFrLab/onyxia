@@ -1,15 +1,15 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { memo } from "react";
-import { Typography } from "app/components/designSystem/Typography";
-import { Props as AppIconProps } from "../designSystem/Icon";
-import { Icon } from "../designSystem/Icon";
+import { Typography } from "onyxia-ui";
+import { IconProps } from "onyxia-ui";
+import { Icon } from "onyxia-ui";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 
 export type Props = {
-    icon: AppIconProps["type"];
+    icon: IconProps["type"];
     text1: NonNullable<React.ReactNode>;
     text2: NonNullable<React.ReactNode>;
     text3: NonNullable<React.ReactNode>;

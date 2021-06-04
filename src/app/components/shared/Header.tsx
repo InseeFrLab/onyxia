@@ -1,16 +1,15 @@
 
 import { memo } from "react";
-import { IconButton } from "app/components/designSystem/IconButton";
-import { Button } from "app/components/designSystem/Button";
+import { IconButton } from "onyxia-ui";
+import { Button } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { createUseClassNames } from "onyxia-design";
-import { useTheme } from "@material-ui/core/styles";
+import { createUseClassNames, useTheme } from "app/theme";
 import { cx, css } from "tss-react";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 import { ChangeLanguage } from "./ChangeLanguage";
 
 export type Props = Props.Core | Props.Keycloak;
@@ -52,7 +51,7 @@ const { useClassNames } = createUseClassNames<Props>()(
             "justifyContent": "center"
         },
         "svg": {
-            "fill": theme.colors.palette.exuberantOrange.main,
+            "fill": theme.colors.palette.focus.main,
             "width": 53,
         }
     })

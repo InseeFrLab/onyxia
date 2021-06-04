@@ -1,9 +1,9 @@
 
 
 import { memo } from "react";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ReactComponent as GitHubSvg } from "app/assets/svg/GitHub.svg";
 

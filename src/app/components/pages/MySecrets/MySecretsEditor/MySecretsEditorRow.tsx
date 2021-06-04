@@ -1,22 +1,21 @@
-import { createUseClassNames } from "onyxia-design";
-import { useTheme } from "@material-ui/core/styles";
+import { createUseClassNames, useTheme } from "app/theme";
 import { css, cx } from "tss-react";
 import { useMemo, useState, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
-import { TextField } from "app/components/designSystem/TextField";
-import type { TextFieldProps } from "app/components/designSystem/TextField";
+import { TextField } from "onyxia-ui";
+import type { TextFieldProps } from "onyxia-ui";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
-import { Typography } from "app/components/designSystem/Typography";
-import { IconButton } from "app/components/designSystem/IconButton";
+import { Typography } from "onyxia-ui";
+import { IconButton } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import type { Parameters } from "tsafe";
-import { useDomRect } from "powerhooks";
+import { useDomRect } from "onyxia-ui";
 import type { Param0 } from "tsafe";
 
 
@@ -335,7 +334,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     <SmartTrim
                         className={cx(
                             classNames.valueAndResolvedValue,
-                            css({ "color": theme.custom.colors.palette.whiteSnow.greyVariant3 })
+                            css({ "color": theme.colors.palette.light.greyVariant3 })
                         )}
                     >
                         {resolveValueResult.resolvedValue}
