@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import type { Meta } from "@storybook/react";
 import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
-import { ThemeProvider } from "app/theme";
+import { ThemeProvider, useTheme } from "app/theme";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
@@ -14,11 +14,9 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
-import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/routes/router";
 import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
 import "./fonts.scss";
-
 
 const getStoreInitializationParams: StoreProviderProps["getStoreInitializationParams"] = () => ({
     "oidcClientConfig": id<OidcClientConfig.Phony>({
@@ -49,35 +47,6 @@ const getStoreInitializationParams: StoreProviderProps["getStoreInitializationPa
         build
     })
 });
-
-function Container(props: { children: React.ReactNode; }) {
-
-    const { children } = props;
-
-    const theme = useTheme();
-
-    return (
-        <Box p={4} style={{ "backgroundColor": "white" }}>
-            <Box clone p={4} m={2} display="inline-block">
-                <Paper
-                    style={{
-                        "backgroundColor": theme.custom.colors.useCases.surfaces.background
-                    }}
-                >
-                    <div
-                        style={{
-                            "border": `1px dotted ${theme.custom.colors.useCases.typography.textDisabled}`
-                        }}
-                    >
-                        {children}
-                    </div>
-                </Paper>
-            </Box>
-        </Box>
-    );
-
-
-}
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;
@@ -113,14 +82,30 @@ export function getStoryFactory<Props>(params: {
                 [darkMode]
             );
 
+            const theme = useTheme();
+
             return (
                 <I18nProvider lng={lng}>
                     <RouteProvider>
                         <ThemeProvider zoomProviderReferenceWidth={undefined}>
                             <StoreProviderOrFragment>
-                                <Container>
-                                    <Component {...props} />
-                                </Container>
+                                <Box p={4} style={{ "backgroundColor": "white" }}>
+                                    <Box clone p={4} m={2} display="inline-block">
+                                        <Paper
+                                            style={{
+                                                "backgroundColor": theme.colors.useCases.surfaces.background
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    "border": `1px dotted ${theme.colors.useCases.typography.textDisabled}`
+                                                }}
+                                            >
+                                                <Component {...props} />
+                                            </div>
+                                        </Paper>
+                                    </Box>
+                                </Box>
                             </StoreProviderOrFragment>
                         </ThemeProvider>
                     </RouteProvider>
