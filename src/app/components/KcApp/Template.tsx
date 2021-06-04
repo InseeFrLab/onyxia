@@ -13,14 +13,14 @@ import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
 //import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
-import { createUseClassNames } from "onyxia-design";
-import { useDomRect } from "powerhooks";
+import { createUseClassNames } from "app/theme";
+import { useDomRect } from "onyxia-ui";
 import { useWindowInnerSize } from "powerhooks";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import { Paper } from "app/components/designSystem/Paper";
-import { Typography } from "app/components/designSystem/Typography";
-import { Alert } from "app/components/designSystem/Alert";
+import { Paper } from "onyxia-ui";
+import { Typography } from "onyxia-ui";
+import { Alert } from "onyxia-ui";
 
 export type TemplateProps = {
     className?: string;
@@ -52,12 +52,11 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         "betweenHeaderAndFooter": {
             "flex": 1,
             "overflow": "hidden",
-            "backgroundImage": `url(${(() => {
-                switch (theme.paletteType) {
-                    case "dark": return onyxiaNeumorphismDarkModeUrl;
-                    case "light": return onyxiaNeumorphismLightModeUrl;
-                }
-            })()})`,
+            "backgroundImage": `url( ${
+                theme.isDarkModeEnabled ? 
+                    onyxiaNeumorphismDarkModeUrl : 
+                    onyxiaNeumorphismLightModeUrl
+                })`,
             "backgroundSize": "auto 90%",
             "backgroundPosition": "center",
             "backgroundRepeat": "no-repeat",

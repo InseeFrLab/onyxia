@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks";
@@ -17,7 +17,7 @@ import Link from "@material-ui/core/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
-import { showSplashScreen, hideSplashScreen } from "onyxia-design/splashScreen";
+import { showSplashScreen, hideSplashScreen } from "onyxia-ui";
 import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";
 import { Evt } from "evt";

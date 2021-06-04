@@ -1,11 +1,10 @@
 
 import { useMemo, memo } from "react";
-import { Icon } from "app/components/designSystem/Icon";
-import { Typography } from "app/components/designSystem/Typography";
-import type { Props as IconProps } from "app/components/designSystem/Icon";
-import { createUseClassNames } from "onyxia-design";
+import { Icon } from "onyxia-ui";
+import { Typography } from "onyxia-ui";
+import type { IconProps } from "onyxia-ui";
+import { createUseClassNames, useTheme } from "app/theme";
 import { cx } from "tss-react";
-import { useTheme } from "@material-ui/core/styles";
 import { useTranslation } from "app/i18n/useTranslations";
 import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/routes/router";

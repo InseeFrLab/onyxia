@@ -1,6 +1,5 @@
 
-import { createUseClassNames } from "onyxia-design";
-import { useTheme } from "@material-ui/core/styles";
+import { createUseClassNames, useTheme } from "app/theme";
 import { cx, css } from "tss-react";
 import { useState, useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks";
@@ -17,14 +16,14 @@ import { CmdTranslation } from "./CmdTranslation";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { Paper } from "app/components/designSystem/Paper";
+import { Paper } from "onyxia-ui";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
-import { useDomRect } from "powerhooks";
+import { useDomRect } from "onyxia-ui";
 import { getPathDepth } from "app/tools/getPathDepth";
 import { useWithProps } from "powerhooks";
 

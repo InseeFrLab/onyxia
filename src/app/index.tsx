@@ -8,9 +8,8 @@ import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes/router";
 import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
 import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
-import { onyxiaThemeProviderFactory } from "onyxia-design/OnyxiaThemeProvider";
-import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
-import { SplashScreenProvider } from "onyxia-design/splashScreen";
+import { ThemeProvider } from "./theme";
+import { SplashScreenProvider } from "onyxia-ui";
 import { App } from "app/components/App";
 import { useLng } from "app/i18n/useLng";
 import {
@@ -19,13 +18,8 @@ import {
 } from "keycloakify";
 import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
-import { ZoomProvider } from "app/tools/ZoomProvider";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 
-
-
-const { OnyxiaThemeProvider } = onyxiaThemeProviderFactory(
-    { "isReactStrictModeEnabled": process.env.NODE_ENV !== "production" }
-);
 
 Object.defineProperty(
     kcContextMocks.kcRegisterContext.realm,
@@ -40,11 +34,8 @@ const kcContext = realKcContext ?? (
         undefined
 );
 
-
-
 function Root() {
 
-    const { isDarkModeEnabled } = useIsDarkModeEnabled();
     const { lng } = useLng();
 
     const getStoreInitializationParams = useConstCallback<StoreProviderProps["getStoreInitializationParams"]>(
@@ -92,23 +83,20 @@ function Root() {
         }
     );
 
-
     return (
         <React.StrictMode>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <OnyxiaThemeProvider isDarkModeEnabled={isDarkModeEnabled} >
-                        <ZoomProvider zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}>
-                            <SplashScreenProvider>
-                                {kcContext !== undefined ?
-                                    <KcApp kcContext={kcContext} /> :
-                                    <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
-                                        <App />
-                                    </StoreProvider>
-                                }
-                            </SplashScreenProvider>
-                        </ZoomProvider>
-                    </OnyxiaThemeProvider>
+                    <ThemeProvider zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}>
+                        <SplashScreenProvider Logo={OnyxiaLogoSvg}>
+                            {kcContext !== undefined ?
+                                <KcApp kcContext={kcContext} /> :
+                                <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
+                                    <App />
+                                </StoreProvider>
+                            }
+                        </SplashScreenProvider>
+                    </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>
         </React.StrictMode>

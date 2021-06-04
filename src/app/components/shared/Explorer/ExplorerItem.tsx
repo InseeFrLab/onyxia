@@ -1,11 +1,11 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { useState, useEffect, useMemo, memo } from "react";
 import { useConstCallback } from "powerhooks";
 //import { Input } from "app/components/designSystem/textField/Input";
-import { TextField } from "app/components/designSystem/TextField";
-import type { TextFieldProps } from "app/components/designSystem/TextField";
-import { Typography } from "../../designSystem/Typography"
+import { TextField } from "onyxia-ui";
+import type { TextFieldProps } from "onyxia-ui";
+import { Typography } from "onyxia-ui"
 import { useClick } from "powerhooks";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";

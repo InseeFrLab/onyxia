@@ -1,10 +1,10 @@
 
 import { memo } from "react";
 import type { ReactNode } from "react";
-import { Typography } from "app/components/designSystem/Typography";
-import { Tooltip } from "app/components/designSystem/Tooltip";
-import { Icon } from "app/components/designSystem/Icon";
-import { createUseClassNames } from "onyxia-design";
+import { Typography } from "onyxia-ui";
+import { Tooltip } from "onyxia-ui";
+import { Icon } from "onyxia-ui";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 
 export type Props = {

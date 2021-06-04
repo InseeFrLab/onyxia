@@ -3,14 +3,14 @@ import type { ReactNode, FunctionComponent } from "react";
 import { useGuaranteedMemo } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import type { NonPostableEvt } from "evt";
-import type { TextFieldProps } from "app/components/designSystem/TextField";
-import { Typography } from "app/components/designSystem/Typography";
-import { createUseClassNames } from "onyxia-design";
-import { TextField } from "app/components/designSystem/TextField";
+import type { TextFieldProps } from "onyxia-ui";
+import { Typography } from "onyxia-ui";
+import { createUseClassNames } from "app/theme";
+import { TextField } from "onyxia-ui";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
-import { IconButton } from "app/components/designSystem/IconButton";
+import { IconButton } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -19,11 +19,11 @@ import Switch from "@material-ui/core/Switch";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
-import { Tooltip } from "app/components/designSystem/Tooltip";
+import { Tooltip } from "onyxia-ui";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
 import { assert } from "tsafe/assert";
-import { Button } from "app/components/designSystem/Button";
+import { Button } from "onyxia-ui";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |

@@ -12,11 +12,11 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
-import { Tooltip } from "app/components/designSystem/Tooltip";
-import { Icon } from "app/components/designSystem/Icon";
+import { Tooltip } from "onyxia-ui";
+import { Icon } from "onyxia-ui";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 
 Account.routeGroup = createGroup([
     routes.account

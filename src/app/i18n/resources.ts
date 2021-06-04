@@ -24,7 +24,6 @@ import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/Catalog
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
 import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { Catalog }  from "app/components/pages/Catalog/Catalog";
-import { Dialog } from "app/components/designSystem/Dialog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
@@ -60,7 +59,6 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
-    [symToStr({ Dialog })]: Reflect<Dialog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
     [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
     [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
@@ -233,7 +231,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 purpose.
                 The values will be injected as environnement variable.
             `,
-            "use secret dialog ok": "Got it"
+            "use secret dialog ok": "Got it",
+            "do not display again": "Don't display again"
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -303,9 +302,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "contribute to the catalog": "contribute to the {{catalogId}} catalog",
             "contribute to the package": "Find the sources of the {{packageName}} package ",
             "here": "here"
-        },
-        "Dialog": {
-            "do not display again": "Don't display again"
         },
         "Footer": {
             "contribute": "Contribute",
@@ -460,7 +456,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
                 Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
             `,
-            "use secret dialog ok": "J'ai compris"
+            "use secret dialog ok": "J'ai compris",
+            "do not display again": "Ne plus afficher"
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
@@ -530,9 +527,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "contribute to the catalog": "contribuer au catalogue {{catalogId}}",
             "contribute to the package": "Accéder aux sources du package {{packageName}} ",
             "here": "ici"
-        },
-        "Dialog": {
-            "do not display again": "Ne plus afficher"
         },
         "Footer": {
             "contribute": "Contribuer au projet",

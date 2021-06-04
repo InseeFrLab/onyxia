@@ -1,14 +1,14 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { useState, useReducer, useRef, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { id } from "tsafe/id";
 import memoize from "memoizee";
-import { useDomRect } from "powerhooks";
-import { CircularProgress } from "app/components/designSystem/CircularProgress";
-import { IconButton } from "app/components/designSystem/IconButton";
-import { Icon } from "app/components/designSystem/Icon";
+import { useDomRect } from "onyxia-ui";
+import { CircularProgress } from "onyxia-ui";
+import { IconButton } from "onyxia-ui";
+import { Icon } from "onyxia-ui";
 import { assert } from "tsafe/assert";
 
 export type Props = {
@@ -27,12 +27,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 
 		const borderRadius = `0 0 0 30px`;
 
-		const textColor = (() => {
-						switch (theme.paletteType) {
-							case "light": return theme.colors.palette.limeGreen.main;
-							case "dark": return theme.colors.palette.midnightBlue.main;
-						}
-					})();
+		const textColor = theme.isDarkModeEnabled ? 
+			theme.colors.palette.limeGreen.main : 
+			theme.colors.palette.dark.main;
 
 		return {
 			"iconButton": ({
@@ -49,12 +46,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				},
 				"&:hover": {
 					"& svg": {
-						"color": (()=>{
-						switch (theme.paletteType) {
-							case "light": return theme.colors.palette.whiteSnow.light;
-							case "dark": return theme.colors.palette.midnightBlue.greyVariant2;
-						}
-						})()
+						"color": theme.isDarkModeEnabled ? 
+							theme.colors.palette.light.light : 
+							theme.colors.palette.dark.greyVariant2
 					}
 				},
 				"& .MuiTouchRipple-root": {
@@ -62,7 +56,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				},
 			}),
 			"circularLoading": {
-				"color": theme.colors.palette.whiteSnow.main
+				"color": theme.colors.palette.light.main
 			},
 			"collapsedPanel": {
 				"maxHeight": 0,
@@ -72,7 +66,7 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 			},
 			"expandedPanel": {
 				"maxHeight": maxHeight - headerHeight,
-				"backgroundColor": theme.colors.palette.midnightBlue.light,
+				"backgroundColor": theme.colors.palette.dark.light,
 				"overflow": "auto",
 				"transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
 				"& pre": {
@@ -85,12 +79,9 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 				"paddingTop": theme.spacing(1)
 			},
 			"header": {
-				"backgroundColor": (() => {
-					switch (theme.paletteType) {
-						case "light": return theme.colors.palette.midnightBlue.main;
-						case "dark": return theme.colors.palette.limeGreen.main;
-					}
-				})(),
+				"backgroundColor": theme.isDarkModeEnabled? 
+					theme.colors.palette.dark.main : 
+					theme.colors.palette.limeGreen.main,
 				...(!isExpended ? {} : { borderRadius }),
 				"borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
 				"display": "flex",
@@ -128,9 +119,12 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 					"marginTop": 2
 				},
 				"& pre:nth-of-type(2)": {
-					"color": theme.colors.palette.whiteSnow.light
+					"color": theme.colors.palette.light.light
 				}
 
+			},
+			"dollarIcon": {
+				"color": theme.colors.palette.limeGreen.main
 			}
 		};
 	}
@@ -264,7 +258,7 @@ export const CmdTranslation = memo((props: Props) => {
 						<div key={cmdId} className={classNames.entryRoot}>
 
 							<div className={classNames.dollarContainer}>
-								<Icon type="attachMoney" color="limeGreen" fontSize="small" />
+								<Icon type="attachMoney" fontSize="small" className={classNames.dollarIcon}/>
 							</div>
 							<div className={classNames.preWrapper}>
 								<pre>

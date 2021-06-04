@@ -1,9 +1,9 @@
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { useState, memo } from "react";
 import type { ReactNode } from "react";
-import { Icon } from "app/components/designSystem/Icon";
+import { Icon } from "onyxia-ui";
 import { cx, css } from "tss-react";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 
 

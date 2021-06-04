@@ -33,12 +33,10 @@
     "keycloakify": "^1.0.3",
     "minimal-polyfills": "^2.2.1",
     "react-app-rewired": "^2.1.8",
-    "typescript": "^4.2.4"
+    "typescript": "4.2.2"
   },
   "dependencies": {
-    "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/system": "^4.9.14",
     "@reduxjs/toolkit": "^1.4.0",
     "async-mutex": "^0.2.6",
@@ -65,8 +63,9 @@
     "moment": "^2.29.1",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
+    "onyxia-ui": "^0.2.1",
     "path": "^0.12.7",
-    "powerhooks": "^0.0.38",
+    "powerhooks": "^0.0.40",
     "public-ip": "^4.0.3",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
@@ -100,6 +99,9 @@
     "storybook": "start-storybook -p 6006 -s public",
     "postinstall": "generate-env-getter",
     "prestart": "generate-env-getter"
+  },
+  "resolutions": {
+    "babel-loader": "8.1.0"
   },
   "eslintConfig": {
     "extends": [

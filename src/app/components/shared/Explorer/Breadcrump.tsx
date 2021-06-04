@@ -1,7 +1,7 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { useMemo, useState, useEffect, memo } from "react";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { basename as pathBasename, relative as pathRelative } from "path";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";

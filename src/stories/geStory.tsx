@@ -1,9 +1,11 @@
 
 
+import { useEffect } from "react";
 import type { Meta } from "@storybook/react";
 import { symToStr } from "app/tools/symToStr";
 import type { Story } from "@storybook/react";
-import { onyxiaThemeProviderFactory } from "onyxia-design";
+import { ThemeProvider } from "app/theme";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { id } from "tsafe/id";
@@ -15,12 +17,8 @@ import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProv
 import { useTheme } from "@material-ui/core/styles";
 import { RouteProvider } from "app/routes/router";
 import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
-import { ZoomProvider } from "app/tools/ZoomProvider";
 import "./fonts.scss";
 
-const { OnyxiaThemeProvider } = onyxiaThemeProviderFactory(
-    { "isReactStrictModeEnabled": false }
-);
 
 const getStoreInitializationParams: StoreProviderProps["getStoreInitializationParams"] = () => ({
     "oidcClientConfig": id<OidcClientConfig.Phony>({
@@ -105,20 +103,30 @@ export function getStoryFactory<Props>(params: {
 
 
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
-        ({ darkMode, lng, ...props }) =>
-            <I18nProvider lng={lng}>
-                <RouteProvider>
-                    <OnyxiaThemeProvider isDarkModeEnabled={darkMode}>
-                        <ZoomProvider zoomProviderReferenceWidth={undefined}>
+        ({ darkMode, lng, ...props }) => {
+
+            const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
+
+            useEffect(
+                () => { setIsDarkModeEnabled(darkMode); },
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [darkMode]
+            );
+
+            return (
+                <I18nProvider lng={lng}>
+                    <RouteProvider>
+                        <ThemeProvider zoomProviderReferenceWidth={undefined}>
                             <StoreProviderOrFragment>
                                 <Container>
                                     <Component {...props} />
                                 </Container>
                             </StoreProviderOrFragment>
-                        </ZoomProvider>
-                    </OnyxiaThemeProvider>
-                </RouteProvider>
-            </I18nProvider>;
+                        </ThemeProvider>
+                    </RouteProvider>
+                </I18nProvider>
+            );
+        }
 
 
     function getStory(props: Props): typeof Template {

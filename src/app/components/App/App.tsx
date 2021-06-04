@@ -7,7 +7,7 @@ import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
 import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { 
     useAppConstants, 
@@ -23,8 +23,8 @@ import { FourOhFour }  from "./FourOhFour";
 import { assert } from "tsafe/assert";
 import { routes } from "app/routes/router";
 import { useEffectOnValueChange } from "powerhooks";
-import { useDomRect } from "powerhooks";
-import { hideSplashScreen, showSplashScreen } from "onyxia-design/splashScreen";
+import { useDomRect } from "onyxia-ui";
+import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
 import { Account } from "app/components/pages/Account";
 
 //Legacy

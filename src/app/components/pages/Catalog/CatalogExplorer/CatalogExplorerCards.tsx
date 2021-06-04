@@ -1,15 +1,15 @@
 
 import { useEffect, useState, useMemo, memo } from "react";
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useCallbackFactory } from "powerhooks";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "app/i18n/useTranslations";
-import { Button } from "app/components/designSystem/Button";
+import { Button } from "onyxia-ui";
 import { useConstCallback } from "powerhooks";
 import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
-import { Typography } from "app/components/designSystem/Typography";
+import { Typography } from "onyxia-ui";
 import { CatalogExplorerSearchBar } from "./CatalogExplorerSearchBar";
 import type { Props as SearchBarProps } from "./CatalogExplorerSearchBar";
 import { Evt } from "evt";
@@ -257,7 +257,7 @@ const { NoMatches } = (() => {
                 "maxWidth": 500
             },
             "svg": {
-                "fill": theme.colors.palette.midnightBlue.greyVariant2,
+                "fill": theme.colors.palette.dark.greyVariant2,
                 "width": 100,
                 "margin": 0
             },
@@ -266,7 +266,7 @@ const { NoMatches } = (() => {
             },
             "typo": {
                 "marginBottom": theme.spacing(1),
-                "color": theme.colors.palette.whiteSnow.greyVariant3
+                "color": theme.colors.palette.light.greyVariant3
             },
             "link": {
                 "cursor": "pointer"

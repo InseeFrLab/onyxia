@@ -1,5 +1,5 @@
 
-import { createUseClassNames } from "onyxia-design";
+import { createUseClassNames } from "app/theme";
 import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks";
@@ -13,10 +13,10 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "powerhooks";
-import { Button } from "app/components/designSystem/Button";
-import { Typography } from "app/components/designSystem/Typography";
+import { Button } from "onyxia-ui";
+import { Typography } from "onyxia-ui";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
-import { Tooltip } from "app/components/designSystem/Tooltip";
+import { Tooltip } from "onyxia-ui";
 import { id } from "tsafe/id";
 import type { Id } from "tsafe/id";
 import { evaluateShellExpression } from "app/tools/evaluateShellExpression";
@@ -26,7 +26,7 @@ import Table from "@material-ui/core/Table";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
-import { Dialog } from "app/components/designSystem/Dialog";
+import { Dialog } from "onyxia-ui";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -404,6 +404,7 @@ export const MySecretsEditor = memo((props: Props) => {
                             {t("use secret dialog ok")}
                         </Button>
                     }
+                    doNotShowNextTimeText={t("do not display again")}
                 />
             </div>
 
@@ -437,7 +438,7 @@ export declare namespace MySecretsEditor {
         'use secret dialog body': undefined;
         'use secret dialog ok': undefined;
 
-
+        'do not display again': undefined;
     };
 
 }

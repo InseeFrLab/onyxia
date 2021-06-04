@@ -3,7 +3,7 @@ import { memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useIsDarkModeEnabled } from "onyxia-design/hooks/useIsDarkModeEnabled";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useConstCallback } from "powerhooks";
 import { useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
 import { thunks } from "lib/setup";
