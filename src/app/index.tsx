@@ -1,6 +1,7 @@
-import React from "react";
+import { StrictMode } from "react";
 import * as reactDom from "react-dom";
 import { getValidatedEnv } from "./validatedEnv";
+import memoize from "memoizee";
 
 import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
 import { id } from "tsafe/id";
@@ -16,16 +17,9 @@ import {
     kcContext as realKcContext,
     kcContextMocks
 } from "keycloakify";
-import { useConstCallback } from "powerhooks";
 import { KcApp } from "app/components/KcApp";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-
-
-Object.defineProperty(
-    kcContextMocks.kcRegisterContext.realm,
-    "registrationEmailAsUsername",
-    { "value": false }
-);
+import { Typography } from "onyxia-ui";
 
 const kcContext = realKcContext ?? (
     false /* Set to true to test the login pages outside of Keycloak */
@@ -34,60 +28,64 @@ const kcContext = realKcContext ?? (
         undefined
 );
 
+const getStoreInitializationParams = memoize(
+    id<StoreProviderProps["getStoreInitializationParams"]>(() => {
+
+        const env = getValidatedEnv();
+
+        return {
+            "oidcClientConfig":
+                env.AUTHENTICATION.TYPE === "oidc" ?
+                    id<OidcClientConfig.Keycloak>({
+                        "implementation": "KEYCLOAK",
+                        "keycloakConfig": env.AUTHENTICATION.OIDC
+                    }) :
+                    id<OidcClientConfig.Phony>({
+                        "implementation": "PHONY",
+                        "tokenValidityDurationMs": Infinity,
+                        "parsedJwt": {
+                            "email": "john.doe@insee.fr",
+                            "preferred_username": "jdoe",
+                            "family_name": "Doe",
+                            "given_name": "John",
+                            "groups": [],
+                            "locale": "fr"
+                        }
+                    }),
+            "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
+                "implementation": "VAULT",
+                "baseUri": env.VAULT.BASE_URI,
+                "engine": env.VAULT.ENGINE,
+                "role": env.VAULT.ROLE
+            }),
+            "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Official>({
+                "implementation": "OFFICIAL",
+                "baseUrl": env.API.BASE_URL ?? (() => {
+
+                    const { protocol, host } = window.location;
+
+                    return `${protocol}//${host}/api`;
+
+                })()
+            })
+        };
+
+    })
+);
+
+
 function Root() {
 
     const { lng } = useLng();
 
-    const getStoreInitializationParams = useConstCallback<StoreProviderProps["getStoreInitializationParams"]>(
-        () => {
-
-            const env = getValidatedEnv();
-
-            return {
-                "oidcClientConfig":
-                    env.AUTHENTICATION.TYPE === "oidc" ?
-                        id<OidcClientConfig.Keycloak>({
-                            "implementation": "KEYCLOAK",
-                            "keycloakConfig": env.AUTHENTICATION.OIDC
-                        }) :
-                        id<OidcClientConfig.Phony>({
-                            "implementation": "PHONY",
-                            "tokenValidityDurationMs": Infinity,
-                            "parsedJwt": {
-                                "email": "john.doe@insee.fr",
-                                "preferred_username": "jdoe",
-                                "family_name": "Doe",
-                                "given_name": "John",
-                                "groups": [],
-                                "locale": "fr"
-                            }
-                        }),
-                "secretsManagerClientConfig": id<SecretsManagerClientConfig.Vault>({
-                    "implementation": "VAULT",
-                    "baseUri": env.VAULT.BASE_URI,
-                    "engine": env.VAULT.ENGINE,
-                    "role": env.VAULT.ROLE
-                }),
-                "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Official>({
-                    "implementation": "OFFICIAL",
-                    "baseUrl": env.API.BASE_URL ?? (() => {
-
-                        const { protocol, host } = window.location;
-
-                        return `${protocol}//${host}/api`;
-
-                    })()
-                })
-            };
-
-        }
-    );
-
     return (
-        <React.StrictMode>
+        <StrictMode>
             <I18nProvider lng={lng}>
                 <RouteProvider>
-                    <ThemeProvider zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}>
+                    <ThemeProvider
+                        zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
+                        portraitModeUnsupportedMessage={<Typography variant="h3">Please rotate your phone</Typography>}
+                    >
                         <SplashScreenProvider Logo={OnyxiaLogoSvg}>
                             {kcContext !== undefined ?
                                 <KcApp kcContext={kcContext} /> :
@@ -99,7 +97,7 @@ function Root() {
                     </ThemeProvider>
                 </RouteProvider>
             </I18nProvider>
-        </React.StrictMode>
+        </StrictMode>
     );
 
 }
