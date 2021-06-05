@@ -184,7 +184,7 @@ const { CustomButton } = (() => {
             <div
                 className={cx(classNames.root, className)}
                 color="secondary"
-                onClick={isDisabled ? undefined : onClick}
+                onMouseDown={isDisabled ? undefined : onClick}
             >
                 {
                     (() => {
