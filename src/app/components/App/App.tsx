@@ -19,13 +19,13 @@ import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/routes/router";
 import { Home } from "app/components/pages/Home";
-import { FourOhFour }  from "./FourOhFour";
 import { assert } from "tsafe/assert";
 import { routes } from "app/routes/router";
 import { useEffectOnValueChange } from "powerhooks";
 import { useDomRect } from "onyxia-ui";
 import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
 import { Account } from "app/components/pages/Account";
+import { FourOhFour }  from "app/components/pages/FourOhFour";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
