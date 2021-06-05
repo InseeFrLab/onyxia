@@ -431,7 +431,10 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                             {
                                                 props.scriptLabels.map(
                                                     scriptLabel =>
-                                                        <MenuItem value={scriptLabel}>
+                                                        <MenuItem 
+                                                            value={scriptLabel} 
+                                                            key={scriptLabel}
+                                                        >
                                                             {scriptLabel}
                                                         </MenuItem>
                                                 )
