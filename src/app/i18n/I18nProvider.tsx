@@ -10,15 +10,17 @@ import { I18nextProvider } from "react-i18next";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import { useEffectOnValueChange } from "powerhooks";
+import { useLng } from "./useLng";
 
 export type Props = {
-    lng: SupportedLanguage;
     children: React.ReactNode;
 }
 
 export function I18nProvider(props: Props) {
 
-    const { children, lng } = props;
+    const { children } = props;
+
+    const { lng }= useLng();
 
     const [{ i18nInstance }] = useState(() => {
 

@@ -11,42 +11,12 @@ import Paper from "@material-ui/core/Paper";
 import { id } from "tsafe/id";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
-import { StoreProvider } from "app/interfaceWithLib/StoreProvider";
-import type { OidcClientConfig, SecretsManagerClientConfig, OnyxiaApiClientConfig } from "lib/setup";
-import type { Props as StoreProviderProps } from "app/interfaceWithLib/StoreProvider";
 import { RouteProvider } from "app/routes/router";
-import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
+import { useLng } from "app/i18n/useLng";
 import "./fonts.scss";
+import { createStoreProvider } from "app/interfaceWithLib/StoreProvider";
 
-const getStoreInitializationParams: StoreProviderProps["getStoreInitializationParams"] = () => ({
-    "oidcClientConfig": id<OidcClientConfig.Phony>({
-        "implementation": "PHONY",
-        "tokenValidityDurationMs": Infinity,
-        "parsedJwt": {
-            "email": "john.doe@insee.fr",
-            "preferred_username": "jdoe",
-            "family_name": "Doe",
-            "given_name": "John",
-            "groups": ["sspcloud-admin", "dsi-ddc"],
-            "locale": "en"
-        }
-    }),
-    "secretsManagerClientConfig": id<SecretsManagerClientConfig.LocalStorage>({
-        "implementation": "LOCAL STORAGE",
-        "artificialDelayMs": 0,
-        "doReset": false,
-        "paramsForTranslator": {
-            "baseUri": "https://vault.lab.sspcloud.fr",
-            "engine": "onyxia-kv",
-            "role": "onyxia-user"
-        }
-    }),
-    "onyxiaApiClientConfig": id<OnyxiaApiClientConfig.Mock>({
-        "implementation": "MOCK",
-        regions,
-        build
-    })
-});
+const { StoreProvider } = createStoreProvider({ "doMock": true });
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;
@@ -65,11 +35,9 @@ export function getStoryFactory<Props>(params: {
     const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
         ({ children }) => <>{children}</> :
         ({ children }) =>
-            <StoreProvider getStoreInitializationParams={getStoreInitializationParams}>
+            <StoreProvider>
                 {children}
             </StoreProvider>;
-
-
 
     const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
         ({ darkMode, lng, ...props }) => {
@@ -82,10 +50,18 @@ export function getStoryFactory<Props>(params: {
                 [darkMode]
             );
 
+            const { setLng } = useLng();
+
+            useEffect(
+                ()=> { setLng(lng); },
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [lng]
+            );
+
             const theme = useTheme();
 
             return (
-                <I18nProvider lng={lng}>
+                <I18nProvider>
                     <RouteProvider>
                         <ThemeProvider zoomProviderReferenceWidth={undefined}>
                             <StoreProviderOrFragment>
@@ -157,75 +133,3 @@ export function logCallbacks<T extends string>(propertyNames: readonly T[]): Rec
 
 }
 
-
-const regions: Public_Configuration["regions"] =
-    [
-        {
-            "id": 'datalab',
-            "name": 'DG Insee',
-            "description": 'Region principale. Plateforme hébergée sur les serveurs de la direction générale de l\'INSEE',
-            "location": {
-                "lat": 48.8164,
-                "name": 'Montrouge (France)',
-                "long": 2.3174
-            },
-            "services": {
-                "type": 'MARATHON',
-                "defaultIpProtection": true,
-                "network": 'calico',
-                "namespacePrefix": 'users',
-                "marathonDnsSuffix": 'marathon.containerip.dcos.thisdcos.directory',
-                "expose": {
-                    "domain": 'lab.sspcloud.fr'
-                },
-                "monitoring": {
-                    "URLPattern": 'https://grafana.lab.sspcloud.fr/d/mZUaipcmk/app-generique?orgId=1&refresh=5s&var-id=$appIdSlug'
-                },
-                "cloudshell": {
-                    "catalogId": 'internal',
-                    "packageName": 'shelly'
-                },
-                "initScript": 'https://git.lab.sspcloud.fr/innovation/plateforme-onyxia/services-ressources/-/raw/master/onyxia-init.sh'
-            },
-            "data": {
-                "S3": {
-                    "monitoring": {
-                        "URLPattern": 'https://grafana.lab.sspcloud.fr/d/PhCwEJkMz/minio-user?orgId=1&var-username=$bucketId'
-                    },
-                    "URL": 'https://minio.lab.sspcloud.fr'
-                }
-            }
-        },
-        {
-            "id": 'gke',
-            "name": 'Google cloud',
-            "description": 'Region de test. Aucune garantie de service. A n\'utiliser que pour des tests.',
-            "location": {
-                "lat": 50.8503,
-                "name": 'St. Ghislain (Belgium)',
-                "long": 4.3517
-            },
-            "services": {
-                "type": 'KUBERNETES',
-                "defaultIpProtection": false,
-                "namespacePrefix": 'user-',
-                "expose": {
-                    "domain": 'demo.dev.sspcloud.fr'
-                },
-                "cloudshell": {
-                    "catalogId": 'inseefrlab-helm-charts-datascience',
-                    "packageName": 'cloudshell'
-                }
-            },
-            "data": {
-                "S3": {
-                    "URL": 'https://minio.demo.dev.sspcloud.fr'
-                }
-            }
-        }
-    ];
-
-const build: Public_Configuration["build"] = {
-    "version": "0.7.3",
-    "timestamp": Date.now()
-};
