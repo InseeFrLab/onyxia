@@ -11,8 +11,8 @@ import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/components/App/LeftBar";
-import { FourOhFour } from "app/components/App/FourOhFour";
-import { PortraitModeUnsupported } from "app/components/App/PortraitModeUnsupported";
+import { FourOhFour } from "app/components/pages/FourOhFour";
+import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
 import { Home } from "app/components/pages/Home";
 import { Register } from "app/components/KcApp/Register";
 import { AccountField } from "app/components/pages/Account/AccountField";

@@ -12,7 +12,7 @@ import {
 } from "keycloakify";
 import { KcApp } from "app/components/KcApp";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { PortraitModeUnsupported } from "app/components/App/PortraitModeUnsupported";
+import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
 
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
