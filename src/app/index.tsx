@@ -12,9 +12,9 @@ import {
 } from "keycloakify";
 import { KcApp } from "app/components/KcApp";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { Typography } from "onyxia-ui";
+import { PortraitModeUnsupported } from "app/components/App/PortraitModeUnsupported";
 
-const { StoreProvider } = createStoreProvider({ "doMock": false });
+const { StoreProvider } = createStoreProvider({ "doMock": false });
 
 const kcContext = realKcContext ?? (
     false /* Set to true to test the login pages outside of Keycloak */
@@ -29,7 +29,7 @@ reactDom.render(
             <RouteProvider>
                 <ThemeProvider
                     zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
-                    portraitModeUnsupportedMessage={<Typography variant="h3">Please rotate your phone</Typography>}
+                    portraitModeUnsupportedMessage={<PortraitModeUnsupported />}
                 >
                     <SplashScreenProvider Logo={OnyxiaLogoSvg}>
                         {kcContext !== undefined ?
