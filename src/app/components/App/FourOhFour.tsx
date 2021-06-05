@@ -1,15 +1,16 @@
 
+import { memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
-import { createUseClassNames } from "app/theme";
-import { cx } from "tss-react";
-import { Typography } from "onyxia-ui";
+import { createUseClassNames } from "app/theme";
+import { cx } from "tss-react";
+import { Typography } from "onyxia-ui";
 
 export type Props = {
     className?: string;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme=>({
+const { useClassNames } = createUseClassNames()(
+    theme => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
@@ -19,13 +20,13 @@ const { useClassNames } = createUseClassNames()(
     })
 );
 
-export function FourOhFour(props: Props) {
+export const FourOhFour = memo((props: Props) => {
 
     const { className } = props;
 
     const { t } = useTranslation("FourOhFour");
 
-    const { classNames }  = useClassNames({});
+    const { classNames } = useClassNames({});
 
     return (
         <div className={cx(classNames.root, className)}>
@@ -35,8 +36,7 @@ export function FourOhFour(props: Props) {
         </div>
     );
 
-}
-
+});
 
 export declare namespace FourOhFour {
 

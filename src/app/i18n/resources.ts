@@ -12,6 +12,7 @@ import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEdit
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/components/App/LeftBar";
 import { FourOhFour } from "app/components/App/FourOhFour";
+import { PortraitModeUnsupported } from "app/components/App/PortraitModeUnsupported";
 import { Home } from "app/components/pages/Home";
 import { Register } from "app/components/KcApp/Register";
 import { AccountField } from "app/components/pages/Account/AccountField";
@@ -46,6 +47,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
+    [symToStr({ PortraitModeUnsupported })]: Reflect<PortraitModeUnsupported.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
@@ -256,6 +258,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "FourOhFour": {
             "not found": "Page not found"
+        },
+        "PortraitModeUnsupported": {
+            "portrait mode not supported": "Portrait mode isn't supported yet",
+            "instructions": "To use this app on your phone please enable the rotation sensor and turn your phone."
         },
         "Home": {
             "welcome": `Welcome {{who}}!`,
@@ -480,6 +486,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "FourOhFour": {
             "not found": "Page non trouvée"
+        },
+        "PortraitModeUnsupported": {
+            "portrait mode not supported": "Le mode portrait n'est pas encore supporter",
+            "instructions": "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
         },
         "Home": {
             "welcome": `Bienvenue {{who}}!`,
