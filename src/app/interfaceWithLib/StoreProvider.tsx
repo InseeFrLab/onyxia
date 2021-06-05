@@ -5,6 +5,13 @@ import { useAsync } from "react-async-hook";
 import { createStore } from "lib/setup";
 import type { CreateStoreParams } from "lib/setup";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
+import memoize from "memoizee";
+
+export type StoreInitializationParams = Omit<
+        CreateStoreParams,
+        "getIsDarkModeEnabledValueForProfileInitialization"
+    >;
+
 
 export type Props = {
     /** 
@@ -15,22 +22,26 @@ export type Props = {
      * first initialized. Swiping the reference of this getter will
      * have no effect.
      */
-    getStoreInitializationParams(): Omit<
-        CreateStoreParams,
-        "getIsDarkModeEnabledValueForProfileInitialization"
-    >;
+    getStoreInitializationParams(): StoreInitializationParams;
     children: ReactNode;
 };
+
+//NOTE: Create store can only be called once
+const createStore_memo = memoize(
+    (storeInitializationParams: StoreInitializationParams)=> 
+        createStore({
+            ...storeInitializationParams,
+            "getIsDarkModeEnabledValueForProfileInitialization": getIsDarkModeEnabledOsDefault
+        }),
+    { "promise": true }
+);
 
 export function StoreProvider(props: Props) {
 
     const { getStoreInitializationParams, children } = props;
 
     const asyncCreateStore = useAsync(
-        () => createStore({
-            ...getStoreInitializationParams(),
-            "getIsDarkModeEnabledValueForProfileInitialization": getIsDarkModeEnabledOsDefault
-        }),
+        ()=> createStore_memo(getStoreInitializationParams()),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
