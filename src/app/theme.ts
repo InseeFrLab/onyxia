@@ -19,6 +19,7 @@ import { ReactComponent as CollaborationToolsSvg } from "./assets/svg/Collaborat
 import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
 import { ReactComponent as CommunitySvg } from "./assets/svg/Community.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
+import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
@@ -101,7 +102,8 @@ export const { Icon } = createIcon({
     "collaborationTools": CollaborationToolsSvg,
     "bash": BashSvg,
     "community": CommunitySvg,
-    "catalog": CatalogSvg 
+    "catalog": CatalogSvg,
+    "key": KeySvg
 });
 
 export type IconId = Param0<typeof Icon>["id"];

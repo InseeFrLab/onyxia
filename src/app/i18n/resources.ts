@@ -28,6 +28,8 @@ import { Catalog }  from "app/components/pages/Catalog/Catalog";
 import { Footer } from "app/components/App/Footer";
 import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
+import { MyServices } from "app/components/pages/MyServices/MyServices";
+import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -64,6 +66,8 @@ const reflectedI18nSchemes = {
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
     [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
     [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
+    [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
+    [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -326,6 +330,17 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "configuration": "{{packageName}} configurations",
             "dependency": "{{dependencyName}} dependency",
             "launch of a service": "A {{dependencyName}} service will be launched",
+        },
+        "MyServices": {
+            "text1": "My Services",
+            "text2": "Access your running services",
+            "text3": "Copy your service's password by clicking on the key"
+        },
+        "MyServicesButtonBar": {
+            "refresh": "Refresh",
+            "launch": "New service",
+            "password": "Service's password",
+            "trash": "Delete all"
         }
     },
     "fr": {
@@ -555,6 +570,17 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "configuration": "Configuration {{packageName}}",
             "dependency": "Dépendance {{dependencyName}}",
             "launch of a service": "Lancement d'un service {{dependencyName}}",
+        },
+        "MyServices": {
+            "text1" : "Mes services",
+            "text2": "Lancez, visualisr et gérer rapidement vos différents services en cours.",
+            "text3": "Récoupérer le mot de passe pour vos services en copiant la clef.",
+        },
+        "MyServicesButtonBar": {
+            "refresh": "Rafraîchir",
+            "launch": "Nouveau servcie",
+            "password": "Mot de passe des services",
+            "trash": "Tout supprimer"
         }
         /* spell-checker: enable */
     }
