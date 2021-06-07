@@ -7,15 +7,27 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks";
+import { Typography } from "onyxia-ui";
 
 export type Props = {
     className: string;
 };
 
 const { useClassNames } = createUseClassNames()(
-    () => ({
+    theme => ({
         "root": {
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "contextTypo": {
+            "margin": theme.spacing(3, 0)
+        },
+        /*
+        "payload": { 
+            "overflow": "hidden",
+            "flex": 1
         }
+        */
     })
 );
 
@@ -48,6 +60,14 @@ export const MyServices = memo((props: Props) => {
             <MyServicesButtonBar
                 onClick={onButtonBarClick}
             />
+            <Typography
+                variant="h4"
+                className={classNames.contextTypo}
+            >
+                {t("running services")}
+            </Typography>
+            
+
         </div>
     );
 
@@ -60,6 +80,7 @@ export declare namespace MyServices {
         text1: undefined;
         text2: undefined;
         text3: undefined;
+        'running services': undefined;
     };
 
 }
