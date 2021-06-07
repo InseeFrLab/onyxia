@@ -1,4 +1,5 @@
 
+
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
 import Avatar from "@material-ui/core/Avatar";
@@ -60,31 +61,32 @@ export type Props = {
     className?: string;
     packageIconUrl?: string;
     packageName: string;
-    packageDescription: string;
-    onRequestLaunch(): void;
-    packageHomeUrl: string | undefined;
+    infoHref: string;
+    onRequestDelete(): void;
+    monitorHref: string;
+    isReady: boolean;
 };
 
-export const CatalogExplorerCard = memo((props: Props) => {
+export const MyServicesCard = memo((props: Props) => {
 
     const {
         className,
         packageIconUrl,
         packageName,
-        packageDescription,
-        packageHomeUrl,
-        onRequestLaunch
+        infoHref,
+        onRequestDelete,
+        monitorHref
     } = props;
 
     const { classNames } = useClassNames({});
 
-    const { t } = useTranslation("CatalogExplorerCard");
+    const { t } = useTranslation("MyServicesCard");
 
     return (
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
-                {packageIconUrl !== undefined &&
-                    <Avatar src={packageIconUrl} />}
+                {packageIcon !== undefined &&
+                    <Avatar src={packageIcon} />}
                 <Typography
                     className={classNames.title}
                     variant="h5"
@@ -123,10 +125,10 @@ export const CatalogExplorerCard = memo((props: Props) => {
 
 });
 
-export declare namespace CatalogExplorerCard {
+export declare namespace MyServicesCard {
 
     export type I18nScheme = {
-        'learn more': undefined;
-        launch: undefined;
+        service: undefined;
+        'running for': undefined;
     };
 }
