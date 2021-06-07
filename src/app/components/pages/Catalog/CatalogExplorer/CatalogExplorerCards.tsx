@@ -33,7 +33,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
         "root": {
             //Or set by the parent,
             //it must be constrained or the scroll will not work
-            "height": "100%",
+            //"height": "100%",
             "display": "flex",
             "flexDirection": "column",
         },

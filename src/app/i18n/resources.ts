@@ -334,7 +334,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServices": {
             "text1": "My Services",
             "text2": "Access your running services",
-            "text3": "Copy your service's password by clicking on the key"
+            "text3": "Copy your service's password by clicking on the key",
+            "running services": "Running services"
         },
         "MyServicesButtonBar": {
             "refresh": "Refresh",
@@ -575,6 +576,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text1" : "Mes services",
             "text2": "Lancez, visualisr et gérer rapidement vos différents services en cours.",
             "text3": "Récoupérer le mot de passe pour vos services en copiant la clef.",
+            "running services": "Services en cours"
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
