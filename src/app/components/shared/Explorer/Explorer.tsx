@@ -17,7 +17,7 @@ import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUni
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { Paper } from "onyxia-ui";
-import type { NonPostableEvt } from "evt";
+import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
@@ -240,10 +240,9 @@ export function Explorer(props: Props) {
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
     }));
 
-    const buttonBarCallback = useConstCallback(
-        ({ action }: Parameters<ButtonBarProps["callback"]>[0]) => {
-
-            switch (action) {
+    const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(
+        buttonId => {
+            switch (buttonId) {
                 case "refresh":
                     onNavigate({
                         "kind": !file ? "directory" : "file",
@@ -305,9 +304,9 @@ export function Explorer(props: Props) {
         ctx =>
             evtAction
                 .attach(
-                    action=> action === "TRIGGER COPY PATH",
+                    action => action === "TRIGGER COPY PATH",
                     ctx,
-                    () => buttonBarCallback({ "action": "copy path" })
+                    () => buttonBarCallback("copy path")
                 ),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [evtAction]
