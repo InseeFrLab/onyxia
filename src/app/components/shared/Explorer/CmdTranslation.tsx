@@ -28,8 +28,8 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 		const borderRadius = `0 0 0 30px`;
 
 		const textColor = theme.isDarkModeEnabled ? 
-			theme.colors.palette.limeGreen.main : 
-			theme.colors.palette.dark.main;
+			theme.colors.palette.dark.main :
+			theme.colors.palette.limeGreen.main;
 
 		return {
 			"iconButton": ({
@@ -80,8 +80,8 @@ const { useClassNames } = createUseClassNames<Props & { headerHeight: number; is
 			},
 			"header": {
 				"backgroundColor": theme.isDarkModeEnabled? 
-					theme.colors.palette.dark.main : 
-					theme.colors.palette.limeGreen.main,
+					theme.colors.palette.limeGreen.main :
+					theme.colors.palette.dark.main,
 				...(!isExpended ? {} : { borderRadius }),
 				"borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
 				"display": "flex",
