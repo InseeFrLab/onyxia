@@ -24,9 +24,9 @@ const { useClassNames } = createUseClassNames<Props>()(
             "color": (() => {
                 switch (kind) {
                     case "directory": return theme.colors.palette.focus.main;
-                    case "file": return theme.isDarkModeEnabled ?
-                        theme.colors.palette.dark.main :
-                        theme.colors.palette.light.main;
+                    case "file": return theme.colors
+                        .palette[theme.isDarkModeEnabled ? "light" : "dark"]
+                        .main;
                 }
             })(),
             ...(() => {
@@ -35,7 +35,6 @@ const { useClassNames } = createUseClassNames<Props>()(
                     switch (standardizedWidth) {
                         case "big": return 100;
                         case "normal": return 60;
-
                     }
                 })();
 
