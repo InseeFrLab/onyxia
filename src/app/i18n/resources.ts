@@ -30,6 +30,7 @@ import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLa
 import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { MyServices } from "app/components/pages/MyServices/MyServices";
 import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
+import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCard/MyServicesCard";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -68,6 +69,7 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
     [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
     [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
+    [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -342,6 +344,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch": "New service",
             "password": "Service's password",
             "trash": "Delete all"
+        },
+        "MyServicesCard": {
+            "service": "Service",
+            "running for": "Running for"
         }
     },
     "fr": {
@@ -583,6 +589,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch": "Nouveau servcie",
             "password": "Mot de passe des services",
             "trash": "Tout supprimer"
+        },
+        "MyServicesCard": {
+            "service": "Service",
+            "running for": "Temps d'activité"
         }
         /* spell-checker: enable */
     }
