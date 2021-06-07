@@ -13,7 +13,7 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "powerhooks";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { Typography } from "onyxia-ui";
 import { generateUniqDefaultName, buildNameFactory } from "app/tools/generateUniqDefaultName";
 import { Tooltip } from "onyxia-ui";

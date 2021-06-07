@@ -10,7 +10,7 @@ import { TextField } from "onyxia-ui";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
-import { IconButton } from "onyxia-ui";
+import { IconButton } from "app/theme";
 import { useCallbackFactory } from "powerhooks";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,7 +23,7 @@ import { Tooltip } from "onyxia-ui";
 import { useValidUntil } from "app/i18n/useMoment";
 import { cx } from "tss-react";
 import { assert } from "tsafe/assert";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 
 export type Props<T extends string = string> =
     Props.ServicePassword |
@@ -199,7 +199,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
         (props: { onClick(): void; disabled?: boolean; }) =>
             <Tooltip title={t("copy tooltip")}>
                 <IconButton
-                    type="filterNone"
+                    id="filterNone"
                     onClick={props.onClick}
                     fontSize="small"
                     disabled={props.disabled ?? false}
@@ -482,7 +482,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                 return (
                                     <>
                                         <IconButton
-                                            type="getApp"
+                                            id="getApp"
                                             onClick={onS3ScriptClickFactory("download")}
                                             fontSize="small"
                                         />
@@ -495,7 +495,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                 return (
                                     <>
                                         <IconButton
-                                            type={isInEditingState ? "check" : "edit"}
+                                            id={isInEditingState ? "check" : "edit"}
                                             disabled={props.isLocked || (isInEditingState && !isValueBeingTypedValid)}
                                             onClick={isInEditingState ? onSubmitButtonClick : onStartEditButtonClick}
                                             fontSize="small"
@@ -518,7 +518,7 @@ export const AccountField = memo(<T extends string>(props: Props<T>): ReturnType
                                 return (
                                     <>
                                         <IconButton
-                                            type="replay"
+                                            id="replay"
                                             fontSize="small"
                                             disabled={props.isLocked}
                                             onClick={props.onRequestServicePasswordRenewal}

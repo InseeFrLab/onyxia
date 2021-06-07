@@ -10,7 +10,7 @@ import { Typography } from "onyxia-ui";
 import { Tooltip } from "onyxia-ui";
 import MuiButton from "@material-ui/core/Button";
 import type { ButtonProps as MuiButtonProps } from "@material-ui/core/Button";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import type { SupportedLanguage } from "app/i18n/resources";
@@ -86,14 +86,14 @@ export const ChangeLanguage = memo((props: Props) => {
                     data-ga-event-category="header"
                     data-ga-event-action="language"
                 >
-                    {doShowIcon && <Icon type="translate" />}
+                    {doShowIcon && <Icon id="translate" />}
                     <Typography
                         variant="subtitle1"
                         className={css({ "marginLeft": theme.spacing(1) })}
                     >
                         {lngPrettyPrintByLng[lng].toUpperCase()}
                     </Typography>
-                    <Icon type="expandMore" />
+                    <Icon id="expandMore" />
                 </MuiButton>
             </Tooltip>
             <Menu

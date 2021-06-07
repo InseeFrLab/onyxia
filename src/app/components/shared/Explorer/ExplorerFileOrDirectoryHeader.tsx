@@ -6,7 +6,7 @@ import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
 import { Typography } from "onyxia-ui";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { IconButton } from "onyxia-ui"
+import { IconButton } from "app/theme"
 import { useFormattedDate } from "app/i18n/useMoment";
 import { useWithProps } from "powerhooks";
 
@@ -78,7 +78,7 @@ export const ExplorerFileOrDirectoryHeader = memo((props: Props) => {
             <div>
                 <IconButton
                     fontSize="large"
-                    type="chevronLeft"
+                    id="chevronLeft"
                     onClick={onBack}
                 />
             </div>

@@ -3,7 +3,7 @@ import { memo } from "react";
 import { createUseClassNames } from "app/theme";
 import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "onyxia-ui";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { capitalize } from "app/tools/capitalize";

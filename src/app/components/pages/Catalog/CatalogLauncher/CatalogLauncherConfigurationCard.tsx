@@ -13,7 +13,7 @@ import { useState, useMemo, memo } from "react";
 import { Tabs } from "app/components/shared/Tabs";
 import MuiTextField from "@material-ui/core/TextField";
 import { createUseClassNames } from "app/theme";
-import { IconButton } from "onyxia-ui";
+import { IconButton } from "app/theme";
 import { Typography } from "onyxia-ui";
 import { cx } from "tss-react";
 import { useConstCallback } from "powerhooks";
@@ -21,7 +21,7 @@ import type { FormField } from "lib/useCases/launcher";
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
 import { useCallbackFactory } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { IndexedFormFields } from "lib/useCases/launcher";
 
@@ -200,12 +200,16 @@ const { Header } = (() => {
                 "isExpandIconVisible": onIsCollapsedValueChange !== undefined
             });
 
+            const onClick = useConstCallback(
+                ()=>onIsCollapsedValueChange?.()
+            );
+
             const { t } = useTranslation("CatalogLauncherConfigurationCard");
 
             return (
                 <div
                     className={cx(classNames.root, className)}
-                    onClick={onIsCollapsedValueChange}
+                    onClick={onClick}
                 >
                     <div className={classNames.titleWrapper}>
                         <Typography
@@ -216,7 +220,7 @@ const { Header } = (() => {
                                 switch (props.type) {
                                     case "dependency": return (
                                         <>
-                                            <Icon type="subdirectoryArrowRight" />
+                                            <Icon id="subdirectoryArrowRight" />
                                             &nbsp;
                                             {t("dependency", { "dependencyName": capitalize(props.dependencyName) })}
                                         </>
@@ -253,8 +257,8 @@ const { Header } = (() => {
                     </div>
                     <div style={{ "flex": 1 }} />
                     <IconButton
-                        onClick={onIsCollapsedValueChange}
-                        type="expandMore"
+                        onClick={onClick}
+                        id="expandMore"
                         className={classNames.expandIcon}
                     />
                 </div>

@@ -9,7 +9,7 @@ import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Typography } from "onyxia-ui";
-import { IconButton } from "onyxia-ui";
+import { IconButton } from "app/theme";
 import { useCallbackFactory } from "powerhooks";
 import { useConstCallback } from "powerhooks";
 import TableRow from "@material-ui/core/TableRow";
@@ -344,14 +344,14 @@ export const MySecretsEditorRow = memo((props: Props) => {
             <TableCell align="right">
                 <div className={css({ "display": "flex" })}>
                     <IconButton
-                        type={isInEditingState ? "check" : "edit"}
+                        id={isInEditingState ? "check" : "edit"}
                         disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                         onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
                         fontSize="small"
                     />
                     <IconButton
                         disabled={isLocked}
-                        type="delete"
+                        id="delete"
                         onClick={onDelete}
                         fontSize="small"
                     />

@@ -3,7 +3,7 @@ import { memo } from "react";
 import type { ReactNode } from "react";
 import { Typography } from "onyxia-ui";
 import { Tooltip } from "onyxia-ui";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 
@@ -51,7 +51,7 @@ export const AccountSectionHeader = memo((props: Props) => {
                 <Tooltip title={tooltipText}>
                     <Icon 
                         className={classNames.helpIcon} 
-                        type="help" 
+                        id="help" 
                         fontSize="small" 
                     />
                 </Tooltip>

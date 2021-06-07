@@ -5,7 +5,7 @@ import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useConstCallback } from "powerhooks";
 import { Template } from "./Template";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import Link from "@material-ui/core/Link";
 import { Typography } from "onyxia-ui";
 import { createUseClassNames } from "app/theme";

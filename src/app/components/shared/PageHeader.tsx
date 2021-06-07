@@ -3,13 +3,13 @@ import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { memo } from "react";
 import { Typography } from "onyxia-ui";
-import { IconProps } from "onyxia-ui";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import type { PickOptionals } from "tsafe";
 import { noUndefined } from "app/tools/noUndefined";
+import type { IconId } from "app/theme";
 
 export type Props = {
-    icon: IconProps["type"];
+    icon: IconId;
     text1: NonNullable<React.ReactNode>;
     text2: NonNullable<React.ReactNode>;
     text3: NonNullable<React.ReactNode>;
@@ -56,7 +56,7 @@ export const PageHeader = memo((props: Props) => {
     return (
         <div className={cx(classNames.root, className)}>
             <Typography variant="h2" className={classNames.text1}>
-                <Icon type={icon} className={classNames.icon} />
+                <Icon id={icon} className={classNames.icon} />
                 {text1}
             </Typography>
             <Typography variant="h5" className={classNames.text2}>{text2}</Typography>

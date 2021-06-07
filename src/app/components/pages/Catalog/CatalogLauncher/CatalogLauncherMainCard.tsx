@@ -4,10 +4,10 @@ import { memo } from "react";
 import { createUseClassNames } from "app/theme";
 import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "onyxia-ui";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
-import { IconButton } from "onyxia-ui";
+import { IconButton } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import { TextField } from "onyxia-ui";
 import type { TextFieldProps } from "onyxia-ui";
@@ -122,13 +122,13 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 {onRequestCopyLaunchUrl !== undefined &&
                     <Tooltip title={t("copy url helper text")}>
                         <IconButton
-                            type="link"
+                            id="link"
                             onClick={onRequestCopyLaunchUrl}
                         />
                     </Tooltip>}
                 <Tooltip title={t("save configuration")}>
                     <IconButton
-                        type={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                        id={isBookmarked ? "bookmark" : "bookmarkBorder"}
                         onClick={onBookmarkIconButtonClick}
                     />
                 </Tooltip>

@@ -1,10 +1,10 @@
 
 import { createUseClassNames } from "app/theme";
 import { memo } from "react";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import type { IconProps } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
+import type { IconId } from "app/theme";
 
 
 export type Action = "refresh" | "rename" | "create file" | "create directory" | "delete" | "copy path";
@@ -113,7 +113,7 @@ export declare namespace ExplorerButtonBar {
 const { CustomButton } = (() => {
 
     type CustomButtonProps = {
-        startIcon: IconProps["type"];
+        startIcon: IconId;
         disabled: boolean;
         onClick(): void;
         children: React.ReactNode;
