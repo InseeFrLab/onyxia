@@ -36,7 +36,9 @@
     "typescript": "4.2.2"
   },
   "dependencies": {
-    "@material-ui/icons": "^4.9.1",
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
     "@material-ui/system": "^4.9.14",
     "@reduxjs/toolkit": "^1.4.0",
     "async-mutex": "^0.2.6",
@@ -63,7 +65,7 @@
     "moment": "^2.29.1",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.0",
-    "onyxia-ui": "^0.2.3",
+    "onyxia-ui": "^0.3.0",
     "path": "^0.12.7",
     "powerhooks": "^0.0.42",
     "public-ip": "^4.0.3",
@@ -86,7 +88,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "shell-quote": "^1.7.2",
     "tsafe": "^0.2.4",
-    "tss-react": "^0.0.11",
+    "tss-react": "^0.0.12",
     "type-route": "^0.6.0",
     "typeface-roboto": "^0.0.75",
     "url-join-ts": "^1.0.5"

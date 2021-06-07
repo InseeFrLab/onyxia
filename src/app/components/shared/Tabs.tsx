@@ -1,7 +1,7 @@
 import { createUseClassNames } from "app/theme";
 import { useState, memo } from "react";
 import type { ReactNode } from "react";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { cx, css } from "tss-react";
 import { Typography } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
@@ -198,7 +198,7 @@ const { CustomButton } = (() => {
                                             case "left": return undefined;
                                         }
                                     })()}
-                                    type="chevronLeft"
+                                    id="chevronLeft"
                                 />
                             );
                             case "tab": return (

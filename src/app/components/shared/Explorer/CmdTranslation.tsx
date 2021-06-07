@@ -7,8 +7,8 @@ import { id } from "tsafe/id";
 import memoize from "memoizee";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui";
-import { IconButton } from "onyxia-ui";
-import { Icon } from "onyxia-ui";
+import { IconButton } from "app/theme";
+import { Icon } from "app/theme";
 import { assert } from "tsafe/assert";
 
 export type Props = {
@@ -231,7 +231,7 @@ export const CmdTranslation = memo((props: Props) => {
 			<div ref={headerRef} className={classNames.header}>
 
 				<div className={classNames.dollarContainer} >
-					<Icon className="dollarSign" type="attachMoney" fontSize="small" />
+					<Icon className="dollarSign" id="attachMoney" fontSize="small" />
 				</div>
 
 				<div className={classNames.lastTranslatedCmd}>
@@ -240,7 +240,7 @@ export const CmdTranslation = memo((props: Props) => {
 
 				<IconButton
 					onClick={toggleIsExpended}
-					type="expandMore"
+					id="expandMore"
 					className={classNames.iconButton}
 				/>
 
@@ -258,7 +258,7 @@ export const CmdTranslation = memo((props: Props) => {
 						<div key={cmdId} className={classNames.entryRoot}>
 
 							<div className={classNames.dollarContainer}>
-								<Icon type="attachMoney" fontSize="small" className={classNames.dollarIcon}/>
+								<Icon id="attachMoney" fontSize="small" className={classNames.dollarIcon}/>
 							</div>
 							<div className={classNames.preWrapper}>
 								<pre>

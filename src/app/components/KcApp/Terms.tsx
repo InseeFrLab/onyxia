@@ -2,7 +2,7 @@ import { useEffect, memo } from "react";
 import { Template } from "./Template";
 import type { KcContext, KcProps } from "keycloakify";
 import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { createUseClassNames } from "app/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 

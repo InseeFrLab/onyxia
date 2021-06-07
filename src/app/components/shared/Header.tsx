@@ -1,7 +1,7 @@
 
 import { memo } from "react";
-import { IconButton } from "onyxia-ui";
-import { Button } from "onyxia-ui";
+import { IconButton } from "app/theme";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
@@ -153,7 +153,7 @@ const { ToggleDarkMode } = (() => {
 
         return (
             <IconButton
-                type={isDarkModeEnabled ? "brightness7" : "brightness4"}
+                id={isDarkModeEnabled ? "brightness7" : "brightness4"}
                 onClick={onClick}
             />
         );
@@ -188,7 +188,7 @@ const { ToggleCloudShell } = (() => {
 
         return (
             <IconButton
-                type="bash"
+                id="bash"
                 fontSize="large"
                 onClick={toggleCloudShellVisibility}
             />

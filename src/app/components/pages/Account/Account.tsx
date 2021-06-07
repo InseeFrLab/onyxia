@@ -13,7 +13,7 @@ import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { Tooltip } from "onyxia-ui";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
 import { createUseClassNames } from "app/theme";
@@ -72,7 +72,7 @@ export function Account(props: Props) {
                     &nbsp;
                     <Tooltip title={t("personal tokens tooltip")}>
                         <Icon
-                            type="help"
+                            id="help"
                             fontSize="small"
                         />
                     </Tooltip>

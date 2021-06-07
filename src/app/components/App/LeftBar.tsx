@@ -1,8 +1,7 @@
 
 import { useMemo, memo } from "react";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { Typography } from "onyxia-ui";
-import type { IconProps } from "onyxia-ui";
 import { createUseClassNames, useTheme } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -10,6 +9,7 @@ import { createUseGlobalState, useCallbackFactory } from "powerhooks";
 import { routes } from "app/routes/router";
 import { doExtends } from "tsafe/doExtends";
 import Divider from "@material-ui/core/Divider";
+import type { IconId } from "app/theme";
 
 const targets = [
     "toggle isExpanded" as const,
@@ -207,7 +207,7 @@ const { CustomButton } = (() => {
 
         const { t } = useTranslation("LeftBar");
 
-        const type = useMemo((): IconProps["type"] => {
+        const type = useMemo((): IconId => {
             switch (target) {
                 case "home": return "home";
                 case "account": return "account";
@@ -234,7 +234,7 @@ const { CustomButton } = (() => {
                         <div className={cx(hoverBoxClassName, classNames.iconHoverBox)} />
 
                         <Icon
-                            type={type}
+                            id={type}
                             className={classNames.icon}
                             fontSize="large"
                         />

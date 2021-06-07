@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, memo } from "react";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import "./style.scss";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
@@ -20,7 +20,6 @@ import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
 import { Paper } from "onyxia-ui"
 import { assert } from "tsafe/assert";
-import type { Link } from "type-route";
 
 Home.routeGroup = createGroup([
     routes.home
@@ -119,7 +118,7 @@ export function Home() {
 					title={t("cardTitle1")}
 					text={t("cardText1")}
 					buttonText={t("cardButton1")}
-					link={routes.catalogExplorer().link}
+					href={routes.catalogExplorer().link.href}
 					doOpenNewTab={false}
 				/>
 				<Card
@@ -128,7 +127,7 @@ export function Home() {
 					title={t("cardTitle2")}
 					text={t("cardText2")}
 					buttonText={t("cardButton2")}
-					link={{ "href": "https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr" }}
+					href={"https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr"}
 					doOpenNewTab={true}
 				/>
 				<Card
@@ -136,7 +135,7 @@ export function Home() {
 					title={t("cardTitle3")}
 					text={t("cardText3")}
 					buttonText={t("cardButton3")}
-					link={routes.myBuckets().link}
+					href={routes.myBuckets().link.href}
 					doOpenNewTab={false}
 				/>
 			</div>
@@ -219,14 +218,14 @@ const { Card } = (() => {
 		text: string;
 		buttonText: string;
 		Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
-		link: Partial<Link>;
+		href: string;
 		doOpenNewTab: boolean;
 	};
 
 
 	const Card = memo((props: Props) => {
 
-		const { title, text, buttonText, Icon, className, link, doOpenNewTab } = props;
+		const { title, text, buttonText, Icon, className, href, doOpenNewTab } = props;
 
 		const theme = useTheme();
 
@@ -275,7 +274,7 @@ const { Card } = (() => {
 						<Typography>{text}</Typography>
 					</div>
 					<div className={css({ "marginTop": theme.spacing(4) })} >
-						<Button {...link} doOpenNewTabIfHref={doOpenNewTab}>{buttonText}</Button>
+						<Button href={href} doOpenNewTabIfHref={doOpenNewTab}>{buttonText}</Button>
 					</div>
 				</div>
 

@@ -10,7 +10,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { emailRegExp } from "app/tools/emailRegExp";
 import type { Param0 } from "tsafe";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { createUseClassNames } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";

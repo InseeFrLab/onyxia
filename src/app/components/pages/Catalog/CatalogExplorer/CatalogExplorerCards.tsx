@@ -5,7 +5,7 @@ import { cx } from "tss-react";
 import { useCallbackFactory } from "powerhooks";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "app/i18n/useTranslations";
-import { Button } from "onyxia-ui";
+import { Button } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";

@@ -2,9 +2,9 @@ import { useRef, useState, memo } from "react";
 import type { ChangeEventHandler } from "react";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
-import { Icon } from "onyxia-ui";
+import { Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { IconButton } from "onyxia-ui";
+import { IconButton } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import { useClickAway } from "app/tools/useClickAway";
 import type { NonPostableEvt } from "evt";
@@ -150,7 +150,7 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
             <div>
                 <Icon
                     color={isActive ? "textFocus" : undefined}
-                    type="search"
+                    id="search"
                     onClick={onIconClick}
                     className={classNames.icon}
                 />
@@ -171,7 +171,7 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
                             {
                                 <IconButton
                                     fontSize="small"
-                                    type="cancel"
+                                    id="cancel"
                                     disabled={search === ""}
                                     onClick={onClearButtonClick}
                                 />
