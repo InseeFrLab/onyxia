@@ -16,6 +16,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { useLng } from "app/i18n/useLng";
 import { objectKeys } from "tsafe/objectKeys";
+import { useTranslation } from "app/i18n/useTranslations";
 
 const menuId = "language-menu";
 
@@ -74,14 +75,16 @@ export const ChangeLanguage = memo((props: Props) => {
 
     const theme = useTheme();
 
+    const { t } = useTranslation("ChangeLanguage");
+
     return (
         <>
-            <Tooltip title={"change language"} enterDelay={300}>
+            <Tooltip title={t("change language")} enterDelay={300}>
                 <MuiButton
                     ref={buttonRef}
                     aria-owns={languageMenu ? menuId : undefined}
                     aria-haspopup="true"
-                    aria-label={"change language"}
+                    aria-label={t("change language")}
                     onClick={handleLanguageIconClick}
                     data-ga-event-category="header"
                     data-ga-event-action="language"
@@ -123,6 +126,14 @@ export const ChangeLanguage = memo((props: Props) => {
     );
 
 });
+
+export declare namespace ChangeLanguage {
+
+    export type I18nScheme = {
+        'change language': undefined;
+    };
+
+}
 
 
 

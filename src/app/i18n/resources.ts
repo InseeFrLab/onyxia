@@ -32,6 +32,8 @@ import { MyServices } from "app/components/pages/MyServices/MyServices";
 import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
 import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCard/MyServicesCard";
 import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCard/MyServicesRunningTime";
+import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
+import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfigOptions";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -72,6 +74,8 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
     [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
+    [symToStr({ ChangeLanguage })]: Reflect<ChangeLanguage.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfigOptions })]: Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -354,6 +358,13 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesRunningTime": {
             "launching": "Launching..."
+        },
+        "ChangeLanguage": {
+            "change language": "Change language"
+        },
+        "MyServicesSavedConfigOptions": {
+            "copy link": "Copy URL link",
+            "remove bookmark": "Delete"
         }
     },
     "fr": {
@@ -603,6 +614,13 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesRunningTime": {
             "launching": "En cours de lancement..."
+        },
+        "ChangeLanguage": {
+            "change language": "Changer la langue"
+        },
+        "MyServicesSavedConfigOptions": {
+            "copy link": "Copier l'URL",
+            "remove bookmark": "Supprimer"
         }
         /* spell-checker: enable */
     }
