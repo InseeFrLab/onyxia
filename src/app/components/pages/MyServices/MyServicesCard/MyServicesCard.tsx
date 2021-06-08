@@ -2,12 +2,12 @@
 
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
-import Avatar from "@material-ui/core/Avatar";
 import { Typography } from "onyxia-ui";
 import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { capitalize } from "app/tools/capitalize";
+import { MyServicesBadge } from "./MyServicesBadge";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -33,26 +33,6 @@ const { useClassNames } = createUseClassNames()(
             "padding": theme.spacing(3),
             "paddingTop": theme.spacing(2),
             "flex": 1,
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "hidden"
-        },
-        "body": {
-            "margin": 0,
-            "flex": 1,
-            //TODO: Commented out for mozilla (longer one always have scroll in a grid)
-            //"overflow": "auto"
-        },
-        "bodyTypo": {
-            "color": theme.colors.useCases.typography.textSecondary
-        },
-        "buttonsWrapper": {
-            "display": "flex",
-            "justifyContent": "flex-end",
-            "marginTop": theme.spacing(3)
-        },
-        "launchButton": {
-            "marginLeft": theme.spacing(1)
         }
     })
 );
@@ -60,11 +40,14 @@ const { useClassNames } = createUseClassNames()(
 export type Props = {
     className?: string;
     packageIconUrl?: string;
+    friendlyName: string;
     packageName: string;
     infoHref: string;
     onRequestDelete(): void;
     monitorHref: string;
-    isReady: boolean;
+    //Undefined when the service is not yey launched
+    startTime: number | undefined;
+    isOvertime: boolean;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -72,10 +55,13 @@ export const MyServicesCard = memo((props: Props) => {
     const {
         className,
         packageIconUrl,
+        friendlyName,
         packageName,
         infoHref,
         onRequestDelete,
-        monitorHref
+        monitorHref,
+        startTime, 
+        isOvertime
     } = props;
 
     const { classNames } = useClassNames({});
@@ -85,39 +71,20 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
-                {packageIcon !== undefined &&
-                    <Avatar src={packageIcon} />}
+                {packageIconUrl !== undefined &&
+                    <MyServicesBadge 
+                    src={packageIconUrl}
+                    circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
+                    />}
                 <Typography
                     className={classNames.title}
                     variant="h5"
                 >
-                    {capitalize(packageName)}
+                    {capitalize(friendlyName)}
                 </Typography>
 
             </div>
             <div className={classNames.belowDivider}>
-                <div className={classNames.body} >
-                    <Typography 
-                        variant="body1" 
-                        className={classNames.bodyTypo}
-                    >
-                        {packageDescription}
-                    </Typography>
-                </div>
-                <div className={classNames.buttonsWrapper}>
-                    {packageHomeUrl !== undefined &&
-                        <Button
-                            href={packageHomeUrl}
-                            color="ternary"
-                        >
-                            {t("learn more")}
-                        </Button>}
-                    <Button
-                        className={classNames.launchButton}
-                        color="secondary"
-                        onClick={onRequestLaunch}
-                    >{t("launch")}</Button>
-                </div>
 
             </div>
         </div>

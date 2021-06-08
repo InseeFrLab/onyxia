@@ -57,17 +57,7 @@ export const ExplorerFileOrDirectoryHeader = memo((props: Props) => {
         { visualRepresentationOfAFile }
     );
 
-    const isSameYear = date.getFullYear() === new Date().getFullYear();
-
-    const formattedDate = useFormattedDate({
-        date,
-        "formatByLng": {
-            /* spell-checker: disable */
-            "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
-            "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`
-            /* spell-checker: enable */
-        }
-    });
+    const formattedDate = useFormattedDate({ date });
 
     const isDateProvided = date.getTime() !== 0;
 
