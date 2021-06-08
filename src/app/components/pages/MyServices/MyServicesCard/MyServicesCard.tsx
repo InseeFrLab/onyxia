@@ -8,6 +8,8 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { capitalize } from "app/tools/capitalize";
 import { MyServicesBadge } from "./MyServicesBadge";
+import { MyServicesRunningTime } from "./MyServicesRunningTime";
+import { IconButton } from "app/theme";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -33,6 +35,13 @@ const { useClassNames } = createUseClassNames()(
             "padding": theme.spacing(3),
             "paddingTop": theme.spacing(2),
             "flex": 1,
+        },
+        "timeContainer": {
+            "marginLeft": theme.spacing(4)
+        },
+        "belowDividerTop": {
+            "display": "flex",
+            "marginBottom": theme.spacing(3)
         }
     })
 );
@@ -44,6 +53,7 @@ export type Props = {
     packageName: string;
     infoHref: string;
     onRequestDelete(): void;
+    openHref: string;
     monitorHref: string;
     //Undefined when the service is not yey launched
     startTime: number | undefined;
@@ -60,7 +70,8 @@ export const MyServicesCard = memo((props: Props) => {
         infoHref,
         onRequestDelete,
         monitorHref,
-        startTime, 
+        openHref,
+        startTime,
         isOvertime
     } = props;
 
@@ -72,9 +83,9 @@ export const MyServicesCard = memo((props: Props) => {
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
                 {packageIconUrl !== undefined &&
-                    <MyServicesBadge 
-                    src={packageIconUrl}
-                    circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
+                    <MyServicesBadge
+                        src={packageIconUrl}
+                        circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
                     />}
                 <Typography
                     className={classNames.title}
@@ -85,6 +96,29 @@ export const MyServicesCard = memo((props: Props) => {
 
             </div>
             <div className={classNames.belowDivider}>
+                <div className={classNames.belowDividerTop}>
+                    <div>
+                        <Typography variant="caption">{t("service")}</Typography>
+                        <Typography variant="subtitle1">
+                            {capitalize(packageName)}
+                        </Typography>
+                    </div>
+                    <div className={classNames.timeContainer}>
+                        <Typography variant="caption">{t("running since")}</Typography>
+                        {
+                            startTime === undefined ?
+                                <MyServicesRunningTime isRunning={false} /> :
+                                <MyServicesRunningTime isRunning={true} isOvertime={isOvertime} startTime={startTime} />
+                        }
+                    </div>
+                </div>
+                <div style={{ "display": "flex" }}>
+                    <IconButton id="infoOutlined" href={infoHref}/>
+                    <IconButton id="delete" onClick={onRequestDelete}/>
+                    <IconButton id="equalizer" href={monitorHref}/>
+                    <div style={{ "flex": 1 }}/>
+                    <Button color="secondary" href={openHref}>{t("open")}</Button>
+                </div>
 
             </div>
         </div>
@@ -96,6 +130,7 @@ export declare namespace MyServicesCard {
 
     export type I18nScheme = {
         service: undefined;
-        'running for': undefined;
+        'running since': undefined;
+        open: undefined;
     };
 }

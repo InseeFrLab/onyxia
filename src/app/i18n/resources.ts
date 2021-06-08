@@ -31,6 +31,7 @@ import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/C
 import { MyServices } from "app/components/pages/MyServices/MyServices";
 import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
 import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCard/MyServicesCard";
+import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCard/MyServicesRunningTime";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -70,6 +71,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
     [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
+    [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -347,7 +349,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesCard": {
             "service": "Service",
-            "running for": "Running for"
+            "running since": "Running since: ",
+            "open": "open"
+        },
+        "MyServicesRunningTime": {
+            "launching": "Launching..."
         }
     },
     "fr": {
@@ -592,7 +598,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesCard": {
             "service": "Service",
-            "running for": "Temps d'activité"
+            "running since": "En exécution depuis: ",
+            "open": "ouvrir"
+        },
+        "MyServicesRunningTime": {
+            "launching": "En cours de lancement..."
         }
         /* spell-checker: enable */
     }
