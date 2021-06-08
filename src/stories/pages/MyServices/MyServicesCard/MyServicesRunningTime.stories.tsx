@@ -13,11 +13,17 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const VueRegular = getStory({
+    "isRunning": true,
     "isOvertime": false,
     "startTime": Date.now()
 });
 
 export const VueOvertime = getStory({
+    "isRunning": true,
     "isOvertime": true,
     "startTime": Date.now() - 3600 * 1000 * 25
+});
+
+export const VueNotYetLaunched = getStory({
+    "isRunning": false,
 });

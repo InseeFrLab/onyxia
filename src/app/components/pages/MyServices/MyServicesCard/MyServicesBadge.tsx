@@ -27,7 +27,8 @@ const { useClassNames } = createUseClassNames<{
             "borderWidth": 3,
             "padding": 2,
             "borderRadius": "50%",
-            "boxSizing": "border-box"
+            "boxSizing": "border-box",
+            "display": "inline-block"
         },
         "avatar": {
             ...(() => {

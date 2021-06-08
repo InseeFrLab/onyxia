@@ -95,7 +95,7 @@ export const { useFromNow } = (() => {
                                 switch (lng) {
                                     case "en": return "just now";
                                     /* cspell: disable-next-line */
-                                    case "fr": return "maintenant";
+                                    case "fr": return "il y a quelque instant";
                                 }
                             })();
 
@@ -364,7 +364,7 @@ export const { useFromNow } = (() => {
         const fromNowText = useMemo(
             () => fromNow({ dateTime, lng }),
             // eslint-disable-next-line react-hooks/exhaustive-deps
-            [lng, trigger]
+            [lng, trigger, dateTime]
         );
 
         return { fromNowText };

@@ -45,6 +45,7 @@ import BookmarkIcon from "@material-ui/icons/Bookmark";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 import CodeIcon from "@material-ui/icons/Code";
 import LinkIcon from "@material-ui/icons/Link";
+import EqualizerIcon from "@material-ui/icons/Equalizer";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
@@ -66,6 +67,7 @@ export const { ThemeProvider, useTheme } = createThemeProvider({
 
 export const { createUseClassNames } = createUseClassNamesFactory({ useTheme });
 
+/** @see: <https://material-ui.com/components/material-icons/> */
 export const { Icon } = createIcon({
     "delete": DeleteIcon,
     "edit": EditIcon,
@@ -93,6 +95,8 @@ export const { Icon } = createIcon({
     "code": CodeIcon,
     "link": LinkIcon,
     "subdirectoryArrowRight": SubdirectoryArrowRightIcon,
+    "accessTime": AccessTimeIcon,
+    "equalizer": EqualizerIcon,
     "tour": TourSvg,
     "services": ServicesSvg,
     "secrets": SecretsSvg,
@@ -105,7 +109,6 @@ export const { Icon } = createIcon({
     "community": CommunitySvg,
     "catalog": CatalogSvg,
     "key": KeySvg,
-    "accessTime": AccessTimeIcon
 });
 
 export type IconId = Param0<typeof Icon>["id"];
