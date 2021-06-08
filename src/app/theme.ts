@@ -26,6 +26,7 @@ import AddIcon from "@material-ui/icons/Add";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import CheckIcon from "@material-ui/icons/Check";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import CachedIcon from "@material-ui/icons/Cached";
@@ -97,6 +98,7 @@ export const { Icon } = createIcon({
     "subdirectoryArrowRight": SubdirectoryArrowRightIcon,
     "accessTime": AccessTimeIcon,
     "equalizer": EqualizerIcon,
+    "moreVert": MoreVertIcon,
     "tour": TourSvg,
     "services": ServicesSvg,
     "secrets": SecretsSvg,
