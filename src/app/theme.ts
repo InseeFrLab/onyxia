@@ -45,6 +45,7 @@ import BookmarkIcon from "@material-ui/icons/Bookmark";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 import CodeIcon from "@material-ui/icons/Code";
 import LinkIcon from "@material-ui/icons/Link";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
 
@@ -103,7 +104,8 @@ export const { Icon } = createIcon({
     "bash": BashSvg,
     "community": CommunitySvg,
     "catalog": CatalogSvg,
-    "key": KeySvg
+    "key": KeySvg,
+    "accessTime": AccessTimeIcon
 });
 
 export type IconId = Param0<typeof Icon>["id"];
