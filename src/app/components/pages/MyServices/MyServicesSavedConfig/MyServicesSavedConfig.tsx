@@ -55,9 +55,10 @@ const { useClassNames } = createUseClassNames<{ hasLogo: boolean; }>()(
 export type Props = {
     className?: string;
     isShortVariant: boolean;
-    logoUrl?: string;
+    logoUrl: string | undefined;
     friendlyName: string;
-    callback(action: MyServicesSavedConfigAction): void;
+    restoreConfigurationUrl: string;
+    callback(action: "delete" | "copy link"): void;
 };
 
 export const MyServicesSavedConfig = memo(
@@ -68,12 +69,12 @@ export const MyServicesSavedConfig = memo(
             friendlyName,
             logoUrl,
             className,
+            restoreConfigurationUrl,
             callback
         } = props;
 
         const { classNames } = useClassNames({ "hasLogo": logoUrl !==undefined  });
 
-        const onButtonClick = useConstCallback(() => callback("launch"));
 
         const onLinkClick = useConstCallback(() => callback("copy link"));
 
@@ -115,7 +116,7 @@ export const MyServicesSavedConfig = memo(
                     id="link"
                     onClick={onLinkClick}
                 />}
-                <Button onClick={onButtonClick} color="secondary">{t("launch")}</Button>
+                <Button href={restoreConfigurationUrl} color="secondary">{t("launch")}</Button>
                 {isShortVariant &&
                     <MyServicesSavedConfigOptions callback={callback} />}
             </div>
