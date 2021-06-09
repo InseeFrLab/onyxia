@@ -26,8 +26,6 @@ export type Props<PackageName extends string = string> = {
     onRequestLaunch(packageName: PackageName): void;
 };
 
-const cardCountPerLine = 3;
-
 const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRevealed: boolean; }>()(
     (theme, { filteredCardCount, isRevealed }) => ({
         "root": {
@@ -45,7 +43,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
             "overflow": "auto",
             ...(filteredCardCount === 0 ? {} : {
                 "display": "grid",
-                "gridTemplateColumns": `repeat(${cardCountPerLine},1fr)`,
+                "gridTemplateColumns": `repeat(3,1fr)`,
                 "gridTemplateRows": `repeat(2,1fr)`,
                 //"gridAutoRows": "1fr",
                 "gap": theme.spacing(3),

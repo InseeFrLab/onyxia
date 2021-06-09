@@ -74,6 +74,7 @@ export const MyServicesSavedConfigs = memo(
                             .filter(isShortVariant ? ((...[, i]) => i < maxConfigCountInShortVariant) : () => true)
                             .map(({ logoUrl, friendlyName, restoreConfigurationUrl }) =>
                                 <MyServicesSavedConfig
+                                    key={restoreConfigurationUrl}
                                     className={classNames.entry}
                                     isShortVariant={isShortVariant}
                                     logoUrl={logoUrl}
