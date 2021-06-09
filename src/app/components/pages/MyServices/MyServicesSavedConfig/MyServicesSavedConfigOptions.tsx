@@ -27,7 +27,6 @@ const { useClassNames } = createUseClassNames()(
             },
             "& .MuiPaper-root": {
                 "backgroundColor": theme.colors.useCases.surfaces.background,
-                //"left": "0px !important",
             },
             "& a": {
                 "color": theme.colors.useCases.typography.textPrimary
