@@ -36,6 +36,7 @@ import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions";
 import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
 import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
+import { MyServicesCards } from "app/components/pages/MyServices/MyServicesCards";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -80,6 +81,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesSavedConfigOptions })]: Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
     [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
+    [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -376,6 +378,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesSavedConfigs": {
             "saved": "Saved",
             "show all": "Show all ({{n}})"
+        },
+        "MyServicesCards": {
+            "running services": "Running services"
         }
     },
     "fr": {
@@ -639,6 +644,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesSavedConfigs": {
             "saved": "Enregistrés",
             "show all": "Afficher tous ({{n}})"
+        },
+        "MyServicesCards": {
+            "running services": "Services en cours"
         }
         /* spell-checker: enable */
     }
