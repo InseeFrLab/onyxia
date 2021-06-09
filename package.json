@@ -67,7 +67,7 @@
     "node-sass": "^4.14.0",
     "onyxia-ui": "^0.3.0",
     "path": "^0.12.7",
-    "powerhooks": "^0.0.42",
+    "powerhooks": "^0.0.43",
     "public-ip": "^4.0.3",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",
