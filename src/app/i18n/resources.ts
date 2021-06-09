@@ -34,6 +34,7 @@ import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCard
 import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCard/MyServicesRunningTime";
 import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfigOptions";
+import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfig";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -76,6 +77,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
     [symToStr({ ChangeLanguage })]: Reflect<ChangeLanguage.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigOptions })]: Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -365,6 +367,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesSavedConfigOptions": {
             "copy link": "Copy URL link",
             "remove bookmark": "Delete"
+        },
+        "MyServicesSavedConfig": {
+            "launch": "Launch"
         }
     },
     "fr": {
@@ -621,6 +626,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesSavedConfigOptions": {
             "copy link": "Copier l'URL",
             "remove bookmark": "Supprimer"
+        },
+        "MyServicesSavedConfig": {
+            "launch": "Lancer"
         }
         /* spell-checker: enable */
     }

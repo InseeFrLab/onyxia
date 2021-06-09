@@ -27,7 +27,7 @@ const { useClassNames } = createUseClassNames()(
             },
             "& .MuiPaper-root": {
                 "backgroundColor": theme.colors.useCases.surfaces.background,
-                "left": "0px !important",
+                //"left": "0px !important",
             },
             "& a": {
                 "color": theme.colors.useCases.typography.textPrimary
@@ -36,6 +36,9 @@ const { useClassNames } = createUseClassNames()(
         "menuTypo": {
             "display": "flex",
             "alignItems": "center"
+        },
+        "button": {
+            "minWidth": "unset"
         }
     })
 );
@@ -65,9 +68,11 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
 
     const { t } = useTranslation("MyServicesSavedConfigOptions");
 
+
     return (
         <>
             <MuiButton
+                className={classNames.button}
                 aria-owns={menuElement ? menuId : undefined}
                 aria-haspopup="true"
                 onClick={onOpenMenuClick}
@@ -100,6 +105,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                                             case "delete": return "bookmark" as const;
                                         }
                                     })()} />
+                                    &nbsp;
                                     {t((() => {
                                         switch (action) {
                                             case "copy link": return "copy link" as const;
@@ -109,6 +115,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                                 </Typography>
                             </MenuItem>
                         ))}
+
             </Menu>
         </>
     );
