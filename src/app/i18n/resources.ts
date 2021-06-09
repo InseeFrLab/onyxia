@@ -3,39 +3,39 @@ import { Reflect } from "app/tools/Reflect";
 import { id } from "tsafe/id";
 
 import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
-import { Explorer } from "app/components/shared/Explorer/Explorer";
+import { Explorer } from "app/components/shared/Explorer";
 import { ExplorerItems } from "app/components/shared/Explorer/ExplorerItems";
 import { ExplorerItem } from "app/components/shared/Explorer/ExplorerItem";
-import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
-import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditor";
+import { MySecrets } from "app/components/pages/MySecrets";
+import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor";
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/components/App/LeftBar";
-import { FourOhFour } from "app/components/pages/FourOhFour";
-import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
-import { Home } from "app/components/pages/Home";
-import { Register } from "app/components/KcApp/Register";
-import { AccountField } from "app/components/pages/Account/AccountField";
-import { Account } from "app/components/pages/Account/Account";
-import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
-import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
-import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
-import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
-import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
-import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCard";
-import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
-import { Catalog }  from "app/components/pages/Catalog/Catalog";
-import { Footer } from "app/components/App/Footer";
-import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
+import { FourOhFour } from "app/components/pages/FourOhFour";
+import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
+import { Home } from "app/components/pages/Home";
+import { Register } from "app/components/KcApp/Register";
+import { AccountField } from "app/components/pages/Account/AccountField";
+import { Account } from "app/components/pages/Account/Account";
+import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
+import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
+import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
+import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
+import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
+import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
+import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
+import { Catalog } from "app/components/pages/Catalog";
+import { Footer } from "app/components/App/Footer";
+import { CatalogLauncherMainCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
-import { MyServices } from "app/components/pages/MyServices/MyServices";
-import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
-import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCard/MyServicesCard";
-import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCard/MyServicesRunningTime";
-import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
-import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfigOptions";
-import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfig";
-import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
+import { MyServices } from "app/components/pages/MyServices";
+import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
+import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard";
+import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRunningTime";
+import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
+import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions";
+import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
+import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -86,7 +86,7 @@ export type I18nSchemes = typeof reflectedI18nSchemes;
 
 export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
 
-export type SupportedLanguage =  "en" | "fr";
+export type SupportedLanguage = "en" | "fr";
 
 const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
     "en": {
@@ -197,7 +197,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MySecrets": {
             ...common.en,
             "page title": "My Secrets",
-            "what this page is used for": 
+            "what this page is used for":
                 `Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
             "to learn more": "To learn more about secrets management,",
             "read our documentation": "read our documentation."
@@ -373,7 +373,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesSavedConfig": {
             "launch": "Launch"
         },
-        "MyServicesSavedConfigs":{
+        "MyServicesSavedConfigs": {
             "saved": "Saved",
             "show all": "Show all ({{n}})"
         }
@@ -607,7 +607,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch of a service": "Lancement d'un service {{dependencyName}}",
         },
         "MyServices": {
-            "text1" : "Mes services",
+            "text1": "Mes services",
             "text2": "Lancez, visualisr et gérer rapidement vos différents services en cours.",
             "text3": "Récoupérer le mot de passe pour vos services en copiant la clef.",
             "running services": "Services en cours"

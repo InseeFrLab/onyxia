@@ -26,10 +26,10 @@ import { useDomRect } from "onyxia-ui";
 import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
 import { Account } from "app/components/pages/Account";
 import { FourOhFour }  from "app/components/pages/FourOhFour";
+import { Catalog } from "app/components/pages/Catalog";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
-import { Catalog } from "app/components/pages/Catalog/Catalog";
 import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";

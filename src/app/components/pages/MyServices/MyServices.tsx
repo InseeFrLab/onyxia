@@ -5,6 +5,8 @@ import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
+import { MyServicesCards } from "./MyServicesCards";
+import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks";
 import { Typography } from "onyxia-ui";

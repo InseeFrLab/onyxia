@@ -1,7 +1,7 @@
 
 
 
-import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCard/MyServicesRunningTime";
+import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRunningTime";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 

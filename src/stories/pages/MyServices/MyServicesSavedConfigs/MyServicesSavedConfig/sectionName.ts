@@ -1,4 +1,4 @@
 
-import { sectionName as parentSectionName } from "../sectionName";
+import { sectionName as parentSectionName } from "../../sectionName";
 
 export const sectionName = `${parentSectionName}/MyServicesSavedConfig`;
