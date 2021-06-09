@@ -8,10 +8,19 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
 import Link from "@material-ui/core/Link";
 
-
 const { useClassNames } = createUseClassNames()(
-    () => ({
+    theme => ({
         "root": {
+            "overflow": "hidden",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "entry": {
+            "marginBottom": theme.spacing(1)
+        },
+        "wrapper": {
+            "flex": 1,
+            "overflow": "auto",
         }
     })
 );
@@ -59,11 +68,13 @@ export const MyServicesSavedConfigs = memo(
                     configCount={savedConfigs.length}
                     onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                 />
+                <div className={classNames.wrapper}>
                 {
                     savedConfigs
                         .filter(isShortVariant ? ((...[, i]) => i < maxConfigCountInShortVariant) : () => true)
                         .map(({ logoUrl, friendlyName, restoreConfigurationUrl }) =>
                         <MyServicesSavedConfig
+                            className={classNames.entry}
                             isShortVariant={isShortVariant}
                             logoUrl={logoUrl}
                             friendlyName={friendlyName}
@@ -72,6 +83,7 @@ export const MyServicesSavedConfigs = memo(
                         />
                     )
                 }
+                </div>
             </div>
         );
 
@@ -98,10 +110,17 @@ const { Header } = (() => {
     };
 
     const { useClassNames } = createUseClassNames()(
-        () => ({
+        theme => ({
             "root": {
+                "margin": theme.spacing(2,0),
                 "display": "flex",
                 "alignItems": "center"
+            },
+            "chevron":{
+                "paddingLeft": 0
+            },
+            "link": {
+                "cursor": "pointer"
             }
         })
     );
@@ -122,6 +141,7 @@ const { Header } = (() => {
 
                     {!isShortVariant &&
                         <IconButton
+                            className={classNames.chevron}
                             fontSize="large"
                             id="chevronLeft"
                             onClick={onRequestToggleIsShortVariant}
@@ -129,11 +149,15 @@ const { Header } = (() => {
                     <Typography variant="h4">
                         {t("saved")}
                     </Typography>
-                    <div style={{ "display": "flex" }} />
+                    <div style={{ "flex": "1" }} />
                     {isShortVariant &&
-                        <Link onClick={onRequestToggleIsShortVariant} >
+                        <Link 
+                            onClick={onRequestToggleIsShortVariant}
+                            className={classNames.link}
+                        >
                             {t("show all", { "n": configCount })}
-                        </Link>}
+                        </Link>
+                    }
                 </div>
             );
         }
