@@ -1,6 +1,6 @@
 
 
-import { MyServicesBadge } from "app/components/pages/MyServices/MyServicesCard/MyServicesBadge";
+import { MyServicesBadge } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesBadge";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";

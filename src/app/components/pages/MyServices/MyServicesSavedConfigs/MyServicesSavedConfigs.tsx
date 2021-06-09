@@ -95,7 +95,7 @@ export declare namespace MyServicesSavedConfigs {
 
     export type I18nScheme = {
         saved: undefined;
-        'show all': { n: number };
+        'show all': { n: string; };
     };
 
 }
@@ -155,7 +155,7 @@ const { Header } = (() => {
                             onClick={onRequestToggleIsShortVariant}
                             className={classNames.link}
                         >
-                            {t("show all", { "n": configCount })}
+                            {t("show all", { "n": `${configCount}` })}
                         </Link>
                     }
                 </div>

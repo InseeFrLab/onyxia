@@ -10,8 +10,8 @@ import { useConstCallback } from "powerhooks";
 import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
 import { Typography } from "onyxia-ui";
-import { CatalogExplorerSearchBar } from "./CatalogExplorerSearchBar";
-import type { Props as SearchBarProps } from "./CatalogExplorerSearchBar";
+import { CatalogExplorerSearchBar } from "../CatalogExplorerSearchBar";
+import type { Props as SearchBarProps } from "../CatalogExplorerSearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 

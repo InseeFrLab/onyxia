@@ -42,6 +42,10 @@ const { useClassNames } = createUseClassNames()(
         "belowDividerTop": {
             "display": "flex",
             "marginBottom": theme.spacing(3)
+        },
+        "captions": {
+            "display": "inline-block",
+            "marginBottom": theme.spacing(1)
         }
     })
 );
@@ -98,13 +102,23 @@ export const MyServicesCard = memo((props: Props) => {
             <div className={classNames.belowDivider}>
                 <div className={classNames.belowDividerTop}>
                     <div>
-                        <Typography variant="caption">{t("service")}</Typography>
+                        <Typography 
+                            variant="caption" 
+                            className={classNames.captions}
+                        >
+                            {t("service")}
+                        </Typography>
                         <Typography variant="subtitle1">
                             {capitalize(packageName)}
                         </Typography>
                     </div>
                     <div className={classNames.timeContainer}>
-                        <Typography variant="caption">{t("running since")}</Typography>
+                        <Typography 
+                            variant="caption"
+                            className={classNames.captions}
+                        >
+                            {t("running since")}
+                        </Typography>
                         {
                             startTime === undefined ?
                                 <MyServicesRunningTime isRunning={false} /> :

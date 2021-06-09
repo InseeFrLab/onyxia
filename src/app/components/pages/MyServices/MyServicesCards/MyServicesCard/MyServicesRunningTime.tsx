@@ -41,14 +41,17 @@ export const MyServicesRunningTime = memo(
 
         const { className } = props;
 
-        const { classNames } = useClassNames({ "isOvertime": !props.isRunning ? false : props.isRunning });
+        const { classNames } = useClassNames({ "isOvertime": !props.isRunning ? false : props.isOvertime });
 
         const { fromNowText } = useFromNow({ "dateTime": props.isRunning ? props.startTime : 0 });
 
         const { t } = useTranslation("MyServicesRunningTime");
 
         return (
-            <Typography className={cx(classNames.root, className)}>
+            <Typography 
+                variant="subtitle1" 
+                className={cx(classNames.root, className)}
+            >
                 <Icon id="accessTime" className={classNames.icon} /> &nbsp;
                 {props.isRunning ? fromNowText : t("launching")}
             </Typography>

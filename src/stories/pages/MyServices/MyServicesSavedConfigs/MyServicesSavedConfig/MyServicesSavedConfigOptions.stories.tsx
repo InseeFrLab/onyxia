@@ -1,5 +1,5 @@
 
-import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfig/MyServicesSavedConfigOptions";
+import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 
