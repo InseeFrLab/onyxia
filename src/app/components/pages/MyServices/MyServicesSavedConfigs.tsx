@@ -45,8 +45,8 @@ export type Props = {
 export const MyServicesSavedConfigs = memo(
     (props: Props) => {
 
-        const { 
-            className, savedConfigs, 
+        const {
+            className, savedConfigs,
             isShortVariant, callback,
             onRequestToggleIsShortVariant,
             maxConfigCountInShortVariant
@@ -63,26 +63,26 @@ export const MyServicesSavedConfigs = memo(
 
         return (
             <div className={cx(classNames.root, className)}>
-                <Header 
-                    isShortVariant={isShortVariant} 
+                <Header
+                    isShortVariant={isShortVariant}
                     configCount={savedConfigs.length}
                     onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                 />
                 <div className={classNames.wrapper}>
-                {
-                    savedConfigs
-                        .filter(isShortVariant ? ((...[, i]) => i < maxConfigCountInShortVariant) : () => true)
-                        .map(({ logoUrl, friendlyName, restoreConfigurationUrl }) =>
-                        <MyServicesSavedConfig
-                            className={classNames.entry}
-                            isShortVariant={isShortVariant}
-                            logoUrl={logoUrl}
-                            friendlyName={friendlyName}
-                            restoreConfigurationUrl={restoreConfigurationUrl}
-                            callback={callbackFactory(restoreConfigurationUrl)}
-                        />
-                    )
-                }
+                    {
+                        savedConfigs
+                            .filter(isShortVariant ? ((...[, i]) => i < maxConfigCountInShortVariant) : () => true)
+                            .map(({ logoUrl, friendlyName, restoreConfigurationUrl }) =>
+                                <MyServicesSavedConfig
+                                    className={classNames.entry}
+                                    isShortVariant={isShortVariant}
+                                    logoUrl={logoUrl}
+                                    friendlyName={friendlyName}
+                                    restoreConfigurationUrl={restoreConfigurationUrl}
+                                    callback={callbackFactory(restoreConfigurationUrl)}
+                                />
+                            )
+                    }
                 </div>
             </div>
         );
@@ -112,11 +112,11 @@ const { Header } = (() => {
     const { useClassNames } = createUseClassNames()(
         theme => ({
             "root": {
-                "margin": theme.spacing(2,0),
+                "margin": theme.spacing(2, 0),
                 "display": "flex",
                 "alignItems": "center"
             },
-            "chevron":{
+            "chevron": {
                 "paddingLeft": 0
             },
             "link": {
@@ -151,7 +151,7 @@ const { Header } = (() => {
                     </Typography>
                     <div style={{ "flex": "1" }} />
                     {isShortVariant &&
-                        <Link 
+                        <Link
                             onClick={onRequestToggleIsShortVariant}
                             className={classNames.link}
                         >
