@@ -14,8 +14,20 @@ import { thunks, selectors } from "lib/setup";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { routes } from "app/routes";
+import { createGroup } from "type-route";
+import type { Route } from "type-route";
+
+MyServices.routeGroup = createGroup([
+    routes.catalogExplorer,
+    routes.catalogLauncher
+]);
+
+type PageRoute = Route<typeof MyServices.routeGroup>;
+
+MyServices.requireUserLoggedIn = () => true;
 
 export type Props = {
+    route: PageRoute;
     className: string;
 };
 
@@ -57,7 +69,7 @@ const { useClassNames } = createUseClassNames<{
     })
 );
 
-export const MyServices = memo((props: Props) => {
+export function MyServices(props: Props) {
 
     const { className } = props;
 
@@ -130,11 +142,14 @@ export const MyServices = memo((props: Props) => {
                 <MyServicesSavedConfigs
                     isShortVariant={!isSavedConfigsExtended}
                     savedConfigs={
-                        displayableConfigs.map(({ logoUrl, friendlyName, restorablePackageConfig }) => ({
-                            logoUrl,
-                            friendlyName,
-                            "restoreConfigurationUrl": routes.catalogLauncher(restorablePackageConfig).href
-                        }))
+                        displayableConfigs.map(
+                            ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
+                                logoUrl,
+                                friendlyName,
+                                "restoreConfigurationUrl":
+                                    routes.catalogLauncher(restorablePackageConfig).href
+                            })
+                        )
                     }
                     className={classNames.savedConfigs}
                     callback={onSavedConfigsCallback}
@@ -144,8 +159,7 @@ export const MyServices = memo((props: Props) => {
         </div>
     );
 
-
-});
+}
 
 export declare namespace MyServices {
 

@@ -72,6 +72,12 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         },
         ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`
     ),
+    "myServices": defineRoute(
+        {
+            "isSavedConfigsExtended": param.query.optional.boolean.default(false)
+        },
+        () => `/my-services`
+    ),
     ...(() => {
 
         const myBuckets = defineRoute("/mes-fichiers");

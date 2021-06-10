@@ -27,10 +27,10 @@ import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
 import { Account } from "app/components/pages/Account";
 import { FourOhFour }  from "app/components/pages/FourOhFour";
 import { Catalog } from "app/components/pages/Catalog";
+import { MyServices } from "app/components/pages/MyServices";
 
 //Legacy
 import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
-import { MyServices } from "js/components/my-services/home";
 import { MyService } from "js/components/my-service/home";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -252,7 +252,6 @@ const PageSelector = (
                     />;
                 case Catalogue:
                 case Trainings:
-                case MyServices:
                 case MyBuckets:
                 case VisiteGuideeDebut:
                     return <Page />;
@@ -370,6 +369,37 @@ const PageSelector = (
                 <Page
                     route={route}
                     className={classNames.generalPaddingRight}
+                />
+            );
+
+        }
+
+    }
+
+    {
+
+        const Page = MyServices;
+
+        if (Page.routeGroup.has(route)) {
+
+            if (
+                Page.requireUserLoggedIn() &&
+                !appConstants.isUserLoggedIn
+            ) {
+
+                appConstants.login();
+
+                return null;
+
+            }
+
+            return (
+                <Page
+                    route={route}
+                    className={cx(
+                        classNames.height100,
+                        classNames.generalPaddingRight
+                    )}
                 />
             );
 
