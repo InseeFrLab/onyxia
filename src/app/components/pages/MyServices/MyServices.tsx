@@ -1,11 +1,12 @@
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
+import type { Props as MyServicesCardsProps } from "./MyServicesCards";
 import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
@@ -16,8 +17,9 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import { routes } from "app/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
+import { showSplashScreen, hideSplashScreen } from "onyxia-ui";
 
-MyServices.routeGroup = createGroup([ routes.myServices ]);
+MyServices.routeGroup = createGroup([routes.myServices]);
 
 type PageRoute = Route<typeof MyServices.routeGroup>;
 
@@ -70,7 +72,6 @@ export function MyServices(props: Props) {
 
     const { className, route } = props;
 
-
     const { t } = useTranslation("MyServices");
 
     const dispatch = useDispatch();
@@ -78,17 +79,60 @@ export function MyServices(props: Props) {
         selectors.restorablePackageConfig.displayableConfigsSelector
     );
 
+    const userServicePassword = useSelector(
+        state => state.userConfigs.userServicePassword.value
+    );
+
+    const { isRunningServicesFetching, runningServices } = useSelector(
+        ({ runningService: state }) => ({
+            "isRunningServicesFetching": state.isFetching,
+            "runningServices": state.isFetched ? state.runningServices : []
+        })
+    );
+
+    useEffect(
+        () => {
+
+            if (isRunningServicesFetching) {
+                showSplashScreen({ "enableTransparency": true });
+            } else {
+                hideSplashScreen();
+            }
+
+        },
+        [isRunningServicesFetching]
+    );
+
     const onButtonBarClick = useConstCallback(
         (buttonId: ButtonId) => {
-
-            //TODO
-
+            switch (buttonId) {
+                case "launch":
+                    routes.catalogExplorer().push();
+                    return;
+                case "refresh":
+                    dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+                    return;
+                case "password":
+                    copyToClipboard(userServicePassword);
+                    return;
+                case "trash":
+                    runningServices.map(({ id }) =>
+                        dispatch(
+                            thunks.runningService
+                                .stopService({ "serviceId": id })
+                        )
+                    );
+                    return;
+            }
         }
     );
 
 
     useEffect(
-        () => { dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone()); },
+        () => {
+            dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
+            dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
@@ -98,7 +142,7 @@ export function MyServices(props: Props) {
     const { classNames } = useClassNames({ isSavedConfigsExtended });
 
     const onRequestToggleIsShortVariant = useConstCallback(
-        () => routes.myServices({ 
+        () => routes.myServices({
             "isSavedConfigsExtended": !isSavedConfigsExtended
         }).push()
     );
@@ -124,6 +168,41 @@ export function MyServices(props: Props) {
         }
     );
 
+    const savedConfigs = useMemo(
+        (): MyServicesSavedConfigsProps["savedConfigs"] =>
+            displayableConfigs.map(
+                ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
+                    logoUrl,
+                    friendlyName,
+                    "restoreConfigurationUrl":
+                        routes.catalogLauncher(restorablePackageConfig).href
+                })
+            ),
+        [displayableConfigs]
+    );
+
+    const cards = useMemo(
+        (): MyServicesCardsProps["cards"] =>
+            runningServices.map(
+                ({ id, logoUrl, friendlyName, packageName, urls, startedAt, monitoringUrl, isStarting }) => ({
+                    "serviceId": id,
+                    "packageIconUrl": logoUrl,
+                    friendlyName,
+                    packageName,
+                    "infoUrl": routes.myService({ "serviceId": id }).href,
+                    "openUrl": urls[0],
+                    monitoringUrl,
+                    "startTime": isStarting ? undefined : startedAt,
+                    "isOvertime": Date.now() - startedAt > 3600 * 24
+                })
+            ),
+        [runningServices]
+    );
+
+    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
+        ({ serviceId }) => dispatch(thunks.runningService.stopService({ serviceId }))
+    );
+
     return (
         <div className={cx(classNames.root, className)}>
             <PageHeader
@@ -139,19 +218,12 @@ export function MyServices(props: Props) {
                 {!isSavedConfigsExtended &&
                     <MyServicesCards
                         className={classNames.cards}
+                        cards={cards}
+                        onRequestDelete={onRequestDelete}
                     />}
                 <MyServicesSavedConfigs
                     isShortVariant={!isSavedConfigsExtended}
-                    savedConfigs={
-                        displayableConfigs.map(
-                            ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
-                                logoUrl,
-                                friendlyName,
-                                "restoreConfigurationUrl":
-                                    routes.catalogLauncher(restorablePackageConfig).href
-                            })
-                        )
-                    }
+                    savedConfigs={savedConfigs}
                     className={classNames.savedConfigs}
                     callback={onSavedConfigsCallback}
                     onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}

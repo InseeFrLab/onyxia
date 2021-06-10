@@ -3,13 +3,13 @@
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
 import { Typography } from "onyxia-ui";
-import { Button } from "app/theme";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
-import { capitalize } from "app/tools/capitalize";
+import { capitalize } from "app/tools/capitalize";
 import { MyServicesBadge } from "./MyServicesBadge";
-import { MyServicesRunningTime } from "./MyServicesRunningTime";
-import { IconButton } from "app/theme";
+import { MyServicesRunningTime } from "./MyServicesRunningTime";
+import { IconButton } from "app/theme";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -55,10 +55,10 @@ export type Props = {
     packageIconUrl?: string;
     friendlyName: string;
     packageName: string;
-    infoHref: string;
+    infoUrl: string;
     onRequestDelete(): void;
-    openHref: string;
-    monitorHref: string;
+    openUrl: string;
+    monitoringUrl: string | undefined;
     //Undefined when the service is not yey launched
     startTime: number | undefined;
     isOvertime: boolean;
@@ -71,10 +71,10 @@ export const MyServicesCard = memo((props: Props) => {
         packageIconUrl,
         friendlyName,
         packageName,
-        infoHref,
+        infoUrl,
         onRequestDelete,
-        monitorHref,
-        openHref,
+        monitoringUrl,
+        openUrl,
         startTime,
         isOvertime
     } = props;
@@ -102,8 +102,8 @@ export const MyServicesCard = memo((props: Props) => {
             <div className={classNames.belowDivider}>
                 <div className={classNames.belowDividerTop}>
                     <div>
-                        <Typography 
-                            variant="caption" 
+                        <Typography
+                            variant="caption"
                             className={classNames.captions}
                         >
                             {t("service")}
@@ -113,7 +113,7 @@ export const MyServicesCard = memo((props: Props) => {
                         </Typography>
                     </div>
                     <div className={classNames.timeContainer}>
-                        <Typography 
+                        <Typography
                             variant="caption"
                             className={classNames.captions}
                         >
@@ -127,11 +127,12 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                 </div>
                 <div style={{ "display": "flex" }}>
-                    <IconButton id="infoOutlined" href={infoHref}/>
-                    <IconButton id="delete" onClick={onRequestDelete}/>
-                    <IconButton id="equalizer" href={monitorHref}/>
-                    <div style={{ "flex": 1 }}/>
-                    <Button color="secondary" href={openHref}>{t("open")}</Button>
+                    <IconButton id="infoOutlined" href={infoUrl} />
+                    <IconButton id="delete" onClick={onRequestDelete} />
+                    {monitoringUrl !== undefined &&
+                        <IconButton id="equalizer" href={monitoringUrl} />}
+                    <div style={{ "flex": 1 }} />
+                    <Button color="secondary" href={openUrl}>{t("open")}</Button>
                 </div>
 
             </div>

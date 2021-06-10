@@ -15,7 +15,6 @@ export default meta;
 const props: Props= {
     "className": css({ "width": 300 }),
     "isShortVariant": true,
-    "maxConfigCountInShortVariant": 5,
     "savedConfigs": [1, 2, 3, 4, 5, 6, 7].map(
         i => ({
             "logoUrl": rstudioImgUrl,

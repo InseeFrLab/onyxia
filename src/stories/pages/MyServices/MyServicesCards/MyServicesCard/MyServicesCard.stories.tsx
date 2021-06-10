@@ -16,10 +16,9 @@ export const VueRegular = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
-    "infoHref": "https://example.com",
-    "openHref": "https://example.com",
-    "monitorHref": "https://example.com",
-    //Undefined when the service is not yey launched
+    "infoUrl": "https://example.com",
+    "openUrl": "https://example.com",
+    "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
     "isOvertime": false,
     ...logCallbacks(["onRequestDelete"])
