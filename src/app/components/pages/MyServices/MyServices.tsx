@@ -55,10 +55,12 @@ const { useClassNames } = createUseClassNames<{
 
             return {
                 "cards": {
-                    "flex": ratio
+                    "flex": ratio,
+                    "marginRight": theme.spacing(4)
                 },
                 "savedConfigs": {
-                    "flex": isSavedConfigsExtended ? 1 : (1 - ratio)
+                    "flex": isSavedConfigsExtended ? 1 : (1 - ratio),
+                    "paddingRight": "2%"
                 }
             };
 
@@ -193,7 +195,7 @@ export function MyServices(props: Props) {
                     "openUrl": urls[0],
                     monitoringUrl,
                     "startTime": isStarting ? undefined : startedAt,
-                    "isOvertime": Date.now() - startedAt > 3600 * 24
+                    "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24
                 })
             ),
         [runningServices]
@@ -221,13 +223,14 @@ export function MyServices(props: Props) {
                         cards={cards}
                         onRequestDelete={onRequestDelete}
                     />}
-                <MyServicesSavedConfigs
-                    isShortVariant={!isSavedConfigsExtended}
-                    savedConfigs={savedConfigs}
-                    className={classNames.savedConfigs}
-                    callback={onSavedConfigsCallback}
-                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
-                />
+                {savedConfigs.length !== 0 &&
+                    <MyServicesSavedConfigs
+                        isShortVariant={!isSavedConfigsExtended}
+                        savedConfigs={savedConfigs}
+                        className={classNames.savedConfigs}
+                        callback={onSavedConfigsCallback}
+                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                    />}
             </div>
         </div>
     );

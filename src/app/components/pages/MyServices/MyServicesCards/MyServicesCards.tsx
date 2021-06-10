@@ -34,10 +34,10 @@ const { useClassNames } = createUseClassNames()(
             "margin": theme.spacing(2, 0),
         },
         "wrapper": {
-            "flex": 1,
+            "paddingRight": theme.spacing(2),
             "overflow": "auto",
             "display": "grid",
-            "gridTemplateColumns": `repeat(2,1fr)`,
+            "gridTemplateColumns": "repeat(2,1fr)",
             "gap": theme.spacing(3),
         }
     })
