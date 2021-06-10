@@ -9,6 +9,7 @@ import * as tokensUseCase from "./useCases/tokens";
 import * as appConstantsUseCase from "./useCases/appConstants";
 import * as launcherUseCase from "./useCases/launcher";
 import * as catalogExplorerUseCase from "./useCases/catalogExplorer";
+import * as runningServiceUseCase from "./useCases/runningService";
 import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageConfigs";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
@@ -128,7 +129,8 @@ const reducer = {
     [tokensUseCase.name]: tokensUseCase.reducer,
     [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer,
     [launcherUseCase.name]: launcherUseCase.reducer,
-    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.reducer
+    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.reducer,
+    [runningServiceUseCase.name]: runningServiceUseCase.reducer
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -420,6 +422,7 @@ export const thunks = {
     [catalogExplorerUseCase.name]: catalogExplorerUseCase.thunks,
     [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.thunks,
     [app.name]: app.thunk,
+    [runningServiceUseCase.name]: runningServiceUseCase.thunks,
 };
 
 export const pure = {

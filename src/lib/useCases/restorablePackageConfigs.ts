@@ -10,6 +10,7 @@ import type { AppThunk } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
 import type { RootState } from "../setup";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 export const name = "restorablePackageConfig";
 
 export type RestorablePackageConfigsState = {
@@ -229,7 +230,6 @@ export const thunks = {
     }
 };
 
-export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export const pure = {
     "isRestorablePackageConfigInStore": (

@@ -111,15 +111,13 @@ export type MyLab_Services = {
     app: {
         id: string;
         urls: string[];
-        env: {
-            'onyxia.friendlyName': string;
-        };
+        env: Record<string, string>;
         startedAt: number;
         tasks: { status: { status: "Running" | "Pending"; } }[];
     }[]
 };
 
-
+export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
 
@@ -158,19 +156,26 @@ export type OnyxiaApiClient = {
         }
     ): Promise<{ contract: Record<string, unknown>; }>;
 
-    getRunningPackages(
+    getRunningServices(
     ): Promise<
         ({
+            id: string;
             packageName: string;
             friendlyName: string;
             urls: string[];
             startedAt: number;
         } & ({
-            state: "running";
+            isStarting: false;
         } | {
-            state: "pending";
-            prRunning: Promise<void>;
+            isStarting: true;
+            prStarted: Promise<void>;
         }))[]
     >;
+
+    stopService(
+        params: {
+            serviceId: string;
+        }
+    ): Promise<void>;
 
 };
