@@ -62,17 +62,15 @@ export const MyServicesCards = memo(
                     {t("running services")}
                 </Typography>
                 <div className={classNames.wrapper}>
-
                     {
                         cards.map(card =>
                             <MyServicesCard
-                                key={card.openUrl}
+                                key={card.serviceId}
                                 {...card}
                                 onRequestDelete={onRequestDeleteFactory(card.serviceId)}
                             />
                         )
                     }
-
                 </div>
             </div>
         )
