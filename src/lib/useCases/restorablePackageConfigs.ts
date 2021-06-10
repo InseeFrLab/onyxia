@@ -9,17 +9,16 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
-import memoize from "memoizee";
-
+import type { RootState } from "../setup";
 export const name = "restorablePackageConfig";
 
 export type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
     packageIcons: {
-        status: "notFetched";
+        areFetched: false;
         isFetching: boolean;
     } | {
-        status: "fetched";
+        areFetched: true;
         iconsUrl: IconsUrl;
     };
 };
@@ -54,14 +53,14 @@ const { reducer, actions } = createSlice({
             return {
                 restorablePackageConfigs,
                 "packageIcons": {
-                    "status": "notFetched",
+                    "areFetched": false,
                     "isFetching": false
                 }
             };
         },
         "fetchIconStarted": state => {
 
-            assert(state.packageIcons.status === "notFetched");
+            assert(!state.packageIcons.areFetched);
 
             state.packageIcons.isFetching = true;
 
@@ -71,7 +70,7 @@ const { reducer, actions } = createSlice({
             const { iconsUrl } = payload;
 
             state.packageIcons = {
-                "status": "fetched",
+                "areFetched": true,
                 iconsUrl
             };
 
@@ -141,9 +140,22 @@ export const privateThunks = {
 
 
 export const thunks = {
-    "fetchIcons": (): AppThunk => async (...args) => {
+    "fetchIconsIfNotAlreadyDone": (): AppThunk => async (...args) => {
 
-        const [dispatch, , dependencies] = args;
+        const [dispatch, getState, dependencies] = args;
+
+        {
+
+            const state = getState().restorablePackageConfig;
+
+            if (
+                state.packageIcons.areFetched ||
+                state.packageIcons.isFetching
+            ) {
+                return;
+            }
+
+        }
 
         dispatch(actions.fetchIconStarted());
 
@@ -172,53 +184,6 @@ export const thunks = {
         dispatch(actions.iconsFetched({ iconsUrl }));
 
     },
-    "getFriendlyName": (() => {
-
-        const memoizee = memoize(
-            (
-                restorablePackageConfigs: RestorablePackageConfig[],
-                catalogId: string,
-                packageName: string
-            ) => {
-
-                const friendlyName =
-                    restorablePackageConfigs.find(restorablePackageConfig => restorablePackageConfig.catalogId === catalogId)!
-                        .formFieldsValueDifferentFromDefault
-                        .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
-                    packageName;
-
-                assert(typeof friendlyName === "string");
-
-                return friendlyName;
-
-            },
-            { "maxAge": 6000 }
-        );
-
-
-        return (
-            params: {
-                catalogId: string;
-                packageName: string;
-            }
-        ): AppThunk<string> => (...args) => {
-
-            const [, getState] = args;
-
-            const { catalogId, packageName } = params;
-
-            return memoizee(
-                getState()
-                    .restorablePackageConfig
-                    .restorablePackageConfigs,
-                catalogId,
-                packageName
-            );
-
-        };
-
-
-    })(),
     "saveRestorablePackageConfig": (
         params: {
             restorablePackageConfig: RestorablePackageConfig;
@@ -309,5 +274,68 @@ function areSameRestorablePackageConfig(
 
 }
 
+export const selectors = (() => {
 
+    const { displayableConfigsSelector } = (() => {
+
+        function getFriendlyName(
+            params: {
+                restorablePackageConfigs: RestorablePackageConfig[];
+                catalogId: string;
+                packageName: string;
+            }
+        ) {
+
+            const {
+                restorablePackageConfigs,
+                catalogId,
+                packageName
+            } = params;
+
+            const friendlyName =
+                restorablePackageConfigs.find(restorablePackageConfig => restorablePackageConfig.catalogId === catalogId)!
+                    .formFieldsValueDifferentFromDefault
+                    .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
+                packageName;
+
+            assert(typeof friendlyName === "string");
+
+            return friendlyName;
+
+        }
+
+        function displayableConfigsSelector(rootState: RootState) {
+
+            const { restorablePackageConfigs, packageIcons } = rootState.restorablePackageConfig;
+
+            return restorablePackageConfigs
+                .map(
+                    restorablePackageConfig => {
+
+                        const { packageName, catalogId } = restorablePackageConfig;
+
+                        return {
+                            "logoUrl":
+                                !packageIcons.areFetched ?
+                                    undefined :
+                                    packageIcons.iconsUrl[catalogId][packageName],
+                            "friendlyName": getFriendlyName({
+                                restorablePackageConfigs,
+                                catalogId,
+                                packageName
+                            }),
+                            restorablePackageConfig
+                        };
+                    }
+                )
+
+        }
+
+        return { displayableConfigsSelector };
+
+    })();
+
+    return { displayableConfigsSelector };
+
+})();
 

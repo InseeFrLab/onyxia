@@ -1,22 +1,28 @@
 
-import { memo } from "react";
+import { useState, useEffect, memo } from "react";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
-import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
+import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
+import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks";
-import { Typography } from "onyxia-ui";
+import { thunks, selectors } from "lib/setup";
+import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
+import { copyToClipboard } from "app/tools/copyToClipboard";
+import { routes } from "app/routes";
 
 export type Props = {
     className: string;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
+const { useClassNames } = createUseClassNames<{
+    isSavedConfigsExtended: boolean;
+}>()(
+    (theme, { isSavedConfigsExtended }) => ({
         "root": {
             "display": "flex",
             "flexDirection": "column"
@@ -24,12 +30,30 @@ const { useClassNames } = createUseClassNames()(
         "contextTypo": {
             "margin": theme.spacing(3, 0)
         },
-        /*
-        "payload": { 
+        "payload": {
             "overflow": "hidden",
-            "flex": 1
-        }
-        */
+            "flex": 1,
+            "display": "flex",
+            "& > *": {
+                "height": "100%"
+            }
+        },
+        ...(() => {
+
+            const ratio = 0.65;
+
+            return {
+                "cards": {
+                    "flex": ratio
+                },
+                "savedConfigs": {
+                    "flex": isSavedConfigsExtended ? 1 : (1 - ratio)
+                }
+            };
+
+        })()
+
+
     })
 );
 
@@ -37,9 +61,12 @@ export const MyServices = memo((props: Props) => {
 
     const { className } = props;
 
-    const { classNames } = useClassNames({});
-
     const { t } = useTranslation("MyServices");
+
+    const dispatch = useDispatch();
+    const displayableConfigs = useSelector(
+        selectors.restorablePackageConfig.displayableConfigsSelector
+    );
 
     const onButtonBarClick = useConstCallback(
         (buttonId: ButtonId) => {
@@ -49,7 +76,40 @@ export const MyServices = memo((props: Props) => {
         }
     );
 
+    const [isSavedConfigsExtended, setIsSavedConfigsExtended] = useState(false);
 
+    useEffect(
+        () => { dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone()); },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
+
+    const { classNames } = useClassNames({ isSavedConfigsExtended });
+
+    const onRequestToggleIsShortVariant = useConstCallback(
+        () => setIsSavedConfigsExtended(!isSavedConfigsExtended)
+    );
+
+    const onSavedConfigsCallback = useConstCallback<MyServicesSavedConfigsProps["callback"]>(
+        ({ restoreConfigurationUrl, action }) => {
+            switch (action) {
+                case "copy link":
+                    copyToClipboard(restoreConfigurationUrl);
+                    return;
+                case "delete":
+                    dispatch(
+                        thunks.restorablePackageConfig.deleteRestorablePackageConfig({
+                            "restorablePackageConfig":
+                                displayableConfigs
+                                    .find(({ restorablePackageConfig }) =>
+                                        routes.catalogLauncher(restorablePackageConfig).href === restoreConfigurationUrl
+                                    )!.restorablePackageConfig
+                        })
+                    );
+                    return;
+            }
+        }
+    );
 
     return (
         <div className={cx(classNames.root, className)}>
@@ -62,14 +122,25 @@ export const MyServices = memo((props: Props) => {
             <MyServicesButtonBar
                 onClick={onButtonBarClick}
             />
-            <Typography
-                variant="h4"
-                className={classNames.contextTypo}
-            >
-                {t("running services")}
-            </Typography>
-            
-
+            <div className={classNames.payload}>
+                {!isSavedConfigsExtended &&
+                    <MyServicesCards
+                        className={classNames.cards}
+                    />}
+                <MyServicesSavedConfigs
+                    isShortVariant={!isSavedConfigsExtended}
+                    savedConfigs={
+                        displayableConfigs.map(({ logoUrl, friendlyName, restorablePackageConfig }) => ({
+                            logoUrl,
+                            friendlyName,
+                            "restoreConfigurationUrl": routes.catalogLauncher(restorablePackageConfig).href
+                        }))
+                    }
+                    className={classNames.savedConfigs}
+                    callback={onSavedConfigsCallback}
+                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                />
+            </div>
         </div>
     );
 
