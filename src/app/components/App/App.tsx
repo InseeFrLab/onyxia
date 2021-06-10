@@ -395,10 +395,7 @@ const PageSelector = (
             return (
                 <Page
                     route={route}
-                    className={cx(
-                        classNames.height100,
-                        classNames.generalPaddingRight
-                    )}
+                    className={classNames.height100}
                 />
             );
 

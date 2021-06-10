@@ -127,7 +127,7 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                 </div>
                 <div style={{ "display": "flex" }}>
-                    <IconButton id="infoOutlined" href={infoUrl} />
+                    <IconButton id="infoOutlined" doOpenNewTabIfHref={false} href={infoUrl} />
                     <IconButton id="delete" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined &&
                         <IconButton id="equalizer" href={monitoringUrl} />}

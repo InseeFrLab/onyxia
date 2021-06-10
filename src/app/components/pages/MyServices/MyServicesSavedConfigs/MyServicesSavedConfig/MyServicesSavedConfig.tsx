@@ -44,7 +44,7 @@ const { useClassNames } = createUseClassNames<{ hasLogo: boolean; }>()(
         },
         "friendlyName": {
             "overflow": "hidden",
-            "text-overflow": "ellipsis"
+            "textOverflow": "ellipsis"
         },
         "linkIcon": {
             "marginRight": theme.spacing(2)
