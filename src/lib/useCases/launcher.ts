@@ -15,7 +15,7 @@ import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import {
     formFieldsValueToObject,
 } from "./sharedDataModel/FormFieldValue";
-import { onyxiaFriendlyNameFormFieldPath } from "./restorablePackageConfigs";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";

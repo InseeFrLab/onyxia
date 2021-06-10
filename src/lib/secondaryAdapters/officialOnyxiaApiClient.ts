@@ -11,7 +11,9 @@ import type {
     Public_Catalog_CatalogId_PackageName,
     MyLab_Services
 } from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
+import { assert } from "tsafe/assert";
 
 export function createOfficialOnyxiaApiClient(
     params: {
@@ -72,18 +74,19 @@ export function createOfficialOnyxiaApiClient(
                 { "promise": true, "maxAge": 1000 }
             );
 
-            const getRunningPackages = async () =>
+            const getRunningServices = async () =>
                 (await getMyLab_Services()).app.map(
                     ({ id, env, urls, startedAt, tasks }) => ({
+                        id,
                         "packageName": id.split("-")[0],
-                        "friendlyName": env["onyxia.friendlyName"],
+                        "friendlyName": env[onyxiaFriendlyNameFormFieldPath.join(".")],
                         urls,
                         startedAt,
                         ...(tasks[0].status.status === "Running" ?
-                            { "state": "running" } as const :
+                            { "isStarting": false } as const :
                             {
-                                "state": "pending",
-                                "prRunning": new Promise<void>(
+                                "isStarting": true,
+                                "prStarted": new Promise<void>(
                                     function callee(resolve) {
                                         setTimeout(
                                             async () => {
@@ -117,11 +120,14 @@ export function createOfficialOnyxiaApiClient(
                 );
 
 
-            return { getRunningPackages };
+            return { getRunningServices };
 
 
-        })()
-
+        })(),
+        "stopService": ({ serviceId })=> axiosInstance.delete<{ success: boolean}>(
+            `/my-lab/app`,
+            { "params": { "path": serviceId } }
+        ).then(({ data }) => { assert(data.success); })
     };
 
     return { onyxiaApiClient, axiosInstance };
