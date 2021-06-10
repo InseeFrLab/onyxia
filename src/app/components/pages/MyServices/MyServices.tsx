@@ -1,5 +1,5 @@
 
-import { useState, useEffect, memo } from "react";
+import { useEffect } from "react";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
@@ -17,10 +17,7 @@ import { routes } from "app/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
 
-MyServices.routeGroup = createGroup([
-    routes.catalogExplorer,
-    routes.catalogLauncher
-]);
+MyServices.routeGroup = createGroup([ routes.myServices ]);
 
 type PageRoute = Route<typeof MyServices.routeGroup>;
 
@@ -71,7 +68,8 @@ const { useClassNames } = createUseClassNames<{
 
 export function MyServices(props: Props) {
 
-    const { className } = props;
+    const { className, route } = props;
+
 
     const { t } = useTranslation("MyServices");
 
@@ -88,7 +86,6 @@ export function MyServices(props: Props) {
         }
     );
 
-    const [isSavedConfigsExtended, setIsSavedConfigsExtended] = useState(false);
 
     useEffect(
         () => { dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone()); },
@@ -96,10 +93,14 @@ export function MyServices(props: Props) {
         []
     );
 
+    const { isSavedConfigsExtended } = route.params;
+
     const { classNames } = useClassNames({ isSavedConfigsExtended });
 
     const onRequestToggleIsShortVariant = useConstCallback(
-        () => setIsSavedConfigsExtended(!isSavedConfigsExtended)
+        () => routes.myServices({ 
+            "isSavedConfigsExtended": !isSavedConfigsExtended
+        }).push()
     );
 
     const onSavedConfigsCallback = useConstCallback<MyServicesSavedConfigsProps["callback"]>(
