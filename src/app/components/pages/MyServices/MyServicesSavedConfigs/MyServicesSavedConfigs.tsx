@@ -25,21 +25,24 @@ const { useClassNames } = createUseClassNames()(
     })
 );
 
+const maxConfigCountInShortVariant = 5;
+
 export type Props = {
     className?: string;
     isShortVariant: boolean;
     savedConfigs: {
-        logoUrl?: string;
+        logoUrl: string | undefined;
         friendlyName: string;
         /** acts as an id*/
         restoreConfigurationUrl: string;
     }[];
-    callback(params: {
-        restoreConfigurationUrl: string;
-        action: "delete" | "copy link"
-    }): void;
+    callback(
+        params: {
+            restoreConfigurationUrl: string;
+            action: "delete" | "copy link"
+        }
+    ): void;
     onRequestToggleIsShortVariant(): void;
-    maxConfigCountInShortVariant: number;
 };
 
 export const MyServicesSavedConfigs = memo(
@@ -48,8 +51,7 @@ export const MyServicesSavedConfigs = memo(
         const {
             className, savedConfigs,
             isShortVariant, callback,
-            onRequestToggleIsShortVariant,
-            maxConfigCountInShortVariant
+            onRequestToggleIsShortVariant
         } = props;
 
         const { classNames } = useClassNames({});

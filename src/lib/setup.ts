@@ -428,8 +428,9 @@ export const pure = {
 };
 
 export const selectors = {
-    [launcherUseCase.name]: launcherUseCase.selectors
-}
+    [launcherUseCase.name]: launcherUseCase.selectors,
+    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.selectors
+};
 
 export type Store = ReturnType<typeof createStore>;
 
