@@ -212,7 +212,6 @@ const PageSelector = (
 
             const Page = [
                 Catalogue,
-                MyServices,
                 MyService,
                 MyBuckets,
                 NavigationFile,

@@ -41,7 +41,7 @@ export function I18nProvider(props: Props) {
     });
 
     useEffectOnValueChange(
-        () => i18nInstance.changeLanguage(lng),
+        () => { i18nInstance.changeLanguage(lng); },
         [lng]
     );
 

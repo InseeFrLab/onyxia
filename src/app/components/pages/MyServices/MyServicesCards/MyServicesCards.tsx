@@ -10,18 +10,17 @@ import { useCallbackFactory } from "powerhooks";
 export type Props = {
     className?: string;
     cards: {
+        serviceId: string;
         packageIconUrl?: string;
         friendlyName: string;
         packageName: string;
-        infoHref: string;
-        //Used as id
-        openHref: string;
-        monitorHref: string;
-        //Undefined when the service is not yey launched
+        infoUrl: string;
+        openUrl: string;
+        monitoringUrl: string | undefined;
         startTime: number | undefined;
         isOvertime: boolean;
     }[];
-    onRequestDelete(params: { openHref: string }): void;
+    onRequestDelete(params: { serviceId: string; }): void;
 }
 
 const { useClassNames } = createUseClassNames()(
@@ -54,7 +53,7 @@ export const MyServicesCards = memo(
         const { t } = useTranslation("MyServicesCards");
 
         const onRequestDeleteFactory = useCallbackFactory(
-            ([openHref]: [string]) => onRequestDelete({ openHref })
+            ([serviceId]: [string]) => onRequestDelete({ serviceId })
         );
 
         return (
@@ -67,9 +66,9 @@ export const MyServicesCards = memo(
                     {
                         cards.map(card =>
                             <MyServicesCard
-                                key={card.openHref}
+                                key={card.openUrl}
                                 {...card}
-                                onRequestDelete={onRequestDeleteFactory(card.openHref)}
+                                onRequestDelete={onRequestDeleteFactory(card.serviceId)}
                             />
                         )
                     }

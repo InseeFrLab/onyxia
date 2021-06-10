@@ -57,7 +57,6 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         const myServices = defineRoute("/my-service");
 
         return {
-            myServices,
             "myService": myServices.extend(
                 { "serviceId": param.path.string },
                 ({ serviceId }) => `/${serviceId}`

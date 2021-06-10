@@ -108,7 +108,7 @@ export namespace Public_Catalog_CatalogId_PackageName {
 
 //TODO BACKEND: Provides catalogId
 export type MyLab_Services = {
-    app: {
+    apps: {
         id: string;
         urls: string[];
         env: Record<string, string>;

@@ -75,7 +75,7 @@ export function createOfficialOnyxiaApiClient(
             );
 
             const getRunningServices = async () =>
-                (await getMyLab_Services()).app.map(
+                (await getMyLab_Services()).apps.map(
                     ({ id, env, urls, startedAt, tasks }) => ({
                         id,
                         "packageName": id.split("-")[0],
@@ -92,7 +92,7 @@ export function createOfficialOnyxiaApiClient(
                                             async () => {
 
                                                 const app = (await getMyLab_Services())
-                                                    .app.find(({ id: id_i }) => id_i === id);
+                                                    .apps.find(app => app.id === id);
 
                                                 if (app === undefined) {
                                                     //Package no longer running, we leave it pending.

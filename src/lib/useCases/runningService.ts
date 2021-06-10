@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { id } from "tsafe/id";
+import { thunks as appConstantsThunks } from "./appConstants";
 export const name = "runningService";
 
 export type RunningServicesState =
@@ -32,6 +33,7 @@ export type RunningService = {
     packageName: string;
     friendlyName: string;
     logoUrl: string | undefined;
+    monitoringUrl: string | undefined;
     isStarting: boolean;
     startedAt: number;
     urls: string[];
@@ -153,6 +155,36 @@ export const thunks = {
 
         })();
 
+        const getMonitoringUrl = (params: { serviceId: string; }) => {
+
+            const { serviceId } = params;
+
+            const { selectedRegion, preferred_username } = (() => {
+
+                const appConstants = dispatch(appConstantsThunks.getAppConstants());
+
+                assert(appConstants.isUserLoggedIn);
+
+                const deploymentRegionId = getState().userConfigs.deploymentRegionId.value;
+
+                const selectedRegion = appConstants.regions.find(({ id }) => id === deploymentRegionId)!;
+
+                const { preferred_username } = appConstants.parsedJwt;
+
+                return { selectedRegion, preferred_username };
+
+            })();
+
+            const namespacePrefix = selectedRegion.services.namespacePrefix;
+
+
+            return selectedRegion.services.monitoring?.URLPattern
+                ?.replace("$NAMESPACE", `${namespacePrefix}${preferred_username}`)
+                .replace("$INSTANCE", serviceId.replace(/^\//, ""));
+
+        };
+
+
         dispatch(
             actions.fetchCompleted({
                 "runningServices":
@@ -162,6 +194,7 @@ export const thunks = {
                             packageName,
                             friendlyName,
                             "logoUrl": getLogoUrl({ packageName }),
+                            "monitoringUrl": getMonitoringUrl({ "serviceId": id }),
                             startedAt,
                             urls,
                             "isStarting": !rest.isStarting ?
@@ -194,4 +227,5 @@ export const thunks = {
 
     },
 };
+
 
