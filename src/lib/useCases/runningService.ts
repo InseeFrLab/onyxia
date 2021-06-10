@@ -113,10 +113,7 @@ export const thunks = {
 
             const state = getState().runningService;
 
-            if (
-                state.isFetching ||
-                state.isFetched
-            ) {
+            if (state.isFetching) {
                 return;
             }
 
