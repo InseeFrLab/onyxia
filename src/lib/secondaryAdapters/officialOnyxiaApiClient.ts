@@ -5,16 +5,13 @@ import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { nonNullable } from "evt";
 import memoize from "memoizee";
-import type { 
-    Public_Configuration, 
+import type {
+    Public_Configuration,
     Public_Catalog,
-    Public_Catalog_CatalogId_PackageName
+    Public_Catalog_CatalogId_PackageName,
+    MyLab_Services
 } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
-
-
-
-
 
 export function createOfficialOnyxiaApiClient(
     params: {
@@ -50,22 +47,81 @@ export function createOfficialOnyxiaApiClient(
                 { "promise": true }
             ),
         "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
-                ({ catalogId, packageName})=> axiosInstance.get<Public_Catalog_CatalogId_PackageName>(
-                    `/public/catalog/${catalogId}/${packageName}`
-                ).then(({ data })=> ({
-                    "dependencies": data.dependencies ?? [],
-                    "sources": data.sources,
-                    "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams })=> JSON.parse(
-                        Mustache.render(
-                            JSON.stringify(data.config),
-                            mustacheParams
-                        )
-                    ) as typeof data.config
-                })),
+            ({ catalogId, packageName }) => axiosInstance.get<Public_Catalog_CatalogId_PackageName>(
+                `/public/catalog/${catalogId}/${packageName}`
+            ).then(({ data }) => ({
+                "dependencies": data.dependencies ?? [],
+                "sources": data.sources,
+                "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({ mustacheParams }) => JSON.parse(
+                    Mustache.render(
+                        JSON.stringify(data.config),
+                        mustacheParams
+                    )
+                ) as typeof data.config
+            })),
         "launchPackage": ({ catalogId, packageName, options, isDryRun }) => axiosInstance.put<Record<string, unknown>>(
             `/my-lab/app`,
             { catalogId, packageName, options, "dryRun": isDryRun }
-        ).then(({ data }) => ({ "contract": data }))
+        ).then(({ data }) => ({ "contract": data })),
+        ...(() => {
+
+            const getMyLab_Services = memoize(
+                () => axiosInstance.get<MyLab_Services>(
+                    "/my-lab/services"
+                ).then(({ data }) => data),
+                { "promise": true, "maxAge": 1000 }
+            );
+
+            const getRunningPackages = async () =>
+                (await getMyLab_Services()).app.map(
+                    ({ id, env, urls, startedAt, tasks }) => ({
+                        "packageName": id.split("-")[0],
+                        "friendlyName": env["onyxia.friendlyName"],
+                        urls,
+                        startedAt,
+                        ...(tasks[0].status.status === "Running" ?
+                            { "state": "running" } as const :
+                            {
+                                "state": "pending",
+                                "prRunning": new Promise<void>(
+                                    function callee(resolve) {
+                                        setTimeout(
+                                            async () => {
+
+                                                const app = (await getMyLab_Services())
+                                                    .app.find(({ id: id_i }) => id_i === id);
+
+                                                if (app === undefined) {
+                                                    //Package no longer running, we leave it pending.
+                                                    return;
+                                                }
+
+                                                if (app.tasks[0].status.status !== "Running") {
+
+                                                    callee(resolve);
+
+                                                    return;
+
+                                                }
+
+                                                resolve();
+
+                                            },
+                                            1000
+                                        )
+                                    }
+                                )
+                            } as const
+                        )
+                    })
+                );
+
+
+            return { getRunningPackages };
+
+
+        })()
+
     };
 
     return { onyxiaApiClient, axiosInstance };

@@ -104,8 +104,20 @@ export namespace Public_Catalog_CatalogId_PackageName {
             AWS_BUCKET_NAME: string;
         }
     };
-
 }
+
+//TODO BACKEND: Provides catalogId
+export type MyLab_Services = {
+    app: {
+        id: string;
+        urls: string[];
+        env: {
+            'onyxia.friendlyName': string;
+        };
+        startedAt: number;
+        tasks: { status: { status: "Running" | "Pending"; } }[];
+    }[]
+};
 
 
 
@@ -145,5 +157,20 @@ export type OnyxiaApiClient = {
             isDryRun: boolean;
         }
     ): Promise<{ contract: Record<string, unknown>; }>;
+
+    getRunningPackages(
+    ): Promise<
+        ({
+            packageName: string;
+            friendlyName: string;
+            urls: string[];
+            startedAt: number;
+        } & ({
+            state: "running";
+        } | {
+            state: "pending";
+            prRunning: Promise<void>;
+        }))[]
+    >;
 
 };
