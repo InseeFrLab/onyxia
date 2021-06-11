@@ -47,6 +47,10 @@ const { useClassNames } = createUseClassNames()(
         "captions": {
             "display": "inline-block",
             "marginBottom": theme.spacing(1)
+        },
+        "belowDividerBottom": {
+            "display": "flex",
+            "alignItems": "center"
         }
     })
 );
@@ -127,14 +131,14 @@ export const MyServicesCard = memo((props: Props) => {
                         }
                     </div>
                 </div>
-                <div style={{ "display": "flex" }}>
+                <div className={classNames.belowDividerBottom}>
                     <IconButton id="infoOutlined" doOpenNewTabIfHref={false} href={infoUrl} />
                     <IconButton id="delete" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined &&
                         <IconButton id="equalizer" href={monitoringUrl} />}
                     <div style={{ "flex": 1 }} />
                     {startTime === undefined ?
-                        <CircularProgress color="textPrimary" size={10} />
+                        <CircularProgress color="textPrimary" size={20}/>
                         :
                         <Button
                             color="secondary"

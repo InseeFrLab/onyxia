@@ -24,3 +24,15 @@ export const VueRegular = getStory({
     ...logCallbacks(["onRequestDelete"])
 });
 
+export const VueStarting = getStory({
+    "packageIconUrl": rstudioImgUrl,
+    "friendlyName": "My Rstudio",
+    "packageName": "rstudio",
+    "infoUrl": "https://example.com",
+    "openUrl": "https://example.com",
+    "monitoringUrl": "https://example.com",
+    "startTime": undefined,
+    "isOvertime": false,
+    ...logCallbacks(["onRequestDelete"])
+});
+
