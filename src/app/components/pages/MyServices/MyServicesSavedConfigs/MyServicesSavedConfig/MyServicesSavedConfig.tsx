@@ -1,7 +1,7 @@
 
 import { memo, useReducer } from "react";
 import { createUseClassNames } from "app/theme";
-import Avatar from "@material-ui/core/Avatar";
+import { RoundLogo } from "app/components/shared/RoundLogo";
 import { Typography } from "onyxia-ui";
 import { cx } from "tss-react";
 import { Button } from "app/theme";
@@ -30,7 +30,7 @@ const { useClassNames } = createUseClassNames<{ hasLogo: boolean; }>()(
             "padding": theme.spacing(1, 1),
             "paddingRight": theme.spacing(2),
         },
-        "avatar": {
+        "logo": {
             ...(() => {
                 const width = 32;
                 return { width, "height": width };
@@ -103,7 +103,7 @@ export const MyServicesSavedConfig = memo(
                         onClick={scheduleDeletion}
                     />
                 }
-                <Avatar src={logoUrl} className={classNames.avatar} />
+                <RoundLogo url={logoUrl} className={classNames.logo} />
                 <div className={classNames.friendlyNameWrapper}>
                     <Typography
                         variant="h6"

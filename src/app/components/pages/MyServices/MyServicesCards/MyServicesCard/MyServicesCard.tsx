@@ -7,7 +7,7 @@ import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { cx } from "tss-react";
 import { capitalize } from "app/tools/capitalize";
-import { MyServicesBadge } from "./MyServicesBadge";
+import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { IconButton } from "app/theme";
 import { CircularProgress } from "onyxia-ui";
@@ -92,8 +92,8 @@ export const MyServicesCard = memo((props: Props) => {
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
                 {packageIconUrl !== undefined &&
-                    <MyServicesBadge
-                        src={packageIconUrl}
+                    <MyServicesRoundLogo
+                        url={packageIconUrl}
                         circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
                     />}
                 <Typography

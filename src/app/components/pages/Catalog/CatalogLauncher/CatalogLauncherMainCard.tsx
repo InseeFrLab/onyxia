@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
-import Avatar from "@material-ui/core/Avatar";
+import { RoundLogo } from "app/components/shared/RoundLogo";
 import { Typography } from "onyxia-ui";
 import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -40,7 +40,7 @@ const { useClassNames } = createUseClassNames()(
             "paddingTop": theme.spacing(2),
             "flex": 1
         },
-        "avatarAndTitleWrapper": {
+        "logoAndTitleWrapper": {
             "display": "flex",
             "marginBottom": theme.spacing(2)
         },
@@ -134,9 +134,9 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 </Tooltip>
             </div>
             <div className={classNames.belowDivider}>
-                <div className={classNames.avatarAndTitleWrapper}>
+                <div className={classNames.logoAndTitleWrapper}>
                     {packageIconUrl !== undefined &&
-                        <Avatar src={packageIconUrl} />}
+                        <RoundLogo url={packageIconUrl} />}
                     <Typography
                         variant="h5"
                         className={classNames.title}
