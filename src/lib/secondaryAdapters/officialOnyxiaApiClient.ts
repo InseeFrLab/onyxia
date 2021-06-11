@@ -99,7 +99,7 @@ export function createOfficialOnyxiaApiClient(
                                                     return;
                                                 }
 
-                                                if (app.tasks[0].status.status !== "Running") {
+                                                if (app.tasks[0]?.status.status !== "Running") {
 
                                                     callee(resolve);
 
