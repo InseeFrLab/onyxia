@@ -1,3 +1,7 @@
+### **0.11.6** (2021-06-11)  
+  
+- MyServices: Fallback logo    
+  
 ### **0.11.5** (2021-06-11)  
   
 - Fix favicon  
