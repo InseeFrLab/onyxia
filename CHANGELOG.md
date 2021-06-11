@@ -1,3 +1,7 @@
+### **0.11.4** (2021-06-11)  
+  
+- MyServices: Fetch S3 credentials before loading the form    
+  
 ### **0.11.3** (2021-06-11)  
   
 - MyServices: Fix bug with apps with no tasks    
