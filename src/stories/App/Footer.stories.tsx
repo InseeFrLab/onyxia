@@ -14,7 +14,7 @@ export default meta;
 export const Vue1 = getStory({
     "className": css({ "height": 32, "width": 1100 }),
     "packageJsonVersion": "0.9.3",
-    "tosHref": "#",
-    "contributeHref": "#"
+    "tosUrl": "#",
+    "contributeUrl": "#"
 });
 

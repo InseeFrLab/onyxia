@@ -10,6 +10,7 @@ import { useConstCallback } from "powerhooks";
 import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
 import { useEffectOnValueChange } from "powerhooks";
+import type { Link } from "type-route";
 
 const actions = ["launch", "delete", "copy link"] as const;
 
@@ -57,7 +58,7 @@ export type Props = {
     isShortVariant: boolean;
     logoUrl: string | undefined;
     friendlyName: string;
-    restoreConfigurationUrl: string;
+    link: Link;
     callback(action: "delete" | "copy link"): void;
 };
 
@@ -69,7 +70,7 @@ export const MyServicesSavedConfig = memo(
             friendlyName,
             logoUrl,
             className,
-            restoreConfigurationUrl,
+            link,
             callback
         } = props;
 
@@ -117,8 +118,7 @@ export const MyServicesSavedConfig = memo(
                     onClick={onLinkClick}
                 />}
                 <Button 
-                    href={restoreConfigurationUrl} 
-                    doOpenNewTabIfHref={false} 
+                    {...link}
                     color="secondary"
                 >
                     {t("launch")}

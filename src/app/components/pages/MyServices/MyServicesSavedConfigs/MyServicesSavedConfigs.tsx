@@ -6,7 +6,8 @@ import { useCallbackFactory } from "powerhooks";
 import { Typography } from "onyxia-ui";
 import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
-import Link from "@material-ui/core/Link";
+import MuiLink from "@material-ui/core/Link";
+import type { Link } from "type-route";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -33,12 +34,12 @@ export type Props = {
     savedConfigs: {
         logoUrl: string | undefined;
         friendlyName: string;
-        /** acts as an id*/
-        restoreConfigurationUrl: string;
+        /** link.href used as id for callback */
+        link: Link;
     }[];
     callback(
         params: {
-            restoreConfigurationUrl: string;
+            linkHref: string;
             action: "delete" | "copy link"
         }
     ): void;
@@ -58,9 +59,9 @@ export const MyServicesSavedConfigs = memo(
 
         const callbackFactory = useCallbackFactory(
             (
-                [restoreConfigurationUrl]: [string],
+                [linkHref]: [string],
                 [action]: ["delete" | "copy link"]
-            ) => callback({ restoreConfigurationUrl, action })
+            ) => callback({ linkHref, action })
         );
 
         return (
@@ -75,15 +76,15 @@ export const MyServicesSavedConfigs = memo(
                     {
                         savedConfigs
                             .filter(isShortVariant ? ((...[, i]) => i < maxConfigCountInShortVariant) : () => true)
-                            .map(({ logoUrl, friendlyName, restoreConfigurationUrl }) =>
+                            .map(({ logoUrl, friendlyName, link }) =>
                                 <MyServicesSavedConfig
-                                    key={restoreConfigurationUrl}
+                                    key={link.href}
                                     className={classNames.entry}
                                     isShortVariant={isShortVariant}
                                     logoUrl={logoUrl}
                                     friendlyName={friendlyName}
-                                    restoreConfigurationUrl={restoreConfigurationUrl}
-                                    callback={callbackFactory(restoreConfigurationUrl)}
+                                    link={link}
+                                    callback={callbackFactory(link.href)}
                                 />
                             )
                     }
@@ -155,12 +156,12 @@ const { Header } = (() => {
                     </Typography>
                     <div style={{ "flex": "1" }} />
                     {isShortVariant &&
-                        <Link
+                        <MuiLink
                             onClick={onRequestToggleIsShortVariant}
                             className={classNames.link}
                         >
                             {t("show all", { "n": `${configCount}` })}
-                        </Link>
+                        </MuiLink>
                     }
                 </div>
             );

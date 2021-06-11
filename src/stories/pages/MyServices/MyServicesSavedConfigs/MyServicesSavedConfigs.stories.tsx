@@ -19,7 +19,7 @@ const props: Props= {
         i => ({
             "logoUrl": rstudioImgUrl,
             "friendlyName": `RStudio ${i}`,
-            "restoreConfigurationUrl": `https://example.com/${i}`
+            "link": { "href": `https://example.com/${i}`, "onClick": () => { } }
         })
     ),
     ...logCallbacks(["callback", "onRequestToggleIsShortVariant"])
