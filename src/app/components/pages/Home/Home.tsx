@@ -1,12 +1,12 @@
 
-import { useEffect, useRef, memo } from "react";
-import { Button } from "app/theme";
+import { useEffect, useRef, useMemo, memo } from "react";
+import { Button } from "app/theme";
 import "./style.scss";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
 import { createUseClassNames, useTheme } from "app/theme";
-import { cx } from "tss-react";
-import {  css } from "tss-react";
+import { cx } from "tss-react";
+import { css } from "tss-react";
 import { Typography } from "onyxia-ui";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/interfaceWithLib/hooks";
@@ -19,13 +19,14 @@ import dotsDarkSvgUrl from "app/assets/svg/dotsDark.svg";
 import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
 import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
 import { Paper } from "onyxia-ui"
-import { assert } from "tsafe/assert";
+import { assert } from "tsafe/assert";
+import type { Link } from "type-route";
 
 Home.routeGroup = createGroup([
-    routes.home
+	routes.home
 ]);
 
-Home.requireUserLoggedIn = ()=> false;
+Home.requireUserLoggedIn = () => false;
 
 const { useClassNames } = createUseClassNames()(
 	theme => ({
@@ -34,7 +35,7 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"hero": {
 			"paddingBottom": theme.spacing(4),
-			"backgroundImage": `url(${theme.isDarkModeEnabled?dotsDarkSvgUrl:dotsLightSvgUrl})`,
+			"backgroundImage": `url(${theme.isDarkModeEnabled ? dotsDarkSvgUrl : dotsLightSvgUrl})`,
 			"backgroundPosition": "right",
 			"backgroundRepeat": "no-repeat",
 			"backgroundSize": "50%",
@@ -61,10 +62,10 @@ const { useClassNames } = createUseClassNames()(
 		"middleCard": {
 			"margin": theme.spacing(0, 2)
 		},
-        "svg": {
-            "fill": theme.colors.palette.focus.main,
+		"svg": {
+			"fill": theme.colors.palette.focus.main,
 			"width": 122
-        }
+		}
 	})
 )
 
@@ -79,9 +80,12 @@ export function Home() {
 	const { t } = useTranslation("Home");
 
 	const onHeroButtonClick = useConstCallback(() => {
-		assert( !appConstants.isUserLoggedIn );
+		assert(!appConstants.isUserLoggedIn);
 		appConstants.login();
 	});
+
+	const myBucketsLink = useMemo(()=> routes.myBuckets().link, []);
+	const catalogExplorerLink = useMemo(()=> routes.catalogExplorer().link, []);
 
 	return (
 		<div className={cx("home", classNames.root)}>
@@ -118,8 +122,7 @@ export function Home() {
 					title={t("cardTitle1")}
 					text={t("cardText1")}
 					buttonText={t("cardButton1")}
-					href={routes.catalogExplorer().link.href}
-					doOpenNewTab={false}
+					link={catalogExplorerLink}
 				/>
 				<Card
 					className={classNames.middleCard}
@@ -127,16 +130,14 @@ export function Home() {
 					title={t("cardTitle2")}
 					text={t("cardText2")}
 					buttonText={t("cardButton2")}
-					href={"https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr"}
-					doOpenNewTab={true}
+					link={"https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr"}
 				/>
 				<Card
 					Icon={IconStorageSvg}
 					title={t("cardTitle3")}
 					text={t("cardText3")}
 					buttonText={t("cardButton3")}
-					href={routes.myBuckets().link.href}
-					doOpenNewTab={false}
+					link={myBucketsLink}
 				/>
 			</div>
 
@@ -218,14 +219,13 @@ const { Card } = (() => {
 		text: string;
 		buttonText: string;
 		Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
-		href: string;
-		doOpenNewTab: boolean;
+		link: Link | string;
 	};
 
 
 	const Card = memo((props: Props) => {
 
-		const { title, text, buttonText, Icon, className, href, doOpenNewTab } = props;
+		const { title, text, buttonText, Icon, className, link } = props;
 
 		const theme = useTheme();
 
@@ -274,7 +274,11 @@ const { Card } = (() => {
 						<Typography>{text}</Typography>
 					</div>
 					<div className={css({ "marginTop": theme.spacing(4) })} >
-						<Button href={href} doOpenNewTabIfHref={doOpenNewTab}>{buttonText}</Button>
+						<Button
+							{...(typeof link === "string" ? { "href": link } : link)}
+						>
+							{buttonText}
+						</Button>
 					</div>
 				</div>
 

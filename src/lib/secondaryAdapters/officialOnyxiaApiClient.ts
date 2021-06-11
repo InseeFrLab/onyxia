@@ -11,7 +11,7 @@ import type {
     Public_Catalog_CatalogId_PackageName,
     MyLab_Services
 } from "lib/ports/OnyxiaApiClient";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 
@@ -78,8 +78,16 @@ export function createOfficialOnyxiaApiClient(
                 (await getMyLab_Services()).apps.map(
                     ({ id, env, urls, startedAt, tasks }) => ({
                         id,
-                        "packageName": id.split("-")[0],
-                        "friendlyName": env[onyxiaFriendlyNameFormFieldPath.join(".")],
+                        ...(() => {
+
+                            const packageName = id.split("-")[0];
+
+                            return {
+                                packageName,
+                                "friendlyName": env[onyxiaFriendlyNameFormFieldPath.join(".")] ?? packageName
+                            };
+
+                        })(),
                         urls,
                         startedAt,
                         ...(tasks[0].status.status === "Running" ?
@@ -107,11 +115,11 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
-                                                try{ 
+                                                try {
 
                                                     await axios.create().get(urls[0]);
 
-                                                }catch(error){
+                                                } catch (error) {
 
                                                     console.log("A 503 error are expected to be log in the console");
 
@@ -138,7 +146,7 @@ export function createOfficialOnyxiaApiClient(
 
 
         })(),
-        "stopService": ({ serviceId })=> axiosInstance.delete<{ success: boolean}>(
+        "stopService": ({ serviceId }) => axiosInstance.delete<{ success: boolean }>(
             `/my-lab/app`,
             { "params": { "path": serviceId } }
         ).then(({ data }) => { assert(data.success); })

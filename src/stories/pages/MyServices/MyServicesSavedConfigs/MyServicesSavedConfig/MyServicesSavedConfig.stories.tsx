@@ -13,14 +13,14 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-const restoreConfigurationUrl = "https://example.com";
+const link = { "href": "https://example.com", "onClick": () => { } };
 
 export const VueShortVariant = getStory({
     "className": css({ "width": 400 }),
     "isShortVariant": true,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
-    restoreConfigurationUrl,
+    link,
     ...logCallbacks([ "callback"])
 });
 
@@ -29,7 +29,7 @@ export const VueLongVariant = getStory({
     "isShortVariant": false,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
-    restoreConfigurationUrl,
+    link,
     ...logCallbacks([ "callback"])
 });
 
@@ -38,7 +38,7 @@ export const VueNoLogo = getStory({
     "logoUrl": undefined,
     "isShortVariant": false,
     "friendlyName": "My RStudio a bit long",
-    restoreConfigurationUrl,
+    link,
     ...logCallbacks([ "callback"])
 });
 

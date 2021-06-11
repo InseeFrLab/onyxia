@@ -7,7 +7,8 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { Typography } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
-import Link from "@material-ui/core/Link";
+import MuiLink from "@material-ui/core/Link";
+import type { Link } from "type-route";
 
 export type Props = {
     className?: string;
@@ -22,7 +23,7 @@ export type Props = {
         startTime: number | undefined;
         isOvertime: boolean;
     }[] | undefined;
-    catalogExplorerUrl: string;
+    catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string; }): void;
 }
 
@@ -56,7 +57,7 @@ const { useClassNames } = createUseClassNames<{ isThereServicesRunning: boolean;
 export const MyServicesCards = memo(
     (props: Props) => {
 
-        const { className, onRequestDelete, cards, catalogExplorerUrl } = props;
+        const { className, onRequestDelete, cards, catalogExplorerLink } = props;
 
         const { classNames } = useClassNames({ "isThereServicesRunning": (cards ?? []).length !== 0 });
 
@@ -76,7 +77,7 @@ export const MyServicesCards = memo(
                         cards !== undefined && cards.length === 0 ?
                             <NoRunningService
                                 className={classNames.noRunningServices}
-                                catalogExplorerUrl={catalogExplorerUrl}
+                                catalogExplorerLink={catalogExplorerLink}
                             /> :
                             cards?.map(card =>
                                 <MyServicesCard
@@ -108,7 +109,7 @@ const { NoRunningService } = (() => {
 
     type Props = {
         className: string;
-        catalogExplorerUrl: string;
+        catalogExplorerLink: Link;
     };
 
     const { useClassNames } = createUseClassNames()(
@@ -143,7 +144,7 @@ const { NoRunningService } = (() => {
     const NoRunningService = memo(
         (props: Props) => {
 
-            const { className, catalogExplorerUrl } = props;
+            const { className, catalogExplorerLink } = props;
 
             const { classNames } = useClassNames({});
 
@@ -158,12 +159,12 @@ const { NoRunningService } = (() => {
                             variant="h2"
                             className={classNames.h2}
                         >{t("no services running")}</Typography>
-                        <Link
+                        <MuiLink
                             className={classNames.link}
-                            href={catalogExplorerUrl}
+                            {...catalogExplorerLink}
                         >
                             {t("launch one")}
-                        </Link>
+                        </MuiLink>
                     </div>
                 </div>
             );

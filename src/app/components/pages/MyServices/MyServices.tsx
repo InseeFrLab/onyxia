@@ -150,10 +150,10 @@ export function MyServices(props: Props) {
     );
 
     const onSavedConfigsCallback = useConstCallback<MyServicesSavedConfigsProps["callback"]>(
-        ({ restoreConfigurationUrl, action }) => {
+        ({ linkHref, action }) => {
             switch (action) {
                 case "copy link":
-                    copyToClipboard(restoreConfigurationUrl);
+                    copyToClipboard(linkHref);
                     return;
                 case "delete":
                     dispatch(
@@ -161,7 +161,7 @@ export function MyServices(props: Props) {
                             "restorablePackageConfig":
                                 displayableConfigs
                                     .find(({ restorablePackageConfig }) =>
-                                        routes.catalogLauncher(restorablePackageConfig).href === restoreConfigurationUrl
+                                        routes.catalogLauncher(restorablePackageConfig).href === linkHref
                                     )!.restorablePackageConfig
                         })
                     );
@@ -176,8 +176,7 @@ export function MyServices(props: Props) {
                 ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
                     logoUrl,
                     friendlyName,
-                    "restoreConfigurationUrl":
-                        routes.catalogLauncher(restorablePackageConfig).href
+                    "link": routes.catalogLauncher(restorablePackageConfig).link
                 })
             ),
         [displayableConfigs]
@@ -209,6 +208,8 @@ export function MyServices(props: Props) {
         ({ serviceId }) => dispatch(thunks.runningService.stopService({ serviceId }))
     );
 
+    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
+
     return (
         <div className={cx(classNames.root, className)}>
             <PageHeader
@@ -226,7 +227,7 @@ export function MyServices(props: Props) {
                         className={classNames.cards}
                         cards={cards}
                         onRequestDelete={onRequestDelete}
-                        catalogExplorerUrl={routes.catalogExplorer().href}
+                        catalogExplorerLink={catalogExplorerLink}
                     />}
                     <MyServicesSavedConfigs
                         isShortVariant={!isSavedConfigsExtended}
