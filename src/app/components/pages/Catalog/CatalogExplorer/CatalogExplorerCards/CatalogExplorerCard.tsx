@@ -1,7 +1,7 @@
 
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
-import Avatar from "@material-ui/core/Avatar";
+import { RoundLogo } from "app/components/shared/RoundLogo";
 import { Typography } from "onyxia-ui";
 import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -84,7 +84,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
                 {packageIconUrl !== undefined &&
-                    <Avatar src={packageIconUrl} />}
+                    <RoundLogo url={packageIconUrl} />}
                 <Typography
                     className={classNames.title}
                     variant="h5"

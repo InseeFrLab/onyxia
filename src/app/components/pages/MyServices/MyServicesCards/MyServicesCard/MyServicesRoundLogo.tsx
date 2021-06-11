@@ -1,13 +1,13 @@
 
 import { memo } from "react";
 import { createUseClassNames } from "app/theme";
-import Avatar from "@material-ui/core/Avatar";
+import { RoundLogo } from "app/components/shared/RoundLogo";
 import { cx } from "tss-react";
 
 export type Props = {
     className?: string;
     circleColor: "red" | "green" | "grey";
-    src: string;
+    url: string;
 };
 
 const { useClassNames } = createUseClassNames<{
@@ -30,7 +30,7 @@ const { useClassNames } = createUseClassNames<{
             "boxSizing": "border-box",
             "display": "inline-block"
         },
-        "avatar": {
+        "logo": {
             ...(() => {
                 const width = 50;
                 return { width, "height": width };
@@ -39,16 +39,16 @@ const { useClassNames } = createUseClassNames<{
     })
 );
 
-export const MyServicesBadge = memo(
+export const MyServicesRoundLogo = memo(
     (props: Props) => {
 
-        const { className, src, circleColor } = props
+        const { className, url, circleColor } = props
 
         const { classNames } = useClassNames({ circleColor });
 
         return (
             <div className={cx(className, classNames.root)}>
-                <Avatar src={src} className={classNames.avatar} />
+                <RoundLogo url={url} className={classNames.logo} />
             </div>
         );
 

@@ -1,29 +1,29 @@
 
 
-import { MyServicesBadge } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesBadge";
+import { MyServicesRoundLogo } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRoundLogo";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
-import rstudioImgUrl from "stories/assets/img/rstudio.png";
+import rstudioLogoUrl from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesBadge }
+    "wrappedComponent": { MyServicesRoundLogo }
 });
 
 export default meta;
 
 export const VueGreen = getStory({
-    "src": rstudioImgUrl,
+    "url": rstudioLogoUrl,
     "circleColor": "green"
 });
 
 export const VueGrey = getStory({
-    "src": rstudioImgUrl,
+    "url": rstudioLogoUrl,
     "circleColor": "grey"
 });
 
 export const VueRed = getStory({
-    "src": rstudioImgUrl,
+    "url": rstudioLogoUrl,
     "circleColor": "red"
 });
 
