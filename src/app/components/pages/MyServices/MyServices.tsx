@@ -222,6 +222,7 @@ export function MyServices(props: Props) {
                         className={classNames.cards}
                         cards={cards}
                         onRequestDelete={onRequestDelete}
+                        catalogExplorerUrl={routes.catalogExplorer().href}
                     />}
                 {savedConfigs.length !== 0 &&
                     <MyServicesSavedConfigs
