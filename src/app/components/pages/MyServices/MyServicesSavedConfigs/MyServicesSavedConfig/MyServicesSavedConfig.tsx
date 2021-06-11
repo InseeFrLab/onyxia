@@ -86,7 +86,7 @@ export const MyServicesSavedConfig = memo(
         useEffectOnValueChange(
             () => {
 
-                const timer = setTimeout(scheduleDeletion, 700);
+                const timer = setTimeout(()=>callback("delete"), 700);
 
                 return () => { clearTimeout(timer); };
 

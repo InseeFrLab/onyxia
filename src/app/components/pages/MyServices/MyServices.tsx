@@ -228,14 +228,13 @@ export function MyServices(props: Props) {
                         onRequestDelete={onRequestDelete}
                         catalogExplorerUrl={routes.catalogExplorer().href}
                     />}
-                {savedConfigs.length !== 0 &&
                     <MyServicesSavedConfigs
                         isShortVariant={!isSavedConfigsExtended}
                         savedConfigs={savedConfigs}
                         className={classNames.savedConfigs}
                         callback={onSavedConfigsCallback}
                         onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
-                    />}
+                    />
             </div>
         </div>
     );
