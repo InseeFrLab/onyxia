@@ -1,3 +1,7 @@
+### **0.11.3** (2021-06-11)  
+  
+- MyServices: Fix bug with apps with no tasks    
+  
 ### **0.11.2** (2021-06-11)  
   
 - MyServices: Friendly names saved config fix  
