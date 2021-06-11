@@ -65,11 +65,12 @@ export const MyServicesSavedConfigs = memo(
 
         return (
             <div className={cx(classNames.root, className)}>
-                <Header
-                    isShortVariant={isShortVariant}
-                    configCount={savedConfigs.length}
-                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
-                />
+                {(savedConfigs.length !== 0 || !isShortVariant) &&
+                    <Header
+                        isShortVariant={isShortVariant}
+                        configCount={savedConfigs.length}
+                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                    />}
                 <div className={classNames.wrapper}>
                     {
                         savedConfigs
