@@ -1,3 +1,32 @@
+## **0.11.0** (2021-06-11)  
+  
+- MyServices: Fix 503 errors  
+- MyServices: Fix saved config deletion  
+- MyServices: Restore config in same tab  
+- MyServices: Loding icon in place of button while service not yet ready  
+- MyServices: Ordering bt launch time  
+- MyServices: Better count since strarted  
+- MyServices: Disable button when service is starting  
+- MyServices: Add call to action when no service running  
+- MyServices: Fix reload  
+- MyServices: CSS Fixes  
+- MyServices: Working, minor bugs remaining  
+- MyServices: Implement slice  
+- MyServices: lib/ implementation of the port adapter  
+- MyServices: Implement route  
+- MyServices: implementation of the logic for restoring configs  
+- MyServices: Implement running services cards  
+- Refactor and small css fixes  
+- MyServices: Make restorable configurations scrollable  
+- MyServices: Toggle short variant  
+- MyServcies: Saved config line  
+- MyServices: Impl Option menu  
+- MyServices: Complete card  
+- MyServices: RunningTime  
+- MyServices: Implement badges with border  
+- MyServices: moving forward  
+- MyServices: Layout fundations    
+  
 ### **0.10.5** (2021-06-07)  
   
 - Secrets: Fix icon color  
