@@ -107,6 +107,20 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
+                                                try{ 
+
+                                                    await axios.create().get(urls[0]);
+
+                                                }catch(error){
+
+                                                    console.log("A 503 error are expected to be log in the console");
+
+                                                    callee(resolve);
+
+                                                    return;
+
+                                                }
+
                                                 resolve();
 
                                             },
