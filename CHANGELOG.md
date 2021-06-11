@@ -1,3 +1,9 @@
+### **0.11.5** (2021-06-11)  
+  
+- Fix favicon  
+- MyServices: Avoid reloading for local link  
+- Footer: use url instead of href    
+  
 ### **0.11.4** (2021-06-11)  
   
 - MyServices: Fetch S3 credentials before loading the form    
