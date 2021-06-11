@@ -1,3 +1,8 @@
+### **0.11.2** (2021-06-11)  
+  
+- MyServices: Friendly names saved config fix  
+- Login: Fix dark mode not carried over    
+  
 ### **0.11.1** (2021-06-11)  
   
 - MyServices: Update wording    
