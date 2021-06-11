@@ -30,6 +30,7 @@ const props: Props = {
             "isOvertime": false
         })
     ),
+    "catalogExplorerUrl": url,
     ...logCallbacks(["onRequestDelete"])
 };
 

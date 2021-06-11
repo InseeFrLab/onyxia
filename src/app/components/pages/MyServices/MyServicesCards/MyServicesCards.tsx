@@ -5,7 +5,9 @@ import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Typography } from "onyxia-ui";
-import { useCallbackFactory } from "powerhooks";
+import { useCallbackFactory } from "powerhooks";
+import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
+import Link from "@material-ui/core/Link";
 
 export type Props = {
     className?: string;
@@ -16,15 +18,16 @@ export type Props = {
         packageName: string;
         infoUrl: string;
         openUrl: string;
-        monitoringUrl: string | undefined;
+        monitoringUrl: string | undefined;
         startTime: number | undefined;
         isOvertime: boolean;
     }[];
+    catalogExplorerUrl: string;
     onRequestDelete(params: { serviceId: string; }): void;
 }
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
+const { useClassNames } = createUseClassNames<{ isThereServicesRunning: boolean; }>()(
+    (theme, { isThereServicesRunning }) => ({
         "root": {
             "overflow": "hidden",
             "display": "flex",
@@ -34,11 +37,18 @@ const { useClassNames } = createUseClassNames()(
             "margin": theme.spacing(2, 0),
         },
         "wrapper": {
-            "paddingRight": theme.spacing(2),
             "overflow": "auto",
-            "display": "grid",
-            "gridTemplateColumns": "repeat(2,1fr)",
-            "gap": theme.spacing(3),
+            ...(!isThereServicesRunning ? {
+                "flex": 1
+            } : {
+                "paddingRight": theme.spacing(2),
+                "display": "grid",
+                "gridTemplateColumns": "repeat(2,1fr)",
+                "gap": theme.spacing(3)
+            }),
+        },
+        "noRunningServices": {
+            "height": "100%"
         }
     })
 );
@@ -46,9 +56,9 @@ const { useClassNames } = createUseClassNames()(
 export const MyServicesCards = memo(
     (props: Props) => {
 
-        const { className, onRequestDelete, cards } = props;
+        const { className, onRequestDelete, cards, catalogExplorerUrl } = props;
 
-        const { classNames } = useClassNames({});
+        const { classNames } = useClassNames({ "isThereServicesRunning": cards.length !== 0 });
 
         const { t } = useTranslation("MyServicesCards");
 
@@ -63,13 +73,18 @@ export const MyServicesCards = memo(
                 </Typography>
                 <div className={classNames.wrapper}>
                     {
-                        cards.map(card =>
-                            <MyServicesCard
-                                key={card.serviceId}
-                                {...card}
-                                onRequestDelete={onRequestDeleteFactory(card.serviceId)}
-                            />
-                        )
+                        cards.length === 0 ?
+                            <NoRunningService
+                                className={classNames.noRunningServices}
+                                catalogExplorerUrl={catalogExplorerUrl}
+                            /> :
+                            cards.map(card =>
+                                <MyServicesCard
+                                    key={card.serviceId}
+                                    {...card}
+                                    onRequestDelete={onRequestDeleteFactory(card.serviceId)}
+                                />
+                            )
                     }
                 </div>
             </div>
@@ -82,7 +97,80 @@ export declare namespace MyServicesCards {
 
     export type I18nScheme = {
         'running services': undefined;
+        'no services running': undefined;
+        'launch one': undefined;
     };
 
 }
 
+
+const { NoRunningService } = (() => {
+
+    type Props = {
+        className: string;
+        catalogExplorerUrl: string;
+    };
+
+    const { useClassNames } = createUseClassNames()(
+        theme => ({
+            "root": {
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center"
+            },
+            "innerDiv": {
+                "textAlign": "center",
+                "maxWidth": 500
+            },
+            "svg": {
+                "fill": theme.colors.palette.dark.greyVariant2,
+                "width": 100,
+                "margin": 0
+            },
+            "h2": {
+                "margin": theme.spacing(4, 0)
+            },
+            "typo": {
+                "marginBottom": theme.spacing(1),
+                "color": theme.colors.palette.light.greyVariant3
+            },
+            "link": {
+                "cursor": "pointer"
+            }
+        })
+    );
+
+    const NoRunningService = memo(
+        (props: Props) => {
+
+            const { className, catalogExplorerUrl } = props;
+
+            const { classNames } = useClassNames({});
+
+            const { t } = useTranslation("MyServicesCards");
+
+            return (
+                <div className={cx(classNames.root, className)}>
+
+                    <div className={classNames.innerDiv}>
+                        <ServiceNotFoundSvg className={classNames.svg} />
+                        <Typography
+                            variant="h2"
+                            className={classNames.h2}
+                        >{t("no services running")}</Typography>
+                        <Link
+                            className={classNames.link}
+                            href={catalogExplorerUrl}
+                        >
+                            {t("launch one")}
+                        </Link>
+                    </div>
+                </div>
+            );
+
+        }
+    );
+
+    return { NoRunningService };
+
+})();

@@ -380,7 +380,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "show all": "Show all ({{n}})"
         },
         "MyServicesCards": {
-            "running services": "Running services"
+            "running services": "Running services",
+            "no services running": "You don't have any service running",
+            "launch one": "Click here to launch one"
         }
     },
     "fr": {
@@ -646,7 +648,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "show all": "Afficher tous ({{n}})"
         },
         "MyServicesCards": {
-            "running services": "Services en cours"
+            "running services": "Services en cours",
+            "no services running": "Vous n'avez actuellement aucun service en cours d'exécution",
+            "launch one": "Cliquez ici pour en lancer un"
         }
         /* spell-checker: enable */
     }
