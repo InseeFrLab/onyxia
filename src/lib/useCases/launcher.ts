@@ -20,6 +20,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
+import { getMinioToken } from "js/minio-client/minio-client";
 
 export const name = "launcher";
 
@@ -243,7 +244,8 @@ export const thunks = {
 
                 const { vaultToken } = getState().tokens;
 
-                //TODO: Fetch first
+                await getMinioToken();
+
                 const s3 = getState().user.s3!;
 
                 const appConstants =

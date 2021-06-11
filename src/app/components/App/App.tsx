@@ -34,8 +34,6 @@ import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation
 import { MyService } from "js/components/my-service/home";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
-import VisiteGuidee from 'js/components/visite-guidee';
-import { VisiteGuideeDebut } from "js/components/visite-guidee/visite-guidee-debut.component";
 import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { SharedServices } from "js/components/services/home/services";
 import { Trainings } from "js/components/trainings/async-component";
@@ -187,7 +185,6 @@ export const App = memo((props: Props) => {
                 contributeHref={"https://github.com/InseeFrLab/onyxia"}
                 tosHref={tosHref}
             />
-            <VisiteGuidee />
             {appConstants.isUserLoggedIn && <CloudShell />}
 
         </div>
@@ -215,7 +212,6 @@ const PageSelector = (
                 MyService,
                 MyBuckets,
                 NavigationFile,
-                VisiteGuideeDebut,
                 SharedServices,
                 Trainings,
             ].find(({ routeGroup }) => routeGroup.has(route));
@@ -252,7 +248,6 @@ const PageSelector = (
                 case Catalogue:
                 case Trainings:
                 case MyBuckets:
-                case VisiteGuideeDebut:
                     return <Page />;
             }
 
