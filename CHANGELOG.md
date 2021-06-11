@@ -1,3 +1,24 @@
+### **0.10.5** (2021-06-07)  
+  
+- Secrets: Fix icon color  
+- Secrets: Fix translation bar  
+- onyxia-ui: Incorporate icon customizations  
+- Refactor: Put 404 and Portrait warning into pages/  
+- Improve portrait mode screen  
+- Tabs: Use onMouseDown instead of onClick to switch beteen tabs  
+- Account: Fix warning missing key  
+- Refactor the way we instantiate the store  
+- Fix zoom provider reload on screen notation  
+- Update deps  
+- Fix getStroy  
+- All broken but we are going to changes many things to debug  
+- Release with new project name  
+- Rename default branch 'main' ( from 'master')  
+- Rename onyxia-ui onyxia-web  
+- Externalizing design: cd  
+- Externalizing design: cd  
+- Externalizing design: Isolate zoom provider from theme provider    
+  
 ### **0.10.4** (2021-05-29)  
   
 - Launcher: Display more informations    
