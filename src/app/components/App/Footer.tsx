@@ -10,8 +10,8 @@ import { ReactComponent as GitHubSvg } from "app/assets/svg/GitHub.svg";
 export type Props = {
     className?: string;
     packageJsonVersion: string;
-    contributeHref: string;
-    tosHref: string;
+    contributeUrl: string;
+    tosUrl: string;
 }
 
 const { useClassNames } = createUseClassNames<Props>()(
@@ -45,8 +45,8 @@ const { useClassNames } = createUseClassNames<Props>()(
 export const Footer = memo((props: Props) => {
 
     const { 
-        contributeHref,
-        tosHref,
+        contributeUrl,
+        tosUrl,
         packageJsonVersion, 
         className
     } = props;
@@ -62,13 +62,13 @@ export const Footer = memo((props: Props) => {
         <footer className={cx(classNames.root, className)}>
             <Typography variant="body2">2017 - 2021 Onyxia, InseefrLab</Typography>
             {spacing}
-            <a href={contributeHref} className={classNames.contribute} target="_blank" rel="noreferrer"> 
+            <a href={contributeUrl} className={classNames.contribute} target="_blank" rel="noreferrer"> 
                 <GitHubSvg className={classNames.icon} />
                 &nbsp;
                 <Typography variant="body2">{t("contribute")}</Typography> 
             </a>
             <div className={classNames.sep}/>
-            <a href={tosHref} target="_blank" rel="noreferrer"> <Typography variant="body2">{t("terms of service")}</Typography> </a>
+            <a href={tosUrl} target="_blank" rel="noreferrer"> <Typography variant="body2">{t("terms of service")}</Typography> </a>
             {spacing}
             <a href={`https://github.com/InseeFrLab/onyxia-web/tree/v${packageJsonVersion}`} target="_blank" rel="noreferrer"> 
                 <Typography variant="body2">v{packageJsonVersion} </Typography>

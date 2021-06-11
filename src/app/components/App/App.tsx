@@ -143,11 +143,11 @@ export const App = memo((props: Props) => {
         }
     );
 
-    const { tosHref } = (function useClosure() {
+    const { tosUrl } = (function useClosure() {
 
         const { lng } = useLng();
-        const tosHref = getTosMarkdownUrl(lng)
-        return { tosHref };
+        const tosUrl = getTosMarkdownUrl(lng)
+        return { tosUrl };
 
 
     })();
@@ -182,8 +182,8 @@ export const App = memo((props: Props) => {
                 className={classNames.footer}
                 //NOTE: Defined in ./config-overrides.js
                 packageJsonVersion={process.env.VERSION!}
-                contributeHref={"https://github.com/InseeFrLab/onyxia"}
-                tosHref={tosHref}
+                contributeUrl={"https://github.com/InseeFrLab/onyxia"}
+                tosUrl={tosUrl}
             />
             {appConstants.isUserLoggedIn && <CloudShell />}
 
