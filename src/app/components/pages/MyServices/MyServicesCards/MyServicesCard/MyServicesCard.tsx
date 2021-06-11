@@ -132,7 +132,11 @@ export const MyServicesCard = memo((props: Props) => {
                     {monitoringUrl !== undefined &&
                         <IconButton id="equalizer" href={monitoringUrl} />}
                     <div style={{ "flex": 1 }} />
-                    <Button color="secondary" href={openUrl}>{t("open")}</Button>
+                    <Button 
+                        color="secondary" 
+                        href={openUrl}
+                        disabled={startTime === undefined}
+                    >{t("open")}</Button>
                 </div>
 
             </div>
