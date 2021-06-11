@@ -354,7 +354,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesButtonBar": {
             "refresh": "Refresh",
             "launch": "New service",
-            "password": "Service's password",
+            "password": "Copy the services password",
             "trash": "Delete all"
         },
         "MyServicesCard": {
@@ -622,7 +622,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
             "launch": "Nouveau servcie",
-            "password": "Mot de passe des services",
+            "password": "Copier le mot de passe",
             "trash": "Tout supprimer"
         },
         "MyServicesCard": {
