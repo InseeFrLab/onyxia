@@ -1,3 +1,7 @@
+### **0.11.1** (2021-06-11)  
+  
+- MyServices: Update wording    
+  
 ## **0.11.0** (2021-06-11)  
   
 - MyServices: Fix 503 errors  
