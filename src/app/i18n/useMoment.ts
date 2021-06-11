@@ -87,7 +87,7 @@ export const { useFromNow } = (() => {
 
                 return [
                     {
-                        "max": 10 * SECOND,
+                        "max": 4 * SECOND,
                         "divisor": 1,
                         ...(() => {
 

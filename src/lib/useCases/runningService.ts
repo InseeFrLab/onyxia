@@ -82,6 +82,9 @@ const { reducer, actions } = createSlice({
 
             runningService.isStarting = false;
 
+            //NOTE: Harmless hack to improve UI readability.
+            runningService.startedAt = Date.now();
+
         },
         "serviceStopped": (
             state,
