@@ -276,64 +276,39 @@ function areSameRestorablePackageConfig(
 
 export const selectors = (() => {
 
-    const { displayableConfigsSelector } = (() => {
+    function displayableConfigsSelector(rootState: RootState) {
 
-        function getFriendlyName(
-            params: {
-                restorablePackageConfigs: RestorablePackageConfig[];
-                catalogId: string;
-                packageName: string;
-            }
-        ) {
+        const { restorablePackageConfigs, packageIcons } = rootState.restorablePackageConfig;
 
-            const {
-                restorablePackageConfigs,
-                catalogId,
-                packageName
-            } = params;
+        return restorablePackageConfigs
+            .map(
+                restorablePackageConfig => {
 
-            const friendlyName =
-                restorablePackageConfigs.find(restorablePackageConfig => restorablePackageConfig.catalogId === catalogId)!
-                    .formFieldsValueDifferentFromDefault
-                    .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ??
-                packageName;
+                    const { packageName, catalogId } = restorablePackageConfig;
 
-            assert(typeof friendlyName === "string");
+                    return {
+                        "logoUrl":
+                            !packageIcons.areFetched ?
+                                undefined :
+                                packageIcons.iconsUrl[catalogId][packageName],
+                        "friendlyName": (() => {
 
-            return friendlyName;
+                            const friendlyName = restorablePackageConfig
+                                .formFieldsValueDifferentFromDefault
+                                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ?? packageName;
 
-        }
+                            assert(typeof friendlyName === "string");
 
-        function displayableConfigsSelector(rootState: RootState) {
+                            return friendlyName;
 
-            const { restorablePackageConfigs, packageIcons } = rootState.restorablePackageConfig;
 
-            return restorablePackageConfigs
-                .map(
-                    restorablePackageConfig => {
+                        })(),
+                        restorablePackageConfig
+                    };
+                }
+            )
 
-                        const { packageName, catalogId } = restorablePackageConfig;
-
-                        return {
-                            "logoUrl":
-                                !packageIcons.areFetched ?
-                                    undefined :
-                                    packageIcons.iconsUrl[catalogId][packageName],
-                            "friendlyName": getFriendlyName({
-                                restorablePackageConfigs,
-                                catalogId,
-                                packageName
-                            }),
-                            restorablePackageConfig
-                        };
-                    }
-                )
-
-        }
-
-        return { displayableConfigsSelector };
-
-    })();
+    }
 
     return { displayableConfigsSelector };
 
