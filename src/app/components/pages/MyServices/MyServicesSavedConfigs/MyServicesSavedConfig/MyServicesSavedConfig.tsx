@@ -116,7 +116,13 @@ export const MyServicesSavedConfig = memo(
                     id="link"
                     onClick={onLinkClick}
                 />}
-                <Button href={restoreConfigurationUrl} color="secondary">{t("launch")}</Button>
+                <Button 
+                    href={restoreConfigurationUrl} 
+                    doOpenNewTabIfHref={false} 
+                    color="secondary"
+                >
+                    {t("launch")}
+                </Button>
                 {isShortVariant &&
                     <MyServicesSavedConfigOptions callback={callback} />}
             </div>
