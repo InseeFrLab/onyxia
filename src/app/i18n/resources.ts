@@ -616,12 +616,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServices": {
             "text1": "Mes services",
             "text2": "Lancez, visualisr et gérer rapidement vos différents services en cours.",
-            "text3": "Récoupérer le mot de passe pour vos services en copiant la clef.",
+            "text3": "Récupérer le mot de passe pour vos services en copiant la clef.",
             "running services": "Services en cours"
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
-            "launch": "Nouveau servcie",
+            "launch": "Nouveau service",
             "password": "Copier le mot de passe",
             "trash": "Tout supprimer"
         },
