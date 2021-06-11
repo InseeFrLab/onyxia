@@ -10,6 +10,7 @@ import { capitalize } from "app/tools/capitalize";
 import { MyServicesBadge } from "./MyServicesBadge";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { IconButton } from "app/theme";
+import { CircularProgress } from "onyxia-ui";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -132,11 +133,14 @@ export const MyServicesCard = memo((props: Props) => {
                     {monitoringUrl !== undefined &&
                         <IconButton id="equalizer" href={monitoringUrl} />}
                     <div style={{ "flex": 1 }} />
-                    <Button 
-                        color="secondary" 
-                        href={openUrl}
-                        disabled={startTime === undefined}
-                    >{t("open")}</Button>
+                    {startTime === undefined ?
+                        <CircularProgress color="textPrimary" size={10} />
+                        :
+                        <Button
+                            color="secondary"
+                            href={openUrl}
+                        >{t("open")}</Button>
+                    }
                 </div>
 
             </div>

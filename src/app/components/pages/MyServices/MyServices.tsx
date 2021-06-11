@@ -185,20 +185,24 @@ export function MyServices(props: Props) {
 
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] =>
-            runningServices.map(
-                ({ id, logoUrl, friendlyName, packageName, urls, startedAt, monitoringUrl, isStarting }) => ({
-                    "serviceId": id,
-                    "packageIconUrl": logoUrl,
-                    friendlyName,
-                    packageName,
-                    "infoUrl": routes.myService({ "serviceId": id }).href,
-                    "openUrl": urls[0],
-                    monitoringUrl,
-                    "startTime": isStarting ? undefined : startedAt,
-                    "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24
-                })
-            ),
-        [runningServices]
+            isRunningServicesFetching ?
+                undefined :
+                [...runningServices]
+                    .sort((a, b) => b.startedAt - a.startedAt)
+                    .map(
+                        ({ id, logoUrl, friendlyName, packageName, urls, startedAt, monitoringUrl, isStarting }) => ({
+                            "serviceId": id,
+                            "packageIconUrl": logoUrl,
+                            friendlyName,
+                            packageName,
+                            "infoUrl": routes.myService({ "serviceId": id }).href,
+                            "openUrl": urls[0],
+                            monitoringUrl,
+                            "startTime": isStarting ? undefined : startedAt,
+                            "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24
+                        })
+                    ),
+        [runningServices, isRunningServicesFetching]
     );
 
     const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(

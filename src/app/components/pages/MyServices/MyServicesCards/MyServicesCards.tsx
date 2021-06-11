@@ -21,7 +21,7 @@ export type Props = {
         monitoringUrl: string | undefined;
         startTime: number | undefined;
         isOvertime: boolean;
-    }[];
+    }[] | undefined;
     catalogExplorerUrl: string;
     onRequestDelete(params: { serviceId: string; }): void;
 }
@@ -58,7 +58,7 @@ export const MyServicesCards = memo(
 
         const { className, onRequestDelete, cards, catalogExplorerUrl } = props;
 
-        const { classNames } = useClassNames({ "isThereServicesRunning": cards.length !== 0 });
+        const { classNames } = useClassNames({ "isThereServicesRunning": (cards ?? []).length !== 0 });
 
         const { t } = useTranslation("MyServicesCards");
 
@@ -73,12 +73,12 @@ export const MyServicesCards = memo(
                 </Typography>
                 <div className={classNames.wrapper}>
                     {
-                        cards.length === 0 ?
+                        cards !== undefined && cards.length === 0 ?
                             <NoRunningService
                                 className={classNames.noRunningServices}
                                 catalogExplorerUrl={catalogExplorerUrl}
                             /> :
-                            cards.map(card =>
+                            cards?.map(card =>
                                 <MyServicesCard
                                     key={card.serviceId}
                                     {...card}
