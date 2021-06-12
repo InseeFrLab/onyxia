@@ -21,7 +21,7 @@ const className = css({ "width": 1550, "height": 700 });
 
 const keywords = [ "python", "RStudio", "Elastic search" ];
 
-const cardsContent = (new Array(20).fill(0)).map((...[, i]) => id<Props["packages"][number]>({
+const packages = (new Array(20).fill(0)).map((...[, i]) => id<Props["packages"][number]>({
     "packageIconUrl": rstudioImg,
     "packageName": `${keywords[i%keywords.length]} ${i}`,
     /* spell-checker: disable */
@@ -38,7 +38,8 @@ const cardsContent = (new Array(20).fill(0)).map((...[, i]) => id<Props["package
 
 export const VueDefault = getStory({
     className,
-    packages: cardsContent,
+    packages,
+    "search": "",
     /* spell-checker: enable */
-    ...logCallbacks(["onRequestLaunch", "onRequestLearnMore", "onClearSearch"])
+    ...logCallbacks(["onRequestLaunch", "onRequestLearnMore", "onClearSearch", "setSearch"])
 });

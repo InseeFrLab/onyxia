@@ -2,7 +2,7 @@
 
 import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
-import type { Props as CatalogCardsParams } from "./CatalogExplorerCards";
+import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks";
 import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
 import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
@@ -53,12 +53,12 @@ export const CatalogExplorer = memo((props: Props) => {
         [
             catalogExplorerState.stateDescription,
             route.params.catalogId ?? "",
-            catalogExplorerState.stateDescription !== "ready" ? 
+            catalogExplorerState.stateDescription !== "ready" ?
                 "" : catalogExplorerState.selectedCatalogId
         ]
     );
 
-    const onRequestLaunch = useConstCallback<CatalogCardsParams["onRequestLaunch"]>(
+    const onRequestLaunch = useConstCallback<CatalogExplorerCardsProps["onRequestLaunch"]>(
         packageName =>
             routes.catalogLauncher({
                 "catalogId": route.params.catalogId!,
@@ -66,12 +66,21 @@ export const CatalogExplorer = memo((props: Props) => {
             }).push()
     );
 
+    const setSearch = useConstCallback<CatalogExplorerCardsProps["setSearch"]>(
+        search => routes.catalogExplorer({
+            "catalogId": route.params.catalogId!,
+            search
+        }).replace()
+    )
+
     if (catalogExplorerState.stateDescription !== "ready") {
         return null;
     }
 
     return (
         <CatalogExplorerCards
+            search={route.params.search}
+            setSearch={setSearch}
             className={className}
             packages={catalogExplorerState.packages}
             onRequestLaunch={onRequestLaunch}
