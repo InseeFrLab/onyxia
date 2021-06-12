@@ -1,3 +1,7 @@
+### **0.11.8** (2021-06-12)  
+  
+- CatalogExplorer: Search string in url    
+  
 ### **0.11.7** (2021-06-12)  
   
 - MyServices: Fix infinite loading on some namespaces  
