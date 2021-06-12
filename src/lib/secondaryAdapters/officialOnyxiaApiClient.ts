@@ -219,7 +219,7 @@ export function createOfficialOnyxiaApiClient(
                                                         callee(resolve);
                                                         return;
                                                     } else if (status === undefined) {
-                                                        await new Promise(resolve => setTimeout(resolve, 25000));
+                                                        await new Promise(resolve => setTimeout(resolve, 35000));
                                                     }
 
                                                 }
