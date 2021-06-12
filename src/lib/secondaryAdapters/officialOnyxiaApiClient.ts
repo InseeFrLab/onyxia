@@ -200,26 +200,26 @@ export function createOfficialOnyxiaApiClient(
 
                                                 try {
 
-                                                    await axios.create().get(urls[0]);
+                                                    await axios.create().head(urls[0]);
 
                                                 } catch (error) {
 
-                                                    const status = (()=>{
+                                                    const status = (() => {
 
-                                                        try{
+                                                        try {
                                                             return error.response.status;
-                                                        }catch{
+                                                        } catch {
                                                             //CORS: Firefox, Safari
                                                             return undefined;
                                                         }
 
                                                     })();
 
-                                                    if( status === 503 ){
+                                                    if (status === 503) {
                                                         callee(resolve);
                                                         return;
-                                                    }else if( status === undefined ){
-                                                        await new Promise(resolve => setTimeout(resolve, 10000));
+                                                    } else if (status === undefined) {
+                                                        await new Promise(resolve => setTimeout(resolve, 17000));
                                                     }
 
                                                 }
