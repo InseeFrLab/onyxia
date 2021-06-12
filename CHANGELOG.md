@@ -1,3 +1,7 @@
+### **0.11.9** (2021-06-12)  
+  
+- MyServices: Deal with CORS error on safary and chrome    
+  
 ### **0.11.8** (2021-06-12)  
   
 - CatalogExplorer: Search string in url    
