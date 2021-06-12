@@ -1,3 +1,7 @@
+### **0.11.13** (2021-06-12)  
+  
+- MyServices: If we can't get the status don't bother waiting    
+  
 ### **0.11.12** (2021-06-12)  
   
 - MyServices: Increace delay yey again    
