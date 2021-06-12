@@ -196,17 +196,31 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
+                                                console.log("503 or CORS error are expected here");
+
                                                 try {
 
                                                     await axios.create().get(urls[0]);
 
                                                 } catch (error) {
 
-                                                    console.log("A 503 error are expected to be log in the console");
+                                                    const status = (()=>{
 
-                                                    callee(resolve);
+                                                        try{
+                                                            return error.response.status;
+                                                        }catch{
+                                                            //CORS: Firefox, Safari
+                                                            return undefined;
+                                                        }
 
-                                                    return;
+                                                    })();
+
+                                                    if( status === 503 ){
+                                                        callee(resolve);
+                                                        return;
+                                                    }else if( status === undefined ){
+                                                        await new Promise(resolve => setTimeout(resolve, 10000));
+                                                    }
 
                                                 }
 
