@@ -93,7 +93,7 @@ export function createOfficialOnyxiaApiClient(
                             return out;
 
                         } catch {
-                            console.log("We couldn't get the serviceId of the launched service");
+                            console.warn("We couldn't get the serviceId of the launched service");
                             return undefined;
                         }
 
@@ -168,11 +168,31 @@ export function createOfficialOnyxiaApiClient(
                                                     return;
                                                 }
 
-                                                if (app.tasks[0]?.status.status !== "Running") {
+                                                {
 
-                                                    callee(resolve);
+                                                    const status = (() => {
 
-                                                    return;
+                                                        try {
+
+                                                            return app.tasks[0]?.status.status
+
+                                                        } catch {
+
+                                                            console.warn(`Couldn't get the service status from tasks for ${id}`);
+
+                                                            return "Running";
+
+                                                        }
+
+                                                    })();
+
+                                                    if (status !== "Running") {
+
+                                                        callee(resolve);
+
+                                                        return;
+
+                                                    }
 
                                                 }
 
