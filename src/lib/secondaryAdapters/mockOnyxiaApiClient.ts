@@ -1,6 +1,6 @@
 
 
-import type { OnyxiaApiClient, Public_Configuration } from "../ports/OnyxiaApiClient";
+import type { OnyxiaApiClient, Get_Public_Configuration } from "../ports/OnyxiaApiClient";
 import Mustache from "mustache";
 
 import memoize from "memoizee";
@@ -8,8 +8,8 @@ import memoize from "memoizee";
 
 export function createMockOnyxiaApiClient(
     params: {
-        regions: Public_Configuration["regions"];
-        build: Public_Configuration["build"]
+        regions: Get_Public_Configuration["regions"];
+        build: Get_Public_Configuration["build"]
     }
 ): { onyxiaApiClient: OnyxiaApiClient; } {
 
@@ -30,7 +30,7 @@ export function createMockOnyxiaApiClient(
                     )
                 ) as any
             })),
-        "launchPackage": ()=> Promise.resolve().then(()=> ({ "contract": { "foo": "bar" } })),
+        "launchPackage": ()=> Promise.resolve().then(()=> ({ "contract": [] })),
         "getRunningServices": ()=> Promise.resolve([]),
         "stopService": ()=> Promise.resolve()
     };

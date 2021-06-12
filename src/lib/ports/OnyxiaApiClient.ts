@@ -1,7 +1,7 @@
 
 import type { Region } from 'js/model/Region';
 
-export type Public_Configuration = {
+export type Get_Public_Configuration = {
     regions: Region[];
     build: {
         version: string;
@@ -9,7 +9,7 @@ export type Public_Configuration = {
     };
 };
 
-export type Public_Catalog = {
+export type Get_Public_Catalog = {
     catalogs: {
         id: string;
         location: string;
@@ -24,8 +24,8 @@ export type Public_Catalog = {
     }[];
 };
 
-export type Public_Catalog_CatalogId_PackageName = {
-    config: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+export type Get_Public_Catalog_CatalogId_PackageName = {
+    config: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
     sources: string[];
     dependencies?: {
         enabled: boolean;
@@ -33,7 +33,7 @@ export type Public_Catalog_CatalogId_PackageName = {
     }[];
 };
 
-export namespace Public_Catalog_CatalogId_PackageName {
+export namespace Get_Public_Catalog_CatalogId_PackageName {
 
     export type JSONSchemaObject = {
         description?: string;
@@ -106,8 +106,9 @@ export namespace Public_Catalog_CatalogId_PackageName {
     };
 }
 
+
 //TODO BACKEND: Provides catalogId
-export type MyLab_Services = {
+export type Get_MyLab_Services = {
     apps: {
         id: string;
         urls: string[];
@@ -117,18 +118,22 @@ export type MyLab_Services = {
     }[]
 };
 
+export type Put_MyLab_App= Record<string, unknown>[][];
+
+export type Get_MyLab_App = { };
+
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
 
     getConfigurations: {
-        (): Promise<Public_Configuration>;
+        (): Promise<Get_Public_Configuration>;
         /* Result is memoized, clear the cache with this method */
         clear(): void;
     };
 
     getCatalogs: {
-        (): Promise<Public_Catalog["catalogs"]>;
+        (): Promise<Get_Public_Catalog["catalogs"]>;
         clear(): void;
     };
 
@@ -140,11 +145,11 @@ export type OnyxiaApiClient = {
     ): Promise<{
         getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
             params: {
-                mustacheParams: Public_Catalog_CatalogId_PackageName.MustacheParams;
+                mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams;
             }
-        ): Public_Catalog_CatalogId_PackageName["config"];
-        dependencies: NonNullable<Public_Catalog_CatalogId_PackageName["dependencies"]>;
-        sources: Public_Catalog_CatalogId_PackageName["sources"];
+        ): Get_Public_Catalog_CatalogId_PackageName["config"];
+        dependencies: NonNullable<Get_Public_Catalog_CatalogId_PackageName["dependencies"]>;
+        sources: Get_Public_Catalog_CatalogId_PackageName["sources"];
     }>;
 
     launchPackage(
@@ -154,10 +159,9 @@ export type OnyxiaApiClient = {
             options: Record<string, unknown>;
             isDryRun: boolean;
         }
-    ): Promise<{ contract: Record<string, unknown>; }>;
+    ): Promise<{ contract: Put_MyLab_App; }>;
 
-    getRunningServices(
-    ): Promise<
+    getRunningServices(): Promise<
         ({
             id: string;
             packageName: string;

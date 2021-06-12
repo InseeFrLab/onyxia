@@ -6,14 +6,17 @@ import type { AxiosInstance } from "axios";
 import { nonNullable } from "evt";
 import memoize from "memoizee";
 import type {
-    Public_Configuration,
-    Public_Catalog,
-    Public_Catalog_CatalogId_PackageName,
-    MyLab_Services
+    Get_Public_Configuration,
+    Get_Public_Catalog,
+    Get_Public_Catalog_CatalogId_PackageName,
+    Get_MyLab_Services,
+    Put_MyLab_App,
+    Get_MyLab_App
 } from "lib/ports/OnyxiaApiClient";
 import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
+import { id } from "tsafe/id";
 
 export function createOfficialOnyxiaApiClient(
     params: {
@@ -36,20 +39,20 @@ export function createOfficialOnyxiaApiClient(
     const onyxiaApiClient: OnyxiaApiClient = {
         "getConfigurations":
             memoize(
-                () => axiosInstance.get<Public_Configuration>(
+                () => axiosInstance.get<Get_Public_Configuration>(
                     "/public/configuration"
                 ).then(({ data }) => data),
                 { "promise": true }
             ),
         "getCatalogs":
             memoize(
-                () => axiosInstance.get<Public_Catalog>(
+                () => axiosInstance.get<Get_Public_Catalog>(
                     "/public/catalog"
                 ).then(({ data }) => data.catalogs),
                 { "promise": true }
             ),
         "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":
-            ({ catalogId, packageName }) => axiosInstance.get<Public_Catalog_CatalogId_PackageName>(
+            ({ catalogId, packageName }) => axiosInstance.get<Get_Public_Catalog_CatalogId_PackageName>(
                 `/public/catalog/${catalogId}/${packageName}`
             ).then(({ data }) => ({
                 "dependencies": data.dependencies ?? [],
@@ -61,14 +64,72 @@ export function createOfficialOnyxiaApiClient(
                     )
                 ) as typeof data.config
             })),
-        "launchPackage": ({ catalogId, packageName, options, isDryRun }) => axiosInstance.put<Record<string, unknown>>(
-            `/my-lab/app`,
-            { catalogId, packageName, options, "dryRun": isDryRun }
-        ).then(({ data }) => ({ "contract": data })),
+        ...((() => {
+
+            const getMyLab_App = (params: { serviceId: string; }) => axiosInstance.get<Get_MyLab_App>(
+                "/my-lab/app",
+                { params }
+            ).then(({ data }) => data);
+
+            const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
+
+                ({ catalogId, packageName, options, isDryRun }) => axiosInstance.put<Put_MyLab_App>(
+                    `/my-lab/app`,
+                    { catalogId, packageName, options, "dryRun": isDryRun }
+                ).then(async ({ data: contract }) => {
+
+                    //We make sure the service is added before resolving.
+
+                    const serviceId = (() => {
+
+                        try {
+
+                            const out = (contract[0].find(({ kind }) => kind === "Service") as any)
+                                .metadata
+                                .name;
+
+                            assert(typeof out === "string");
+
+                            return out;
+
+                        } catch {
+                            console.log("We couldn't get the serviceId of the launched service");
+                            return undefined;
+                        }
+
+                    })();
+
+                    if (serviceId !== undefined) {
+
+                        while (true) {
+
+                            try {
+
+                                await getMyLab_App({ serviceId });
+                                break;
+
+                            } catch {
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                            }
+
+                        }
+
+                    }
+
+                    return { contract };
+
+                })
+            );
+
+            return { launchPackage };
+
+
+
+        })()),
         ...(() => {
 
             const getMyLab_Services = memoize(
-                () => axiosInstance.get<MyLab_Services>(
+                () => axiosInstance.get<Get_MyLab_Services>(
                     "/my-lab/services"
                 ).then(({ data }) => data),
                 { "promise": true, "maxAge": 1000 }
