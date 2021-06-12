@@ -1,3 +1,7 @@
+### **0.11.12** (2021-06-12)  
+  
+- MyServices: Increace delay yey again    
+  
 ### **0.11.11** (2021-06-12)  
   
 - MyServices: Increace delay when cors problems    
