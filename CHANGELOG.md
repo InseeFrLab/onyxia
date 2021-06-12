@@ -1,3 +1,8 @@
+### **0.11.7** (2021-06-12)  
+  
+- MyServices: Fix infinite loading on some namespaces  
+- Launcher: After launching the service wait until it has been added    
+  
 ### **0.11.6** (2021-06-11)  
   
 - MyServices: Fallback logo    
