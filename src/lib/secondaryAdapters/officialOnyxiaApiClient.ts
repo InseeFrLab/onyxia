@@ -17,6 +17,7 @@ import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
+import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
 
 export function createOfficialOnyxiaApiClient(
     params: {
@@ -174,7 +175,7 @@ export function createOfficialOnyxiaApiClient(
 
                                                         try {
 
-                                                            return app.tasks[0]?.status.status
+                                                            return app.tasks[0]?.status.status;
 
                                                         } catch {
 
@@ -186,7 +187,7 @@ export function createOfficialOnyxiaApiClient(
 
                                                     })();
 
-                                                    if( status === undefined ){
+                                                    if (status === undefined) {
                                                         resolve();
                                                     }
 
@@ -200,38 +201,32 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
-                                                console.log("503 or CORS error are expected here!");
+                                                //NOTE: When he get 403 (unauthorized) it mean that the service is running.
+                                                //By defaults services are IP protected.
+                                                //We don't ping directly from front because of CORS
+                                                const httpStatusCode = await getUrlHttpStatusCode({ "url": urls[0] })
+                                                    .catch(() => {
 
-                                                try {
+                                                        console.warn([
+                                                            `Seems like the https://helloacm.com/tools/can-visit/`,
+                                                            `no longer works for checking 503`
+                                                        ].join(" "));
 
-                                                    await axios.create().head(urls[0]);
+                                                        return undefined
 
-                                                } catch (error) {
+                                                    });
 
-                                                    const status = (() => {
+                                                if (httpStatusCode === 503) {
 
-                                                        try {
-                                                            return error.response.status;
-                                                        } catch {
-                                                            //CORS: Firefox, Safari
-                                                            return undefined;
-                                                        }
-
-                                                    })();
-
-                                                    if (status === 503) {
-                                                        callee(resolve);
-                                                        return;
-                                                    } else if (status === undefined) {
-                                                        await new Promise(resolve => setTimeout(resolve, 35000));
-                                                    }
+                                                    callee(resolve);
+                                                    return;
 
                                                 }
 
                                                 resolve();
 
                                             },
-                                            1000
+                                            3000
                                         )
                                     }
                                 )
