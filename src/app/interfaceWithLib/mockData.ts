@@ -1,6 +1,6 @@
-import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
+import type { Get_Public_Configuration } from "lib/ports/OnyxiaApiClient";
 
-export const regions: Public_Configuration["regions"] =
+export const regions: Get_Public_Configuration["regions"] =
     [
         {
             "id": 'datalab',
@@ -67,7 +67,7 @@ export const regions: Public_Configuration["regions"] =
         }
     ];
 
-export const build: Public_Configuration["build"] = {
+export const build: Get_Public_Configuration["build"] = {
     "version": "0.7.3",
     "timestamp": Date.now()
 };

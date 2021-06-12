@@ -3,7 +3,7 @@
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { Public_Catalog } from "../ports/OnyxiaApiClient";
+import type { Get_Public_Catalog } from "../ports/OnyxiaApiClient";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 
@@ -19,7 +19,7 @@ export namespace CatalogExplorerState {
     type Common = {
         availableCatalogsId: string[];
         '~internal': {
-            apiRequestResult: Public_Catalog["catalogs"];
+            apiRequestResult: Get_Public_Catalog["catalogs"];
         }
     };
 

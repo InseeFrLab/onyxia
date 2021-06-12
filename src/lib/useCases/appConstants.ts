@@ -10,7 +10,7 @@ import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
 
 import type { Translation } from "../ports/SecretsManagerClient";
 import type { NonPostableEvt } from "evt";
-import type { Public_Configuration } from "lib/ports/OnyxiaApiClient";
+import type { Get_Public_Configuration } from "lib/ports/OnyxiaApiClient";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
 
@@ -28,8 +28,8 @@ export declare namespace AppConstant {
 
     export type LoggedIn = _Common & {
         parsedJwt: ParsedJwt;
-        regions: Public_Configuration["regions"];
-        build: Public_Configuration["build"];
+        regions: Get_Public_Configuration["regions"];
+        build: Get_Public_Configuration["build"];
         getEvtSecretsManagerTranslation(): { evtSecretsManagerTranslation: NonPostableEvt<Translation> };
     } & Omit<OidcClient.LoggedIn, "evtOidcTokens">;
 

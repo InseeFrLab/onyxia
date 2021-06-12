@@ -10,7 +10,7 @@ import { thunks as appConstantsThunks } from "./appConstants";
 import { pure as secretExplorerPure } from "./secretExplorer";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
-import { Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
+import { Get_Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import {
     formFieldsValueToObject,
@@ -21,6 +21,7 @@ import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { getMinioToken } from "js/minio-client/minio-client";
+import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
 
 export const name = "launcher";
 
@@ -55,7 +56,7 @@ export declare namespace LauncherState {
             formFields: (FormField & { isHidden: boolean; })[];
             defaultFormFieldsValue: FormFieldValue[];
             dependencies?: string[];
-            config: Public_Catalog_CatalogId_PackageName["config"];
+            config: Get_Public_Catalog_CatalogId_PackageName["config"];
         };
         launchState: "not launching" | "launching" | "launched";
     };
@@ -170,11 +171,11 @@ const privateThunks = {
             params: {
                 isForContractPreview: boolean;
             }
-        ): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async (...args) => {
+        ): AppThunk<Promise<{ contract: Put_MyLab_App; }>> => async (...args) => {
 
             const { isForContractPreview } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, { onyxiaApiClient }] = args;
 
             if (!isForContractPreview) {
                 dispatch(actions.launchStarted());
@@ -184,7 +185,7 @@ const privateThunks = {
 
             assert(state.stateDescription === "ready");
 
-            const { contract } = await dependencies.onyxiaApiClient.launchPackage({
+            const { contract } = await onyxiaApiClient.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
@@ -267,7 +268,7 @@ export const thunks = {
                     getState().userConfigs
                 );
 
-                const mustacheParams: Public_Catalog_CatalogId_PackageName.MustacheParams = {
+                const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams = {
                     "user": {
                         "idep": parsedJwt.preferred_username,
                         "name": `${parsedJwt.family_name} ${parsedJwt.given_name}`,
@@ -307,7 +308,7 @@ export const thunks = {
 
                 (function callee(
                     params: {
-                        jsonSchemaObject: Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+                        jsonSchemaObject: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
                         currentPath: string[];
                     }
                 ): void {
@@ -387,7 +388,7 @@ export const thunks = {
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": false }));
         },
     "getContract":
-        (): AppThunk<Promise<{ contract: Record<string, unknown>; }>> => async dispatch =>
+        (): AppThunk<Promise<{ contract: Put_MyLab_App; }>> => async dispatch =>
             dispatch(privateThunks.launchOrPreviewContract({ "isForContractPreview": true })),
     "changeFriendlyName":
         (
