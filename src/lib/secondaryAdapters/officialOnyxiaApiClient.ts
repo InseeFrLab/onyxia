@@ -180,11 +180,15 @@ export function createOfficialOnyxiaApiClient(
 
                                                             console.warn(`Couldn't get the service status from tasks for ${id}`);
 
-                                                            return "Running";
+                                                            return undefined;
 
                                                         }
 
                                                     })();
+
+                                                    if( status === undefined ){
+                                                        resolve();
+                                                    }
 
                                                     if (status !== "Running") {
 
@@ -196,7 +200,7 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
-                                                console.log("503 or CORS error are expected here");
+                                                console.log("503 or CORS error are expected here!");
 
                                                 try {
 
