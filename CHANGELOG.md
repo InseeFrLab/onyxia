@@ -1,3 +1,7 @@
+### **0.11.11** (2021-06-12)  
+  
+- MyServices: Increace delay when cors problems    
+  
 ### **0.11.10** (2021-06-12)  
   
 - MySearvices: Use head and increace delay    
