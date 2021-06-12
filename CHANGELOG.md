@@ -1,3 +1,7 @@
+### **0.11.10** (2021-06-12)  
+  
+- MySearvices: Use head and increace delay    
+  
 ### **0.11.9** (2021-06-12)  
   
 - MyServices: Deal with CORS error on safary and chrome    
