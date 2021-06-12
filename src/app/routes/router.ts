@@ -41,7 +41,10 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
     ),
     "catalogExplorer": defineRoute(
-        { "catalogId": param.path.optional.string },
+        { 
+            "catalogId": param.path.optional.string, 
+            "search": param.query.optional.string.default("")
+        },
         ({ catalogId }) => `/catalog/${catalogId}`
     ),
     "catalogLauncher": defineRoute(

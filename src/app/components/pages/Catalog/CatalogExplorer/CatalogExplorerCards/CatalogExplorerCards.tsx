@@ -17,6 +17,8 @@ import type { UnpackEvt } from "evt";
 
 export type Props<PackageName extends string = string> = {
     className?: string;
+    search: string;
+    setSearch(search: string): void;
     packages: {
         packageName: PackageName;
         packageIconUrl?: string;
@@ -59,9 +61,7 @@ const { useClassNames } = createUseClassNames<{ filteredCardCount: number; isRev
 export const CatalogExplorerCards = memo(
     <PackageName extends string = string>(props: Props<PackageName>) => {
 
-        const { className, packages: cardsContent, onRequestLaunch } = props;
-
-        const [search, setSearch] = useState("");
+        const { className, packages: cardsContent, onRequestLaunch, search, setSearch } = props;
 
         const onRequestLaunchFactory = useCallbackFactory(
             ([packageName]: [PackageName]) =>
