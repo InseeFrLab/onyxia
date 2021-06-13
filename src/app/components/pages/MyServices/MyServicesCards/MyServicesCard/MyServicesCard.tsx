@@ -62,7 +62,7 @@ export type Props = {
     packageName: string;
     infoUrl: string;
     onRequestDelete(): void;
-    openUrl: string;
+    openUrl: string | undefined;
     monitoringUrl: string | undefined;
     //Undefined when the service is not yey launched
     startTime: number | undefined;
@@ -139,6 +139,7 @@ export const MyServicesCard = memo((props: Props) => {
                     {startTime === undefined ?
                         <CircularProgress color="textPrimary" size={20} />
                         :
+                        openUrl &&
                         <Button
                             color="secondary"
                             href={openUrl}

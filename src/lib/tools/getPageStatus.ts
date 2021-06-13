@@ -6,8 +6,8 @@ import { assert } from "tsafe/assert";
 //Got the hash from the page's source. Without it it doesn't work.
 
 /* spell-checker: disable */
-/*
-Other server to choose from
+const servers = [
+    "helloacm.com",
     "happyukgo.com",
     "uploadbeta.com",
     "steakovercooked.com",
@@ -19,8 +19,7 @@ Other server to choose from
     "steemyy.com",
     "propagationtools.com", 
     "slowapi.com"
-*/
-const server = "helloacm.com";
+];
 /* spell-checker: enable */
 
 export async function getUrlHttpStatusCode(
@@ -29,18 +28,32 @@ export async function getUrlHttpStatusCode(
 
     const { url } = params;
 
-    const { code } = await axios.create().get<{ code: number; }>(
-        `https://${server}/api/can-visit/?url=${encodeURIComponent(url)}`,
-        {
-            "params": {
-                "hash": "4ccb730dba9867ca803189738ec2280c"
-                    .split('').reverse().join('')
+    const server = servers[Math.floor(Math.random() * servers.length)];
+
+    let statusCode: number | undefined = undefined;
+
+    try {
+
+        statusCode = await axios.create().get<{ code: number; }>(
+            `https://${server}/api/can-visit/?url=${encodeURIComponent(url)}`,
+            {
+                "params": {
+                    "hash": "4ccb730dba9867ca803189738ec2280c"
+                        .split('').reverse().join('')
+                }
             }
-        }
-    ).then(({ data }) => data);
+        ).then(({ data }) => data.code);
 
-    assert(typeof code === "number");
+        assert(typeof statusCode === "number", "statusCode wasn't a number");
 
-    return code;
+    } catch (error) {
+
+        error.message += ` Used server ${server}`;
+
+        throw error;
+
+    }
+
+    return statusCode;
 
 }
