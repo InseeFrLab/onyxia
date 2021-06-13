@@ -223,11 +223,11 @@ export function createOfficialOnyxiaApiClient(
                                                 //By defaults services are IP protected.
                                                 //We don't ping directly from front because of CORS
                                                 const httpStatusCode = await getUrlHttpStatusCode({ url })
-                                                    .catch(() => {
+                                                    .catch(error => {
 
                                                         console.warn([
                                                             `Seems like the https://helloacm.com/tools/can-visit/`,
-                                                            `no longer works for checking 503`
+                                                            `no longer works for checking 503: ${error.message}`
                                                         ].join(" "));
 
                                                         return undefined

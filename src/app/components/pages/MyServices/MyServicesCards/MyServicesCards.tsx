@@ -18,7 +18,7 @@ export type Props = {
         friendlyName: string;
         packageName: string;
         infoUrl: string;
-        openUrl: string;
+        openUrl: string | undefined;
         monitoringUrl: string | undefined;
         startTime: number | undefined;
         isOvertime: boolean;
