@@ -5,38 +5,38 @@ import { Header } from "app/components/shared/Header";
 import { LeftBar } from "./LeftBar";
 import type { Props as LeftBarProps } from "./LeftBar";
 import { Footer } from "./Footer";
-import { useLng } from "app/i18n/useLng";
-import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
+import { useLng } from "app/i18n/useLng";
+import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
-import { 
-    useAppConstants, 
-    useSelector, 
-    useSyncDarkModeWithValueInProfile, 
-    useApplyLanguageSelectedAtLogin 
+import {
+    useAppConstants,
+    useSelector,
+    useSyncDarkModeWithValueInProfile,
+    useApplyLanguageSelectedAtLogin
 } from "app/interfaceWithLib/hooks";
 import { useConstCallback } from "powerhooks";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/routes/router";
 import { Home } from "app/components/pages/Home";
-import { assert } from "tsafe/assert";
-import { routes } from "app/routes/router";
-import { useEffectOnValueChange } from "powerhooks";
-import { useDomRect } from "onyxia-ui";
-import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
-import { Account } from "app/components/pages/Account";
-import { FourOhFour }  from "app/components/pages/FourOhFour";
-import { Catalog } from "app/components/pages/Catalog";
-import { MyServices } from "app/components/pages/MyServices";
+import { assert } from "tsafe/assert";
+import { routes } from "app/routes/router";
+import { useEffectOnValueChange } from "powerhooks";
+import { useDomRect } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
+import { Account } from "app/components/pages/Account";
+import { FourOhFour } from "app/components/pages/FourOhFour";
+import { Catalog } from "app/components/pages/Catalog";
+import { MyServices } from "app/components/pages/MyServices";
 
 //Legacy
-import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
-import { MyService } from "js/components/my-service/home";
+import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
+import { MyService } from "js/components/my-service/home";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import { CloudShell, useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { SharedServices } from "js/components/services/home/services";
-import { Trainings } from "js/components/trainings/async-component";
+import { SharedServices } from "js/components/services/home/services";
+import { Trainings } from "js/components/trainings/async-component";
 
 
 export const logoMaxWidthInPercent = 5;
@@ -96,23 +96,37 @@ export const App = memo((props: Props) => {
 
     const { domRect: { width: rootWidth }, ref: rootRef } = useDomRect();
 
-    useEffectOnValueChange(
-        () => { hideSplashScreen() },
-        [rootWidth === 0]
-    );
+    {
 
-    const isWaiting = useSelector(state=> state.app.waiting);
+        const { hideSplashScreen } = useSplashScreen();
 
-    useEffectOnValueChange(
-        () => {
-            if( isWaiting ){
-                showSplashScreen({ "enableTransparency": true });
-            }else{
-                hideSplashScreen();
-            }
-        },
-        [isWaiting]
-    );
+        useEffectOnValueChange(
+            () => {
+                hideSplashScreen()
+            },
+            [rootWidth === 0]
+        );
+
+    }
+
+    const isWaiting = useSelector(state => state.app.waiting);
+
+    {
+
+        const { hideSplashScreen, showSplashScreen } = useSplashScreen();
+
+        useEffectOnValueChange(
+            () => {
+                if (isWaiting) {
+                    showSplashScreen({ "enableTransparency": true });
+                } else {
+                    hideSplashScreen();
+                }
+            },
+            [isWaiting]
+        );
+
+    }
 
     const logoMaxWidth = Math.floor(rootWidth * logoMaxWidthInPercent / 100);
 

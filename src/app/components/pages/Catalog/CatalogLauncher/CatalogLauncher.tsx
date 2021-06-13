@@ -14,7 +14,7 @@ import { thunks as restorablePackageConfigsThunks, pure as restorablePackageConf
 import { useConstCallback } from "powerhooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
-import { showSplashScreen, hideSplashScreen } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
 
 export type Props = {
     className?: string;
@@ -149,6 +149,8 @@ export const CatalogLauncher = memo((props: Props) => {
     const friendlyName = useSelector(selectors.friendlyNameSelector);
 
     const state = useSelector(state => state.launcher);
+
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {

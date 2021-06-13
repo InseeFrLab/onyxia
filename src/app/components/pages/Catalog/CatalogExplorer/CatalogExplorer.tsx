@@ -4,7 +4,7 @@ import { memo, useEffect } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks";
-import { hideSplashScreen, showSplashScreen } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
 import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { thunks } from "lib/setup";
 import { routes } from "app/routes/router";
@@ -21,6 +21,8 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
     const dispatch = useDispatch();
+
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {

@@ -1,6 +1,6 @@
 
 import { useEffect, useState, memo } from "react";
-import { hideSplashScreen, setSplashScreenFadeOutDuration } from "onyxia-ui";
+import { setSplashScreenFadeOutDuration, useSplashScreen } from "onyxia-ui";
 import type { KcContext } from "keycloakify";
 import { defaultKcProps } from "keycloakify";
 import { createUseClassNames } from "app/theme";
@@ -89,6 +89,8 @@ export const KcApp = memo((props: Props) => {
             setSplashScreenFadeOutDuration(0);
         }
     });
+
+    const { hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => { hideSplashScreen(); },
