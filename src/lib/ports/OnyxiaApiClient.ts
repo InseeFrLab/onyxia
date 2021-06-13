@@ -118,6 +118,7 @@ export type Get_MyLab_Services = {
         env: Record<string, string>;
         startedAt: number;
         tasks: { status: { status: Get_MyLab_Services.AppStatus; } }[];
+        postInstallInstructions: string | undefined;
     }[]
 };
 
@@ -175,6 +176,7 @@ export type OnyxiaApiClient = {
             friendlyName: string;
             urls: string[];
             startedAt: number;
+            postInstallInstructions: string | undefined;
         } & ({
             isStarting: false;
         } | {

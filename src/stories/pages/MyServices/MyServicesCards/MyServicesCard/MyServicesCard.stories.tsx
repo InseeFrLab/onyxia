@@ -21,7 +21,7 @@ export const VueRegular = getStory({
     "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
     "isOvertime": false,
-    ...logCallbacks(["onRequestDelete"])
+    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"])
 });
 
 export const VueStarting = getStory({
@@ -33,6 +33,6 @@ export const VueStarting = getStory({
     "monitoringUrl": "https://example.com",
     "startTime": undefined,
     "isOvertime": false,
-    ...logCallbacks(["onRequestDelete"])
+    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"])
 });
 
