@@ -13,11 +13,11 @@ import type {
     Put_MyLab_App,
     Get_MyLab_App
 } from "lib/ports/OnyxiaApiClient";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
+import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
 
 export function createOfficialOnyxiaApiClient(
     params: {
@@ -136,9 +136,42 @@ export function createOfficialOnyxiaApiClient(
                 { "promise": true, "maxAge": 1000 }
             );
 
+            function getAppStatus(
+                params: {
+                    tasks: Get_MyLab_Services["apps"][number]["tasks"];
+                    /** For debug */
+                    id?: string;
+                }
+            ): Get_MyLab_Services.AppStatus | undefined {
+
+                const { tasks, id } = params;
+
+                try {
+
+                    const status = tasks[0]?.status.status;
+
+                    assert(appStatuses.includes(status));
+
+                    return status;
+
+                } catch {
+
+                    if (id !== undefined) {
+
+                        console.warn(`Couldn't get the service status from tasks for ${id}`);
+
+                    }
+
+                    return undefined;
+
+                }
+
+            }
+
             const getRunningServices = async () =>
-                (await getMyLab_Services()).apps.map(
-                    ({ id, env, urls, startedAt, tasks }) => ({
+                (await getMyLab_Services()).apps
+                    .map(({ tasks, id, ...rest }) => ({ ...rest, id, "status": getAppStatus({ tasks, id }) }))
+                    .map(({ id, env, urls, startedAt, status }) => ({
                         id,
                         ...(() => {
 
@@ -152,11 +185,11 @@ export function createOfficialOnyxiaApiClient(
                         })(),
                         urls,
                         startedAt,
-                        ...(tasks[0].status.status === "Running" ?
+                        ...(status === "Running" ?
                             { "isStarting": false } as const :
                             {
                                 "isStarting": true,
-                                "prStarted": new Promise<void>(
+                                "prStarted": new Promise<{ isConfirmedJustStarted: boolean; }>(
                                     function callee(resolve) {
                                         setTimeout(
                                             async () => {
@@ -169,42 +202,27 @@ export function createOfficialOnyxiaApiClient(
                                                     return;
                                                 }
 
-                                                {
 
-                                                    const status = (() => {
+                                                const newStatus = getAppStatus({ "tasks": app.tasks });
 
-                                                        try {
+                                                if (newStatus === "Pending") {
 
-                                                            return app.tasks[0]?.status.status;
+                                                    callee(resolve);
+                                                    return;
 
-                                                        } catch {
+                                                }
 
-                                                            console.warn(`Couldn't get the service status from tasks for ${id}`);
+                                                const url = app.urls[0];
 
-                                                            return undefined;
-
-                                                        }
-
-                                                    })();
-
-                                                    if (status === undefined) {
-                                                        resolve();
-                                                    }
-
-                                                    if (status !== "Running") {
-
-                                                        callee(resolve);
-
-                                                        return;
-
-                                                    }
-
+                                                if (url === undefined) {
+                                                    resolve({ "isConfirmedJustStarted": false });
+                                                    return;
                                                 }
 
                                                 //NOTE: When he get 403 (unauthorized) it mean that the service is running.
                                                 //By defaults services are IP protected.
                                                 //We don't ping directly from front because of CORS
-                                                const httpStatusCode = await getUrlHttpStatusCode({ "url": urls[0] })
+                                                const httpStatusCode = await getUrlHttpStatusCode({ url })
                                                     .catch(() => {
 
                                                         console.warn([
@@ -223,7 +241,15 @@ export function createOfficialOnyxiaApiClient(
 
                                                 }
 
-                                                resolve();
+                                                resolve({
+                                                    "isConfirmedJustStarted":
+                                                        status === "Pending" &&
+                                                        newStatus === "Running" &&
+                                                        (
+                                                            httpStatusCode === 403 ||
+                                                            httpStatusCode === 200
+                                                        )
+                                                });
 
                                             },
                                             3000
@@ -232,8 +258,7 @@ export function createOfficialOnyxiaApiClient(
                                 )
                             } as const
                         )
-                    })
-                );
+                    }));
 
 
             return { getRunningServices };

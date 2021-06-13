@@ -65,10 +65,13 @@ const { reducer, actions } = createSlice({
         },
         "serviceStarted": (
             state,
-            { payload }: PayloadAction<{ serviceId: string; }>
+            { payload }: PayloadAction<{ 
+                serviceId: string; 
+                doOverwriteStaredAtToNow: boolean; 
+            }>
         ) => {
 
-            const { serviceId } = payload;
+            const { serviceId, doOverwriteStaredAtToNow } = payload;
 
             assert(state.isFetched);
 
@@ -82,8 +85,12 @@ const { reducer, actions } = createSlice({
 
             runningService.isStarting = false;
 
-            //NOTE: Harmless hack to improve UI readability.
-            runningService.startedAt = Date.now();
+            if( doOverwriteStaredAtToNow ){
+
+                //NOTE: Harmless hack to improve UI readability.
+                runningService.startedAt = Date.now();
+
+            }
 
         },
         "serviceStopped": (
@@ -201,7 +208,10 @@ export const thunks = {
                                 false :
                                 (
                                     rest.prStarted.then(
-                                        () => dispatch(actions.serviceStarted({ "serviceId": id }))
+                                        ({ isConfirmedJustStarted }) => dispatch(actions.serviceStarted({ 
+                                            "serviceId": id, 
+                                            "doOverwriteStaredAtToNow": isConfirmedJustStarted
+                                        }))
                                     ),
                                     true
                                 )

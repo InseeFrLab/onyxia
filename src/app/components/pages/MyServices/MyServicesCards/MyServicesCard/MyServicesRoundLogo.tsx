@@ -7,7 +7,7 @@ import { cx } from "tss-react";
 export type Props = {
     className?: string;
     circleColor: "red" | "green" | "grey";
-    url: string;
+    url: string | undefined;
 };
 
 const { useClassNames } = createUseClassNames<{

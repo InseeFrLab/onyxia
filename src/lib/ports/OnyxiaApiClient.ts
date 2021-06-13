@@ -107,6 +107,9 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
 }
 
 
+
+export const appStatuses = ["Running", "Pending"] as const;
+
 //TODO BACKEND: Provides catalogId
 export type Get_MyLab_Services = {
     apps: {
@@ -114,9 +117,13 @@ export type Get_MyLab_Services = {
         urls: string[];
         env: Record<string, string>;
         startedAt: number;
-        tasks: { status: { status: "Running" | "Pending"; } }[];
+        tasks: { status: { status: Get_MyLab_Services.AppStatus; } }[];
     }[]
 };
+
+export declare namespace Get_MyLab_Services {
+    export type AppStatus= typeof appStatuses[number];
+}
 
 export type Put_MyLab_App= Record<string, unknown>[][];
 
@@ -172,7 +179,7 @@ export type OnyxiaApiClient = {
             isStarting: false;
         } | {
             isStarting: true;
-            prStarted: Promise<void>;
+            prStarted: Promise<{ isConfirmedJustStarted: boolean; }>;
         }))[]
     >;
 
