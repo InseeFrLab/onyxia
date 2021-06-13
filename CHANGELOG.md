@@ -1,3 +1,8 @@
+### **0.11.18** (2021-06-13)  
+  
+- Display post installation notes  
+- CatalogExplorer: Restore the search bar on page reload    
+  
 ### **0.11.17** (2021-06-13)  
   
 - Fix splashscreen (again)    
