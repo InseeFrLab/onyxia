@@ -171,7 +171,7 @@ export function createOfficialOnyxiaApiClient(
             const getRunningServices = async () =>
                 (await getMyLab_Services()).apps
                     .map(({ tasks, id, ...rest }) => ({ ...rest, id, "status": getAppStatus({ tasks, id }) }))
-                    .map(({ id, env, urls, startedAt, status }) => ({
+                    .map(({ id, env, urls, startedAt, postInstallInstructions ,status }) => ({
                         id,
                         ...(() => {
 
@@ -183,6 +183,7 @@ export function createOfficialOnyxiaApiClient(
                             };
 
                         })(),
+                        postInstallInstructions,
                         urls,
                         startedAt,
                         ...(status === "Running" ?

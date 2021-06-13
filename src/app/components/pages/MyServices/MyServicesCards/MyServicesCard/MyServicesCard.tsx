@@ -62,6 +62,7 @@ export type Props = {
     packageName: string;
     infoUrl: string;
     onRequestDelete(): void;
+    onRequestShowPostInstallInstructions: (() => void) | undefined;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     //Undefined when the service is not yey launched
@@ -78,6 +79,7 @@ export const MyServicesCard = memo((props: Props) => {
         packageName,
         infoUrl,
         onRequestDelete,
+        onRequestShowPostInstallInstructions,
         monitoringUrl,
         openUrl,
         startTime,
@@ -135,6 +137,14 @@ export const MyServicesCard = memo((props: Props) => {
                     <IconButton id="delete" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined &&
                         <IconButton id="equalizer" href={monitoringUrl} />}
+                    {onRequestShowPostInstallInstructions !== undefined &&
+                        <Button
+                            onClick={onRequestShowPostInstallInstructions}
+                            color="ternary"
+                        >
+                            <span>{t("readme").toUpperCase()}</span>
+                        </Button>
+                    }
                     <div style={{ "flex": 1 }} />
                     {startTime === undefined ?
                         <CircularProgress color="textPrimary" size={20} />
@@ -159,5 +169,6 @@ export declare namespace MyServicesCard {
         service: undefined;
         'running since': undefined;
         open: undefined;
+        'readme': undefined;
     };
 }

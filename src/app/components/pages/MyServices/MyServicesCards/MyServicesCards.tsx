@@ -1,5 +1,5 @@
 
-import { memo } from "react";
+import { useState, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
@@ -8,7 +8,12 @@ import { Typography } from "onyxia-ui";
 import { useCallbackFactory } from "powerhooks";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
 import MuiLink from "@material-ui/core/Link";
-import type { Link } from "type-route";
+import type { Link } from "type-route";
+import { Dialog } from "onyxia-ui";
+import { assert } from "tsafe/assert";
+import { useConstCallback } from "powerhooks";
+import { Button } from "app/theme";
+import ReactMarkdown from "react-markdown";
 
 export type Props = {
     className?: string;
@@ -22,6 +27,7 @@ export type Props = {
         monitoringUrl: string | undefined;
         startTime: number | undefined;
         isOvertime: boolean;
+        postInstallInstructions: string | undefined;
     }[] | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string; }): void;
@@ -67,6 +73,28 @@ export const MyServicesCards = memo(
             ([serviceId]: [string]) => onRequestDelete({ serviceId })
         );
 
+        const [postInstallInstructionsDialogBody, setPostInstallInstructionsDialogBody] = useState<string>("");
+
+        const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+        const onRequestShowPostInstallInstructionsFactory = useCallbackFactory(
+            ([serviceId]: [string]) => {
+
+                assert(cards !== undefined);
+
+                const { postInstallInstructions } = cards.find(card => card.serviceId === serviceId)!;
+
+                assert(postInstallInstructions !== undefined);
+
+                setPostInstallInstructionsDialogBody(postInstallInstructions);
+
+                setIsDialogOpen(true);
+
+            }
+        );
+
+        const onDialogClose = useConstCallback(() => setIsDialogOpen(false));
+
         return (
             <div className={cx(classNames.root, className)}>
                 <Typography variant="h4" className={classNames.header}>
@@ -84,10 +112,29 @@ export const MyServicesCards = memo(
                                     key={card.serviceId}
                                     {...card}
                                     onRequestDelete={onRequestDeleteFactory(card.serviceId)}
+                                    onRequestShowPostInstallInstructions={
+                                        card.postInstallInstructions !== undefined ?
+                                            onRequestShowPostInstallInstructionsFactory(card.serviceId) :
+                                            undefined
+                                    }
                                 />
                             )
                     }
                 </div>
+                <Dialog
+                    body={
+                        <ReactMarkdown>
+                            {postInstallInstructionsDialogBody}
+                        </ReactMarkdown>
+                    }
+                    isOpen={isDialogOpen}
+                    onClose={onDialogClose}
+                    buttons={
+                        <Button onClick={onDialogClose}>
+                            {t("ok")}
+                        </Button>
+                    }
+                />
             </div>
         )
 
@@ -100,6 +147,7 @@ export declare namespace MyServicesCards {
         'running services': undefined;
         'no services running': undefined;
         'launch one': undefined;
+        ok: undefined;
     };
 
 }

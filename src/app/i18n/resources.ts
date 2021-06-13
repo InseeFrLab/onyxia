@@ -348,7 +348,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServices": {
             "text1": "My Services",
             "text2": "Access your running services",
-            "text3": "Copy your service's password by clicking on the key",
+            "text3": "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
             "running services": "Running services"
         },
         "MyServicesButtonBar": {
@@ -360,7 +360,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesCard": {
             "service": "Service",
             "running since": "Running since: ",
-            "open": "open"
+            "open": "open",
+            "readme": "readme"
         },
         "MyServicesRunningTime": {
             "launching": "Launching..."
@@ -382,7 +383,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesCards": {
             "running services": "Running services",
             "no services running": "You don't have any service running",
-            "launch one": "Click here to launch one"
+            "launch one": "Click here to launch one",
+            "ok": "ok"
         }
     },
     "fr": {
@@ -615,8 +617,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServices": {
             "text1": "Mes services",
-            "text2": "Lancez, visualisr et gérer rapidement vos différents services en cours.",
-            "text3": "Récoupérer le mot de passe pour vos services en copiant la clef.",
+            "text2": "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
+            "text3": "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
             "running services": "Services en cours"
         },
         "MyServicesButtonBar": {
@@ -628,7 +630,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesCard": {
             "service": "Service",
             "running since": "En exécution depuis: ",
-            "open": "ouvrir"
+            "open": "ouvrir",
+            "readme": "readme"
         },
         "MyServicesRunningTime": {
             "launching": "En cours de lancement..."
@@ -650,7 +653,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "MyServicesCards": {
             "running services": "Services en cours",
             "no services running": "Vous n'avez actuellement aucun service en cours d'exécution",
-            "launch one": "Cliquez ici pour en lancer un"
+            "launch one": "Cliquez ici pour en lancer un",
+            "ok": "ok"
         }
         /* spell-checker: enable */
     }

@@ -192,7 +192,11 @@ export function MyServices(props: Props) {
                 [...runningServices]
                     .sort((a, b) => b.startedAt - a.startedAt)
                     .map(
-                        ({ id, logoUrl, friendlyName, packageName, urls, startedAt, monitoringUrl, isStarting }) => ({
+                        ({ 
+                            id, logoUrl, friendlyName, packageName, 
+                            urls, startedAt, monitoringUrl, 
+                            isStarting, postInstallInstructions 
+                        }) => ({
                             "serviceId": id,
                             "packageIconUrl": logoUrl,
                             friendlyName,
@@ -201,7 +205,8 @@ export function MyServices(props: Props) {
                             "openUrl": urls[0],
                             monitoringUrl,
                             "startTime": isStarting ? undefined : startedAt,
-                            "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24
+                            "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24,
+                            postInstallInstructions
                         })
                     ),
         [runningServices, isRunningServicesFetching]

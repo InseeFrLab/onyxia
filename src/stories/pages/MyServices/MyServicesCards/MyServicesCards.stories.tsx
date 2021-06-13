@@ -13,7 +13,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-const url= "https://example.com";
+const url = "https://example.com";
 
 const props: Props = {
     "className": css({ "width": 300 }),
@@ -27,10 +27,14 @@ const props: Props = {
             "openUrl": url + "/" + i,
             "monitoringUrl": url,
             "startTime": Date.now(),
-            "isOvertime": false
+            "isOvertime": false,
+            "postInstallInstructions":
+                (i % 3 === 0) ?
+                    `Post install instruction ${i}` :
+                    undefined
         })
     ),
-    "catalogExplorerLink": { "href": url, "onClick": ()=>{} },
+    "catalogExplorerLink": { "href": url, "onClick": () => { } },
     ...logCallbacks(["onRequestDelete"])
 };
 

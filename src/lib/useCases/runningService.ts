@@ -37,6 +37,7 @@ export type RunningService = {
     isStarting: boolean;
     startedAt: number;
     urls: string[];
+    postInstallInstructions: string | undefined;
 };
 
 const { reducer, actions } = createSlice({
@@ -196,7 +197,7 @@ export const thunks = {
             actions.fetchCompleted({
                 "runningServices":
                     runningServicesRaw.map(
-                        ({ id, friendlyName, packageName, urls, startedAt, ...rest }) => ({
+                        ({ id, friendlyName, packageName, urls, startedAt, postInstallInstructions, ...rest }) => ({
                             id,
                             packageName,
                             friendlyName,
@@ -214,7 +215,8 @@ export const thunks = {
                                         }))
                                     ),
                                     true
-                                )
+                                ),
+                            postInstallInstructions
                         })
                     )
             })
