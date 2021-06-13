@@ -90,10 +90,10 @@ export const KcApp = memo((props: Props) => {
         }
     });
 
-    const { hideSplashScreen } = useSplashScreen();
+    const { hideRootSplashScreen } = useSplashScreen();
 
     useEffect(
-        () => { hideSplashScreen(); },
+        () => { hideRootSplashScreen(); },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );

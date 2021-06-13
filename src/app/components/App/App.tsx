@@ -98,12 +98,10 @@ export const App = memo((props: Props) => {
 
     {
 
-        const { hideSplashScreen } = useSplashScreen();
+        const { hideRootSplashScreen } = useSplashScreen();
 
         useEffectOnValueChange(
-            () => {
-                hideSplashScreen()
-            },
+            () => { hideRootSplashScreen(); },
             [rootWidth === 0]
         );
 
