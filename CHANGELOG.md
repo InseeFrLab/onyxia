@@ -1,3 +1,7 @@
+### **0.11.17** (2021-06-13)  
+  
+- Fix splashscreen (again)    
+  
 ### **0.11.16** (2021-06-13)  
   
 - Fix the splash screen    
