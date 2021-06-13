@@ -91,11 +91,10 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classNames.root, className)}>
             <div className={classNames.aboveDivider}>
-                {packageIconUrl !== undefined &&
-                    <MyServicesRoundLogo
-                        url={packageIconUrl}
-                        circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
-                    />}
+                <MyServicesRoundLogo
+                    url={packageIconUrl}
+                    circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
+                />
                 <Typography
                     className={classNames.title}
                     variant="h5"
@@ -138,7 +137,7 @@ export const MyServicesCard = memo((props: Props) => {
                         <IconButton id="equalizer" href={monitoringUrl} />}
                     <div style={{ "flex": 1 }} />
                     {startTime === undefined ?
-                        <CircularProgress color="textPrimary" size={20}/>
+                        <CircularProgress color="textPrimary" size={20} />
                         :
                         <Button
                             color="secondary"
