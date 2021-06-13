@@ -1,3 +1,7 @@
+### **0.11.19** (2021-06-13)  
+  
+- MyServices: Dialogs for cofirm deletion    
+  
 ### **0.11.18** (2021-06-13)  
   
 - Display post installation notes  
