@@ -67,7 +67,7 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
 
     const { className, onSearchChange, search, evtAction } = props;
 
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(search !== "");
 
     const { classNames } = useClassNames({ isActive });
 
