@@ -1,3 +1,7 @@
+### **0.11.16** (2021-06-13)  
+  
+- Fix the splash screen    
+  
 ### **0.11.15** (2021-06-13)  
   
 - MyServices: Rotate can-visit api servers to mitigate rate limit  
