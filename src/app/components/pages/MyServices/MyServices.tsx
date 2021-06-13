@@ -17,7 +17,7 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import { routes } from "app/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
-import { showSplashScreen, hideSplashScreen } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
@@ -92,6 +92,8 @@ export function MyServices(props: Props) {
         })
     );
 
+    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
+
     useEffect(
         () => {
 
@@ -102,6 +104,7 @@ export function MyServices(props: Props) {
             }
 
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isRunningServicesFetching]
     );
 

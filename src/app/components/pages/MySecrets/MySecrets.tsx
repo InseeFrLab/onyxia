@@ -17,7 +17,7 @@ import Link from "@material-ui/core/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
-import { showSplashScreen, hideSplashScreen } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
 import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";
 import { Evt } from "evt";
@@ -219,6 +219,8 @@ export function MySecrets(props: Props) {
     );
 
     const { classNames } = useClassNames({});
+
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {
