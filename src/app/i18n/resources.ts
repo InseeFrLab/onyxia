@@ -349,13 +349,18 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text1": "My Services",
             "text2": "Access your running services",
             "text3": "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
-            "running services": "Running services"
+            "running services": "Running services",
+            "confirm terminate title": "Are you sure?",
+            "confirm terminate subtitle": "Make sure your service are ready to be terminated",
+            "confirm terminate body": "Don't forget to push your code on GitHub or GitLab before terminating your services",
+            "cancel": "cancel",
+            "confirm": "Yes, terminate"
         },
         "MyServicesButtonBar": {
             "refresh": "Refresh",
             "launch": "New service",
             "password": "Copy the services password",
-            "trash": "Delete all"
+            "trash": "Terminate all"
         },
         "MyServicesCard": {
             "service": "Service",
@@ -619,13 +624,18 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text1": "Mes services",
             "text2": "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
             "text3": "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
-            "running services": "Services en cours"
+            "running services": "Services en cours",
+            "confirm terminate title": "Êtes-vous sur?",
+            "confirm terminate subtitle": "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
+            "confirm terminate body": "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
+            "cancel": "Annuler",
+            "confirm": "Oui, arrêter"
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
             "launch": "Nouveau servcie",
             "password": "Copier le mot de passe",
-            "trash": "Tout supprimer"
+            "trash": "Arrêter tous"
         },
         "MyServicesCard": {
             "service": "Service",

@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "app/components/shared/PageHeader";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
@@ -18,6 +18,9 @@ import { routes } from "app/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
+import { Dialog } from "onyxia-ui";
+import { useCallbackFactory } from "powerhooks";
+import { Button } from "app/theme";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
@@ -121,12 +124,7 @@ export function MyServices(props: Props) {
                     copyToClipboard(userServicePassword);
                     return;
                 case "trash":
-                    runningServices.map(({ id }) =>
-                        dispatch(
-                            thunks.runningService
-                                .stopService({ "serviceId": id })
-                        )
-                    );
+                    setIsDialogOpen(true);
                     return;
             }
         }
@@ -151,6 +149,7 @@ export function MyServices(props: Props) {
             "isSavedConfigsExtended": !isSavedConfigsExtended
         }).push()
     );
+
 
     const onSavedConfigsCallback = useConstCallback<MyServicesSavedConfigsProps["callback"]>(
         ({ linkHref, action }) => {
@@ -185,6 +184,7 @@ export function MyServices(props: Props) {
         [displayableConfigs]
     );
 
+
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] =>
             isRunningServicesFetching ?
@@ -192,10 +192,10 @@ export function MyServices(props: Props) {
                 [...runningServices]
                     .sort((a, b) => b.startedAt - a.startedAt)
                     .map(
-                        ({ 
-                            id, logoUrl, friendlyName, packageName, 
-                            urls, startedAt, monitoringUrl, 
-                            isStarting, postInstallInstructions 
+                        ({
+                            id, logoUrl, friendlyName, packageName,
+                            urls, startedAt, monitoringUrl,
+                            isStarting, postInstallInstructions
                         }) => ({
                             "serviceId": id,
                             "packageIconUrl": logoUrl,
@@ -212,11 +212,44 @@ export function MyServices(props: Props) {
         [runningServices, isRunningServicesFetching]
     );
 
-    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        ({ serviceId }) => dispatch(thunks.runningService.stopService({ serviceId }))
-    );
 
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
+
+    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<string | undefined>();
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
+        ({ serviceId }) => { 
+            setServiceIdRequestedToBeDeleted(serviceId); 
+            setIsDialogOpen(true);
+        }
+    );
+
+    const onDialogCloseFactory = useCallbackFactory(
+        ([doDelete]: [boolean]) => {
+
+            if (doDelete) {
+
+                if (serviceIdRequestedToBeDeleted) {
+                    dispatch(thunks.runningService.stopService(
+                        { "serviceId": serviceIdRequestedToBeDeleted })
+                    );
+                } else {
+                    runningServices.map(({ id }) =>
+                        dispatch(
+                            thunks.runningService
+                                .stopService({ "serviceId": id })
+                        )
+                    );
+                }
+
+            }
+
+            setIsDialogOpen(false);
+
+        }
+    );
 
     return (
         <div className={cx(classNames.root, className)}>
@@ -237,14 +270,34 @@ export function MyServices(props: Props) {
                         onRequestDelete={onRequestDelete}
                         catalogExplorerLink={catalogExplorerLink}
                     />}
-                    <MyServicesSavedConfigs
-                        isShortVariant={!isSavedConfigsExtended}
-                        savedConfigs={savedConfigs}
-                        className={classNames.savedConfigs}
-                        callback={onSavedConfigsCallback}
-                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
-                    />
+                <MyServicesSavedConfigs
+                    isShortVariant={!isSavedConfigsExtended}
+                    savedConfigs={savedConfigs}
+                    className={classNames.savedConfigs}
+                    callback={onSavedConfigsCallback}
+                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                />
             </div>
+            <Dialog
+                title={t("confirm terminate title")}
+                subtitle={t("confirm terminate subtitle")}
+                body={t("confirm terminate body")}
+                isOpen={isDialogOpen}
+                onClose={onDialogCloseFactory(false)}
+                buttons={
+                    <>
+                    <Button 
+                            onClick={onDialogCloseFactory(false)}
+                            color="secondary"
+                    >
+                        {t("cancel")}
+                    </Button>
+                    <Button onClick={onDialogCloseFactory(true)}>
+                        {t("confirm")}
+                    </Button>
+                    </>
+                }
+            />
         </div>
     );
 
@@ -257,6 +310,11 @@ export declare namespace MyServices {
         text2: undefined;
         text3: undefined;
         'running services': undefined;
+        'confirm terminate title': undefined;
+        'confirm terminate subtitle': undefined;
+        'confirm terminate body': undefined;
+        cancel: undefined;
+        confirm: undefined;
     };
 
 }
