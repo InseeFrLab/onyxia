@@ -633,7 +633,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
-            "launch": "Nouveau servcie",
+            "launch": "Nouveau service",
             "password": "Copier le mot de passe",
             "trash": "Arrêter tous"
         },
