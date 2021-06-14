@@ -214,6 +214,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
     return (
         <Template
             {...{ kcContext, ...props }}
+            doFetchDefaultThemeResources={false}
             headerNode={msg("registerTitle")}
             formNode={
                 <form className={classNames.root} action={url.registrationAction} method="post">

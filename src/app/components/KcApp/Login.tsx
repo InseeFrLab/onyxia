@@ -175,6 +175,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     return (
         <Template
             {...{ kcContext, ...props }}
+            doFetchDefaultThemeResources={false}
             displayInfo={social.displayInfo}
             displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
