@@ -36,6 +36,14 @@ Core feature set:
   type he's password. 
 - Users can provide a bash script to be executed at the start of a container. (e.g: `git clone ... && pip install` )
 
+# Screenshots
+
+![scree_myservices](https://user-images.githubusercontent.com/6702424/121828699-a8a36600-ccc0-11eb-903c-1cd4b6cbb0ff.png)
+![screen_launcher](https://user-images.githubusercontent.com/6702424/121828696-a80acf80-ccc0-11eb-86fb-c7d0bca55d4f.png)
+![screen_main_services](https://user-images.githubusercontent.com/6702424/121828700-a93bfc80-ccc0-11eb-8149-f6c85c06cffd.png)
+![my_secrets](https://user-images.githubusercontent.com/6702424/121828695-a5a87580-ccc0-11eb-9e86-295fdac6c497.png)
+
+
 # Contributing
 
 ## Development
@@ -81,7 +89,7 @@ The is four source directories:
 - `src/js`: Legacy code that hasn't be ported to the new architecture yet.
 
 
-# Ops
+# OPS
 
 To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
 the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-web) 
@@ -95,13 +103,6 @@ tagged `:<name-of-the-feature-branch>`.
 
 You can find [here](https://github.com/InseeFrLab/paris-sspcloud/blob/main/apps/onyxia/values.yaml) the Helm chart
 we use to put the docker image of the app in production.
-
-# Screenshots
-
-<p align="center">
-    <img src="https://user-images.githubusercontent.com/6702424/111554614-f0305980-8786-11eb-9729-a942fb3a4dbe.png">
-    <img src="https://user-images.githubusercontent.com/6702424/111326486-e1558400-866c-11eb-94f8-b00f23bd4b7b.png">
-</p>
 
 # NOTE (for self)
 
