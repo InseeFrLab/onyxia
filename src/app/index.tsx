@@ -17,8 +17,8 @@ import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupp
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
 const kcContext = realKcContext ?? (
-    false /* Set to true to test the login pages outside of Keycloak */
-        ? kcContextMocks.kcRegisterContext /* Change to .kcRegisterContext for example */
+    true /* Set to true to test the login pages outside of Keycloak */
+        ? kcContextMocks.kcLoginIdpLinkConfirmContext /* Change to .kcRegisterContext for example */
         :
         undefined
 );

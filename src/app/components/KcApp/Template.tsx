@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import { useEffect, memo } from "react";
+import { useReducer, useEffect, memo } from "react";
 import type { ReactNode } from "react";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useKcLanguageTag } from "keycloakify/lib/i18n/useKcLanguageTag";
@@ -11,7 +11,6 @@ import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageT
 import { useConstCallback } from "powerhooks";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
-//import { Footer } from "app/components/App/Footer";
 import { logoMaxWidthInPercent } from "app/components/App";
 import { createUseClassNames } from "app/theme";
 import { useDomRect } from "onyxia-ui";
@@ -21,8 +20,11 @@ import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLight
 import { Paper } from "onyxia-ui";
 import { Typography } from "onyxia-ui";
 import { Alert } from "onyxia-ui";
+import { appendHead } from "keycloakify/lib/tools/appendHead";
+import { join as pathJoin } from "path";
 
 export type TemplateProps = {
+    doFetchDefaultThemeResources: boolean;
     className?: string;
     displayInfo?: boolean;
     displayMessage?: boolean;
@@ -52,9 +54,8 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         "betweenHeaderAndFooter": {
             "flex": 1,
             "overflow": "hidden",
-            "backgroundImage": `url( ${
-                theme.isDarkModeEnabled ? 
-                    onyxiaNeumorphismDarkModeUrl : 
+            "backgroundImage": `url( ${theme.isDarkModeEnabled ?
+                    onyxiaNeumorphismDarkModeUrl :
                     onyxiaNeumorphismLightModeUrl
                 })`,
             "backgroundSize": "auto 90%",
@@ -75,7 +76,7 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
 
 export const Template = memo((props: TemplateProps) => {
 
-    const { kcContext, className } = props;
+    const { kcContext, className, doFetchDefaultThemeResources } = props;
 
     useEffect(() => { console.log("Rendering this page with react using keycloakify") }, []);
 
@@ -119,6 +120,78 @@ export const Template = memo((props: TemplateProps) => {
         window.location.href = "https://docs.sspcloud.fr"
     );
 
+    const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
+
+    useEffect(
+        () => {
+
+            if (!doFetchDefaultThemeResources) {
+                setExtraCssLoaded();
+                return;
+            }
+
+            let isUnmounted = false;
+            const cleanups: (() => void)[] = [];
+
+            const toArr = (x: string | readonly string[] | undefined) =>
+                typeof x === "string" ? x.split(" ") : x ?? [];
+
+            Promise.all(
+                [
+                    ...toArr(props.stylesCommon).map(relativePath => pathJoin(kcContext.url.resourcesCommonPath, relativePath)),
+                    ...toArr(props.styles).map(relativePath => pathJoin(kcContext.url.resourcesPath, relativePath))
+                ].map(href => appendHead({
+                    "type": "css",
+                    href
+                }))).then(() => {
+
+                    if (isUnmounted) {
+                        return;
+                    }
+
+                    setExtraCssLoaded();
+
+                });
+
+            toArr(props.scripts).forEach(
+                relativePath => appendHead({
+                    "type": "javascript",
+                    "src": pathJoin(kcContext.url.resourcesPath, relativePath)
+                })
+            );
+
+            if (props.kcHtmlClass !== undefined) {
+
+                const htmlClassList =
+                    document.getElementsByTagName("html")[0]
+                        .classList;
+
+                const tokens = cx(props.kcHtmlClass).split(" ")
+
+                htmlClassList.add(...tokens);
+
+                cleanups.push(() => htmlClassList.remove(...tokens));
+
+            }
+
+            return () => {
+
+                isUnmounted = true;
+
+                cleanups.forEach(f => f());
+
+            };
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [props.kcHtmlClass]
+    );
+
+    if (!isExtraCssLoaded) {
+        return null;
+    }
+
+
     return (
         <div ref={rootRef} className={cx(classNames.root, className)} >
             <Header
@@ -130,7 +203,6 @@ export const Template = memo((props: TemplateProps) => {
             <section className={classNames.betweenHeaderAndFooter}>
                 <Page {...props} className={classNames.page} />
             </section>
-            {/*<Footer className={classNames.footer} />*/}
         </div>
     );
 
