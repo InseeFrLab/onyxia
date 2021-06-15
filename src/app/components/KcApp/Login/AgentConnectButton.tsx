@@ -4,7 +4,8 @@ import agentConnectImgUrl from "app/assets/img/agentConnect.png";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
-import MuiButtonBase from "@material-ui/core/ButtonBase";
+import MuiButtonBase from "@material-ui/core/ButtonBase";
+import { useWindowInnerSize } from "powerhooks";
 
 export type Props = {
 	className?: string;
@@ -46,7 +47,7 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"img": {
 			"width": 32,
-			"margin": (()=>{
+			"margin": (() => {
 
 				const topBottom = "8px";
 
@@ -67,10 +68,16 @@ export const AgentConnectButton = memo(
 
 		const { t } = useTranslation("AgentConnectButton");
 
+		const { windowInnerWidth } = useWindowInnerSize();
+
 		return (
 			<MuiButtonBase className={cx(classNames.root, className)} href={url}>
 				<img src={agentConnectImgUrl} alt="" className={classNames.img} />
-				<span className={classNames.label} >{t("sign in with AgentConnect")}</span>
+				<span className={classNames.label} >{
+					windowInnerWidth > 450 ?
+						t("sign in with AgentConnect") :
+						"AgentConnect"
+				}</span>
 			</MuiButtonBase>
 		);
 
