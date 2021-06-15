@@ -1,3 +1,7 @@
+### **0.11.27** (2021-06-15)  
+  
+- Remove excessive padding on header in login    
+  
 ### **0.11.26** (2021-06-15)  
   
 - Enable zoom provider for some screen size on login    
