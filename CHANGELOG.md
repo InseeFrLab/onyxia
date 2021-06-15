@@ -1,3 +1,12 @@
+### **0.11.24** (2021-06-15)  
+  
+- AgentConnect: Implement minimal safe update profile  
+- Make the Login more responsive  
+- Small css fix on login  
+- Integrate AgentConnect button  
+- AgentConnect button done  
+- First draft Agent Connect button    
+  
 ### **0.11.23** (2021-06-14)  
   
   
