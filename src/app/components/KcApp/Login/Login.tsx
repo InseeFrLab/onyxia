@@ -4,7 +4,7 @@ import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useConstCallback } from "powerhooks";
-import { Template } from "./Template";
+import { Template } from "../Template";
 import { Button } from "app/theme";
 import Link from "@material-ui/core/Link";
 import { Typography } from "onyxia-ui";
@@ -17,6 +17,7 @@ import { useSplashScreen } from "onyxia-ui";
 import { getBrowser } from "app/tools/getBrowser";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
+import { LoginDivider } from "./LoginDivider";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -53,6 +54,9 @@ const { useClassNames } = createUseClassNames()(
         },
         "registerLink": {
             "paddingLeft": theme.spacing(1)
+        },
+        "divider": {
+            "margin": theme.spacing(2, 0)
         }
     })
 );
@@ -292,19 +296,27 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     </div>
                     {
                         (realm.password && social.providers !== undefined) &&
-                        <div>
-                            <ul>
-                                {
-                                    social.providers.map(p =>
-                                        <li >
-                                            <a href={p.loginUrl}>
-                                                <span>{p.displayName}</span>
-                                            </a>
-                                        </li>
-                                    )
-                                }
-                            </ul>
-                        </div>
+                        <>
+                            <LoginDivider className={classNames.divider}/>
+                            <div>
+                                <ul>
+                                    {
+                                        social.providers.map(p =>
+                                            <li key={p.providerId}>
+                                                {
+                                                    p.displayName.toLocaleLowerCase().replace(/ /g, "").includes("agentconnect") ?
+                                                        <Button href={p.loginUrl}>{p.displayName}</Button>
+                                                        :
+                                                        <a href={p.loginUrl}>
+                                                            <span>{p.displayName}</span>
+                                                        </a>
+                                                }
+                                            </li>
+                                        )
+                                    }
+                                </ul>
+                            </div>
+                        </>
                     }
                 </div>
             }
