@@ -10,18 +10,16 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks";
 import { emailRegExp } from "app/tools/emailRegExp";
 import type { Param0 } from "tsafe";
-import { Button } from "app/theme";
+import { Button } from "app/theme";
 import { createUseClassNames } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import { Tooltip } from "onyxia-ui";
+import { generateUsername } from "./generateUsername";
 
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12
 
-function toAlphaNumerical(value: string) {
-    return value.replace(/[^a-zA-Z0-9]/g, "x");
-}
 
 const targets = ["firstName", "lastName", "email", "username", "password", "password-confirm"] as const;
 
@@ -63,7 +61,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
     const [lastName, setLastName] = useState(register.formData.lastName ?? "");
 
     const usernameDefaultValue = useMemo(
-        () => toAlphaNumerical(`${firstName[0] ?? ""}${lastName}`).toLowerCase(),
+        () => generateUsername({ firstName, lastName }),
         [firstName, lastName]
     );
 
@@ -105,7 +103,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Re
                     if (authorizedMailDomains !== undefined) {
                         if (
                             !authorizedMailDomains
-                                .map(domainWithWildcard=> domainWithWildcard.replace(/\^*.\?/, ""))
+                                .map(domainWithWildcard => domainWithWildcard.replace(/\^*.\?/, ""))
                                 .find(domain => new RegExp(`[@.]${domain}$`, "i").test(value))
                         ) {
                             return {
