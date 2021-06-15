@@ -37,6 +37,8 @@ import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/My
 import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
 import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
 import { MyServicesCards } from "app/components/pages/MyServices/MyServicesCards";
+import { LoginDivider } from "app/components/KcApp/Login/LoginDivider";
+import { AgentConnectButton } from "app/components/KcApp/Login/AgentConnectButton";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -82,6 +84,8 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
     [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),
+    [symToStr({ LoginDivider })]: Reflect<LoginDivider.I18nScheme>(),
+    [symToStr({ AgentConnectButton })]: Reflect<AgentConnectButton.I18nScheme>()
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
@@ -390,6 +394,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no services running": "You don't have any service running",
             "launch one": "Click here to launch one",
             "ok": "ok"
+        },
+        "LoginDivider": {
+            "or": "or"
+        },
+        "AgentConnectButton": {
+            "sign in with AgentConnect": "Sign in with Agent Connect"
         }
     },
     "fr": {
@@ -665,6 +675,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no services running": "Vous n'avez actuellement aucun service en cours d'exécution",
             "launch one": "Cliquez ici pour en lancer un",
             "ok": "ok"
+        },
+        "LoginDivider": {
+            "or": "ou"
+        },
+        "AgentConnectButton": {
+            "sign in with AgentConnect": "S'identifier avec AgentConnect"
         }
         /* spell-checker: enable */
     }

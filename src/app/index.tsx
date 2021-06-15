@@ -16,8 +16,17 @@ import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupp
 
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
+kcContextMocks.kcLoginContext.social.providers = [
+    {
+        "alias": "Agent connect (alias)",
+        "displayName": "Agent Connect",
+        "loginUrl": "https://example.com",
+        "providerId": "agentConnect"
+    }
+];
+
 const kcContext = realKcContext ?? (
-    false /* Set to true to test the login pages outside of Keycloak */
+    true /* Set to true to test the login pages outside of Keycloak */
         ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
         :
         undefined
