@@ -15,7 +15,7 @@ import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPasswor
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail"
 import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConfirm";
-import { LoginUpdateProfile } from "keycloakify/lib/components/LoginUpdateProfile";
+import { LoginUpdateProfile } from "./LoginUpdateProfile";
 import { getBrowser } from "app/tools/getBrowser";
 
 export type Props = {
@@ -113,11 +113,9 @@ export const KcApp = memo((props: Props) => {
     };
 
     switch (kcContext.pageId) {
-        /* Custom */
         case "login.ftl": return <Login {...{ kcContext, ...kcProps }} />;
         case "register.ftl": return <Register {...{ kcContext, ...kcProps }} />;
         case "terms.ftl": return <Terms {...{ kcContext, ...kcProps }} />;
-        /* Defaults */
         case "info.ftl": return <Info {...{ kcContext, ...kcProps }} />;
         case "error.ftl": return <Error {...{ kcContext, ...kcProps }} />;
         case "login-reset-password.ftl": return <LoginResetPassword {...{ kcContext, ...kcProps }} />;

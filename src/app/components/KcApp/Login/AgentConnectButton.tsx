@@ -24,13 +24,13 @@ const { useClassNames } = createUseClassNames()(
 			"borderColor":
 				theme.isDarkModeEnabled ?
 					theme.colors.useCases.typography.textPrimary :
-					theme.colors.palette.agentConnect.blueMain,
+					theme.colors.palette.agentConnectBlue,
 			"backgroundColor": "transparent",
 			"&:hover": {
 				"backgroundColor":
 					theme.isDarkModeEnabled ?
 						theme.colors.palette.light.main :
-						theme.colors.palette.agentConnect.blueMain,
+						theme.colors.palette.agentConnectBlue,
 				"borderColor": theme.isDarkModeEnabled ?
 					theme.colors.palette.light.main :
 					undefined,
@@ -43,7 +43,7 @@ const { useClassNames } = createUseClassNames()(
 			...theme.typography.button,
 			"color": theme.isDarkModeEnabled ?
 				theme.colors.useCases.typography.textPrimary :
-				theme.colors.palette.agentConnect.blueMain,
+				theme.colors.palette.agentConnectBlue,
 		},
 		"img": {
 			"width": 32,
