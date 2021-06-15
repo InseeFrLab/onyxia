@@ -50,7 +50,6 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         "header": {
             "width": "100%",
             "paddingRight": "2%",
-            "paddingLeft": "2%",
             "height": 64
         },
         "betweenHeaderAndFooter": {
