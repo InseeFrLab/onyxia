@@ -18,6 +18,7 @@ import { getBrowser } from "app/tools/getBrowser";
 import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import { LoginDivider } from "./LoginDivider";
+import { AgentConnectButton } from "./AgentConnectButton";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -56,7 +57,11 @@ const { useClassNames } = createUseClassNames()(
             "paddingLeft": theme.spacing(1)
         },
         "divider": {
-            "margin": theme.spacing(2, 0)
+            "margin": theme.spacing(4, 0)
+        },
+        "providers": {
+            "listStyleType": "none",
+            "padding": 0
         }
     })
 );
@@ -299,17 +304,14 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                         <>
                             <LoginDivider className={classNames.divider}/>
                             <div>
-                                <ul>
+                                <ul className={classNames.providers}>
                                     {
                                         social.providers.map(p =>
                                             <li key={p.providerId}>
                                                 {
                                                     p.displayName.toLocaleLowerCase().replace(/ /g, "").includes("agentconnect") ?
+                                                        <AgentConnectButton url={p.loginUrl} /> :
                                                         <Button href={p.loginUrl}>{p.displayName}</Button>
-                                                        :
-                                                        <a href={p.loginUrl}>
-                                                            <span>{p.displayName}</span>
-                                                        </a>
                                                 }
                                             </li>
                                         )
