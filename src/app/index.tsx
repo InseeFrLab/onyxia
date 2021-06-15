@@ -25,6 +25,8 @@ kcContextMocks.kcLoginContext.social.providers = [
     }
 ];
 
+kcContextMocks.kcLoginContext.message = undefined;
+
 const kcContext = realKcContext ?? (
     true /* Set to true to test the login pages outside of Keycloak */
         ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */

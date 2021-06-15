@@ -12,7 +12,7 @@ import { useConstCallback } from "powerhooks";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
 import { logoMaxWidthInPercent } from "app/components/App";
-import { createUseClassNames } from "app/theme";
+import { createUseClassNames, IconButton } from "app/theme";
 import { useDomRect } from "onyxia-ui";
 import { useWindowInnerSize } from "powerhooks";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -35,6 +35,7 @@ export type TemplateProps = {
     showUsernameNode?: ReactNode;
     formNode: ReactNode;
     infoNode?: ReactNode;
+    onClickCross?(): void;
 } & { kcContext: KcContext; } & KcTemplateProps;
 
 const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspectRatio: number; windowInnerHeight: number; }>()(
@@ -49,14 +50,15 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
         "header": {
             "width": "100%",
             "paddingRight": "2%",
+            "paddingLeft": "2%",
             "height": 64
         },
         "betweenHeaderAndFooter": {
             "flex": 1,
             "overflow": "hidden",
             "backgroundImage": `url( ${theme.isDarkModeEnabled ?
-                    onyxiaNeumorphismDarkModeUrl :
-                    onyxiaNeumorphismLightModeUrl
+                onyxiaNeumorphismDarkModeUrl :
+                onyxiaNeumorphismLightModeUrl
                 })`,
             "backgroundSize": "auto 90%",
             "backgroundPosition": "center",
@@ -76,7 +78,7 @@ const { useClassNames } = createUseClassNames<{ windowInnerWidth: number; aspect
 
 export const Template = memo((props: TemplateProps) => {
 
-    const { kcContext, className, doFetchDefaultThemeResources } = props;
+    const { kcContext, className, doFetchDefaultThemeResources, onClickCross } = props;
 
     useEffect(() => { console.log("Rendering this page with react using keycloakify") }, []);
 
@@ -201,7 +203,7 @@ export const Template = memo((props: TemplateProps) => {
                 onLogoClick={onHeaderLogoClick}
             />
             <section className={classNames.betweenHeaderAndFooter}>
-                <Page {...props} className={classNames.page} />
+                <Page {...props} className={classNames.page} onClickCross={onClickCross} />
             </section>
         </div>
     );
@@ -221,6 +223,7 @@ const { Page } = (() => {
         showUsernameNode?: ReactNode;
         formNode: ReactNode;
         infoNode?: ReactNode;
+        onClickCross: (()=> void) | undefined;
     } & { kcContext: KcContext; } & KcTemplateProps;
 
 
@@ -235,10 +238,14 @@ const { Page } = (() => {
                 "padding": theme.spacing(4),
                 "width": 490,
                 "height": "fit-content",
-                "marginBottom": theme.spacing(3)
+                "marginBottom": theme.spacing(3),
+                "borderRadius": 8
             },
             "alert": {
                 "alignItems": "center"
+            },
+            "crossButtonWrapper": {
+                "display": "flex"
             }
         })
     );
@@ -258,6 +265,7 @@ const { Page } = (() => {
             formNode,
             infoNode = null,
             kcContext,
+            onClickCross,
             ...kcProps
         } = props;
 
@@ -271,6 +279,12 @@ const { Page } = (() => {
         return (
             <div ref={containerRef} className={cx(classNames.root, className)}>
                 <Paper ref={paperRef} className={classNames.paper}>
+
+                    {onClickCross !== undefined &&
+                        <div className={classNames.crossButtonWrapper}>
+                            <div style={{ "flex": 1 }} />
+                            <IconButton id="close" onClick={onClickCross} />
+                        </div>}
 
                     <Head
                         {...{ kcContext, ...kcProps }}
@@ -306,8 +320,8 @@ const { Page } = (() => {
             theme => ({
                 "root": {
                     "textAlign": "center",
-                    "marginTop": theme.spacing(4),
-                    "marginBottom": theme.spacing(4)
+                    "marginTop": theme.spacing(2),
+                    "marginBottom": theme.spacing(2)
                 }
             })
         );

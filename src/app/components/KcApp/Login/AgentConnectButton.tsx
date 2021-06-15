@@ -74,7 +74,7 @@ export const AgentConnectButton = memo(
 			<MuiButtonBase className={cx(classNames.root, className)} href={url}>
 				<img src={agentConnectImgUrl} alt="" className={classNames.img} />
 				<span className={classNames.label} >{
-					windowInnerWidth > 450 ?
+					windowInnerWidth > 470 ?
 						t("sign in with AgentConnect") :
 						"AgentConnect"
 				}</span>
