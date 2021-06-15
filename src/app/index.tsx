@@ -13,35 +13,55 @@ import {
 import { KcApp } from "app/components/KcApp";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
+import { useWindowInnerSize } from "powerhooks";
+import { breakpointsValues } from "onyxia-ui";
 
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
 const kcContext = realKcContext ?? (
     false /* Set to true to test the login pages outside of Keycloak */
-        ? kcContextMocks.kcLoginUpdateProfileContext /* Change to .kcRegisterContext for example */
+        ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
         :
         undefined
 );
 
+function Root() {
+
+    const { isLandscapeOrientation, windowInnerWidth } = useWindowInnerSize();
+
+    const enableZoomProvider =
+        kcContext === undefined ||
+        (
+            windowInnerWidth < breakpointsValues["lg"] &&
+            isLandscapeOrientation
+        );
+
+    return (
+        <StrictMode>
+            <I18nProvider>
+                <RouteProvider>
+                    <ThemeProvider
+                        zoomProviderReferenceWidth={enableZoomProvider ? 1920 : undefined}
+                        portraitModeUnsupportedMessage={<PortraitModeUnsupported />}
+                    >
+                        <SplashScreenProvider Logo={OnyxiaLogoSvg}>
+                            {kcContext !== undefined ?
+                                <KcApp kcContext={kcContext} /> :
+                                <StoreProvider>
+                                    <App />
+                                </StoreProvider>
+                            }
+                        </SplashScreenProvider>
+                    </ThemeProvider>
+                </RouteProvider>
+            </I18nProvider>
+        </StrictMode>
+    );
+
+}
+
+
 reactDom.render(
-    <StrictMode>
-        <I18nProvider>
-            <RouteProvider>
-                <ThemeProvider
-                    zoomProviderReferenceWidth={kcContext !== undefined ? undefined : 1920}
-                    portraitModeUnsupportedMessage={<PortraitModeUnsupported />}
-                >
-                    <SplashScreenProvider Logo={OnyxiaLogoSvg}>
-                        {kcContext !== undefined ?
-                            <KcApp kcContext={kcContext} /> :
-                            <StoreProvider>
-                                <App />
-                            </StoreProvider>
-                        }
-                    </SplashScreenProvider>
-                </ThemeProvider>
-            </RouteProvider>
-        </I18nProvider>
-    </StrictMode>,
+    <Root />,
     document.getElementById("root")
 );
