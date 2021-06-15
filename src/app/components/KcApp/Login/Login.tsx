@@ -47,7 +47,7 @@ const { useClassNames } = createUseClassNames()(
             "marginLeft": theme.spacing(1)
         },
         "linkToRegisterWrapper": {
-            "marginTop": theme.spacing(3),
+            "marginTop": theme.spacing(4),
             "textAlign": "center",
             "& > *": {
                 "display": "inline-block"
@@ -181,9 +181,12 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
 
 
+
+
     return (
         <Template
             {...{ kcContext, ...props }}
+            onClickCross={window.history.back.bind(window.history)}
             doFetchDefaultThemeResources={false}
             displayInfo={social.displayInfo}
             displayWide={realm.password && social.providers !== undefined}
@@ -273,12 +276,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
 
                                     </div>
                                     <div className={classNames.buttonsWrapper}>
-                                        <Button
-                                            color="secondary"
-                                            onClick={window.history.back.bind(window.history)}
-                                        >
-                                            {msg("doCancel")}
-                                        </Button>
                                         <input
                                             type="hidden"
                                             name="credentialId"

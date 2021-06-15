@@ -11,6 +11,7 @@ import { Typography } from "onyxia-ui";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { ChangeLanguage } from "./ChangeLanguage";
+import { useWindowInnerSize } from "powerhooks";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -45,6 +46,7 @@ const { useClassNames } = createUseClassNames<Props>()(
         "logoContainer": {
             "cursor": "pointer",
             "width": logoMaxWidth,
+            "minWidth": 45,
             "textAlign": "center",
             "display": "flex",
             "alignItems": "center",
@@ -66,6 +68,8 @@ export const Header = memo((props: Props) => {
     const { classNames } = useClassNames(props );
 
     const theme = useTheme();
+
+    const { windowInnerWidth } = useWindowInnerSize();
 
     return (
         <header className={cx(classNames.root, className)}>
@@ -97,13 +101,14 @@ export const Header = memo((props: Props) => {
                 >
                     SSP Cloud
                 </Typography>
+                {windowInnerWidth > 450 &&
                 <Typography
                     variant="h4"
                     className={css({ "fontWeight": 500 })}
                     color="focus"
                 >
                     Datalab
-                </Typography>
+                </Typography>}
 
             </div>
 
