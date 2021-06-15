@@ -4,6 +4,7 @@ import agentConnectImgUrl from "app/assets/img/agentConnect.png";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
 import { useTranslation } from "app/i18n/useTranslations";
+import MuiButtonBase from "@material-ui/core/ButtonBase";
 
 export type Props = {
 	className?: string;
@@ -32,19 +33,10 @@ const { useClassNames } = createUseClassNames()(
 				"borderColor": theme.isDarkModeEnabled ?
 					theme.colors.palette.light.main :
 					undefined,
-				"& > span": {
+				"& span": {
 					"color": theme.colors.palette[theme.isDarkModeEnabled ? "dark" : "light"].main,
 				}
-			},
-			"&:active": {
-				"backgroundColor":
-					theme.isDarkModeEnabled ?
-						theme.colors.palette.light.greyVariant1 :
-						undefined
-			},
-			"& .MuiTouchRipple-root": {
-				"color": "red"
-			},
+			}
 		},
 		"label": {
 			...theme.typography.button,
@@ -76,10 +68,10 @@ export const AgentConnectButton = memo(
 		const { t } = useTranslation("AgentConnectButton");
 
 		return (
-			<a className={cx(classNames.root, className)} href={url}>
+			<MuiButtonBase className={cx(classNames.root, className)} href={url}>
 				<img src={agentConnectImgUrl} alt="" className={classNames.img} />
 				<span className={classNames.label} >{t("sign in with AgentConnect")}</span>
-			</a>
+			</MuiButtonBase>
 		);
 
 	}
