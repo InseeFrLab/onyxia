@@ -1,3 +1,7 @@
+### **0.11.25** (2021-06-15)  
+  
+- Update workflow (should fix favicon)    
+  
 ### **0.11.24** (2021-06-15)  
   
 - AgentConnect: Implement minimal safe update profile  
