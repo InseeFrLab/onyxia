@@ -1,3 +1,7 @@
+### **0.11.26** (2021-06-15)  
+  
+- Enable zoom provider for some screen size on login    
+  
 ### **0.11.25** (2021-06-15)  
   
 - Update workflow (should fix favicon)    
