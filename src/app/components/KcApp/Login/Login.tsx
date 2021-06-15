@@ -329,7 +329,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                     !registrationDisabled
                 ) &&
                 <div className={classNames.linkToRegisterWrapper}>
-                    <Typography variant="body2" color="disabled">{msg("noAccount")!}</Typography>
+                    <Typography variant="body2" color="secondary">{msg("noAccount")!}</Typography>
                     <Link
                         href={url.registrationUrl}
                         className={classNames.registerLink}
