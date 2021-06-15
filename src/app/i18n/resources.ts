@@ -584,7 +584,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "projectText": "Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
             "projectButton": "Contribuer au projet",
             "warningTitle": "Précautions d’usage",
-            "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
+            "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y déposez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
         },
         "CatalogExplorerSearchBar": {
             "search": "Rechercher"
