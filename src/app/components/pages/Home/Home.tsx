@@ -32,7 +32,8 @@ const { useClassNames } = createUseClassNames()(
 		"root": {
 			"backgroundColor": "transparent",
 			"display": "flex",
-			"flexDirection": "column"
+			"flexDirection": "column",
+			"paddingRight": theme.spacing(3),
 		},
 		"hero": {
 			"flex": 1,
@@ -59,7 +60,6 @@ const { useClassNames } = createUseClassNames()(
 		"cardsWrapper": {
 			"borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
 			"borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-			"marginRight": theme.spacing(3),
 			"display": "flex",
 			"padding": theme.spacing(3, 0),
 			"& > *": {
