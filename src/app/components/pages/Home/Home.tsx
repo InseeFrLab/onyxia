@@ -58,7 +58,7 @@ const { useClassNames } = createUseClassNames()(
 		"cardsWrapper": {
 			"borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
 			"display": "flex",
-			"paddingTop": theme.spacing(3),
+			"padding": theme.spacing(3, 0),
 			"& > *": {
 				"flex": 1
 			}
