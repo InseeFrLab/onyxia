@@ -1,3 +1,7 @@
+### **0.11.32** (2021-06-17)  
+  
+- Home: Remove extra padding that causes the content to overflow    
+  
 ### **0.11.31** (2021-06-17)  
   
 - index: try to fix meta tags  
