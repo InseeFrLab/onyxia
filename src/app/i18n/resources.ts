@@ -299,12 +299,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cardText3": "To easily access your data and those made available to you from your programs - S3 API implementation",
             "cardButton1": "Consult the catalog",
             "cardButton2": "Join the community",
-            "cardButton3": "Consult the data",
-            "projectTitle": "The project in a few words",
-            "projectText": "With INSEE as coordinator, we want to design a shared platform of statistical and data science tool services. One of the objectives of our project is to share tools, knowledge and resources within the official statistical service (SSP). As part of a public collaboration, the project is also available in open-source.",
-            "projectButton": "Contribute to the project",
-            "warningTitle": "Precautions for use",
-            "warningText": "The datalab is a field of exploration. Service guarantees are therefore limited: do not leave sensitive data there. Educational content must be open data. Also, this instance of Onyxia is intended to be improved based on your feedback.",
+            "cardButton3": "Consult the data"
         },
         "CatalogExplorerSearchBar": {
             "search": "Search"
@@ -562,7 +557,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page non trouvée"
         },
         "PortraitModeUnsupported": {
-            "portrait mode not supported": "Le mode portrait n'est pas encore supporter",
+            "portrait mode not supported": "Le mode portrait n'est pas encore supporté",
             "instructions": "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
         },
         "Home": {
@@ -579,12 +574,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cardText3": "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
             "cardButton1": "Consulter le catalogue",
             "cardButton2": "Rejoindre la communauté",
-            "cardButton3": "Consulter des données",
-            "projectTitle": "Le projet en quelques mots",
-            "projectText": "Avec l'Insee en tant que coordinateur, nous souhaitons concevoir une plateforme mutualisée de services d’outils de statistique et de datascience. Un des objectifs de notre projet est de partager les outils les connaissances et des ressources au sein du service statistique public (SSP). Dans le cadre d'une collaboration publique, le projet est aussi disponible en open-source.",
-            "projectButton": "Contribuer au projet",
-            "warningTitle": "Précautions d’usage",
-            "warningText": "Le datalab est un terrain d'exploration. Les garanties de service sont par conséquent limites: n'y laissez surtout pas de données sensibles. Le contenu pédagogique doit être de la donnée ouverte. De plus cette instance d'Onyxia a vocation à être améliorée en fonction de vos retours."
+            "cardButton3": "Consulter des données"
         },
         "CatalogExplorerSearchBar": {
             "search": "Rechercher"
