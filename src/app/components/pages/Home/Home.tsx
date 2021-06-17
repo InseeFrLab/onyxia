@@ -37,7 +37,6 @@ const { useClassNames } = createUseClassNames()(
 		},
 		"hero": {
 			"flex": 1,
-			"paddingBottom": theme.spacing(4),
 			"backgroundImage": `url(${homeIllustrationImgUrl}), url(${theme.isDarkModeEnabled ?
 				onyxiaNeumorphismDarkModeUrl :
 				onyxiaNeumorphismLightModeUrl
@@ -45,7 +44,6 @@ const { useClassNames } = createUseClassNames()(
 			"backgroundPosition": "171% 38%, 100% 0%",
 			"backgroundRepeat": "no-repeat, no-repeat",
 			"backgroundSize": "76%, 80%",
-			"paddingTop": 50
 		},
 		"heroTextWrapper": {
 			"paddingLeft": theme.spacing(2),
