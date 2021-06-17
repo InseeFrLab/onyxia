@@ -1,3 +1,8 @@
+### **0.11.36** (2021-06-17)  
+  
+- Attempt at fixing meta tags  
+- Restore padding    
+  
 ### **0.11.34** (2021-06-17)  
   
 - Change the key to avoid 503    
