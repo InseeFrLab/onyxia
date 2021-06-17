@@ -1,7 +1,6 @@
 
 import { useEffect, useRef, useMemo, memo } from "react";
 import { Button } from "app/theme";
-import "./style.scss";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
 import { createUseClassNames, useTheme } from "app/theme";
@@ -15,12 +14,12 @@ import { useConstCallback } from "powerhooks";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg"
 import { ReactComponent as IconServiceSvg } from "app/assets/svg/IconService.svg"
 import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg"
-import dotsDarkSvgUrl from "app/assets/svg/dotsDark.svg";
-import dotsLightSvgUrl from "app/assets/svg/dotsLight.svg";
-import serverHomeImageUrl from "app/assets/img/serverHomeImage.jpg";
 import { Paper } from "onyxia-ui"
 import { assert } from "tsafe/assert";
 import type { Link } from "type-route";
+import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import homeIllustrationImgUrl from "app/assets/img/homeIllustration.png"
 
 Home.routeGroup = createGroup([
 	routes.home
@@ -31,23 +30,31 @@ Home.requireUserLoggedIn = () => false;
 const { useClassNames } = createUseClassNames()(
 	theme => ({
 		"root": {
-			"backgroundColor": "transparent"
+			"backgroundColor": "transparent",
+			"display": "flex",
+			"flexDirection": "column"
 		},
 		"hero": {
+			"flex": 1,
 			"paddingBottom": theme.spacing(4),
-			"backgroundImage": `url(${theme.isDarkModeEnabled ? dotsDarkSvgUrl : dotsLightSvgUrl})`,
-			"backgroundPosition": "right",
-			"backgroundRepeat": "no-repeat",
-			"backgroundSize": "50%",
-
+			"backgroundImage": `url(${homeIllustrationImgUrl}), url(${theme.isDarkModeEnabled ?
+				onyxiaNeumorphismDarkModeUrl :
+				onyxiaNeumorphismLightModeUrl
+				})`,
+			"backgroundPosition": "171% 38%, 100% 0%",
+			"backgroundRepeat": "no-repeat, no-repeat",
+			"backgroundSize": "76%, 80%",
 			"paddingTop": 50
-
 		},
 		"heroTextWrapper": {
-			"maxWidth": "35%",
+			"paddingLeft": theme.spacing(2),
+			"maxWidth": "42%",
 			"& > *": {
 				"marginBottom": theme.spacing(3)
 			},
+		},
+		"heroSubtitle": {
+			"marginBottom": theme.spacing(4)
 		},
 		"cardsWrapper": {
 			"borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
@@ -69,9 +76,13 @@ const { useClassNames } = createUseClassNames()(
 	})
 )
 
-export function Home() {
+type Props ={
+	className?: string;
+};
 
-	const theme = useTheme();
+export function Home(props: Props) {
+
+	const { className } = props;
 
 	const { classNames } = useClassNames({});
 
@@ -84,33 +95,36 @@ export function Home() {
 		appConstants.login();
 	});
 
-	const myBucketsLink = useMemo(()=> routes.myBuckets().link, []);
-	const catalogExplorerLink = useMemo(()=> routes.catalogExplorer().link, []);
+	const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
+	const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
 	return (
-		<div className={cx("home", classNames.root)}>
+		<div className={cx(classNames.root, className)}>
 			<div className={classNames.hero} >
 				<div className={classNames.heroTextWrapper}>
 
 					<OnyxiaLogoSvg className={classNames.svg} />
-					<Typography variant="h2">
+					<Typography variant="h1">
 						{
 							appConstants.isUserLoggedIn ?
 								t("welcome", { "who": appConstants.parsedJwt.given_name }) :
 								t("title")
 						}
 					</Typography>
-					<Typography variant="h3">
+					<Typography 
+					variant="h3"
+					className={classNames.heroSubtitle}
+					>
 						{t("subtitle")}
 					</Typography>
 					{
 						!appConstants.isUserLoggedIn ?
 							<Button onClick={onHeroButtonClick}>
-								{t("logIn")}
+								{t("login")}
 							</Button>
 							:
 							<Button href="https://docs.sspcloud.fr/" >
-								{t("start tour")}
+								{t("new user")}
 							</Button>
 					}
 				</div>
@@ -141,44 +155,8 @@ export function Home() {
 				/>
 			</div>
 
-			<div className={css({
-				"display": "flex",
-				"marginRight": theme.spacing(3),
-			})}>
-				<section className={css({ "flex": 1, "display": "flex", "alignItems": "center" })}>
-					<div className={css({ "width": "60%" })}>
-						<Typography
-							variant="h4"
-							className={css({ "marginBottom": theme.spacing(3) })}
-						>
-							{t("projectTitle")}
-						</Typography>
-						<Typography>{t("projectText")}</Typography>
-						<Button
-							onClick={() => { }}
-							color="secondary"
-							className={css({ "marginTop": theme.spacing(3) })}
-						>
-							{t("projectButton")}
-						</Button>
-					</div>
-				</section>
-				<div className={css({ "flex": 1 })}>
-					<img src={serverHomeImageUrl} alt="Logo INSEEFrLab" className={css({
-						"width": "100%",
-						"height": 410,
-						"objectFit": "cover"
-					})} />
-				</div>
-			</div>
 
 
-			<div className="warning">
-				<div style={{ "backgroundColor": theme.colors.palette.focus.main }}>
-					<h1>{t("warningTitle")}</h1>
-					<p>{t("warningText")}</p>
-				</div>
-			</div>
 		</div>
 	);
 }
@@ -187,10 +165,10 @@ export declare namespace Home {
 
 	export type I18nScheme = {
 		welcome: { who: string; };
-		logIn: undefined;
+		login: undefined;
+		'new user': undefined;
 		title: undefined;
 		subtitle: undefined;
-		'start tour': undefined;
 		cardTitle1: undefined;
 		cardTitle2: undefined;
 		cardTitle3: undefined;
@@ -200,11 +178,6 @@ export declare namespace Home {
 		cardButton1: undefined;
 		cardButton2: undefined;
 		cardButton3: undefined;
-		projectTitle: undefined;
-		projectText: undefined;
-		projectButton: undefined;
-		warningTitle: undefined;
-		warningText: undefined;
 	};
 
 }
@@ -250,7 +223,7 @@ const { Card } = (() => {
 			<Paper className={cx(css({
 				"display": "flex",
 				"flexDirection": "column",
-				"padding": theme.spacing(2),
+				"padding": theme.spacing(3),
 				"backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
 			}), className)}>
 				<div className={css({ "display": "flex", })}>
@@ -271,10 +244,15 @@ const { Card } = (() => {
 					"paddingTop": theme.spacing(2)
 				})}>
 					<div className={css({ "flex": 1, })}>
-						<Typography>{text}</Typography>
+						<Typography variant="body1">{text}</Typography>
 					</div>
-					<div className={css({ "marginTop": theme.spacing(4) })} >
+					<div className={css({ 
+						"marginTop": theme.spacing(4),
+						"display": "flex"
+					})} >
+						<div style={{ "flex": 1 }} />
 						<Button
+							color="secondary"
 							{...(typeof link === "string" ? { "href": link } : link)}
 						>
 							{buttonText}
