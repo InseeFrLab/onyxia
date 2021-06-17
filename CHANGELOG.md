@@ -1,3 +1,7 @@
+### **0.11.28** (2021-06-17)  
+  
+- Add meta tags to index.html    
+  
 ### **0.11.27** (2021-06-15)  
   
 - Remove excessive padding on header in login    
