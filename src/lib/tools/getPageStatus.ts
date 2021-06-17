@@ -38,7 +38,7 @@ export async function getUrlHttpStatusCode(
             `https://${server}/api/can-visit/?url=${encodeURIComponent(url)}`,
             {
                 "params": {
-                    "hash": "4ccb730dba9867ca803189738ec2280c"
+                    "hash": "283f4a8d45199ab07a0d44a8aa3b35e7"
                         .split('').reverse().join('')
                 }
             }
