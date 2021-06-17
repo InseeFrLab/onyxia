@@ -1,3 +1,8 @@
+### **0.11.30** (2021-06-17)  
+  
+- Update TOS fr  
+- Update metta and smaller home immage    
+  
 ### **0.11.29** (2021-06-17)  
   
 - Merge pull request #238 from linogaliana/patch-1
