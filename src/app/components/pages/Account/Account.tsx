@@ -12,8 +12,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "app/components/shared/PageHeader";
-import { Tooltip } from "onyxia-ui";
-import { Icon } from "app/theme";
 import { useConstCallback } from "powerhooks";
 import type { Route } from "type-route";
 import { createUseClassNames } from "app/theme";
@@ -65,20 +63,7 @@ export function Account(props: Props) {
                 icon="account"
                 text1={t("text1")}
                 text2={t("text2")}
-                text3={<>
-                    {t("text3p1")}
-                    &nbsp;
-                    <strong>{t("personal tokens")}</strong>
-                    &nbsp;
-                    <Tooltip title={t("personal tokens tooltip")}>
-                        <Icon
-                            id="help"
-                            fontSize="small"
-                        />
-                    </Tooltip>
-                    &nbsp;
-                    {t("text3p2")}
-                </>}
+                text3={t("text3")}
             />
             <Tabs
                 className={classNames.tabs}
@@ -107,9 +92,7 @@ export declare namespace Account {
     export type I18nScheme = Record<AccountTabId, undefined> & {
         text1: undefined;
         text2: undefined;
-        text3p1: undefined;
-        text3p2: undefined;
-        'personal tokens': undefined;
+        text3: undefined;
         'personal tokens tooltip': undefined;
     };
 
