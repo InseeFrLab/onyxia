@@ -1,3 +1,7 @@
+### **0.11.33** (2021-06-17)  
+  
+- Home: Small padding fix    
+  
 ### **0.11.32** (2021-06-17)  
   
 - Home: Remove extra padding that causes the content to overflow    
