@@ -1,3 +1,12 @@
+### **0.11.29** (2021-06-17)  
+  
+- Merge pull request #238 from linogaliana/patch-1
+
+correction typo  
+- Home: Perfect pacement of the illustration  
+- Good version of the new homepage  
+- coquille ici aussi    
+  
 ### **0.11.28** (2021-06-17)  
   
 - Add meta tags to index.html    
