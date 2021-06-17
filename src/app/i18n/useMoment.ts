@@ -165,10 +165,10 @@ export const { useFromNow } = (() => {
                                 } as const;
                                 /* spell-checker: disable */
                                 case "fr": return {
-                                    "past1": "il y a une heur",
-                                    "pastN": "il y a # heurs",
-                                    "future1": "dans une heur",
-                                    "futureN": "dans # heurs"
+                                    "past1": "il y a une heure",
+                                    "pastN": "il y a # heures",
+                                    "future1": "dans une heure",
+                                    "futureN": "dans # heures"
                                 } as const;
                                 /* spell-checker: enable */
                             }
