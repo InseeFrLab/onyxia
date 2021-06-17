@@ -1,3 +1,8 @@
+### **0.11.31** (2021-06-17)  
+  
+- index: try to fix meta tags  
+- Login: Smaller agent connect immage    
+  
 ### **0.11.30** (2021-06-17)  
   
 - Update TOS fr  
