@@ -320,7 +320,7 @@ const PageSelector = (
 
             }
 
-            return <Page />;
+            return <Page className={classNames.height100} />;
 
         }
 
