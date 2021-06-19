@@ -1,3 +1,7 @@
+### **0.11.39** (2021-06-19)  
+  
+- Improve Login page hergonomy #237    
+  
 ### **0.11.38** (2021-06-19)  
   
 - Fix resources  
