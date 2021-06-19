@@ -16,7 +16,7 @@ export function createMockOnyxiaApiClient(
     const { regions, build } = params;
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        //"getUserInfo": () => Promise.resolve({ ip, nomComplet }),
+        "getPublicIp": memoize(()=> Promise.resolve("0.0.0.0")),
         "getConfigurations": memoize(() => Promise.resolve({ regions, build }), { "promise": true }),
         "getCatalogs": memoize(() => Promise.resolve(data1), { "promise": true }),
         "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory":

@@ -11,7 +11,8 @@ import type {
     Get_Public_Catalog_CatalogId_PackageName,
     Get_MyLab_Services,
     Put_MyLab_App,
-    Get_MyLab_App
+    Get_MyLab_App,
+    Get_User_Info
 } from "lib/ports/OnyxiaApiClient";
 import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
@@ -38,6 +39,12 @@ export function createOfficialOnyxiaApiClient(
     const { axiosInstance } = createAxiosInstance(params);
 
     const onyxiaApiClient: OnyxiaApiClient = {
+        "getPublicIp":
+            memoize(
+                () => axiosInstance.get<Get_User_Info>(
+                    "/user/info"
+                ).then(({ data }) => data.ip)
+            ),
         "getConfigurations":
             memoize(
                 () => axiosInstance.get<Get_Public_Configuration>(
@@ -171,7 +178,7 @@ export function createOfficialOnyxiaApiClient(
             const getRunningServices = async () =>
                 (await getMyLab_Services()).apps
                     .map(({ tasks, id, ...rest }) => ({ ...rest, id, "status": getAppStatus({ tasks, id }) }))
-                    .map(({ id, env, urls, startedAt, postInstallInstructions ,status }) => ({
+                    .map(({ id, env, urls, startedAt, postInstallInstructions, status }) => ({
                         id,
                         ...(() => {
 

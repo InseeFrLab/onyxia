@@ -11,6 +11,7 @@ import * as launcherUseCase from "./useCases/launcher";
 import * as catalogExplorerUseCase from "./useCases/catalogExplorer";
 import * as runningServiceUseCase from "./useCases/runningService";
 import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageConfigs";
+import * as publicIpUseCase  from "./useCases/publicIp";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
@@ -130,7 +131,8 @@ const reducer = {
     [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer,
     [launcherUseCase.name]: launcherUseCase.reducer,
     [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.reducer,
-    [runningServiceUseCase.name]: runningServiceUseCase.reducer
+    [runningServiceUseCase.name]: runningServiceUseCase.reducer,
+    [publicIpUseCase.name]: publicIpUseCase.reducer,
 };
 
 const getMiddleware = (params: { dependencies: Dependencies; }) => ({
@@ -423,6 +425,7 @@ export const thunks = {
     [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.thunks,
     [app.name]: app.thunk,
     [runningServiceUseCase.name]: runningServiceUseCase.thunks,
+    [publicIpUseCase.name]: publicIpUseCase.thunks
 };
 
 export const pure = {

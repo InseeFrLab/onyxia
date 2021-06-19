@@ -4,7 +4,6 @@ import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import { getPublicIp } from "lib/tools/getPublicIp";
 import { assert } from "tsafe/assert";
 import { thunks as appConstantsThunks } from "./appConstants";
 import { pure as secretExplorerPure } from "./secretExplorer";
@@ -22,6 +21,7 @@ import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { getMinioToken } from "js/minio-client/minio-client";
 import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
+import { thunks as publicIpThunks } from "./publicIp";
 
 export const name = "launcher";
 
@@ -241,7 +241,7 @@ export const thunks = {
 
             const { mustacheParams } = await (async () => {
 
-                const publicIp = await getPublicIp();
+                const { publicIp } = await dispatch(publicIpThunks.fetch());
 
                 const { vaultToken } = getState().tokens;
 

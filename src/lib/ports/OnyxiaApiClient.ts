@@ -130,9 +130,18 @@ export type Put_MyLab_App= Record<string, unknown>[][];
 
 export type Get_MyLab_App = { };
 
+export type Get_User_Info = {
+    ip: string;
+};
+
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
+
+    getPublicIp: {
+        (): Promise<string>;
+        clear(): void;
+    };
 
     getConfigurations: {
         (): Promise<Get_Public_Configuration>;

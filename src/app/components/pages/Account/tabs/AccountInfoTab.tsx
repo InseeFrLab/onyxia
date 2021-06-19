@@ -1,5 +1,5 @@
 
-import { useMemo, memo } from "react";
+import { useEffect, useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
@@ -12,10 +12,9 @@ import { getValidatedEnv } from "app/validatedEnv";
 import { urlJoin } from 'url-join-ts';
 import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks";
-import { getPublicIp } from "lib/tools/getPublicIp";
 import { smartTrim } from "app/tools/smartTrim";
 import { createUseClassNames } from "app/theme";
-import { useAsync } from "react-async-hook";
+import { thunks as publicIpThunks } from "lib/useCases/publicIp";
 
 export type Props = {
     className?: string;
@@ -46,7 +45,15 @@ export const AccountInfoTab = memo((props: Props) => {
         ([textToCopy]: [string]) => copyToClipboard(textToCopy)
     );
 
+    const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
+
     const dispatch = useDispatch();
+
+    useEffect(
+        () => { dispatch(publicIpThunks.fetch()); }, 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     //We make the assumption that if we use OIDC we are using keycloak
     //...which is not necessarily the case.
@@ -87,13 +94,6 @@ export const AccountInfoTab = memo((props: Props) => {
         */
     );
 
-    const publicIp = (function useClosure(){
-
-        const { result } = useAsync(getPublicIp, []);
-
-        return result ?? "Loading..."
-
-    })();
 
 
     const { classNames } = useClassNames({});
