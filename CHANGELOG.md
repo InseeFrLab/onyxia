@@ -1,3 +1,11 @@
+### **0.11.38** (2021-06-19)  
+  
+- Fix resources  
+- 503: Update hash  
+- Catalog: Update page header icon  
+- New SVG Icon for MyServices  
+- Text detail corrections    
+  
 ### **0.11.37** (2021-06-17)  
   
 - Account: Fix header text    
