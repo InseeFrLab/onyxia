@@ -1,3 +1,8 @@
+### **0.11.40** (2021-06-19)  
+  
+- Use Onyxia API to get the public ip #241  
+- Add screenshot of the new home    
+  
 ### **0.11.39** (2021-06-19)  
   
 - Improve Login page hergonomy #237    
