@@ -75,7 +75,7 @@ export function Catalog(props: Props) {
     return (
         <div className={cx(classNames.root, className)}>
             <PageHeader
-                icon="services"
+                icon="catalog"
                 text1={t("header text1")}
                 text2={t("header text2")}
                 text3={<>
