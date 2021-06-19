@@ -19,6 +19,7 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import { LoginDivider } from "./LoginDivider";
 import { AgentConnectButton } from "./AgentConnectButton";
+import { useTranslation } from "app/i18n/useTranslations";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -180,8 +181,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
     );
 
 
-
-
+    const { t } = useTranslation("Login");
 
     return (
         <Template
@@ -331,7 +331,7 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
                         href={url.registrationUrl}
                         className={classNames.registerLink}
                     >
-                        {msg("doRegister")}
+                        {t("doRegister")}
                     </Link>
 
                 </div>
@@ -340,3 +340,13 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login
         />
     );
 });
+
+
+export declare namespace Login {
+
+    export type I18nScheme = {
+        'doRegister': undefined;
+    };
+
+}
+
