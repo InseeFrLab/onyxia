@@ -12,6 +12,7 @@ const getPublicIpMemoized = memoize(
 
 let isInit = false;
 
+/** @deprecated TODO: Remove, problems with add blockers */
 export function getPublicIp() {
 
     if (!isInit) {
