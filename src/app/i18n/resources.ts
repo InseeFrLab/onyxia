@@ -128,7 +128,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user-interface": "Interface preferences",
             "text1": "My account",
             "text2": "Access your different account information.",
-            "text3": "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
+            "text3p1": "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
+            "personal tokens": "personal tokens",
+            "text3p2": "can be accessed and configured here.",
             "personal tokens tooltip": "Password that are generated for you and that have a given validity period"
         },
         "AccountInfoTab": {
@@ -404,7 +406,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user-interface": "Modes d'interface",
             "text1": "Mon compte",
             "text2": "Accèdez à vos différentes informations de compte.",
-            "text3": "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
+            "text3p1": "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
+            "personal tokens": "Jetons d'accès individuel",
+            "text3p2": "sont accessibles et configurables ici.",
             "personal tokens tooltip": "Ou en anglais \"token\"."
         },
         "AccountInfoTab": {
@@ -543,9 +547,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "home": "Accueil",
             "account": "Mon compte",
             "catalogExplorer": "Catalogue de services",
-            "myServices": "Mes Services",
-            "mySecrets": "Mes Secrets",
-            "myBuckets": "Mes Fichiers",
+            "myServices": "Mes services",
+            "mySecrets": "Mes secrets",
+            "myBuckets": "Mes fichiers",
             "trainings": "Formations",
             "sharedServices": "Services partagés"
         },
@@ -603,7 +607,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "terms of service": "Conditions d'utilisation"
         },
         "CatalogLauncherMainCard": {
-            "card title": "Crée votre propre service",
+            "card title": "Créer votre propre service",
             "friendly name": "Nom personalisé",
             "launch": "Lancer",
             "cancel": "Annuler",
@@ -640,7 +644,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "readme": "readme"
         },
         "MyServicesRunningTime": {
-            "launching": "En cours de lancement..."
+            "launching": "En cours..."
         },
         "ChangeLanguage": {
             "change language": "Changer la langue"
