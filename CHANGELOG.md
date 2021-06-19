@@ -1,3 +1,7 @@
+### **0.11.37** (2021-06-17)  
+  
+- Account: Fix header text    
+  
 ### **0.11.36** (2021-06-17)  
   
 - Attempt at fixing meta tags  
