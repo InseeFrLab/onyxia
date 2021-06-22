@@ -1,7 +1,7 @@
 import {
     createThemeProvider,
     defaultPalette,
-    defaultTypography,
+    defaultGetTypography
 } from "onyxia-ui/lib";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
@@ -19,7 +19,7 @@ import { ReactComponent as CollaborationToolsSvg } from "./assets/svg/Collaborat
 import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
 import { ReactComponent as CommunitySvg } from "./assets/svg/Community.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
-import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
+import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
@@ -49,14 +49,14 @@ import LinkIcon from "@material-ui/icons/Link";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
-import type { Param0 } from "tsafe/Param0";
+import type { Param0 } from "tsafe/Param0";
 
 export const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.
-    "typography": {
-        ...defaultTypography,
+    "getTypography": ({ windowInnerWidth }) => ({
+        ...defaultGetTypography({ windowInnerWidth }),
         "fontFamily": '"Work Sans", sans-serif',
-    },
+    }),
     "palette": {
         ...defaultPalette,
         "limeGreen": {
