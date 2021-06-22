@@ -1,3 +1,7 @@
+### **0.11.41** (2021-06-22)  
+  
+- Update onyxia-ui. Fix font sizes    
+  
 ### **0.11.40** (2021-06-19)  
   
 - Use Onyxia API to get the public ip #241  
