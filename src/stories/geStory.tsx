@@ -39,8 +39,8 @@ export function getStoryFactory<Props>(params: {
                 {children}
             </StoreProvider>;
 
-    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; }> =
-        ({ darkMode, lng, ...props }) => {
+    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; width: number; }> =
+        ({ darkMode, width, lng, ...props }) => {
 
             const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
@@ -69,7 +69,8 @@ export function getStoryFactory<Props>(params: {
                                     <Box clone p={4} m={2} display="inline-block">
                                         <Paper
                                             style={{
-                                                "backgroundColor": theme.colors.useCases.surfaces.background
+                                                "backgroundColor": theme.colors.useCases.surfaces.background,
+                                                "width": width !== 0 ? width : undefined,
                                             }}
                                         >
                                             <div
@@ -97,6 +98,7 @@ export function getStoryFactory<Props>(params: {
         out.args = {
             "darkMode": false,
             "lng": id<SupportedLanguage>("fr"),
+            "width": 0,
             ...props
         };
 
@@ -115,6 +117,14 @@ export function getStoryFactory<Props>(params: {
                         "type": "inline-radio",
                         "options": id<SupportedLanguage[]>(["fr", "en"]),
                     }
+                },
+                "width": {
+                    "control": {
+                        "type": "range",
+                        "min": 0,
+                        "max": 1920,
+                        "step": 1,
+                    },
                 }
             }
         }),
