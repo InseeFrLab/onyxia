@@ -1,3 +1,8 @@
+### **0.11.43** (2021-06-28)  
+  
+- Login: Update the agent connect button  
+- Stories: Customizable width container    
+  
 ### **0.11.42** (2021-06-28)  
   
 - MyServices: Service url is always first (alphabetical ordering)    
