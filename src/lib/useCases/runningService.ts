@@ -204,7 +204,7 @@ export const thunks = {
                             "logoUrl": getLogoUrl({ packageName }),
                             "monitoringUrl": getMonitoringUrl({ "serviceId": id }),
                             startedAt,
-                            urls,
+                            "urls": urls.sort(),
                             "isStarting": !rest.isStarting ?
                                 false :
                                 (
