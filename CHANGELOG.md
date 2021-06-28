@@ -1,3 +1,7 @@
+### **0.11.42** (2021-06-28)  
+  
+- MyServices: Service url is always first (alphabetical ordering)    
+  
 ### **0.11.41** (2021-06-22)  
   
 - Update onyxia-ui. Fix font sizes    
