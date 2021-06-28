@@ -63,7 +63,11 @@ export const { ThemeProvider, useTheme } = createThemeProvider({
             "main": "#BAFF29",
             "light": "#E2FFA6"
         },
-        "agentConnectBlue": "#2E94FA"
+        "agentConnectBlue": {
+            "main": "#0579EE",
+            "light": "#2E94FA",
+            "lighter": "#E5EDF5"
+        }
     }
 });
 

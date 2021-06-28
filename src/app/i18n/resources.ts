@@ -38,7 +38,6 @@ import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyService
 import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
 import { MyServicesCards } from "app/components/pages/MyServices/MyServicesCards";
 import { LoginDivider } from "app/components/KcApp/Login/LoginDivider";
-import { AgentConnectButton } from "app/components/KcApp/Login/AgentConnectButton";
 import { Login } from "app/components/KcApp/Login";
 
 export type Scheme = {
@@ -86,7 +85,6 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
     [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),
     [symToStr({ LoginDivider })]: Reflect<LoginDivider.I18nScheme>(),
-    [symToStr({ AgentConnectButton })]: Reflect<AgentConnectButton.I18nScheme>(),
     [symToStr({ Login })]: Reflect<Login.I18nScheme>()
 };
 
@@ -393,9 +391,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "LoginDivider": {
             "or": "or"
         },
-        "AgentConnectButton": {
-            "sign in with AgentConnect": "Sign in with Agent Connect"
-        },
         "Login": {
             "doRegister": "Create an account"
         }
@@ -669,9 +664,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "LoginDivider": {
             "or": "ou"
-        },
-        "AgentConnectButton": {
-            "sign in with AgentConnect": "S'identifier avec AgentConnect"
         },
         "Login": {
             "doRegister": "Créer un compte"
