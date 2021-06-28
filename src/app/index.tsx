@@ -19,7 +19,7 @@ import { breakpointsValues } from "onyxia-ui";
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
 const kcContext = realKcContext ?? (
-    false /* Set to true to test the login pages outside of Keycloak */
+    true /* Set to true to test the login pages outside of Keycloak */
         ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
         :
         undefined

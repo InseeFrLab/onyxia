@@ -1,11 +1,10 @@
 
 import { memo } from "react";
-import agentConnectImgUrl from "app/assets/img/agentConnect.png";
 import { createUseClassNames } from "app/theme";
 import { cx } from "tss-react";
-import { useTranslation } from "app/i18n/useTranslations";
-import MuiButtonBase from "@material-ui/core/ButtonBase";
-import { useWindowInnerSize } from "powerhooks";
+import { ReactComponent as AgentConnectLightSvg } from "app/assets/svg/agentConnectLight.svg";
+import { ReactComponent as AgentConnectDarkSvg } from "app/assets/svg/agentConnectDark.svg";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 
 export type Props = {
 	className?: string;
@@ -15,47 +14,31 @@ export type Props = {
 const { useClassNames } = createUseClassNames()(
 	theme => ({
 		"root": {
-			"padding": theme.spacing(0, 4),
-			"alignItems": "center",
+			"padding": theme.spacing(1, 0),
 			"display": "flex",
-			"borderRadius": 30,
+			"justifyContent": "center",
+			"borderRadius": 8,
 			"borderWidth": 2,
 			"borderStyle": "solid",
-			"borderColor":
+			"borderColor": "transparent",
+			"backgroundColor":
 				theme.isDarkModeEnabled ?
 					theme.colors.useCases.typography.textPrimary :
-					theme.colors.palette.agentConnectBlue,
-			"backgroundColor": "transparent",
+					theme.colors.palette.agentConnectBlue.main,
+			"boxSizing": "border-box",
 			"&:hover": {
 				"backgroundColor":
 					theme.isDarkModeEnabled ?
-						theme.colors.palette.light.main :
-						theme.colors.palette.agentConnectBlue,
+						theme.colors.palette.agentConnectBlue.lighter :
+						theme.colors.palette.agentConnectBlue.light,
 				"borderColor": theme.isDarkModeEnabled ?
-					theme.colors.palette.light.main :
+					theme.colors.palette.agentConnectBlue.light :
 					undefined,
-				"& span": {
-					"color": theme.colors.palette[theme.isDarkModeEnabled ? "dark" : "light"].main,
-				}
 			}
 		},
-		"label": {
-			...theme.typography.button,
-			"color": theme.isDarkModeEnabled ?
-				theme.colors.useCases.typography.textPrimary :
-				theme.colors.palette.agentConnectBlue,
-		},
-		"img": {
-			"width": 32,
-			"margin": (() => {
-
-				const topBottom = "8px";
-
-				return `${topBottom} ${theme.spacing(2)}px ${topBottom} 0`;
-
-			})()
+		"svg": {
+			"height": 48
 		}
-
 	})
 );
 
@@ -66,27 +49,15 @@ export const AgentConnectButton = memo(
 
 		const { classNames } = useClassNames({});
 
-		const { t } = useTranslation("AgentConnectButton");
+		const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
-		const { windowInnerWidth } = useWindowInnerSize();
+		const AgentConnectSvg = isDarkModeEnabled ? AgentConnectDarkSvg : AgentConnectLightSvg;
 
 		return (
-			<MuiButtonBase className={cx(classNames.root, className)} href={url}>
-				<img src={agentConnectImgUrl} alt="" className={classNames.img} />
-				<span className={classNames.label} >{
-					windowInnerWidth > 470 ?
-						t("sign in with AgentConnect") :
-						"AgentConnect"
-				}</span>
-			</MuiButtonBase>
+			<a className={cx(classNames.root, className)} href={url}>
+				<AgentConnectSvg className={classNames.svg}/>
+			</a>
 		);
 
 	}
 );
-
-export declare namespace AgentConnectButton {
-
-	export type I18nScheme = {
-		'sign in with AgentConnect': undefined;
-	};
-}
