@@ -1,3 +1,7 @@
+### **0.11.45** (2021-06-29)  
+  
+- Login: Fix password confirm and allow click on register    
+  
 ### **0.11.44** (2021-06-29)  
   
 - Login: Upgrade to Keycloakify 2.0    
