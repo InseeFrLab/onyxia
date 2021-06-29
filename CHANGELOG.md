@@ -1,3 +1,7 @@
+### **0.11.44** (2021-06-29)  
+  
+- Login: Upgrade to Keycloakify 2.0    
+  
 ### **0.11.43** (2021-06-28)  
   
 - Login: Update the agent connect button  
