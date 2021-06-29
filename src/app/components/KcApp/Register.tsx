@@ -15,7 +15,7 @@ import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import { Tooltip } from "onyxia-ui";
 import { generateUsername } from "./generateUsername";
-import type { KcContext } from "./kcContext";
+import type { KcContext } from "./kcContext";
 
 type KcContext_Register = Extract<KcContext, { pageId: "register.ftl"; }>;
 
@@ -150,7 +150,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
         useCallback(
             (value: string) => {
 
-                if ( password !== value) {
+                if (password !== value) {
                     return {
                         "isValidValue": false,
                         "message": t("password mismatch")
@@ -257,9 +257,9 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
                                             doOnlyValidateInputAfterFistFocusLost={
                                                 (() => {
                                                     switch (target) {
-                                                        case "email": 
-                                                        case "password": 
-                                                        case "password-confirm": 
+                                                        case "email":
+                                                        case "password":
+                                                        case "password-confirm":
                                                             return true;
                                                         default: return false;
                                                     }
@@ -327,8 +327,9 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
                         >
                             {t("go back")}
                         </Button>
-                        <Tooltip title={areAllTargetsValid ? "" : t("form not filled properly yet")}>
-                            <span>
+                        {(() => {
+
+                            const button =
                                 <Button
                                     className={cx(classNames.buttonSubmit)}
                                     disabled={!areAllTargetsValid}
@@ -336,9 +337,18 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
                                     tabIndex={6}
                                 >
                                     {msgStr("doRegister")}
-                                </Button>
-                            </span>
-                        </Tooltip>
+                                </Button>;
+
+                            return areAllTargetsValid ?
+                                button :
+                                <Tooltip
+                                    title={t("form not filled properly yet")}>
+                                    <span>
+                                        {button}
+                                    </span>
+                                </Tooltip>;
+
+                        })()}
                     </div>
                 </form>
             }
