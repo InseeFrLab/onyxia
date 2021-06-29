@@ -1,7 +1,6 @@
 
 import { useState, useRef, useEffect, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
-import type { KcContext } from "keycloakify";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useConstCallback } from "powerhooks";
 import { Template } from "../Template";
@@ -20,6 +19,7 @@ import { Evt } from "evt";
 import { LoginDivider } from "./LoginDivider";
 import { AgentConnectButton } from "./AgentConnectButton";
 import { useTranslation } from "app/i18n/useTranslations";
+import type { KcContext } from "../kcContext";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -67,7 +67,9 @@ const { useClassNames } = createUseClassNames()(
     })
 );
 
-export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext.Login; } & KcProps) => {
+type KcContext_Login = Extract<KcContext, { pageId: "login.ftl"; }>;
+
+export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext_Login; } & KcProps) => {
 
     const { msg, msgStr } = useKcMessage();
 

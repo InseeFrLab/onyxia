@@ -1,7 +1,6 @@
 
 import { useEffect, useState, memo } from "react";
 import { setSplashScreenFadeOutDuration, useSplashScreen } from "onyxia-ui";
-import type { KcContext } from "keycloakify";
 import { defaultKcProps } from "keycloakify";
 import { createUseClassNames } from "app/theme";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -17,6 +16,7 @@ import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConfirm";
 import { LoginUpdateProfile } from "./LoginUpdateProfile";
 import { getBrowser } from "app/tools/getBrowser";
+import type { KcContext } from "./kcContext";
 
 export type Props = {
     kcContext: KcContext;

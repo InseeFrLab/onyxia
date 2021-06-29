@@ -2,7 +2,9 @@
 import { Template } from "app/components/KcApp/Template";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
-import { kcContextMocks, defaultKcProps } from "keycloakify";
+import { defaultKcProps } from "keycloakify";
+import { kcContextLogin } from "./kcContexts";
+
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -13,7 +15,7 @@ export default meta;
 
 export const Vue1 = getStory({
     "doFetchDefaultThemeResources": false,
-    "kcContext": kcContextMocks.kcLoginContext,
+    "kcContext": kcContextLogin,
     "displayInfo": true,
     "displayWide": true,
     "headerNode": <p>Header node</p>,

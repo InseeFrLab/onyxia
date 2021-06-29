@@ -30,7 +30,7 @@
     "circular-dependency-plugin": "^5.2.0",
     "events": "^3.2.0",
     "fs": "file:./.storybook/.compatibility/fs",
-    "keycloakify": "^1.2.0",
+    "keycloakify": "^2.0.2",
     "minimal-polyfills": "^2.2.1",
     "react-app-rewired": "^2.1.8",
     "typescript": "4.2.2"
@@ -67,7 +67,7 @@
     "node-sass": "^4.14.0",
     "onyxia-ui": "^0.6.1",
     "path": "^0.12.7",
-    "powerhooks": "^0.1.4",
+    "powerhooks": "^0.1.6",
     "public-ip": "^4.0.3",
     "query-params": "0.0.1",
     "re-resizable": "^6.3.2",

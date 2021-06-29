@@ -6,24 +6,13 @@ import { createStoreProvider } from "app/interfaceWithLib/StoreProvider";
 import { ThemeProvider } from "./theme";
 import { SplashScreenProvider } from "onyxia-ui";
 import { App } from "app/components/App";
-import {
-    kcContext as realKcContext,
-    kcContextMocks
-} from "keycloakify";
-import { KcApp } from "app/components/KcApp";
+import { KcApp, kcContext } from "app/components/KcApp";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
 import { useWindowInnerSize } from "powerhooks";
 import { breakpointsValues } from "onyxia-ui";
 
 const { StoreProvider } = createStoreProvider({ "doMock": false });
-
-const kcContext = realKcContext ?? (
-    true /* Set to true to test the login pages outside of Keycloak */
-        ? kcContextMocks.kcLoginContext /* Change to .kcRegisterContext for example */
-        :
-        undefined
-);
 
 function Root() {
 

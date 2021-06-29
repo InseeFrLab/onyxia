@@ -1,7 +1,6 @@
 import { useCallback, useState, useMemo, memo } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
-import type { KcContext } from "keycloakify/lib/KcContext";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { cx } from "tss-react";
 import { TextField } from "onyxia-ui";
@@ -16,6 +15,9 @@ import { useConstCallback } from "powerhooks";
 import { capitalize } from "app/tools/capitalize";
 import { Tooltip } from "onyxia-ui";
 import { generateUsername } from "./generateUsername";
+import type { KcContext } from "./kcContext";
+
+type KcContext_Register = Extract<KcContext, { pageId: "register.ftl"; }>;
 
 //NOTE: Client side validation only the actual policy is set on the Keycloak server.
 const passwordMinLength = 12
@@ -43,7 +45,7 @@ const { useClassNames } = createUseClassNames()(
 );
 
 
-export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext.Register; } & KcProps) => {
+export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Register; } & KcProps) => {
 
     const { msg, msgStr } = useKcMessage();
 

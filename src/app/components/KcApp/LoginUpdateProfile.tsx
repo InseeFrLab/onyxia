@@ -1,14 +1,16 @@
 import type { ChangeEvent } from "react";
 import { useState, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
-import type { KcContext } from "keycloakify/lib/KcContext";
+import type { KcContext } from "./kcContext";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { Template } from "./Template";
 import { cx } from "tss-react";
 import { generateUsername, toAlphaNumerical } from "./generateUsername";
 import { useConstCallback } from "powerhooks";
 
-export const LoginUpdateProfile = memo(({ kcContext, ...props }: { kcContext: KcContext.LoginUpdateProfile; } & KcProps) => {
+type KcContext_LoginUpdateProfile = Extract<KcContext, { pageId: "login-update-profile.ftl"; }>;
+
+export const LoginUpdateProfile = memo(({ kcContext, ...props }: { kcContext: KcContext_LoginUpdateProfile; } & KcProps) => {
 
 	const { msg, msgStr } = useKcMessage();
 
