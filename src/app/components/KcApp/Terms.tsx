@@ -1,10 +1,11 @@
 import { useEffect, memo } from "react";
 import { Template } from "./Template";
-import type { KcContext, KcProps } from "keycloakify";
+import type { KcProps } from "keycloakify";
 import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
 import { Button } from "app/theme";
 import { createUseClassNames } from "app/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
+import type { KcContext } from "./kcContext";
 
 const { useClassNames } = createUseClassNames()(
     theme => ({
@@ -27,7 +28,9 @@ const { useClassNames } = createUseClassNames()(
     })
 );
 
-export const Terms = memo(({ kcContext, ...props }: { kcContext: KcContext.Terms; } & KcProps) => {
+type KcContext_Terms = Extract<KcContext, { pageId: "terms.ftl"; }>;
+
+export const Terms = memo(({ kcContext, ...props }: { kcContext: KcContext_Terms; } & KcProps) => {
 
     const { msg, msgStr } = useKcMessage();
 

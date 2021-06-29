@@ -4,7 +4,6 @@ import { useReducer, useEffect, memo } from "react";
 import type { ReactNode } from "react";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { useKcLanguageTag } from "keycloakify/lib/i18n/useKcLanguageTag";
-import type { KcContext } from "keycloakify/lib/KcContext";
 import { assert } from "tsafe/assert";
 import { cx } from "tss-react";
 import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageTag";
@@ -22,6 +21,7 @@ import { Typography } from "onyxia-ui";
 import { Alert } from "onyxia-ui";
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";
+import type { KcContext } from "./kcContext";
 
 export type TemplateProps = {
     doFetchDefaultThemeResources: boolean;
