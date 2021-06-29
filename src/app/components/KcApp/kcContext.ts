@@ -11,7 +11,7 @@ export const { kcContext } = getKcContext<
 		authorizedMailDomains?: string[];
 	}
 >({
-	//"mockPageId": "login.ftl",
+	//"mockPageId": "register.ftl",
 	/** 
 	 * Customize the simulated kcContext that will let us 
 	 * dev the page outside keycloak (with auto-reload)
@@ -48,7 +48,10 @@ export const { kcContext } = getKcContext<
 				"ac-nice.fr", "ac-corse.fr", "ac-martinique.fr", "ac-guadeloupe.fr",
 				"ac-reunion.fr", "ac-guyane.fr", "ac-mayotte.fr",
 				"ac-wf.wf", "monvr.pf", "ac-noumea.nc", "ac-spm.fr", "*.ensai.fr"
-			]
+			],
+			"realm": {
+				"registrationEmailAsUsername": false
+			}
 			/* spell-checker: enable */
 		}
 	]

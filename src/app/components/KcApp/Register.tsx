@@ -150,7 +150,7 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
         useCallback(
             (value: string) => {
 
-                if (value !== "" && password !== value) {
+                if ( password !== value) {
                     return {
                         "isValidValue": false,
                         "message": t("password mismatch")
@@ -257,7 +257,10 @@ export const Register = memo(({ kcContext, ...props }: { kcContext: KcContext_Re
                                             doOnlyValidateInputAfterFistFocusLost={
                                                 (() => {
                                                     switch (target) {
-                                                        case "email": return true;
+                                                        case "email": 
+                                                        case "password": 
+                                                        case "password-confirm": 
+                                                            return true;
                                                         default: return false;
                                                     }
                                                 })()
