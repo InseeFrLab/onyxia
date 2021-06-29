@@ -1,3 +1,7 @@
+### **0.11.46** (2021-06-29)  
+  
+- Fix register tooltip    
+  
 ### **0.11.45** (2021-06-29)  
   
 - Login: Fix password confirm and allow click on register    
