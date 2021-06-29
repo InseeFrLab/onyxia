@@ -473,7 +473,9 @@ const { Page } = (() => {
                                 )
                             ) &&
                             <Alert className={classNames.alert} severity={kcContext.message.type}>
-                                <Typography variant="subtitle2"> {kcContext.message.summary}</Typography>
+                                <Typography variant="subtitle2"> 
+                                    <span dangerouslySetInnerHTML={{ "__html": kcContext.message.summary }} />
+                                </Typography>
                             </Alert>
                         }
                         {formNode}
