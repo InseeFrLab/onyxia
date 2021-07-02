@@ -1,3 +1,7 @@
+### **0.11.49** (2021-07-02)  
+  
+- Put agent connect in first    
+  
 ### **0.11.48** (2021-06-29)  
   
 - Fix unformatted messages    
