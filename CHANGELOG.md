@@ -1,3 +1,8 @@
+### **0.11.50** (2021-07-02)  
+  
+- Bump version  
+- Fix previous build    
+  
 ### **0.11.49** (2021-07-02)  
   
 - Put agent connect in first    
