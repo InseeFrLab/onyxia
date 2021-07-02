@@ -195,6 +195,27 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext_Login
             headerNode={msg("doLogIn")}
             formNode={
                 <div className={classNames.root} >
+                    {
+                        (realm.password && social.providers !== undefined) &&
+                        <>
+                            <div>
+                                <ul className={classNames.providers}>
+                                    {
+                                        social.providers.map(p =>
+                                            <li key={p.providerId}>
+                                                {
+                                                    p.displayName.toLocaleLowerCase().replace(/ /g, "").includes("agentconnect") ?
+                                                        <AgentConnectButton url={p.loginUrl} /> :
+                                                        <Button href={p.loginUrl}>{p.displayName}</Button>
+                                                }
+                                            </li>
+                                        )
+                                    }
+                                </ul>
+                            </div>
+                            <LoginDivider className={classNames.divider}/>
+                        </>
+                    }
                     <div>
                         {
                             realm.password &&
@@ -298,27 +319,6 @@ export const Login = memo(({ kcContext, ...props }: { kcContext: KcContext_Login
                             )
                         }
                     </div>
-                    {
-                        (realm.password && social.providers !== undefined) &&
-                        <>
-                            <LoginDivider className={classNames.divider}/>
-                            <div>
-                                <ul className={classNames.providers}>
-                                    {
-                                        social.providers.map(p =>
-                                            <li key={p.providerId}>
-                                                {
-                                                    p.displayName.toLocaleLowerCase().replace(/ /g, "").includes("agentconnect") ?
-                                                        <AgentConnectButton url={p.loginUrl} /> :
-                                                        <Button href={p.loginUrl}>{p.displayName}</Button>
-                                                }
-                                            </li>
-                                        )
-                                    }
-                                </ul>
-                            </div>
-                        </>
-                    }
                 </div>
             }
             infoNode={
