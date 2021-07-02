@@ -11,14 +11,14 @@ export const { kcContext } = getKcContext<
 		authorizedMailDomains?: string[];
 	}
 >({
-	"mockPageId": "login.ftl",
+	//"mockPageId": "login.ftl",
 	/** 
 	 * Customize the simulated kcContext that will let us 
 	 * dev the page outside keycloak (with auto-reload)
 	 */
 	"mockData": [
 		{
-			//"pageId": "login.ftl",
+			"pageId": "login.ftl",
 			"social": {
 				"providers": [
 					{
