@@ -166,3 +166,8 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    - uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        event-type: update_onyxia_web
+        repository: InseeFrLab/paris-sspcloud
