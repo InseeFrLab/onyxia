@@ -1,3 +1,9 @@
+### **0.11.52** (2021-07-04)  
+  
+- Use specific secret to dispatch to paris-sspcloud  
+- update tsafe  
+- Add dispatch action for complete CD    
+  
 ### **0.11.51** (2021-07-03)  
   
 - Update keycloakify    
