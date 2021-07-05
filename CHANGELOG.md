@@ -1,3 +1,7 @@
+### **0.11.53** (2021-07-05)  
+  
+- Add specific job poke_gitops    
+  
 ### **0.11.52** (2021-07-04)  
   
 - Use specific secret to dispatch to paris-sspcloud  
