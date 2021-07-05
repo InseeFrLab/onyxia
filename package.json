@@ -1,7 +1,7 @@
 {
   "homepage": "https://datalab.sspcloud.fr",
   "name": "onyxia-web",
-  "version": "0.11.52",
+  "version": "0.11.53",
   "license": "MIT",
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.11",
@@ -30,7 +30,7 @@
     "circular-dependency-plugin": "^5.2.0",
     "events": "^3.2.0",
     "fs": "file:./.storybook/.compatibility/fs",
-    "keycloakify": "^2.0.4",
+    "keycloakify": "^2.0.5",
     "minimal-polyfills": "^2.2.1",
     "react-app-rewired": "^2.1.8",
     "typescript": "4.2.2"
