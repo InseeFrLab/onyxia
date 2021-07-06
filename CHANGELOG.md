@@ -1,3 +1,7 @@
+### **0.11.54** (2021-07-06)  
+  
+- Inject git token    
+  
 ### **0.11.53** (2021-07-05)  
   
 - Add specific job poke_gitops    
