@@ -86,6 +86,7 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             name: string;
             email: string;
             credentials_cache_duration: number;
+            token: string | null;
         },
         vault: {
             VAULT_ADDR: string;
