@@ -279,7 +279,8 @@ export const thunks = {
                     "git": {
                         "name": userConfigs.gitName,
                         "email": userConfigs.gitEmail,
-                        "credentials_cache_duration": userConfigs.gitCredentialCacheDuration
+                        "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
+                        "token": userConfigs.githubPersonalAccessToken
                     },
                     "vault": {
                         "VAULT_ADDR": vaultClientConfig.baseUri,
