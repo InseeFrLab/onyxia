@@ -3,7 +3,6 @@ import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import { getLocalStorage } from "../tools/safeLocalStorage";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks";
@@ -18,8 +17,6 @@ export async function createKeycloakOidcClient(
 
     const keycloakInstance = keycloak_js(keycloakConfig);
 
-    const { evtLocallyStoredOidcAccessToken } = getEvtLocallyStoredOidcAccessToken();
-
     const { origin } = window.location;
 
     const isAuthenticated = await keycloakInstance.init({
@@ -27,7 +24,6 @@ export async function createKeycloakOidcClient(
         "silentCheckSsoRedirectUri": `${origin}/silent-sso.html`,
         "responseMode": "query",
         "checkLoginIframe": false,
-        "token": evtLocallyStoredOidcAccessToken.state,
         "adapter": createKeycloakAdapter({
             "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
             keycloakInstance
@@ -49,8 +45,6 @@ export async function createKeycloakOidcClient(
 
     if (!isAuthenticated) {
 
-        evtLocallyStoredOidcAccessToken.state = undefined;
-
         return id<OidcClient.NotLoggedIn>({
             "isUserLoggedIn": false,
             login
@@ -58,7 +52,9 @@ export async function createKeycloakOidcClient(
 
     }
 
-    evtLocallyStoredOidcAccessToken.state = keycloakInstance.token!;
+    assert(keycloakInstance.token !== undefined);
+
+    const evtLocallyStoredOidcAccessToken= Evt.create<string | undefined>(keycloakInstance.token);
 
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
@@ -138,32 +134,3 @@ export async function createKeycloakOidcClient(
 
 }
 
-
-const getEvtLocallyStoredOidcAccessToken = () => {
-
-    const { localStorage } = getLocalStorage();
-
-    const key = "onyxia/localStorage/user/token";
-
-    const evtLocallyStoredOidcAccessToken = Evt.create(localStorage.getItem(key) ?? undefined);
-
-    evtLocallyStoredOidcAccessToken
-        .toStateless()
-        .attach(oidcAccessToken => {
-
-            if (oidcAccessToken === undefined) {
-
-                localStorage.removeItem(key)
-
-            } else {
-
-                localStorage.setItem(key, oidcAccessToken);
-
-            }
-
-        });
-
-    return { evtLocallyStoredOidcAccessToken };
-
-
-};
