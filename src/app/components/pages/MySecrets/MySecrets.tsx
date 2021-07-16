@@ -269,18 +269,16 @@ export function MySecrets(props: Props) {
                 icon="secrets"
                 text1={t("page title")}
                 text2={t("what this page is used for")}
-                text3={
-                    <>
-                        {t("to learn more")}
-                        &nbsp;
-                        <Link
-                            href="https://docs.sspcloud.fr/onyxia-guide-avance/utiliser-des-variables-denvironnement"
-                            target="_blank"
-                        >
-                            {t("read our documentation")}
-                        </Link>
-                    </>
-                }
+                text3={<>
+                    {t("to learn more")}
+                    &nbsp;
+                    <Link
+                        href="https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement"
+                        target="_blank"
+                    >
+                        {t("read our documentation")}
+                    </Link>
+                </>}
             />
             <Explorer
                 className={classes.explorer}
