@@ -267,7 +267,7 @@ export function MySecrets(props: Props) {
                     {t("to learn more")}
                     &nbsp;
                     <Link
-                        href="https://docs.sspcloud.fr/onyxia-guide-avance/utiliser-des-variables-denvironnement"
+                        href="https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement"
                         target="_blank"
                     >
                         {t("read our documentation")}
