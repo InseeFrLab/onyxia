@@ -1,4 +1,3 @@
-
 /* eslint-disable array-callback-return */
 
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -12,16 +11,13 @@ import { same } from "evt/tools/inDepth/same";
 import { useState, useMemo, memo } from "react";
 import { Tabs } from "app/components/shared/Tabs";
 import MuiTextField from "@material-ui/core/TextField";
-import { createUseClassNames } from "app/theme";
-import { IconButton } from "app/theme";
-import { Typography } from "onyxia-ui";
-import { cx } from "tss-react";
-import { useConstCallback } from "powerhooks";
+import { makeStyles, IconButton, Text } from "app/theme";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import type { FormField } from "lib/useCases/launcher";
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
-import { useCallbackFactory } from "powerhooks";
-import { capitalize } from "app/tools/capitalize";
-import { Icon } from "app/theme";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { capitalize } from "tsafe/capitalize";
+import { Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { IndexedFormFields } from "lib/useCases/launcher";
 
@@ -33,79 +29,90 @@ export type Props = {
     onFormValueChange(params: FormFieldValue): void;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "borderRadius": 8,
-            "overflow": "hidden",
-            "boxShadow": theme.shadows[1]
-        },
-        "collapsedPanel": {
-            "maxHeight": 0,
-            "transform": "scaleY(0)"
-        },
-        "expandedPanel": {
-            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-            "transform": "scaleY(1)",
-            "transformOrigin": "top"
-        }
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "overflow": "hidden",
+        "boxShadow": theme.shadows[1],
+    },
+    "collapsedPanel": {
+        "maxHeight": 0,
+        "transform": "scaleY(0)",
+    },
+    "expandedPanel": {
+        "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "transform": "scaleY(1)",
+        "transformOrigin": "top",
+    },
+}));
 
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
-
     const {
         className,
         dependencyNamePackageNameOrGlobal,
         meta,
         formFieldsByTabName,
-        onFormValueChange
+        onFormValueChange,
     } = props;
 
-    const { classNames } = useClassNames({});
-
+    const { classes, cx } = useStyles();
 
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const tabs = useMemo(
-        () => Object.keys(formFieldsByTabName)
-            .map(title => ({ "id": title, "title": capitalize(title) })),
-        [formFieldsByTabName]
+        () =>
+            Object.keys(formFieldsByTabName).map(title => ({
+                "id": title,
+                "title": capitalize(title),
+            })),
+        [formFieldsByTabName],
     );
 
-    const onIsCollapsedValueChange = useConstCallback(
-        () => setIsCollapsed(!isCollapsed)
+    const onIsCollapsedValueChange = useConstCallback(() =>
+        setIsCollapsed(!isCollapsed),
     );
 
-    const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
-
+    const [activeTabId, setActiveTabId] = useState<string | undefined>(
+        tabs[0]?.id,
+    );
 
     return (
-        <div className={cx(classNames.root, className)}>
+        <div className={cx(classes.root, className)}>
             <Header
                 packageName={dependencyNamePackageNameOrGlobal}
                 isCollapsed={isCollapsed}
-                onIsCollapsedValueChange={tabs.length === 0 ? undefined : onIsCollapsedValueChange}
+                onIsCollapsedValueChange={
+                    tabs.length === 0 ? undefined : onIsCollapsedValueChange
+                }
                 {...(() => {
                     switch (meta.type) {
-                        case "dependency": return {
-                            "type": "dependency",
-                            "dependencyName": dependencyNamePackageNameOrGlobal
-                        } as const;
-                        case "global": return {
-                            "type": "global",
-                            "description": meta.description
-                        } as const;
-                        case "package": return {
-                            "type": "package",
-                            "packageName": dependencyNamePackageNameOrGlobal
-                        } as const;
+                        case "dependency":
+                            return {
+                                "type": "dependency",
+                                "dependencyName":
+                                    dependencyNamePackageNameOrGlobal,
+                            } as const;
+                        case "global":
+                            return {
+                                "type": "global",
+                                "description": meta.description,
+                            } as const;
+                        case "package":
+                            return {
+                                "type": "package",
+                                "packageName":
+                                    dependencyNamePackageNameOrGlobal,
+                            } as const;
                     }
                 })()}
             />
-            {activeTabId !== undefined &&
+            {activeTabId !== undefined && (
                 <Tabs
-                    className={classNames[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
+                    className={
+                        classes[
+                            isCollapsed ? "collapsedPanel" : "expandedPanel"
+                        ]
+                    }
                     tabs={tabs}
                     activeTabId={activeTabId}
                     onRequestChangeActiveTab={setActiveTabId}
@@ -117,163 +124,162 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                         onFormValueChange={onFormValueChange}
                     />
                 </Tabs>
-            }
+            )}
         </div>
     );
 });
 
 export declare namespace CatalogLauncherConfigurationCard {
-
     export type I18nScheme = {
-        'global config': undefined;
-        'configuration': { packageName: string; };
-        'dependency': { dependencyName: string; };
-        'launch of a service': { dependencyName: string; };
+        "global config": undefined;
+        "configuration": { packageName: string };
+        "dependency": { dependencyName: string };
+        "launch of a service": { dependencyName: string };
     };
-
 }
 
 const { Header } = (() => {
-
     type Props = {
         className?: string;
         isCollapsed: boolean;
         onIsCollapsedValueChange?(): void;
-    } & ({
-        type: "dependency";
-        dependencyName: string;
-    } | {
-        type: "package"
-        packageName: string;
-    } | {
-        type: "global"
-        description?: string;
-    });
-
-    const { useClassNames } = createUseClassNames<{
-        isCollapsed: boolean;
-        isExpandIconVisible: boolean;
-    }>()(
-        (theme, { isCollapsed, isExpandIconVisible }) => ({
-            "root": {
-                "display": "flex",
-                "padding": theme.spacing(0, 3),
-                "backgroundColor": theme.colors.useCases.surfaces.surface1,
-                "cursor": "pointer",
-                "borderBottom": isCollapsed ?
-                    undefined :
-                    `1px solid ${theme.colors.useCases.typography.textTertiary}`
-            },
-            "expandIcon": {
-                "& svg": {
-                    "transition": theme.muiTheme.transitions.create(
-                        ["transform"],
-                        { "duration": theme.muiTheme.transitions.duration.short }
-                    ),
-                    "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
-                    "visibility": isExpandIconVisible ? undefined : "hidden"
-                }
-            },
-            "title": {
-                "display": "flex",
-                "alignItems": "center"
-            },
-            "titleWrapper": {
-                "display": "flex",
-                "flexDirection": "column",
-                "justifyContent": "center",
-                "margin": theme.spacing(2, 0)
-            },
-            "subtitle": {
-                "marginTop": theme.spacing(1)
-            }
-        })
+    } & (
+        | {
+              type: "dependency";
+              dependencyName: string;
+          }
+        | {
+              type: "package";
+              packageName: string;
+          }
+        | {
+              type: "global";
+              description?: string;
+          }
     );
 
-    const Header = memo(
-        (props: Props) => {
+    const { useStyles } = makeStyles<{
+        isCollapsed: boolean;
+        isExpandIconVisible: boolean;
+    }>()((theme, { isCollapsed, isExpandIconVisible }) => ({
+        "root": {
+            "display": "flex",
+            "padding": theme.spacing(0, 3),
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "cursor": "pointer",
+            "borderBottom": isCollapsed
+                ? undefined
+                : `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        },
+        "expandIcon": {
+            "& svg": {
+                "transition": theme.muiTheme.transitions.create(["transform"], {
+                    "duration": theme.muiTheme.transitions.duration.short,
+                }),
+                "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
+                "visibility": isExpandIconVisible ? undefined : "hidden",
+            },
+        },
+        "title": {
+            "display": "flex",
+            "alignItems": "center",
+        },
+        "titleWrapper": {
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "center",
+            "margin": theme.spacing(2, 0),
+        },
+        "subtitle": {
+            "marginTop": theme.spacing(1),
+        },
+    }));
 
-            const { className, isCollapsed, onIsCollapsedValueChange } = props;
+    const Header = memo((props: Props) => {
+        const { className, isCollapsed, onIsCollapsedValueChange } = props;
 
-            const { classNames } = useClassNames({
-                isCollapsed,
-                "isExpandIconVisible": onIsCollapsedValueChange !== undefined
-            });
+        const { classes, cx } = useStyles({
+            isCollapsed,
+            "isExpandIconVisible": onIsCollapsedValueChange !== undefined,
+        });
 
-            const onClick = useConstCallback(
-                ()=>onIsCollapsedValueChange?.()
-            );
+        const onClick = useConstCallback(() => onIsCollapsedValueChange?.());
 
-            const { t } = useTranslation("CatalogLauncherConfigurationCard");
+        const { t } = useTranslation("CatalogLauncherConfigurationCard");
 
-            return (
-                <div
-                    className={cx(classNames.root, className)}
-                    onClick={onClick}
-                >
-                    <div className={classNames.titleWrapper}>
-                        <Typography
-                            variant="h5"
-                            className={classNames.title}
-                        >
-                            {(() => {
-                                switch (props.type) {
-                                    case "dependency": return (
-                                        <>
-                                            <Icon id="subdirectoryArrowRight" />
-                                            &nbsp;
-                                            {t("dependency", { "dependencyName": capitalize(props.dependencyName) })}
-                                        </>
-                                    );
-                                    case "global": return t("global config");
-                                    case "package": return t(
-                                        "configuration",
-                                        { "packageName": capitalize(props.packageName) }
-                                    );
-                                }
-                            })()}
-                        </Typography>
+        return (
+            <div className={cx(classes.root, className)} onClick={onClick}>
+                <div className={classes.titleWrapper}>
+                    <Text typo="object heading" className={classes.title}>
                         {(() => {
                             switch (props.type) {
                                 case "dependency":
                                     return (
-                                        <Typography variant="body2" className={classNames.subtitle}>
-                                            {t(
-                                                "launch of a service",
-                                                {
-                                                    "dependencyName": capitalize(props.dependencyName)
-                                                })}
-                                        </Typography>
+                                        <>
+                                            <Icon iconId="subdirectoryArrowRight" />
+                                            &nbsp;
+                                            {t("dependency", {
+                                                "dependencyName": capitalize(
+                                                    props.dependencyName,
+                                                ),
+                                            })}
+                                        </>
                                     );
                                 case "global":
-                                    return props.description === undefined ? null :
-                                        <Typography variant="body2" className={classNames.subtitle}>
-                                            {capitalize(props.description)}
-                                        </Typography>;
+                                    return t("global config");
                                 case "package":
-                                    return null;
+                                    return t("configuration", {
+                                        "packageName": capitalize(
+                                            props.packageName,
+                                        ),
+                                    });
                             }
                         })()}
-                    </div>
-                    <div style={{ "flex": 1 }} />
-                    <IconButton
-                        onClick={onClick}
-                        id="expandMore"
-                        className={classNames.expandIcon}
-                    />
+                    </Text>
+                    {(() => {
+                        switch (props.type) {
+                            case "dependency":
+                                return (
+                                    <Text
+                                        typo="body 2"
+                                        className={classes.subtitle}
+                                    >
+                                        {t("launch of a service", {
+                                            "dependencyName": capitalize(
+                                                props.dependencyName,
+                                            ),
+                                        })}
+                                    </Text>
+                                );
+                            case "global":
+                                return props.description ===
+                                    undefined ? null : (
+                                    <Text
+                                        typo="body 2"
+                                        className={classes.subtitle}
+                                    >
+                                        {capitalize(props.description)}
+                                    </Text>
+                                );
+                            case "package":
+                                return null;
+                        }
+                    })()}
                 </div>
-            );
-
-        }
-    );
+                <div style={{ "flex": 1 }} />
+                <IconButton
+                    iconId="expandMore"
+                    onClick={onClick}
+                    className={classes.expandIcon}
+                />
+            </div>
+        );
+    });
 
     return { Header };
-
-
 })();
 
 const { TabContent } = (() => {
-
     type Props = {
         description?: string;
         className?: string;
@@ -281,132 +287,155 @@ const { TabContent } = (() => {
         onFormValueChange(params: FormFieldValue): void;
     };
 
-    const { useClassNames } = createUseClassNames()(
-        theme => ({
-            "root": {
-                "display": "grid",
-                "gridTemplateColumns": "repeat(3, 1fr)",
-                "gap": theme.spacing(8)
-            },
-            "textField": {
-                //Hacky... to accommodate the helper text
-                //"marginBottom": 32,
-                "width": "100%"
-            },
-            "tabDescription": {
-                "marginTop": theme.spacing(1),
-                "marginBottom": theme.spacing(4)
-            }
-        })
-    );
+    const { useStyles } = makeStyles()(theme => ({
+        "root": {
+            "display": "grid",
+            "gridTemplateColumns": "repeat(3, 1fr)",
+            "gap": theme.spacing(8),
+        },
+        "textField": {
+            //Hacky... to accommodate the helper text
+            //"marginBottom": 32,
+            "width": "100%",
+        },
+        "tabDescription": {
+            "marginTop": theme.spacing(1),
+            "marginBottom": theme.spacing(4),
+        },
+    }));
 
     const TabContent = memo((props: Props) => {
-
         const { className, formFields, onFormValueChange, description } = props;
 
         const onTextFieldChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>]
-            ) =>
-                onFormValueChange({ path, "value": target.value })
+                [{ target }]: [
+                    React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+                ],
+            ) => onFormValueChange({ path, "value": target.value }),
         );
 
         const onTextFieldFocus = useConstCallback(
-            ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                target.setSelectionRange(0, target.value.length)
+            ({
+                target,
+            }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                target.setSelectionRange(0, target.value.length),
         );
 
         const onCheckboxChangeFactory = useCallbackFactory(
             ([path]: [string[]]) =>
                 onFormValueChange({
                     path,
-                    "value": !formFields
-                        .find(formField => same(formField.path, path))!
-                        .value
-                })
+                    "value": !formFields.find(formField =>
+                        same(formField.path, path),
+                    )!.value,
+                }),
         );
 
         const onSelectChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [event]: [React.ChangeEvent<{ value: unknown; }>]
+                [event]: [React.ChangeEvent<{ value: unknown }>],
             ) =>
                 onFormValueChange({
                     path,
-                    "value": event.target.value as string
-                })
+                    "value": event.target.value as string,
+                }),
         );
 
         const onNumberTextFieldChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>]
+                [{ target }]: [
+                    React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+                ],
             ) =>
                 onFormValueChange({
                     path,
-                    "value": parseFloat(target.value)
-                })
+                    "value": parseFloat(target.value),
+                }),
         );
 
-        const { classNames } = useClassNames({});
+        const { classes, cx } = useStyles();
 
         return (
             <>
-                {description !== undefined &&
-                    <Typography variant="subtitle1" className={classNames.tabDescription}>
+                {description !== undefined && (
+                    <Text typo="subtitle" className={classes.tabDescription}>
                         {capitalize(description)}
-                    </Typography>}
-                <div className={cx(classNames.root, className)}>
-                    {formFields.map((formField, i) =>
-                        <div key={i} >
+                    </Text>
+                )}
+                <div className={cx(classes.root, className)}>
+                    {formFields.map((formField, i) => (
+                        <div key={i}>
                             {(() => {
-
                                 const label = capitalize(formField.title);
-                                const helperText = formField.description === undefined ?
-                                    undefined : capitalize(formField.description);
+                                const helperText =
+                                    formField.description === undefined
+                                        ? undefined
+                                        : capitalize(formField.description);
 
                                 switch (typeof formField.value) {
                                     case "string":
-                                        return formField.enum !== undefined ?
+                                        return formField.enum !== undefined ? (
                                             (() => {
-
                                                 const labelId = `select_label_${i}`;
 
                                                 return (
                                                     <FormControl>
-                                                        <InputLabel id={labelId}>{label}</InputLabel>
+                                                        <InputLabel
+                                                            id={labelId}
+                                                        >
+                                                            {label}
+                                                        </InputLabel>
                                                         <Select
                                                             labelId={labelId}
-                                                            value={formField.value}
-                                                            onChange={onSelectChangeFactory(formField.path)}
+                                                            value={
+                                                                formField.value
+                                                            }
+                                                            onChange={onSelectChangeFactory(
+                                                                formField.path,
+                                                            )}
                                                         >
-                                                            {formField.enum.map(value =>
-                                                                <MenuItem
-                                                                    key={value}
-                                                                    value={value}
-                                                                >
-                                                                    {value}
-                                                                </MenuItem>
+                                                            {formField.enum.map(
+                                                                value => (
+                                                                    <MenuItem
+                                                                        key={
+                                                                            value
+                                                                        }
+                                                                        value={
+                                                                            value
+                                                                        }
+                                                                    >
+                                                                        {value}
+                                                                    </MenuItem>
+                                                                ),
                                                             )}
                                                         </Select>
-                                                        <FormHelperText>{helperText}</FormHelperText>
+                                                        <FormHelperText>
+                                                            {helperText}
+                                                        </FormHelperText>
                                                     </FormControl>
                                                 );
-
                                             })()
-                                            :
+                                        ) : (
                                             <MuiTextField
-                                                className={classNames.textField}
+                                                className={classes.textField}
                                                 label={label}
                                                 value={formField.value}
                                                 helperText={helperText}
                                                 disabled={formField.isReadonly}
-                                                onChange={onTextFieldChangeFactory(formField.path)}
+                                                onChange={onTextFieldChangeFactory(
+                                                    formField.path,
+                                                )}
                                                 autoComplete="off"
-                                                inputProps={{ "spellCheck": false }}
+                                                inputProps={{
+                                                    "spellCheck": false,
+                                                }}
                                                 onFocus={onTextFieldFocus}
-                                            />;
+                                            />
+                                        );
                                     case "boolean":
                                         return (
                                             <FormControl>
@@ -414,41 +443,47 @@ const { TabContent } = (() => {
                                                     control={
                                                         <Checkbox
                                                             color="primary"
-                                                            checked={formField.value}
-                                                            onChange={onCheckboxChangeFactory(formField.path)}
+                                                            checked={
+                                                                formField.value
+                                                            }
+                                                            onChange={onCheckboxChangeFactory(
+                                                                formField.path,
+                                                            )}
                                                         />
                                                     }
                                                     label={label}
                                                 />
-                                                <FormHelperText>{helperText}</FormHelperText>
+                                                <FormHelperText>
+                                                    {helperText}
+                                                </FormHelperText>
                                             </FormControl>
                                         );
                                     case "number":
                                         return (
                                             <MuiTextField
                                                 value={formField.value}
-                                                onChange={onNumberTextFieldChangeFactory(formField.path)}
-                                                inputProps={{ "min": formField.minimum }}
+                                                onChange={onNumberTextFieldChangeFactory(
+                                                    formField.path,
+                                                )}
+                                                inputProps={{
+                                                    "min": formField.minimum,
+                                                }}
                                                 label={label}
                                                 type="number"
-                                                InputLabelProps={{ "shrink": true }}
+                                                InputLabelProps={{
+                                                    "shrink": true,
+                                                }}
                                                 helperText={helperText}
                                             />
                                         );
                                 }
                             })()}
                         </div>
-                    )}
-
+                    ))}
                 </div>
             </>
         );
-
-
-
     });
 
     return { TabContent };
-
-
 })();

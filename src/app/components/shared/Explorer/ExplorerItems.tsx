@@ -1,7 +1,5 @@
-
-
 import { useMemo, useState, useRef, memo } from "react";
-import Grid from '@material-ui/core/Grid';
+import Grid from "@material-ui/core/Grid";
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
 import { getKeyPropFactory } from "app/tools/getKeyProp";
@@ -10,24 +8,22 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
-import { useEffectOnValueChange } from "powerhooks";
-import { useArrayDiff } from "powerhooks";
-import { Typography } from "onyxia-ui";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
+import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useCallbackFactory } from "powerhooks";
-import { useConstCallback } from "powerhooks";
-import { useWithProps } from "powerhooks";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { useWithProps } from "powerhooks/useWithProps";
 import memoize from "memoizee";
-
+import { Text } from "app/theme";
 
 export type Props = {
-
     className?: string;
 
     /** [HIGHER ORDER] */
     visualRepresentationOfAFile: ExplorerItemProps["visualRepresentationOfAFile"];
     /** [HIGHER ORDER] */
-    getIsValidBasename(params: { basename: string; }): boolean;
+    getIsValidBasename(params: { basename: string }): boolean;
 
     isNavigating: boolean;
 
@@ -41,27 +37,35 @@ export type Props = {
     filesBeingCreated: string[];
     filesBeingRenamed: string[];
 
-    onNavigate(params: { kind: "file" | "directory"; basename: string; }): void;
-    onEditBasename(params: { kind: "file" | "directory"; basename: string; editedBasename: string; }): void;
-    onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
+    onNavigate(params: { kind: "file" | "directory"; basename: string }): void;
+    onEditBasename(params: {
+        kind: "file" | "directory";
+        basename: string;
+        editedBasename: string;
+    }): void;
+    onDeleteItem(params: {
+        kind: "file" | "directory";
+        basename: string;
+    }): void;
     onCopyPath(params: { basename: string }): void;
 
     /** Assert initial value is none */
-    onSelectedItemKindValueChange(params: { selectedItemKind: "file" | "directory" | "none" }): void;
+    onSelectedItemKindValueChange(params: {
+        selectedItemKind: "file" | "directory" | "none";
+    }): void;
 
-    onIsSelectedItemInEditingStateValueChange(params: { isSelectedItemInEditingState: boolean; }): void;
+    onIsSelectedItemInEditingStateValueChange(params: {
+        isSelectedItemInEditingState: boolean;
+    }): void;
 
     evtAction: NonPostableEvt<
-        "START EDITING SELECTED ITEM BASENAME" |
-        "DELETE SELECTED ITEM" |
-        "COPY SELECTED ITEM PATH"
+        | "START EDITING SELECTED ITEM BASENAME"
+        | "DELETE SELECTED ITEM"
+        | "COPY SELECTED ITEM PATH"
     >;
-
 };
 
-
 export const ExplorerItems = memo((props: Props) => {
-
     const {
         className,
         visualRepresentationOfAFile,
@@ -79,132 +83,137 @@ export const ExplorerItems = memo((props: Props) => {
         filesBeingRenamed,
         evtAction,
         onSelectedItemKindValueChange,
-        onIsSelectedItemInEditingStateValueChange
+        onIsSelectedItemInEditingStateValueChange,
     } = props;
 
-    const ExplorerItem = useWithProps(
-        SecretOrFileExplorerItem,
-        { visualRepresentationOfAFile }
-    );
-
-    const [{
-        getKeyProp,
-        transfersKeyProp,
-        getValuesCurrentlyMappedToKeyProp
-    }] = useState(
-        () => getKeyPropFactory<{
-            kind: "directory" | "file";
-            basename: string;
-        }>()
-    );
+    const ExplorerItem = useWithProps(SecretOrFileExplorerItem, {
+        visualRepresentationOfAFile,
+    });
 
     const [
-        selectedItemKeyProp,
-        setSelectedItemKeyProp
-    ] = useState<string | undefined>(undefined);
+        { getKeyProp, transfersKeyProp, getValuesCurrentlyMappedToKeyProp },
+    ] = useState(() =>
+        getKeyPropFactory<{
+            kind: "directory" | "file";
+            basename: string;
+        }>(),
+    );
+
+    const [selectedItemKeyProp, setSelectedItemKeyProp] = useState<
+        string | undefined
+    >(undefined);
 
     useEffectOnValueChange(
         selectedItemKind => onSelectedItemKindValueChange({ selectedItemKind }),
         [
             useMemo(
-                () => selectedItemKeyProp === undefined ?
-                    "none" as const :
-                    getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp).kind,
-                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
-            )
-        ]
+                () =>
+                    selectedItemKeyProp === undefined
+                        ? ("none" as const)
+                        : getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp)
+                              .kind,
+                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp],
+            ),
+        ],
     );
 
     const getEvtItemAction = useMemo(
-        () => memoize(
-            (_keyProp: string) => Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>()
-        ),
-        []
+        () =>
+            memoize((_keyProp: string) =>
+                Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>(),
+            ),
+        [],
     );
 
     useEvt(
-        ctx => evtAction.attach(
-            ctx,
-            action => {
+        ctx =>
+            evtAction.attach(ctx, action => {
                 switch (action) {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItemKeyProp !== undefined);
-                        onDeleteItem(getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp));
+                        onDeleteItem(
+                            getValuesCurrentlyMappedToKeyProp(
+                                selectedItemKeyProp,
+                            ),
+                        );
                         break;
                     case "START EDITING SELECTED ITEM BASENAME":
                         assert(selectedItemKeyProp !== undefined);
-                        getEvtItemAction(selectedItemKeyProp).post("ENTER EDITING STATE");
+                        getEvtItemAction(selectedItemKeyProp).post(
+                            "ENTER EDITING STATE",
+                        );
                         break;
                     case "COPY SELECTED ITEM PATH":
                         assert(selectedItemKeyProp !== undefined);
-                        onCopyPath(getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp));
+                        onCopyPath(
+                            getValuesCurrentlyMappedToKeyProp(
+                                selectedItemKeyProp,
+                            ),
+                        );
                         break;
                 }
-            }
-        ),
+            }),
         [
             evtAction,
             onDeleteItem,
             onCopyPath,
             getEvtItemAction,
             selectedItemKeyProp,
-            getValuesCurrentlyMappedToKeyProp
-        ]
+            getValuesCurrentlyMappedToKeyProp,
+        ],
     );
 
-
-    useEffectOnValueChange(
-        () => {
-            setIsSelectedItemInEditingState(false);
-            setSelectedItemKeyProp(undefined);
-        },
-        [isNavigating]
-    );
+    useEffectOnValueChange(() => {
+        setIsSelectedItemInEditingState(false);
+        setSelectedItemKeyProp(undefined);
+    }, [isNavigating]);
 
     // If selected item is removed, unselect it.
     {
-
         const callbackFactory = useCallbackFactory(
-            ([kind]: ["file" | "directory"], [params]: [{ removed: string[]; }]) => {
-
+            (
+                [kind]: ["file" | "directory"],
+                [params]: [{ removed: string[] }],
+            ) => {
                 const { removed } = params;
 
                 if (selectedItemKeyProp === undefined) {
                     return;
                 }
 
-                const selectedItem = getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
+                const selectedItem =
+                    getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp);
 
-                if (selectedItem.kind === kind && removed.includes(selectedItem.basename)) {
+                if (
+                    selectedItem.kind === kind &&
+                    removed.includes(selectedItem.basename)
+                ) {
                     setIsSelectedItemInEditingState(false);
                     setSelectedItemKeyProp(undefined);
                 }
-
-            }
+            },
         );
-
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": files,
-            "callback": callbackFactory("file")
+            "callback": callbackFactory("file"),
         });
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": directories,
-            "callback": callbackFactory("directory")
+            "callback": callbackFactory("directory"),
         });
-
     }
 
     // When an item is created automatically enter editing mode.
     {
-
-
         const callbackFactory = useCallbackFactory(
-            ([kind]: ["file" | "directory"], [params]: [{ added: string[]; }]) => {
-
+            (
+                [kind]: ["file" | "directory"],
+                [params]: [{ added: string[] }],
+            ) => {
                 const { added } = params;
 
                 if (added.length > 1) {
@@ -213,66 +222,62 @@ export const ExplorerItems = memo((props: Props) => {
 
                 const [basename] = added;
 
-                if (!(() => {
-                    switch (kind) {
-                        case "directory": return directoriesBeingCreated;
-                        case "file": return filesBeingCreated;
-                    }
-                })().includes(basename)) {
+                if (
+                    !(() => {
+                        switch (kind) {
+                            case "directory":
+                                return directoriesBeingCreated;
+                            case "file":
+                                return filesBeingCreated;
+                        }
+                    })().includes(basename)
+                ) {
                     return;
                 }
 
                 const evtItemAction = getEvtItemAction(
-                    getKeyProp({ kind, basename })
+                    getKeyProp({ kind, basename }),
                 );
 
-
                 evtItemAction.post("ENTER EDITING STATE");
-            }
+            },
         );
-
 
         useArrayDiff({
             "watchFor": "addition",
             "array": files,
-            "callback": callbackFactory("file")
+            "callback": callbackFactory("file"),
         });
 
         useArrayDiff({
             "watchFor": "addition",
             "array": directories,
-            "callback": callbackFactory("directory")
+            "callback": callbackFactory("directory"),
         });
-
     }
-
 
     const onMouseEventFactory = useCallbackFactory(
         async (
             [kind, basename]: ["file" | "directory", string],
-            [{ type, target }]: [Parameters<ExplorerItemProps["onMouseEvent"]>[0]]
+            [{ type, target }]: [
+                Parameters<ExplorerItemProps["onMouseEvent"]>[0],
+            ],
         ) => {
-
             if (isNavigating) {
                 return;
             }
 
             switch (type) {
                 case "down":
-
                     const keyProp = getKeyProp({ kind, basename });
 
                     if (target === "text" && selectedItemKeyProp === keyProp) {
-
                         await Evt.from(window, "mouseup").waitFor();
 
                         getEvtItemAction(keyProp).post("ENTER EDITING STATE");
 
                         break;
-
                     }
-
-
 
                     setSelectedItemKeyProp(keyProp);
 
@@ -282,39 +287,43 @@ export const ExplorerItems = memo((props: Props) => {
                     onNavigate({ kind, basename });
                     break;
             }
-
-        }
+        },
     );
 
-
-    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] = useState(false);
+    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] =
+        useState(false);
 
     useEffectOnValueChange(
-        () => onIsSelectedItemInEditingStateValueChange({ isSelectedItemInEditingState }),
-        [isSelectedItemInEditingState]
+        () =>
+            onIsSelectedItemInEditingStateValueChange({
+                isSelectedItemInEditingState,
+            }),
+        [isSelectedItemInEditingState],
     );
-
 
     const onEditBasenameFactory = useCallbackFactory(
         (
             [kind, basename]: ["file" | "directory", string],
-            [{ editedBasename }]: [Parameters<ExplorerItemProps["onEditBasename"]>[0]]
+            [{ editedBasename }]: [
+                Parameters<ExplorerItemProps["onEditBasename"]>[0],
+            ],
         ) => {
             transfersKeyProp({
                 "toValues": { kind, "basename": editedBasename },
-                "fromValues": { kind, basename }
+                "fromValues": { kind, basename },
             });
 
             onEditBasename({ kind, basename, editedBasename });
-        }
+        },
     );
 
     const getIsValidBasenameFactory = useCallbackFactory(
         (
             [kind, basename]: ["file" | "directory", string],
-            [{ basename: candidateBasename }]: [Parameters<ExplorerItemProps["getIsValidBasename"]>[0]]
+            [{ basename: candidateBasename }]: [
+                Parameters<ExplorerItemProps["getIsValidBasename"]>[0],
+            ],
         ) => {
-
             if (basename === candidateBasename) {
                 return true;
             }
@@ -322,8 +331,10 @@ export const ExplorerItems = memo((props: Props) => {
             if (
                 (() => {
                     switch (kind) {
-                        case "directory": return directories;
-                        case "file": return files;
+                        case "directory":
+                            return directories;
+                        case "file":
+                            return files;
                     }
                 })().includes(candidateBasename)
             ) {
@@ -331,33 +342,32 @@ export const ExplorerItems = memo((props: Props) => {
             }
 
             return getIsValidBasename({ "basename": candidateBasename });
-
-        }
+        },
     );
 
-
-
     const onIsInEditingStateValueChange = useConstCallback(
-        ({ isInEditingState }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
-            setIsSelectedItemInEditingState(isInEditingState)
+        ({
+            isInEditingState,
+        }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
+            setIsSelectedItemInEditingState(isInEditingState),
     );
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     const onGridMouseDown = useConstCallback(
         ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-
             if (
                 containerRef.current !== target &&
-                !Array.from(containerRef.current!.children).includes(target as any)
+                !Array.from(containerRef.current!.children).includes(
+                    target as any,
+                )
             ) {
                 return;
             }
 
             setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
-
-        }
+        },
     );
 
     const { t } = useTranslation("ExplorerItems");
@@ -368,71 +378,72 @@ export const ExplorerItems = memo((props: Props) => {
             ref={containerRef}
             onMouseDown={onGridMouseDown}
         >
-            {
-                files.length === 0 && directories.length === 0 ?
-                    <Typography>{t("empty directory")}</Typography>
-                    :
-                    <Grid
-                        container
-                        wrap="wrap"
-                        justify="flex-start"
-                        spacing={1}
-                    >
-                        {(["directory", "file"] as const).map(
-                            kind => ((() => {
-                                switch (kind) {
-                                    case "directory": return directories;
-                                    case "file": return files;
-                                }
-                            })()).map(basename => {
+            {files.length === 0 && directories.length === 0 ? (
+                <Text typo="body 1">{t("empty directory")}</Text>
+            ) : (
+                <Grid container wrap="wrap" justify="flex-start" spacing={1}>
+                    {(["directory", "file"] as const).map(kind =>
+                        (() => {
+                            switch (kind) {
+                                case "directory":
+                                    return directories;
+                                case "file":
+                                    return files;
+                            }
+                        })().map(basename => {
+                            const keyProp = getKeyProp({ kind, basename });
+                            const isSelected = selectedItemKeyProp === keyProp;
 
-                                const keyProp = getKeyProp({ kind, basename });
-                                const isSelected = selectedItemKeyProp === keyProp;
-
-                                return (
-                                    <Grid item key={keyProp}>
-                                        <ExplorerItem
-                                            kind={kind}
-                                            basename={basename}
-                                            isSelected={isSelected}
-                                            evtAction={getEvtItemAction(keyProp)}
-                                            isCircularProgressShown={
-                                                (() => {
-                                                    switch (kind) {
-                                                        case "directory": return [
-                                                            ...directoriesBeingCreated,
-                                                            ...directoriesBeingRenamed
-                                                        ];
-                                                        case "file": return [
-                                                            ...filesBeingCreated,
-                                                            ...filesBeingRenamed
-                                                        ];
-                                                    }
-                                                })().includes(basename)
+                            return (
+                                <Grid item key={keyProp}>
+                                    <ExplorerItem
+                                        kind={kind}
+                                        basename={basename}
+                                        isSelected={isSelected}
+                                        evtAction={getEvtItemAction(keyProp)}
+                                        isCircularProgressShown={(() => {
+                                            switch (kind) {
+                                                case "directory":
+                                                    return [
+                                                        ...directoriesBeingCreated,
+                                                        ...directoriesBeingRenamed,
+                                                    ];
+                                                case "file":
+                                                    return [
+                                                        ...filesBeingCreated,
+                                                        ...filesBeingRenamed,
+                                                    ];
                                             }
-                                            standardizedWidth="big"
-                                            onMouseEvent={onMouseEventFactory(kind, basename)}
-                                            onEditBasename={onEditBasenameFactory(kind, basename)}
-                                            getIsValidBasename={getIsValidBasenameFactory(kind, basename)}
-                                            onIsInEditingStateValueChange={onIsInEditingStateValueChange}
-                                        />
-                                    </Grid>
-                                );
-
-
-
-                            }))}
-
-                    </Grid>
-            }
+                                        })().includes(basename)}
+                                        standardizedWidth="big"
+                                        onMouseEvent={onMouseEventFactory(
+                                            kind,
+                                            basename,
+                                        )}
+                                        onEditBasename={onEditBasenameFactory(
+                                            kind,
+                                            basename,
+                                        )}
+                                        getIsValidBasename={getIsValidBasenameFactory(
+                                            kind,
+                                            basename,
+                                        )}
+                                        onIsInEditingStateValueChange={
+                                            onIsInEditingStateValueChange
+                                        }
+                                    />
+                                </Grid>
+                            );
+                        }),
+                    )}
+                </Grid>
+            )}
         </div>
     );
-
-
 });
 
 export declare namespace ExplorerItems {
     export type I18nScheme = {
-        'empty directory': undefined;
+        "empty directory": undefined;
     };
 }

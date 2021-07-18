@@ -1,73 +1,64 @@
-
-
 import { memo } from "react";
-import { createUseClassNames } from "app/theme";
-import { RoundLogo } from "app/components/shared/RoundLogo";
-import { Typography } from "onyxia-ui";
-import { Button } from "app/theme";
+import { makeStyles } from "app/theme";
+import { RoundLogo } from "app/components/shared/RoundLogo";
+import { Button, Text } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { cx } from "tss-react";
-import { IconButton } from "app/theme";
-import { useConstCallback } from "powerhooks";
-import { TextField } from "onyxia-ui";
-import type { TextFieldProps } from "onyxia-ui";
-import { Tooltip } from "onyxia-ui";
-import { capitalize } from "app/tools/capitalize";
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[7],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "aboveDivider": {
-            "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box",
-            "display": "flex"
-        },
-        "cardTitle": {
-            "display": "flex",
-            "alignItems": "center"
-        },
+import { IconButton } from "app/theme";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { TextField } from "onyxia-ui/TextField";
+import type { TextFieldProps } from "onyxia-ui/TextField";
+import { Tooltip } from "onyxia-ui/Tooltip";
+import { capitalize } from "tsafe/capitalize";
 
-        "belowDivider": {
-            "padding": theme.spacing(3),
-            "paddingLeft": theme.spacing(4),
-            "paddingTop": theme.spacing(2),
-            "flex": 1
-        },
-        "logoAndTitleWrapper": {
-            "display": "flex",
-            "marginBottom": theme.spacing(2)
-        },
-        "title": {
-            "display": "flex",
-            "alignItems": "center",
-            "marginLeft": theme.spacing(2)
-        },
-
-        "textFieldAndButtonWrapper": {
-            "display": "flex",
-            "alignItems": "center"
-        },
-
-        "bellowDividerLeft": {
-            "flex": 1
-        },
-        "bellowDividerRight": {
-            "display": "flex",
-            "alignItems": "flex-end"
-        },
-        "launchButton": {
-            "marginLeft": theme.spacing(1)
-        }
-
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[7],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "aboveDivider": {
+        "padding": theme.spacing(2, 3),
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "boxSizing": "border-box",
+        "display": "flex",
+    },
+    "cardTitle": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "belowDivider": {
+        "padding": theme.spacing(3),
+        "paddingLeft": theme.spacing(4),
+        "paddingTop": theme.spacing(2),
+        "flex": 1,
+    },
+    "logoAndTitleWrapper": {
+        "display": "flex",
+        "marginBottom": theme.spacing(2),
+    },
+    "title": {
+        "display": "flex",
+        "alignItems": "center",
+        "marginLeft": theme.spacing(2),
+    },
+    "textFieldAndButtonWrapper": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "bellowDividerLeft": {
+        "flex": 1,
+    },
+    "bellowDividerRight": {
+        "display": "flex",
+        "alignItems": "flex-end",
+    },
+    "launchButton": {
+        "marginLeft": theme.spacing(1),
+    },
+}));
 
 export type Props = {
     className?: string;
@@ -87,7 +78,6 @@ export type Props = {
 };
 
 export const CatalogLauncherMainCard = memo((props: Props) => {
-
     const {
         className,
         packageIconUrl,
@@ -98,54 +88,54 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onFriendlyNameChange,
         onRequestLaunch,
         onRequestCancel,
-        onRequestCopyLaunchUrl
+        onRequestCopyLaunchUrl,
     } = props;
 
-    const { classNames } = useClassNames({});
+    const { classes, cx } = useStyles();
 
     const { t } = useTranslation("CatalogLauncherMainCard");
 
-    const onBookmarkIconButtonClick = useConstCallback(
-        () => onIsBookmarkedValueChange(!isBookmarked)
+    const onBookmarkIconButtonClick = useConstCallback(() =>
+        onIsBookmarkedValueChange(!isBookmarked),
     );
 
-    const onValueBeingTypedChange = useConstCallback<TextFieldProps["onValueBeingTypedChange"]>(
-        ({ value }) => onFriendlyNameChange(value)
-    );
+    const onValueBeingTypedChange = useConstCallback<
+        TextFieldProps["onValueBeingTypedChange"]
+    >(({ value }) => onFriendlyNameChange(value));
 
     return (
-        <div className={cx(classNames.root, className)}>
-            <div className={classNames.aboveDivider}>
-                <Typography variant="h5" className={classNames.cardTitle}>{t("card title")}</Typography>
+        <div className={cx(classes.root, className)}>
+            <div className={classes.aboveDivider}>
+                <Text typo="object heading" className={classes.cardTitle}>
+                    {t("card title")}
+                </Text>
                 <div style={{ "flex": 1 }} />
 
-                {onRequestCopyLaunchUrl !== undefined &&
+                {onRequestCopyLaunchUrl !== undefined && (
                     <Tooltip title={t("copy url helper text")}>
                         <IconButton
-                            id="link"
+                            iconId="link"
                             onClick={onRequestCopyLaunchUrl}
                         />
-                    </Tooltip>}
+                    </Tooltip>
+                )}
                 <Tooltip title={t("save configuration")}>
                     <IconButton
-                        id={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                        iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
                         onClick={onBookmarkIconButtonClick}
                     />
                 </Tooltip>
             </div>
-            <div className={classNames.belowDivider}>
-                <div className={classNames.logoAndTitleWrapper}>
-                    {packageIconUrl !== undefined &&
-                        <RoundLogo url={packageIconUrl} />}
-                    <Typography
-                        variant="h5"
-                        className={classNames.title}
-                    >
+            <div className={classes.belowDivider}>
+                <div className={classes.logoAndTitleWrapper}>
+                    {packageIconUrl !== undefined && (
+                        <RoundLogo url={packageIconUrl} />
+                    )}
+                    <Text typo="object heading" className={classes.title}>
                         {capitalize(packageName)}
-                    </Typography>
+                    </Text>
                 </div>
-                <div className={classNames.textFieldAndButtonWrapper}>
-
+                <div className={classes.textFieldAndButtonWrapper}>
                     <TextField
                         label={t("friendly name")}
                         defaultValue={friendlyName}
@@ -157,16 +147,13 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
                     <div style={{ "flex": 1 }} />
 
-                    <Button
-                        color="secondary"
-                        onClick={onRequestCancel}
-                    >
+                    <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
                     </Button>
                     <Button
-                        color="primary"
+                        variant="primary"
                         onClick={onRequestLaunch}
-                        className={classNames.launchButton}
+                        className={classes.launchButton}
                     >
                         {t("launch")}
                     </Button>
@@ -174,17 +161,15 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
             </div>
         </div>
     );
-
 });
 
 export declare namespace CatalogLauncherMainCard {
-
     export type I18nScheme = {
-        'card title': undefined;
+        "card title": undefined;
         cancel: undefined;
-        launch: undefined
-        'friendly name': undefined;
-        'copy url helper text': undefined;
-        'save configuration': undefined;
+        launch: undefined;
+        "friendly name": undefined;
+        "copy url helper text": undefined;
+        "save configuration": undefined;
     };
 }

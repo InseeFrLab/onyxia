@@ -1,8 +1,6 @@
-
-
-import { css } from "tss-react";
+import { css } from "tss-react";
 import { useReducer, useState } from "react";
-import { useEffectOnValueChange } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { Breadcrump } from "app/components/shared/Explorer/Breadcrump";
 import type { Props } from "app/components/shared/Explorer/Breadcrump";
 import { sectionName } from "./sectionName";
@@ -11,46 +9,39 @@ import { symToStr } from "app/tools/symToStr";
 import type { UnpackEvt } from "evt";
 import { Evt } from "evt";
 
+function Component(
+    props: Omit<Props, "evtAction"> & {
+        width: number;
+        /** Toggle to fire a translation event */
+        tick: boolean;
+    },
+) {
+    const { tick, minDepth, path, callback, isNavigationDisabled, width } =
+        props;
 
-function Component(props: Omit<Props, "evtAction"> & {
-    width: number;
-    /** Toggle to fire a translation event */
-    tick: boolean;
-}) {
+    const [index, incrementIndex] = useReducer((index: number) => index + 1, 0);
 
-    const { tick, minDepth, path, callback, isNavigationDisabled, width } = props;
+    useEffectOnValueChange(() => {
+        incrementIndex();
+    }, [tick]);
 
-    const [index, incrementIndex] = useReducer(
-        (index: number) => index + 1,
-        0
+    const [evtAction] = useState(() =>
+        Evt.create<UnpackEvt<Props["evtAction"]>>(),
     );
 
-    useEffectOnValueChange(
-        () => { incrementIndex(); },
-        [tick]
-    );
-
-    const [evtAction] = useState(() => Evt.create<UnpackEvt<Props["evtAction"]>>());
-
-    useEffectOnValueChange(
-        () => {
-
-            evtAction.post({
-                "action": "DISPLAY COPY FEEDBACK",
-                "basename": "foo.svg"
-            });
-
-        },
-        [evtAction, index]
-    );
-
+    useEffectOnValueChange(() => {
+        evtAction.post({
+            "action": "DISPLAY COPY FEEDBACK",
+            "basename": "foo.svg",
+        });
+    }, [evtAction, index]);
 
     return (
         <Breadcrump
             isNavigationDisabled={isNavigationDisabled}
             className={css({
                 "border": "1px solid black",
-                width
+                width,
             })}
             evtAction={evtAction}
             minDepth={minDepth}
@@ -58,14 +49,11 @@ function Component(props: Omit<Props, "evtAction"> & {
             callback={callback}
         />
     );
-
 }
-
-
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ Breadcrump })]: Component }
+    "wrappedComponent": { [symToStr({ Breadcrump })]: Component },
 });
 
 export default {
@@ -77,16 +65,15 @@ export default {
                 "type": "range",
                 "min": 200,
                 "max": 1920,
-                "step": 10
-            }
+                "step": 10,
+            },
         },
         "tick": {
             "control": {
                 "type": "boolean",
-            }
-        }
-
-    }
+            },
+        },
+    },
 };
 
 export const Vue1 = getStory({
@@ -95,7 +82,7 @@ export const Vue1 = getStory({
     "minDepth": 0,
     "width": 800,
     "tick": true,
-    ...logCallbacks(["callback"])
+    ...logCallbacks(["callback"]),
 });
 
 export const VueRelativeMinDepthNot0 = getStory({
@@ -104,7 +91,7 @@ export const VueRelativeMinDepthNot0 = getStory({
     "minDepth": 1,
     "width": 800,
     "tick": true,
-    ...logCallbacks(["callback"])
+    ...logCallbacks(["callback"]),
 });
 
 export const VueFromRoot = getStory({
@@ -113,6 +100,5 @@ export const VueFromRoot = getStory({
     "minDepth": 2,
     "width": 800,
     "tick": true,
-    ...logCallbacks(["callback"])
+    ...logCallbacks(["callback"]),
 });
-

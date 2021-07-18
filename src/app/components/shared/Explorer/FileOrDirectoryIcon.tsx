@@ -1,5 +1,4 @@
-
-import { createUseClassNames } from "app/theme";
+import { makeStyles } from "app/theme";
 import { useMemo, memo } from "react";
 import { ReactComponent as SecretSvg } from "app/assets/svg/Secret.svg";
 import { ReactComponent as FileSvg } from "app/assets/svg/ExplorerFile.svg";
@@ -14,60 +13,57 @@ export type Props = {
 
     /** Tell if we are displaying an directory or a secret */
     kind: "file" | "directory";
-
 };
 
-const { useClassNames } = createUseClassNames<Props>()(
+const { useStyles } = makeStyles<Props>()(
     (theme, { kind, standardizedWidth }) => ({
         "root": {
             "fill": "currentColor",
             "color": (() => {
                 switch (kind) {
-                    case "directory": return theme.colors.palette.focus.main;
-                    case "file": return theme.colors
-                        .palette[theme.isDarkModeEnabled ? "light" : "dark"]
-                        .main;
+                    case "directory":
+                        return theme.colors.palette.focus.main;
+                    case "file":
+                        return theme.colors.palette[
+                            theme.isDarkModeEnabled ? "light" : "dark"
+                        ].main;
                 }
             })(),
             ...(() => {
-
                 const width = (() => {
                     switch (standardizedWidth) {
-                        case "big": return 100;
-                        case "normal": return 60;
+                        case "big":
+                            return 100;
+                        case "normal":
+                            return 60;
                     }
                 })();
 
-                return { width, "height": ~~(width * 8 / 10) };
-
+                return { width, "height": ~~((width * 8) / 10) };
             })(),
-            "display": "block"
-        }
-    })
+            "display": "block",
+        },
+    }),
 );
 
-
-
 export const FileOrDirectoryIcon = memo((props: Props) => {
-
     const { visualRepresentationOfAFile, kind } = props;
 
-    const { classNames } = useClassNames(props);
+    const { classes } = useStyles(props);
 
     const SvgComponent = useMemo(() => {
-
         switch (kind) {
             case "directory":
                 return DirectorySvg;
             case "file":
                 switch (visualRepresentationOfAFile) {
-                    case "file": return FileSvg;
-                    case "secret": return SecretSvg;
+                    case "file":
+                        return FileSvg;
+                    case "secret":
+                        return SecretSvg;
                 }
         }
-
     }, [kind, visualRepresentationOfAFile]);
 
-    return <SvgComponent className={classNames.root} />;
-
+    return <SvgComponent className={classes.root} />;
 });

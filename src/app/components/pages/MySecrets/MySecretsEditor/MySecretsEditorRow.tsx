@@ -1,26 +1,22 @@
-import { createUseClassNames, useTheme } from "app/theme";
 import { css, cx } from "tss-react";
 import { useMemo, useState, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
-import { TextField } from "onyxia-ui";
-import type { TextFieldProps } from "onyxia-ui";
+import type { TextFieldProps } from "onyxia-ui/TextField";
+import { TextField } from "onyxia-ui/TextField";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
-import { Typography } from "onyxia-ui";
-import { IconButton } from "app/theme";
-import { useCallbackFactory } from "powerhooks";
-import { useConstCallback } from "powerhooks";
+import { IconButton, Text, makeStyles, useTheme } from "app/theme";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import type { Parameters } from "tsafe";
 import { useDomRect } from "onyxia-ui";
-import type { Param0 } from "tsafe";
-
+import type { Param0 } from "tsafe";
 
 export type Props = {
-
     isLocked: boolean;
 
     /** NOTE: We can't use "key" as it's a reserved props*/
@@ -31,54 +27,56 @@ export type Props = {
         editedStrValue: string | undefined;
     }): void;
     onDelete(): void;
-    getResolvedValue(params: { strValue: string; }): {
-        isResolvedSuccessfully: true;
-        resolvedValue: string;
-    } | {
-        isResolvedSuccessfully: false;
-        message: string;
-    };
-    getIsValidAndAvailableKey(params: { key: string; }): {
-        isValidAndAvailableKey: true;
-    } | {
-        isValidAndAvailableKey: false;
-        message: string;
-    };
+    getResolvedValue(params: { strValue: string }):
+        | {
+              isResolvedSuccessfully: true;
+              resolvedValue: string;
+          }
+        | {
+              isResolvedSuccessfully: false;
+              message: string;
+          };
+    getIsValidAndAvailableKey(params: { key: string }):
+        | {
+              isValidAndAvailableKey: true;
+          }
+        | {
+              isValidAndAvailableKey: false;
+              message: string;
+          };
     onStartEdit(): void;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE" | "SUBMIT EDIT">;
 
     isDarker: boolean;
-
 };
 
-const { useClassNames } = createUseClassNames<Props & { isInEditingState: boolean; }>()(
+const { useStyles } = makeStyles<Props & { isInEditingState: boolean }>()(
     (theme, { isInEditingState, isDarker }) => ({
         "root": {
-            "backgroundColor": isDarker ?
-                theme.colors.useCases.surfaces.background :
-                "transparent",
+            "backgroundColor": isDarker
+                ? theme.colors.useCases.surfaces.background
+                : "transparent",
             "& .MuiTextField-root": {
-                "width": "100%"
-            }
+                "width": "100%",
+            },
         },
         "dollarSign": {
-            "color": isInEditingState ?
-                theme.colors.useCases.typography.textDisabled :
-                theme.colors.useCases.typography.textFocus
+            "color": isInEditingState
+                ? theme.colors.useCases.typography.textDisabled
+                : theme.colors.useCases.typography.textFocus,
         },
         "valueAndResolvedValue": {
             "padding": theme.spacing(2, 1),
             //"wordBreak": "break-all"
         },
         "keyAndValueTableCells": {
-            "padding": isInEditingState ? theme.spacing(0, 2) : undefined
-        }
-    })
+            "padding": isInEditingState ? theme.spacing(0, 2) : undefined,
+        },
+    }),
 );
 
 export const MySecretsEditorRow = memo((props: Props) => {
-
     const { t } = useTranslation("MySecretsEditorRow");
 
     const {
@@ -90,86 +88,81 @@ export const MySecretsEditorRow = memo((props: Props) => {
         getResolvedValue,
         getIsValidAndAvailableKey,
         onStartEdit,
-        evtAction
+        evtAction,
     } = props;
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
-    useEffect(
-        () => {
+    useEffect(() => {
+        if (!isInEditingState) {
+            return;
+        }
 
-            if (!isInEditingState) {
-                return;
-            }
-
-            onStartEdit();
-
-        },
-        [isInEditingState, onStartEdit]
-    );
+        onStartEdit();
+    }, [isInEditingState, onStartEdit]);
 
     useEvt(
         ctx => {
             evtAction.attach(
                 action => action === "ENTER EDITING STATE",
                 ctx,
-                () => setIsInEditingState(true)
+                () => setIsInEditingState(true),
             );
             evtAction.attach(
-                action => (
-                    action === "SUBMIT EDIT" &&
-                    isInEditingState
-                ),
+                action => action === "SUBMIT EDIT" && isInEditingState,
                 ctx,
-                () => onSubmitButtonClick()
+                () => onSubmitButtonClick(),
             );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [evtAction, isInEditingState]
+        [evtAction, isInEditingState],
     );
 
-    const [evtInputAction] = useState(
-        () => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
+    const [evtInputAction] = useState(() =>
+        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
     );
 
-    const [evtEdited] = useState(() => Evt.create<{ editedKey?: string; editedStrValue?: string; }>({}));
+    const [evtEdited] = useState(() =>
+        Evt.create<{ editedKey?: string; editedStrValue?: string }>({}),
+    );
 
     const onSubmitFactory = useCallbackFactory(
-        ([inputTarget]: [keyof UnpackEvt<typeof evtEdited>], [value]: [Param0<TextFieldProps["onSubmit"]>]) =>
-            evtEdited.state = { ...evtEdited.state, [inputTarget]: value }
+        (
+            [inputTarget]: [keyof UnpackEvt<typeof evtEdited>],
+            [value]: [Param0<TextFieldProps["onSubmit"]>],
+        ) => (evtEdited.state = { ...evtEdited.state, [inputTarget]: value }),
     );
 
     useEvt(
-        ctx => evtEdited.attach(
-            ({ editedKey, editedStrValue }) =>
-                editedKey !== undefined && editedStrValue !== undefined,
-            ctx,
-            ({ editedKey, editedStrValue }) => {
+        ctx =>
+            evtEdited.attach(
+                ({ editedKey, editedStrValue }) =>
+                    editedKey !== undefined && editedStrValue !== undefined,
+                ctx,
+                ({ editedKey, editedStrValue }) => {
+                    evtEdited.state = {};
 
-                evtEdited.state = {};
+                    setIsInEditingState(false);
 
-                setIsInEditingState(false);
+                    if (editedKey === key) {
+                        editedKey = undefined;
+                    }
 
-                if (editedKey === key) {
-                    editedKey = undefined;
-                }
+                    if (editedStrValue === strValue) {
+                        editedStrValue = undefined;
+                    }
 
-                if (editedStrValue === strValue) {
-                    editedStrValue = undefined;
-                }
+                    if (
+                        editedKey === undefined &&
+                        editedStrValue === undefined
+                    ) {
+                        return;
+                    }
 
-                if (
-                    editedKey === undefined &&
-                    editedStrValue === undefined
-                ) {
-                    return;
-                }
-
-                onEdit({ editedKey, editedStrValue });
-
-            }
-        ),
-        [evtEdited, onEdit, key, strValue]
+                    onEdit({ editedKey, editedStrValue });
+                },
+            ),
+        [evtEdited, onEdit, key, strValue],
     );
 
     const [isValidKey, setIsValidKey] = useState(false);
@@ -177,198 +170,226 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const isSubmitButtonDisabled = isLocked || !isValidKey || !isValidStrValue;
 
-    const onSubmitButtonClick = useConstCallback(
-        () => {
-            evtInputAction.post("TRIGGER SUBMIT");
-            //setIsInEditingState(false);
-        }
+    const onSubmitButtonClick = useConstCallback(() => {
+        evtInputAction.post("TRIGGER SUBMIT");
+        //setIsInEditingState(false);
+    });
+
+    const onEscapeKeyDown = useConstCallback(() =>
+        evtInputAction.post("RESTORE DEFAULT VALUE"),
     );
 
-    const onEscapeKeyDown = useConstCallback(
-        () => evtInputAction.post("RESTORE DEFAULT VALUE")
-    );
-
-    const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
-
-
+    const onEnterKeyDown = isSubmitButtonDisabled
+        ? undefined
+        : onSubmitButtonClick;
 
     const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
 
     const onValueBeingTypedChange_key = useConstCallback(
-        ({ isValidValue }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
-            setIsValidKey(isValidValue)
+        ({
+            isValidValue,
+        }: Parameters<
+            NonNullable<TextFieldProps["onValueBeingTypedChange"]>
+        >[0]) => setIsValidKey(isValidValue),
     );
 
     const onValueBeingTypedChange_strValue = useConstCallback(
-        ({ isValidValue, value }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
-
+        ({
+            isValidValue,
+            value,
+        }: Parameters<
+            NonNullable<TextFieldProps["onValueBeingTypedChange"]>
+        >[0]) => {
             setIsValidStrValue(isValidValue);
 
             setStrValueBeingTyped(value);
-
-        }
+        },
     );
 
-    const onEditButtonClick = useConstCallback(
-        () => setIsInEditingState(true)
-    );
+    const onEditButtonClick = useConstCallback(() => setIsInEditingState(true));
 
     //NOTE: We don't want to use useMemo here because the resolved values depends on other keys.
-    const resolveValueResult = getResolvedValue(
-        { "strValue": isInEditingState ? strValueBeingTyped : strValue }
-    );
+    const resolveValueResult = getResolvedValue({
+        "strValue": isInEditingState ? strValueBeingTyped : strValue,
+    });
 
     const getIsValidValue_key = useConstCallback(
-        (value: Parameters<NonNullable<TextFieldProps["getIsValidValue"]>>[0]) => {
-
+        (
+            value: Parameters<
+                NonNullable<TextFieldProps["getIsValidValue"]>
+            >[0],
+        ) => {
             const result = getIsValidAndAvailableKey({ "key": value });
 
-            return result.isValidAndAvailableKey ?
-                { "isValidValue": true } as const :
-                { "isValidValue": false, "message": result.message } as const;
-
-        }
+            return result.isValidAndAvailableKey
+                ? ({ "isValidValue": true } as const)
+                : ({
+                      "isValidValue": false,
+                      "message": result.message,
+                  } as const);
+        },
     );
 
     const getIsValidValue_strValue = useConstCallback(
         (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
-
             const resolveValueResult = getResolvedValue({ "strValue": value });
 
-            return resolveValueResult.isResolvedSuccessfully ?
-                { "isValidValue": true } as const :
-                { "isValidValue": false, "message": resolveValueResult.message } as const;
-
-        }
+            return resolveValueResult.isResolvedSuccessfully
+                ? ({ "isValidValue": true } as const)
+                : ({
+                      "isValidValue": false,
+                      "message": resolveValueResult.message,
+                  } as const);
+        },
     );
 
-    const { classNames } = useClassNames({ ...props, isInEditingState });
+    const { classes } = useStyles({ ...props, isInEditingState });
 
     const SmartTrim = useMemo(
         () =>
-            function SmartTim(props: {
-                className: string;
-                children: string;
-            }) {
-
+            function SmartTim(props: { className: string; children: string }) {
                 const { children, className } = props;
 
                 return (
-                    <Typography className={cx(css({
-                        "textOverflow": "ellipsis",
-                        "overflow": "hidden",
-                        "whiteSpace": "nowrap"
-                    }), className)}>
+                    <Text
+                        typo="body 1"
+                        className={cx(
+                            css({
+                                "textOverflow": "ellipsis",
+                                "overflow": "hidden",
+                                "whiteSpace": "nowrap",
+                            }),
+                            className,
+                        )}
+                    >
                         {children}
-                    </Typography>
+                    </Text>
                 );
-
             },
-        []
+        [],
     );
 
     const theme = useTheme();
 
-    const { ref, domRect: { width } } = useDomRect();
+    const {
+        ref,
+        domRect: { width },
+    } = useDomRect();
 
     return (
-        <TableRow ref={ref} className={classNames.root}>
+        <TableRow ref={ref} className={classes.root}>
             <TableCell>
-                <Typography
-                    variant="body1"
+                <Text
+                    typo="body 1"
                     className={cx(
-                        classNames.dollarSign,
-                        css({ "padding": theme.spacing(2, 1) })
+                        classes.dollarSign,
+                        css({ "padding": theme.spacing(2, 1) }),
                     )}
                 >
                     $
-                </Typography>
+                </Text>
             </TableCell>
-            <TableCell className={classNames.keyAndValueTableCells}>
-                {
-                    !isInEditingState ?
-                        <Typography
-                            variant="body1"
-                            className={css({ "padding": theme.spacing(2, 1) })}
-                        >
-                            {key}
-                        </Typography>
-                        :
-                        <TextField
-                            defaultValue={key}
-                            inputProps_aria-label={t("key input desc")}
-                            inputProps_autoFocus={true}
-                            onEscapeKeyDown={onEscapeKeyDown}
-                            onEnterKeyDown={onEnterKeyDown}
-                            evtAction={evtInputAction}
-                            onSubmit={onSubmitFactory("editedKey")}
-                            getIsValidValue={getIsValidValue_key}
-                            onValueBeingTypedChange={onValueBeingTypedChange_key}
-                            transformValueBeingTyped={toUpperCase}
-                            doOnlyValidateInputAfterFistFocusLost={false}
-                        />
-                }</TableCell>
-            <TableCell className={cx(classNames.keyAndValueTableCells, css(
-                [width * 0.36].map(width => ({ width, "maxWidth": width }))[0]
-            ))}>{
-                    !isInEditingState ?
-                        <SmartTrim className={classNames.valueAndResolvedValue}>
-                            {strValue}
-                        </SmartTrim>
-                        :
-                        <TextField
-                            defaultValue={strValue}
-                            inputProps_aria-label={t("value input desc")}
-                            onEscapeKeyDown={onEscapeKeyDown}
-                            onEnterKeyDown={onEnterKeyDown}
-                            evtAction={evtInputAction}
-                            onSubmit={onSubmitFactory("editedStrValue")}
-                            getIsValidValue={getIsValidValue_strValue}
-                            onValueBeingTypedChange={onValueBeingTypedChange_strValue}
-                            doOnlyValidateInputAfterFistFocusLost={false}
-                        />
-                }</TableCell>
-            <TableCell>{
-                !resolveValueResult.isResolvedSuccessfully ?
-                    null :
+            <TableCell className={classes.keyAndValueTableCells}>
+                {!isInEditingState ? (
+                    <Text
+                        typo="body 1"
+                        className={css({ "padding": theme.spacing(2, 1) })}
+                    >
+                        {key}
+                    </Text>
+                ) : (
+                    <TextField
+                        defaultValue={key}
+                        inputProps_aria-label={t("key input desc")}
+                        inputProps_autoFocus={true}
+                        onEscapeKeyDown={onEscapeKeyDown}
+                        onEnterKeyDown={onEnterKeyDown}
+                        evtAction={evtInputAction}
+                        onSubmit={onSubmitFactory("editedKey")}
+                        getIsValidValue={getIsValidValue_key}
+                        onValueBeingTypedChange={onValueBeingTypedChange_key}
+                        transformValueBeingTyped={toUpperCase}
+                        doOnlyValidateInputAfterFistFocusLost={false}
+                    />
+                )}
+            </TableCell>
+            <TableCell
+                className={cx(
+                    classes.keyAndValueTableCells,
+                    css(
+                        [width * 0.36].map(width => ({
+                            width,
+                            "maxWidth": width,
+                        }))[0],
+                    ),
+                )}
+            >
+                {!isInEditingState ? (
+                    <SmartTrim className={classes.valueAndResolvedValue}>
+                        {strValue}
+                    </SmartTrim>
+                ) : (
+                    <TextField
+                        defaultValue={strValue}
+                        inputProps_aria-label={t("value input desc")}
+                        onEscapeKeyDown={onEscapeKeyDown}
+                        onEnterKeyDown={onEnterKeyDown}
+                        evtAction={evtInputAction}
+                        onSubmit={onSubmitFactory("editedStrValue")}
+                        getIsValidValue={getIsValidValue_strValue}
+                        onValueBeingTypedChange={
+                            onValueBeingTypedChange_strValue
+                        }
+                        doOnlyValidateInputAfterFistFocusLost={false}
+                    />
+                )}
+            </TableCell>
+            <TableCell>
+                {!resolveValueResult.isResolvedSuccessfully ? null : (
                     <SmartTrim
                         className={cx(
-                            classNames.valueAndResolvedValue,
-                            css({ "color": theme.colors.palette.light.greyVariant3 })
+                            classes.valueAndResolvedValue,
+                            css({
+                                "color":
+                                    theme.colors.palette.light.greyVariant3,
+                            }),
                         )}
                     >
                         {resolveValueResult.resolvedValue}
                     </SmartTrim>
-
-            }</TableCell>
+                )}
+            </TableCell>
             <TableCell align="right">
                 <div className={css({ "display": "flex" })}>
                     <IconButton
-                        id={isInEditingState ? "check" : "edit"}
-                        disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
-                        onClick={isInEditingState ? onSubmitButtonClick : onEditButtonClick}
-                        fontSize="small"
+                        iconId={isInEditingState ? "check" : "edit"}
+                        disabled={
+                            isInEditingState ? isSubmitButtonDisabled : isLocked
+                        }
+                        onClick={
+                            isInEditingState
+                                ? onSubmitButtonClick
+                                : onEditButtonClick
+                        }
+                        size="small"
                     />
                     <IconButton
                         disabled={isLocked}
-                        id="delete"
+                        iconId="delete"
                         onClick={onDelete}
-                        fontSize="small"
+                        size="small"
                     />
                 </div>
             </TableCell>
         </TableRow>
     );
-
 });
 
 export declare namespace MySecretsEditorRow {
-
     export type I18nScheme = {
-        'key input desc': undefined;
-        'value input desc': undefined;
+        "key input desc": undefined;
+        "value input desc": undefined;
     };
-
 }
 
 function toUpperCase(value: string) {

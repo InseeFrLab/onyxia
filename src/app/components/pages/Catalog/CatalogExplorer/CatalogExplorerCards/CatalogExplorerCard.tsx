@@ -1,60 +1,55 @@
-
 import { memo } from "react";
-import { createUseClassNames } from "app/theme";
-import { RoundLogo } from "app/components/shared/RoundLogo";
-import { Typography } from "onyxia-ui";
-import { Button } from "app/theme";
+import { makeStyles, Text } from "app/theme";
+import { RoundLogo } from "app/components/shared/RoundLogo";
+import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { cx } from "tss-react";
-import { capitalize } from "app/tools/capitalize";
+import { capitalize } from "tsafe/capitalize";
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "&:hover": {
-                "boxShadow": theme.shadows[6]
-            },
-            "display": "flex",
-            "flexDirection": "column"
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[1],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "&:hover": {
+            "boxShadow": theme.shadows[6],
         },
-        "aboveDivider": {
-            "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box"
-        },
-        "title": {
-            "marginTop": theme.spacing(2)
-        },
-        "belowDivider": {
-            "padding": theme.spacing(3),
-            "paddingTop": theme.spacing(2),
-            "flex": 1,
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "hidden"
-        },
-        "body": {
-            "margin": 0,
-            "flex": 1,
-            //TODO: Commented out for mozilla (longer one always have scroll in a grid)
-            //"overflow": "auto"
-        },
-        "bodyTypo": {
-            "color": theme.colors.useCases.typography.textSecondary
-        },
-        "buttonsWrapper": {
-            "display": "flex",
-            "justifyContent": "flex-end",
-            "marginTop": theme.spacing(3)
-        },
-        "launchButton": {
-            "marginLeft": theme.spacing(1)
-        }
-    })
-);
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "aboveDivider": {
+        "padding": theme.spacing(2, 3),
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "boxSizing": "border-box",
+    },
+    "title": {
+        "marginTop": theme.spacing(2),
+    },
+    "belowDivider": {
+        "padding": theme.spacing(3),
+        "paddingTop": theme.spacing(2),
+        "flex": 1,
+        "display": "flex",
+        "flexDirection": "column",
+        "overflow": "hidden",
+    },
+    "body": {
+        "margin": 0,
+        "flex": 1,
+        //TODO: Commented out for mozilla (longer one always have scroll in a grid)
+        //"overflow": "auto"
+    },
+    "bodyTypo": {
+        "color": theme.colors.useCases.typography.textSecondary,
+    },
+    "buttonsWrapper": {
+        "display": "flex",
+        "justifyContent": "flex-end",
+        "marginTop": theme.spacing(3),
+    },
+    "launchButton": {
+        "marginLeft": theme.spacing(1),
+    },
+}));
 
 export type Props = {
     className?: string;
@@ -66,67 +61,57 @@ export type Props = {
 };
 
 export const CatalogExplorerCard = memo((props: Props) => {
-
     const {
         className,
         packageIconUrl,
         packageName,
         packageDescription,
         packageHomeUrl,
-        onRequestLaunch
+        onRequestLaunch,
     } = props;
 
-    const { classNames } = useClassNames({});
+    const { classes, cx } = useStyles();
 
     const { t } = useTranslation("CatalogExplorerCard");
 
     return (
-        <div className={cx(classNames.root, className)}>
-            <div className={classNames.aboveDivider}>
-                {packageIconUrl !== undefined &&
-                    <RoundLogo url={packageIconUrl} />}
-                <Typography
-                    className={classNames.title}
-                    variant="h5"
-                >
+        <div className={cx(classes.root, className)}>
+            <div className={classes.aboveDivider}>
+                {packageIconUrl !== undefined && (
+                    <RoundLogo url={packageIconUrl} />
+                )}
+                <Text className={classes.title} typo="object heading">
                     {capitalize(packageName)}
-                </Typography>
-
+                </Text>
             </div>
-            <div className={classNames.belowDivider}>
-                <div className={classNames.body} >
-                    <Typography 
-                        variant="body1" 
-                        className={classNames.bodyTypo}
-                    >
+            <div className={classes.belowDivider}>
+                <div className={classes.body}>
+                    <Text typo="body 1" className={classes.bodyTypo}>
                         {packageDescription}
-                    </Typography>
+                    </Text>
                 </div>
-                <div className={classNames.buttonsWrapper}>
-                    {packageHomeUrl !== undefined &&
-                        <Button
-                            href={packageHomeUrl}
-                            color="ternary"
-                        >
+                <div className={classes.buttonsWrapper}>
+                    {packageHomeUrl !== undefined && (
+                        <Button href={packageHomeUrl} variant="ternary">
                             {t("learn more")}
-                        </Button>}
+                        </Button>
+                    )}
                     <Button
-                        className={classNames.launchButton}
-                        color="secondary"
+                        className={classes.launchButton}
+                        variant="secondary"
                         onClick={onRequestLaunch}
-                    >{t("launch")}</Button>
+                    >
+                        {t("launch")}
+                    </Button>
                 </div>
-
             </div>
         </div>
     );
-
 });
 
 export declare namespace CatalogExplorerCard {
-
     export type I18nScheme = {
-        'learn more': undefined;
+        "learn more": undefined;
         launch: undefined;
     };
 }

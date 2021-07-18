@@ -1,59 +1,54 @@
-
-
 import { memo } from "react";
-import { createUseClassNames } from "app/theme";
-import { Typography } from "onyxia-ui";
-import { Button } from "app/theme";
+import { makeStyles } from "app/theme";
+import { Button, Text } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { cx } from "tss-react";
-import { capitalize } from "app/tools/capitalize";
+
+import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { IconButton } from "app/theme";
-import { CircularProgress } from "onyxia-ui";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "&:hover": {
-                "boxShadow": theme.shadows[6]
-            },
-            "display": "flex",
-            "flexDirection": "column"
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[1],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "&:hover": {
+            "boxShadow": theme.shadows[6],
         },
-        "aboveDivider": {
-            "padding": theme.spacing(2, 3),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box"
-        },
-        "title": {
-            "marginTop": theme.spacing(2)
-        },
-        "belowDivider": {
-            "padding": theme.spacing(3),
-            "paddingTop": theme.spacing(2),
-            "flex": 1,
-        },
-        "timeContainer": {
-            "marginLeft": theme.spacing(4)
-        },
-        "belowDividerTop": {
-            "display": "flex",
-            "marginBottom": theme.spacing(3)
-        },
-        "captions": {
-            "display": "inline-block",
-            "marginBottom": theme.spacing(1)
-        },
-        "belowDividerBottom": {
-            "display": "flex",
-            "alignItems": "center"
-        }
-    })
-);
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "aboveDivider": {
+        "padding": theme.spacing(2, 3),
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "boxSizing": "border-box",
+    },
+    "title": {
+        "marginTop": theme.spacing(2),
+    },
+    "belowDivider": {
+        "padding": theme.spacing(3),
+        "paddingTop": theme.spacing(2),
+        "flex": 1,
+    },
+    "timeContainer": {
+        "marginLeft": theme.spacing(4),
+    },
+    "belowDividerTop": {
+        "display": "flex",
+        "marginBottom": theme.spacing(3),
+    },
+    "captions": {
+        "display": "inline-block",
+        "marginBottom": theme.spacing(1),
+    },
+    "belowDividerBottom": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+}));
 
 export type Props = {
     className?: string;
@@ -71,7 +66,6 @@ export type Props = {
 };
 
 export const MyServicesCard = memo((props: Props) => {
-
     const {
         className,
         packageIconUrl,
@@ -83,92 +77,92 @@ export const MyServicesCard = memo((props: Props) => {
         monitoringUrl,
         openUrl,
         startTime,
-        isOvertime
+        isOvertime,
     } = props;
 
-    const { classNames } = useClassNames({});
+    const { classes, cx } = useStyles();
 
     const { t } = useTranslation("MyServicesCard");
 
     return (
-        <div className={cx(classNames.root, className)}>
-            <div className={classNames.aboveDivider}>
+        <div className={cx(classes.root, className)}>
+            <div className={classes.aboveDivider}>
                 <MyServicesRoundLogo
                     url={packageIconUrl}
-                    circleColor={isOvertime ? "red" : startTime === undefined ? "grey" : "green"}
+                    circleColor={
+                        isOvertime
+                            ? "red"
+                            : startTime === undefined
+                            ? "grey"
+                            : "green"
+                    }
                 />
-                <Typography
-                    className={classNames.title}
-                    variant="h5"
-                >
+                <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
-                </Typography>
-
+                </Text>
             </div>
-            <div className={classNames.belowDivider}>
-                <div className={classNames.belowDividerTop}>
+            <div className={classes.belowDivider}>
+                <div className={classes.belowDividerTop}>
                     <div>
-                        <Typography
-                            variant="caption"
-                            className={classNames.captions}
-                        >
+                        <Text typo="caption" className={classes.captions}>
                             {t("service")}
-                        </Typography>
-                        <Typography variant="subtitle1">
-                            {capitalize(packageName)}
-                        </Typography>
+                        </Text>
+                        <Text typo="subtitle">{capitalize(packageName)}</Text>
                     </div>
-                    <div className={classNames.timeContainer}>
-                        <Typography
-                            variant="caption"
-                            className={classNames.captions}
-                        >
+                    <div className={classes.timeContainer}>
+                        <Text typo="caption" className={classes.captions}>
                             {t("running since")}
-                        </Typography>
-                        {
-                            startTime === undefined ?
-                                <MyServicesRunningTime isRunning={false} /> :
-                                <MyServicesRunningTime isRunning={true} isOvertime={isOvertime} startTime={startTime} />
-                        }
+                        </Text>
+                        {startTime === undefined ? (
+                            <MyServicesRunningTime isRunning={false} />
+                        ) : (
+                            <MyServicesRunningTime
+                                isRunning={true}
+                                isOvertime={isOvertime}
+                                startTime={startTime}
+                            />
+                        )}
                     </div>
                 </div>
-                <div className={classNames.belowDividerBottom}>
-                    <IconButton id="infoOutlined" doOpenNewTabIfHref={false} href={infoUrl} />
-                    <IconButton id="delete" onClick={onRequestDelete} />
-                    {monitoringUrl !== undefined &&
-                        <IconButton id="equalizer" href={monitoringUrl} />}
-                    {onRequestShowPostInstallInstructions !== undefined &&
+                <div className={classes.belowDividerBottom}>
+                    <IconButton
+                        iconId="infoOutlined"
+                        doOpenNewTabIfHref={false}
+                        href={infoUrl}
+                    />
+                    <IconButton iconId="delete" onClick={onRequestDelete} />
+                    {monitoringUrl !== undefined && (
+                        <IconButton iconId="equalizer" href={monitoringUrl} />
+                    )}
+                    {onRequestShowPostInstallInstructions !== undefined && (
                         <Button
                             onClick={onRequestShowPostInstallInstructions}
-                            color="ternary"
+                            variant="ternary"
                         >
                             <span>{t("readme").toUpperCase()}</span>
                         </Button>
-                    }
+                    )}
                     <div style={{ "flex": 1 }} />
-                    {startTime === undefined ?
+                    {startTime === undefined ? (
                         <CircularProgress color="textPrimary" size={20} />
-                        :
-                        openUrl &&
-                        <Button
-                            color="secondary"
-                            href={openUrl}
-                        >{t("open")}</Button>
-                    }
+                    ) : (
+                        openUrl && (
+                            <Button variant="secondary" href={openUrl}>
+                                {t("open")}
+                            </Button>
+                        )
+                    )}
                 </div>
-
             </div>
         </div>
     );
-
 });
 
 export declare namespace MyServicesCard {
-
     export type I18nScheme = {
         service: undefined;
-        'running since': undefined;
+        "running since": undefined;
         open: undefined;
-        'readme': undefined;
+        "readme": undefined;
     };
 }

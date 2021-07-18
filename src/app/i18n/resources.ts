@@ -1,7 +1,6 @@
 import { symToStr } from "app/tools/symToStr";
 import { Reflect } from "app/tools/Reflect";
 import { id } from "tsafe/id";
-
 import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/shared/Explorer";
 import { ExplorerItems } from "app/components/shared/Explorer/ExplorerItems";
@@ -55,46 +54,77 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
-    [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ MySecretsEditorRow })]:
+        Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
-    [symToStr({ PortraitModeUnsupported })]: Reflect<PortraitModeUnsupported.I18nScheme>(),
+    [symToStr({ PortraitModeUnsupported })]:
+        Reflect<PortraitModeUnsupported.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
     [symToStr({ AccountField })]: Reflect<AccountField.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
-    [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
+    [symToStr({ AccountIntegrationsTab })]:
+        Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
-    [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
-    [symToStr({ CatalogExplorerSearchBar })]: Reflect<CatalogExplorerSearchBar.I18nScheme>(),
-    [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
-    [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
+    [symToStr({ AccountUserInterfaceTab })]:
+        Reflect<AccountUserInterfaceTab.I18nScheme>(),
+    [symToStr({ CatalogExplorerSearchBar })]:
+        Reflect<CatalogExplorerSearchBar.I18nScheme>(),
+    [symToStr({ CatalogExplorerCard })]:
+        Reflect<CatalogExplorerCard.I18nScheme>(),
+    [symToStr({ CatalogExplorerCards })]:
+        Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
-    [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
-    [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherMainCard })]:
+        Reflect<CatalogLauncherMainCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherConfigurationCard })]:
+        Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
     [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
-    [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
+    [symToStr({ MyServicesButtonBar })]:
+        Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
-    [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
+    [symToStr({ MyServicesRunningTime })]:
+        Reflect<MyServicesRunningTime.I18nScheme>(),
     [symToStr({ ChangeLanguage })]: Reflect<ChangeLanguage.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfigOptions })]: Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfigOptions })]:
+        Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfig })]:
+        Reflect<MyServicesSavedConfig.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfigs })]:
+        Reflect<MyServicesSavedConfigs.I18nScheme>(),
     [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),
     [symToStr({ LoginDivider })]: Reflect<LoginDivider.I18nScheme>(),
-    [symToStr({ Login })]: Reflect<Login.I18nScheme>()
+    [symToStr({ Login })]: Reflect<Login.I18nScheme>(),
 };
 
 export type I18nSchemes = typeof reflectedI18nSchemes;
 
-export type Translations = { [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]> };
+export type Translations = {
+    [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]>;
+};
 
 export type SupportedLanguage = "en" | "fr";
 
-const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here", string>>>({
+const common = id<
+    Record<
+        SupportedLanguage,
+        Record<
+            | "file"
+            | "secret"
+            | "create"
+            | "cancel"
+            | "rename"
+            | "delete"
+            | "ok"
+            | "here",
+            string
+        >
+    >
+>({
     "en": {
         "file": "file",
         "secret": "secret",
@@ -103,7 +133,7 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
         "rename": "rename",
         "delete": "delete",
         "ok": "Ok",
-        "here": "here"
+        "here": "here",
     },
     "fr": {
         /* spell-checker: disable */
@@ -114,10 +144,10 @@ const common = id<Record<SupportedLanguage, Record<"file" | "secret" | "create" 
         "rename": "renommer",
         "delete": "supprimer",
         "ok": "Ok",
-        "here": "ici"
+        "here": "ici",
         /* spell-checker: enable */
-    }
-})
+    },
+});
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
@@ -128,8 +158,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user-interface": "Interface preferences",
             "text1": "My account",
             "text2": "Access your different account information.",
-            "text3": "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
-            "personal tokens tooltip": "Password that are generated for you and that have a given validity period"
+            "text3":
+                "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
+            "personal tokens tooltip":
+                "Password that are generated for you and that have a given validity period",
         },
         "AccountInfoTab": {
             "general information": "General information",
@@ -140,7 +172,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "auth information": "Onyxia authentication information",
             "auth information helper": `Theses information allows you to identify yourself
             within the platform and the various services.`,
-            "ip address": "IP Address"
+            "ip address": "IP Address",
         },
         "AccountIntegrationsTab": {
             "git section title": "Git configuration",
@@ -148,29 +180,37 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             as the author of Git contributions`,
             "gitName": "Username for Git",
             "gitEmail": "Email for Git",
-            "third party tokens section title": "Connect your Gitlab, Github and Kaggle accounts",
+            "third party tokens section title":
+                "Connect your Gitlab, Github and Kaggle accounts",
             "third party tokens section helper": `
                 Connect your services to external accounts using 
                 personal access tokens and environment variables
             `,
             "personal token": "{{serviceName}} personal access token",
             "link for token creation": "Create your {{serviceName}} token.",
-            "accessible as env": "Accessible withing your services as the environnement variable"
+            "accessible as env":
+                "Accessible withing your services as the environnement variable",
         },
         "AccountStorageTab": {
             "credentials section title": "Connect your data to your services",
-            "credentials section helper": "Amazon-compatible MinIO object storage (AWS S3). This information is already filled in automatically.",
-            "accessible as env": "Accessible withing your services as the environnement variable:",
-            "init script section title": "To access your storage outside of datalab services",
-            "init script section helper": "Download or copy the init script in the programming language of your choice.",
-            "valid until": "Valid until {{when}}"
+            "credentials section helper":
+                "Amazon-compatible MinIO object storage (AWS S3). This information is already filled in automatically.",
+            "accessible as env":
+                "Accessible withing your services as the environnement variable:",
+            "init script section title":
+                "To access your storage outside of datalab services",
+            "init script section helper":
+                "Download or copy the init script in the programming language of your choice.",
+            "valid until": "Valid until {{when}}",
         },
         "AccountUserInterfaceTab": {
             "title": "Interface preferences",
             "enable dark mode": "Enable dark mode",
-            "dark mode helper": "Low light interface theme with dark colored background.",
+            "dark mode helper":
+                "Low light interface theme with dark colored background.",
             "enable beta": "Enable beta-test mode",
-            "beta mode helper": "For advanced platform configurations and features.",
+            "beta mode helper":
+                "For advanced platform configurations and features.",
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
@@ -184,43 +224,44 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not yet defined": "Not yet defined",
             "reset helper dialogs": "Reset instructions windows",
             "reset": "Reset",
-            "reset helper dialogs helper text": "Reset message windows that have been requested not to be shown again"
+            "reset helper dialogs helper text":
+                "Reset message windows that have been requested not to be shown again",
         },
         "Register": {
             "required field": "Required field",
             "not a valid": "This is not a valid {{what}}",
             "allowed email domains": "Allowed domains",
             "alphanumerical chars only": "Only alphanumerical characters",
-            "username question mark helper text": "No spaces or special characters (#,*,é,...)",
+            "username question mark helper text":
+                "No spaces or special characters (#,*,é,...)",
             "minimum length": "Minimum length: {{n}}",
             "must be different from username": "Pass can't be the username",
             "password mismatch": "Passwords mismatch",
             "go back": "Go back",
-            "form not filled properly yet": "Please make sure the form is properly filled out"
+            "form not filled properly yet":
+                "Please make sure the form is properly filled out",
         },
         "MySecrets": {
             ...common.en,
             "page title": "My Secrets",
-            "what this page is used for":
-                `Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
+            "what this page is used for": `Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
             "to learn more": "To learn more about secrets management,",
-            "read our documentation": "read our documentation."
+            "read our documentation": "read our documentation.",
         },
         "ExplorerItem": {
-            "description": "description"
+            "description": "description",
         },
         "ExplorerButtonBar": {
             ...common.en,
             "copy path": "Use in a service",
             "create directory": "Create directory",
             "create what": "Create {{what}}",
-            "refresh": "refresh"
+            "refresh": "refresh",
         },
         "Explorer": {
             ...common.en,
             "untitled what": "untitled_{{what}}",
-            "folder": "folder"
-
+            "folder": "folder",
         },
         "ExplorerItems": {
             "empty directory": "This directory is empty",
@@ -246,7 +287,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid value cannot eval": "Invalid shell expression",
             "use this secret": `Use in services`,
             "use secret dialog title": "Use in a service",
-            "use secret dialog subtitle": "The path of the secret have been copied",
+            "use secret dialog subtitle":
+                "The path of the secret have been copied",
             "use secret dialog body": `
                 When you launch a service (RStudio, Jupyter, ect) go to the
                 secret tab and and paste the path of the secret provided for this 
@@ -254,15 +296,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 The values will be injected as environnement variable.
             `,
             "use secret dialog ok": "Got it",
-            "do not display again": "Don't display again"
+            "do not display again": "Don't display again",
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
-            "value input desc": "Environnement variable value"
+            "value input desc": "Environnement variable value",
         },
         "Header": {
             "login": "Login",
-            "logout": "Logout"
+            "logout": "Logout",
         },
         "LeftBar": {
             "toggle isExpanded": "Reduce",
@@ -273,60 +315,70 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
             "trainings": "Trainings",
-            "sharedServices": "Shared services"
+            "sharedServices": "Shared services",
             //"tour": "Guided Tour"
         },
         "FourOhFour": {
-            "not found": "Page not found"
+            "not found": "Page not found",
         },
         "PortraitModeUnsupported": {
             "portrait mode not supported": "Portrait mode isn't supported yet",
-            "instructions": "To use this app on your phone please enable the rotation sensor and turn your phone."
+            "instructions":
+                "To use this app on your phone please enable the rotation sensor and turn your phone.",
         },
         "Home": {
             "welcome": `Welcome {{who}}!`,
             "title": "Welcome ont the SSP Cloud's datalab",
             "new user": "New to the datalab?",
             "login": "Login",
-            "subtitle": "Work with Python or R, enjoy all the computing power you need!",
+            "subtitle":
+                "Work with Python or R, enjoy all the computing power you need!",
             "cardTitle1": "An ergonomic environment and on-demand services",
-            "cardTitle2": "An active and enthusiastic community at your service",
+            "cardTitle2":
+                "An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",
-            "cardText1": "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
-            "cardText2": "Use and share the resources available to you: tutorials, training and exchange channels.",
-            "cardText3": "To easily access your data and those made available to you from your programs - S3 API implementation",
+            "cardText1":
+                "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
+            "cardText2":
+                "Use and share the resources available to you: tutorials, training and exchange channels.",
+            "cardText3":
+                "To easily access your data and those made available to you from your programs - S3 API implementation",
             "cardButton1": "Consult the catalog",
             "cardButton2": "Join the community",
-            "cardButton3": "Consult the data"
+            "cardButton3": "Consult the data",
         },
         "CatalogExplorerSearchBar": {
-            "search": "Search"
+            "search": "Search",
         },
         "CatalogExplorerCard": {
             "launch": "Launch",
-            "learn more": "Learn more"
+            "learn more": "Learn more",
         },
         "CatalogExplorerCards": {
             "show more": "Show more",
             "no service found": "No service found",
             "no result found": "No result found for {{forWhat}}",
-            "check spelling": "Please check your spelling or try widening your search.",
+            "check spelling":
+                "Please check your spelling or try widening your search.",
             "go back": "Back to main services",
             "main services": "Main services",
             "all services": "All services",
-            "search results": "Search result"
+            "search results": "Search result",
         },
         "Catalog": {
             "header text1": "Services catalog",
-            "header text2": "Explore, launch and configure services with just a few clicks.",
+            "header text2":
+                "Explore, launch and configure services with just a few clicks.",
             "all services are open sources": "All services are open source, ",
-            "contribute to the catalog": "contribute to the {{catalogId}} catalog",
-            "contribute to the package": "Find the sources of the {{packageName}} package ",
-            "here": "here"
+            "contribute to the catalog":
+                "contribute to the {{catalogId}} catalog",
+            "contribute to the package":
+                "Find the sources of the {{packageName}} package ",
+            "here": "here",
         },
         "Footer": {
             "contribute": "Contribute",
-            "terms of service": "Terms of service"
+            "terms of service": "Terms of service",
         },
         "CatalogLauncherMainCard": {
             "card title": "Create your personal services",
@@ -334,66 +386,70 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch": "Launch",
             "cancel": "Cancel",
             "copy url helper text": "Copy url to restore this configuration",
-            "save configuration": "Save this configuration"
+            "save configuration": "Save this configuration",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Global configuration",
             "configuration": "{{packageName}} configurations",
             "dependency": "{{dependencyName}} dependency",
-            "launch of a service": "A {{dependencyName}} service will be launched",
+            "launch of a service":
+                "A {{dependencyName}} service will be launched",
         },
         "MyServices": {
             "text1": "My Services",
             "text2": "Access your running services",
-            "text3": "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
+            "text3":
+                "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
             "running services": "Running services",
             "confirm terminate title": "Are you sure?",
-            "confirm terminate subtitle": "Make sure your service are ready to be terminated",
-            "confirm terminate body": "Don't forget to push your code on GitHub or GitLab before terminating your services",
+            "confirm terminate subtitle":
+                "Make sure your service are ready to be terminated",
+            "confirm terminate body":
+                "Don't forget to push your code on GitHub or GitLab before terminating your services",
             "cancel": "cancel",
-            "confirm": "Yes, terminate"
+            "confirm": "Yes, terminate",
         },
         "MyServicesButtonBar": {
             "refresh": "Refresh",
             "launch": "New service",
             "password": "Copy the services password",
-            "trash": "Terminate all"
+            "trash": "Terminate all",
         },
         "MyServicesCard": {
             "service": "Service",
             "running since": "Running since: ",
             "open": "open",
-            "readme": "readme"
+            "readme": "readme",
         },
         "MyServicesRunningTime": {
-            "launching": "Launching..."
+            "launching": "Launching...",
         },
         "ChangeLanguage": {
-            "change language": "Change language"
+            "change language": "Change language",
         },
         "MyServicesSavedConfigOptions": {
             "copy link": "Copy URL link",
-            "remove bookmark": "Delete"
+            "remove bookmark": "Delete",
         },
         "MyServicesSavedConfig": {
-            "launch": "Launch"
+            "launch": "Launch",
         },
         "MyServicesSavedConfigs": {
             "saved": "Saved",
-            "show all": "Show all ({{n}})"
+            "show all": "Show all ({{n}})",
         },
         "MyServicesCards": {
             "running services": "Running services",
             "no services running": "You don't have any service running",
             "launch one": "Click here to launch one",
-            "ok": "ok"
+            "ok": "ok",
         },
         "LoginDivider": {
-            "or": "or"
+            "or": "or",
         },
         "Login": {
-            "doRegister": "Create an account"
-        }
+            "doRegister": "Create an account",
+        },
     },
     "fr": {
         /* spell-checker: disable */
@@ -404,8 +460,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user-interface": "Modes d'interface",
             "text1": "Mon compte",
             "text2": "Accèdez à vos différentes informations de compte.",
-            "text3": "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
-            "personal tokens tooltip": "Ou en anglais \"token\"."
+            "text3":
+                "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
+            "personal tokens tooltip": 'Ou en anglais "token".',
         },
         "AccountInfoTab": {
             "general information": "Informations générales",
@@ -416,7 +473,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "auth information": "Informations d'authentification Onyxia",
             "auth information helper": `Ces informations vous permettent de vous identifier 
             au sein de la plateforme et des différents services.`,
-            "ip address": "Adresse IP"
+            "ip address": "Adresse IP",
         },
         "AccountIntegrationsTab": {
             "git section title": "Configurations Git",
@@ -424,27 +481,34 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             services comme l'auteur des contributions Git`,
             "gitName": "Nom d'utilisateur pour Git",
             "gitEmail": "Email pour Git",
-            "third party tokens section title": "Connecter vos comptes Gitlab, Github et Kaggle",
+            "third party tokens section title":
+                "Connecter vos comptes Gitlab, Github et Kaggle",
             "third party tokens section helper": `Connectez vos services à des comptes extérieurs à l'aide
             de jetons d'accès personnel et de variables d'environnement.`,
             "personal token": "Jeton d'accès personnel {{serviceName}}",
             "link for token creation": "Créer votre jeton {{serviceName}}.",
-            "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement"
+            "accessible as env":
+                "Accessible au sein de vos services en tant que la variable d'environnement",
         },
         "AccountStorageTab": {
             "credentials section title": "Connecter vos données à vos services",
-            "credentials section helper": "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
-            "accessible as env": "Accessible au sein de vos services en tant que la variable d'environnement",
-            "init script section title": "Pour accèder au stockage en dehors des services du datalab",
+            "credentials section helper":
+                "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
+            "accessible as env":
+                "Accessible au sein de vos services en tant que la variable d'environnement",
+            "init script section title":
+                "Pour accèder au stockage en dehors des services du datalab",
             "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-            "valid until": "Valides jusqu'a {{when}}"
+            "valid until": "Valides jusqu'a {{when}}",
         },
         "AccountUserInterfaceTab": {
             "title": "Configurer le mode d'interface",
             "enable dark mode": "Activer le mode sombre",
-            "dark mode helper": "Thème de l’interface à faible luminosité avec un fond de couleur sombre.",
+            "dark mode helper":
+                "Thème de l’interface à faible luminosité avec un fond de couleur sombre.",
             "enable beta": "Activer le mode béta-testeur",
-            "beta mode helper": "Pour des configurations et fonctionnalités avancées de la plateforme.",
+            "beta mode helper":
+                "Pour des configurations et fonctionnalités avancées de la plateforme.",
         },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",
@@ -458,41 +522,46 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not yet defined": "Non définie",
             "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
             "reset": "Réinitialiser",
-            "reset helper dialogs helper text": "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
+            "reset helper dialogs helper text":
+                "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher",
         },
         "Register": {
             "required field": "Champ requis",
             "not a valid": "Pas un {{what}} valide",
             "allowed email domains": "Domaines autorisés",
             "alphanumerical chars only": "Caractère alphanumérique uniquement",
-            "username question mark helper text": "Pas d'espace ni de caractères spéciaux (#,*,é, ect)",
+            "username question mark helper text":
+                "Pas d'espace ni de caractères spéciaux (#,*,é, ect)",
             "minimum length": "Longueur minimum {{n}}",
-            "must be different from username": "Ne peut pas être le nom d'utilisateur",
+            "must be different from username":
+                "Ne peut pas être le nom d'utilisateur",
             "password mismatch": "Les deux mots de passe ne correspondent pas",
             "go back": "Retour",
-            "form not filled properly yet": "Veuillez vérifier que vous avez bien rempli le formulaire"
+            "form not filled properly yet":
+                "Veuillez vérifier que vous avez bien rempli le formulaire",
         },
         "MySecrets": {
             ...common.fr,
             "page title": "Mes secrets",
             "what this page is used for": `Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.`,
-            "to learn more": "Pour en savoir plus sur l’utilisation de secrets,",
-            "read our documentation": "lisez notre documentation."
+            "to learn more":
+                "Pour en savoir plus sur l’utilisation de secrets,",
+            "read our documentation": "lisez notre documentation.",
         },
         "ExplorerItem": {
-            "description": "description"
+            "description": "description",
         },
         "ExplorerButtonBar": {
             ...common.fr,
             "copy path": "Utiliser dans le service",
             "create directory": "Nouveau dossier",
             "create what": "Nouveau {{what}}",
-            "refresh": "rafraîchir"
+            "refresh": "rafraîchir",
         },
         "Explorer": {
             ...common.fr,
             "untitled what": "{{what}}_sans_nom",
-            "folder": "dossier"
+            "folder": "dossier",
         },
         "ExplorerItems": {
             "empty directory": "Ce répertoire est vide",
@@ -515,7 +584,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "unavailable key": "Déjà utilisé",
             "invalid key empty string": "Un nom est requis",
             "invalid key _ not valid": "Ne peut pas être juste _",
-            "invalid key start with digit": "Ne doit pas commencer par un chiffre",
+            "invalid key start with digit":
+                "Ne doit pas commencer par un chiffre",
             "invalid key invalid character": "Caractère non valide",
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
@@ -528,15 +598,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
             `,
             "use secret dialog ok": "J'ai compris",
-            "do not display again": "Ne plus afficher"
+            "do not display again": "Ne plus afficher",
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
-            "value input desc": "Valeur de la variable d'environnement"
+            "value input desc": "Valeur de la variable d'environnement",
         },
         "Header": {
             "login": "Connexion",
-            "logout": "Déconnexion"
+            "logout": "Déconnexion",
         },
         "LeftBar": {
             "toggle isExpanded": "Réduire",
@@ -547,37 +617,46 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "mySecrets": "Mes secrets",
             "myBuckets": "Mes fichiers",
             "trainings": "Formations",
-            "sharedServices": "Services partagés"
+            "sharedServices": "Services partagés",
         },
         "FourOhFour": {
-            "not found": "Page non trouvée"
+            "not found": "Page non trouvée",
         },
         "PortraitModeUnsupported": {
-            "portrait mode not supported": "Le mode portrait n'est pas encore supporté",
-            "instructions": "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
+            "portrait mode not supported":
+                "Le mode portrait n'est pas encore supporté",
+            "instructions":
+                "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone.",
         },
         "Home": {
             "welcome": `Bienvenue {{who}}!`,
             "title": "Bienvenue sur le datalab du SSP Cloud",
             "login": "Connexion",
             "new user": "Nouvel utilisateur du datalab?",
-            "subtitle": "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
-            "cardTitle1": "Un environnement ergonomique et des services à la demande",
-            "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
-            "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
-            "cardText1": "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
-            "cardText2": "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
-            "cardText3": "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
+            "subtitle":
+                "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
+            "cardTitle1":
+                "Un environnement ergonomique et des services à la demande",
+            "cardTitle2":
+                "Une communauté active et enthousiaste à votre écoute",
+            "cardTitle3":
+                "Un espace de stockage de données rapide, flexible et en ligne",
+            "cardText1":
+                "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "cardText2":
+                "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
+            "cardText3":
+                "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
             "cardButton1": "Consulter le catalogue",
             "cardButton2": "Rejoindre la communauté",
-            "cardButton3": "Consulter des données"
+            "cardButton3": "Consulter des données",
         },
         "CatalogExplorerSearchBar": {
-            "search": "Rechercher"
+            "search": "Rechercher",
         },
         "CatalogExplorerCard": {
             "launch": "Lancer",
-            "learn more": "En savoir plus"
+            "learn more": "En savoir plus",
         },
         "CatalogExplorerCards": {
             "show more": "Afficher tous",
@@ -588,27 +667,32 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "go back": "Retourner aux principaux services",
             "main services": "Principaux services",
             "all services": "Tous les services",
-            "search results": "Résultats de la recherche"
+            "search results": "Résultats de la recherche",
         },
         "Catalog": {
             "header text1": "Catalogue de services",
-            "header text2": "Explorez, lancez et configurez des services en quelques clics seulement.",
-            "all services are open sources": "Tous les services proposés sont open source, ",
-            "contribute to the catalog": "contribuer au catalogue {{catalogId}}",
-            "contribute to the package": "Accéder aux sources du package {{packageName}} ",
-            "here": "ici"
+            "header text2":
+                "Explorez, lancez et configurez des services en quelques clics seulement.",
+            "all services are open sources":
+                "Tous les services proposés sont open source, ",
+            "contribute to the catalog":
+                "contribuer au catalogue {{catalogId}}",
+            "contribute to the package":
+                "Accéder aux sources du package {{packageName}} ",
+            "here": "ici",
         },
         "Footer": {
             "contribute": "Contribuer au projet",
-            "terms of service": "Conditions d'utilisation"
+            "terms of service": "Conditions d'utilisation",
         },
         "CatalogLauncherMainCard": {
             "card title": "Créer votre propre service",
             "friendly name": "Nom personalisé",
             "launch": "Lancer",
             "cancel": "Annuler",
-            "copy url helper text": "Copier l'URL permettant de restaurer cette configuration",
-            "save configuration": "Enregistrer cette configuration"
+            "copy url helper text":
+                "Copier l'URL permettant de restaurer cette configuration",
+            "save configuration": "Enregistrer cette configuration",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Configurations globales",
@@ -618,57 +702,61 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServices": {
             "text1": "Mes services",
-            "text2": "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
-            "text3": "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
+            "text2":
+                "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
+            "text3":
+                "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
             "running services": "Services en cours",
             "confirm terminate title": "Êtes-vous sur?",
-            "confirm terminate subtitle": "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
-            "confirm terminate body": "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
+            "confirm terminate subtitle":
+                "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
+            "confirm terminate body":
+                "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
             "cancel": "Annuler",
-            "confirm": "Oui, arrêter"
+            "confirm": "Oui, arrêter",
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
             "launch": "Nouveau service",
             "password": "Copier le mot de passe",
-            "trash": "Arrêter tous"
+            "trash": "Arrêter tous",
         },
         "MyServicesCard": {
             "service": "Service",
             "running since": "En exécution depuis: ",
             "open": "ouvrir",
-            "readme": "readme"
+            "readme": "readme",
         },
         "MyServicesRunningTime": {
-            "launching": "En cours..."
+            "launching": "En cours...",
         },
         "ChangeLanguage": {
-            "change language": "Changer la langue"
+            "change language": "Changer la langue",
         },
         "MyServicesSavedConfigOptions": {
             "copy link": "Copier l'URL",
-            "remove bookmark": "Supprimer"
+            "remove bookmark": "Supprimer",
         },
         "MyServicesSavedConfig": {
-            "launch": "Lancer"
+            "launch": "Lancer",
         },
         "MyServicesSavedConfigs": {
             "saved": "Enregistrés",
-            "show all": "Afficher tous ({{n}})"
+            "show all": "Afficher tous ({{n}})",
         },
         "MyServicesCards": {
             "running services": "Services en cours",
-            "no services running": "Vous n'avez actuellement aucun service en cours d'exécution",
+            "no services running":
+                "Vous n'avez actuellement aucun service en cours d'exécution",
             "launch one": "Cliquez ici pour en lancer un",
-            "ok": "ok"
+            "ok": "ok",
         },
         "LoginDivider": {
-            "or": "ou"
+            "or": "ou",
         },
         "Login": {
-            "doRegister": "Créer un compte"
-        }
+            "doRegister": "Créer un compte",
+        },
         /* spell-checker: enable */
-    }
-
+    },
 });
