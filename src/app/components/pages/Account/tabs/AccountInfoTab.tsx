@@ -1,48 +1,47 @@
-
 import { useEffect, useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useAppConstants, useSelector, useDispatch } from "app/interfaceWithLib/hooks";
-import { useCallbackFactory } from "powerhooks";
+import {
+    useAppConstants,
+    useSelector,
+    useDispatch,
+} from "app/interfaceWithLib/hooks";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
 import { getValidatedEnv } from "app/validatedEnv";
-import { urlJoin } from 'url-join-ts';
+import { urlJoin } from "url-join-ts";
 import { thunks } from "lib/setup";
-import { useConstCallback } from "powerhooks";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import { smartTrim } from "app/tools/smartTrim";
-import { createUseClassNames } from "app/theme";
-import { thunks as publicIpThunks } from "lib/useCases/publicIp";
+import { makeStyles } from "app/theme";
+import { thunks as publicIpThunks } from "lib/useCases/publicIp";
 
 export type Props = {
     className?: string;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "divider": {
-            "margin": theme.spacing(3, 0)
-        },
-        "link": {
-            "marginTop": theme.spacing(1),
-            "display": "inline-block"
-        }
-
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "divider": {
+        "margin": theme.spacing(3, 0),
+    },
+    "link": {
+        "marginTop": theme.spacing(1),
+        "display": "inline-block",
+    },
+}));
 
 export const AccountInfoTab = memo((props: Props) => {
-
     const { className } = props;
 
     const { t } = useTranslation("AccountInfoTab");
 
     const { parsedJwt } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
-    const onRequestCopyFactory = useCallbackFactory(
-        ([textToCopy]: [string]) => copyToClipboard(textToCopy)
+    const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
+        copyToClipboard(textToCopy),
     );
 
     const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
@@ -50,27 +49,27 @@ export const AccountInfoTab = memo((props: Props) => {
     const dispatch = useDispatch();
 
     useEffect(
-        () => { dispatch(publicIpThunks.fetch()); }, 
+        () => {
+            dispatch(publicIpThunks.fetch());
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [],
     );
 
     //We make the assumption that if we use OIDC we are using keycloak
     //...which is not necessarily the case.
     const keycloakConfig = (() => {
-
         const { AUTHENTICATION } = getValidatedEnv();
 
-        return AUTHENTICATION.TYPE !== "oidc" ?
-            undefined :
-            AUTHENTICATION.OIDC;
-
+        return AUTHENTICATION.TYPE !== "oidc" ? undefined : AUTHENTICATION.OIDC;
     })();
 
-    const userServicePasswordState = useSelector(state => state.userConfigs.userServicePassword);
+    const userServicePasswordState = useSelector(
+        state => state.userConfigs.userServicePassword,
+    );
 
-    const onRequestServicePasswordRenewal = useConstCallback(
-        () => dispatch(thunks.userConfigs.renewUserServicePassword())
+    const onRequestServicePasswordRenewal = useConstCallback(() =>
+        dispatch(thunks.userConfigs.renewUserServicePassword()),
     );
 
     const fullName = `${parsedJwt.given_name} ${parsedJwt.family_name}`;
@@ -82,11 +81,11 @@ export const AccountInfoTab = memo((props: Props) => {
     const accessTokenRemainingValidity = useMemo(
         () => appConstants.getOidcTokensRemandingValidity(),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [tokenState.oidcTokens.accessToken]
+        [tokenState.oidcTokens.accessToken],
     );
 
     const onRequestOidcAccessTokenRenewal = useConstCallback(
-        () => console.log("TODO: Trigger login")
+        () => console.log("TODO: Trigger login"),
         /*
         appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
             { "minValidity": Infinity }
@@ -94,9 +93,7 @@ export const AccountInfoTab = memo((props: Props) => {
         */
     );
 
-
-
-    const { classNames } = useClassNames({});
+    const { classes } = useStyles();
 
     return (
         <div className={className}>
@@ -105,7 +102,9 @@ export const AccountInfoTab = memo((props: Props) => {
                 type="text"
                 title={t("user id")}
                 text={parsedJwt.preferred_username}
-                onRequestCopy={onRequestCopyFactory(parsedJwt.preferred_username)}
+                onRequestCopy={onRequestCopyFactory(
+                    parsedJwt.preferred_username,
+                )}
             />
             <AccountField
                 type="text"
@@ -119,16 +118,21 @@ export const AccountInfoTab = memo((props: Props) => {
                 text={parsedJwt.email}
                 onRequestCopy={onRequestCopyFactory(parsedJwt.email)}
             />
-            {keycloakConfig !== undefined &&
+            {keycloakConfig !== undefined && (
                 <Link
-                    className={classNames.link}
-                    href={urlJoin(keycloakConfig.url, "realms", keycloakConfig.realm, "account/password")}
+                    className={classes.link}
+                    href={urlJoin(
+                        keycloakConfig.url,
+                        "realms",
+                        keycloakConfig.realm,
+                        "account/password",
+                    )}
                     target="_blank"
                 >
                     {t("password")}
                 </Link>
-            }
-            <Divider className={classNames.divider} variant="middle" />
+            )}
+            <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("auth information")}
                 helperText={t("auth information helper")}
@@ -137,22 +141,28 @@ export const AccountInfoTab = memo((props: Props) => {
                 type="service password"
                 isLocked={userServicePasswordState.isBeingChanged}
                 servicePassword={userServicePasswordState.value}
-                onRequestCopy={onRequestCopyFactory(userServicePasswordState.value)}
-                onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
+                onRequestCopy={onRequestCopyFactory(
+                    userServicePasswordState.value,
+                )}
+                onRequestServicePasswordRenewal={
+                    onRequestServicePasswordRenewal
+                }
             />
             <AccountField
                 type="OIDC Access token"
                 isLocked={tokenState.areTokensBeingRefreshed}
                 remainingValidity={accessTokenRemainingValidity}
-                oidcAccessToken={
-                    smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": tokenState.oidcTokens.accessToken
-                    })
+                oidcAccessToken={smartTrim({
+                    "maxLength": 50,
+                    "minCharAtTheEnd": 20,
+                    "text": tokenState.oidcTokens.accessToken,
+                })}
+                onRequestOidcAccessTokenRenewal={
+                    onRequestOidcAccessTokenRenewal
                 }
-                onRequestOidcAccessTokenRenewal={onRequestOidcAccessTokenRenewal}
-                onRequestCopy={onRequestCopyFactory(tokenState.oidcTokens.accessToken)}
+                onRequestCopy={onRequestCopyFactory(
+                    tokenState.oidcTokens.accessToken,
+                )}
             />
             <AccountField
                 type="text"
@@ -162,20 +172,17 @@ export const AccountInfoTab = memo((props: Props) => {
             />
         </div>
     );
-
 });
 
 export declare namespace AccountInfoTab {
-
     export type I18nScheme = {
-        'general information': undefined;
-        'user id': undefined;
-        'full name': undefined;
-        'email': undefined;
-        'password': undefined;
-        'auth information': undefined;
-        'auth information helper': undefined;
-        'ip address': undefined;
+        "general information": undefined;
+        "user id": undefined;
+        "full name": undefined;
+        "email": undefined;
+        "password": undefined;
+        "auth information": undefined;
+        "auth information helper": undefined;
+        "ip address": undefined;
     };
-
 }

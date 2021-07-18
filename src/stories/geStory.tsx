@@ -1,123 +1,179 @@
-
-
-import { useEffect } from "react";
-import type { Meta } from "@storybook/react";
-import { symToStr } from "app/tools/symToStr";
-import type { Story } from "@storybook/react";
-import { ThemeProvider, useTheme } from "app/theme";
-import { useIsDarkModeEnabled } from "onyxia-ui";
-import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
+/* eslint-disable react-hooks/exhaustive-deps */
+import type { Meta, Story } from "@storybook/react";
+import type { ArgType } from "@storybook/addons";
+import { useEffect, useCallback, useMemo } from "react";
+import { symToStr } from "tsafe/symToStr";
+import {
+    useIsDarkModeEnabled,
+    chromeFontSizesFactors,
+    breakpointsValues,
+    useWindowInnerSize,
+} from "onyxia-ui";
+import type { ThemeProviderProps, ChromeFontSize } from "onyxia-ui";
+import { ThemeProvider, Text, useTheme } from "app/theme";
 import { id } from "tsafe/id";
+import "onyxia-ui/assets/fonts/work-sans.css";
+import { GlobalStyles } from "tss-react";
+import { objectKeys } from "tsafe/objectKeys";
+import { createStoreProvider } from "app/interfaceWithLib/StoreProvider";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { RouteProvider } from "app/routes/router";
-import { useLng } from "app/i18n/useLng";
-import "./fonts.scss";
-import { createStoreProvider } from "app/interfaceWithLib/StoreProvider";
+import { useLng } from "app/i18n/useLng";
 
-const { StoreProvider } = createStoreProvider({ "doMock": true });
+const { StoreProvider } = createStoreProvider({ "doMock": true });
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
     doProvideMockStore?: boolean;
+    /** https://storybook.js.org/docs/react/essentials/controls */
+    argTypes?: Partial<Record<keyof Props, ArgType>>;
 }) {
-
     const {
         sectionName,
         wrappedComponent,
-        doProvideMockStore = false
+        argTypes = {},
+        doProvideMockStore,
     } = params;
 
-    const Component: any = Object.entries(wrappedComponent).map(([, component]) => component)[0];
+    const Component: React.ComponentType<Props> = Object.entries(
+        wrappedComponent,
+    ).map(([, component]) => component)[0];
 
-    const StoreProviderOrFragment: React.FC = !doProvideMockStore ?
-        ({ children }) => <>{children}</> :
-        ({ children }) =>
-            <StoreProvider>
-                {children}
-            </StoreProvider>;
+    function ScreenSize() {
+        const { windowInnerWidth } = useWindowInnerSize();
 
-    const Template: Story<Props & { darkMode: boolean; lng: SupportedLanguage; width: number; }> =
-        ({ darkMode, width, lng, ...props }) => {
+        const range = useMemo(() => {
+            if (windowInnerWidth >= breakpointsValues["xl"]) {
+                return "xl-∞";
+            }
 
-            const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
+            if (windowInnerWidth >= breakpointsValues["lg"]) {
+                return "lg-xl";
+            }
 
-            useEffect(
-                () => { setIsDarkModeEnabled(darkMode); },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [darkMode]
-            );
+            if (windowInnerWidth >= breakpointsValues["md"]) {
+                return "md-lg";
+            }
 
-            const { setLng } = useLng();
+            if (windowInnerWidth >= breakpointsValues["sm"]) {
+                return "sm-md";
+            }
 
-            useEffect(
-                ()=> { setLng(lng); },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [lng]
-            );
+            return "0-sm";
+        }, [windowInnerWidth]);
 
-            const theme = useTheme();
+        return (
+            <Text typo="body 1">
+                {windowInnerWidth}px width: {range}
+            </Text>
+        );
+    }
 
-            return (
-                <I18nProvider>
-                    <RouteProvider>
-                        <ThemeProvider zoomProviderReferenceWidth={undefined}>
-                            <StoreProviderOrFragment>
-                                <Box p={4} style={{ "backgroundColor": "white" }}>
-                                    <Box clone p={4} m={2} display="inline-block">
-                                        <Paper
-                                            style={{
-                                                "backgroundColor": theme.colors.useCases.surfaces.background,
-                                                "width": width !== 0 ? width : undefined,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    "border": `1px dotted ${theme.colors.useCases.typography.textDisabled}`
-                                                }}
-                                            >
-                                                <Component {...props} />
-                                            </div>
-                                        </Paper>
-                                    </Box>
-                                </Box>
-                            </StoreProviderOrFragment>
-                        </ThemeProvider>
-                    </RouteProvider>
-                </I18nProvider>
-            );
+    const StoreProviderOrFragment: React.ComponentType = !doProvideMockStore
+        ? ({ children }) => <>{children}</>
+        : ({ children }) => <StoreProvider>{children}</StoreProvider>;
+
+    const Template: Story<
+        Props & {
+            darkMode: boolean;
+            width: number;
+            chromeFontSize: ChromeFontSize;
+            targetWindowInnerWidth: number;
+            lng: SupportedLanguage;
         }
+    > = ({
+        darkMode,
+        width,
+        targetWindowInnerWidth,
+        chromeFontSize,
+        lng,
+        ...props
+    }) => {
+        const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
+        useEffect(() => {
+            setIsDarkModeEnabled(darkMode);
+        }, [darkMode]);
+
+        const { setLng } = useLng();
+
+        useEffect(() => {
+            setLng(lng);
+        }, [lng]);
+
+        const getViewPortConfig = useCallback<
+            NonNullable<ThemeProviderProps["getViewPortConfig"]>
+        >(
+            ({ windowInnerWidth }) => ({
+                "targetBrowserFontSizeFactor":
+                    chromeFontSizesFactors[chromeFontSize],
+                "targetWindowInnerWidth":
+                    targetWindowInnerWidth || windowInnerWidth,
+            }),
+            [targetWindowInnerWidth, chromeFontSize],
+        );
+
+        const theme = useTheme();
+
+        return (
+            <>
+                {
+                    <GlobalStyles
+                        styles={{
+                            "html": {
+                                "font-size": "100% !important",
+                            },
+                            "body": {
+                                "padding": `0 !important`,
+                                "backgroundColor": `${theme.colors.useCases.surfaces.surface1} !important`,
+                            },
+                        }}
+                    />
+                }
+                <ThemeProvider getViewPortConfig={getViewPortConfig}>
+                    <ScreenSize />
+                    <div
+                        style={{
+                            "width": width || undefined,
+                            "border": "1px dotted grey",
+                            "display": "inline-block",
+                        }}
+                    >
+                        <StoreProviderOrFragment>
+                            <I18nProvider>
+                                <RouteProvider>
+                                    <Component {...(props as any)} />
+                                </RouteProvider>
+                            </I18nProvider>
+                        </StoreProviderOrFragment>
+                    </div>
+                </ThemeProvider>
+            </>
+        );
+    };
 
     function getStory(props: Props): typeof Template {
-
         const out = Template.bind({});
 
         out.args = {
             "darkMode": false,
-            "lng": id<SupportedLanguage>("fr"),
             "width": 0,
-            ...props
+            "targetWindowInnerWidth": 0,
+            "chromeFontSize": "Medium (Recommended)",
+            "lng": id<SupportedLanguage>("en"),
+            ...props,
         };
 
         return out;
-
     }
 
     return {
         "meta": id<Meta>({
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
             "component": Component,
-            // https://storybook.js.org/docs/react/essentials/controls
             "argTypes": {
-                "lng": {
-                    "control": {
-                        "type": "inline-radio",
-                        "options": id<SupportedLanguage[]>(["fr", "en"]),
-                    }
-                },
                 "width": {
                     "control": {
                         "type": "range",
@@ -125,21 +181,41 @@ export function getStoryFactory<Props>(params: {
                         "max": 1920,
                         "step": 1,
                     },
-                }
-            }
+                },
+                "targetWindowInnerWidth": {
+                    "control": {
+                        "type": "range",
+                        "min": 0,
+                        "max": 2560,
+                        "step": 10,
+                    },
+                },
+                "chromeFontSize": {
+                    "options": objectKeys(chromeFontSizesFactors),
+                    "control": { "type": "select" },
+                },
+                "lng": {
+                    "control": {
+                        "type": "inline-radio",
+                        "options": id<SupportedLanguage[]>(["fr", "en"]),
+                    },
+                },
+                ...argTypes,
+            },
         }),
-        getStory
+        getStory,
     };
-
 }
 
-export function logCallbacks<T extends string>(propertyNames: readonly T[]): Record<T, () => void> {
+export function logCallbacks<T extends string>(
+    propertyNames: readonly T[],
+): Record<T, () => void> {
+    const out: Record<T, () => void> = id<Record<string, never>>({});
 
-    const out: Record<T, () => void> = {} as any;
-
-    propertyNames.forEach(propertyName => out[propertyName] = console.log.bind(console, propertyName));
+    propertyNames.forEach(
+        propertyName =>
+            (out[propertyName] = console.log.bind(console, propertyName)),
+    );
 
     return out;
-
 }
-

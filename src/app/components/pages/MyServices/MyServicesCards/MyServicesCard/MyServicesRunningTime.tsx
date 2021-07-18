@@ -1,71 +1,64 @@
-
-
 import { memo } from "react";
-import { createUseClassNames, Icon } from "app/theme";
-import { Typography } from "onyxia-ui";
-import { cx } from "tss-react";
-import { useFromNow } from "app/i18n/useMoment";
+import { makeStyles, Icon, Text } from "app/theme";
+
+import { useFromNow } from "app/i18n/useMoment";
 import { useTranslation } from "app/i18n/useTranslations";
 
-const { useClassNames } = createUseClassNames<{ isOvertime: boolean; }>()(
+const { useStyles } = makeStyles<{ isOvertime: boolean }>()(
     (theme, { isOvertime }) => {
-
-        const color = isOvertime ? theme.colors.useCases.alertSeverity.error.main : undefined;
+        const color = isOvertime
+            ? theme.colors.useCases.alertSeverity.error.main
+            : undefined;
 
         return {
             "root": {
                 color,
                 "display": "flex",
-                "alignItems": "center"
+                "alignItems": "center",
             },
             "icon": {
-                color
-            }
+                color,
+            },
         };
-    }
+    },
 );
-
 
 export type Props = {
     className?: string;
-} & ({
-    isRunning: true;
-    startTime: number;
-    isOvertime: boolean;
-} |{
-    isRunning: false;
-});
-
-export const MyServicesRunningTime = memo(
-    (props: Props) => {
-
-        const { className } = props;
-
-        const { classNames } = useClassNames({ "isOvertime": !props.isRunning ? false : props.isOvertime });
-
-        const { fromNowText } = useFromNow({ "dateTime": props.isRunning ? props.startTime : 0 });
-
-        const { t } = useTranslation("MyServicesRunningTime");
-
-        return (
-            <Typography 
-                variant="subtitle1" 
-                className={cx(classNames.root, className)}
-            >
-                <Icon id="accessTime" className={classNames.icon} /> &nbsp;
-                {props.isRunning ? fromNowText : t("launching")}
-            </Typography>
-        );
-
-    }
+} & (
+    | {
+          isRunning: true;
+          startTime: number;
+          isOvertime: boolean;
+      }
+    | {
+          isRunning: false;
+      }
 );
 
-export declare namespace MyServicesRunningTime {
+export const MyServicesRunningTime = memo((props: Props) => {
+    const { className } = props;
 
+    const { classes, cx } = useStyles({
+        "isOvertime": !props.isRunning ? false : props.isOvertime,
+    });
+
+    const { fromNowText } = useFromNow({
+        "dateTime": props.isRunning ? props.startTime : 0,
+    });
+
+    const { t } = useTranslation("MyServicesRunningTime");
+
+    return (
+        <Text typo="subtitle" className={cx(classes.root, className)}>
+            <Icon iconId="accessTime" className={classes.icon} /> &nbsp;
+            {props.isRunning ? fromNowText : t("launching")}
+        </Text>
+    );
+});
+
+export declare namespace MyServicesRunningTime {
     export type I18nScheme = {
-        'launching': undefined;
+        "launching": undefined;
     };
 }
-
-
-

@@ -1,64 +1,49 @@
-
-
 import { memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
-import { createUseClassNames } from "app/theme";
-import { cx } from "tss-react";
-import { Typography } from "onyxia-ui";
+import { makeStyles, Text } from "app/theme";
 
 export type Props = {
     className?: string;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "height": "100vh",
-            "display": "flex",
-            "alignItems": "center"
-        },
-        "wrapper": {
-            "textAlign": "center"
-        },
-        "instructions": {
-            "marginTop": theme.spacing(2)
-        }
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "height": "100vh",
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "wrapper": {
+        "textAlign": "center",
+    },
+    "instructions": {
+        "marginTop": theme.spacing(2),
+    },
+}));
 
 export const PortraitModeUnsupported = memo((props: Props) => {
-
     const { className } = props;
 
     const { t } = useTranslation("PortraitModeUnsupported");
 
-    const { classNames } = useClassNames({});
+    const { classes, cx } = useStyles();
 
     return (
-        <div className={cx(classNames.root, className)}>
-            <div className={classNames.wrapper}>
-                <Typography variant="h4">
+        <div className={cx(classes.root, className)}>
+            <div className={classes.wrapper}>
+                <Text typo="section heading">
                     {t("portrait mode not supported")} 🙇
-            </Typography>
-                <Typography
-                    variant="body1"
-                    className={classNames.instructions}
-                >
+                </Text>
+                <Text typo="body 1" className={classes.instructions}>
                     {t("instructions")}
-                </Typography>
+                </Text>
             </div>
         </div>
     );
-
 });
 
-
 export declare namespace PortraitModeUnsupported {
-
     export type I18nScheme = {
-        'portrait mode not supported': undefined;
-        'instructions': undefined;
+        "portrait mode not supported": undefined;
+        "instructions": undefined;
     };
-
 }
-

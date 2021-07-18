@@ -40,7 +40,7 @@ import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
-import { css } from "app/theme/useClassNames";
+import { css } from "app/theme/useStyles";
 import { LegacyThemeProvider } from "./LegacyThemeProvider";
 
 JavascriptTimeAgo.locale(fr);

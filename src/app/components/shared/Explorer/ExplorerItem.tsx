@@ -1,22 +1,19 @@
-
-import { createUseClassNames } from "app/theme";
+import { makeStyles, Text } from "app/theme";
 import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "powerhooks";
-//import { Input } from "app/components/designSystem/textField/Input";
-import { TextField } from "onyxia-ui";
-import type { TextFieldProps } from "onyxia-ui";
-import { Typography } from "onyxia-ui"
-import { useClick } from "powerhooks";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { TextField } from "onyxia-ui/TextField";
+import type { TextFieldProps } from "onyxia-ui/TextField";
+import { useClick } from "powerhooks/useClick";
 import Color from "color";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { useEffectOnValueChange } from "powerhooks";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "app/tools/smartTrim";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
-import { useWithProps } from "powerhooks";
+import { useWithProps } from "powerhooks/useWithProps";
 
 export type Props = {
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
@@ -36,59 +33,65 @@ export type Props = {
 
     isCircularProgressShown: boolean;
 
-    getIsValidBasename(params: { basename: string; }): boolean;
+    getIsValidBasename(params: { basename: string }): boolean;
 
-    /** 
-     * Invoked when the component have been clicked once 
-     * and when it has been double clicked 
+    /**
+     * Invoked when the component have been clicked once
+     * and when it has been double clicked
      */
-    onMouseEvent(params: { type: "down" | "double", target: "icon" | "text" }): void;
+    onMouseEvent(params: {
+        type: "down" | "double";
+        target: "icon" | "text";
+    }): void;
 
-    onEditBasename(params: { editedBasename: string; }): void;
+    onEditBasename(params: { editedBasename: string }): void;
 
     /** Assert initial value is false */
-    onIsInEditingStateValueChange(params: { isInEditingState: boolean; }): void;
+    onIsInEditingStateValueChange(params: { isInEditingState: boolean }): void;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
-
 };
 
-const { useClassNames } = createUseClassNames<Props>()(
+const { useStyles } = makeStyles<Props>()(
     (theme, { isSelected, standardizedWidth, basename }) => ({
         "root": {
             "textAlign": "center",
             "cursor": "pointer",
-            "width": theme.spacing((() => {
-                switch (standardizedWidth) {
-                    case "big": return 15;
-                    case "normal": return 10;
-                }
-            })())
+            "width": theme.spacing(
+                (() => {
+                    switch (standardizedWidth) {
+                        case "big":
+                            return 15;
+                        case "normal":
+                            return 10;
+                    }
+                })(),
+            ),
         },
         "frame": {
             "borderRadius": "5px",
             "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
             "display": "inline-block",
-            "padding": theme.spacing("4px", "6px")
+            "padding": theme.spacing("4px", "6px"),
         },
         "text": {
             //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
             //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
             "color": (() => {
-
-                const color = new Color(theme.colors.useCases.typography.textPrimary).rgb();
+                const color = new Color(
+                    theme.colors.useCases.typography.textPrimary,
+                ).rgb();
 
                 return color
                     .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
                     .string();
-
             })(),
-            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
+            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all",
         },
         "hiddenSpan": {
             "width": 0,
             "overflow": "hidden",
-            "display": "inline-block"
+            "display": "inline-block",
         },
         "input": {
             //NOTE: So that the text does not move when editing start.
@@ -97,14 +100,13 @@ const { useClassNames } = createUseClassNames<Props>()(
 
             "paddingTop": 0,
             "& .MuiInput-input": {
-                "textAlign": "center"
-            }
-        }
-    })
+                "textAlign": "center",
+            },
+        },
+    }),
 );
 
 export const ExplorerItem = memo((props: Props) => {
-
     const {
         visualRepresentationOfAFile,
         kind,
@@ -115,62 +117,64 @@ export const ExplorerItem = memo((props: Props) => {
         onMouseEvent,
         onEditBasename,
         onIsInEditingStateValueChange,
-        getIsValidBasename
+        getIsValidBasename,
     } = props;
 
-    const Icon = useWithProps(
-        FileOrDirectoryIcon,
-        { visualRepresentationOfAFile }
-    );
-
+    const Icon = useWithProps(FileOrDirectoryIcon, {
+        visualRepresentationOfAFile,
+    });
 
     const { t } = useTranslation("ExplorerItem");
 
-    const { classNames } = useClassNames(props);
+    const { classes } = useStyles(props);
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
     useEffectOnValueChange(
         () => onIsInEditingStateValueChange({ isInEditingState }),
-        [isInEditingState]
+        [isInEditingState],
     );
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
+        "callback": ({ type, extraArg: target }) =>
+            onMouseEvent({ type, target }),
     });
 
     //TODO: We need a custom hook for this.
-    const [evtIsCircularProgressShown] = useState(() => Evt.create(isCircularProgressShown));
-    useEffect(() => { evtIsCircularProgressShown.state = isCircularProgressShown });
+    const [evtIsCircularProgressShown] = useState(() =>
+        Evt.create(isCircularProgressShown),
+    );
+    useEffect(() => {
+        evtIsCircularProgressShown.state = isCircularProgressShown;
+    });
 
     useEvt(
-        ctx => evtAction
-            .pipe(ctx)
-            .attach(
+        ctx =>
+            evtAction.pipe(ctx).attach(
                 action => action === "ENTER EDITING STATE",
-                () => evtIsCircularProgressShown.attachOnce(
-                    isCircularProgressShown => !isCircularProgressShown,
-                    ctx,
-                    () => setIsInEditingState(true)
-                )
+                () =>
+                    evtIsCircularProgressShown.attachOnce(
+                        isCircularProgressShown => !isCircularProgressShown,
+                        ctx,
+                        () => setIsInEditingState(true),
+                    ),
             ),
-        [evtAction, evtIsCircularProgressShown]
+        [evtAction, evtIsCircularProgressShown],
     );
 
-
-    const getIsValidValue = useConstCallback(
-        (value: string) =>
-            getIsValidBasename({ "basename": value }) ?
-                { "isValidValue": true } as const :
-                { "isValidValue": false, "message": "" } as const
+    const getIsValidValue = useConstCallback((value: string) =>
+        getIsValidBasename({ "basename": value })
+            ? ({ "isValidValue": true } as const)
+            : ({ "isValidValue": false, "message": "" } as const),
     );
 
-    const [evtInputAction] = useState(() => Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>());
+    const [evtInputAction] = useState(() =>
+        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+    );
 
     const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
-        (value) => {
-
+        value => {
             setIsInEditingState(false);
 
             if (value === basename) {
@@ -178,16 +182,13 @@ export const ExplorerItem = memo((props: Props) => {
             }
 
             onEditBasename({ "editedBasename": value });
-        }
+        },
     );
 
+    const onEscapeKeyDown = useConstCallback(() => setIsInEditingState(false));
 
-    const onEscapeKeyDown = useConstCallback(
-        () => setIsInEditingState(false)
-    );
-
-    const onEnterKeyDown = useConstCallback(
-        () => evtInputAction.post("TRIGGER SUBMIT")
+    const onEnterKeyDown = useConstCallback(() =>
+        evtInputAction.post("TRIGGER SUBMIT"),
     );
 
     const formattedBasename = useMemo(
@@ -196,82 +197,83 @@ export const ExplorerItem = memo((props: Props) => {
                 "text": basename,
                 ...(() => {
                     switch (standardizedWidth) {
-                        case "big": return {
-                            "maxLength": 25,
-                            "minCharAtTheEnd": 7
-                        };
-                        case "normal": return {
-                            "maxLength": 21,
-                            "minCharAtTheEnd": 5
-                        };
+                        case "big":
+                            return {
+                                "maxLength": 25,
+                                "minCharAtTheEnd": 7,
+                            };
+                        case "normal":
+                            return {
+                                "maxLength": 21,
+                                "minCharAtTheEnd": 5,
+                            };
                     }
-                })()
+                })(),
             })
-                //NOTE: Word break with - or space but not _, 
+                //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
                 .split("_")
                 .reduce<React.ReactNode[]>(
                     (prev, curr, i) => [
                         ...prev,
-                        ...(
-                            prev.length === 0 ?
-                                [] :
-                                ["_", <span key={i} className={classNames.hiddenSpan}> </span>]
-                        ),
-                        curr
+                        ...(prev.length === 0
+                            ? []
+                            : [
+                                  "_",
+                                  <span key={i} className={classes.hiddenSpan}>
+                                      {" "}
+                                  </span>,
+                              ]),
+                        curr,
                     ],
-                    []
-                )
+                    [],
+                ),
 
-        ,
-        [basename, standardizedWidth, classNames.hiddenSpan]
+        [basename, standardizedWidth, classes.hiddenSpan],
     );
 
     return (
-        <div className={classNames.root}>
-            <div
-                className={classNames.frame}
-                {...getOnMouseProps("icon")}
-            >
+        <div className={classes.root}>
+            <div className={classes.frame} {...getOnMouseProps("icon")}>
                 <Icon {...{ standardizedWidth, kind }} />
             </div>
-            {
-                !isInEditingState && !isCircularProgressShown ?
-                    <div {...getOnMouseProps("text")}>
-                        {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
-                        <Typography className={classNames.text} >
-                            {formattedBasename}
-                        </Typography>
-                    </div>
-                    :
-                    <form className={classNames.root/*TODO*/} noValidate autoComplete="off">
-                        <TextField
-                            className={classNames.input}
-                            defaultValue={basename}
-                            inputProps_aria-label={t("description")}
-                            inputProps_autoFocus={true}
-                            doOnlyValidateInputAfterFistFocusLost={false}
-                            disabled={isCircularProgressShown}
-                            isCircularProgressShown={isCircularProgressShown}
-                            selectAllTextOnFocus={true}
-                            multiline={true}
-                            onEscapeKeyDown={onEscapeKeyDown}
-                            onEnterKeyDown={onEnterKeyDown}
-                            onBlur={onEnterKeyDown}
-                            evtAction={evtInputAction}
-                            onSubmit={onInputSubmit}
-                            getIsValidValue={getIsValidValue}
-                        />
-                    </form>
-            }
+            {!isInEditingState && !isCircularProgressShown ? (
+                <div {...getOnMouseProps("text")}>
+                    {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
+                    <Text typo="body 1" className={classes.text}>
+                        {formattedBasename}
+                    </Text>
+                </div>
+            ) : (
+                <form
+                    className={classes.root /*TODO*/}
+                    noValidate
+                    autoComplete="off"
+                >
+                    <TextField
+                        className={classes.input}
+                        defaultValue={basename}
+                        inputProps_aria-label={t("description")}
+                        inputProps_autoFocus={true}
+                        doOnlyValidateInputAfterFistFocusLost={false}
+                        disabled={isCircularProgressShown}
+                        isCircularProgressShown={isCircularProgressShown}
+                        selectAllTextOnFocus={true}
+                        multiline={true}
+                        onEscapeKeyDown={onEscapeKeyDown}
+                        onEnterKeyDown={onEnterKeyDown}
+                        onBlur={onEnterKeyDown}
+                        evtAction={evtInputAction}
+                        onSubmit={onInputSubmit}
+                        getIsValidValue={getIsValidValue}
+                    />
+                </form>
+            )}
         </div>
     );
-
 });
 export declare namespace ExplorerItem {
     export type I18nScheme = {
         description: undefined;
     };
 }
-
-

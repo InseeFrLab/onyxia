@@ -1,13 +1,17 @@
 import {
     createThemeProvider,
     defaultPalette,
-    defaultGetTypography
-} from "onyxia-ui/lib";
+    defaultGetTypographyDesc,
+    getIsPortraitOrientation,
+    ViewPortOutOfRangeError,
+    breakpointsValues,
+} from "onyxia-ui";
+import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
-import { createUseClassNamesFactory } from "tss-react";
-
+import { createText } from "onyxia-ui/Text";
+import { createMakeStyles } from "tss-react";
 import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "./assets/svg/Secrets.svg";
@@ -50,28 +54,30 @@ import EqualizerIcon from "@material-ui/icons/Equalizer";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { ComponentType } from "app/tools/types/ComponentType";
 
 export const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.
-    "getTypography": ({ windowInnerWidth }) => ({
-        ...defaultGetTypography({ windowInnerWidth }),
+    "getTypographyDesc": params => ({
+        ...defaultGetTypographyDesc(params),
         "fontFamily": '"Work Sans", sans-serif',
     }),
     "palette": {
         ...defaultPalette,
         "limeGreen": {
             "main": "#BAFF29",
-            "light": "#E2FFA6"
+            "light": "#E2FFA6",
         },
         "agentConnectBlue": {
             "main": "#0579EE",
             "light": "#2E94FA",
-            "lighter": "#E5EDF5"
-        }
-    }
+            "lighter": "#E5EDF5",
+        },
+    },
 });
 
-export const { createUseClassNames } = createUseClassNamesFactory({ useTheme });
+export const { makeStyles } = createMakeStyles({ useTheme });
 
 /** @see: <https://material-ui.com/components/material-icons/> */
 export const { Icon } = createIcon({
@@ -118,7 +124,39 @@ export const { Icon } = createIcon({
     "key": KeySvg,
 });
 
-export type IconId = Param0<typeof Icon>["id"];
+export type IconId = Param0<typeof Icon>["iconId"];
 
 export const { IconButton } = createIconButton({ Icon });
 export const { Button } = createButton({ Icon });
+export const { Text } = createText({ useTheme });
+
+export function getThemeProviderProps(params: {
+    PortraitModeUnsupported: ComponentType;
+}): Omit<ThemeProviderProps, "children"> {
+    const { PortraitModeUnsupported } = params;
+
+    return {
+        "getViewPortConfig": ({ windowInnerWidth, windowInnerHeight }) => {
+            if (
+                getIsPortraitOrientation({
+                    windowInnerWidth,
+                    windowInnerHeight,
+                })
+            ) {
+                throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
+            }
+
+            let targetWindowInnerWidth = 1100;
+
+            if (windowInnerWidth > breakpointsValues.md) {
+                targetWindowInnerWidth = windowInnerWidth;
+            }
+
+            return {
+                targetWindowInnerWidth,
+                "targetBrowserFontSizeFactor": 1,
+            };
+        },
+        "splashScreen": { "Logo": OnyxiaLogoSvg },
+    };
+}

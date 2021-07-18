@@ -1,8 +1,7 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "app/components/shared/PageHeader";
-import { createUseClassNames } from "app/theme";
-import { cx } from "tss-react";
+import { makeStyles } from "app/theme";
+
 import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
@@ -10,7 +9,7 @@ import type { Props as MyServicesCardsProps } from "./MyServicesCards";
 import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
-import { useConstCallback } from "powerhooks";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import { thunks, selectors } from "lib/setup";
 import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
 import { copyToClipboard } from "app/tools/copyToClipboard";
@@ -18,8 +17,8 @@ import { routes } from "app/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
-import { Dialog } from "onyxia-ui";
-import { useCallbackFactory } from "powerhooks";
+import { Dialog } from "onyxia-ui/Dialog";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Button } from "app/theme";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
@@ -33,144 +32,142 @@ export type Props = {
     className: string;
 };
 
-const { useClassNames } = createUseClassNames<{
+const { useStyles } = makeStyles<{
     isSavedConfigsExtended: boolean;
-}>()(
-    (theme, { isSavedConfigsExtended }) => ({
-        "root": {
-            "display": "flex",
-            "flexDirection": "column"
+}>()((theme, { isSavedConfigsExtended }) => ({
+    "root": {
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "contextTypo": {
+        "margin": theme.spacing(3, 0),
+    },
+    "payload": {
+        "overflow": "hidden",
+        "flex": 1,
+        "display": "flex",
+        "& > *": {
+            "height": "100%",
         },
-        "contextTypo": {
-            "margin": theme.spacing(3, 0)
-        },
-        "payload": {
-            "overflow": "hidden",
-            "flex": 1,
-            "display": "flex",
-            "& > *": {
-                "height": "100%"
-            }
-        },
-        ...(() => {
+    },
+    ...(() => {
+        const ratio = 0.65;
 
-            const ratio = 0.65;
-
-            return {
-                "cards": {
-                    "flex": ratio,
-                    "marginRight": theme.spacing(4)
-                },
-                "savedConfigs": {
-                    "flex": isSavedConfigsExtended ? 1 : (1 - ratio),
-                    "paddingRight": "2%"
-                }
-            };
-
-        })()
-
-
-    })
-);
+        return {
+            "cards": {
+                "flex": ratio,
+                "marginRight": theme.spacing(4),
+            },
+            "savedConfigs": {
+                "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                "paddingRight": "2%",
+            },
+        };
+    })(),
+}));
 
 export function MyServices(props: Props) {
-
     const { className, route } = props;
 
     const { t } = useTranslation("MyServices");
 
     const dispatch = useDispatch();
     const displayableConfigs = useSelector(
-        selectors.restorablePackageConfig.displayableConfigsSelector
+        selectors.restorablePackageConfig.displayableConfigsSelector,
     );
 
     const userServicePassword = useSelector(
-        state => state.userConfigs.userServicePassword.value
+        state => state.userConfigs.userServicePassword.value,
     );
 
     const { isRunningServicesFetching, runningServices } = useSelector(
         ({ runningService: state }) => ({
             "isRunningServicesFetching": state.isFetching,
-            "runningServices": state.isFetched ? state.runningServices : []
-        })
+            "runningServices": state.isFetched ? state.runningServices : [],
+        }),
     );
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(
         () => {
-
             if (isRunningServicesFetching) {
                 showSplashScreen({ "enableTransparency": true });
             } else {
                 hideSplashScreen();
             }
-
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isRunningServicesFetching]
+        [isRunningServicesFetching],
     );
 
-    const onButtonBarClick = useConstCallback(
-        (buttonId: ButtonId) => {
-            switch (buttonId) {
-                case "launch":
-                    routes.catalogExplorer().push();
-                    return;
-                case "refresh":
-                    dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
-                    return;
-                case "password":
-                    copyToClipboard(userServicePassword);
-                    return;
-                case "trash":
-                    setIsDialogOpen(true);
-                    return;
-            }
+    const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
+        switch (buttonId) {
+            case "launch":
+                routes.catalogExplorer().push();
+                return;
+            case "refresh":
+                dispatch(
+                    thunks.runningService.initializeOrRefreshIfNotAlreadyFetching(),
+                );
+                return;
+            case "password":
+                copyToClipboard(userServicePassword);
+                return;
+            case "trash":
+                setIsDialogOpen(true);
+                return;
         }
-    );
-
+    });
 
     useEffect(
         () => {
-            dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
-            dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+            dispatch(
+                thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone(),
+            );
+            dispatch(
+                thunks.runningService.initializeOrRefreshIfNotAlreadyFetching(),
+            );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [],
     );
 
     const { isSavedConfigsExtended } = route.params;
 
-    const { classNames } = useClassNames({ isSavedConfigsExtended });
+    const { classes, cx } = useStyles({ isSavedConfigsExtended });
 
-    const onRequestToggleIsShortVariant = useConstCallback(
-        () => routes.myServices({
-            "isSavedConfigsExtended": !isSavedConfigsExtended
-        }).push()
+    const onRequestToggleIsShortVariant = useConstCallback(() =>
+        routes
+            .myServices({
+                "isSavedConfigsExtended": !isSavedConfigsExtended,
+            })
+            .push(),
     );
 
-
-    const onSavedConfigsCallback = useConstCallback<MyServicesSavedConfigsProps["callback"]>(
-        ({ linkHref, action }) => {
-            switch (action) {
-                case "copy link":
-                    copyToClipboard(linkHref);
-                    return;
-                case "delete":
-                    dispatch(
-                        thunks.restorablePackageConfig.deleteRestorablePackageConfig({
-                            "restorablePackageConfig":
-                                displayableConfigs
-                                    .find(({ restorablePackageConfig }) =>
-                                        routes.catalogLauncher(restorablePackageConfig).href === linkHref
-                                    )!.restorablePackageConfig
-                        })
-                    );
-                    return;
-            }
+    const onSavedConfigsCallback = useConstCallback<
+        MyServicesSavedConfigsProps["callback"]
+    >(({ linkHref, action }) => {
+        switch (action) {
+            case "copy link":
+                copyToClipboard(linkHref);
+                return;
+            case "delete":
+                dispatch(
+                    thunks.restorablePackageConfig.deleteRestorablePackageConfig(
+                        {
+                            "restorablePackageConfig": displayableConfigs.find(
+                                ({ restorablePackageConfig }) =>
+                                    routes.catalogLauncher(
+                                        restorablePackageConfig,
+                                    ).href === linkHref,
+                            )!.restorablePackageConfig,
+                        },
+                    ),
+                );
+                return;
         }
-    );
+    });
 
     const savedConfigs = useMemo(
         (): MyServicesSavedConfigsProps["savedConfigs"] =>
@@ -178,104 +175,111 @@ export function MyServices(props: Props) {
                 ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
                     logoUrl,
                     friendlyName,
-                    "link": routes.catalogLauncher(restorablePackageConfig).link
-                })
+                    "link": routes.catalogLauncher(restorablePackageConfig)
+                        .link,
+                }),
             ),
-        [displayableConfigs]
+        [displayableConfigs],
     );
-
 
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] =>
-            isRunningServicesFetching ?
-                undefined :
-                [...runningServices]
-                    .sort((a, b) => b.startedAt - a.startedAt)
-                    .map(
-                        ({
-                            id, logoUrl, friendlyName, packageName,
-                            urls, startedAt, monitoringUrl,
-                            isStarting, postInstallInstructions
-                        }) => ({
-                            "serviceId": id,
-                            "packageIconUrl": logoUrl,
-                            friendlyName,
-                            packageName,
-                            "infoUrl": routes.myService({ "serviceId": id }).href,
-                            "openUrl": urls[0],
-                            monitoringUrl,
-                            "startTime": isStarting ? undefined : startedAt,
-                            "isOvertime": (Date.now() - startedAt) > 3600 * 1000 * 24,
-                            postInstallInstructions
-                        })
-                    ),
-        [runningServices, isRunningServicesFetching]
+            isRunningServicesFetching
+                ? undefined
+                : [...runningServices]
+                      .sort((a, b) => b.startedAt - a.startedAt)
+                      .map(
+                          ({
+                              id,
+                              logoUrl,
+                              friendlyName,
+                              packageName,
+                              urls,
+                              startedAt,
+                              monitoringUrl,
+                              isStarting,
+                              postInstallInstructions,
+                          }) => ({
+                              "serviceId": id,
+                              "packageIconUrl": logoUrl,
+                              friendlyName,
+                              packageName,
+                              "infoUrl": routes.myService({ "serviceId": id })
+                                  .href,
+                              "openUrl": urls[0],
+                              monitoringUrl,
+                              "startTime": isStarting ? undefined : startedAt,
+                              "isOvertime":
+                                  Date.now() - startedAt > 3600 * 1000 * 24,
+                              postInstallInstructions,
+                          }),
+                      ),
+        [runningServices, isRunningServicesFetching],
     );
 
+    const catalogExplorerLink = useMemo(
+        () => routes.catalogExplorer().link,
+        [],
+    );
 
-    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
-
-    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<string | undefined>();
+    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] =
+        useState<string | undefined>();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        ({ serviceId }) => { 
-            setServiceIdRequestedToBeDeleted(serviceId); 
-            setIsDialogOpen(true);
-        }
-    );
+    const onRequestDelete = useConstCallback<
+        MyServicesCardsProps["onRequestDelete"]
+    >(({ serviceId }) => {
+        setServiceIdRequestedToBeDeleted(serviceId);
+        setIsDialogOpen(true);
+    });
 
-    const onDialogCloseFactory = useCallbackFactory(
-        ([doDelete]: [boolean]) => {
-
-            if (doDelete) {
-
-                if (serviceIdRequestedToBeDeleted) {
-                    dispatch(thunks.runningService.stopService(
-                        { "serviceId": serviceIdRequestedToBeDeleted })
-                    );
-                } else {
-                    runningServices.map(({ id }) =>
-                        dispatch(
-                            thunks.runningService
-                                .stopService({ "serviceId": id })
-                        )
-                    );
-                }
-
+    const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
+        if (doDelete) {
+            if (serviceIdRequestedToBeDeleted) {
+                dispatch(
+                    thunks.runningService.stopService({
+                        "serviceId": serviceIdRequestedToBeDeleted,
+                    }),
+                );
+            } else {
+                runningServices.map(({ id }) =>
+                    dispatch(
+                        thunks.runningService.stopService({ "serviceId": id }),
+                    ),
+                );
             }
-
-            setIsDialogOpen(false);
-
         }
-    );
+
+        setIsDialogOpen(false);
+    });
 
     return (
-        <div className={cx(classNames.root, className)}>
+        <div className={cx(classes.root, className)}>
             <PageHeader
                 icon="services"
                 text1={t("text1")}
                 text2={t("text2")}
                 text3={t("text3")}
             />
-            <MyServicesButtonBar
-                onClick={onButtonBarClick}
-            />
-            <div className={classNames.payload}>
-                {!isSavedConfigsExtended &&
+            <MyServicesButtonBar onClick={onButtonBarClick} />
+            <div className={classes.payload}>
+                {!isSavedConfigsExtended && (
                     <MyServicesCards
-                        className={classNames.cards}
+                        className={classes.cards}
                         cards={cards}
                         onRequestDelete={onRequestDelete}
                         catalogExplorerLink={catalogExplorerLink}
-                    />}
+                    />
+                )}
                 <MyServicesSavedConfigs
                     isShortVariant={!isSavedConfigsExtended}
                     savedConfigs={savedConfigs}
-                    className={classNames.savedConfigs}
+                    className={classes.savedConfigs}
                     callback={onSavedConfigsCallback}
-                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                    onRequestToggleIsShortVariant={
+                        onRequestToggleIsShortVariant
+                    }
                 />
             </div>
             <Dialog
@@ -286,39 +290,32 @@ export function MyServices(props: Props) {
                 onClose={onDialogCloseFactory(false)}
                 buttons={
                     <>
-                    <Button 
+                        <Button
                             onClick={onDialogCloseFactory(false)}
-                            color="secondary"
-                    >
-                        {t("cancel")}
-                    </Button>
-                    <Button onClick={onDialogCloseFactory(true)}>
-                        {t("confirm")}
-                    </Button>
+                            variant="secondary"
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button onClick={onDialogCloseFactory(true)}>
+                            {t("confirm")}
+                        </Button>
                     </>
                 }
             />
         </div>
     );
-
 }
 
 export declare namespace MyServices {
-
     export type I18nScheme = {
         text1: undefined;
         text2: undefined;
         text3: undefined;
-        'running services': undefined;
-        'confirm terminate title': undefined;
-        'confirm terminate subtitle': undefined;
-        'confirm terminate body': undefined;
+        "running services": undefined;
+        "confirm terminate title": undefined;
+        "confirm terminate subtitle": undefined;
+        "confirm terminate body": undefined;
         cancel: undefined;
         confirm: undefined;
     };
-
 }
-
-
-
-

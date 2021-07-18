@@ -1,10 +1,7 @@
-
 import { memo } from "react";
 import type { IconId } from "app/theme";
-import { createUseClassNames, Button } from "app/theme";
-import { cx } from "tss-react";
-import { useCallbackFactory } from "powerhooks";
-
+import { makeStyles, Button } from "app/theme";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 
 export type ButtonBarProps<ButtonId extends string> = {
     className?: string;
@@ -17,33 +14,28 @@ export type ButtonBarProps<ButtonId extends string> = {
     onClick(buttonId: ButtonId): void;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.shadows[1],
-            "borderRadius": "8px 0 0 8px",
-            "overflow": "hidden"
-        }
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "boxShadow": theme.shadows[1],
+        "borderRadius": "8px 0 0 8px",
+        "overflow": "hidden",
+    },
+}));
 
-export const ButtonBar = memo(<ButtonId extends string>(props: ButtonBarProps<ButtonId>) => {
+export const ButtonBar = memo(
+    <ButtonId extends string>(props: ButtonBarProps<ButtonId>) => {
+        const { className, buttons, onClick } = props;
 
-    const { className, buttons, onClick } = props;
+        const { classes, cx } = useStyles();
 
-    const { classNames } = useClassNames({});
+        const onClickFactory = useCallbackFactory(([buttonId]: [ButtonId]) =>
+            onClick(buttonId),
+        );
 
-    const onClickFactory = useCallbackFactory(
-        (
-            [buttonId]: [ButtonId]
-        ) => onClick(buttonId)
-    );
-
-    return (
-        <div className={cx(classNames.root, className)}>
-            {
-                buttons.map(({ buttonId, icon, isDisabled, label }) =>
+        return (
+            <div className={cx(classes.root, className)}>
+                {buttons.map(({ buttonId, icon, isDisabled, label }) => (
                     <CustomButton
                         startIcon={icon}
                         disabled={isDisabled}
@@ -51,16 +43,13 @@ export const ButtonBar = memo(<ButtonId extends string>(props: ButtonBarProps<Bu
                         onClick={onClickFactory(buttonId)}
                         label={label}
                     />
-                )
-
-            }
-        </div>
-    );
-
-});
+                ))}
+            </div>
+        );
+    },
+);
 
 const { CustomButton } = (() => {
-
     type CustomButtonProps = {
         startIcon: IconId;
         disabled: boolean;
@@ -68,63 +57,57 @@ const { CustomButton } = (() => {
         label: string;
     };
 
-    const { useClassNames } = createUseClassNames<CustomButtonProps>()(
-        theme => ({
-            "root": {
-                "backgroundColor": "transparent",
-                "borderRadius": "unset",
-                "borderColor": "transparent",
-                "&.Mui-disabled .MuiButton-label": {
-                    "color": theme.colors.useCases.typography.textDisabled
-                },
-                "& .MuiButton-label": {
-                    "color": theme.colors.useCases.typography.textPrimary
-                },
-                "&:active .MuiButton-label": {
+    const { useStyles } = makeStyles<CustomButtonProps>()(theme => ({
+        "root": {
+            "backgroundColor": "transparent",
+            "borderRadius": "unset",
+            "borderColor": "transparent",
+            "&.Mui-disabled .MuiButton-label": {
+                "color": theme.colors.useCases.typography.textDisabled,
+            },
+            "& .MuiButton-label": {
+                "color": theme.colors.useCases.typography.textPrimary,
+            },
+            "&:active .MuiButton-label": {
+                "color": theme.colors.useCases.typography.textFocus,
+                "& .MuiSvgIcon-root": {
                     "color": theme.colors.useCases.typography.textFocus,
-                    "& .MuiSvgIcon-root": {
-                        "color": theme.colors.useCases.typography.textFocus
-                    }
                 },
-                "& .MuiTouchRipple-root": {
-                    "display": "none"
-                },
+            },
+            "& .MuiTouchRipple-root": {
+                "display": "none",
+            },
+            "transition": "none",
+            "& > *": {
                 "transition": "none",
-                "& > *": {
-                    "transition": "none"
+            },
+            "&:hover": {
+                "borderBottomColor": theme.colors.useCases.buttons.actionActive,
+                "boxSizing": "border-box",
+                "backgroundColor": "unset",
+                "& .MuiSvgIcon-root": {
+                    "color": theme.colors.useCases.typography.textPrimary,
                 },
-                "&:hover": {
-                    "borderBottomColor": theme.colors.useCases.buttons.actionActive,
-                    "boxSizing": "border-box",
-                    "backgroundColor": "unset",
-                    "& .MuiSvgIcon-root": {
-                        "color": theme.colors.useCases.typography.textPrimary
-                    }
-                }
-            }
-        })
-    );
+            },
+        },
+    }));
 
     const CustomButton = memo((props: CustomButtonProps) => {
-
         const { startIcon, disabled, onClick, label } = props;
 
-        const { classNames } = useClassNames(props);
+        const { classes } = useStyles(props);
 
         return (
             <Button
-                className={classNames.root}
-                color="secondary"
+                className={classes.root}
+                variant="secondary"
                 startIcon={startIcon}
                 {...{ disabled, onClick }}
             >
                 {label}
             </Button>
         );
-
     });
 
     return { CustomButton };
-
-
 })();

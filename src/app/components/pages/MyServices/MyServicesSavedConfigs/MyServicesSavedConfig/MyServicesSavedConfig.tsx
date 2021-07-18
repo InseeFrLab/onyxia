@@ -1,29 +1,27 @@
-
 import { memo, useReducer } from "react";
-import { createUseClassNames } from "app/theme";
-import { RoundLogo } from "app/components/shared/RoundLogo";
-import { Typography } from "onyxia-ui";
-import { cx } from "tss-react";
-import { Button } from "app/theme";
+import { makeStyles } from "app/theme";
+import { RoundLogo } from "app/components/shared/RoundLogo";
+
+import { Button, Text } from "app/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
-import { useConstCallback } from "powerhooks";
+import { useConstCallback } from "powerhooks/useConstCallback";
 import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
-import { useEffectOnValueChange } from "powerhooks";
-import type { Link } from "type-route";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
+import type { Link } from "type-route";
 
 const actions = ["launch", "delete", "copy link"] as const;
 
 export type MyServicesSavedConfigAction = typeof actions[number];
 
-const { useClassNames } = createUseClassNames<{ hasLogo: boolean; }>()(
-    (theme,{ hasLogo }) => ({
+const { useStyles } = makeStyles<{ hasLogo: boolean }>()(
+    (theme, { hasLogo }) => ({
         "root": {
             "borderRadius": 16,
             "boxShadow": theme.shadows[1],
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                "boxShadow": theme.shadows[6],
             },
             "display": "flex",
             "alignItems": "center",
@@ -36,21 +34,21 @@ const { useClassNames } = createUseClassNames<{ hasLogo: boolean; }>()(
                 return { width, "height": width };
             })(),
             "visibility": hasLogo ? undefined : "hidden",
-            "margin": theme.spacing(0,1)
+            "margin": theme.spacing(0, 1),
         },
         "friendlyNameWrapper": {
             "overflow": "hidden",
             "whiteSpace": "nowrap",
-            "flex": 1
+            "flex": 1,
         },
         "friendlyName": {
             "overflow": "hidden",
-            "textOverflow": "ellipsis"
+            "textOverflow": "ellipsis",
         },
         "linkIcon": {
-            "marginRight": theme.spacing(2)
-        }
-    })
+            "marginRight": theme.spacing(2),
+        },
+    }),
 );
 
 export type Props = {
@@ -62,79 +60,62 @@ export type Props = {
     callback(action: "delete" | "copy link"): void;
 };
 
-export const MyServicesSavedConfig = memo(
-    (props: Props) => {
+export const MyServicesSavedConfig = memo((props: Props) => {
+    const { isShortVariant, friendlyName, logoUrl, className, link, callback } =
+        props;
 
-        const {
-            isShortVariant,
-            friendlyName,
-            logoUrl,
-            className,
-            link,
-            callback
-        } = props;
+    const { classes, cx } = useStyles({ "hasLogo": logoUrl !== undefined });
 
-        const { classNames } = useClassNames({ "hasLogo": logoUrl !==undefined  });
+    const onLinkClick = useConstCallback(() => callback("copy link"));
 
+    const { t } = useTranslation("MyServicesSavedConfig");
 
-        const onLinkClick = useConstCallback(() => callback("copy link"));
+    const [isDeletionScheduled, scheduleDeletion] = useReducer(
+        () => true,
+        false,
+    );
 
-        const { t } = useTranslation("MyServicesSavedConfig");
+    useEffectOnValueChange(() => {
+        const timer = setTimeout(() => callback("delete"), 700);
 
-        const [isDeletionScheduled, scheduleDeletion] =
-            useReducer(() => true, false);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [isDeletionScheduled]);
 
-        useEffectOnValueChange(
-            () => {
-
-                const timer = setTimeout(()=>callback("delete"), 700);
-
-                return () => { clearTimeout(timer); };
-
-            },
-            [isDeletionScheduled]
-        );
-
-        return (
-            <div className={cx(classNames.root, className)}>
-                { !isShortVariant &&
-                    <IconButton
-                        id={isDeletionScheduled ? "bookmarkBorder" : "bookmark"}
-                        onClick={scheduleDeletion}
-                    />
-                }
-                <RoundLogo url={logoUrl} className={classNames.logo} />
-                <div className={classNames.friendlyNameWrapper}>
-                    <Typography
-                        variant="h6"
-                        className={classNames.friendlyName}
-                    >
-                        {friendlyName}
-                    </Typography>
-                </div>
-                {!isShortVariant && <IconButton
-                    className={classNames.linkIcon}
-                    id="link"
-                    onClick={onLinkClick}
-                />}
-                <Button 
-                    {...link}
-                    color="secondary"
-                >
-                    {t("launch")}
-                </Button>
-                {isShortVariant &&
-                    <MyServicesSavedConfigOptions callback={callback} />}
+    return (
+        <div className={cx(classes.root, className)}>
+            {!isShortVariant && (
+                <IconButton
+                    iconId={isDeletionScheduled ? "bookmarkBorder" : "bookmark"}
+                    onClick={scheduleDeletion}
+                />
+            )}
+            <RoundLogo url={logoUrl} className={classes.logo} />
+            <div className={classes.friendlyNameWrapper}>
+                <Text typo="label 1" className={classes.friendlyName}>
+                    {friendlyName}
+                </Text>
             </div>
-        );
-
-    }
-);
+            {!isShortVariant && (
+                <IconButton
+                    className={classes.linkIcon}
+                    iconId="link"
+                    onClick={onLinkClick}
+                />
+            )}
+            <Button {...link} variant="secondary">
+                {t("launch")}
+            </Button>
+            {isShortVariant && (
+                <MyServicesSavedConfigOptions callback={callback} />
+            )}
+        </div>
+    );
+});
 
 export declare namespace MyServicesSavedConfig {
-
     export type I18nScheme = {
         "launch": undefined;
     };
-
 }

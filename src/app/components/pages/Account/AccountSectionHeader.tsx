@@ -1,11 +1,9 @@
-
 import { memo } from "react";
-import type { ReactNode } from "react";
-import { Typography } from "onyxia-ui";
-import { Tooltip } from "onyxia-ui";
-import { Icon } from "app/theme";
-import { createUseClassNames } from "app/theme";
-import { cx } from "tss-react";
+import type { ReactNode } from "react";
+import { Tooltip } from "onyxia-ui/Tooltip";
+import { Icon, Text } from "app/theme";
+import { makeStyles } from "app/theme";
+import { cx } from "tss-react";
 
 export type Props = {
     className?: string;
@@ -14,59 +12,45 @@ export type Props = {
     tooltipText?: string;
 };
 
-const { useClassNames } = createUseClassNames()(
-    theme => ({
-        "root": {
-            "marginBottom": theme.spacing(3)
-        },
-        "title": {
-            "display": "inline-block",
-        },
-        "helperText": {
-            "marginTop": theme.spacing(1)
-        },
-        "helpIcon": {
-            "marginLeft": theme.spacing(1)
-        }
-    })
-);
+const { useStyles } = makeStyles()(theme => ({
+    "root": {
+        "marginBottom": theme.spacing(3),
+    },
+    "title": {
+        "display": "inline-block",
+    },
+    "helperText": {
+        "marginTop": theme.spacing(1),
+    },
+    "helpIcon": {
+        "marginLeft": theme.spacing(1),
+    },
+}));
 
 export const AccountSectionHeader = memo((props: Props) => {
-
     const { title, helperText, tooltipText, className } = props;
 
-    const { classNames } = useClassNames({});
+    const { classes } = useStyles();
 
     return (
-        <div className={cx(classNames.root, className)}>
-
-            <Typography
-                variant="h5"
-                className={classNames.title}
-            >
+        <div className={cx(classes.root, className)}>
+            <Text typo="object heading" className={classes.title}>
                 {title}
-            </Typography>
-            {
-                tooltipText &&
+            </Text>
+            {tooltipText && (
                 <Tooltip title={tooltipText}>
-                    <Icon 
-                        className={classNames.helpIcon} 
-                        id="help" 
-                        fontSize="small" 
+                    <Icon
+                        className={classes.helpIcon}
+                        iconId="help"
+                        size="small"
                     />
                 </Tooltip>
-            }
-            {
-                helperText &&
-                <Typography
-                    variant="body2"
-                    className={classNames.helperText}
-                >
+            )}
+            {helperText && (
+                <Text typo="body 2" className={classes.helperText}>
                     {helperText}
-                </Typography>
-            }
-
+                </Text>
+            )}
         </div>
     );
-
 });
