@@ -69,7 +69,7 @@ export const LeftBar = memo((props: Props) => {
         onClick(target);
     });
 
-    const { classes, cx, theme } = useStyles(props);
+    const { classes, cx } = useStyles(props);
 
     return (
         <section className={cx(classes.root, className)}>
