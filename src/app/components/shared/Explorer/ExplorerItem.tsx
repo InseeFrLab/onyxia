@@ -52,7 +52,7 @@ export type Props = {
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 };
 
-const { useStyles } = makeStyles<Props>()(
+const useStyles = makeStyles<Props>()(
     (theme, { isSelected, standardizedWidth, basename }) => ({
         "root": {
             "textAlign": "center",
@@ -61,9 +61,9 @@ const { useStyles } = makeStyles<Props>()(
                 (() => {
                     switch (standardizedWidth) {
                         case "big":
-                            return 15;
+                            return 16;
                         case "normal":
-                            return 10;
+                            return 11;
                     }
                 })(),
             ),

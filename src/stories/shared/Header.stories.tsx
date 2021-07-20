@@ -14,7 +14,7 @@ export default meta;
 
 const width = 1000;
 
-const logoMaxWidth = (width * 4) / 100;
+const logoContainerWidth = (width * 4) / 100;
 const paddingRight = (width * 2) / 100;
 
 const { useIsCloudShellVisible } = (() => {
@@ -42,13 +42,13 @@ export const Vue1 = getStory({
     "isUserLoggedIn": false,
     "type": "core",
     useIsCloudShellVisible,
-    logoMaxWidth,
+    logoContainerWidth,
     ...logCallbacks(["onLogoClick", "onAuthClick"]),
 });
 
 export const Vue2 = getStory({
     "className": css({ width, "height": 64, paddingRight }),
     "type": "keycloak",
-    logoMaxWidth,
+    logoContainerWidth,
     ...logCallbacks(["onLogoClick"]),
 });

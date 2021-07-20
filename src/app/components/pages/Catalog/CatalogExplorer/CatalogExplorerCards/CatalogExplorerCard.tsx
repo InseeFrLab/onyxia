@@ -5,7 +5,7 @@ import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { capitalize } from "tsafe/capitalize";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[1],
@@ -17,16 +17,16 @@ const { useStyles } = makeStyles()(theme => ({
         "flexDirection": "column",
     },
     "aboveDivider": {
-        "padding": theme.spacing(2, 3),
+        "padding": theme.spacing(3, 4),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
     },
     "title": {
-        "marginTop": theme.spacing(2),
+        "marginTop": theme.spacing(3),
     },
     "belowDivider": {
-        "padding": theme.spacing(3),
-        "paddingTop": theme.spacing(2),
+        "padding": theme.spacing(4),
+        "paddingTop": theme.spacing(3),
         "flex": 1,
         "display": "flex",
         "flexDirection": "column",
@@ -44,10 +44,10 @@ const { useStyles } = makeStyles()(theme => ({
     "buttonsWrapper": {
         "display": "flex",
         "justifyContent": "flex-end",
-        "marginTop": theme.spacing(3),
+        "marginTop": theme.spacing(4),
     },
     "launchButton": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
 }));
 

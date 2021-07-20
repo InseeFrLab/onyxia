@@ -25,7 +25,7 @@ export type Props = {
     className?: string;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "tabs": {
         "borderRadius": 8,
         "overflow": "hidden",

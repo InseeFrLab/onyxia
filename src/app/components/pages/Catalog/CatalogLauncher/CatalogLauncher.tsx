@@ -24,7 +24,7 @@ export type Props = {
     route: Route<typeof routes.catalogLauncher>;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "wrapperForScroll": {
         "height": "100%",
         "overflow": "auto",
@@ -32,7 +32,7 @@ const { useStyles } = makeStyles()(theme => ({
     "wrapperForMawWidth": {
         "maxWidth": 1200,
         "& > *": {
-            "marginBottom": theme.spacing(2),
+            "marginBottom": theme.spacing(3),
         },
     },
 }));

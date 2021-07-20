@@ -21,7 +21,7 @@ export type Props = {
     maxHeight: number;
 };
 
-const { useStyles } = makeStyles<
+const useStyles = makeStyles<
     Props & { headerHeight: number; isExpended: boolean }
 >()((theme, { isExpended, maxHeight, headerHeight }) => {
     const borderRadius = `0 0 0 30px`;
@@ -71,7 +71,7 @@ const { useStyles } = makeStyles<
             "transform": "scaleY(1)",
             "transformOrigin": "top",
             borderRadius,
-            "paddingTop": theme.spacing(1),
+            "paddingTop": theme.spacing(2),
         },
         "header": {
             "backgroundColor": theme.isDarkModeEnabled

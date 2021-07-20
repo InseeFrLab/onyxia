@@ -21,7 +21,7 @@ export type Props = {
     kcContext: KcContext;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "kcLoginClass": {
         "& #kc-locale": {
             "zIndex": 5,

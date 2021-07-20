@@ -38,18 +38,16 @@ export type Props = {
     onClick(target: Exclude<Target, "toggle isExpanded">): void;
 };
 
-const { useStyles } = makeStyles<Props>()(theme => ({
+const useStyles = makeStyles<Props>()(theme => ({
     "root": {
-        "paddingBottom": theme.spacing(2),
+        "paddingBottom": theme.spacing(3),
         "overflow": "visible",
     },
     "nav": {
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "borderRadius": 16,
         "boxShadow": theme.shadows[3],
-        "paddingTop": theme.spacing(1),
-        "marginLeft": theme.spacing(2),
-        "marginRight": theme.spacing(2),
+        "paddingTop": theme.spacing(2),
         "overflow": "auto",
         "height": "100%",
     },
@@ -86,7 +84,7 @@ export const LeftBar = memo((props: Props) => {
                         }
                         target={target}
                         isExpanded={isExpanded}
-                        collapsedWidth={collapsedWidth - theme.spacing(4)}
+                        collapsedWidth={collapsedWidth}
                         hasDivider={(() => {
                             switch (target) {
                                 case "account":
@@ -121,13 +119,13 @@ const { CustomButton } = (() => {
 
     const hoverBoxClassName = "hoverBox";
 
-    const { useStyles } = makeStyles<
+    const useStyles = makeStyles<
         Pick<Props, "collapsedWidth" | "isExpanded" | "target" | "isActive">
     >()((theme, { collapsedWidth, isExpanded, target, isActive }) => ({
         "root": {
             "display": "flex",
             "cursor": "pointer",
-            "marginTop": theme.spacing(1),
+            "marginTop": theme.spacing(2),
             [`&:hover .${hoverBoxClassName}`]: {
                 "backgroundColor": theme.colors.useCases.surfaces.background,
             },
@@ -154,7 +152,7 @@ const { CustomButton } = (() => {
         "icon": {
             "position": "relative",
             "zIndex": 2,
-            "margin": theme.spacing(1, 0),
+            "margin": theme.spacing(2, 0),
             ...(target !== "toggle isExpanded"
                 ? {}
                 : {
@@ -162,15 +160,15 @@ const { CustomButton } = (() => {
                   }),
         },
         "typoWrapper": {
-            "paddingRight": theme.spacing(1),
+            "paddingRight": theme.spacing(2),
             "flex": 1,
             "borderRadius": "0 10px 10px 0",
             "display": "flex",
             "alignItems": "center",
-            "marginRight": theme.spacing(4),
+            "marginRight": theme.spacing(5),
         },
         "divider": {
-            "marginTop": theme.spacing(1),
+            "marginTop": theme.spacing(2),
             "backgroundColor": theme.colors.useCases.typography.textTertiary,
         },
     }));

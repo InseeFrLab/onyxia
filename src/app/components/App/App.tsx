@@ -37,9 +37,9 @@ import {
 import { SharedServices } from "js/components/services/home/services";
 import { Trainings } from "js/components/trainings/async-component";
 
-export const logoMaxWidthInPercent = 5;
+export const logoContainerWidthInPercent = 4;
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "height": "100%",
         "display": "flex",
@@ -48,7 +48,7 @@ const { useStyles } = makeStyles()(theme => ({
     },
     "header": {
         "width": "100%",
-        "height": 64,
+        "marginLeft": theme.spacing(3),
     },
     "betweenHeaderAndFooter": {
         "flex": 1,
@@ -61,13 +61,14 @@ const { useStyles } = makeStyles()(theme => ({
 
     "leftBar": {
         "height": "100%",
+        "marginLeft": theme.spacing(3),
     },
     "main": {
         "flex": 1,
         "height": "100%",
         //TODO: See if scroll delegation works if we put auto here instead of "hidden"
         "overflow": "auto",
-        "paddingLeft": theme.spacing(3),
+        "paddingLeft": theme.spacing(4),
     },
     "generalPaddingRight": {
         "paddingRight": "2%",
@@ -114,10 +115,14 @@ export const App = memo((props: Props) => {
             }
         }, [isWaiting]);
     }
-
-    const logoMaxWidth = Math.floor((rootWidth * logoMaxWidthInPercent) / 100);
-
     const { classes, cx } = useStyles();
+
+    const logoContainerWidth = Math.max(
+        Math.floor(
+            (Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100,
+        ),
+        45,
+    );
 
     const route = useRoute();
 
@@ -153,7 +158,7 @@ export const App = memo((props: Props) => {
             <Header
                 type="core"
                 className={cx(classes.header, classes.generalPaddingRight)}
-                logoMaxWidth={logoMaxWidth}
+                logoContainerWidth={logoContainerWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}
                 onLogoClick={onHeaderLogoClick}
@@ -162,7 +167,7 @@ export const App = memo((props: Props) => {
             <section className={classes.betweenHeaderAndFooter}>
                 <LeftBar
                     className={classes.leftBar}
-                    collapsedWidth={logoMaxWidth}
+                    collapsedWidth={logoContainerWidth}
                     onClick={onLeftBarClick}
                     currentPage={route.name}
                 />

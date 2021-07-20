@@ -94,7 +94,7 @@ export type Props = {
     onCopyPath(params: { path: string }): void;
 };
 
-const { useStyles } = makeStyles<{ cmdTranslationTop: number }>()(
+const useStyles = makeStyles<{ cmdTranslationTop: number }>()(
     (theme, { cmdTranslationTop }) => ({
         "root": {
             "position": "relative",
@@ -109,8 +109,8 @@ const { useStyles } = makeStyles<{ cmdTranslationTop: number }>()(
             "zIndex": 1,
         },
         "breadcrump": {
-            "marginTop": theme.spacing(2),
-            "marginBottom": theme.spacing(3),
+            "marginTop": theme.spacing(3),
+            "marginBottom": theme.spacing(4),
         },
     }),
 );
@@ -377,7 +377,7 @@ export function Explorer(props: Props) {
                 className={cx(
                     css({
                         "flex": 1,
-                        "paddingRight": theme.spacing(1),
+                        "paddingRight": theme.spacing(2),
                         "overflow": "auto",
                     }),
                 )}

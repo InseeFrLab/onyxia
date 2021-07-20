@@ -21,7 +21,7 @@ export declare namespace Props {
     };
 }
 
-const { useStyles } = makeStyles<Props>()(theme => ({
+const useStyles = makeStyles<Props>()(theme => ({
     "root": {
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
     },
@@ -33,7 +33,7 @@ const { useStyles } = makeStyles<Props>()(theme => ({
         "flex": 1,
     },
     "content": {
-        "padding": theme.spacing(3),
+        "padding": theme.spacing(4),
     },
 }));
 
@@ -159,7 +159,7 @@ const { CustomButton } = (() => {
           }
     );
 
-    const { useStyles } = makeStyles<CustomButtonProps>()(
+    const useStyles = makeStyles<CustomButtonProps>()(
         (theme, { isSelected, isFirst, size, isDisabled }) => ({
             "root": {
                 "backgroundColor":
@@ -173,9 +173,9 @@ const { CustomButton } = (() => {
                 "padding": (() => {
                     switch (size) {
                         case "big":
-                            return theme.spacing(2, 3);
+                            return theme.spacing(3, 4);
                         case "small":
-                            return theme.spacing(1, 2);
+                            return theme.spacing(2, 3);
                     }
                 })(),
                 "display": "flex",

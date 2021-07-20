@@ -29,7 +29,7 @@ export type Props = {
     onFormValueChange(params: FormFieldValue): void;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "borderRadius": 8,
         "overflow": "hidden",
@@ -158,13 +158,13 @@ const { Header } = (() => {
           }
     );
 
-    const { useStyles } = makeStyles<{
+    const useStyles = makeStyles<{
         isCollapsed: boolean;
         isExpandIconVisible: boolean;
     }>()((theme, { isCollapsed, isExpandIconVisible }) => ({
         "root": {
             "display": "flex",
-            "padding": theme.spacing(0, 3),
+            "padding": theme.spacing(0, 4),
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "cursor": "pointer",
             "borderBottom": isCollapsed
@@ -188,10 +188,10 @@ const { Header } = (() => {
             "display": "flex",
             "flexDirection": "column",
             "justifyContent": "center",
-            "margin": theme.spacing(2, 0),
+            "margin": theme.spacing(3, 0),
         },
         "subtitle": {
-            "marginTop": theme.spacing(1),
+            "marginTop": theme.spacing(2),
         },
     }));
 
@@ -287,11 +287,11 @@ const { TabContent } = (() => {
         onFormValueChange(params: FormFieldValue): void;
     };
 
-    const { useStyles } = makeStyles()(theme => ({
+    const useStyles = makeStyles()(theme => ({
         "root": {
             "display": "grid",
             "gridTemplateColumns": "repeat(3, 1fr)",
-            "gap": theme.spacing(8),
+            "gap": theme.spacing(9),
         },
         "textField": {
             //Hacky... to accommodate the helper text
@@ -299,8 +299,8 @@ const { TabContent } = (() => {
             "width": "100%",
         },
         "tabDescription": {
-            "marginTop": theme.spacing(1),
-            "marginBottom": theme.spacing(4),
+            "marginTop": theme.spacing(2),
+            "marginBottom": theme.spacing(5),
         },
     }));
 

@@ -26,7 +26,7 @@ export type Props<PackageName extends string = string> = {
     onRequestLaunch(packageName: PackageName): void;
 };
 
-const { useStyles } = makeStyles<{
+const useStyles = makeStyles<{
     filteredCardCount: number;
     isRevealed: boolean;
 }>()((theme, { filteredCardCount, isRevealed }) => ({
@@ -38,7 +38,7 @@ const { useStyles } = makeStyles<{
         "flexDirection": "column",
     },
     "contextTypo": {
-        "margin": theme.spacing(3, 0),
+        "margin": theme.spacing(4, 0),
     },
     "cards": {
         "flex": 1,
@@ -50,8 +50,8 @@ const { useStyles } = makeStyles<{
                   "gridTemplateColumns": `repeat(3,1fr)`,
                   "gridTemplateRows": `repeat(2,1fr)`,
                   //"gridAutoRows": "1fr",
-                  "gap": theme.spacing(3),
-                  "marginBottom": isRevealed ? undefined : theme.spacing(2),
+                  "gap": theme.spacing(4),
+                  "marginBottom": isRevealed ? undefined : theme.spacing(3),
               }),
     },
     "noMatches": {
@@ -195,7 +195,7 @@ const { CardShowMore } = (() => {
         leftToShowCount: number;
     };
 
-    const { useStyles } = makeStyles()(() => ({
+    const useStyles = makeStyles()(() => ({
         "root": {
             "display": "flex",
             "justifyContent": "center",
@@ -229,7 +229,7 @@ const { NoMatches } = (() => {
         onGoBackClick(): void;
     };
 
-    const { useStyles } = makeStyles()(theme => ({
+    const useStyles = makeStyles()(theme => ({
         "root": {
             "display": "flex",
             "alignItems": "center",

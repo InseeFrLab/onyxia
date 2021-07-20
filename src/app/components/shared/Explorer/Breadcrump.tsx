@@ -153,7 +153,7 @@ const { Section } = (() => {
 
     const hoverFontWeight = 500;
 
-    const { useStyles } = makeStyles<
+    const useStyles = makeStyles<
         Pick<Props, "isClickable" | "isFocused" | "isLast"> & { text: string }
     >()((theme, { isClickable, isFocused, isLast, text }) => ({
         "root": {

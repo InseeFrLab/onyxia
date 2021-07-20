@@ -3,18 +3,18 @@ import { IconButton } from "app/theme";
 import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { useIsDarkModeEnabled, useWindowInnerSize } from "onyxia-ui";
 import { ChangeLanguage } from "./ChangeLanguage";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 
 export type Props = Props.Core | Props.Keycloak;
 
 export declare namespace Props {
     export type Common = {
         className?: string;
-        logoMaxWidth: number;
+        logoContainerWidth: number;
         onLogoClick(): void;
     };
 
@@ -30,33 +30,35 @@ export declare namespace Props {
     };
 }
 
-const { useStyles } = makeStyles<Props>()((theme, { logoMaxWidth }) => ({
-    "root": {
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-        "overflow": "auto",
-        "display": "flex",
-    },
-    "logoContainer": {
-        "cursor": "pointer",
-        "width": logoMaxWidth,
-        "minWidth": 45,
-        "textAlign": "center",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center",
-    },
-    "svg": {
-        "fill": theme.colors.palette.focus.main,
-        "width": 53,
-    },
-}));
+const useStyles = makeStyles<{ logoContainerWidth: number }>()(
+    (theme, { logoContainerWidth }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "overflow": "auto",
+            "display": "flex",
+            "padding": theme.spacing(2, 0),
+        },
+        "logoContainer": {
+            "cursor": "pointer",
+            "width": logoContainerWidth,
+            "textAlign": "center",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+        },
+        "svg": {
+            "fill": theme.colors.palette.focus.main,
+            "width": "70%",
+        },
+    }),
+);
 
 export const Header = memo((props: Props) => {
-    const { className, onLogoClick } = props;
+    const { className, logoContainerWidth, onLogoClick } = props;
 
     const { t } = useTranslation("Header");
 
-    const { classes, cx, css, theme } = useStyles(props);
+    const { classes, cx, css, theme } = useStyles({ logoContainerWidth });
 
     const { windowInnerWidth } = useWindowInnerSize();
 
@@ -84,7 +86,7 @@ export const Header = memo((props: Props) => {
                 )}
                 <Text
                     typo="section heading"
-                    className={css({ "margin": theme.spacing(0, 1) })}
+                    className={css({ "margin": theme.spacing(0, 2) })}
                 >
                     SSP Cloud
                 </Text>
@@ -123,7 +125,7 @@ export const Header = memo((props: Props) => {
                             variant={
                                 props.isUserLoggedIn ? "secondary" : "primary"
                             }
-                            className={css({ "marginLeft": theme.spacing(2) })}
+                            className={css({ "marginLeft": theme.spacing(3) })}
                         >
                             {t(props.isUserLoggedIn ? "logout" : "login")}
                         </Button>

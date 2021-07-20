@@ -8,14 +8,14 @@ import { IconButton, Text } from "app/theme";
 import MuiLink from "@material-ui/core/Link";
 import type { Link } from "type-route";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "overflow": "hidden",
         "display": "flex",
         "flexDirection": "column",
     },
     "entry": {
-        "marginBottom": theme.spacing(1),
+        "marginBottom": theme.spacing(2),
     },
     "wrapper": {
         "flex": 1,
@@ -106,9 +106,9 @@ const { Header } = (() => {
         configCount: number;
     };
 
-    const { useStyles } = makeStyles()(theme => ({
+    const useStyles = makeStyles()(theme => ({
         "root": {
-            "margin": theme.spacing(2, 0),
+            "margin": theme.spacing(3, 0),
             "display": "flex",
             "alignItems": "center",
         },

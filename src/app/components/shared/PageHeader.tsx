@@ -17,24 +17,23 @@ export const defaultProps: PickOptionals<Props> = {
     "className": null,
 };
 
-const { useStyles } = makeStyles<Required<Props>>()(theme => ({
+const useStyles = makeStyles<Required<Props>>()(theme => ({
     "root": {
         "backgroundColor": "inherit",
-        //"paddingTop": theme.spacing(3),
-        "paddingBottom": theme.spacing(4),
+        "paddingBottom": theme.spacing(5),
     },
     "text1": {
-        "marginBottom": theme.spacing(2),
+        "marginBottom": theme.spacing(3),
         "display": "flex",
         "alignItems": "center",
     },
     "icon": {
-        "marginRight": theme.spacing(2),
+        "marginRight": theme.spacing(3),
         "position": "relative",
         "fontSize": 40,
     },
     "text2": {
-        "marginBottom": theme.spacing(1),
+        "marginBottom": theme.spacing(2),
     },
 }));
 

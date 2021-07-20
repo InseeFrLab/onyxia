@@ -19,16 +19,16 @@ import { AgentConnectButton } from "./AgentConnectButton";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { KcContext } from "../kcContext";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",
-            "marginTop": theme.spacing(4),
+            "marginTop": theme.spacing(5),
         },
     },
     "rememberMeForgotPasswordWrapper": {
         "display": "flex",
-        "marginTop": theme.spacing(3),
+        "marginTop": theme.spacing(4),
     },
     "forgotPassword": {
         "flex": 1,
@@ -37,25 +37,25 @@ const { useStyles } = makeStyles()(theme => ({
         "alignItems": "center",
     },
     "buttonsWrapper": {
-        "marginTop": theme.spacing(3),
+        "marginTop": theme.spacing(4),
         "display": "flex",
         "justifyContent": "flex-end",
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
     "linkToRegisterWrapper": {
-        "marginTop": theme.spacing(4),
+        "marginTop": theme.spacing(5),
         "textAlign": "center",
         "& > *": {
             "display": "inline-block",
         },
     },
     "registerLink": {
-        "paddingLeft": theme.spacing(1),
+        "paddingLeft": theme.spacing(2),
     },
     "divider": {
-        "margin": theme.spacing(4, 0),
+        "margin": theme.spacing(5, 0),
     },
     "providers": {
         "listStyleType": "none",

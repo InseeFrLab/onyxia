@@ -8,7 +8,7 @@ export type RoundLogoProps = {
     url: string | undefined;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "fallback": {
         "fill": theme.colors.useCases.typography.textPrimary,
     },

@@ -4,7 +4,7 @@ import { makeStyles, Icon, Text } from "app/theme";
 import { useFromNow } from "app/i18n/useMoment";
 import { useTranslation } from "app/i18n/useTranslations";
 
-const { useStyles } = makeStyles<{ isOvertime: boolean }>()(
+const useStyles = makeStyles<{ isOvertime: boolean }>()(
     (theme, { isOvertime }) => {
         const color = isOvertime
             ? theme.colors.useCases.alertSeverity.error.main

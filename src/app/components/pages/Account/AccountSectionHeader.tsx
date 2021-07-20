@@ -12,18 +12,18 @@ export type Props = {
     tooltipText?: string;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
-        "marginBottom": theme.spacing(3),
+        "marginBottom": theme.spacing(4),
     },
     "title": {
         "display": "inline-block",
     },
     "helperText": {
-        "marginTop": theme.spacing(1),
+        "marginTop": theme.spacing(2),
     },
     "helpIcon": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
 }));
 

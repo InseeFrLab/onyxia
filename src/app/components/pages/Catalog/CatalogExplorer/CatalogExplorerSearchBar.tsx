@@ -17,7 +17,7 @@ export type Props = {
     evtAction: NonPostableEvt<"CLEAR SEARCH">;
 };
 
-const { useStyles } = makeStyles<{ isActive: boolean }>()(
+const useStyles = makeStyles<{ isActive: boolean }>()(
     (theme, { isActive }) => ({
         "root": {
             "borderRadius": 8,
@@ -51,7 +51,7 @@ const { useStyles } = makeStyles<{ isActive: boolean }>()(
             },
         },
         "icon": {
-            "margin": `${theme.spacing(1) - 2}px ${theme.spacing(2) - 2}px`,
+            "margin": `${theme.spacing(2) - 2}px ${theme.spacing(3) - 2}px`,
             "color": isActive
                 ? theme.colors.useCases.typography.textFocus
                 : undefined,

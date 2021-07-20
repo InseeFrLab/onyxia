@@ -16,7 +16,7 @@ export type Props = {
     callback(action: SavedConfigurationAction): void;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "menu": {
         "& .Mui-selected": {
             "backgroundColor": theme.colors.useCases.surfaces.surface1,

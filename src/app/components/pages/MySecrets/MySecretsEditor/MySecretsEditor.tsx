@@ -43,9 +43,9 @@ export type Props = {
     ): void;
 };
 
-const { useStyles } = makeStyles<Props>()(theme => ({
+const useStyles = makeStyles<Props>()(theme => ({
     "root": {
-        "padding": theme.spacing(2),
+        "padding": theme.spacing(3),
         "& .MuiTableCell-root": {
             "padding": 0,
             "border": "unset",
@@ -58,13 +58,13 @@ const { useStyles } = makeStyles<Props>()(theme => ({
     },
     "tableHead": {
         "& .MuiTypography-root": {
-            "padding": theme.spacing(2, 1),
+            "padding": theme.spacing(3, 2),
         },
     },
     "buttonWrapper": {
         "& > *": {
-            "marginTop": theme.spacing(3),
-            "marginRight": theme.spacing(1),
+            "marginTop": theme.spacing(4),
+            "marginRight": theme.spacing(2),
         },
     },
     "tableContainerRoot": {
