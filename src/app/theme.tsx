@@ -2,9 +2,9 @@ import {
     createThemeProvider,
     defaultPalette,
     defaultGetTypographyDesc,
-    getIsPortraitOrientation,
-    ViewPortOutOfRangeError,
-    breakpointsValues,
+    //getIsPortraitOrientation,
+    //ViewPortOutOfRangeError,
+    //breakpointsValues,
 } from "onyxia-ui";
 import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
