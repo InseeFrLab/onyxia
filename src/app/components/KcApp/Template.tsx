@@ -10,7 +10,7 @@ import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageT
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
-import { logoMaxWidthInPercent } from "app/components/App";
+import { logoContainerWidthInPercent as logoContainerWidthInPercent } from "app/components/App";
 import { makeStyles, IconButton, Text } from "app/theme";
 import { useDomRect, useWindowInnerSize } from "onyxia-ui";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -36,7 +36,7 @@ export type TemplateProps = {
     onClickCross?(): void;
 } & { kcContext: KcContext } & KcTemplateProps;
 
-const { useStyles } = makeStyles<{
+const useStyles = makeStyles<{
     windowInnerWidth: number;
     aspectRatio: number;
     windowInnerHeight: number;
@@ -112,7 +112,12 @@ export const Template = memo((props: TemplateProps) => {
         ref: rootRef,
     } = useDomRect();
 
-    const logoMaxWidth = Math.floor((rootWidth * logoMaxWidthInPercent) / 100);
+    const logoContainerWidth = Math.max(
+        Math.floor(
+            (Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100,
+        ),
+        45,
+    );
 
     const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
 
@@ -203,7 +208,7 @@ export const Template = memo((props: TemplateProps) => {
             <Header
                 type="keycloak"
                 className={classes.header}
-                logoMaxWidth={logoMaxWidth}
+                logoContainerWidth={logoContainerWidth}
                 onLogoClick={onHeaderLogoClick}
             />
             <section className={classes.betweenHeaderAndFooter}>
@@ -232,7 +237,7 @@ const { Page } = (() => {
         onClickCross: (() => void) | undefined;
     } & { kcContext: KcContext } & KcTemplateProps;
 
-    const { useStyles } = makeStyles<{ isPaperBiggerThanContainer: boolean }>()(
+    const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>()(
         (theme, { isPaperBiggerThanContainer }) => ({
             "root": {
                 "display": "flex",
@@ -240,10 +245,10 @@ const { Page } = (() => {
                 "alignItems": isPaperBiggerThanContainer ? undefined : "center",
             },
             "paper": {
-                "padding": theme.spacing(4),
+                "padding": theme.spacing(5),
                 "width": 490,
                 "height": "fit-content",
-                "marginBottom": theme.spacing(3),
+                "marginBottom": theme.spacing(4),
                 "borderRadius": 8,
             },
             "alert": {
@@ -321,11 +326,11 @@ const { Page } = (() => {
             showUsernameNode?: ReactNode;
         } & { kcContext: KcContext } & KcTemplateProps;
 
-        const { useStyles } = makeStyles()(theme => ({
+        const useStyles = makeStyles()(theme => ({
             "root": {
                 "textAlign": "center",
-                "marginTop": theme.spacing(2),
-                "marginBottom": theme.spacing(2),
+                "marginTop": theme.spacing(3),
+                "marginBottom": theme.spacing(3),
             },
         }));
 
@@ -465,7 +470,7 @@ const { Page } = (() => {
             infoNode?: ReactNode;
         } & { kcContext: KcContext } & KcTemplateProps;
 
-        const { useStyles } = makeStyles()(() => ({
+        const useStyles = makeStyles()(() => ({
             "alert": {
                 "alignItems": "center",
             },

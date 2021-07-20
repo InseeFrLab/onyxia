@@ -24,7 +24,7 @@ const lngPrettyPrintByLng: Record<SupportedLanguage, string> = {
     "fr": "French",
 };
 
-const { useStyles } = makeStyles<{ buttonWidth: number }>()(
+const useStyles = makeStyles<{ buttonWidth: number }>()(
     (theme, { buttonWidth }) => ({
         "menu": {
             "& .Mui-selected": {
@@ -87,7 +87,7 @@ export const ChangeLanguage = memo((props: Props) => {
                     {doShowIcon && <Icon iconId="translate" />}
                     <Text
                         typo="subtitle"
-                        className={css({ "marginLeft": theme.spacing(1) })}
+                        className={css({ "marginLeft": theme.spacing(2) })}
                     >
                         {lngPrettyPrintByLng[lng].toUpperCase()}
                     </Text>

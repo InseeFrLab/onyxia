@@ -31,20 +31,20 @@ const targets = [
     "password-confirm",
 ] as const;
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",
-            "marginTop": theme.spacing(5),
+            "marginTop": theme.spacing(6),
         },
     },
     "buttonsWrapper": {
-        "marginTop": theme.spacing(7),
+        "marginTop": theme.spacing(8),
         "display": "flex",
         "justifyContent": "flex-end",
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
 }));
 

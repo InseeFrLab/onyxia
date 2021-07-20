@@ -10,12 +10,12 @@ export type Props = {
     tosUrl: string;
 };
 
-const { useStyles } = makeStyles<Props>()(theme => ({
+const useStyles = makeStyles<Props>()(theme => ({
     "root": {
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "display": "flex",
         "alignItems": "center",
-        "padding": theme.spacing(0, 3),
+        "padding": theme.spacing(0, 4),
         "& a:hover": {
             "textDecoration": "underline",
             "textDecorationColor": theme.colors.useCases.typography.textPrimary,
@@ -32,7 +32,7 @@ const { useStyles } = makeStyles<Props>()(theme => ({
         "flex": 1,
     },
     "spacing": {
-        "width": theme.spacing(3),
+        "width": theme.spacing(4),
     },
 }));
 

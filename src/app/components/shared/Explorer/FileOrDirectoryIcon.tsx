@@ -15,36 +15,34 @@ export type Props = {
     kind: "file" | "directory";
 };
 
-const { useStyles } = makeStyles<Props>()(
-    (theme, { kind, standardizedWidth }) => ({
-        "root": {
-            "fill": "currentColor",
-            "color": (() => {
-                switch (kind) {
-                    case "directory":
-                        return theme.colors.palette.focus.main;
-                    case "file":
-                        return theme.colors.palette[
-                            theme.isDarkModeEnabled ? "light" : "dark"
-                        ].main;
+const useStyles = makeStyles<Props>()((theme, { kind, standardizedWidth }) => ({
+    "root": {
+        "fill": "currentColor",
+        "color": (() => {
+            switch (kind) {
+                case "directory":
+                    return theme.colors.palette.focus.main;
+                case "file":
+                    return theme.colors.palette[
+                        theme.isDarkModeEnabled ? "light" : "dark"
+                    ].main;
+            }
+        })(),
+        ...(() => {
+            const width = (() => {
+                switch (standardizedWidth) {
+                    case "big":
+                        return 100;
+                    case "normal":
+                        return 60;
                 }
-            })(),
-            ...(() => {
-                const width = (() => {
-                    switch (standardizedWidth) {
-                        case "big":
-                            return 100;
-                        case "normal":
-                            return 60;
-                    }
-                })();
+            })();
 
-                return { width, "height": ~~((width * 8) / 10) };
-            })(),
-            "display": "block",
-        },
-    }),
-);
+            return { width, "height": ~~((width * 8) / 10) };
+        })(),
+        "display": "block",
+    },
+}));
 
 export const FileOrDirectoryIcon = memo((props: Props) => {
     const { visualRepresentationOfAFile, kind } = props;

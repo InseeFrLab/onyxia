@@ -24,6 +24,7 @@ import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
 import { ReactComponent as CommunitySvg } from "./assets/svg/Community.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
+import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
@@ -54,7 +55,6 @@ import EqualizerIcon from "@material-ui/icons/Equalizer";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
-import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { ComponentType } from "app/tools/types/ComponentType";
 
 export const { ThemeProvider, useTheme } = createThemeProvider({
@@ -135,8 +135,17 @@ export function getThemeProviderProps(params: {
 }): Omit<ThemeProviderProps, "children"> {
     const { PortraitModeUnsupported } = params;
 
+    console.log(PortraitModeUnsupported);
+
     return {
         "getViewPortConfig": ({ windowInnerWidth, windowInnerHeight }) => {
+            console.log(windowInnerHeight);
+
+            return {
+                "targetWindowInnerWidth": windowInnerWidth,
+                "targetBrowserFontSizeFactor": 1,
+            };
+            /*
             if (
                 getIsPortraitOrientation({
                     windowInnerWidth,
@@ -156,6 +165,7 @@ export function getThemeProviderProps(params: {
                 targetWindowInnerWidth,
                 "targetBrowserFontSizeFactor": 1,
             };
+            */
         },
         "splashScreen": { "Logo": OnyxiaLogoSvg },
     };

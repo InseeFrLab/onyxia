@@ -28,12 +28,12 @@ export type Props = {
     className?: string;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "divider": {
-        "margin": theme.spacing(3, 0),
+        "margin": theme.spacing(4, 0),
     },
     "link": {
-        "marginTop": theme.spacing(1),
+        "marginTop": theme.spacing(2),
         "display": "inline-block",
     },
     "envVar": {

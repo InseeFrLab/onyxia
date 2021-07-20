@@ -14,7 +14,7 @@ export type ButtonBarProps<ButtonId extends string> = {
     onClick(buttonId: ButtonId): void;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "boxShadow": theme.shadows[1],
@@ -57,7 +57,7 @@ const { CustomButton } = (() => {
         label: string;
     };
 
-    const { useStyles } = makeStyles<CustomButtonProps>()(theme => ({
+    const useStyles = makeStyles<CustomButtonProps>()(theme => ({
         "root": {
             "backgroundColor": "transparent",
             "borderRadius": "unset",

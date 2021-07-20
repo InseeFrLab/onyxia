@@ -7,14 +7,14 @@ import { makeStyles } from "app/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 import type { KcContext } from "./kcContext";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "buttonsWrapper": {
-        "marginTop": theme.spacing(3),
+        "marginTop": theme.spacing(4),
         "display": "flex",
         "justifyContent": "flex-end",
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
     "markdownWrapper": {
         "& a": {

@@ -9,7 +9,7 @@ import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { IconButton } from "app/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[1],
@@ -21,28 +21,28 @@ const { useStyles } = makeStyles()(theme => ({
         "flexDirection": "column",
     },
     "aboveDivider": {
-        "padding": theme.spacing(2, 3),
+        "padding": theme.spacing(3, 4),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
     },
     "title": {
-        "marginTop": theme.spacing(2),
+        "marginTop": theme.spacing(3),
     },
     "belowDivider": {
-        "padding": theme.spacing(3),
-        "paddingTop": theme.spacing(2),
+        "padding": theme.spacing(4),
+        "paddingTop": theme.spacing(3),
         "flex": 1,
     },
     "timeContainer": {
-        "marginLeft": theme.spacing(4),
+        "marginLeft": theme.spacing(5),
     },
     "belowDividerTop": {
         "display": "flex",
-        "marginBottom": theme.spacing(3),
+        "marginBottom": theme.spacing(4),
     },
     "captions": {
         "display": "inline-block",
-        "marginBottom": theme.spacing(1),
+        "marginBottom": theme.spacing(2),
     },
     "belowDividerBottom": {
         "display": "flex",

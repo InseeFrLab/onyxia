@@ -107,10 +107,10 @@ export declare namespace Props {
 
 const flashDurationMs = 600;
 
-const { useStyles } = makeStyles<{ isFlashing: boolean }>()(
+const useStyles = makeStyles<{ isFlashing: boolean }>()(
     (theme, { isFlashing }) => ({
         "root": {
-            "marginBottom": theme.spacing(2),
+            "marginBottom": theme.spacing(3),
         },
         "mainLine": {
             "display": "flex",
@@ -118,7 +118,7 @@ const { useStyles } = makeStyles<{ isFlashing: boolean }>()(
                 "display": "flex",
                 "alignItems": "center",
             },
-            "marginBottom": theme.spacing(1),
+            "marginBottom": theme.spacing(2),
         },
         "cellTitle": {
             "width": 360,
@@ -140,7 +140,7 @@ const { useStyles } = makeStyles<{ isFlashing: boolean }>()(
             },
         },
         "cellActions": {
-            "marginRight": theme.spacing(1),
+            "marginRight": theme.spacing(2),
         },
         "noText": {
             "color": theme.colors.useCases.typography.textDisabled,

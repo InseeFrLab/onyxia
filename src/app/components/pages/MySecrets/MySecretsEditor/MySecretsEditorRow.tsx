@@ -51,7 +51,7 @@ export type Props = {
     isDarker: boolean;
 };
 
-const { useStyles } = makeStyles<Props & { isInEditingState: boolean }>()(
+const useStyles = makeStyles<Props & { isInEditingState: boolean }>()(
     (theme, { isInEditingState, isDarker }) => ({
         "root": {
             "backgroundColor": isDarker
@@ -67,11 +67,11 @@ const { useStyles } = makeStyles<Props & { isInEditingState: boolean }>()(
                 : theme.colors.useCases.typography.textFocus,
         },
         "valueAndResolvedValue": {
-            "padding": theme.spacing(2, 1),
+            "padding": theme.spacing(3, 2),
             //"wordBreak": "break-all"
         },
         "keyAndValueTableCells": {
-            "padding": isInEditingState ? theme.spacing(0, 2) : undefined,
+            "padding": isInEditingState ? theme.spacing(0, 3) : undefined,
         },
     }),
 );
@@ -283,7 +283,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     typo="body 1"
                     className={cx(
                         classes.dollarSign,
-                        css({ "padding": theme.spacing(2, 1) }),
+                        css({ "padding": theme.spacing(3, 2) }),
                     )}
                 >
                     $
@@ -293,7 +293,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 {!isInEditingState ? (
                     <Text
                         typo="body 1"
-                        className={css({ "padding": theme.spacing(2, 1) })}
+                        className={css({ "padding": theme.spacing(3, 2) })}
                     >
                         {key}
                     </Text>

@@ -6,7 +6,7 @@ export type Props = {
     className?: string;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "height": "100vh",
         "display": "flex",
@@ -16,7 +16,7 @@ const { useStyles } = makeStyles()(theme => ({
         "textAlign": "center",
     },
     "instructions": {
-        "marginTop": theme.spacing(2),
+        "marginTop": theme.spacing(3),
     },
 }));
 

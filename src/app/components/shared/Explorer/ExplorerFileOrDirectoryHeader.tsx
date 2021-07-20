@@ -23,17 +23,17 @@ export const defaultProps: PickOptionals<Props> = {
     "date": new Date(0),
 };
 
-const { useStyles } = makeStyles<{ isDateProvided: boolean }>()(
+const useStyles = makeStyles<{ isDateProvided: boolean }>()(
     (theme, { isDateProvided }) => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
-            "gap": `0 ${theme.spacing(2)}px`,
+            "gap": `0 ${theme.spacing(3)}px`,
             "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "padding": theme.spacing(3, 0),
+            "padding": theme.spacing(4, 0),
         },
         "basename": {
-            "marginBottom": isDateProvided ? theme.spacing(1) : undefined,
+            "marginBottom": isDateProvided ? theme.spacing(2) : undefined,
         },
         "date": {
             "color": theme.colors.useCases.typography.textSecondary,

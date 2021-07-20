@@ -33,7 +33,7 @@ export type Props = {
     onRequestDelete(params: { serviceId: string }): void;
 };
 
-const { useStyles } = makeStyles<{ isThereServicesRunning: boolean }>()(
+const useStyles = makeStyles<{ isThereServicesRunning: boolean }>()(
     (theme, { isThereServicesRunning }) => ({
         "root": {
             "overflow": "hidden",
@@ -41,7 +41,7 @@ const { useStyles } = makeStyles<{ isThereServicesRunning: boolean }>()(
             "flexDirection": "column",
         },
         "header": {
-            "margin": theme.spacing(2, 0),
+            "margin": theme.spacing(3, 0),
         },
         "wrapper": {
             "overflow": "auto",
@@ -50,10 +50,10 @@ const { useStyles } = makeStyles<{ isThereServicesRunning: boolean }>()(
                       "flex": 1,
                   }
                 : {
-                      "paddingRight": theme.spacing(2),
+                      "paddingRight": theme.spacing(3),
                       "display": "grid",
                       "gridTemplateColumns": "repeat(2,1fr)",
-                      "gap": theme.spacing(3),
+                      "gap": theme.spacing(4),
                   }),
         },
         "noRunningServices": {
@@ -159,7 +159,7 @@ const { NoRunningService } = (() => {
         catalogExplorerLink: Link;
     };
 
-    const { useStyles } = makeStyles()(theme => ({
+    const useStyles = makeStyles()(theme => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
@@ -175,10 +175,10 @@ const { NoRunningService } = (() => {
             "margin": 0,
         },
         "h2": {
-            "margin": theme.spacing(4, 0),
+            "margin": theme.spacing(5, 0),
         },
         "typo": {
-            "marginBottom": theme.spacing(1),
+            "marginBottom": theme.spacing(2),
             "color": theme.colors.palette.light.greyVariant3,
         },
         "link": {

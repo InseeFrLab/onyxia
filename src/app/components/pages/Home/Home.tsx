@@ -22,12 +22,12 @@ Home.routeGroup = createGroup([routes.home]);
 
 Home.requireUserLoggedIn = () => false;
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "backgroundColor": "transparent",
         "display": "flex",
         "flexDirection": "column",
-        "paddingRight": theme.spacing(3),
+        "paddingRight": theme.spacing(4),
     },
     "hero": {
         "flex": 1,
@@ -41,25 +41,25 @@ const { useStyles } = makeStyles()(theme => ({
         "backgroundSize": "76%, 80%",
     },
     "heroTextWrapper": {
-        "paddingLeft": theme.spacing(2),
+        "paddingLeft": theme.spacing(3),
         "maxWidth": "42%",
         "& > *": {
-            "marginBottom": theme.spacing(3),
+            "marginBottom": theme.spacing(4),
         },
     },
     "heroSubtitle": {
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(5),
     },
     "cardsWrapper": {
         "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
         "display": "flex",
-        "padding": theme.spacing(3, 0),
+        "padding": theme.spacing(4, 0),
         "& > *": {
             "flex": 1,
         },
     },
     "middleCard": {
-        "margin": theme.spacing(0, 2),
+        "margin": theme.spacing(0, 3),
     },
     "svg": {
         "fill": theme.colors.palette.focus.main,
@@ -202,7 +202,7 @@ const { Card } = (() => {
                     css({
                         "display": "flex",
                         "flexDirection": "column",
-                        "padding": theme.spacing(3),
+                        "padding": theme.spacing(4),
                         "backgroundColor": theme.isDarkModeEnabled
                             ? "#383E50"
                             : undefined,
@@ -217,7 +217,7 @@ const { Card } = (() => {
                             "flex": 1,
                             "display": "flex",
                             "alignItems": "center",
-                            "padding": theme.spacing(0, 3),
+                            "padding": theme.spacing(0, 4),
                         })}
                     >
                         <Text typo="section heading">{title}</Text>
@@ -228,7 +228,7 @@ const { Card } = (() => {
                         "flex": 1,
                         "display": "flex",
                         "flexDirection": "column",
-                        "paddingTop": theme.spacing(2),
+                        "paddingTop": theme.spacing(3),
                     })}
                 >
                     <div className={css({ "flex": 1 })}>
@@ -236,7 +236,7 @@ const { Card } = (() => {
                     </div>
                     <div
                         className={css({
-                            "marginTop": theme.spacing(4),
+                            "marginTop": theme.spacing(5),
                             "display": "flex",
                         })}
                     >

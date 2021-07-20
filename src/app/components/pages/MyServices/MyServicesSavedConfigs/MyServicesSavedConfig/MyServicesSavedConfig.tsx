@@ -14,42 +14,40 @@ const actions = ["launch", "delete", "copy link"] as const;
 
 export type MyServicesSavedConfigAction = typeof actions[number];
 
-const { useStyles } = makeStyles<{ hasLogo: boolean }>()(
-    (theme, { hasLogo }) => ({
-        "root": {
-            "borderRadius": 16,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "&:hover": {
-                "boxShadow": theme.shadows[6],
-            },
-            "display": "flex",
-            "alignItems": "center",
-            "padding": theme.spacing(1, 1),
-            "paddingRight": theme.spacing(2),
+const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
+    "root": {
+        "borderRadius": 16,
+        "boxShadow": theme.shadows[1],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "&:hover": {
+            "boxShadow": theme.shadows[6],
         },
-        "logo": {
-            ...(() => {
-                const width = 32;
-                return { width, "height": width };
-            })(),
-            "visibility": hasLogo ? undefined : "hidden",
-            "margin": theme.spacing(0, 1),
-        },
-        "friendlyNameWrapper": {
-            "overflow": "hidden",
-            "whiteSpace": "nowrap",
-            "flex": 1,
-        },
-        "friendlyName": {
-            "overflow": "hidden",
-            "textOverflow": "ellipsis",
-        },
-        "linkIcon": {
-            "marginRight": theme.spacing(2),
-        },
-    }),
-);
+        "display": "flex",
+        "alignItems": "center",
+        "padding": theme.spacing(2, 2),
+        "paddingRight": theme.spacing(3),
+    },
+    "logo": {
+        ...(() => {
+            const width = 32;
+            return { width, "height": width };
+        })(),
+        "visibility": hasLogo ? undefined : "hidden",
+        "margin": theme.spacing(0, 2),
+    },
+    "friendlyNameWrapper": {
+        "overflow": "hidden",
+        "whiteSpace": "nowrap",
+        "flex": 1,
+    },
+    "friendlyName": {
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+    },
+    "linkIcon": {
+        "marginRight": theme.spacing(3),
+    },
+}));
 
 export type Props = {
     className?: string;

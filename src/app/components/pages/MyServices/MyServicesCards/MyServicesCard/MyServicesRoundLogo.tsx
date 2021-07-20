@@ -8,7 +8,7 @@ export type Props = {
     url: string | undefined;
 };
 
-const { useStyles } = makeStyles<{
+const useStyles = makeStyles<{
     circleColor: Props["circleColor"];
 }>()((theme, { circleColor }) => ({
     "root": {

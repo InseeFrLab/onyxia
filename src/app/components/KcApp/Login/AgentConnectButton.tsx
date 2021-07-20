@@ -10,9 +10,9 @@ export type Props = {
     url: string;
 };
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
-        "padding": theme.spacing(1, 0),
+        "padding": theme.spacing(2, 0),
         "display": "flex",
         "justifyContent": "center",
         "borderRadius": 8,

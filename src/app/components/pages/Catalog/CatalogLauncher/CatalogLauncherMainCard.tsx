@@ -11,7 +11,7 @@ import type { TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { capitalize } from "tsafe/capitalize";
 
-const { useStyles } = makeStyles()(theme => ({
+const useStyles = makeStyles()(theme => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[7],
@@ -20,7 +20,7 @@ const { useStyles } = makeStyles()(theme => ({
         "flexDirection": "column",
     },
     "aboveDivider": {
-        "padding": theme.spacing(2, 3),
+        "padding": theme.spacing(3, 4),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
         "display": "flex",
@@ -30,19 +30,19 @@ const { useStyles } = makeStyles()(theme => ({
         "alignItems": "center",
     },
     "belowDivider": {
-        "padding": theme.spacing(3),
-        "paddingLeft": theme.spacing(4),
-        "paddingTop": theme.spacing(2),
+        "padding": theme.spacing(4),
+        "paddingLeft": theme.spacing(5),
+        "paddingTop": theme.spacing(3),
         "flex": 1,
     },
     "logoAndTitleWrapper": {
         "display": "flex",
-        "marginBottom": theme.spacing(2),
+        "marginBottom": theme.spacing(3),
     },
     "title": {
         "display": "flex",
         "alignItems": "center",
-        "marginLeft": theme.spacing(2),
+        "marginLeft": theme.spacing(3),
     },
     "textFieldAndButtonWrapper": {
         "display": "flex",
@@ -56,7 +56,7 @@ const { useStyles } = makeStyles()(theme => ({
         "alignItems": "flex-end",
     },
     "launchButton": {
-        "marginLeft": theme.spacing(1),
+        "marginLeft": theme.spacing(2),
     },
 }));
 

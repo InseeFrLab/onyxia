@@ -37,7 +37,7 @@ export type Props = {
     className?: string;
 };
 
-const { useStyles } = makeStyles()({
+const useStyles = makeStyles()({
     "root": {
         "display": "flex",
         "flexDirection": "column",

@@ -32,7 +32,7 @@ export type Props = {
     className: string;
 };
 
-const { useStyles } = makeStyles<{
+const useStyles = makeStyles<{
     isSavedConfigsExtended: boolean;
 }>()((theme, { isSavedConfigsExtended }) => ({
     "root": {
@@ -40,7 +40,7 @@ const { useStyles } = makeStyles<{
         "flexDirection": "column",
     },
     "contextTypo": {
-        "margin": theme.spacing(3, 0),
+        "margin": theme.spacing(4, 0),
     },
     "payload": {
         "overflow": "hidden",
@@ -56,7 +56,7 @@ const { useStyles } = makeStyles<{
         return {
             "cards": {
                 "flex": ratio,
-                "marginRight": theme.spacing(4),
+                "marginRight": theme.spacing(5),
             },
             "savedConfigs": {
                 "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
