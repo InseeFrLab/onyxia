@@ -10,7 +10,7 @@ import { getBestMatchAmongKcLanguageTag } from "keycloakify/lib/i18n/KcLanguageT
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "app/components/shared/Header";
-import { logoContainerWidthInPercent as logoContainerWidthInPercent } from "app/components/App";
+import { logoContainerWidthInPercent } from "app/components/App";
 import { makeStyles, IconButton, Text } from "app/theme";
 import { useDomRect, useWindowInnerSize } from "onyxia-ui";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
