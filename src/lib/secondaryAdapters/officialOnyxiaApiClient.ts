@@ -85,7 +85,9 @@ export function createOfficialOnyxiaApiClient(params: {
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
                 ({ catalogId, packageName, options, isDryRun }) => {
-                    const serviceId = `${packageName}-${Date.now()}`;
+                    const serviceId = `${packageName}-${Math.floor(
+                        Math.random() * 1000000,
+                    )}`;
 
                     return axiosInstance
                         .put<Put_MyLab_App>(`/my-lab/app`, {
