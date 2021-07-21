@@ -2,9 +2,9 @@ import {
     createThemeProvider,
     defaultPalette,
     defaultGetTypographyDesc,
-    //getIsPortraitOrientation,
-    //ViewPortOutOfRangeError,
-    //breakpointsValues,
+    getIsPortraitOrientation,
+    ViewPortOutOfRangeError,
+    breakpointsValues,
 } from "onyxia-ui";
 import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
@@ -135,17 +135,8 @@ export function getThemeProviderProps(params: {
 }): Omit<ThemeProviderProps, "children"> {
     const { PortraitModeUnsupported } = params;
 
-    console.log(PortraitModeUnsupported);
-
     return {
         "getViewPortConfig": ({ windowInnerWidth, windowInnerHeight }) => {
-            console.log(windowInnerHeight);
-
-            return {
-                "targetWindowInnerWidth": windowInnerWidth,
-                "targetBrowserFontSizeFactor": 1,
-            };
-            /*
             if (
                 getIsPortraitOrientation({
                     windowInnerWidth,
@@ -165,7 +156,6 @@ export function getThemeProviderProps(params: {
                 targetWindowInnerWidth,
                 "targetBrowserFontSizeFactor": 1,
             };
-            */
         },
         "splashScreen": { "Logo": OnyxiaLogoSvg },
     };
