@@ -59,7 +59,7 @@ const execYarnLink = (params: { targetModuleName?: string; cwd: string }) => {
     });
 };
 
-const inHouseModuleNames = ["onyxia-ui", "powerhooks", "tss-react"];
+const inHouseModuleNames = ["onyxia-ui", "powerhooks", "tss-react", "evt"];
 
 console.log("=== Linking common dependencies ===");
 
