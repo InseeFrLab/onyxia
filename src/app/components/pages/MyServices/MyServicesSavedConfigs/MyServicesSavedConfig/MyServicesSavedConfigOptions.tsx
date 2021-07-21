@@ -95,7 +95,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                                         case "copy link":
                                             return "link" as const;
                                         case "delete":
-                                            return "bookmark" as const;
+                                            return "delete" as const;
                                     }
                                 })()}
                             />
