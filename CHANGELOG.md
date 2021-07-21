@@ -1,3 +1,20 @@
+### **0.11.55** (2021-07-21)  
+  
+- #248  
+- Use random instead of epoch for serviceId  
+- Provide name when launching service  
+- Update deps  
+- add evt in inhouse deps list  
+- fix spacing and App structure  
+- MySecrets, correcting link to documentation
+
+Issue is: https://github.com/InseeFrLab/onyxia-web/issues/247  
+- Big DS update #242  
+- MySecrets, correcting link to documentation
+
+Issue is: https://github.com/InseeFrLab/onyxia-web/issues/247  
+- Do not store OIDC Access token in localStorage    
+  
 ### **0.11.54** (2021-07-06)  
   
 - Inject git token    
