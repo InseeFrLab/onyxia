@@ -12,6 +12,7 @@ import { CatalogExplorerSearchBar } from "../CatalogExplorerSearchBar";
 import type { Props as SearchBarProps } from "../CatalogExplorerSearchBar";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { breakpointsValues } from "onyxia-ui";
 
 export type Props<PackageName extends string = string> = {
     className?: string;
@@ -28,8 +29,7 @@ export type Props<PackageName extends string = string> = {
 
 const useStyles = makeStyles<{
     filteredCardCount: number;
-    isRevealed: boolean;
-}>()((theme, { filteredCardCount, isRevealed }) => ({
+}>()((theme, { filteredCardCount }) => ({
     "root": {
         //Or set by the parent,
         //it must be constrained or the scroll will not work
@@ -40,18 +40,32 @@ const useStyles = makeStyles<{
     "contextTypo": {
         "margin": theme.spacing(4, 0),
     },
-    "cards": {
+    "cardsWrapper": {
         "flex": 1,
         "overflow": "auto",
+    },
+    "cards": {
         ...(filteredCardCount === 0
             ? {}
             : {
                   "display": "grid",
-                  "gridTemplateColumns": `repeat(3,1fr)`,
-                  "gridTemplateRows": `repeat(2,1fr)`,
-                  //"gridAutoRows": "1fr",
+                  "gridTemplateColumns": `repeat(${(() => {
+                      if (
+                          theme.responsive.windowInnerWidth >=
+                          breakpointsValues.xl
+                      ) {
+                          return 4;
+                      }
+                      if (
+                          theme.responsive.windowInnerWidth >=
+                          breakpointsValues.lg
+                      ) {
+                          return 3;
+                      }
+
+                      return 2;
+                  })()},1fr)`,
                   "gap": theme.spacing(4),
-                  "marginBottom": isRevealed ? undefined : theme.spacing(3),
               }),
     },
     "noMatches": {
@@ -73,7 +87,7 @@ export const CatalogExplorerCards = memo(
             ([packageName]: [PackageName]) => onRequestLaunch(packageName),
         );
 
-        let [isRevealed, setIsRevealed] = useState(false);
+        const [isRevealed, setIsRevealed] = useState(false);
 
         const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
 
@@ -104,7 +118,6 @@ export const CatalogExplorerCards = memo(
 
         const { classes, cx } = useStyles({
             "filteredCardCount": filteredCards.length,
-            isRevealed,
         });
 
         const [evtSearchBarAction] = useState(() =>
@@ -136,40 +149,42 @@ export const CatalogExplorerCards = memo(
                         )}
                     </Text>
                 )}
-                <div className={classes.cards}>
-                    {filteredCards.length === 0 ? (
-                        <NoMatches
-                            className={classes.noMatches}
-                            search={search}
-                            onGoBackClick={onGoBackClick}
-                        />
-                    ) : (
-                        filteredCards.map(
-                            ({
-                                packageName,
-                                packageIconUrl,
-                                packageDescription,
-                                packageHomeUrl,
-                            }) => (
-                                <CatalogExplorerCard
-                                    key={packageName}
-                                    packageIconUrl={packageIconUrl}
-                                    packageName={packageName}
-                                    packageDescription={packageDescription}
-                                    onRequestLaunch={onRequestLaunchFactory(
-                                        packageName,
-                                    )}
-                                    packageHomeUrl={packageHomeUrl}
-                                />
-                            ),
-                        )
-                    )}
-                    {!isRevealed && (
-                        <CardShowMore
-                            leftToShowCount={cardsContent.length - 5}
-                            onClick={onShowMoreClick}
-                        />
-                    )}
+                <div className={classes.cardsWrapper}>
+                    <div className={classes.cards}>
+                        {filteredCards.length === 0 ? (
+                            <NoMatches
+                                className={classes.noMatches}
+                                search={search}
+                                onGoBackClick={onGoBackClick}
+                            />
+                        ) : (
+                            filteredCards.map(
+                                ({
+                                    packageName,
+                                    packageIconUrl,
+                                    packageDescription,
+                                    packageHomeUrl,
+                                }) => (
+                                    <CatalogExplorerCard
+                                        key={packageName}
+                                        packageIconUrl={packageIconUrl}
+                                        packageName={packageName}
+                                        packageDescription={packageDescription}
+                                        onRequestLaunch={onRequestLaunchFactory(
+                                            packageName,
+                                        )}
+                                        packageHomeUrl={packageHomeUrl}
+                                    />
+                                ),
+                            )
+                        )}
+                        {!isRevealed && (
+                            <CardShowMore
+                                leftToShowCount={cardsContent.length - 5}
+                                onClick={onShowMoreClick}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         );
