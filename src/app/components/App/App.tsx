@@ -45,9 +45,9 @@ const useStyles = makeStyles()(theme => ({
         "display": "flex",
         "flexDirection": "column",
         "backgroundColor": theme.colors.useCases.surfaces.background,
+        "marginRight": theme.spacing(6),
     },
     "header": {
-        "width": "100%",
         "marginLeft": theme.spacing(3),
     },
     "betweenHeaderAndFooter": {
@@ -69,9 +69,6 @@ const useStyles = makeStyles()(theme => ({
         //TODO: See if scroll delegation works if we put auto here instead of "hidden"
         "overflow": "auto",
         "paddingLeft": theme.spacing(4),
-    },
-    "generalPaddingRight": {
-        "paddingRight": "2%",
     },
     "height100": {
         "height": "100%",
@@ -157,7 +154,7 @@ export const App = memo((props: Props) => {
         <div ref={rootRef} className={cx(classes.root, className)}>
             <Header
                 type="core"
-                className={cx(classes.header, classes.generalPaddingRight)}
+                className={cx(classes.header)}
                 logoContainerWidth={logoContainerWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}
@@ -253,15 +250,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return (
-                <Page
-                    route={route}
-                    className={cx(
-                        classes.height100,
-                        classes.generalPaddingRight,
-                    )}
-                />
-            );
+            return <Page route={route} className={cx(classes.height100)} />;
         }
     }
 
@@ -303,9 +292,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return (
-                <Page route={route} className={classes.generalPaddingRight} />
-            );
+            return <Page route={route} />;
         }
     }
 
