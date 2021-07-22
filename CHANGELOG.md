@@ -1,3 +1,7 @@
+### **0.11.58** (2021-07-22)  
+  
+- Rework headers    
+  
 ### **0.11.57** (2021-07-22)  
   
 - Responsivness of cards    
