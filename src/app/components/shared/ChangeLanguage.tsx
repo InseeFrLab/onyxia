@@ -21,7 +21,9 @@ type Props = {
 
 const lngPrettyPrintByLng: Record<SupportedLanguage, string> = {
     "en": "English",
-    "fr": "French",
+    /* spell-checker: disable */
+    "fr": "Français",
+    /* spell-checker: enable */
 };
 
 const useStyles = makeStyles<{ buttonWidth: number }>()(
@@ -84,12 +86,15 @@ export const ChangeLanguage = memo((props: Props) => {
                     data-ga-event-category="header"
                     data-ga-event-action="language"
                 >
-                    {doShowIcon && <Icon iconId="translate" />}
+                    {doShowIcon && <Icon iconId="public" />}
                     <Text
-                        typo="subtitle"
-                        className={css({ "marginLeft": theme.spacing(2) })}
+                        typo="label 1"
+                        className={css({
+                            "marginLeft": theme.spacing(2),
+                            "textTransform": "capitalize",
+                        })}
                     >
-                        {lngPrettyPrintByLng[lng].toUpperCase()}
+                        {lngPrettyPrintByLng[lng]}
                     </Text>
                     <Icon iconId="expandMore" />
                 </MuiButton>

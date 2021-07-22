@@ -412,7 +412,7 @@ export const AccountField = memo(
             <div className={cx(classes.root, className)}>
                 <div className={classes.mainLine}>
                     <div className={classes.cellTitle}>
-                        <Text typo="subtitle">
+                        <Text typo="label 1">
                             {"title" in props ? props.title : t(props.type)}
                         </Text>
                     </div>

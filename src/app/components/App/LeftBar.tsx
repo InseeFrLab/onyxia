@@ -129,7 +129,7 @@ const { CustomButton } = (() => {
             [`&:hover .${hoverBoxClassName}`]: {
                 "backgroundColor": theme.colors.useCases.surfaces.background,
             },
-            [[".MuiSvgIcon-root", ".MuiTypography-root"]
+            [[".MuiSvgIcon-root", "h6"]
                 .map(name => `&${!isActive ? ":active" : ""} ${name}`)
                 .join(", ")]: {
                 "color": theme.colors.useCases.typography.textFocus,
@@ -174,7 +174,7 @@ const { CustomButton } = (() => {
     }));
 
     const CustomButton = memo((props: Props) => {
-        const { isExpanded, target, hasDivider, onClick } = props;
+        const { isExpanded, target, hasDivider, isActive, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -200,6 +200,8 @@ const { CustomButton } = (() => {
                     return "trainings";
             }
         }, [target]);
+
+        console.log({ target, isActive });
 
         const { classes, cx } = useStyles(props);
 
