@@ -1,3 +1,8 @@
+### **0.11.59** (2021-07-22)  
+  
+- Responsive size for service icon  
+- Icon and title on the same line    
+  
 ### **0.11.58** (2021-07-22)  
   
 - Rework headers    
