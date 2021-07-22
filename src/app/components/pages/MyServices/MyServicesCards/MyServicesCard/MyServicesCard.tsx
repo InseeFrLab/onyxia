@@ -107,7 +107,7 @@ export const MyServicesCard = memo((props: Props) => {
                         <Text typo="caption" className={classes.captions}>
                             {t("service")}
                         </Text>
-                        <Text typo="subtitle">{capitalize(packageName)}</Text>
+                        <Text typo="label 1">{capitalize(packageName)}</Text>
                     </div>
                     <div className={classes.timeContainer}>
                         <Text typo="caption" className={classes.captions}>

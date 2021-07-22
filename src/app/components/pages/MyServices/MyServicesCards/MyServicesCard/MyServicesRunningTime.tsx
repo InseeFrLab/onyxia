@@ -50,7 +50,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { t } = useTranslation("MyServicesRunningTime");
 
     return (
-        <Text typo="subtitle" className={cx(classes.root, className)}>
+        <Text typo="label 1" className={cx(classes.root, className)}>
             <Icon iconId="accessTime" className={classes.icon} /> &nbsp;
             {props.isRunning ? fromNowText : t("launching")}
         </Text>

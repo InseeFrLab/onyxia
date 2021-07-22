@@ -26,6 +26,7 @@ import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import DeleteIcon from "@material-ui/icons/Delete";
+import PublicIcon from "@material-ui/icons/Public";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
@@ -110,6 +111,7 @@ export const { Icon } = createIcon({
     "accessTime": AccessTimeIcon,
     "equalizer": EqualizerIcon,
     "moreVert": MoreVertIcon,
+    "public": PublicIcon,
     "tour": TourSvg,
     "services": ServicesSvg,
     "secrets": SecretsSvg,
