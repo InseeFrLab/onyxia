@@ -28,10 +28,6 @@ const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
         "paddingRight": theme.spacing(3),
     },
     "logo": {
-        ...(() => {
-            const width = 32;
-            return { width, "height": width };
-        })(),
         "visibility": hasLogo ? undefined : "hidden",
         "margin": theme.spacing(0, 2),
     },
@@ -89,7 +85,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     onClick={scheduleDeletion}
                 />
             )}
-            <RoundLogo url={logoUrl} className={classes.logo} />
+            <RoundLogo url={logoUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
                 <Text typo="label 1" className={classes.friendlyName}>
                     {friendlyName}

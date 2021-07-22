@@ -80,7 +80,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
                 {packageIconUrl !== undefined && (
-                    <RoundLogo url={packageIconUrl} />
+                    <RoundLogo url={packageIconUrl} size="large" />
                 )}
                 <Text className={classes.title} typo="object heading">
                     {capitalize(packageName)}
