@@ -24,9 +24,11 @@ const useStyles = makeStyles()(theme => ({
         "padding": theme.spacing(3, 4),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
+        "display": "flex",
+        "alignItems": "center",
     },
     "title": {
-        "marginTop": theme.spacing(3),
+        "marginLeft": theme.spacing(3),
     },
     "belowDivider": {
         "padding": theme.spacing(4),

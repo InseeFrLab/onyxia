@@ -21,7 +21,6 @@ const useStyles = makeStyles<{ helperHeight: number }>()(
         "root": {
             "backgroundColor": "inherit",
             "paddingBottom": theme.spacing(5),
-            "marginRight": theme.spacing(6),
         },
         "title": {
             "display": "flex",
