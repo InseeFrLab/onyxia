@@ -1,59 +1,120 @@
 import { makeStyles, Text } from "app/theme";
 import { memo } from "react";
-import { Icon } from "app/theme";
-import type { PickOptionals } from "tsafe";
-import { noUndefined } from "app/tools/noUndefined";
+import { Icon, IconButton } from "app/theme";
 import type { IconId } from "app/theme";
+import { useDomRect } from "powerhooks/useDomRect";
+import { createUseGlobalState } from "powerhooks/useGlobalState";
+import { id } from "tsafe/id";
+import { useConstCallback } from "powerhooks/useConstCallback";
 
 export type Props = {
-    icon: IconId;
-    text1: NonNullable<React.ReactNode>;
-    text2: NonNullable<React.ReactNode>;
-    text3: NonNullable<React.ReactNode>;
-    className?: string | null;
+    mainIcon: IconId;
+    title: string;
+    helpIcon?: IconId;
+    helpTitle: NonNullable<React.ReactNode>;
+    helpContent: NonNullable<React.ReactNode>;
+    className?: string;
 };
 
-export const defaultProps: PickOptionals<Props> = {
-    "className": null,
-};
+const useStyles = makeStyles<{ helperHeight: number }>()(
+    (theme, { helperHeight }) => ({
+        "root": {
+            "backgroundColor": "inherit",
+            "paddingBottom": theme.spacing(5),
+            "marginRight": theme.spacing(6),
+        },
+        "title": {
+            "display": "flex",
+            "alignItems": "center",
+        },
+        "titleIcon": {
+            "marginRight": theme.spacing(3),
+        },
+        "helperRoot": {
+            "display": "flex",
+            "backgroundColor": theme.colors.useCases.surfaces.surface2,
+            "alignItems": "start",
+            "padding": theme.spacing(3),
+            "borderRadius": helperHeight * 0.15,
+            "marginTop": theme.spacing(3),
+        },
+        "helperMiddle": {
+            "flex": 1,
+        },
+        "helperIcon": {
+            "marginRight": theme.spacing(3),
+            "color": theme.colors.useCases.typography.textFocus,
+        },
+        "closeButton": {
+            "padding": 0,
+            "marginLeft": theme.spacing(3),
+        },
+    }),
+);
 
-const useStyles = makeStyles<Required<Props>>()(theme => ({
-    "root": {
-        "backgroundColor": "inherit",
-        "paddingBottom": theme.spacing(5),
-    },
-    "text1": {
-        "marginBottom": theme.spacing(3),
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "icon": {
-        "marginRight": theme.spacing(3),
-        "position": "relative",
-        "fontSize": 40,
-    },
-    "text2": {
-        "marginBottom": theme.spacing(2),
-    },
-}));
+const { usePageHeaderClosedHelpers } = createUseGlobalState(
+    "pageHeaderClosedHelpers",
+    id<string[]>([]),
+    { "persistance": false },
+);
 
 export const PageHeader = memo((props: Props) => {
-    const completedProps = { ...defaultProps, ...noUndefined(props) };
+    const { mainIcon, title, helpTitle, helpIcon, helpContent, className } =
+        props;
 
-    const { icon, text1, text2, text3, className } = completedProps;
+    const {
+        ref: helperRef,
+        domRect: { height: helperHeight },
+    } = useDomRect();
 
-    const { classes, cx } = useStyles(completedProps);
+    const { classes, cx } = useStyles({ helperHeight });
+
+    const { isHelpShown, hideHelp } = (function useClosure() {
+        const { pageHeaderClosedHelpers, setPageHeaderClosedHelpers } =
+            usePageHeaderClosedHelpers();
+
+        const isHelpShown = !pageHeaderClosedHelpers.includes(title);
+
+        const hideHelp = useConstCallback(() =>
+            setPageHeaderClosedHelpers([...pageHeaderClosedHelpers, title]),
+        );
+
+        return { isHelpShown, hideHelp };
+    })();
 
     return (
         <div className={cx(classes.root, className)}>
-            <Text typo="page heading" className={classes.text1}>
-                <Icon iconId={icon} className={classes.icon} />
-                {text1}
+            <Text typo="page heading" className={classes.title}>
+                <Icon
+                    iconId={mainIcon}
+                    className={classes.titleIcon}
+                    size="large"
+                />
+                {title}
             </Text>
-            <Text typo="object heading" className={classes.text2}>
-                {text2}
-            </Text>
-            <Text typo="body 1">{text3}</Text>
+            {isHelpShown && (
+                <div ref={helperRef} className={classes.helperRoot}>
+                    {helpIcon && (
+                        <div>
+                            <Icon
+                                iconId={helpIcon}
+                                className={classes.helperIcon}
+                            />
+                        </div>
+                    )}
+                    <div className={classes.helperMiddle}>
+                        <Text typo="navigation label">{helpTitle}</Text>
+                        <Text typo="body 1">{helpContent}</Text>
+                    </div>
+                    <div>
+                        <IconButton
+                            iconId="close"
+                            onClick={hideHelp}
+                            className={classes.closeButton}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 });
