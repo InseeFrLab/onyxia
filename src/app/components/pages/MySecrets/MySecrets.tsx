@@ -266,10 +266,10 @@ export function MySecrets(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                icon="secrets"
-                text1={t("page title")}
-                text2={t("what this page is used for")}
-                text3={
+                mainIcon="secrets"
+                title={t("page title")}
+                helpTitle={t("what this page is used for")}
+                helpContent={
                     <>
                         {t("to learn more")}
                         &nbsp;
@@ -281,6 +281,7 @@ export function MySecrets(props: Props) {
                         </Link>
                     </>
                 }
+                helpIcon="sentimentSatisfied"
             />
             <Explorer
                 className={classes.explorer}

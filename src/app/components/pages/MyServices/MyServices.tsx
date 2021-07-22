@@ -257,10 +257,11 @@ export function MyServices(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                icon="services"
-                text1={t("text1")}
-                text2={t("text2")}
-                text3={t("text3")}
+                mainIcon="services"
+                title={t("text1")}
+                helpTitle={t("text2")}
+                helpContent={t("text3")}
+                helpIcon="sentimentSatisfied"
             />
             <MyServicesButtonBar onClick={onButtonBarClick} />
             <div className={classes.payload}>

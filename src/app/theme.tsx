@@ -25,6 +25,7 @@ import { ReactComponent as CommunitySvg } from "./assets/svg/Community.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PublicIcon from "@material-ui/icons/Public";
 import EditIcon from "@material-ui/icons/Edit";
@@ -112,6 +113,7 @@ export const { Icon } = createIcon({
     "equalizer": EqualizerIcon,
     "moreVert": MoreVertIcon,
     "public": PublicIcon,
+    "sentimentSatisfied": SentimentSatisfiedIcon,
     "tour": TourSvg,
     "services": ServicesSvg,
     "secrets": SecretsSvg,

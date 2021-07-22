@@ -72,10 +72,10 @@ export function Catalog(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                icon="catalog"
-                text1={t("header text1")}
-                text2={t("header text2")}
-                text3={
+                mainIcon="catalog"
+                title={t("header text1")}
+                helpTitle={t("header text2")}
+                helpContent={
                     <>
                         {t("all services are open sources")}
                         {sourcesUrls === undefined
@@ -137,6 +137,7 @@ export function Catalog(props: Props) {
                               })()}
                     </>
                 }
+                helpIcon="sentimentSatisfied"
             />
             {(() => {
                 switch (route.name) {

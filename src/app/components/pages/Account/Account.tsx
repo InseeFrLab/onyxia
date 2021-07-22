@@ -52,10 +52,11 @@ export function Account(props: Props) {
     return (
         <div className={className}>
             <PageHeader
-                icon="account"
-                text1={t("text1")}
-                text2={t("text2")}
-                text3={t("text3")}
+                mainIcon="account"
+                title={t("text1")}
+                helpTitle={t("text2")}
+                helpContent={t("text3")}
+                helpIcon="sentimentSatisfied"
             />
             <Tabs
                 className={classes.tabs}
