@@ -31,12 +31,6 @@ const useStyles = makeStyles<{
         "boxSizing": "border-box",
         "display": "inline-block",
     },
-    "logo": {
-        ...(() => {
-            const width = 50;
-            return { width, "height": width };
-        })(),
-    },
 }));
 
 export const MyServicesRoundLogo = memo((props: Props) => {
@@ -46,7 +40,7 @@ export const MyServicesRoundLogo = memo((props: Props) => {
 
     return (
         <div className={cx(className, classes.root)}>
-            <RoundLogo url={url} className={classes.logo} />
+            <RoundLogo url={url} size="large" />
         </div>
     );
 });

@@ -129,7 +129,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
             <div className={classes.belowDivider}>
                 <div className={classes.logoAndTitleWrapper}>
                     {packageIconUrl !== undefined && (
-                        <RoundLogo url={packageIconUrl} />
+                        <RoundLogo url={packageIconUrl} size="large" />
                     )}
                     <Text typo="object heading" className={classes.title}>
                         {capitalize(packageName)}
