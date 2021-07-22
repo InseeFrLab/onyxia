@@ -174,7 +174,7 @@ const { CustomButton } = (() => {
     }));
 
     const CustomButton = memo((props: Props) => {
-        const { isExpanded, target, hasDivider, isActive, onClick } = props;
+        const { isExpanded, target, hasDivider, onClick } = props;
 
         const { t } = useTranslation("LeftBar");
 
@@ -200,8 +200,6 @@ const { CustomButton } = (() => {
                     return "trainings";
             }
         }, [target]);
-
-        console.log({ target, isActive });
 
         const { classes, cx } = useStyles(props);
 
