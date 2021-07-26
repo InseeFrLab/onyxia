@@ -15,7 +15,6 @@ const useStyles = makeStyles<Props>()(theme => ({
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "display": "flex",
         "alignItems": "center",
-        "padding": theme.spacing(0, 4),
         "& a:hover": {
             "textDecoration": "underline",
             "textDecorationColor": theme.colors.useCases.typography.textPrimary,

@@ -36,7 +36,6 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
             "display": "flex",
-            "padding": theme.spacing(2, 0),
         },
         "logoContainer": {
             "cursor": "pointer",
