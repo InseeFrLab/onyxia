@@ -1,3 +1,8 @@
+### **0.11.61** (2021-07-26)  
+  
+- Update general App layout  
+- Update theme switch icon button    
+  
 ### **0.11.59** (2021-07-22)  
   
 - Responsive size for service icon  
