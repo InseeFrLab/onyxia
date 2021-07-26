@@ -5,9 +5,9 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { useIsDarkModeEnabled, useWindowInnerSize } from "onyxia-ui";
 import { ChangeLanguage } from "./ChangeLanguage";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -60,8 +60,6 @@ export const Header = memo((props: Props) => {
 
     const { classes, cx, css, theme } = useStyles({ logoContainerWidth });
 
-    const { windowInnerWidth } = useWindowInnerSize();
-
     return (
         <header className={cx(classes.root, className)}>
             <div onClick={onLogoClick} className={classes.logoContainer}>
@@ -90,7 +88,7 @@ export const Header = memo((props: Props) => {
                 >
                     SSP Cloud
                 </Text>
-                {windowInnerWidth > 450 && (
+                {theme.responsive.windowInnerWidth > 450 && (
                     <Text
                         typo="section heading"
                         className={css({ "fontWeight": 500 })}
@@ -112,7 +110,7 @@ export const Header = memo((props: Props) => {
                 <ChangeLanguage />
                 {props.type === "core" && (
                     <>
-                        <ToggleDarkMode />
+                        <DarkModeSwitch />
                         {props.isUserLoggedIn && (
                             <ToggleCloudShell
                                 useIsCloudShellVisible={
@@ -142,26 +140,6 @@ export declare namespace Header {
         login: undefined;
     };
 }
-
-const { ToggleDarkMode } = (() => {
-    const ToggleDarkMode = memo(() => {
-        const { isDarkModeEnabled, setIsDarkModeEnabled } =
-            useIsDarkModeEnabled();
-
-        const onClick = useConstCallback(() =>
-            setIsDarkModeEnabled(!isDarkModeEnabled),
-        );
-
-        return (
-            <IconButton
-                iconId={isDarkModeEnabled ? "brightness7" : "brightness4"}
-                onClick={onClick}
-            />
-        );
-    });
-
-    return { ToggleDarkMode };
-})();
 
 const { ToggleCloudShell } = (() => {
     type Props = {
