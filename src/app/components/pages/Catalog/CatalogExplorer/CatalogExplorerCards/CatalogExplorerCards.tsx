@@ -68,9 +68,6 @@ const useStyles = makeStyles<{
                   "gap": theme.spacing(4),
               }),
     },
-    "noMatches": {
-        "height": "100%",
-    },
 }));
 
 export const CatalogExplorerCards = memo(
@@ -153,7 +150,6 @@ export const CatalogExplorerCards = memo(
                     <div className={classes.cards}>
                         {filteredCards.length === 0 ? (
                             <NoMatches
-                                className={classes.noMatches}
                                 search={search}
                                 onGoBackClick={onGoBackClick}
                             />
@@ -239,7 +235,6 @@ const { CardShowMore } = (() => {
 
 const { NoMatches } = (() => {
     type Props = {
-        className: string;
         search: string;
         onGoBackClick(): void;
     };
@@ -247,7 +242,6 @@ const { NoMatches } = (() => {
     const useStyles = makeStyles()(theme => ({
         "root": {
             "display": "flex",
-            "alignItems": "center",
             "justifyContent": "center",
         },
         "innerDiv": {
@@ -272,14 +266,14 @@ const { NoMatches } = (() => {
     }));
 
     const NoMatches = memo((props: Props) => {
-        const { className, search, onGoBackClick } = props;
+        const { search, onGoBackClick } = props;
 
-        const { classes, cx } = useStyles();
+        const { classes } = useStyles();
 
         const { t } = useTranslation("CatalogExplorerCards");
 
         return (
-            <div className={cx(classes.root, className)}>
+            <div className={classes.root}>
                 <div className={classes.innerDiv}>
                     <ServiceNotFoundSvg className={classes.svg} />
                     <Text typo="page heading" className={classes.h2}>
