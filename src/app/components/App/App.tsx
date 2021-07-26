@@ -45,10 +45,7 @@ const useStyles = makeStyles()(theme => ({
         "display": "flex",
         "flexDirection": "column",
         "backgroundColor": theme.colors.useCases.surfaces.background,
-        "marginRight": theme.spacing(6),
-    },
-    "header": {
-        "marginLeft": theme.spacing(3),
+        "margin": theme.spacing(0, 4),
     },
     "betweenHeaderAndFooter": {
         "flex": 1,
@@ -61,7 +58,6 @@ const useStyles = makeStyles()(theme => ({
 
     "leftBar": {
         "height": "100%",
-        "marginLeft": theme.spacing(3),
     },
     "main": {
         "flex": 1,
@@ -154,7 +150,6 @@ export const App = memo((props: Props) => {
         <div ref={rootRef} className={cx(classes.root, className)}>
             <Header
                 type="core"
-                className={cx(classes.header)}
                 logoContainerWidth={logoContainerWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}

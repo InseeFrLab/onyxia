@@ -18,7 +18,7 @@ const useStyles = makeStyles()(theme => ({
     "root": {
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "boxShadow": theme.shadows[1],
-        "borderRadius": "8px 0 0 8px",
+        "borderRadius": 8,
         "overflow": "hidden",
     },
 }));

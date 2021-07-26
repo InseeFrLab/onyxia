@@ -27,7 +27,6 @@ const useStyles = makeStyles()(theme => ({
         "backgroundColor": "transparent",
         "display": "flex",
         "flexDirection": "column",
-        "paddingRight": theme.spacing(4),
     },
     "hero": {
         "flex": 1,
