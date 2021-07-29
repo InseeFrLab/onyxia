@@ -1,3 +1,8 @@
+### **0.11.62** (2021-07-29)  
+  
+- Add padding to header  
+- Delete unused fonts    
+  
 ### **0.11.61** (2021-07-26)  
   
 - Update general App layout  
