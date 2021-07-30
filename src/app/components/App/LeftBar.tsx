@@ -227,7 +227,7 @@ const { CustomButton } = (() => {
                                 classes.typoWrapper,
                             )}
                         >
-                            <Text typo="label 1">{t(target)}</Text>
+                            <Text typo="navigation label">{t(target)}</Text>
                         </div>
                     )}
                 </div>
