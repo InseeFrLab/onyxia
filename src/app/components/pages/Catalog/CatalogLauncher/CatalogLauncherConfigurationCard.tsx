@@ -362,7 +362,7 @@ const { TabContent } = (() => {
         return (
             <>
                 {description !== undefined && (
-                    <Text typo="label1" className={classes.tabDescription}>
+                    <Text typo="label 1" className={classes.tabDescription}>
                         {capitalize(description)}
                     </Text>
                 )}
