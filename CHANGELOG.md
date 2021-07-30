@@ -1,3 +1,14 @@
+### **0.11.63** (2021-07-30)  
+  
+- Fix previous commit  
+- Merge pull request #250 from InseeFrLab/marchufschmitt-patch-1
+
+Update CatalogLauncherConfigurationCard.tsx  
+- Update CatalogLauncherConfigurationCard.tsx
+
+Change gap of row (config forms)  
+- Update font (subtitle to label1)    
+  
 ### **0.11.62** (2021-07-29)  
   
 - Add padding to header  
