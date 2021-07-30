@@ -469,7 +469,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "user id": "Identifiant (IDEP)",
             "full name": "Nom complet",
             "email": "Adresse mail",
-            "password": "Mot de passe du compte",
+            "password": "Modifier le mot de passe du compte",
             "auth information": "Informations d'authentification Onyxia",
             "auth information helper": `Ces informations vous permettent de vous identifier 
             au sein de la plateforme et des différents services.`,
