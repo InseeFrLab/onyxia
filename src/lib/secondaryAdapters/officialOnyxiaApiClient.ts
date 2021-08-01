@@ -262,6 +262,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     "params": { "path": serviceId },
                 })
                 .then(({ data }) => {
+                    //TODO: Wrong assertion here once, investigate
                     assert(data.success);
                 }),
     };

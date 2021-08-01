@@ -175,8 +175,10 @@ export function MyServices(props: Props) {
                 ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
                     logoUrl,
                     friendlyName,
-                    "link": routes.catalogLauncher(restorablePackageConfig)
-                        .link,
+                    "link": routes.catalogLauncher({
+                        ...restorablePackageConfig,
+                        "autoLaunch": true,
+                    }).link,
                 }),
             ),
         [displayableConfigs],
