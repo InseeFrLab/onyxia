@@ -174,12 +174,24 @@ export const CatalogExplorerCards = memo(
                                 ),
                             )
                         )}
-                        {!isRevealed && (
-                            <CardShowMore
-                                leftToShowCount={cardsContent.length - 5}
-                                onClick={onShowMoreClick}
-                            />
-                        )}
+                        {!isRevealed &&
+                            (() => {
+                                const leftToShowCount = Math.max(
+                                    cardsContent.length - 5,
+                                    0,
+                                );
+
+                                return (
+                                    leftToShowCount !== 0 && (
+                                        <CardShowMore
+                                            leftToShowCount={
+                                                cardsContent.length - 5
+                                            }
+                                            onClick={onShowMoreClick}
+                                        />
+                                    )
+                                );
+                            })()}
                     </div>
                 </div>
             </div>
