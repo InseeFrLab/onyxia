@@ -1,3 +1,7 @@
+### **0.11.64** (2021-08-01)  
+  
+- Fix laucher for Trainings    
+  
 ### **0.11.63** (2021-07-30)  
   
 - Fix previous commit  
