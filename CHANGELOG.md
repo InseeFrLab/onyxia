@@ -1,3 +1,8 @@
+### **0.11.68** (2021-08-01)  
+  
+- Fix bug introduced by previous commit  
+- Add auto launch option    
+  
 ### **0.11.67** (2021-08-01)  
   
   
