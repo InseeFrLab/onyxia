@@ -369,7 +369,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text1": "Services catalog",
             "header text2":
                 "Explore, launch and configure services with just a few clicks.",
-            "all services are open sources": "All services are open source, ",
+            "all services are open sources": "All services are open source. ",
             "contribute to the catalog":
                 "contribute to the {{catalogId}} catalog",
             "contribute to the package":
