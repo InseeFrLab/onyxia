@@ -158,9 +158,10 @@ export function MyServices(props: Props) {
                         {
                             "restorablePackageConfig": displayableConfigs.find(
                                 ({ restorablePackageConfig }) =>
-                                    routes.catalogLauncher(
-                                        restorablePackageConfig,
-                                    ).href === linkHref,
+                                    routes.catalogLauncher({
+                                        ...restorablePackageConfig,
+                                        "autoLaunch": true,
+                                    }).href === linkHref,
                             )!.restorablePackageConfig,
                         },
                     ),
