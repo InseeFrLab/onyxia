@@ -1,5 +1,4 @@
-
-import type { Region } from 'js/model/Region';
+import type { Region } from "js/model/Region";
 
 export type Get_Public_Configuration = {
     regions: Region[];
@@ -19,14 +18,14 @@ export type Get_Public_Catalog = {
                 icon?: string;
                 name: string;
                 home?: string;
-            }[]
+            }[];
         };
     }[];
 };
 
 export type Get_Public_Catalog_CatalogId_PackageName = {
     config: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
-    sources: string[];
+    sources?: string[];
     dependencies?: {
         enabled: boolean;
         name: string;
@@ -34,28 +33,29 @@ export type Get_Public_Catalog_CatalogId_PackageName = {
 };
 
 export namespace Get_Public_Catalog_CatalogId_PackageName {
-
     export type JSONSchemaObject = {
         description?: string;
-        properties: Record<string, JSONSchemaObject | JSONSchemaFormFieldDescription>;
+        properties: Record<
+            string,
+            JSONSchemaObject | JSONSchemaFormFieldDescription
+        >;
         type: "object";
     };
 
     export type JSONSchemaFormFieldDescription =
-        JSONSchemaFormFieldDescription.String |
-        JSONSchemaFormFieldDescription.Boolean |
-        JSONSchemaFormFieldDescription.Integer;
+        | JSONSchemaFormFieldDescription.String
+        | JSONSchemaFormFieldDescription.Boolean
+        | JSONSchemaFormFieldDescription.Integer;
     export namespace JSONSchemaFormFieldDescription {
-
         type Common<T> = {
             description?: string;
             title?: string;
             default?: T;
-            'x-form'?: {
+            "x-form"?: {
                 hidden: boolean;
                 readonly: boolean;
                 value: T;
-            }
+            };
         };
 
         export type String = {
@@ -71,7 +71,6 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             type: "number";
             minimum?: string;
         } & Common<number>;
-
     }
 
     export type MustacheParams = {
@@ -81,19 +80,19 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             email: string;
             password: string;
             ip: string;
-        },
+        };
         git: {
             name: string;
             email: string;
             credentials_cache_duration: number;
             token: string | null;
-        },
+        };
         vault: {
             VAULT_ADDR: string;
             VAULT_TOKEN: string;
             VAULT_MOUNT: string;
             VAULT_TOP_DIR: string;
-        },
+        };
         kaggleApiToken: string | null;
         s3: {
             AWS_ACCESS_KEY_ID: string;
@@ -103,11 +102,9 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             AWS_S3_ENDPOINT: string;
             AWS_EXPIRATION: string;
             AWS_BUCKET_NAME: string;
-        }
+        };
     };
 }
-
-
 
 export const appStatuses = ["Running", "Pending"] as const;
 
@@ -118,18 +115,18 @@ export type Get_MyLab_Services = {
         urls: string[];
         env: Record<string, string>;
         startedAt: number;
-        tasks: { status: { status: Get_MyLab_Services.AppStatus; } }[];
-        postInstallInstructions: string | undefined;
-    }[]
+        tasks: { status: { status: Get_MyLab_Services.AppStatus } }[];
+        postInstallInstructions: string | undefined;
+    }[];
 };
 
 export declare namespace Get_MyLab_Services {
-    export type AppStatus= typeof appStatuses[number];
+    export type AppStatus = typeof appStatuses[number];
 }
 
-export type Put_MyLab_App= Record<string, unknown>[][];
+export type Put_MyLab_App = Record<string, unknown>[][];
 
-export type Get_MyLab_App = { };
+export type Get_MyLab_App = {};
 
 export type Get_User_Info = {
     ip: string;
@@ -138,7 +135,6 @@ export type Get_User_Info = {
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
-
     getPublicIp: {
         (): Promise<string>;
         clear(): void;
@@ -155,29 +151,25 @@ export type OnyxiaApiClient = {
         clear(): void;
     };
 
-    getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory(
-        params: {
-            catalogId: string;
-            packageName: string;
-        }
-    ): Promise<{
-        getPackageConfigJSONSchemaObjectWithRenderedMustachParams(
-            params: {
-                mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams;
-            }
-        ): Get_Public_Catalog_CatalogId_PackageName["config"];
-        dependencies: NonNullable<Get_Public_Catalog_CatalogId_PackageName["dependencies"]>;
+    getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory(params: {
+        catalogId: string;
+        packageName: string;
+    }): Promise<{
+        getPackageConfigJSONSchemaObjectWithRenderedMustachParams(params: {
+            mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams;
+        }): Get_Public_Catalog_CatalogId_PackageName["config"];
+        dependencies: NonNullable<
+            Get_Public_Catalog_CatalogId_PackageName["dependencies"]
+        >;
         sources: Get_Public_Catalog_CatalogId_PackageName["sources"];
     }>;
 
-    launchPackage(
-        params: {
-            catalogId: string;
-            packageName: string;
-            options: Record<string, unknown>;
-            isDryRun: boolean;
-        }
-    ): Promise<{ contract: Put_MyLab_App; }>;
+    launchPackage(params: {
+        catalogId: string;
+        packageName: string;
+        options: Record<string, unknown>;
+        isDryRun: boolean;
+    }): Promise<{ contract: Put_MyLab_App }>;
 
     getRunningServices(): Promise<
         ({
@@ -187,18 +179,16 @@ export type OnyxiaApiClient = {
             urls: string[];
             startedAt: number;
             postInstallInstructions: string | undefined;
-        } & ({
-            isStarting: false;
-        } | {
-            isStarting: true;
-            prStarted: Promise<{ isConfirmedJustStarted: boolean; }>;
-        }))[]
+        } & (
+            | {
+                  isStarting: false;
+              }
+            | {
+                  isStarting: true;
+                  prStarted: Promise<{ isConfirmedJustStarted: boolean }>;
+              }
+        ))[]
     >;
 
-    stopService(
-        params: {
-            serviceId: string;
-        }
-    ): Promise<void>;
-
+    stopService(params: { serviceId: string }): Promise<void>;
 };

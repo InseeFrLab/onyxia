@@ -27,6 +27,7 @@ import { useEvt } from "evt/hooks";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
+//TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
 import { useDomRect } from "onyxia-ui";
 import { getPathDepth } from "app/tools/getPathDepth";
