@@ -146,6 +146,9 @@ export const CatalogLauncher = memo((props: Props) => {
             case "ready":
                 switch (state.launchState) {
                     case "not launching":
+                        if (route.params.autoLaunch) {
+                            onRequestLaunch();
+                        }
                         hideSplashScreen();
                         break;
                     case "launching":

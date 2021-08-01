@@ -4,84 +4,92 @@ import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
-import { routerOpts, formFieldsDefineRouteParam } from "./formFieldsQueryParameters";
+import {
+    routerOpts,
+    formFieldsDefineRouteParam,
+} from "./formFieldsQueryParameters";
 
 export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     "account": defineRoute(
         {
-            "tabId": param.path.optional.ofType(id<ValueSerializer<AccountTabId>>({
-                "parse": raw => !id<readonly string[]>(accountTabIds).includes(raw) ? noMatch : raw as AccountTabId,
-                "stringify": value => value
-            })).default(accountTabIds[0])
+            "tabId": param.path.optional
+                .ofType(
+                    id<ValueSerializer<AccountTabId>>({
+                        "parse": raw =>
+                            !id<readonly string[]>(accountTabIds).includes(raw)
+                                ? noMatch
+                                : (raw as AccountTabId),
+                        "stringify": value => value,
+                    }),
+                )
+                .default(accountTabIds[0]),
         },
-        ({ tabId }) => `/account/${tabId}`
+        ({ tabId }) => `/account/${tabId}`,
     ),
     "home": defineRoute(["/home", "/"]),
     "tour": defineRoute("/visite-guidee"),
     ...(() => {
-
         const sharedServices = defineRoute("/services");
 
         return {
             sharedServices,
             "sharedServicesDetails": sharedServices.extend(
                 { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`
-            )
+                ({ serviceId }) => `/${serviceId}`,
+            ),
         };
-
     })(),
     "trainings": defineRoute(
         { "courseCode": param.path.optional.string },
-        ({ courseCode }) => `/trainings/${courseCode}`
+        ({ courseCode }) => `/trainings/${courseCode}`,
     ),
     //TODO: Remove, legacy
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
-        ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`
+        ({ optionalTrailingPath }) =>
+            `/my-lab/catalogue/${optionalTrailingPath}`,
     ),
     "catalogExplorer": defineRoute(
-        { 
-            "catalogId": param.path.optional.string, 
-            "search": param.query.optional.string.default("")
+        {
+            "catalogId": param.path.optional.string,
+            "search": param.query.optional.string.default(""),
         },
-        ({ catalogId }) => `/catalog/${catalogId}`
+        ({ catalogId }) => `/catalog/${catalogId}`,
     ),
     "catalogLauncher": defineRoute(
         {
             "catalogId": param.path.string,
             "packageName": param.path.string,
-            ...formFieldsDefineRouteParam
+            "autoLaunch": param.query.optional.boolean.default(false),
+            ...formFieldsDefineRouteParam,
         },
-        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`
+        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`,
     ),
     ...(() => {
-
         const myServices = defineRoute("/my-service");
 
         return {
             "myService": myServices.extend(
                 { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`
-            )
+                ({ serviceId }) => `/${serviceId}`,
+            ),
         };
-
     })(),
     "mySecrets": defineRoute(
         {
             "secretOrDirectoryPath": param.path.trailing.optional.string,
-            "isFile": param.query.optional.boolean
+            "isFile": param.query.optional.boolean,
         },
-        ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`
+        ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`,
     ),
     "myServices": defineRoute(
         {
-            "isSavedConfigsExtended": param.query.optional.boolean.default(false)
+            "isSavedConfigsExtended":
+                param.query.optional.boolean.default(false),
         },
-        () => `/my-services`
+        () => `/my-services`,
     ),
     ...(() => {
-
         const myBuckets = defineRoute("/mes-fichiers");
 
         return {
@@ -89,11 +97,11 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             "myFiles": myBuckets.extend(
                 {
                     "bucketName": param.path.string,
-                    "fileOrDirectoryPath": param.path.trailing.optional.string
+                    "fileOrDirectoryPath": param.path.trailing.optional.string,
                 },
-                ({ bucketName, fileOrDirectoryPath }) => `/${bucketName}/${fileOrDirectoryPath}`
-            )
+                ({ bucketName, fileOrDirectoryPath }) =>
+                    `/${bucketName}/${fileOrDirectoryPath}`,
+            ),
         };
-
-    })()
+    })(),
 });
