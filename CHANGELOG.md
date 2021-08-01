@@ -1,3 +1,7 @@
+### **0.11.69** (2021-08-01)  
+  
+- Fix copy to clipboard function    
+  
 ### **0.11.68** (2021-08-01)  
   
 - Fix bug introduced by previous commit  
