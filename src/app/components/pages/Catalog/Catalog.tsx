@@ -103,7 +103,8 @@ export function Catalog(props: Props) {
                                               </>
                                           );
                                       case "package":
-                                          return (
+                                          return sourcesUrls.sources.length ===
+                                              0 ? null : (
                                               <>
                                                   {t(
                                                       "contribute to the package",
