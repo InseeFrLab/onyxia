@@ -1,3 +1,7 @@
+### **0.11.66** (2021-08-01)  
+  
+- If there is less than 5 cards do not display show more    
+  
 ### **0.11.65** (2021-08-01)  
   
 - Do not display acess to source when there is no sources    
