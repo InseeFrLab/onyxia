@@ -49,7 +49,11 @@ export declare namespace LauncherState {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
                 path: string[];
             }[];
-            formFields: (FormField & { isHidden: boolean })[];
+            formFields: FormField[];
+            hiddenFormFields: {
+                path: string[];
+                isHidden: boolean | FormFieldValue;
+            }[];
             defaultFormFieldsValue: FormFieldValue[];
             dependencies?: string[];
             config: Get_Public_Catalog_CatalogId_PackageName["config"];
@@ -98,6 +102,7 @@ const { reducer, actions } = createSlice({
                 icon: string | undefined;
                 sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
+                hiddenFormFields: LauncherState.Ready["~internal"]["hiddenFormFields"];
                 config: LauncherState.Ready["~internal"]["config"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
@@ -109,6 +114,7 @@ const { reducer, actions } = createSlice({
                 icon,
                 sources,
                 formFields,
+                hiddenFormFields,
                 config,
                 dependencies,
                 formFieldsValueDifferentFromDefault,
@@ -124,6 +130,7 @@ const { reducer, actions } = createSlice({
                     sources,
                     "~internal": {
                         formFields,
+                        hiddenFormFields,
                         "defaultFormFieldsValue": formFields.map(
                             ({ path, value }) => ({ path, value }),
                         ),
@@ -301,8 +308,10 @@ export const thunks = {
                     mustacheParams,
                 });
 
-            const { formFields } = (() => {
+            const { formFields, hiddenFormFields } = (() => {
                 const formFields: LauncherState.Ready["~internal"]["formFields"] =
+                    [];
+                const hiddenFormFields: LauncherState.Ready["~internal"]["hiddenFormFields"] =
                     [];
 
                 (function callee(params: {
@@ -334,12 +343,6 @@ export const thunks = {
                                     value["x-form"]?.value ??
                                     value.default ??
                                     (null as any as never),
-                                "isHidden":
-                                    same(
-                                        onyxiaFriendlyNameFormFieldPath,
-                                        newCurrentPath,
-                                    ) ||
-                                    (value["x-form"]?.hidden ?? false),
                                 "enum":
                                     value.type === "string"
                                         ? value.enum
@@ -349,6 +352,32 @@ export const thunks = {
                                         ? value.minimum
                                         : undefined,
                             });
+
+                            hiddenFormFields.push({
+                                "path": newCurrentPath,
+                                "isHidden": (() => {
+                                    const { hidden } = value;
+
+                                    if (hidden === undefined) {
+                                        const hidden = value["x-form"]?.hidden;
+
+                                        if (hidden !== undefined) {
+                                            return hidden;
+                                        }
+
+                                        return false;
+                                    }
+
+                                    if (typeof hidden === "boolean") {
+                                        return hidden;
+                                    }
+
+                                    return {
+                                        "path": hidden.path.split("/"),
+                                        "value": hidden.value,
+                                    };
+                                })(),
+                            });
                         }
                     });
                 })({
@@ -356,7 +385,7 @@ export const thunks = {
                     "jsonSchemaObject": config,
                 });
 
-                return { formFields };
+                return { formFields, hiddenFormFields };
             })();
 
             dispatch(
@@ -375,6 +404,7 @@ export const thunks = {
                         ),
                     "sources": sources ?? [],
                     formFields,
+                    hiddenFormFields,
                     config,
                     "dependencies": dependencies
                         .filter(({ enabled }) => enabled)
@@ -436,6 +466,11 @@ export const selectors = (() => {
         state => state?.["~internal"].formFields,
     );
 
+    const hiddenFormFieldsSelector = createSelector(
+        readyLauncherSelector,
+        state => state?.["~internal"].hiddenFormFields,
+    );
+
     const dependenciesSelector = createSelector(
         readyLauncherSelector,
         state => state?.["~internal"].dependencies,
@@ -466,18 +501,45 @@ export const selectors = (() => {
     const indexedFormFieldsSelector = createSelector(
         configSelector,
         formFieldsSelector,
+        hiddenFormFieldsSelector,
         packageNameSelector,
         dependenciesSelector,
-        (config, formFields, packageName, dependencies) => {
-            if (!formFields || !packageName || !dependencies) {
+        (config, formFields, hiddenFormFields, packageName, dependencies) => {
+            if (
+                !formFields ||
+                !packageName ||
+                !dependencies ||
+                !hiddenFormFields
+            ) {
                 return undefined;
             }
 
             const indexedFormFields: IndexedFormFields = {};
 
-            const formFieldsRest = formFields.filter(
-                ({ isHidden }) => !isHidden,
-            );
+            const formFieldsRest = formFields.filter(({ path }) => {
+                if (same(onyxiaFriendlyNameFormFieldPath, path)) {
+                    return false;
+                }
+
+                const wrap = hiddenFormFields.find(({ path: path_i }) =>
+                    same(path, path_i),
+                );
+
+                if (wrap === undefined) {
+                    return true;
+                }
+
+                const { isHidden } = wrap;
+
+                if (typeof isHidden === "boolean") {
+                    return !isHidden;
+                }
+
+                return (
+                    formFields.find(({ path }) => same(path, isHidden.path))!
+                        .value !== isHidden.value
+                );
+            });
 
             [...dependencies, "global"].forEach(dependencyOrGlobal => {
                 const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] =
