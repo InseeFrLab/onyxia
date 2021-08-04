@@ -56,6 +56,12 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                 readonly: boolean;
                 value: T;
             };
+            hidden?:
+                | boolean
+                | {
+                      value: string | boolean | number;
+                      path: string;
+                  };
         };
 
         export type String = {
