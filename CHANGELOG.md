@@ -1,3 +1,7 @@
+### **0.11.70** (2021-08-04)  
+  
+- Hide non relevent fields    
+  
 ### **0.11.69** (2021-08-01)  
   
 - Fix copy to clipboard function    
