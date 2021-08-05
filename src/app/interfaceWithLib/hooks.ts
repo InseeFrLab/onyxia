@@ -53,9 +53,7 @@ export function useSelectedRegion() {
     const appConstants = useAppConstants();
 
     const deploymentRegionId = useSelector(state =>
-        appConstants.isUserLoggedIn
-            ? state.userConfigs.deploymentRegionId.value
-            : null,
+        appConstants.isUserLoggedIn ? state.userConfigs.deploymentRegionId.value : null,
     );
 
     const selectedRegion = !appConstants.isUserLoggedIn

@@ -37,8 +37,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
 
     const { t } = useTranslation("ExplorerButtonBar");
 
-    const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(
-        buttonId => callback(buttonId),
+    const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
+        callback(buttonId),
     );
 
     const buttons = useMemo(
@@ -77,9 +77,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         case "delete":
                             return selectedItemKind === "none" || isViewingFile;
                         case "copy path":
-                            return (
-                                selectedItemKind !== "file" && !isViewingFile
-                            );
+                            return selectedItemKind !== "file" && !isViewingFile;
                     }
                 })(),
                 "label":
@@ -87,22 +85,13 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         ? t("create what", { "what": t(wordForFile) })
                         : t(buttonId),
             })),
-        [
-            isSelectedItemInEditingState,
-            selectedItemKind,
-            isViewingFile,
-            wordForFile,
-            t,
-        ],
+        [isSelectedItemInEditingState, selectedItemKind, isViewingFile, wordForFile, t],
     );
 
     return <ButtonBar buttons={buttons} onClick={onClick} />;
 });
 export declare namespace ExplorerButtonBar {
-    export type I18nScheme = Record<
-        Exclude<ButtonId, "create file">,
-        undefined
-    > & {
+    export type I18nScheme = Record<Exclude<ButtonId, "create file">, undefined> & {
         "create what": { what: string };
         secret: undefined;
         file: undefined;

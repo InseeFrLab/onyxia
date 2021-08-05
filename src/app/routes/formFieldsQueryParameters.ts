@@ -1,8 +1,7 @@
-
 import type { FormFieldValue } from "lib/useCases/sharedDataModel/FormFieldValue";
 import type { QueryStringSerializer } from "type-route";
 import { arrPartition } from "evt/tools/reducers/partition";
-import { assert } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import type { ValueSerializer, RouterOpts } from "type-route";
 import { param } from "type-route";
 
@@ -11,107 +10,97 @@ const formFieldsValueDifferentFromDefault = "formFieldsValueDifferentFromDefault
 const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
     "urlEncode": false,
     "stringify": JSON.stringify,
-    "parse": JSON.parse
+    "parse": JSON.parse,
 };
 
 const queryStringSerializer: QueryStringSerializer = {
     "parse": raw => {
+        const allEntries = raw.split("&").map(part => part.split("="));
 
-        const allEntries =
-            raw.split("&")
-                .map(part => part.split("="));
-
-        const [formFieldsEntries, otherEntries] = arrPartition(
-            allEntries,
-            ([key]) => key.includes(".")
+        const [formFieldsEntries, otherEntries] = arrPartition(allEntries, ([key]) =>
+            key.includes("."),
         );
 
-        const formFieldsValue =
-            formFieldsEntries
-                .map(([pathStr, valueStr]): FormFieldValue => ({
-                    "path":
-                        pathStr
-                            //NOTE the two next pipe mean "split all non escaped dots"
-                            //the regular expression 'look behind' is not supported by Safari.
-                            .split(".")
-                            .reduce<string[]>((prev, curr) =>
-                                prev[prev.length - 1]?.endsWith("\\") ?
-                                    (prev[prev.length - 1] += `.${curr}`, prev) :
-                                    [...prev, curr],
-                                []
-                            )
-                            .map(s => s.replace(/\\\./g, ".")),
-                    "value": (()=>{
+        const formFieldsValue = formFieldsEntries.map(
+            ([pathStr, valueStr]): FormFieldValue => ({
+                "path": pathStr
+                    //NOTE the two next pipe mean "split all non escaped dots"
+                    //the regular expression 'look behind' is not supported by Safari.
+                    .split(".")
+                    .reduce<string[]>(
+                        (prev, curr) =>
+                            prev[prev.length - 1]?.endsWith("\\")
+                                ? ((prev[prev.length - 1] += `.${curr}`), prev)
+                                : [...prev, curr],
+                        [],
+                    )
+                    .map(s => s.replace(/\\\./g, ".")),
+                "value": (() => {
+                    if (["true", "false"].includes(valueStr)) {
+                        return "true" === valueStr;
+                    }
 
-                        if( ["true", "false"].includes(valueStr) ){
-                            return "true" === valueStr;
+                    {
+                        const x = parseFloat(valueStr);
+                        if (!isNaN(x)) {
+                            return x;
                         }
+                    }
 
-                        {
-                            const x = parseFloat(valueStr);
-                            if( !isNaN(x) ){
-                                return x;
-                            }
-                        }
+                    return decodeURIComponent(valueStr)
+                        .replace(/^«/, "")
+                        .replace(/»$/, "");
+                })(),
+            }),
+        );
 
-                        return decodeURIComponent( valueStr)
-                            .replace(/^«/, "")
-                            .replace(/»$/, "");
-
-                    })()
-                    
-                }));
-
-        return Object.fromEntries(
+        return Object.fromEntries([
+            ...otherEntries,
             [
-                ...otherEntries,
-                [
-                    formFieldsValueDifferentFromDefault,
-                    formFieldsValueSerializer.stringify(formFieldsValue)
-                ]
-            ]
-        );
-
+                formFieldsValueDifferentFromDefault,
+                formFieldsValueSerializer.stringify(formFieldsValue),
+            ],
+        ]);
     },
     "stringify": queryParams =>
         Object.keys(queryParams)
             .map(name => {
-
                 if (name === formFieldsValueDifferentFromDefault) {
-
-                    const formFieldsValue = formFieldsValueSerializer.parse(queryParams[name].value!);
+                    const formFieldsValue = formFieldsValueSerializer.parse(
+                        queryParams[name].value!,
+                    );
 
                     assert(!("__noMatch" in formFieldsValue));
 
                     return formFieldsValue
-                        .map(
-                            ({ path, value }) => [
-                                path
-                                    .map(part => part.replace(/\./g, "\\."))
-                                    .join("."),
+                        .map(({ path, value }) =>
+                            [
+                                path.map(part => part.replace(/\./g, "\\.")).join("."),
                                 (() => {
                                     switch (typeof value) {
-                                        case "boolean": return value ? "true" : "false";
-                                        case "number": return value.toString(10);
-                                        case "string": return `«${encodeURIComponent(value)}»`;
+                                        case "boolean":
+                                            return value ? "true" : "false";
+                                        case "number":
+                                            return value.toString(10);
+                                        case "string":
+                                            return `«${encodeURIComponent(value)}»`;
                                     }
-                                })()
-                            ].join("=")
+                                })(),
+                            ].join("="),
                         )
                         .join("&");
-
                 }
 
                 return `${name}=${queryParams[name].value}`;
-
             })
             .filter(part => part !== "")
-            .join("&")
-}
+            .join("&"),
+};
 
 export const routerOpts: RouterOpts = { queryStringSerializer };
 
 export const formFieldsDefineRouteParam = {
-    [formFieldsValueDifferentFromDefault]: 
-        param.query.optional.ofType(formFieldsValueSerializer).default([])
+    [formFieldsValueDifferentFromDefault]: param.query.optional
+        .ofType(formFieldsValueSerializer)
+        .default([]),
 };

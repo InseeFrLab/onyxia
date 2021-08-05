@@ -79,8 +79,7 @@ export const Login = memo(
             registrationDisabled,
         } = kcContext;
 
-        const [isLoginButtonDisabled, setIsLoginButtonDisabled] =
-            useState(false);
+        const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
         const usernameInputRef = useRef<HTMLInputElement>(null);
         const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -102,8 +101,9 @@ export const Login = memo(
 
         //TODO: Export useEvtFromElement to evt
         {
-            const [passwordInput, setPasswordInput] =
-                useState<HTMLInputElement | null>(null);
+            const [passwordInput, setPasswordInput] = useState<HTMLInputElement | null>(
+                null,
+            );
 
             useEffect(
                 () => {
@@ -135,8 +135,7 @@ export const Login = memo(
                                             break;
                                         case "safari":
                                             setTimeout(
-                                                () =>
-                                                    submitButtonRef.current?.focus(),
+                                                () => submitButtonRef.current?.focus(),
                                                 100,
                                             );
                                             break;
@@ -204,9 +203,7 @@ export const Login = memo(
                                                 {p.displayName
                                                     .toLocaleLowerCase()
                                                     .replace(/ /g, "")
-                                                    .includes(
-                                                        "agentconnect",
-                                                    ) ? (
+                                                    .includes("agentconnect") ? (
                                                     <AgentConnectButton
                                                         url={p.loginUrl}
                                                     />
@@ -241,9 +238,7 @@ export const Login = memo(
                                             inputProps_ref={usernameInputRef}
                                             inputProps_aria-label="username"
                                             inputProps_tabIndex={1}
-                                            inputProps_autoFocus={
-                                                !areTextInputsDisabled
-                                            }
+                                            inputProps_autoFocus={!areTextInputsDisabled}
                                             inputProps_spellCheck={false}
                                             label={
                                                 !realm.loginWithEmailAllowed
@@ -253,9 +248,7 @@ export const Login = memo(
                                                     : msg("email")
                                             }
                                             autoComplete="off"
-                                            getIsValidValue={
-                                                getUsernameIsValidValue
-                                            }
+                                            getIsValidValue={getUsernameIsValidValue}
                                         />
                                     </div>
                                     <div>
@@ -270,9 +263,7 @@ export const Login = memo(
                                             inputProps_tabIndex={2}
                                             label={msg("password")}
                                             autoComplete="off"
-                                            getIsValidValue={
-                                                getPasswordIsValidValue
-                                            }
+                                            getIsValidValue={getPasswordIsValidValue}
                                         />
                                     </div>
                                     <div
@@ -281,39 +272,28 @@ export const Login = memo(
                                         }
                                     >
                                         <div>
-                                            {realm.rememberMe &&
-                                                !usernameEditDisabled && (
-                                                    <div className="checkbox">
-                                                        <FormControlLabel
-                                                            control={
-                                                                <Checkbox
-                                                                    defaultChecked={
-                                                                        true
-                                                                    }
-                                                                    name="rememberMe"
-                                                                    color="primary"
-                                                                />
-                                                            }
-                                                            label={
-                                                                <Text typo="body 2">
-                                                                    {
-                                                                        msg(
-                                                                            "rememberMe",
-                                                                        )!
-                                                                    }
-                                                                </Text>
-                                                            }
-                                                        />
-                                                    </div>
-                                                )}
+                                            {realm.rememberMe && !usernameEditDisabled && (
+                                                <div className="checkbox">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                defaultChecked={true}
+                                                                name="rememberMe"
+                                                                color="primary"
+                                                            />
+                                                        }
+                                                        label={
+                                                            <Text typo="body 2">
+                                                                {msg("rememberMe")!}
+                                                            </Text>
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                         <div className={classes.forgotPassword}>
                                             {realm.resetPasswordAllowed && (
-                                                <Link
-                                                    href={
-                                                        url.loginResetCredentialsUrl
-                                                    }
-                                                >
+                                                <Link href={url.loginResetCredentialsUrl}>
                                                     {msg("doForgotPassword")}
                                                 </Link>
                                             )}
@@ -323,11 +303,9 @@ export const Login = memo(
                                         <input
                                             type="hidden"
                                             name="credentialId"
-                                            {...(auth?.selectedCredential !==
-                                            undefined
+                                            {...(auth?.selectedCredential !== undefined
                                                 ? {
-                                                      "value":
-                                                          auth.selectedCredential,
+                                                      "value": auth.selectedCredential,
                                                   }
                                                 : {})}
                                         />

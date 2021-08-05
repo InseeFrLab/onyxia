@@ -113,10 +113,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
                 {onRequestCopyLaunchUrl !== undefined && (
                     <Tooltip title={t("copy url helper text")}>
-                        <IconButton
-                            iconId="link"
-                            onClick={onRequestCopyLaunchUrl}
-                        />
+                        <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
                     </Tooltip>
                 )}
                 <Tooltip title={t("save configuration")}>

@@ -85,10 +85,7 @@ export function Home(props: Props) {
     });
 
     const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
-    const catalogExplorerLink = useMemo(
-        () => routes.catalogExplorer().link,
-        [],
-    );
+    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -106,13 +103,9 @@ export function Home(props: Props) {
                         {t("subtitle")}
                     </Text>
                     {!appConstants.isUserLoggedIn ? (
-                        <Button onClick={onHeroButtonClick}>
-                            {t("login")}
-                        </Button>
+                        <Button onClick={onHeroButtonClick}>{t("login")}</Button>
                     ) : (
-                        <Button href="https://docs.sspcloud.fr/">
-                            {t("new user")}
-                        </Button>
+                        <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
             </div>
@@ -242,9 +235,7 @@ const { Card } = (() => {
                         <div style={{ "flex": 1 }} />
                         <Button
                             variant="secondary"
-                            {...(typeof link === "string"
-                                ? { "href": link }
-                                : link)}
+                            {...(typeof link === "string" ? { "href": link } : link)}
                         >
                             {buttonText}
                         </Button>

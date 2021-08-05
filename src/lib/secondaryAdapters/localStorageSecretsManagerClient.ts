@@ -1,5 +1,3 @@
-
-
 import { join as pathJoin, relative as pathRelative } from "path";
 import { partition } from "evt/tools/reducers/partition";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
@@ -7,31 +5,24 @@ import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManage
 import { assert } from "tsafe/assert";
 import { symToStr } from "app/tools/symToStr";
 
-
 function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-export function createLocalStorageSecretManagerClient(
-    params: {
-        artificialDelayMs: number;
-        doReset: boolean;
-    }
-): { secretsManagerClient: SecretsManagerClient } {
-
+export function createLocalStorageSecretManagerClient(params: {
+    artificialDelayMs: number;
+    doReset: boolean;
+}): { secretsManagerClient: SecretsManagerClient } {
     const { artificialDelayMs, doReset } = params;
 
     if (doReset) {
         localStorage.removeItem(storageKey);
     }
 
-    const record: { [path: string]: SecretWithMetadata; } = (() => {
-
+    const record: { [path: string]: SecretWithMetadata } = (() => {
         const serializedRecord = localStorage.getItem(storageKey);
 
-
         return serializedRecord === null ? {} : JSON.parse(serializedRecord);
-
     })();
 
     const updateLocalStorage = () =>
@@ -39,19 +30,16 @@ export function createLocalStorageSecretManagerClient(
 
     const sleep = () => new Promise(resolve => setTimeout(resolve, artificialDelayMs));
 
-    const secretsManagerClient: SecretsManagerClient= {
+    const secretsManagerClient: SecretsManagerClient = {
         "list": async params => {
-
-
             const path = formatPath(params.path);
 
             assert(!(path in record), `${path} is a secret not a directory`);
 
-            let [directories, secrets] =
-                Object.keys(record)
-                    .map(key => pathRelative(path, key))
-                    .filter(path => !path.startsWith(".."))
-                    .reduce(...partition<string>(path => path.split("/").length > 1));
+            let [directories, secrets] = Object.keys(record)
+                .map(key => pathRelative(path, key))
+                .filter(path => !path.startsWith(".."))
+                .reduce(...partition<string>(path => path.split("/").length > 1));
 
             directories = directories
                 .map(path => path.split("/")[0])
@@ -61,12 +49,10 @@ export function createLocalStorageSecretManagerClient(
 
             return {
                 "directories": directories.map(path => path.split("/")[0]),
-                secrets
+                secrets,
             };
-
         },
         "get": async params => {
-
             const path = formatPath(params.path);
 
             assert(path in record, `no secret at path ${path}`);
@@ -74,10 +60,8 @@ export function createLocalStorageSecretManagerClient(
             await sleep();
 
             return record[path]!;
-
         },
         "put": async params => {
-
             const { secret } = params;
 
             const path = formatPath(params.path);
@@ -88,17 +72,15 @@ export function createLocalStorageSecretManagerClient(
                     "created_time": new Date().toISOString(),
                     "deletion_time": "",
                     "destroyed": false,
-                    "version": !(path in record) ? 0 : (record[path]!.metadata.version + 1)
-                }
+                    "version": !(path in record) ? 0 : record[path]!.metadata.version + 1,
+                },
             };
 
             updateLocalStorage();
 
             await sleep();
-
         },
         "delete": async params => {
-
             const path = formatPath(params.path);
 
             delete record[path];
@@ -106,17 +88,10 @@ export function createLocalStorageSecretManagerClient(
             updateLocalStorage();
 
             await sleep();
-
-        }
-
+        },
     };
 
     return { secretsManagerClient };
-
-
-
 }
 
 const storageKey = symToStr({ createLocalStorageSecretManagerClient });
-
-

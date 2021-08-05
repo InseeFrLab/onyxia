@@ -50,16 +50,10 @@ const useStyles = makeStyles<{
             : {
                   "display": "grid",
                   "gridTemplateColumns": `repeat(${(() => {
-                      if (
-                          theme.responsive.windowInnerWidth >=
-                          breakpointsValues.xl
-                      ) {
+                      if (theme.responsive.windowInnerWidth >= breakpointsValues.xl) {
                           return 4;
                       }
-                      if (
-                          theme.responsive.windowInnerWidth >=
-                          breakpointsValues.lg
-                      ) {
+                      if (theme.responsive.windowInnerWidth >= breakpointsValues.lg) {
                           return 3;
                       }
 
@@ -103,11 +97,7 @@ export const CatalogExplorerCards = memo(
                     .slice(0, isRevealed ? cardsContent.length : 5)
                     .filter(({ packageName, packageDescription }) =>
                         [packageName, packageDescription]
-                            .map(str =>
-                                str
-                                    .toLowerCase()
-                                    .includes(search.toLowerCase()),
-                            )
+                            .map(str => str.toLowerCase().includes(search.toLowerCase()))
                             .includes(true),
                     ),
             [cardsContent, isRevealed, search],
@@ -133,10 +123,7 @@ export const CatalogExplorerCards = memo(
                     onSearchChange={setSearch}
                 />
                 {filteredCards.length === 0 ? undefined : (
-                    <Text
-                        typo="section heading"
-                        className={classes.contextTypo}
-                    >
+                    <Text typo="section heading" className={classes.contextTypo}>
                         {t(
                             search !== ""
                                 ? "search results"
@@ -149,10 +136,7 @@ export const CatalogExplorerCards = memo(
                 <div className={classes.cardsWrapper}>
                     <div className={classes.cards}>
                         {filteredCards.length === 0 ? (
-                            <NoMatches
-                                search={search}
-                                onGoBackClick={onGoBackClick}
-                            />
+                            <NoMatches search={search} onGoBackClick={onGoBackClick} />
                         ) : (
                             filteredCards.map(
                                 ({
@@ -184,9 +168,7 @@ export const CatalogExplorerCards = memo(
                                 return (
                                     leftToShowCount !== 0 && (
                                         <CardShowMore
-                                            leftToShowCount={
-                                                cardsContent.length - 5
-                                            }
+                                            leftToShowCount={cardsContent.length - 5}
                                             onClick={onShowMoreClick}
                                         />
                                     )

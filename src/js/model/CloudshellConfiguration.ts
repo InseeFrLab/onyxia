@@ -1,4 +1,4 @@
 export interface CloudshellConfiguration {
-	catalogId: string;
-	packageName: string;
+    catalogId: string;
+    packageName: string;
 }

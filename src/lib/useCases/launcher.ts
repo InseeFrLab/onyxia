@@ -131,12 +131,12 @@ const { reducer, actions } = createSlice({
                     "~internal": {
                         formFields,
                         hiddenFormFields,
-                        "defaultFormFieldsValue": formFields.map(
-                            ({ path, value }) => ({ path, value }),
-                        ),
+                        "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
+                            path,
+                            value,
+                        })),
                         dependencies,
-                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault":
-                            [],
+                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                         config,
                     },
                     "launchState": "not launching",
@@ -153,10 +153,7 @@ const { reducer, actions } = createSlice({
             id<LauncherState.NotInitialized>({
                 "stateDescription": "not initialized",
             }),
-        "formFieldValueChanged": (
-            state,
-            { payload }: PayloadAction<FormFieldValue>,
-        ) => {
+        "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
             assert(state.stateDescription === "ready");
 
             formFieldValueChangedReducer({ state, "formFieldValue": payload });
@@ -195,9 +192,7 @@ const privateThunks = {
             const { contract } = await onyxiaApiClient.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
-                "options": formFieldsValueToObject(
-                    state["~internal"].formFields,
-                ),
+                "options": formFieldsValueToObject(state["~internal"].formFields),
                 "isDryRun": isForContractPreview,
             });
 
@@ -217,11 +212,8 @@ export const thunks = {
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }): AppThunk =>
         async (...args) => {
-            const {
-                catalogId,
-                packageName,
-                formFieldsValueDifferentFromDefault,
-            } = params;
+            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+                params;
 
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
@@ -254,22 +246,17 @@ export const thunks = {
 
                 const s3 = getState().user.s3!;
 
-                const appConstants = dispatch(
-                    appConstantsThunks.getAppConstants(),
-                );
+                const appConstants = dispatch(appConstantsThunks.getAppConstants());
 
                 assert(appConstants.isUserLoggedIn);
 
                 const { parsedJwt, vaultClientConfig } = appConstants;
 
-                const secretExplorerUserHomePath =
-                    secretExplorerPure.getUserHomePath({
-                        "preferred_username": parsedJwt.preferred_username,
-                    });
+                const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
+                    "preferred_username": parsedJwt.preferred_username,
+                });
 
-                const userConfigs = userConfigsStateToUserConfigs(
-                    getState().userConfigs,
-                );
+                const userConfigs = userConfigsStateToUserConfigs(getState().userConfigs);
 
                 const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams =
                     {
@@ -279,6 +266,10 @@ export const thunks = {
                             "email": parsedJwt.email,
                             "password": userConfigs.userServicePassword,
                             "ip": publicIp,
+                        },
+                        "project": {
+                            "id": parsedJwt.preferred_username,
+                            "password": userConfigs.userServicePassword,
                         },
                         "git": {
                             "name": userConfigs.gitName,
@@ -303,14 +294,12 @@ export const thunks = {
                 return { mustacheParams };
             })();
 
-            const config =
-                getPackageConfigJSONSchemaObjectWithRenderedMustachParams({
-                    mustacheParams,
-                });
+            const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams({
+                mustacheParams,
+            });
 
             const { formFields, hiddenFormFields } = (() => {
-                const formFields: LauncherState.Ready["~internal"]["formFields"] =
-                    [];
+                const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
                 const hiddenFormFields: LauncherState.Ready["~internal"]["hiddenFormFields"] =
                     [];
 
@@ -334,23 +323,16 @@ export const thunks = {
                         } else {
                             formFields.push({
                                 "path": newCurrentPath,
-                                "title":
-                                    value.title ?? newCurrentPath.slice(-1)[0],
+                                "title": value.title ?? newCurrentPath.slice(-1)[0],
                                 "description": value.description,
-                                "isReadonly":
-                                    value["x-form"]?.readonly ?? false,
+                                "isReadonly": value["x-form"]?.readonly ?? false,
                                 "value":
                                     value["x-form"]?.value ??
                                     value.default ??
                                     (null as any as never),
-                                "enum":
-                                    value.type === "string"
-                                        ? value.enum
-                                        : undefined,
+                                "enum": value.type === "string" ? value.enum : undefined,
                                 "minimum":
-                                    value.type === "number"
-                                        ? value.minimum
-                                        : undefined,
+                                    value.type === "number" ? value.minimum : undefined,
                             });
 
                             hiddenFormFields.push({
@@ -425,13 +407,12 @@ export const thunks = {
             }),
         );
     },
-    "getContract":
-        (): AppThunk<Promise<{ contract: Put_MyLab_App }>> => async dispatch =>
-            dispatch(
-                privateThunks.launchOrPreviewContract({
-                    "isForContractPreview": true,
-                }),
-            ),
+    "getContract": (): AppThunk<Promise<{ contract: Put_MyLab_App }>> => async dispatch =>
+        dispatch(
+            privateThunks.launchOrPreviewContract({
+                "isForContractPreview": true,
+            }),
+        ),
     "changeFriendlyName":
         (friendlyName: string): AppThunk<void> =>
         dispatch =>
@@ -476,22 +457,19 @@ export const selectors = (() => {
         state => state?.["~internal"].dependencies,
     );
 
-    const friendlyNameSelector = createSelector(
-        formFieldsSelector,
-        formFields => {
-            if (formFields === undefined) {
-                return undefined;
-            }
+    const friendlyNameSelector = createSelector(formFieldsSelector, formFields => {
+        if (formFields === undefined) {
+            return undefined;
+        }
 
-            const friendlyName = formFields.find(({ path }) =>
-                same(path, onyxiaFriendlyNameFormFieldPath),
-            )!.value;
+        const friendlyName = formFields.find(({ path }) =>
+            same(path, onyxiaFriendlyNameFormFieldPath),
+        )!.value;
 
-            assert(typeof friendlyName === "string");
+        assert(typeof friendlyName === "string");
 
-            return friendlyName;
-        },
-    );
+        return friendlyName;
+    });
 
     const configSelector = createSelector(
         readyLauncherSelector,
@@ -505,12 +483,7 @@ export const selectors = (() => {
         packageNameSelector,
         dependenciesSelector,
         (config, formFields, hiddenFormFields, packageName, dependencies) => {
-            if (
-                !formFields ||
-                !packageName ||
-                !dependencies ||
-                !hiddenFormFields
-            ) {
+            if (!formFields || !packageName || !dependencies || !hiddenFormFields) {
                 return undefined;
             }
 
@@ -536,8 +509,8 @@ export const selectors = (() => {
                 }
 
                 return (
-                    formFields.find(({ path }) => same(path, isHidden.path))!
-                        .value !== isHidden.value
+                    formFields.find(({ path }) => same(path, isHidden.path))!.value !==
+                    isHidden.value
                 );
             });
 
@@ -553,22 +526,17 @@ export const selectors = (() => {
                             formFieldsByTabName[formField.path[1]] ??
                             (formFieldsByTabName[formField.path[1]] = {
                                 "description": (() => {
-                                    const o =
-                                        config?.properties[formField.path[0]];
+                                    const o = config?.properties[formField.path[0]];
 
                                     assert(o?.type === "object");
 
-                                    return o.properties[formField.path[1]]
-                                        .description;
+                                    return o.properties[formField.path[1]].description;
                                 })(),
                                 "formFields": [],
                             })
                         ).formFields.push(formField);
 
-                        formFieldsRest.splice(
-                            formFieldsRest.indexOf(formField),
-                            1,
-                        );
+                        formFieldsRest.splice(formFieldsRest.indexOf(formField), 1);
                     });
 
                 if (
@@ -584,8 +552,7 @@ export const selectors = (() => {
                         dependencyOrGlobal === "global"
                             ? {
                                   "type": "global",
-                                  "description":
-                                      config?.properties["global"].description,
+                                  "description": config?.properties["global"].description,
                               }
                             : {
                                   "type": "dependency",
@@ -603,8 +570,7 @@ export const selectors = (() => {
                         formFieldsByTabName[formField.path[0]] ??
                         (formFieldsByTabName[formField.path[0]] = {
                             "description":
-                                config?.properties[formField.path[0]]
-                                    .description,
+                                config?.properties[formField.path[0]].description,
                             "formFields": [],
                         })
                     ).formFields.push(formField),
@@ -625,13 +591,10 @@ export const selectors = (() => {
         },
     );
 
-    const pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector =
-        createSelector(
-            readyLauncherSelector,
-            state =>
-                state?.["~internal"]
-                    .pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
-        );
+    const pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector = createSelector(
+        readyLauncherSelector,
+        state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+    );
 
     const catalogIdSelector = createSelector(
         readyLauncherSelector,
@@ -698,8 +661,7 @@ function formFieldValueChangedReducer(params: {
     }
 
     {
-        const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } =
-            state["~internal"];
+        const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
 
         if (
             state["~internal"].defaultFormFieldsValue.find(formField =>
@@ -716,16 +678,12 @@ function formFieldValueChangedReducer(params: {
                 });
             }
         } else {
-            const index =
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
-                    ({ path: path_i }) => same(path_i, path),
-                );
+            const index = pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
+                ({ path: path_i }) => same(path_i, path),
+            );
 
             if (index >= 0) {
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(
-                    index,
-                    1,
-                );
+                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(index, 1);
             }
         }
     }

@@ -2,11 +2,7 @@ import { useEffect, useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import {
-    useAppConstants,
-    useSelector,
-    useDispatch,
-} from "app/interfaceWithLib/hooks";
+import { useAppConstants, useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
@@ -102,9 +98,7 @@ export const AccountInfoTab = memo((props: Props) => {
                 type="text"
                 title={t("user id")}
                 text={parsedJwt.preferred_username}
-                onRequestCopy={onRequestCopyFactory(
-                    parsedJwt.preferred_username,
-                )}
+                onRequestCopy={onRequestCopyFactory(parsedJwt.preferred_username)}
             />
             <AccountField
                 type="text"
@@ -141,12 +135,8 @@ export const AccountInfoTab = memo((props: Props) => {
                 type="service password"
                 isLocked={userServicePasswordState.isBeingChanged}
                 servicePassword={userServicePasswordState.value}
-                onRequestCopy={onRequestCopyFactory(
-                    userServicePasswordState.value,
-                )}
-                onRequestServicePasswordRenewal={
-                    onRequestServicePasswordRenewal
-                }
+                onRequestCopy={onRequestCopyFactory(userServicePasswordState.value)}
+                onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
             />
             <AccountField
                 type="OIDC Access token"
@@ -157,12 +147,8 @@ export const AccountInfoTab = memo((props: Props) => {
                     "minCharAtTheEnd": 20,
                     "text": tokenState.oidcTokens.accessToken,
                 })}
-                onRequestOidcAccessTokenRenewal={
-                    onRequestOidcAccessTokenRenewal
-                }
-                onRequestCopy={onRequestCopyFactory(
-                    tokenState.oidcTokens.accessToken,
-                )}
+                onRequestOidcAccessTokenRenewal={onRequestOidcAccessTokenRenewal}
+                onRequestCopy={onRequestCopyFactory(tokenState.oidcTokens.accessToken)}
             />
             <AccountField
                 type="text"

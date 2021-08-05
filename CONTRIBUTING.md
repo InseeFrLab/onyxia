@@ -8,11 +8,11 @@ The following is a set of guidelines for contributing to [Onyxia UI](https://git
 
 ### Table Of Contents
 
-- [Contributing to Onyxia UI](#contributing-to-onyxia-web)
-    - [Table Of Contents](#table-of-contents)
-  - [Bug report](#bug-report)
-  - [Code proposal](#code-proposal)
-    - [How to contribute?](#how-to-contribute)
+-   [Contributing to Onyxia UI](#contributing-to-onyxia-web)
+    -   [Table Of Contents](#table-of-contents)
+    -   [Bug report](#bug-report)
+    -   [Code proposal](#code-proposal)
+        -   [How to contribute?](#how-to-contribute)
 
 ## Bug report
 

@@ -54,19 +54,18 @@ export function Tabs<TabId extends string = string>(props: Props<TabId>) {
 
     const [firstTabIndex, setFirstTabIndex] = useState(0);
 
-    const onArrowClickFactory = useCallbackFactory(
-        ([direction]: ["left" | "right"]) =>
-            setFirstTabIndex(
-                firstTabIndex +
-                    (() => {
-                        switch (direction) {
-                            case "left":
-                                return -1;
-                            case "right":
-                                return +1;
-                        }
-                    })(),
-            ),
+    const onArrowClickFactory = useCallbackFactory(([direction]: ["left" | "right"]) =>
+        setFirstTabIndex(
+            firstTabIndex +
+                (() => {
+                    switch (direction) {
+                        case "left":
+                            return -1;
+                        case "right":
+                            return +1;
+                    }
+                })(),
+        ),
     );
 
     const onTabClickFactory = useCallbackFactory(([id]: [TabId]) =>
@@ -92,8 +91,7 @@ export function Tabs<TabId extends string = string>(props: Props<TabId>) {
                     {tabs
                         .filter(
                             (...[, i]) =>
-                                i >= firstTabIndex &&
-                                i < firstTabIndex + maxTabCount,
+                                i >= firstTabIndex && i < firstTabIndex + maxTabCount,
                         )
                         .map(({ id, ...rest }) => ({
                             id,
@@ -163,9 +161,7 @@ const { CustomButton } = (() => {
         (theme, { isSelected, isFirst, size, isDisabled }) => ({
             "root": {
                 "backgroundColor":
-                    theme.colors.useCases.surfaces[
-                        isSelected ? "surface1" : "surface2"
-                    ],
+                    theme.colors.useCases.surfaces[isSelected ? "surface1" : "surface2"],
                 "boxShadow": [
                     theme.shadows[4],
                     ...(isSelected || isFirst ? [theme.shadows[5]] : []),
@@ -210,8 +206,7 @@ const { CustomButton } = (() => {
                                             switch (props.direction) {
                                                 case "right":
                                                     return css({
-                                                        "transform":
-                                                            "rotate(180deg)",
+                                                        "transform": "rotate(180deg)",
                                                     });
                                                 case "left":
                                                     return undefined;
@@ -219,8 +214,8 @@ const { CustomButton } = (() => {
                                         })(),
                                         css({
                                             "color": isDisabled
-                                                ? theme.colors.useCases
-                                                      .typography.textDisabled
+                                                ? theme.colors.useCases.typography
+                                                      .textDisabled
                                                 : undefined,
                                         }),
                                     )}

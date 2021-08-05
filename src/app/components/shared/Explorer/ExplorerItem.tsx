@@ -39,10 +39,7 @@ export type Props = {
      * Invoked when the component have been clicked once
      * and when it has been double clicked
      */
-    onMouseEvent(params: {
-        type: "down" | "double";
-        target: "icon" | "text";
-    }): void;
+    onMouseEvent(params: { type: "down" | "double"; target: "icon" | "text" }): void;
 
     onEditBasename(params: { editedBasename: string }): void;
 
@@ -137,8 +134,7 @@ export const ExplorerItem = memo((props: Props) => {
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) =>
-            onMouseEvent({ type, target }),
+        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target }),
     });
 
     //TODO: We need a custom hook for this.
@@ -173,23 +169,19 @@ export const ExplorerItem = memo((props: Props) => {
         Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
     );
 
-    const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
-        value => {
-            setIsInEditingState(false);
+    const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(value => {
+        setIsInEditingState(false);
 
-            if (value === basename) {
-                return;
-            }
+        if (value === basename) {
+            return;
+        }
 
-            onEditBasename({ "editedBasename": value });
-        },
-    );
+        onEditBasename({ "editedBasename": value });
+    });
 
     const onEscapeKeyDown = useConstCallback(() => setIsInEditingState(false));
 
-    const onEnterKeyDown = useConstCallback(() =>
-        evtInputAction.post("TRIGGER SUBMIT"),
-    );
+    const onEnterKeyDown = useConstCallback(() => evtInputAction.post("TRIGGER SUBMIT"));
 
     const formattedBasename = useMemo(
         () =>
@@ -245,11 +237,7 @@ export const ExplorerItem = memo((props: Props) => {
                     </Text>
                 </div>
             ) : (
-                <form
-                    className={classes.root /*TODO*/}
-                    noValidate
-                    autoComplete="off"
-                >
+                <form className={classes.root /*TODO*/} noValidate autoComplete="off">
                     <TextField
                         className={classes.input}
                         defaultValue={basename}

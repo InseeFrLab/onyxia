@@ -48,10 +48,7 @@ export const AccountStorageTab = memo((props: Props) => {
         const [isFetching, setIsFetching] = useState(false);
 
         useEffect(() => {
-            if (
-                !isFetching &&
-                (!s3Credentials || !s3Credentials.AWS_EXPIRATION)
-            ) {
+            if (!isFetching && (!s3Credentials || !s3Credentials.AWS_EXPIRATION)) {
                 setIsFetching(true);
                 getMinioToken().then(() => setIsFetching(false));
             }
@@ -86,16 +83,11 @@ export const AccountStorageTab = memo((props: Props) => {
         },
     );
 
-    const scriptLabels = useMemo(
-        () => exportMinio.map(({ label }) => label),
-        [],
-    );
+    const scriptLabels = useMemo(() => exportMinio.map(({ label }) => label), []);
 
     const { credentialExpiriesWhen } = (function useClosure() {
         const millisecondsLeft = useMemo(
-            () =>
-                new Date(s3Credentials?.AWS_EXPIRATION ?? 0).getTime() -
-                Date.now(),
+            () => new Date(s3Credentials?.AWS_EXPIRATION ?? 0).getTime() - Date.now(),
             // eslint-disable-next-line react-hooks/exhaustive-deps
             [s3Credentials?.AWS_EXPIRATION ?? null],
         );
@@ -136,10 +128,7 @@ export const AccountStorageTab = memo((props: Props) => {
                 <AccountField
                     type="text"
                     key={key}
-                    title={key
-                        .replace(/^AWS/, "")
-                        .replace(/_/g, " ")
-                        .toLowerCase()}
+                    title={key.replace(/^AWS/, "").replace(/_/g, " ").toLowerCase()}
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,

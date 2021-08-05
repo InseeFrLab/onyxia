@@ -18,10 +18,13 @@ const logoContainerWidth = (width * 4) / 100;
 const paddingRight = (width * 2) / 100;
 
 const { useIsCloudShellVisible } = (() => {
-    const { useIsCloudShellVisible: useIsCloudShellVisibleSrc } =
-        createUseGlobalState("isCloudShellVisible", () => false, {
+    const { useIsCloudShellVisible: useIsCloudShellVisibleSrc } = createUseGlobalState(
+        "isCloudShellVisible",
+        () => false,
+        {
             "persistance": false,
-        });
+        },
+    );
 
     function useIsCloudShellVisible() {
         const { isCloudShellVisible, setIsCloudShellVisible } =

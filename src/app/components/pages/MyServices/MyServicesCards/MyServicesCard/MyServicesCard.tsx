@@ -92,11 +92,7 @@ export const MyServicesCard = memo((props: Props) => {
                 <MyServicesRoundLogo
                     url={packageIconUrl}
                     circleColor={
-                        isOvertime
-                            ? "red"
-                            : startTime === undefined
-                            ? "grey"
-                            : "green"
+                        isOvertime ? "red" : startTime === undefined ? "grey" : "green"
                     }
                 />
                 <Text className={classes.title} typo="object heading">

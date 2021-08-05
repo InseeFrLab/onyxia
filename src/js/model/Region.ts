@@ -1,50 +1,50 @@
-import { CloudshellConfiguration } from './CloudshellConfiguration';
+import { CloudshellConfiguration } from "./CloudshellConfiguration";
 
 export interface Region {
-	id: "datalab" | "gke";
-	name: string;
-	description?: string;
-	services: Services;
-	data: Data;
-	location?: Location;
-	auth?: Auth;
+    id: "datalab" | "gke";
+    name: string;
+    description?: string;
+    services: Services;
+    data: Data;
+    location?: Location;
+    auth?: Auth;
 }
 
 export interface Services {
-	type: "MARATHON" | "KUBERNETES";
-	namespacePrefix: string;
-	marathonDnsSuffix?: string;
-	cloudshell?: CloudshellConfiguration;
-	monitoring?: Monitoring;
-	expose?: { domain: string; };
-	defaultIpProtection: boolean;
-	network?: "calico",
-	initScript?: string;
+    type: "MARATHON" | "KUBERNETES";
+    namespacePrefix: string;
+    marathonDnsSuffix?: string;
+    cloudshell?: CloudshellConfiguration;
+    monitoring?: Monitoring;
+    expose?: { domain: string };
+    defaultIpProtection: boolean;
+    network?: "calico";
+    initScript?: string;
 }
 
 export interface Monitoring {
-	URLPattern: string;
+    URLPattern: string;
 }
 
 export interface Expose {
-	domain: string;
+    domain: string;
 }
 
 export interface Data {
-	S3: S3Config;
+    S3: S3Config;
 }
 
 export interface Auth {
-	type: string;
+    type: string;
 }
 
 export interface S3Config {
-	URL: string;
-	monitoring?: Monitoring;
+    URL: string;
+    monitoring?: Monitoring;
 }
 
 export interface Location {
-	name: string;
-	lat: number;
-	long: number;
+    name: string;
+    lat: number;
+    long: number;
 }

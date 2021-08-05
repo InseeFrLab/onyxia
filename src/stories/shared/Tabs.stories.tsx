@@ -1,5 +1,3 @@
-
-
 import { Tabs } from "app/components/shared/Tabs";
 import type { Props } from "app/components/shared/Tabs";
 import { sectionName } from "./sectionName";
@@ -8,7 +6,7 @@ import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "Tabs": Tabs as any }
+    "wrappedComponent": { "Tabs": Tabs as any },
 });
 
 export default meta;
@@ -21,24 +19,26 @@ const props: Props = {
     "tabs": [
         {
             "id": "info",
-            "title": "Information du compte"
-        }, {
+            "title": "Information du compte",
+        },
+        {
             "id": "configs",
-            "title": "Configuration des comptes"
-        }, {
+            "title": "Configuration des comptes",
+        },
+        {
             "id": "storage",
-            "title": "Connexion au stockage"
-        }, {
+            "title": "Connexion au stockage",
+        },
+        {
             "id": "ui",
-            "title": "Mode d'interface"
-        }
+            "title": "Mode d'interface",
+        },
     ],
     /* spell-checker: enable */
     "maxTabCount": 5,
     "children": <h1>Content</h1>,
-    ...logCallbacks(["onRequestChangeActiveTab"])
-}
-
+    ...logCallbacks(["onRequestChangeActiveTab"]),
+};
 
 export const VueBig = getStory(props);
 export const VueSmall = getStory({
@@ -47,27 +47,27 @@ export const VueSmall = getStory({
     "tabs": [
         {
             "id": "kub",
-            "title": "Kubernetes"
+            "title": "Kubernetes",
         },
         {
             "id": "r",
-            "title": "R"
+            "title": "R",
         },
         {
             "id": "init",
-            "title": "Init"
+            "title": "Init",
         },
         {
             "id": "security",
-            "title": "Security"
+            "title": "Security",
         },
         {
             "id": "environnement",
-            "title": "Environnement"
+            "title": "Environnement",
         },
         {
             "id": "git",
-            "title": "Git"
-        }
-    ]
+            "title": "Git",
+        },
+    ],
 });

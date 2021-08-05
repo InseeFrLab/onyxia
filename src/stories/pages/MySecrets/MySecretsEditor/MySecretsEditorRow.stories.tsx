@@ -1,4 +1,3 @@
-
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { sectionName } from "./sectionName";
@@ -7,7 +6,7 @@ import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MySecretsEditorRow }
+    "wrappedComponent": { MySecretsEditorRow },
 });
 
 export default meta;
@@ -18,49 +17,41 @@ const baseParams: Parameters<typeof getStory>[0] = {
     "strValue": "hello world",
     "getResolvedValue": ({ strValue }) => ({
         "isResolvedSuccessfully": true,
-        "resolvedValue": `$(${strValue})`
+        "resolvedValue": `$(${strValue})`,
     }),
-    "getIsValidAndAvailableKey": ({ key })=> { 
+    "getIsValidAndAvailableKey": ({ key }) => {
+        const r = getIsValidKey({ key });
 
-        const r= getIsValidKey({ key });
-
-        return r.isValidKey ? 
-            { "isValidAndAvailableKey": true } : 
-            { "isValidAndAvailableKey": false, "message": r.message };
-
+        return r.isValidKey
+            ? { "isValidAndAvailableKey": true }
+            : { "isValidAndAvailableKey": false, "message": r.message };
     },
     "evtAction": new Evt(),
-    ...logCallbacks([
-        "onEdit",
-        "onDelete",
-        "onStartEdit"
-    ]),
-    "isDarker": true
+    ...logCallbacks(["onEdit", "onDelete", "onStartEdit"]),
+    "isDarker": true,
 };
 
 export const VueDefault = getStory(baseParams);
 
 export const { VueEditing } = (() => {
-
-    const evtAction: (typeof baseParams)["evtAction"] = new Evt();
+    const evtAction: typeof baseParams["evtAction"] = new Evt();
 
     const VueEditing = getStory({
         ...baseParams,
-        evtAction
+        evtAction,
     });
 
     Evt.asPostable(evtAction).post("ENTER EDITING STATE");
 
     return { VueEditing };
-
 })();
 
 export const VueLongValue = getStory({
     ...baseParams,
-    "strValue": [...Array(30)].map(() => Math.random().toString(36)[2]).join('')
+    "strValue": [...Array(30)].map(() => Math.random().toString(36)[2]).join(""),
 });
 
 export const VueLongKey = getStory({
     ...baseParams,
-    "keyOfSecret": "thisIsAVeryLongKeyToSeeHowItShouldBeDisplayed"
+    "keyOfSecret": "thisIsAVeryLongKeyToSeeHowItShouldBeDisplayed",
 });

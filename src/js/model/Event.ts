@@ -1,4 +1,4 @@
 export interface Event {
-	message: string;
-	timestamp: number;
+    message: string;
+    timestamp: number;
 }

@@ -6,7 +6,7 @@ import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { CatalogLauncherMainCard }
+    "wrappedComponent": { CatalogLauncherMainCard },
 });
 
 export default meta;
@@ -22,6 +22,6 @@ export const VueDefault = getStory({
         "onIsBookmarkedValueChange",
         "onRequestCancel",
         "onRequestCopyLaunchUrl",
-        "onRequestLaunch"
-    ])
+        "onRequestLaunch",
+    ]),
 });

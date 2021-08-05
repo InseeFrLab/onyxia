@@ -79,8 +79,7 @@ export const LeftBar = memo((props: Props) => {
                         key={target}
                         isActive={
                             currentPage === target ||
-                            (currentPage === "myFiles" &&
-                                target === "myBuckets")
+                            (currentPage === "myFiles" && target === "myBuckets")
                         }
                         target={target}
                         isExpanded={isExpanded}
@@ -207,26 +206,12 @@ const { CustomButton } = (() => {
             <>
                 <div className={classes.root} onClick={onClick}>
                     <div className={classes.iconWrapper}>
-                        <div
-                            className={cx(
-                                hoverBoxClassName,
-                                classes.iconHoverBox,
-                            )}
-                        />
+                        <div className={cx(hoverBoxClassName, classes.iconHoverBox)} />
 
-                        <Icon
-                            iconId={type}
-                            className={classes.icon}
-                            size="large"
-                        />
+                        <Icon iconId={type} className={classes.icon} size="large" />
                     </div>
                     {!isExpanded ? null : (
-                        <div
-                            className={cx(
-                                hoverBoxClassName,
-                                classes.typoWrapper,
-                            )}
-                        >
+                        <div className={cx(hoverBoxClassName, classes.typoWrapper)}>
                             <Text typo="label 1">{t(target)}</Text>
                         </div>
                     )}

@@ -42,9 +42,9 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
 
     const { classes } = useStyles();
 
-    const [menuElement, setMenuElement] = useState<
-        HTMLButtonElement | undefined
-    >(undefined);
+    const [menuElement, setMenuElement] = useState<HTMLButtonElement | undefined>(
+        undefined,
+    );
 
     const onOpenMenuClick = useConstCallback<MuiButtonProps["onClick"]>(event =>
         setMenuElement(event.currentTarget),

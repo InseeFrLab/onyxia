@@ -1,4 +1,3 @@
-
 import { ExplorerItem, Props } from "app/components/shared/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
@@ -11,7 +10,7 @@ import { EventEmitter } from "events";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerItem }
+    "wrappedComponent": { ExplorerItem },
 });
 
 const eventEmitter = new EventEmitter();
@@ -27,11 +26,10 @@ export default {
                     "title": "Enter editing state",
                     "name": "default",
                     "payload": id<UnpackEvt<Props["evtAction"]>>("ENTER EDITING STATE"),
-                }
-            ]
+                },
+            ],
         }),
     ],
-
 };
 
 export const defaultView = getStory({
@@ -43,9 +41,5 @@ export const defaultView = getStory({
     "isCircularProgressShown": false,
     "getIsValidBasename": pure.getIsValidBasename,
     "evtAction": Evt.from(eventEmitter, "default"),
-    ...logCallbacks([
-        "onMouseEvent",
-        "onEditBasename",
-        "onIsInEditingStateValueChange"
-    ])
+    ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"]),
 });

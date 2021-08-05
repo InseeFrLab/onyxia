@@ -64,9 +64,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
     const getEvtFieldAction = useMemo(
         () =>
             memoize((_key: EditableFieldKey) =>
-                Evt.create<
-                    UnpackEvt<AccountFieldProps.EditableText["evtAction"]>
-                >(),
+                Evt.create<UnpackEvt<AccountFieldProps.EditableText["evtAction"]>>(),
             ),
         [],
     );
@@ -107,70 +105,63 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 title={t("third party tokens section title")}
                 helperText={t("third party tokens section helper")}
             />
-            {(["githubPersonalAccessToken", "kaggleApiToken"] as const).map(
-                key => {
-                    const { value, isBeingChanged } = userConfigsState[key];
+            {(["githubPersonalAccessToken", "kaggleApiToken"] as const).map(key => {
+                const { value, isBeingChanged } = userConfigsState[key];
 
-                    const serviceName = (() => {
-                        switch (key) {
-                            case "githubPersonalAccessToken":
-                                return "GitHub";
-                            case "kaggleApiToken":
-                                return "Kaggle";
+                const serviceName = (() => {
+                    switch (key) {
+                        case "githubPersonalAccessToken":
+                            return "GitHub";
+                        case "kaggleApiToken":
+                            return "Kaggle";
+                    }
+                })();
+
+                const tokenCreationHref = (() => {
+                    switch (key) {
+                        case "githubPersonalAccessToken":
+                            return `https://docs.github.com/${lng}/github/authenticating-to-github/creating-a-personal-access-token`;
+                        case "kaggleApiToken":
+                            return `https://www.kaggle.com/docs/api`;
+                    }
+                })();
+
+                const envVarName = (() => {
+                    switch (key) {
+                        case "githubPersonalAccessToken":
+                            return "$GITHUB_TOKEN";
+                        case "kaggleApiToken":
+                            return "$KAGGLE_TOKEN";
+                    }
+                })();
+
+                return (
+                    <AccountField
+                        key={key}
+                        type="editable text"
+                        title={t("personal token", { serviceName })}
+                        helperText={
+                            <>
+                                <Link href={tokenCreationHref} target="__blank">
+                                    {t("link for token creation", {
+                                        serviceName,
+                                    })}
+                                </Link>
+                                &nbsp;
+                                {t("accessible as env")}
+                                &nbsp;
+                                <span className={classes.envVar}>{envVarName}</span>
+                            </>
                         }
-                    })();
-
-                    const tokenCreationHref = (() => {
-                        switch (key) {
-                            case "githubPersonalAccessToken":
-                                return `https://docs.github.com/${lng}/github/authenticating-to-github/creating-a-personal-access-token`;
-                            case "kaggleApiToken":
-                                return `https://www.kaggle.com/docs/api`;
-                        }
-                    })();
-
-                    const envVarName = (() => {
-                        switch (key) {
-                            case "githubPersonalAccessToken":
-                                return "$GITHUB_TOKEN";
-                            case "kaggleApiToken":
-                                return "$KAGGLE_TOKEN";
-                        }
-                    })();
-
-                    return (
-                        <AccountField
-                            key={key}
-                            type="editable text"
-                            title={t("personal token", { serviceName })}
-                            helperText={
-                                <>
-                                    <Link
-                                        href={tokenCreationHref}
-                                        target="__blank"
-                                    >
-                                        {t("link for token creation", {
-                                            serviceName,
-                                        })}
-                                    </Link>
-                                    &nbsp;
-                                    {t("accessible as env")}
-                                    &nbsp;
-                                    <span className={classes.envVar}>
-                                        {envVarName}
-                                    </span>
-                                </>
-                            }
-                            text={value ?? undefined}
-                            evtAction={getEvtFieldAction(key)}
-                            onStartEdit={onStartEditFactory(key)}
-                            isLocked={isBeingChanged}
-                            onRequestEdit={onRequestEditFactory(key)}
-                            onRequestCopy={onRequestCopyFactory(value ?? "")}
-                        />
-                    );
-                },
-            )}
+                        text={value ?? undefined}
+                        evtAction={getEvtFieldAction(key)}
+                        onStartEdit={onStartEditFactory(key)}
+                        isLocked={isBeingChanged}
+                        onRequestEdit={onRequestEditFactory(key)}
+                        onRequestCopy={onRequestCopyFactory(value ?? "")}
+                    />
+                );
+            })}
         </div>
     );
 });

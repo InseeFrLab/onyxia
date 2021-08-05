@@ -34,10 +34,7 @@ export type Props = {
         /** link.href used as id for callback */
         link: Link;
     }[];
-    callback(params: {
-        linkHref: string;
-        action: "delete" | "copy link";
-    }): void;
+    callback(params: { linkHref: string; action: "delete" | "copy link" }): void;
     onRequestToggleIsShortVariant(): void;
 };
 
@@ -63,9 +60,7 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
                 <Header
                     isShortVariant={isShortVariant}
                     configCount={savedConfigs.length}
-                    onRequestToggleIsShortVariant={
-                        onRequestToggleIsShortVariant
-                    }
+                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                 />
             )}
             <div className={classes.wrapper}>
@@ -121,12 +116,8 @@ const { Header } = (() => {
     }));
 
     const Header = memo((props: Props) => {
-        const {
-            className,
-            isShortVariant,
-            onRequestToggleIsShortVariant,
-            configCount,
-        } = props;
+        const { className, isShortVariant, onRequestToggleIsShortVariant, configCount } =
+            props;
 
         const { classes, cx } = useStyles();
 

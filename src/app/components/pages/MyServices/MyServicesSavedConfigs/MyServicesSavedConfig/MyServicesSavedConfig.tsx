@@ -55,8 +55,7 @@ export type Props = {
 };
 
 export const MyServicesSavedConfig = memo((props: Props) => {
-    const { isShortVariant, friendlyName, logoUrl, className, link, callback } =
-        props;
+    const { isShortVariant, friendlyName, logoUrl, className, link, callback } = props;
 
     const { classes, cx } = useStyles({ "hasLogo": logoUrl !== undefined });
 
@@ -64,10 +63,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
 
     const { t } = useTranslation("MyServicesSavedConfig");
 
-    const [isDeletionScheduled, scheduleDeletion] = useReducer(
-        () => true,
-        false,
-    );
+    const [isDeletionScheduled, scheduleDeletion] = useReducer(() => true, false);
 
     useEffectOnValueChange(() => {
         const timer = setTimeout(() => callback("delete"), 700);
@@ -101,9 +97,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
             <Button {...link} variant="secondary">
                 {t("launch")}
             </Button>
-            {isShortVariant && (
-                <MyServicesSavedConfigOptions callback={callback} />
-            )}
+            {isShortVariant && <MyServicesSavedConfigOptions callback={callback} />}
         </div>
     );
 });

@@ -107,9 +107,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const onFormValueChange = useConstCallback<
         CatalogLauncherConfigurationCardProps["onFormValueChange"]
-    >(({ path, value }) =>
-        dispatch(thunks.changeFormFieldValue({ path, value })),
-    );
+    >(({ path, value }) => dispatch(thunks.changeFormFieldValue({ path, value })));
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
         copyToClipboard(window.location.href),
@@ -119,18 +117,16 @@ export const CatalogLauncher = memo((props: Props) => {
         dispatch(thunks.changeFriendlyName(friendlyName)),
     );
 
-    const onIsBookmarkedValueChange = useConstCallback(
-        (isBookmarked: boolean) => {
-            assert(restorablePackageConfig !== undefined);
-            dispatch(
-                restorablePackageConfigsThunks[
-                    isBookmarked
-                        ? "saveRestorablePackageConfig"
-                        : "deleteRestorablePackageConfig"
-                ]({ restorablePackageConfig }),
-            );
-        },
-    );
+    const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
+        assert(restorablePackageConfig !== undefined);
+        dispatch(
+            restorablePackageConfigsThunks[
+                isBookmarked
+                    ? "saveRestorablePackageConfig"
+                    : "deleteRestorablePackageConfig"
+            ]({ restorablePackageConfig }),
+        );
+    });
 
     const friendlyName = useSelector(selectors.friendlyNameSelector);
 
@@ -190,9 +186,8 @@ export const CatalogLauncher = memo((props: Props) => {
                         onRequestLaunch={onRequestLaunch}
                         onRequestCancel={onRequestCancel}
                         onRequestCopyLaunchUrl={
-                            restorablePackageConfig
-                                .formFieldsValueDifferentFromDefault.length !==
-                            0
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault
+                                .length !== 0
                                 ? onRequestCopyLaunchUrl
                                 : undefined
                         }
@@ -204,9 +199,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 dependencyNamePackageNameOrGlobal={
                                     dependencyNamePackageNameOrGlobal
                                 }
-                                {...indexedFormFields[
-                                    dependencyNamePackageNameOrGlobal
-                                ]}
+                                {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
                                 onFormValueChange={onFormValueChange}
                             />
                         ),

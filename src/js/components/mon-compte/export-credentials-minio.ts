@@ -1,14 +1,12 @@
-
 import type { S3 } from "js/redux/user";
 
-
 const exportTypes = [
-	{
-		id: 'r',
-		label: 'R (aws.S3)',
-		fileName: 'credentials.R',
-		text: (c: S3) =>
-			`
+    {
+        id: "r",
+        label: "R (aws.S3)",
+        fileName: "credentials.R",
+        text: (c: S3) =>
+            `
 install.packages("aws.s3", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
@@ -19,13 +17,13 @@ Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
 
 library("aws.s3")
 bucketlist(region="")`,
-	},
-	{
-		id: 'r_bis',
-		label: 'R (paws)',
-		fileName: 'credentials.R',
-		text: (c: S3) =>
-			`
+    },
+    {
+        id: "r_bis",
+        label: "R (paws)",
+        fileName: "credentials.R",
+        text: (c: S3) =>
+            `
 install.packages("paws", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${c.AWS_ACCESS_KEY_ID}",
@@ -46,51 +44,52 @@ minio <- paws::s3(config = list(
 	region = Sys.getenv("AWS_DEFAULT_REGION")))
   
 minio$list_buckets()`,
-	},
-	{
-		id: 'python_s3fs',
-		label: 'Python (s3fs)',
-		fileName: 'credentials.py',
-		text: (c: S3) => `
+    },
+    {
+        id: "python_s3fs",
+        label: "Python (s3fs)",
+        fileName: "credentials.py",
+        text: (c: S3) => `
 import s3fs
 fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
-	},
-	{
-		id: 'python_boto3',
-		label: 'Python (boto3)',
-		fileName: 'credentials.py',
-		text: (c: S3)=> `
+    },
+    {
+        id: "python_boto3",
+        label: "Python (boto3)",
+        fileName: "credentials.py",
+        text: (c: S3) => `
 import boto3
 s3 = boto3.client("s3",endpoint_url = 'http://'+'${c.AWS_S3_ENDPOINT}',
                   aws_access_key_id= '${c.AWS_ACCESS_KEY_ID}', 
                   aws_secret_access_key= '${c.AWS_SECRET_ACCESS_KEY}', 
                   aws_session_token = '${c.AWS_SESSION_TOKEN}')
-		`
-	},
-	{
-		id: 'env',
-		label: 'Environment variables',
-		fileName: '.bashrc',
-		text: (c: S3) => `
+		`,
+    },
+    {
+        id: "env",
+        label: "Environment variables",
+        fileName: ".bashrc",
+        text: (c: S3) => `
 export AWS_ACCESS_KEY_ID=${c.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY=${c.AWS_SECRET_ACCESS_KEY}
 export AWS_DEFAULT_REGION=${c.AWS_DEFAULT_REGION}
 export AWS_SESSION_TOKEN=${c.AWS_SESSION_TOKEN}
 export AWS_S3_ENDPOINT=${c.AWS_S3_ENDPOINT}
- 		`
-	},
-	{
-		id: 'mc',
-		label: 'MC client',
-		fileName: '.bashrc',
-		text: (c: S3) => `export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}`,
-	},
-	{
-		id: 's3cmd',
-		label: 's3cmd (.s3cfg)',
-		fileName: '.s3cfg',
-		text: (c: S3) =>
-			`
+ 		`,
+    },
+    {
+        id: "mc",
+        label: "MC client",
+        fileName: ".bashrc",
+        text: (c: S3) =>
+            `export MC_HOST_minio=https://${c.AWS_ACCESS_KEY_ID}:${c.AWS_SECRET_ACCESS_KEY}:${c.AWS_SESSION_TOKEN}@${c.AWS_S3_ENDPOINT}`,
+    },
+    {
+        id: "s3cmd",
+        label: "s3cmd (.s3cfg)",
+        fileName: ".s3cfg",
+        text: (c: S3) =>
+            `
 [default]
 access_key = ${c.AWS_ACCESS_KEY_ID}
 access_token = ${c.AWS_SESSION_TOKEN}
@@ -165,13 +164,13 @@ website_endpoint = http://%(bucket)s.s3-website-%(location)s.amazonaws.com/
 website_error =
 website_index = index.html
 `,
-	},
-	{
-		id: 'rclone',
-		label: 'rclone (.conf)',
-		fileName: 'rclone.conf',
-		text: (c: S3) =>
-			`
+    },
+    {
+        id: "rclone",
+        label: "rclone (.conf)",
+        fileName: "rclone.conf",
+        text: (c: S3) =>
+            `
 [minio]
 type = s3
 provider = Minio
@@ -184,7 +183,7 @@ access_key_id = ${c.AWS_ACCESS_KEY_ID}
 secret_access_key = ${c.AWS_SECRET_ACCESS_KEY}
 session_token = ${c.AWS_SESSION_TOKEN}
 `,
-	},
+    },
 ];
 
 export default exportTypes;

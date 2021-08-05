@@ -1,5 +1,5 @@
 {
-	"service": { "name": "shelly", "cpus": 0.1, "mem": 1024 },
-	"networking": { "virtual-host": "changeme", "https-redirect": false },
-	"storage": { "host-volume": "/tmp" }
+    "service": { "name": "shelly", "cpus": 0.1, "mem": 1024 },
+    "networking": { "virtual-host": "changeme", "https-redirect": false },
+    "storage": { "host-volume": "/tmp" }
 }

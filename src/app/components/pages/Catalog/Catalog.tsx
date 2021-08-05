@@ -12,10 +12,7 @@ import Link from "@material-ui/core/Link";
 import { useSelector } from "app/interfaceWithLib/hooks";
 import { elementsToSentence } from "app/tools/elementsToSentence";
 
-Catalog.routeGroup = createGroup([
-    routes.catalogExplorer,
-    routes.catalogLauncher,
-]);
+Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
 type PageRoute = Route<typeof Catalog.routeGroup>;
 
@@ -86,18 +83,13 @@ export function Catalog(props: Props) {
                                           return (
                                               <>
                                                   <Link
-                                                      href={
-                                                          sourcesUrls.locationUrl
-                                                      }
+                                                      href={sourcesUrls.locationUrl}
                                                       target="_blank"
                                                   >
-                                                      {t(
-                                                          "contribute to the catalog",
-                                                          {
-                                                              "catalogId":
-                                                                  sourcesUrls.catalogId,
-                                                          },
-                                                      )}
+                                                      {t("contribute to the catalog", {
+                                                          "catalogId":
+                                                              sourcesUrls.catalogId,
+                                                      })}
                                                   </Link>
                                                   .
                                               </>
@@ -106,29 +98,21 @@ export function Catalog(props: Props) {
                                           return sourcesUrls.sources.length ===
                                               0 ? null : (
                                               <>
-                                                  {t(
-                                                      "contribute to the package",
-                                                      {
-                                                          "packageName":
-                                                              sourcesUrls.packageName,
-                                                      },
-                                                  )}
+                                                  {t("contribute to the package", {
+                                                      "packageName":
+                                                          sourcesUrls.packageName,
+                                                  })}
                                                   {elementsToSentence({
-                                                      "elements":
-                                                          sourcesUrls.sources.map(
-                                                              source => (
-                                                                  <Link
-                                                                      href={
-                                                                          source
-                                                                      }
-                                                                      target="_blank"
-                                                                  >
-                                                                      {t(
-                                                                          "here",
-                                                                      )}
-                                                                  </Link>
-                                                              ),
+                                                      "elements": sourcesUrls.sources.map(
+                                                          source => (
+                                                              <Link
+                                                                  href={source}
+                                                                  target="_blank"
+                                                              >
+                                                                  {t("here")}
+                                                              </Link>
                                                           ),
+                                                      ),
                                                       "language": lng,
                                                   })}
                                                   .
@@ -144,17 +128,11 @@ export function Catalog(props: Props) {
                 switch (route.name) {
                     case "catalogExplorer":
                         return (
-                            <CatalogExplorer
-                                route={route}
-                                className={classes.payload}
-                            />
+                            <CatalogExplorer route={route} className={classes.payload} />
                         );
                     case "catalogLauncher":
                         return (
-                            <CatalogLauncher
-                                route={route}
-                                className={classes.payload}
-                            />
+                            <CatalogLauncher route={route} className={classes.payload} />
                         );
                 }
             })()}

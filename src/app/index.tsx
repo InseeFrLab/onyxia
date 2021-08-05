@@ -14,9 +14,7 @@ reactDom.render(
     <StrictMode>
         <I18nProvider>
             <RouteProvider>
-                <ThemeProvider
-                    {...getThemeProviderProps({ PortraitModeUnsupported })}
-                >
+                <ThemeProvider {...getThemeProviderProps({ PortraitModeUnsupported })}>
                     {kcContext !== undefined ? (
                         <KcApp kcContext={kcContext} />
                     ) : (

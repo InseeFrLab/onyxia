@@ -27,7 +27,9 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 export const { useIsCloudShellVisible } = createUseGlobalState(
     "isCloudShellVisible",
     () => false,
-    { "persistance": false },
+    {
+        "persistance": false,
+    },
 );
 interface CloudShellData {
     status?: "UP" | "DOWN" | undefined;
@@ -40,12 +42,11 @@ export const CloudShell = memo(() => {
     const {
         parsedJwt: { preferred_username },
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
-    const [cloudShellStatus, setCloudShellStatus] = useState<
-        "UP" | "DOWN" | undefined
-    >(undefined);
+    const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(
+        undefined,
+    );
     const [url, setUrl] = useState<string | undefined>(undefined);
-    const { isCloudShellVisible, setIsCloudShellVisible } =
-        useIsCloudShellVisible();
+    const { isCloudShellVisible, setIsCloudShellVisible } = useIsCloudShellVisible();
     const [minioCredentials, setMinioCredentials] = useState<any>();
     const [reloadCloudshell, setReloadCloudShell] = useState(0);
     const dispatch = useDispatch();
@@ -157,9 +158,7 @@ export const CloudShell = memo(() => {
                 >
                     <CloudShellIconButton
                         aria-label="autorenew"
-                        onClick={() =>
-                            setReloadCloudShell(reloadCloudshell + 1)
-                        }
+                        onClick={() => setReloadCloudShell(reloadCloudshell + 1)}
                         className="renew-shell"
                     >
                         <Autorenew />
@@ -198,10 +197,7 @@ export const CloudShell = memo(() => {
                         <CloseIcon />
                     </CloudShellIconButton>
                 </div>
-                <CloudShellWindow
-                    reloadCloudshell={reloadCloudshell}
-                    src={url!}
-                />
+                <CloudShellWindow reloadCloudshell={reloadCloudshell} src={url!} />
             </div>
         </div>
     );
@@ -225,11 +221,8 @@ const { CloudShellWindow } = (() => {
         const [height, setHeight] = useState(200);
 
         const onResizeStop = useConstCallback(
-            (
-                ...[, , , d]: Parameters<
-                    NonNullable<ResizableProps["onResizeStop"]>
-                >
-            ) => setHeight(height + d.height),
+            (...[, , , d]: Parameters<NonNullable<ResizableProps["onResizeStop"]>>) =>
+                setHeight(height + d.height),
         );
 
         return (

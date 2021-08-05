@@ -4,9 +4,7 @@ import { Evt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
 //TODO: Move in powerhooks
-export function useClickAway<T extends HTMLElement = any>(
-    onClickAway: () => void,
-) {
+export function useClickAway<T extends HTMLElement = any>(onClickAway: () => void) {
     const rootRef = useRef<T>(null);
 
     const onClickAway_const = useConstCallback(onClickAway);

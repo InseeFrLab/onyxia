@@ -2,29 +2,34 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { AppThunk, Dependencies } from "../setup";
-import type { SecretWithMetadata, SecretsManagerClient, Secret } from "lib/ports/SecretsManagerClient";
+import type {
+    SecretWithMetadata,
+    SecretsManagerClient,
+    Secret,
+} from "lib/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
-import { basename as pathBasename, join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
+import {
+    basename as pathBasename,
+    join as pathJoin,
+    dirname as pathDirname,
+    relative as pathRelative,
+} from "path";
 import memoize from "memoizee";
 import { crawlFactory } from "lib/tools/crawl";
 import { unwrapWritableDraft } from "lib/tools/unwrapWritableDraft";
-import { Mutex } from "async-mutex";
+import { Mutex } from "async-mutex";
 
-const getMutexes = memoize(
-    (_: Dependencies) => ({
-        "createOrRename": new Mutex(),
-        "navigateMutex": new Mutex()
-    })
-);
+const getMutexes = memoize((_: Dependencies) => ({
+    "createOrRename": new Mutex(),
+    "navigateMutex": new Mutex(),
+}));
 
 export declare type SecretExplorerState =
-    SecretExplorerState.Failure |
-    SecretExplorerState.ShowingDirectory |
-    SecretExplorerState.ShowingSecret
-    ;
+    | SecretExplorerState.Failure
+    | SecretExplorerState.ShowingDirectory
+    | SecretExplorerState.ShowingSecret;
 
 export declare namespace SecretExplorerState {
-
     export type _Common = {
         currentPath: string;
         directories: string[];
@@ -52,34 +57,36 @@ export declare namespace SecretExplorerState {
         isBeingRenamed: boolean;
         isBeingUpdated: boolean;
     };
-
-
-
 }
-
 
 export type EditSecretParams = {
     key: string;
-} & ({
-    action: "addOrOverwriteKeyValue";
-    value: string
-} | {
-    action: "renameKey";
-    newKey: string;
-} | {
-    action: "renameKeyAndUpdateValue";
-    newKey: string;
-    newValue: string;
-} | {
-    action: "removeKeyValue";
-} | {
-    action: "hideOrRevealKey";
-    type: "hide" | "reveal";
-    key: string;
-});
+} & (
+    | {
+          action: "addOrOverwriteKeyValue";
+          value: string;
+      }
+    | {
+          action: "renameKey";
+          newKey: string;
+      }
+    | {
+          action: "renameKeyAndUpdateValue";
+          newKey: string;
+          newValue: string;
+      }
+    | {
+          action: "removeKeyValue";
+      }
+    | {
+          action: "hideOrRevealKey";
+          type: "hide" | "reveal";
+          key: string;
+      }
+);
 
 const extraKey = ".onyxia";
-type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[]; };
+type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
 export const name = "secretExplorer";
 
@@ -95,15 +102,11 @@ const { reducer, actions } = createSlice({
             "directoriesBeingRenamed": [],
             "secretsBeingCreated": [],
             "secretsBeingRenamed": [],
-            "isNavigationOngoing": true
-        })
+            "isNavigationOngoing": true,
+        }),
     ),
     "reducers": {
-        "errorOcurred": (
-            state,
-            { payload }: PayloadAction<{ errorMessage: string; }>
-        ) => {
-
+        "errorOcurred": (state, { payload }: PayloadAction<{ errorMessage: string }>) => {
             const { errorMessage } = payload;
 
             const { directories, secrets, isNavigationOngoing } = state;
@@ -114,22 +117,23 @@ const { reducer, actions } = createSlice({
                 errorMessage,
                 directories,
                 secrets,
-                isNavigationOngoing
+                isNavigationOngoing,
             });
-
         },
-        "navigationStarted": (
-            state
-        ) => {
-
+        "navigationStarted": state => {
             state.isNavigationOngoing = true;
-
         },
         "navigationTowardDirectorySuccess": (
             _state,
-            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingDirectory, "directories" | "secrets" | "currentPath">>
+            {
+                payload,
+            }: PayloadAction<
+                Pick<
+                    SecretExplorerState.ShowingDirectory,
+                    "directories" | "secrets" | "currentPath"
+                >
+            >,
         ) => {
-
             const { directories, secrets, currentPath } = payload;
 
             return id<SecretExplorerState.ShowingDirectory>({
@@ -141,15 +145,20 @@ const { reducer, actions } = createSlice({
                 "directoriesBeingRenamed": [],
                 "secretsBeingCreated": [],
                 "secretsBeingRenamed": [],
-                "isNavigationOngoing": false
+                "isNavigationOngoing": false,
             });
-
         },
         "navigationTowardSecretSuccess": (
             state,
-            { payload }: PayloadAction<Pick<SecretExplorerState.ShowingSecret, "secretWithMetadata" | "currentPath" | "hiddenKeys">>
+            {
+                payload,
+            }: PayloadAction<
+                Pick<
+                    SecretExplorerState.ShowingSecret,
+                    "secretWithMetadata" | "currentPath" | "hiddenKeys"
+                >
+            >,
         ) => {
-
             const { secretWithMetadata, currentPath, hiddenKeys } = payload;
 
             const { directories, secrets } = state;
@@ -163,141 +172,174 @@ const { reducer, actions } = createSlice({
                 secrets,
                 directories,
                 "isBeingUpdated": false,
-                "isNavigationOngoing": false
+                "isNavigationOngoing": false,
             });
-
         },
         "renameCurrentlyShownSecretStarted": (
             state,
-            { payload }: PayloadAction<{ newSecretBasename: string; }>
+            { payload }: PayloadAction<{ newSecretBasename: string }>,
         ) => {
-
             const { newSecretBasename } = payload;
 
             assert(state.state === "SHOWING SECRET");
 
             state.isBeingRenamed = true;
 
-            state.secrets[state.secrets.indexOf(pathBasename(state.currentPath))] = newSecretBasename;
+            state.secrets[state.secrets.indexOf(pathBasename(state.currentPath))] =
+                newSecretBasename;
 
-            state.currentPath = pathJoin(pathDirname(state.currentPath), newSecretBasename);
-
+            state.currentPath = pathJoin(
+                pathDirname(state.currentPath),
+                newSecretBasename,
+            );
         },
-        "renameCurrentlyShownSecretCompleted": (
-            state
-        ) => {
-
+        "renameCurrentlyShownSecretCompleted": state => {
             assert(state.state === "SHOWING SECRET");
 
             state.isBeingRenamed = false;
-
         },
         "renameDirectoryOrSecretWithinCurrentDirectoryStarted": (
             state,
-            { payload }: PayloadAction<{ basename: string; newBasename: string; kind: "secret" | "directory" }>
+            {
+                payload,
+            }: PayloadAction<{
+                basename: string;
+                newBasename: string;
+                kind: "secret" | "directory";
+            }>,
         ) => {
-
             const { kind, basename, newBasename } = payload;
 
             assert(state.state === "SHOWING DIRECTORY");
 
-            const relevantArray = state[(() => {
-                switch (kind) {
-                    case "secret": return "secrets";
-                    case "directory": return "directories";
-                }
-            })()]
+            const relevantArray =
+                state[
+                    (() => {
+                        switch (kind) {
+                            case "secret":
+                                return "secrets";
+                            case "directory":
+                                return "directories";
+                        }
+                    })()
+                ];
 
             relevantArray[relevantArray.indexOf(basename)] = newBasename;
 
-            state[(() => {
-                switch (kind) {
-                    case "secret": return "secretsBeingRenamed";
-                    case "directory": return "directoriesBeingRenamed";
-                }
-            })()].push(newBasename);
-
-
+            state[
+                (() => {
+                    switch (kind) {
+                        case "secret":
+                            return "secretsBeingRenamed";
+                        case "directory":
+                            return "directoriesBeingRenamed";
+                    }
+                })()
+            ].push(newBasename);
         },
         "renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted": (
             state,
-            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory"; action: "rename" | "create" }>
+            {
+                payload,
+            }: PayloadAction<{
+                basename: string;
+                kind: "secret" | "directory";
+                action: "rename" | "create";
+            }>,
         ) => {
-
             const { basename, kind, action } = payload;
 
             assert(state.state === "SHOWING DIRECTORY");
 
-            const relevantArray = state[(() => {
-                switch (kind) {
-                    case "secret":
-                        switch (action) {
-                            case "create": return "secretsBeingCreated";
-                            case "rename": return "secretsBeingRenamed";
+            const relevantArray =
+                state[
+                    (() => {
+                        switch (kind) {
+                            case "secret":
+                                switch (action) {
+                                    case "create":
+                                        return "secretsBeingCreated";
+                                    case "rename":
+                                        return "secretsBeingRenamed";
+                                }
+                                break;
+                            case "directory":
+                                switch (action) {
+                                    case "create":
+                                        return "directoriesBeingCreated";
+                                    case "rename":
+                                        return "directoriesBeingRenamed";
+                                }
+                                break;
                         }
-                        break;
-                    case "directory":
-                        switch (action) {
-                            case "create": return "directoriesBeingCreated";
-                            case "rename": return "directoriesBeingRenamed";
-                        }
-                        break;
-                }
-            })()];
+                    })()
+                ];
 
             relevantArray.splice(relevantArray.indexOf(basename), 1);
-
         },
         "createSecretOrDirectoryStarted": (
             state,
-            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory"; }>
+            {
+                payload,
+            }: PayloadAction<{
+                basename: string;
+                kind: "secret" | "directory";
+            }>,
         ) => {
-
             const { kind, basename } = payload;
 
             assert(state.state === "SHOWING DIRECTORY");
 
-            state[(() => {
-                switch (kind) {
-                    case "secret": return "secrets";
-                    case "directory": return "directories";
-                }
-            })()].push(basename);
+            state[
+                (() => {
+                    switch (kind) {
+                        case "secret":
+                            return "secrets";
+                        case "directory":
+                            return "directories";
+                    }
+                })()
+            ].push(basename);
 
-            state[(() => {
-                switch (kind) {
-                    case "secret": return "secretsBeingCreated";
-                    case "directory": return "directoriesBeingCreated";
-                }
-            })()].push(basename);
-
-
-
+            state[
+                (() => {
+                    switch (kind) {
+                        case "secret":
+                            return "secretsBeingCreated";
+                        case "directory":
+                            return "directoriesBeingCreated";
+                    }
+                })()
+            ].push(basename);
         },
         "deleteDirectoryOrSecretWithinCurrentDirectoryStarted": (
             state,
-            { payload }: PayloadAction<{ basename: string; kind: "secret" | "directory" }>
+            {
+                payload,
+            }: PayloadAction<{
+                basename: string;
+                kind: "secret" | "directory";
+            }>,
         ) => {
-
             const { kind, basename } = payload;
 
             assert(state.state === "SHOWING DIRECTORY");
 
-            const relevantArray = state[(() => {
-                switch (kind) {
-                    case "secret": return "secrets";
-                    case "directory": return "directories";
-                }
-            })()]
+            const relevantArray =
+                state[
+                    (() => {
+                        switch (kind) {
+                            case "secret":
+                                return "secrets";
+                            case "directory":
+                                return "directories";
+                        }
+                    })()
+                ];
 
             relevantArray.splice(relevantArray.indexOf(basename), 1);
-
         },
-        "editSecretStarted": (
-            state,
-            { payload }: PayloadAction<EditSecretParams>
-        ) => {
-
+        "editSecretStarted": (state, { payload }: PayloadAction<EditSecretParams>) => {
             assert(state.state === "SHOWING SECRET");
 
             const { key } = payload;
@@ -306,64 +348,68 @@ const { reducer, actions } = createSlice({
             //instantiation is too deep. But unwrapWritableDraft is the id function
             const { secret } = unwrapWritableDraft(state).secretWithMetadata;
 
-            //By doing that we preserve the ordering of the 
-            //properties in the record. 
-            const renameKey = (params: { newKey: string; }) => {
-
+            //By doing that we preserve the ordering of the
+            //properties in the record.
+            const renameKey = (params: { newKey: string }) => {
                 const { newKey } = params;
 
                 const secretClone = { ...secret };
 
-                Object.keys(secretClone).forEach(key => { delete secret[key] });
+                Object.keys(secretClone).forEach(key => {
+                    delete secret[key];
+                });
 
-                Object.keys(secretClone)
-                    .forEach(key_i =>
-                        secret[key_i === key ? newKey : key_i] =
-                        secretClone[key_i]
-                    );
-
+                Object.keys(secretClone).forEach(
+                    key_i =>
+                        (secret[key_i === key ? newKey : key_i] = secretClone[key_i]),
+                );
             };
 
             switch (payload.action) {
-                case "addOrOverwriteKeyValue": {
-                    const { value } = payload;
-                    secret[key] = value;
-                } break;
+                case "addOrOverwriteKeyValue":
+                    {
+                        const { value } = payload;
+                        secret[key] = value;
+                    }
+                    break;
                 case "removeKeyValue":
                     delete secret[key];
                     break;
-                case "renameKeyAndUpdateValue": {
-                    const { newKey, newValue } = payload;
+                case "renameKeyAndUpdateValue":
+                    {
+                        const { newKey, newValue } = payload;
 
-                    renameKey({ newKey });
-                    secret[newKey] = newValue;
-
-                } break;
-                case "renameKey": {
-                    const { newKey } = payload;
-                    renameKey({ newKey });
-                } break;
-                case "hideOrRevealKey": {
-                    const { key, type } = payload;
-
-                    switch (type) {
-                        case "hide":
-                            state.hiddenKeys.push(key);
-                            break;
-                        case "reveal":
-                            state.hiddenKeys = state.hiddenKeys
-                                .filter(key_i => key_i !== key);
-                            break;
+                        renameKey({ newKey });
+                        secret[newKey] = newValue;
                     }
+                    break;
+                case "renameKey":
+                    {
+                        const { newKey } = payload;
+                        renameKey({ newKey });
+                    }
+                    break;
+                case "hideOrRevealKey":
+                    {
+                        const { key, type } = payload;
 
-                } break;
+                        switch (type) {
+                            case "hide":
+                                state.hiddenKeys.push(key);
+                                break;
+                            case "reveal":
+                                state.hiddenKeys = state.hiddenKeys.filter(
+                                    key_i => key_i !== key,
+                                );
+                                break;
+                        }
+                    }
+                    break;
             }
 
             state.isBeingUpdated = true;
-
         },
         "editSecretCompleted": state => {
-
             if (state.state !== "SHOWING SECRET") {
                 return;
             }
@@ -374,155 +420,141 @@ const { reducer, actions } = createSlice({
             metadata.version++;
 
             state.isBeingUpdated = false;
-
-        }
-
-    }
+        },
+    },
 });
 
 export { reducer };
 
 export const thunks = {
     /**
-    * NOTE: It IS possible to navigate to a directory currently being renamed or created.
-    */
+     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
+     */
     "navigateToDirectory":
         (
-            params: {
-                fromCurrentPath: true;
-                directoryRelativePath: string;
-            } | {
-                fromCurrentPath: false;
-                directoryPath: string;
-            }
-        ): AppThunk => async (...args) => {
-
-
+            params:
+                | {
+                      fromCurrentPath: true;
+                      directoryRelativePath: string;
+                  }
+                | {
+                      fromCurrentPath: false;
+                      directoryPath: string;
+                  },
+        ): AppThunk =>
+        async (...args) => {
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
             dispatch(actions.navigationStarted());
 
-
-            (
-                await getMutexes(dependencies)
-                    .createOrRename
-                    .acquire()
-            )();
+            (await getMutexes(dependencies).createOrRename.acquire())();
 
             const directoryPath = (() => {
-
                 const { currentPath } = getState().secretExplorer;
 
-                return params.fromCurrentPath ?
-                    (
-                        assert(currentPath !== ""),
-                        pathJoin(currentPath, params.directoryRelativePath)
-                    )
-                    :
-                    params.directoryPath;
-
+                return params.fromCurrentPath
+                    ? (assert(currentPath !== ""),
+                      pathJoin(currentPath, params.directoryRelativePath))
+                    : params.directoryPath;
             })();
 
-            const releaseNavigationMutex= await getMutexes(dependencies)
-                .navigateMutex
-                .acquire();
+            const releaseNavigationMutex = await getMutexes(
+                dependencies,
+            ).navigateMutex.acquire();
 
-            const listResult = await secretsManagerClient.list({ "path": directoryPath })
+            const listResult = await secretsManagerClient
+                .list({ "path": directoryPath })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
 
             dispatch(
-                listResult instanceof Error ?
-                    actions.errorOcurred({ "errorMessage": listResult.message }) :
-                    actions.navigationTowardDirectorySuccess({ ...listResult, "currentPath": directoryPath })
+                listResult instanceof Error
+                    ? actions.errorOcurred({
+                          "errorMessage": listResult.message,
+                      })
+                    : actions.navigationTowardDirectorySuccess({
+                          ...listResult,
+                          "currentPath": directoryPath,
+                      }),
             );
-
         },
     /**
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
      */
     "navigateToSecret":
         (
-            params: {
-                fromCurrentPath: true;
-                secretRelativePath: string;
-            } | {
-                fromCurrentPath: false;
-                secretPath: string;
-            }
-        ): AppThunk => async (...args) => {
-
+            params:
+                | {
+                      fromCurrentPath: true;
+                      secretRelativePath: string;
+                  }
+                | {
+                      fromCurrentPath: false;
+                      secretPath: string;
+                  },
+        ): AppThunk =>
+        async (...args) => {
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
 
             dispatch(actions.navigationStarted());
 
-            (
-                await getMutexes(dependencies)
-                    .createOrRename
-                    .acquire()
-            )();
+            (await getMutexes(dependencies).createOrRename.acquire())();
 
             const secretPath = (() => {
-
                 const { currentPath } = getState().secretExplorer;
 
-                return params.fromCurrentPath ?
-                    (
-                        assert(currentPath !== ""),
-                        pathJoin(currentPath, params.secretRelativePath)
-                    )
-                    :
-                    params.secretPath;
-
+                return params.fromCurrentPath
+                    ? (assert(currentPath !== ""),
+                      pathJoin(currentPath, params.secretRelativePath))
+                    : params.secretPath;
             })();
 
-            const releaseNavigationMutex= await getMutexes(dependencies)
-                .navigateMutex
-                .acquire();
+            const releaseNavigationMutex = await getMutexes(
+                dependencies,
+            ).navigateMutex.acquire();
 
-            const secretWithMetadata = await secretsManagerClient.get({ "path": secretPath })
+            const secretWithMetadata = await secretsManagerClient
+                .get({ "path": secretPath })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
 
             if (secretWithMetadata instanceof Error) {
-
-                dispatch(actions.errorOcurred({ "errorMessage": secretWithMetadata.message }));
+                dispatch(
+                    actions.errorOcurred({
+                        "errorMessage": secretWithMetadata.message,
+                    }),
+                );
 
                 return;
-
             }
 
             const { secret } = secretWithMetadata;
 
-
             const { hiddenKeys, keysOrdering } = (() => {
-
                 try {
-
                     const { hiddenKeys, keysOrdering } = secret[extraKey] as ExtraValue;
 
                     for (const arr of [hiddenKeys, keysOrdering]) {
-                        assert(arr instanceof Array && arr.every(key => typeof key === "string"));
+                        assert(
+                            arr instanceof Array &&
+                                arr.every(key => typeof key === "string"),
+                        );
                     }
 
                     return {
                         hiddenKeys,
-                        "keysOrdering": keysOrdering.filter(key => key in secret)
+                        "keysOrdering": keysOrdering.filter(key => key in secret),
                     };
-
                 } catch {
-
                     return {
                         "hiddenKeys": id<string[]>([]),
-                        "keysOrdering": Object.keys(secret)
+                        "keysOrdering": Object.keys(secret),
                     };
-
                 }
-
             })();
 
             const orderedSecret = { ...secret };
@@ -531,19 +563,18 @@ export const thunks = {
 
             keysOrdering.forEach(key => delete orderedSecret[key]);
 
-            keysOrdering.forEach(key => orderedSecret[key] = secret[key]);
+            keysOrdering.forEach(key => (orderedSecret[key] = secret[key]));
 
             dispatch(
                 actions.navigationTowardSecretSuccess({
                     "secretWithMetadata": {
                         "metadata": secretWithMetadata.metadata,
-                        "secret": orderedSecret
+                        "secret": orderedSecret,
                     },
                     "currentPath": secretPath,
-                    hiddenKeys
-                })
+                    hiddenKeys,
+                }),
             );
-
         },
     /**
      * Assert:
@@ -553,10 +584,8 @@ export const thunks = {
      * The secret is not already being renamed or deleted.
      */
     "renameCurrentlyShownSecret":
-        (params: {
-            newSecretBasename: string;
-        }): AppThunk => async (...args) => {
-
+        (params: { newSecretBasename: string }): AppThunk =>
+        async (...args) => {
             const { newSecretBasename } = params;
 
             const [dispatch, getState, dependencies] = args;
@@ -567,42 +596,39 @@ export const thunks = {
             assert(state.state === "SHOWING SECRET");
 
             dispatch(
-                actions.renameCurrentlyShownSecretStarted(
-                    { newSecretBasename }
-                )
+                actions.renameCurrentlyShownSecretStarted({
+                    newSecretBasename,
+                }),
             );
 
-            const { secretsManagerClientExtension } = getSecretsManagerClientExtension(
-                secretsManagerClient
-            );
+            const { secretsManagerClientExtension } =
+                getSecretsManagerClientExtension(secretsManagerClient);
 
-            const prReleaseMutex = getMutexes(dependencies)
-                .createOrRename
-                .acquire()
+            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
-            const error = await secretsManagerClientExtension.renameSecret({
-                "path": state.currentPath,
-                newSecretBasename,
-                "secret": state.secretWithMetadata.secret
-            }).then(
-                () => undefined,
-                (error: Error) => error
-            );
+            const error = await secretsManagerClientExtension
+                .renameSecret({
+                    "path": state.currentPath,
+                    newSecretBasename,
+                    "secret": state.secretWithMetadata.secret,
+                })
+                .then(
+                    () => undefined,
+                    (error: Error) => error,
+                );
 
-            prReleaseMutex.then(release=> release());
+            prReleaseMutex.then(release => release());
 
             dispatch(
-                error !== undefined ?
-                    actions.errorOcurred({ "errorMessage": error.message }) :
-                    actions.renameCurrentlyShownSecretCompleted()
+                error !== undefined
+                    ? actions.errorOcurred({ "errorMessage": error.message })
+                    : actions.renameCurrentlyShownSecretCompleted(),
             );
-
-
         },
-    /** 
+    /**
      * Assert:
      * We are currently showing a directory (state === "SHOWING DIRECTORY")
-     * The secret or directory we are renaming is present in the directory 
+     * The secret or directory we are renaming is present in the directory
      * currently listed.
      * The secret or directory we are about to rename is not  being
      * renamed or created.
@@ -611,14 +637,13 @@ export const thunks = {
         (params: {
             basename: string;
             newBasename: string;
-            kind: "secret" | "directory"
-        }): AppThunk => async (...args) => {
-
+            kind: "secret" | "directory";
+        }): AppThunk =>
+        async (...args) => {
             const { basename, newBasename, kind } = params;
 
             const [dispatch, getState, dependencies] = args;
             const { secretsManagerClient } = dependencies;
-            
 
             const { secretExplorer: state } = getState();
 
@@ -627,57 +652,53 @@ export const thunks = {
             const path = pathJoin(state.currentPath, basename);
 
             dispatch(
-                actions.renameDirectoryOrSecretWithinCurrentDirectoryStarted(
-                    { basename, kind, newBasename }
-                )
+                actions.renameDirectoryOrSecretWithinCurrentDirectoryStarted({
+                    basename,
+                    kind,
+                    newBasename,
+                }),
             );
 
-            const { secretsManagerClientExtension } = getSecretsManagerClientExtension(
-                secretsManagerClient
-            );
+            const { secretsManagerClientExtension } =
+                getSecretsManagerClientExtension(secretsManagerClient);
 
-            const prReleaseMutex = getMutexes(dependencies)
-                .createOrRename
-                .acquire();
+            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
-            const error = await (
-                kind === "secret" ?
-                    secretsManagerClientExtension.renameSecret({
-                        path,
-                        "newSecretBasename": newBasename
-                    })
-                    :
-                    secretsManagerClientExtension.renameDirectory({
-                        path,
-                        newBasename
-                    })
+            const error = await (kind === "secret"
+                ? secretsManagerClientExtension.renameSecret({
+                      path,
+                      "newSecretBasename": newBasename,
+                  })
+                : secretsManagerClientExtension.renameDirectory({
+                      path,
+                      newBasename,
+                  })
             ).then(
                 () => undefined,
-                (error: Error) => error
+                (error: Error) => error,
             );
 
-            prReleaseMutex.then(release=> release());
+            prReleaseMutex.then(release => release());
 
             dispatch(
-                error !== undefined ?
-                    actions.errorOcurred({ "errorMessage": error.message }) :
-                    actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
-                        { "basename": newBasename, kind, "action": "rename" }
-                    )
+                error !== undefined
+                    ? actions.errorOcurred({ "errorMessage": error.message })
+                    : actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
+                          {
+                              "basename": newBasename,
+                              kind,
+                              "action": "rename",
+                          },
+                      ),
             );
-
         },
-    /** 
+    /**
      * Assert:
      * We are currently showing a directory (state === "SHOWING DIRECTORY")
      */
     "createSecretOrDirectory":
-        (params: {
-            basename: string;
-            kind: "secret" | "directory"
-        }): AppThunk => async (...args) => {
-
-
+        (params: { basename: string; kind: "secret" | "directory" }): AppThunk =>
+        async (...args) => {
             const { basename, kind } = params;
 
             const [dispatch, getState, dependencies] = args;
@@ -689,39 +710,34 @@ export const thunks = {
 
             const path = pathJoin(state.currentPath, basename);
 
-            dispatch(
-                actions.createSecretOrDirectoryStarted(
-                    { basename, kind }
-                )
-            );
+            dispatch(actions.createSecretOrDirectoryStarted({ basename, kind }));
 
-            const { secretsManagerClientExtension } = getSecretsManagerClientExtension(
-                secretsManagerClient
-            );
+            const { secretsManagerClientExtension } =
+                getSecretsManagerClientExtension(secretsManagerClient);
 
-            const prReleaseMutex = getMutexes(dependencies)
-                .createOrRename
-                .acquire();
+            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
-            const error = await (
-                kind === "secret" ?
-                    secretsManagerClient.put({ path, "secret": {} }) :
-                    secretsManagerClientExtension.createDirectory({ path })
+            const error = await (kind === "secret"
+                ? secretsManagerClient.put({ path, "secret": {} })
+                : secretsManagerClientExtension.createDirectory({ path })
             ).then(
                 () => undefined,
-                (error: Error) => error
+                (error: Error) => error,
             );
 
-            prReleaseMutex.then(release=> release());
+            prReleaseMutex.then(release => release());
 
             dispatch(
-                error !== undefined ?
-                    actions.errorOcurred({ "errorMessage": error.message }) :
-                    actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
-                        { basename, kind, "action": "create" }
-                    )
+                error !== undefined
+                    ? actions.errorOcurred({ "errorMessage": error.message })
+                    : actions.renameOrCreateDirectoryOrSecretWithinCurrentDirectoryCompleted(
+                          {
+                              basename,
+                              kind,
+                              "action": "create",
+                          },
+                      ),
             );
-
         },
 
     /**
@@ -730,8 +746,8 @@ export const thunks = {
      * The secret is not already being renamed.
      */
     "deleteCurrentlyShownSecret":
-        (): AppThunk => async (...args) => {
-
+        (): AppThunk =>
+        async (...args) => {
             const [dispatch, getState] = args;
 
             const { secretExplorer: state } = getState();
@@ -741,34 +757,29 @@ export const thunks = {
             await dispatch(
                 thunks.navigateToDirectory({
                     "fromCurrentPath": true,
-                    "directoryRelativePath": ".."
-                })
+                    "directoryRelativePath": "..",
+                }),
             );
 
             await dispatch(
                 thunks.deleteDirectoryOrSecretWithinCurrentDirectory({
                     "basename": pathBasename(state.currentPath),
-                    "kind": "secret"
-                })
+                    "kind": "secret",
+                }),
             );
-
         },
 
-    /** 
+    /**
      * Assert:
      * We are currently showing a directory (state === "SHOWING DIRECTORY")
-     * The secret or directory we are deleting is present in the directory 
+     * The secret or directory we are deleting is present in the directory
      * currently listed.
      * The secret or directory we are about to delete is not being
      * created or renamed.
      */
     "deleteDirectoryOrSecretWithinCurrentDirectory":
-        (params: {
-            basename: string;
-            kind: "secret" | "directory"
-        }): AppThunk => async (...args) => {
-
-
+        (params: { basename: string; kind: "secret" | "directory" }): AppThunk =>
+        async (...args) => {
             const { basename, kind } = params;
 
             const [dispatch, getState, { secretsManagerClient }] = args;
@@ -780,159 +791,143 @@ export const thunks = {
             const path = pathJoin(state.currentPath, basename);
 
             dispatch(
-                actions.deleteDirectoryOrSecretWithinCurrentDirectoryStarted(
-                    { basename, kind }
-                )
+                actions.deleteDirectoryOrSecretWithinCurrentDirectoryStarted({
+                    basename,
+                    kind,
+                }),
             );
 
-            const { secretsManagerClientExtension } = getSecretsManagerClientExtension(
-                secretsManagerClient
-            );
+            const { secretsManagerClientExtension } =
+                getSecretsManagerClientExtension(secretsManagerClient);
 
-            const error = await (
-                kind === "secret" ?
-                    secretsManagerClient.delete({ path }) :
-                    secretsManagerClientExtension.deleteDirectory({ path })
+            const error = await (kind === "secret"
+                ? secretsManagerClient.delete({ path })
+                : secretsManagerClientExtension.deleteDirectory({ path })
             ).then(
                 () => undefined,
-                (error: Error) => error
-            )
+                (error: Error) => error,
+            );
 
             if (error !== undefined) {
-
-                dispatch(
-                    actions.errorOcurred({ "errorMessage": error.message })
-                );
-
+                dispatch(actions.errorOcurred({ "errorMessage": error.message }));
             }
-
         },
     "editCurrentlyShownSecret":
-        (params: EditSecretParams): AppThunk => async (...args) => {
-
+        (params: EditSecretParams): AppThunk =>
+        async (...args) => {
             const [dispatch, , { secretsManagerClient }] = args;
 
             const getSecretCurrentPathAndHiddenKeys = () => {
-
                 const [, getState] = args;
 
                 const state = getState().secretExplorer;
 
                 assert(state.state === "SHOWING SECRET");
 
-                const { secretWithMetadata: { secret }, hiddenKeys } = state;
+                const {
+                    secretWithMetadata: { secret },
+                    hiddenKeys,
+                } = state;
 
                 return {
                     "path": state.currentPath,
                     hiddenKeys,
                     secret,
                 };
-
             };
 
             //Optimizations
             {
-
-
                 const { key } = params;
                 const { secret } = getSecretCurrentPathAndHiddenKeys();
 
                 switch (params.action) {
-                    case "addOrOverwriteKeyValue": {
-                        const { value } = params;
-                        if (secret[key] === value) {
-                            return;
+                    case "addOrOverwriteKeyValue":
+                        {
+                            const { value } = params;
+                            if (secret[key] === value) {
+                                return;
+                            }
                         }
-                    } break;
-                    case "renameKey": {
-                        const { newKey } = params;
-                        if (key === newKey) {
-                            return;
+                        break;
+                    case "renameKey":
+                        {
+                            const { newKey } = params;
+                            if (key === newKey) {
+                                return;
+                            }
                         }
-                    } break;
-                    case "renameKeyAndUpdateValue": {
-                        const { newKey, newValue } = params;
-                        if (
-                            key === newKey &&
-                            secret[key] === newValue
-                        ) {
-                            return;
+                        break;
+                    case "renameKeyAndUpdateValue":
+                        {
+                            const { newKey, newValue } = params;
+                            if (key === newKey && secret[key] === newValue) {
+                                return;
+                            }
                         }
-                    } break;
+                        break;
                     case "removeKeyValue":
                         if (!(key in secret)) {
                             return;
                         }
                         break;
-
                 }
-
             }
 
             dispatch(actions.editSecretStarted(params));
 
-            const error = await secretsManagerClient.put((() => {
+            const error = await secretsManagerClient
+                .put(
+                    (() => {
+                        const { path, secret, hiddenKeys } =
+                            getSecretCurrentPathAndHiddenKeys();
 
-                const { path, secret, hiddenKeys } = getSecretCurrentPathAndHiddenKeys();
-
-                return {
-                    path,
-                    "secret": {
-                        ...secret,
-                        [extraKey]: id<ExtraValue>({
-                            hiddenKeys,
-                            "keysOrdering": Object.keys(secret)
-                        })
-                    }
-                };
-
-            })())
+                        return {
+                            path,
+                            "secret": {
+                                ...secret,
+                                [extraKey]: id<ExtraValue>({
+                                    hiddenKeys,
+                                    "keysOrdering": Object.keys(secret),
+                                }),
+                            },
+                        };
+                    })(),
+                )
                 .then(
                     () => undefined,
-                    (error: Error) => error
+                    (error: Error) => error,
                 );
 
             dispatch(
-                error !== undefined ?
-                    actions.errorOcurred({ "errorMessage": error.message }) :
-                    actions.editSecretCompleted()
+                error !== undefined
+                    ? actions.errorOcurred({ "errorMessage": error.message })
+                    : actions.editSecretCompleted(),
             );
-
-        }
-
+        },
 };
 
 const getSecretsManagerClientExtension = memoize(
     (secretsManagerClient: SecretsManagerClient) => {
-
         const { crawl } = crawlFactory({
             "list": async ({ directoryPath }) => {
-
-                const {
-                    directories,
-                    secrets
-                } = await secretsManagerClient.list({ "path": directoryPath });
+                const { directories, secrets } = await secretsManagerClient.list({
+                    "path": directoryPath,
+                });
 
                 return {
                     "fileBasenames": secrets,
-                    "directoryBasenames": directories
+                    "directoryBasenames": directories,
                 };
-
-            }
+            },
         });
 
-        async function mvSecret(
-            params: {
-                srcPath: string;
-                dstPath: string;
-                secret?: Secret;
-            }
-        ) {
-
-            const {
-                srcPath,
-                dstPath
-            } = params;
+        async function mvSecret(params: {
+            srcPath: string;
+            dstPath: string;
+            secret?: Secret;
+        }) {
+            const { srcPath, dstPath } = params;
 
             if (pathRelative(srcPath, dstPath) === "") {
                 return;
@@ -942,64 +937,43 @@ const getSecretsManagerClientExtension = memoize(
                 secret = (await secretsManagerClient.get({ "path": srcPath })).secret,
             } = params;
 
-
-
             await secretsManagerClient.delete({ "path": srcPath });
 
             await secretsManagerClient.put({
                 "path": dstPath,
-                secret
+                secret,
             });
-
-
         }
 
         const secretsManagerClientExtension = {
-            "renameSecret": async (
-                params: {
-                    path: string;
-                    newSecretBasename: string;
-                    secret?: Secret;
-                }
-            ) => {
-
-                const {
-                    path,
-                    newSecretBasename,
-                    secret
-                } = params;
+            "renameSecret": async (params: {
+                path: string;
+                newSecretBasename: string;
+                secret?: Secret;
+            }) => {
+                const { path, newSecretBasename, secret } = params;
 
                 await mvSecret({
                     "srcPath": path,
                     "dstPath": pathJoin(pathDirname(path), newSecretBasename),
-                    secret
+                    secret,
                 });
-
             },
-            "renameDirectory": async (
-                params: {
-                    path: string;
-                    newBasename: string;
-                }
-            ) => {
-
+            "renameDirectory": async (params: { path: string; newBasename: string }) => {
                 const { path, newBasename } = params;
 
                 const { filePaths } = await crawl({ "directoryPath": path });
 
                 await Promise.all(
-                    filePaths
-                        .map(filePath => mvSecret({
+                    filePaths.map(filePath =>
+                        mvSecret({
                             "srcPath": pathJoin(path, filePath),
-                            "dstPath": pathJoin(pathDirname(path), newBasename, filePath)
-                        }))
+                            "dstPath": pathJoin(pathDirname(path), newBasename, filePath),
+                        }),
+                    ),
                 );
-
             },
-            "createDirectory": async (
-                params: { path: string; }
-            ) => {
-
+            "createDirectory": async (params: { path: string }) => {
                 const { path } = params;
 
                 await secretsManagerClient.put({
@@ -1007,17 +981,12 @@ const getSecretsManagerClientExtension = memoize(
                     "secret": {
                         "info": [
                             "This is a dummy secret so that this directory is kept even if there",
-                            "is no other secrets in it"
-                        ].join(" ")
-                    }
+                            "is no other secrets in it",
+                        ].join(" "),
+                    },
                 });
-
-
             },
-            "deleteDirectory": async (
-                params: { path: string; }
-            ) => {
-
+            "deleteDirectory": async (params: { path: string }) => {
                 const { path } = params;
 
                 const { filePaths } = await crawl({ "directoryPath": path });
@@ -1025,28 +994,25 @@ const getSecretsManagerClientExtension = memoize(
                 await Promise.all(
                     filePaths
                         .map(filePathRelative => pathJoin(path, filePathRelative))
-                        .map(filePath => secretsManagerClient.delete({ "path": filePath }))
+                        .map(filePath =>
+                            secretsManagerClient.delete({ "path": filePath }),
+                        ),
                 );
-
             },
         };
 
         return { secretsManagerClientExtension };
-
-    }
+    },
 );
 
 export const pure = {
     //TODO!!!
-    "getIsValidBasename": (params: { basename: string; }): boolean => {
+    "getIsValidBasename": (params: { basename: string }): boolean => {
         const { basename } = params;
-        return basename !== "" && !basename.includes(" ")
+        return basename !== "" && !basename.includes(" ");
     },
-    "getUserHomePath": (params: { preferred_username: string; }): string => {
+    "getUserHomePath": (params: { preferred_username: string }): string => {
         const { preferred_username } = params;
         return preferred_username;
-    }
+    },
 };
-
-
-

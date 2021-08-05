@@ -4,10 +4,7 @@ import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
 import type { AccountTabId } from "app/components/pages/Account/accountTabIds";
 import { accountTabIds } from "app/components/pages/Account/accountTabIds";
-import {
-    routerOpts,
-    formFieldsDefineRouteParam,
-} from "./formFieldsQueryParameters";
+import { routerOpts, formFieldsDefineRouteParam } from "./formFieldsQueryParameters";
 
 export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     "account": defineRoute(
@@ -46,8 +43,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     //TODO: Remove, legacy
     "catalog": defineRoute(
         { "optionalTrailingPath": param.path.trailing.optional.string },
-        ({ optionalTrailingPath }) =>
-            `/my-lab/catalogue/${optionalTrailingPath}`,
+        ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`,
     ),
     "catalogExplorer": defineRoute(
         {
@@ -84,8 +80,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     ),
     "myServices": defineRoute(
         {
-            "isSavedConfigsExtended":
-                param.query.optional.boolean.default(false),
+            "isSavedConfigsExtended": param.query.optional.boolean.default(false),
         },
         () => `/my-services`,
     ),

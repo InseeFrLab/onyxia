@@ -61,11 +61,7 @@ export const ExplorerFileOrDirectoryHeader = memo((props: Props) => {
     return (
         <div className={classes.root}>
             <div>
-                <IconButton
-                    size="large"
-                    iconId="chevronLeft"
-                    onClick={onBack}
-                />
+                <IconButton size="large" iconId="chevronLeft" onClick={onBack} />
             </div>
             <div>
                 <Icon kind={kind} standardizedWidth="big" />

@@ -7,291 +7,257 @@ import { PUSHER } from "js/components/notifications";
 import type { AppThunk } from "lib/setup";
 import { parseOidcAccessToken } from "lib/ports/OidcClient";
 
-
 export type State = {
-	currentObjects: (Blob & { name: string; })[];
-	currentDirectories: { prefix: string; }[];
-	/** bucket -> policy */
-	bucketsPolicies: Record<string, State.Policy>;
-	userBuckets: State.Bucket[] | undefined;
+    currentObjects: (Blob & { name: string })[];
+    currentDirectories: { prefix: string }[];
+    /** bucket -> policy */
+    bucketsPolicies: Record<string, State.Policy>;
+    userBuckets: State.Bucket[] | undefined;
 };
 
 export declare namespace State {
+    export type Policy = {
+        Version: string;
+        Statement: never[];
+    };
 
-
-	export type Policy = {
-		Version: string;
-		Statement: never[];
-	};
-
-	export type Bucket = {
-		id: string;
-		description: string;
-		isPublic: boolean;
-	};
-
+    export type Bucket = {
+        id: string;
+        description: string;
+        isPublic: boolean;
+    };
 }
 
 export const name = "myFiles";
 
 const asyncThunks = {
-	...(() => {
+    ...(() => {
+        const typePrefix = "loadBucketContent";
 
-		const typePrefix = "loadBucketContent";
+        return {
+            [typePrefix]: createAsyncThunk(
+                `${name}/${typePrefix}`,
+                async (
+                    payload: {
+                        bucketName: string;
+                        prefix: string;
+                        rec: boolean;
+                    },
+                    { dispatch },
+                ) => {
+                    const { bucketName, prefix, rec } = payload;
 
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async (
-					payload: {
-						bucketName: string;
-						prefix: string;
-						rec: boolean;
-					},
-					{ dispatch }
-				) => {
+                    assert(
+                        typeof bucketName === "string" &&
+                            typeof prefix === "string" &&
+                            typeof rec === "boolean",
+                    );
 
-					const { bucketName, prefix, rec } = payload;
+                    dispatch(syncActions.emptyCurrentBucket());
 
-					assert(
-						typeof bucketName === "string" &&
-						typeof prefix === "string" &&
-						typeof rec === "boolean"
-					);
+                    // eslint-disable-next-line
+                    walkGetUserBucketPolicy: {
+                        const policy = await minio
+                            .getBucketPolicy(bucketName)
+                            .catch(() => undefined);
 
-					dispatch(syncActions.emptyCurrentBucket());
+                        if (policy === undefined) {
+                            // eslint-disable-next-line
+                            break walkGetUserBucketPolicy;
+                        }
 
-					// eslint-disable-next-line
-					walkGetUserBucketPolicy: {
+                        dispatch(
+                            syncActions.setBucketPolicy({
+                                "bucket": bucketName,
+                                "policy": JSON.parse(policy),
+                            }),
+                        );
+                    }
 
-						const policy = await minio.getBucketPolicy(bucketName)
-							.catch(() => undefined);
+                    const stream = await minio.getBucketContent(
+                        bucketName,
+                        prefix.replace(/^\//, ""),
+                        rec,
+                    );
 
-						if (policy === undefined) {
-							// eslint-disable-next-line
-							break walkGetUserBucketPolicy;
-						}
+                    stream.on("data", object =>
+                        dispatch(
+                            "prefix" in object
+                                ? syncActions.addDirectoryToCurrentBucket({
+                                      "directory": object as any,
+                                  }) //TODO
+                                : syncActions.addObjectToCurrentBucket({
+                                      object,
+                                  }),
+                        ),
+                    );
 
-						dispatch(
-							syncActions.setBucketPolicy({
-								"bucket": bucketName,
-								"policy": JSON.parse(policy)
-							})
-						);
+                    stream.on(
+                        "error",
+                        (error: { resource: string }) =>
+                            PUSHER.push(`Accés refusé : ${error.resource}`), //TODO: Franglish
+                    );
+                },
+            ),
+        };
+    })(),
+    ...(() => {
+        const typePrefix = "uploadFileToBucket";
 
-					}
+        return {
+            [typePrefix]: createAsyncThunk(
+                `${name}/${typePrefix}`,
+                async (payload: {
+                    file: Blob & { name: string };
+                    bucketName: string;
+                    notify: (msg: string, params: Blob) => void;
+                    path: string;
+                }) => {
+                    //TODO: Figure out why there is no dispatch.
+                    //TODO: Franglish
 
-					const stream = await minio.getBucketContent(
-						bucketName, 
-						prefix.replace(/^\//, ""), 
-						rec
-					);
+                    const { file, bucketName, notify, path } = payload;
 
-					stream.on(
-						"data",
-						object => dispatch(
-							"prefix" in object ?
-								syncActions.addDirectoryToCurrentBucket({ "directory": object as any }) : //TODO
-								syncActions.addObjectToCurrentBucket({ object })
-						)
-					);
+                    assert(
+                        typeof file === "object" &&
+                            typeof bucketName === "string" &&
+                            typeof notify === "function" &&
+                            typeof path === "string",
+                    );
 
-					stream.on('error', (error: { resource: string; }) =>
-						PUSHER.push(`Accés refusé : ${error.resource}`) //TODO: Franglish
-					);
+                    const result = await minio
+                        .uploadFile({ bucketName, file, notify, path })
+                        .catch(() => undefined);
 
+                    if (!result) {
+                        PUSHER.push(`l'upload du fichier ${file.name} a échoué.`);
+                        return;
+                    }
 
-				}
-			)
-		};
+                    PUSHER.push(`${file.name} a été uploadé.`);
+                },
+            ),
+        };
+    })(),
+    ...(() => {
+        const typePrefix = "removeObjectFromBucket";
 
+        return {
+            [typePrefix]: createAsyncThunk(
+                `${name}/${typePrefix}`,
+                async (payload: { bucketName: string; objectName: string }) => {
+                    //TODO: Figure out why there is no dispatch.
+                    //TODO: Franglish
 
-	})(),
-	...(() => {
+                    const { bucketName, objectName } = payload;
 
-		const typePrefix = "uploadFileToBucket";
+                    assert(
+                        typeof bucketName === "string" && typeof objectName === "string",
+                    );
 
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async (
-					payload: {
-						file: Blob & { name: string; };
-						bucketName: string;
-						notify: (msg: string, params: Blob) => void;
-						path: string;
-					}
-				) => {
+                    const result = await minio
+                        .removeObject({ bucketName, objectName })
+                        .catch(() => undefined);
 
+                    if (!result) {
+                        PUSHER.push(`la suppression du fichier ${objectName} a échoué.`);
+                        return;
+                    }
 
-					//TODO: Figure out why there is no dispatch.
-					//TODO: Franglish
+                    PUSHER.push(`${objectName} a été supprimé.`);
+                },
+            ),
+        };
+    })(),
+    "loadUserBuckets":
+        (): AppThunk =>
+        async (...args) => {
+            const [dispatch, , { oidcClient }] = args;
 
-					const { file, bucketName, notify, path } = payload;
+            assert(oidcClient.isUserLoggedIn);
 
-					assert(
-						typeof file === "object" &&
-						typeof bucketName === "string" &&
-						typeof notify === "function" &&
-						typeof path === "string"
-					);
+            const { preferred_username, groups } = await parseOidcAccessToken(oidcClient);
 
-					const result = await minio.uploadFile({ bucketName, file, notify, path })
-						.catch(() => undefined);
-
-					if (!result) {
-
-						PUSHER.push(`l'upload du fichier ${file.name} a échoué.`);
-						return;
-
-					}
-
-					PUSHER.push(`${file.name} a été uploadé.`);
-
-
-				}
-			)
-		};
-
-
-	})(),
-	...(() => {
-
-		const typePrefix = "removeObjectFromBucket";
-
-		return {
-			[typePrefix]: createAsyncThunk(
-				`${name}/${typePrefix}`,
-				async (
-					payload: {
-						bucketName: string;
-						objectName: string;
-					}
-				) => {
-
-					//TODO: Figure out why there is no dispatch.
-					//TODO: Franglish
-
-					const { bucketName, objectName } = payload;
-
-					assert(
-						typeof bucketName === "string" &&
-						typeof objectName === "string"
-					);
-
-					const result = await minio.removeObject({ bucketName, objectName })
-						.catch(() => undefined);
-
-					if (!result) {
-
-						PUSHER.push(`la suppression du fichier ${objectName} a échoué.`);
-						return;
-
-					}
-
-					PUSHER.push(`${objectName} a été supprimé.`);
-
-
-				}
-			)
-		};
-
-
-	})(),
-	"loadUserBuckets":
-		(): AppThunk => async (...args) => {
-
-			const [dispatch, , { oidcClient }] = args;
-
-			assert(oidcClient.isUserLoggedIn);
-
-			const { preferred_username, groups } = await parseOidcAccessToken(oidcClient);
-
-			dispatch(
-				syncActions.loadUserBuckets({
-					"buckets":
-						[preferred_username, ...groups.map(g=> `projet-${g}`)].map((id, i) => ({
-							id,
-							"description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
-							"isPublic": false
-						}))
-				})
-			);
-
-		}
+            dispatch(
+                syncActions.loadUserBuckets({
+                    "buckets": [
+                        preferred_username,
+                        ...groups.map(g => `projet-${g}`),
+                    ].map((id, i) => ({
+                        id,
+                        "description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
+                        "isPublic": false,
+                    })),
+                }),
+            );
+        },
 };
 
-
 const slice = createSlice({
-	name,
-	"initialState": id<State>({
-		"currentObjects": [],
-		"currentDirectories": [],
-		"bucketsPolicies": {},
-		"userBuckets": undefined
-	}),
-	"reducers": {
-		"loadUserBuckets": (
-			state,
-			{ payload }: PayloadAction<{ buckets: State.Bucket[]; }>
-		) => {
+    name,
+    "initialState": id<State>({
+        "currentObjects": [],
+        "currentDirectories": [],
+        "bucketsPolicies": {},
+        "userBuckets": undefined,
+    }),
+    "reducers": {
+        "loadUserBuckets": (
+            state,
+            { payload }: PayloadAction<{ buckets: State.Bucket[] }>,
+        ) => {
+            const { buckets } = payload;
 
-			const { buckets } = payload;
+            state.userBuckets = buckets;
+        },
+        "emptyCurrentBucket": state => {
+            state.currentObjects = [];
+            state.currentDirectories = [];
+        },
+        "addObjectToCurrentBucket": (
+            state,
+            { payload }: PayloadAction<{ object: State["currentObjects"][number] }>,
+        ) => {
+            const { object } = payload;
 
-			state.userBuckets = buckets;
+            assert(typeof object === "object");
 
-		},
-		"emptyCurrentBucket": state => {
-			state.currentObjects = [];
-			state.currentDirectories = [];
-		},
-		"addObjectToCurrentBucket": (
-			state,
-			{ payload }: PayloadAction<{ object: State["currentObjects"][number]; }>
-		) => {
+            state.currentObjects.push(object);
+        },
+        "addDirectoryToCurrentBucket": (
+            state,
+            {
+                payload,
+            }: PayloadAction<{
+                directory: State["currentDirectories"][number];
+            }>,
+        ) => {
+            const { directory } = payload;
 
-			const { object } = payload;
+            state.currentDirectories.push(directory);
+        },
+        "setBucketPolicy": (
+            state,
+            {
+                payload,
+            }: PayloadAction<{
+                bucket: keyof State["bucketsPolicies"];
+                policy: State["bucketsPolicies"][string];
+            }>,
+        ) => {
+            const { bucket, policy } = payload;
 
-			assert(typeof object === "object");
+            assert(typeof bucket === "string" && typeof policy === "object");
 
-			state.currentObjects.push(object);
-		},
-		"addDirectoryToCurrentBucket": (
-			state,
-			{ payload }: PayloadAction<{ directory: State["currentDirectories"][number]; }>
-		) => {
-			const { directory } = payload;
-
-			state.currentDirectories.push(directory);
-		},
-		"setBucketPolicy": (
-			state,
-			{ payload }: PayloadAction<{
-				bucket: keyof State["bucketsPolicies"];
-				policy: State["bucketsPolicies"][string];
-			}>
-		) => {
-
-			const { bucket, policy } = payload;
-
-			assert(
-				typeof bucket === "string" &&
-				typeof policy === "object"
-			);
-
-			state.bucketsPolicies[bucket] = policy;
-
-		}
-	}
+            state.bucketsPolicies[bucket] = policy;
+        },
+    },
 });
-
 
 const { actions: syncActions } = slice;
 
 export const actions = {
-	...asyncThunks
+    ...asyncThunks,
 };
 
 export const reducer = slice.reducer;
-
-

@@ -1,164 +1,145 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Fade from '@material-ui/core/Fade';
-import classnames from 'classnames';
+import { useState, useCallback, useRef, useEffect } from "react";
+import Paper from "@material-ui/core/Paper";
+import Fade from "@material-ui/core/Fade";
+import classnames from "classnames";
 import "./style.scss";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 
 export const HidablePane: React.FC<{
-	post?: () => boolean;
-	anchor?: HTMLElement;
-	className: string;
+    post?: () => boolean;
+    anchor?: HTMLElement;
+    className: string;
 }> = props => {
+    const { post, anchor, className } = props;
+    const [isDisplayed, setIsDisplayed] = useState(false);
+    const [isHidden, setIsHidden] = useState(true);
+    const [requestShow, setRequestShow] = useState<undefined | "panel" | "anchor">(
+        undefined,
+    );
 
-	const { post, anchor, className } = props;
-	const [isDisplayed, setIsDisplayed] = useState(false);
-	const [isHidden, setIsHidden] = useState(true);
-	const [requestShow, setRequestShow] = useState<undefined | "panel" | "anchor">(undefined);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [timer, setTimer] = useState(() => setTimeout(() => {}, 0));
 
-	const wrapperRef = useRef<HTMLDivElement>(null);
-	const [timer, setTimer] = useState(() => setTimeout(() => { }, 0));
+    const checkPosition = useCallback(() => {
+        if (!anchor || !wrapperRef.current) {
+            return;
+        }
 
-	const checkPosition = useCallback(() => {
+        const rect = anchor.getBoundingClientRect();
 
-		if (!anchor || !wrapperRef.current) {
-			return;
-		}
+        const { style } = wrapperRef.current;
 
-		const rect = anchor.getBoundingClientRect();
+        style.top = `${
+            rect.top + parseInt(getComputedStyle(anchor).getPropertyValue("height"))
+        }px`;
+        style.left = `${rect.left}px`;
+        style.width = `${rect.width}px`;
+    }, [anchor]);
 
-		const { style } = wrapperRef.current;
+    const hide = useCallback(
+        (who: "panel" | "anchor") => {
+            if (requestShow === "panel" && who !== "panel") {
+                return;
+            }
 
-		style.top = `${
-			rect.top +
-			parseInt(getComputedStyle(anchor).getPropertyValue("height"))
-			}px`;
-		style.left = `${rect.left}px`;
-		style.width = `${rect.width}px`;
+            clearTimeout(timer);
 
+            setTimer(
+                setTimeout(() => {
+                    setIsDisplayed(false);
+                    setRequestShow(undefined);
+                }, 300),
+            );
+        },
+        [requestShow, timer],
+    );
 
-	}, [anchor]);
+    const display = useCallback(
+        (who: "panel" | "anchor") => {
+            setRequestShow(who);
+            clearTimeout(timer);
+            setIsDisplayed(true);
+            setIsHidden(false);
+        },
+        [timer],
+    );
 
+    useEvt(
+        ctx => {
+            Evt.from(ctx, window, "scroll", { "passive": true }).attach(checkPosition);
+        },
+        [checkPosition],
+    );
 
-	const hide = useCallback(
-		(who: "panel" | "anchor") => {
+    useEvt(
+        ctx => {
+            if (!anchor) {
+                return;
+            }
 
-			if (requestShow === "panel" && who !== "panel") {
-				return;
-			}
+            for (const eventName of ["mouseenter", "mouseleave"] as const) {
+                Evt.from(ctx, anchor, eventName).attach(event => {
+                    event.stopImmediatePropagation();
 
-			clearTimeout(timer);
+                    switch (eventName) {
+                        case "mouseenter":
+                            display("anchor");
+                            break;
+                        case "mouseleave":
+                            hide("anchor");
+                            break;
+                    }
+                });
+            }
+        },
+        [anchor, display, hide],
+    );
 
-			setTimer(
-				setTimeout(
-					() => {
+    useEffect(() => {
+        checkPosition();
+        return () => {
+            clearTimeout(timer);
+        };
+    });
 
-						setIsDisplayed(false);
-						setRequestShow(undefined);
+    const postProcessing = useCallback(() => setIsDisplayed(post?.() ?? true), [post]);
 
-					},
-					300
-				)
-			);
-
-
-		},
-		[requestShow, timer]
-	);
-
-	const display = useCallback(
-		(who: "panel" | "anchor") => {
-			setRequestShow(who);
-			clearTimeout(timer);
-			setIsDisplayed(true);
-			setIsHidden(false);
-		},
-		[timer]
-	);
-
-	useEvt(ctx => {
-
-		Evt.from(
-			ctx,
-			window,
-			"scroll",
-			{ "passive": true }
-		).attach(checkPosition);
-
-	}, [checkPosition]);
-
-
-	useEvt(ctx => {
-
-		if (!anchor) {
-			return;
-		}
-
-		for (const eventName of ["mouseenter", "mouseleave"] as const) {
-
-			Evt.from(ctx, anchor, eventName)
-				.attach(event => {
-					event.stopImmediatePropagation();
-
-					switch (eventName) {
-						case "mouseenter": display("anchor"); break;
-						case "mouseleave": hide("anchor"); break;
-					}
-
-				});
-		}
-
-
-
-	}, [anchor, display, hide ]);
-
-
-	useEffect(() => {
-		checkPosition();
-		return () => { clearTimeout(timer); };
-	});
-
-	const postProcessing = useCallback(
-		()=> setIsDisplayed(post?.() ?? true) , 
-		[post]
-		);
-
-	return (
-		<div
-			className={classnames("hidable-pane", {
-				"hide": isHidden,
-				[className]: className
-			})}
-			onMouseEnter={useCallback(event => {
-				event.stopPropagation();
-				if (!isDisplayed){
-					return;
-				} 
-				display("panel");
-			},[isDisplayed, display])}
-			onMouseLeave={useCallback(event => {
-				event.stopPropagation();
-				hide("panel");
-			},[hide])}
-			ref={wrapperRef}
-		>
-			<Fade
-				in={isDisplayed}
-				timeout={300}
-				onExit={() => setIsHidden(true)}
-			>
-				<Paper
-					elevation={1}
-					classes={{ "root": "paper" }}
-					onClick={postProcessing}
-					onChange={postProcessing}
-				>
-					{props.children}
-				</Paper>
-			</Fade>
-		</div>
-	);
-
-
+    return (
+        <div
+            className={classnames("hidable-pane", {
+                "hide": isHidden,
+                [className]: className,
+            })}
+            onMouseEnter={useCallback(
+                event => {
+                    event.stopPropagation();
+                    if (!isDisplayed) {
+                        return;
+                    }
+                    display("panel");
+                },
+                [isDisplayed, display],
+            )}
+            onMouseLeave={useCallback(
+                event => {
+                    event.stopPropagation();
+                    hide("panel");
+                },
+                [hide],
+            )}
+            ref={wrapperRef}
+        >
+            <Fade in={isDisplayed} timeout={300} onExit={() => setIsHidden(true)}>
+                <Paper
+                    elevation={1}
+                    classes={{ "root": "paper" }}
+                    onClick={postProcessing}
+                    onChange={postProcessing}
+                >
+                    {props.children}
+                </Paper>
+            </Fade>
+        </div>
+    );
 };

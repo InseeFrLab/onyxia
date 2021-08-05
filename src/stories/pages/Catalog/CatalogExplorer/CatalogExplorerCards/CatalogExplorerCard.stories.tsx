@@ -1,21 +1,17 @@
-
-
-
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css, cx } from "tss-react";
-
+import { css, cx } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { CatalogExplorerCard }
+    "wrappedComponent": { CatalogExplorerCard },
 });
 
 export default meta;
 
-const className = css({ "maxWidth": 450 });
+const className = css({ "maxWidth": 450 });
 
 export const VueDefault = getStory({
     className,
@@ -29,7 +25,7 @@ export const VueDefault = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLaunch"])
+    ...logCallbacks(["onRequestLaunch"]),
 });
 
 export const VueNoDesc = getStory({
@@ -38,7 +34,7 @@ export const VueNoDesc = getStory({
     "packageName": "package_name",
     "packageDescription": "",
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
 });
 
 export const VueNoLearnMore = getStory({
@@ -53,7 +49,7 @@ export const VueNoLearnMore = getStory({
     justo varius`,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "packageHomeUrl": undefined
+    "packageHomeUrl": undefined,
 });
 
 export const VueScroll = getStory({
@@ -71,6 +67,5 @@ export const VueScroll = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": undefined,
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
 });
-

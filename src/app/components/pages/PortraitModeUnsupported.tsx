@@ -30,9 +30,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.wrapper}>
-                <Text typo="section heading">
-                    {t("portrait mode not supported")} 🙇
-                </Text>
+                <Text typo="section heading">{t("portrait mode not supported")} 🙇</Text>
                 <Text typo="body 1" className={classes.instructions}>
                     {t("instructions")}
                 </Text>

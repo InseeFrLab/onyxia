@@ -19,7 +19,6 @@ export type UserState = {
 
 export const name = "user";
 
-
 const slice = createSlice({
     name,
     "initialState": id<UserState>({
@@ -41,21 +40,22 @@ const slice = createSlice({
         */
         "newS3Credentials": (
             state,
-            { payload }: PayloadAction<{
+            {
+                payload,
+            }: PayloadAction<{
                 accessKey: string;
                 secretAccessKey: string;
                 expiration: string;
                 sessionToken: string;
-            }>
+            }>,
         ) => {
-
             const { accessKey, secretAccessKey, expiration, sessionToken } = payload;
 
             assert(
                 typeof accessKey === "string" &&
-                typeof secretAccessKey === "string" &&
-                typeof expiration === "string" &&
-                typeof sessionToken === "string"
+                    typeof secretAccessKey === "string" &&
+                    typeof expiration === "string" &&
+                    typeof sessionToken === "string",
             );
 
             state.s3 = {
@@ -64,20 +64,12 @@ const slice = createSlice({
                 "AWS_EXPIRATION": expiration,
                 "AWS_SESSION_TOKEN": sessionToken,
                 "AWS_DEFAULT_REGION": "us-east-1",
-                "AWS_S3_ENDPOINT": getValidatedEnv().MINIO.END_POINT
+                "AWS_S3_ENDPOINT": getValidatedEnv().MINIO.END_POINT,
             };
-
-        }
-    }
+        },
+    },
 });
 
 export const { reducer } = slice;
 
 export const actions = id<Omit<typeof slice.actions, "setUserInfo">>(slice.actions);
-
-
-
-
-
-
-

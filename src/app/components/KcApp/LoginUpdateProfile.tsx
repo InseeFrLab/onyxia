@@ -15,10 +15,7 @@ type KcContext_LoginUpdateProfile = Extract<
 >;
 
 export const LoginUpdateProfile = memo(
-    ({
-        kcContext,
-        ...props
-    }: { kcContext: KcContext_LoginUpdateProfile } & KcProps) => {
+    ({ kcContext, ...props }: { kcContext: KcContext_LoginUpdateProfile } & KcProps) => {
         const { msg, msgStr } = useKcMessage();
 
         const { url, user, messagesPerField, isAppInitiatedAction } = kcContext;
@@ -89,10 +86,7 @@ export const LoginUpdateProfile = memo(
                             )}
                         >
                             <div className={cx(props.kcLabelWrapperClass)}>
-                                <label
-                                    htmlFor="email"
-                                    className={cx(props.kcLabelClass)}
-                                >
+                                <label htmlFor="email" className={cx(props.kcLabelClass)}>
                                     {msg("email")}
                                 </label>
                             </div>
@@ -171,11 +165,7 @@ export const LoginUpdateProfile = memo(
                                 id="kc-form-options"
                                 className={cx(props.kcFormOptionsClass)}
                             >
-                                <div
-                                    className={cx(
-                                        props.kcFormOptionsWrapperClass,
-                                    )}
-                                />
+                                <div className={cx(props.kcFormOptionsWrapperClass)} />
                             </div>
 
                             <div

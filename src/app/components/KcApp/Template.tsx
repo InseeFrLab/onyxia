@@ -75,8 +75,7 @@ const useStyles = makeStyles<{
 }));
 
 export const Template = memo((props: TemplateProps) => {
-    const { kcContext, className, doFetchDefaultThemeResources, onClickCross } =
-        props;
+    const { kcContext, className, doFetchDefaultThemeResources, onClickCross } = props;
 
     useEffect(() => {
         console.log("Rendering this page with react using keycloakify");
@@ -93,8 +92,7 @@ export const Template = memo((props: TemplateProps) => {
             assert(kcContext.locale !== undefined);
 
             if (
-                kcLanguageTag ===
-                getBestMatchAmongKcLanguageTag(kcContext.locale.current)
+                kcLanguageTag === getBestMatchAmongKcLanguageTag(kcContext.locale.current)
             ) {
                 return;
             }
@@ -113,9 +111,7 @@ export const Template = memo((props: TemplateProps) => {
     } = useDomRect();
 
     const logoContainerWidth = Math.max(
-        Math.floor(
-            (Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100,
-        ),
+        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
         45,
     );
 
@@ -149,10 +145,7 @@ export const Template = memo((props: TemplateProps) => {
             Promise.all(
                 [
                     ...toArr(props.stylesCommon).map(relativePath =>
-                        pathJoin(
-                            kcContext.url.resourcesCommonPath,
-                            relativePath,
-                        ),
+                        pathJoin(kcContext.url.resourcesCommonPath, relativePath),
                     ),
                     ...toArr(props.styles).map(relativePath =>
                         pathJoin(kcContext.url.resourcesPath, relativePath),
@@ -179,8 +172,7 @@ export const Template = memo((props: TemplateProps) => {
             );
 
             if (props.kcHtmlClass !== undefined) {
-                const htmlClassList =
-                    document.getElementsByTagName("html")[0].classList;
+                const htmlClassList = document.getElementsByTagName("html")[0].classList;
 
                 const tokens = cx(props.kcHtmlClass).split(" ");
 
@@ -212,11 +204,7 @@ export const Template = memo((props: TemplateProps) => {
                 onLogoClick={onHeaderLogoClick}
             />
             <section className={classes.betweenHeaderAndFooter}>
-                <Page
-                    {...props}
-                    className={classes.page}
-                    onClickCross={onClickCross}
-                />
+                <Page {...props} className={classes.page} onClickCross={onClickCross} />
             </section>
         </div>
     );
@@ -368,30 +356,19 @@ const { Page } = (() => {
                                     </span>
                                 </div>
                                 <div className="col-md-10">
-                                    <Text
-                                        className={classes.root}
-                                        typo="section heading"
-                                    >
+                                    <Text className={classes.root} typo="section heading">
                                         {headerNode!}
                                     </Text>
                                 </div>
                             </div>
                         ) : (
-                            <Text
-                                className={classes.root}
-                                typo="section heading"
-                            >
+                            <Text className={classes.root} typo="section heading">
                                 {headerNode!}
                             </Text>
                         )
                     ) : displayRequiredFields ? (
                         <div className={cx(kcProps.kcContentWrapperClass)}>
-                            <div
-                                className={cx(
-                                    kcProps.kcLabelWrapperClass,
-                                    "subtitle",
-                                )}
-                            >
+                            <div className={cx(kcProps.kcLabelWrapperClass, "subtitle")}>
                                 <span className="subtitle">
                                     <span className="required">*</span>{" "}
                                     {msg("requiredFields")}
@@ -406,10 +383,7 @@ const { Page } = (() => {
                                         </label>
                                         <a
                                             id="reset-login"
-                                            href={
-                                                kcContext.url
-                                                    .loginRestartFlowUrl
-                                            }
+                                            href={kcContext.url.loginRestartFlowUrl}
                                         >
                                             <div className="kc-login-tooltip">
                                                 <i
@@ -440,9 +414,7 @@ const { Page } = (() => {
                                     >
                                         <div className="kc-login-tooltip">
                                             <i
-                                                className={cx(
-                                                    kcProps.kcResetFlowIcon,
-                                                )}
+                                                className={cx(kcProps.kcResetFlowIcon)}
                                             ></i>
                                             <span className="kc-tooltip-text">
                                                 {msg("restartLoginTooltip")}
@@ -489,9 +461,7 @@ const { Page } = (() => {
             } = props;
 
             const onTryAnotherWayClick = useConstCallback(() => {
-                document.forms[
-                    "kc-select-try-another-way-form" as never
-                ].submit();
+                document.forms["kc-select-try-another-way-form" as never].submit();
                 return false;
             });
 
@@ -514,8 +484,7 @@ const { Page } = (() => {
                                     <Text typo="label 2">
                                         <span
                                             dangerouslySetInnerHTML={{
-                                                "__html":
-                                                    kcContext.message.summary,
+                                                "__html": kcContext.message.summary,
                                             }}
                                         />
                                     </Text>
@@ -530,8 +499,7 @@ const { Page } = (() => {
                                     action={kcContext.url.loginAction}
                                     method="post"
                                     className={cx(
-                                        displayWide &&
-                                            props.kcContentWrapperClass,
+                                        displayWide && props.kcContentWrapperClass,
                                     )}
                                 >
                                     <div
@@ -542,11 +510,7 @@ const { Page } = (() => {
                                             ],
                                         )}
                                     >
-                                        <div
-                                            className={cx(
-                                                kcProps.kcFormGroupClass,
-                                            )}
-                                        >
+                                        <div className={cx(kcProps.kcFormGroupClass)}>
                                             <input
                                                 type="hidden"
                                                 name="tryAnotherWay"
@@ -564,15 +528,10 @@ const { Page } = (() => {
                                 </form>
                             )}
                         {displayInfo && (
-                            <div
-                                id="kc-info"
-                                className={cx(kcProps.kcSignUpClass)}
-                            >
+                            <div id="kc-info" className={cx(kcProps.kcSignUpClass)}>
                                 <div
                                     id="kc-info-wrapper"
-                                    className={cx(
-                                        kcProps.kcInfoAreaWrapperClass,
-                                    )}
+                                    className={cx(kcProps.kcInfoAreaWrapperClass)}
                                 >
                                     {infoNode}
                                 </div>

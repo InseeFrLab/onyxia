@@ -16,8 +16,7 @@ function Component(
         tick: boolean;
     },
 ) {
-    const { tick, minDepth, path, callback, isNavigationDisabled, width } =
-        props;
+    const { tick, minDepth, path, callback, isNavigationDisabled, width } = props;
 
     const [index, incrementIndex] = useReducer((index: number) => index + 1, 0);
 
@@ -25,9 +24,7 @@ function Component(
         incrementIndex();
     }, [tick]);
 
-    const [evtAction] = useState(() =>
-        Evt.create<UnpackEvt<Props["evtAction"]>>(),
-    );
+    const [evtAction] = useState(() => Evt.create<UnpackEvt<Props["evtAction"]>>());
 
     useEffectOnValueChange(() => {
         evtAction.post({

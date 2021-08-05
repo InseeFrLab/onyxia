@@ -152,10 +152,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         editedStrValue = undefined;
                     }
 
-                    if (
-                        editedKey === undefined &&
-                        editedStrValue === undefined
-                    ) {
+                    if (editedKey === undefined && editedStrValue === undefined) {
                         return;
                     }
 
@@ -179,27 +176,22 @@ export const MySecretsEditorRow = memo((props: Props) => {
         evtInputAction.post("RESTORE DEFAULT VALUE"),
     );
 
-    const onEnterKeyDown = isSubmitButtonDisabled
-        ? undefined
-        : onSubmitButtonClick;
+    const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
 
     const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
 
     const onValueBeingTypedChange_key = useConstCallback(
         ({
             isValidValue,
-        }: Parameters<
-            NonNullable<TextFieldProps["onValueBeingTypedChange"]>
-        >[0]) => setIsValidKey(isValidValue),
+        }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
+            setIsValidKey(isValidValue),
     );
 
     const onValueBeingTypedChange_strValue = useConstCallback(
         ({
             isValidValue,
             value,
-        }: Parameters<
-            NonNullable<TextFieldProps["onValueBeingTypedChange"]>
-        >[0]) => {
+        }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
             setIsValidStrValue(isValidValue);
 
             setStrValueBeingTyped(value);
@@ -214,11 +206,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     });
 
     const getIsValidValue_key = useConstCallback(
-        (
-            value: Parameters<
-                NonNullable<TextFieldProps["getIsValidValue"]>
-            >[0],
-        ) => {
+        (value: Parameters<NonNullable<TextFieldProps["getIsValidValue"]>>[0]) => {
             const result = getIsValidAndAvailableKey({ "key": value });
 
             return result.isValidAndAvailableKey
@@ -337,9 +325,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         evtAction={evtInputAction}
                         onSubmit={onSubmitFactory("editedStrValue")}
                         getIsValidValue={getIsValidValue_strValue}
-                        onValueBeingTypedChange={
-                            onValueBeingTypedChange_strValue
-                        }
+                        onValueBeingTypedChange={onValueBeingTypedChange_strValue}
                         doOnlyValidateInputAfterFistFocusLost={false}
                     />
                 )}
@@ -350,8 +336,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         className={cx(
                             classes.valueAndResolvedValue,
                             css({
-                                "color":
-                                    theme.colors.palette.light.greyVariant3,
+                                "color": theme.colors.palette.light.greyVariant3,
                             }),
                         )}
                     >
@@ -363,13 +348,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 <div className={css({ "display": "flex" })}>
                     <IconButton
                         iconId={isInEditingState ? "check" : "edit"}
-                        disabled={
-                            isInEditingState ? isSubmitButtonDisabled : isLocked
-                        }
+                        disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                         onClick={
-                            isInEditingState
-                                ? onSubmitButtonClick
-                                : onEditButtonClick
+                            isInEditingState ? onSubmitButtonClick : onEditButtonClick
                         }
                         size="small"
                     />
