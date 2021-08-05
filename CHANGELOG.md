@@ -1,3 +1,7 @@
+### **0.11.71** (2021-08-05)  
+  
+- Provide dummy project infos in mustache params    
+  
 ### **0.11.70** (2021-08-04)  
   
 - Hide non relevent fields    
