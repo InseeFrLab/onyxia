@@ -1,6 +1,6 @@
-import { TaskStatus } from './TaskStatus';
+import { TaskStatus } from "./TaskStatus";
 
 export interface Task {
-	id: string;
-	status?: TaskStatus;
+    id: string;
+    status?: TaskStatus;
 }

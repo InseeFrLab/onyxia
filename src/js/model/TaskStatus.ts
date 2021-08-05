@@ -1,4 +1,4 @@
 export interface TaskStatus {
-	status: string;
-	reason: string;
+    status: string;
+    reason: string;
 }

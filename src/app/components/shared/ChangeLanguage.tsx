@@ -26,22 +26,20 @@ const lngPrettyPrintByLng: Record<SupportedLanguage, string> = {
     /* spell-checker: enable */
 };
 
-const useStyles = makeStyles<{ buttonWidth: number }>()(
-    (theme, { buttonWidth }) => ({
-        "menu": {
-            "& .Mui-selected": {
-                "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            },
-            "& .MuiPaper-root": {
-                "backgroundColor": theme.colors.useCases.surfaces.background,
-                "width": buttonWidth,
-            },
-            "& a": {
-                "color": theme.colors.useCases.typography.textPrimary,
-            },
+const useStyles = makeStyles<{ buttonWidth: number }>()((theme, { buttonWidth }) => ({
+    "menu": {
+        "& .Mui-selected": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
         },
-    }),
-);
+        "& .MuiPaper-root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "width": buttonWidth,
+        },
+        "& a": {
+            "color": theme.colors.useCases.typography.textPrimary,
+        },
+    },
+}));
 
 export const ChangeLanguage = memo((props: Props) => {
     const { doShowIcon = true } = props;
@@ -55,22 +53,20 @@ export const ChangeLanguage = memo((props: Props) => {
 
     const { classes, theme, css } = useStyles({ buttonWidth });
 
-    const [languageMenu, setLanguageMenu] = useState<
-        HTMLButtonElement | undefined
-    >(undefined);
+    const [languageMenu, setLanguageMenu] = useState<HTMLButtonElement | undefined>(
+        undefined,
+    );
 
-    const handleLanguageIconClick = useConstCallback<MuiButtonProps["onClick"]>(
-        event => setLanguageMenu(event.currentTarget),
+    const handleLanguageIconClick = useConstCallback<MuiButtonProps["onClick"]>(event =>
+        setLanguageMenu(event.currentTarget),
     );
 
     const onMenuClose = useConstCallback(() => setLanguageMenu(undefined));
 
-    const onMenuItemClickFactory = useCallbackFactory(
-        ([lng]: [SupportedLanguage]) => {
-            setLng(lng);
-            onMenuClose();
-        },
-    );
+    const onMenuItemClickFactory = useCallbackFactory(([lng]: [SupportedLanguage]) => {
+        setLng(lng);
+        onMenuClose();
+    });
 
     const { t } = useTranslation("ChangeLanguage");
 

@@ -38,10 +38,7 @@ export function Account(props: Props) {
 
     const { t } = useTranslation("Account");
 
-    const tabs = useMemo(
-        () => accountTabIds.map(id => ({ id, "title": t(id) })),
-        [t],
-    );
+    const tabs = useMemo(() => accountTabIds.map(id => ({ id, "title": t(id) })), [t]);
 
     const onRequestChangeActiveTab = useConstCallback((tabId: AccountTabId) =>
         routes.account({ tabId }).push(),

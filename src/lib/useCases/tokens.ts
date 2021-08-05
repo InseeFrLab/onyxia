@@ -1,4 +1,3 @@
-
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
@@ -22,57 +21,61 @@ const { reducer, actions } = createSlice({
     name,
     "initialState": id<TokenState>({} as any),
     "reducers": {
-        "oidcTokensRenewed": (state, { payload }: PayloadAction<Pick<TokenState, "oidcTokens">>) => {
+        "oidcTokensRenewed": (
+            state,
+            { payload }: PayloadAction<Pick<TokenState, "oidcTokens">>,
+        ) => {
             const { oidcTokens } = payload;
             state.oidcTokens = oidcTokens;
         },
-        "vaultTokenRenewed": (state, { payload }: PayloadAction<Pick<TokenState, "vaultToken">>) => {
+        "vaultTokenRenewed": (
+            state,
+            { payload }: PayloadAction<Pick<TokenState, "vaultToken">>,
+        ) => {
             const { vaultToken } = payload;
             state.vaultToken = vaultToken;
         },
-        "startedOrStoppedRefreshing": (state, { payload }: PayloadAction<Pick<TokenState, "areTokensBeingRefreshed">>) => {
+        "startedOrStoppedRefreshing": (
+            state,
+            { payload }: PayloadAction<Pick<TokenState, "areTokensBeingRefreshed">>,
+        ) => {
             const { areTokensBeingRefreshed } = payload;
             state.areTokensBeingRefreshed = areTokensBeingRefreshed;
-        }
-    }
+        },
+    },
 });
 
 export { reducer };
 
-
 export const privateThunks = {
-
     "initialize":
-        (): AppThunk<void> => async (...args) => {
-
+        (): AppThunk<void> =>
+        async (...args) => {
             const [dispatch, , { evtVaultToken, oidcClient }] = args;
 
             assert(oidcClient.isUserLoggedIn);
 
-            oidcClient.evtOidcTokens.$attach(
-                nonNullable(),
-                oidcTokens => dispatch(actions.oidcTokensRenewed({ oidcTokens }))
+            oidcClient.evtOidcTokens.$attach(nonNullable(), oidcTokens =>
+                dispatch(actions.oidcTokensRenewed({ oidcTokens })),
             );
 
-            evtVaultToken.$attach(
-                nonNullable(),
-                vaultToken => dispatch(actions.vaultTokenRenewed({ vaultToken }))
+            evtVaultToken.$attach(nonNullable(), vaultToken =>
+                dispatch(actions.vaultTokenRenewed({ vaultToken })),
             );
 
-            Evt.merge([
-                evtVaultToken,
-                evtVaultToken
-            ])
+            Evt.merge([evtVaultToken, evtVaultToken])
                 .toStateful()
                 .$attach(
                     () => [
                         evtVaultToken.state === undefined ||
-                        evtVaultToken.state === undefined
+                            evtVaultToken.state === undefined,
                     ],
                     areTokensBeingRefreshed =>
-                        dispatch(actions.startedOrStoppedRefreshing({ areTokensBeingRefreshed }))
+                        dispatch(
+                            actions.startedOrStoppedRefreshing({
+                                areTokensBeingRefreshed,
+                            }),
+                        ),
                 );
-
-
-        }
-}
+        },
+};

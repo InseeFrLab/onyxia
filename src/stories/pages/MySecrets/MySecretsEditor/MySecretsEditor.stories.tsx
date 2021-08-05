@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor";
 import type { Props } from "app/components/pages/MySecrets/MySecretsEditor";
@@ -13,83 +12,77 @@ const preloadedSecretWitMetadata: Props["secretWithMetadata"] = {
         "created_time": "2021-01-05T05:18:37.880Z",
         "deletion_time": "",
         "destroyed": false,
-        "version": 1
+        "version": 1,
     },
     "secret": {
         "DOMAIN": "example.com",
         "PROTOCOL": "https",
         "PORT": "8081",
         "BEFORE_DEFINED": '"$URL"hello world',
-        "URL": '$PROTOCOL://$DOMAIN:$PORT',
-        "API_URL": '$URL/api',
+        "URL": "$PROTOCOL://$DOMAIN:$PORT",
+        "API_URL": "$URL/api",
         "FOO": '__"$URL"__',
         "notAValidEnv": "foo bar",
-        "GITHUB_PAT": [...Array(255)].map(() => Math.random().toString(36)[2]).join(''),
-        "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " '
-    }
+        "GITHUB_PAT": [...Array(255)].map(() => Math.random().toString(36)[2]).join(""),
+        "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " ',
+    },
 };
 
 function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
+    const [secret, setSecret] = useState(preloadedSecretWitMetadata.secret);
 
-    const [
-        secret,
-        setSecret
-    ] = useState(preloadedSecretWitMetadata.secret);
-
-    const [
-        metadata,
-        setMetadata
-    ] = useState(preloadedSecretWitMetadata.metadata);
+    const [metadata, setMetadata] = useState(preloadedSecretWitMetadata.metadata);
 
     const [isBeingUpdated, setIsBeingUpdated] = useState(props.isBeingUpdated);
 
-    useEffect(
-        () => { setIsBeingUpdated(props.isBeingUpdated); },
-        [props.isBeingUpdated]
-    );
-
+    useEffect(() => {
+        setIsBeingUpdated(props.isBeingUpdated);
+    }, [props.isBeingUpdated]);
 
     const onEdit = useCallback(
         async (params: Parameters<Props["onEdit"]>[0]) => {
-
             const { key } = params;
 
-            //By doing that we preserve the ordering of the 
-            //properties in the record. 
-            const renameKey = (params: { newKey: string; }) => {
-
+            //By doing that we preserve the ordering of the
+            //properties in the record.
+            const renameKey = (params: { newKey: string }) => {
                 const { newKey } = params;
 
                 const secretClone = { ...secret };
 
-                Object.keys(secretClone).forEach(key => { delete secret[key] });
+                Object.keys(secretClone).forEach(key => {
+                    delete secret[key];
+                });
 
-                Object.keys(secretClone)
-                    .forEach(key_i =>
-                        secret[key_i === key ? newKey : key_i] =
-                        secretClone[key_i]
-                    );
-
+                Object.keys(secretClone).forEach(
+                    key_i =>
+                        (secret[key_i === key ? newKey : key_i] = secretClone[key_i]),
+                );
             };
 
             switch (params.action) {
-                case "addOrOverwriteKeyValue": {
-                    const { value } = params;
-                    secret[key] = value;
-                } break;
+                case "addOrOverwriteKeyValue":
+                    {
+                        const { value } = params;
+                        secret[key] = value;
+                    }
+                    break;
                 case "removeKeyValue":
                     delete secret[key];
                     break;
-                case "renameKeyAndUpdateValue": {
-                    const { newKey, newValue } = params;
-                    renameKey({ newKey });
-                    secret[newKey] = newValue;
-
-                } break;
-                case "renameKey": {
-                    const { newKey } = params;
-                    renameKey({ newKey });
-                } break;
+                case "renameKeyAndUpdateValue":
+                    {
+                        const { newKey, newValue } = params;
+                        renameKey({ newKey });
+                        secret[newKey] = newValue;
+                    }
+                    break;
+                case "renameKey":
+                    {
+                        const { newKey } = params;
+                        renameKey({ newKey });
+                    }
+                    break;
             }
 
             setIsBeingUpdated(true);
@@ -104,12 +97,15 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
             setMetadata({ ...metadata });
 
             setIsBeingUpdated(false);
-
         },
-        [secret, metadata]
+        [secret, metadata],
     );
 
-    const { onCopyPath, onDoDisplayUseInServiceDialogValueChange, doDisplayUseInServiceDialog } = props;
+    const {
+        onCopyPath,
+        onDoDisplayUseInServiceDialogValueChange,
+        doDisplayUseInServiceDialog,
+    } = props;
 
     return (
         <div style={{ "width": 1600 }}>
@@ -119,21 +115,20 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
                     onEdit,
                     onCopyPath,
                     doDisplayUseInServiceDialog,
-                    onDoDisplayUseInServiceDialogValueChange
+                    onDoDisplayUseInServiceDialogValueChange,
                 }}
                 secretWithMetadata={{
                     metadata,
-                    secret
+                    secret,
                 }}
             />
         </div>
     );
-
 }
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ MySecretsEditor })]: Component }
+    "wrappedComponent": { [symToStr({ MySecretsEditor })]: Component },
 });
 
 export default meta;
@@ -141,6 +136,5 @@ export default meta;
 export const Vue1 = getStory({
     "doDisplayUseInServiceDialog": true,
     "isBeingUpdated": false,
-    ...logCallbacks(["onCopyPath", "onDoDisplayUseInServiceDialogValueChange"])
+    ...logCallbacks(["onCopyPath", "onDoDisplayUseInServiceDialogValueChange"]),
 });
-

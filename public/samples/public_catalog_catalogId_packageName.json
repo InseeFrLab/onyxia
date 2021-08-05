@@ -82,11 +82,7 @@
                         "type": "string",
                         "description": "bind your service account to this kubernetes default role",
                         "default": "view",
-                        "enum": [
-                            "view",
-                            "edit",
-                            "admin"
-                        ]
+                        "enum": ["view", "edit", "admin"]
                     }
                 }
             },

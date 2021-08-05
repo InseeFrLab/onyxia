@@ -1,26 +1,21 @@
-
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import type { Dependencies, } from "../setup";
+import type { Dependencies } from "../setup";
 
 export const name = "publicIp";
-
 
 export type PublicIpState = string | null;
 
 const { reducer, actions } = createSlice({
-	name,
-	"initialState": id<PublicIpState>(null),
-	"reducers": {
-		"fetched": (
-			_,
-			{ payload }: PayloadAction<string>
-		) => payload,
-		"publicIpMightHaveChanged": () => null
-	}
+    name,
+    "initialState": id<PublicIpState>(null),
+    "reducers": {
+        "fetched": (_, { payload }: PayloadAction<string>) => payload,
+        "publicIpMightHaveChanged": () => null,
+    },
 });
 
 export { reducer };
@@ -28,38 +23,29 @@ export { reducer };
 const isEvtOnlineRegisteredByDependencyRef = new WeakMap<Dependencies, true>();
 
 export const thunks = {
-	"fetch":
-		(): AppThunk<Promise<{ publicIp: string; }>> => async (...args) => {
+    "fetch":
+        (): AppThunk<Promise<{ publicIp: string }>> =>
+        async (...args) => {
+            const [dispatch, , dependencies] = args;
 
-			const [dispatch, , dependencies] = args;
+            const { onyxiaApiClient } = dependencies;
 
-			const { onyxiaApiClient } = dependencies;
+            const publicIp = await onyxiaApiClient.getPublicIp();
 
-			const publicIp = await onyxiaApiClient.getPublicIp();
+            if (!isEvtOnlineRegisteredByDependencyRef.has(dependencies)) {
+                Evt.from(window, "online").attach(() => {
+                    dispatch(actions.publicIpMightHaveChanged());
 
-			if (!isEvtOnlineRegisteredByDependencyRef.has(dependencies)) {
+                    onyxiaApiClient.getPublicIp.clear();
 
-				Evt.from(window, "online")
-					.attach(() => {
+                    dispatch(thunks.fetch());
+                });
 
-						dispatch(actions.publicIpMightHaveChanged());
+                isEvtOnlineRegisteredByDependencyRef.set(dependencies, true);
+            }
 
-						onyxiaApiClient.getPublicIp.clear();
+            dispatch(actions.fetched(publicIp));
 
-						dispatch(thunks.fetch());
-
-					});
-
-				isEvtOnlineRegisteredByDependencyRef.set(
-					dependencies,
-					true
-				);
-
-			}
-
-			dispatch(actions.fetched(publicIp));
-
-			return { publicIp };
-
-		}
+            return { publicIp };
+        },
 };

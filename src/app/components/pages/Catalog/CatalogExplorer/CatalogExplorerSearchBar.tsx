@@ -17,53 +17,48 @@ export type Props = {
     evtAction: NonPostableEvt<"CLEAR SEARCH">;
 };
 
-const useStyles = makeStyles<{ isActive: boolean }>()(
-    (theme, { isActive }) => ({
-        "root": {
-            "borderRadius": 8,
+const useStyles = makeStyles<{ isActive: boolean }>()((theme, { isActive }) => ({
+    "root": {
+        "borderRadius": 8,
+        "overflow": "hidden",
+        "boxShadow": theme.shadows[1],
+        "& > div": {
+            "display": "flex",
+            "alignItems": "center",
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "cursor": isActive ? undefined : "pointer",
             "overflow": "hidden",
-            "boxShadow": theme.shadows[1],
-            "& > div": {
-                "display": "flex",
-                "alignItems": "center",
-                "backgroundColor": theme.colors.useCases.surfaces.surface1,
-                "cursor": isActive ? undefined : "pointer",
-                "overflow": "hidden",
-                "border": "solid 2px transparent",
-                "&:hover": {
-                    "borderBottomColor":
-                        theme.colors.useCases.buttons.actionActive,
-                },
+            "border": "solid 2px transparent",
+            "&:hover": {
+                "borderBottomColor": theme.colors.useCases.buttons.actionActive,
             },
         },
-        "input": {
-            "flex": 1,
-            "caretColor": theme.colors.useCases.typography.textFocus,
-            ...theme.typography.variants["body 1"].style,
-            "outline": "none",
-            "borderWidth": 0,
-            "border": "none",
-            "backgroundColor": "transparent",
-            "color": theme.colors.useCases.typography.textPrimary,
-            "&::placeholder": {
-                "color": theme.colors.useCases.typography.textDisabled,
-                "opacity": 1,
-            },
+    },
+    "input": {
+        "flex": 1,
+        "caretColor": theme.colors.useCases.typography.textFocus,
+        ...theme.typography.variants["body 1"].style,
+        "outline": "none",
+        "borderWidth": 0,
+        "border": "none",
+        "backgroundColor": "transparent",
+        "color": theme.colors.useCases.typography.textPrimary,
+        "&::placeholder": {
+            "color": theme.colors.useCases.typography.textDisabled,
+            "opacity": 1,
         },
-        "icon": {
-            "margin": `${theme.spacing(2) - 2}px ${theme.spacing(3) - 2}px`,
-            "color": isActive
-                ? theme.colors.useCases.typography.textFocus
-                : undefined,
-        },
-        "searchLabel": {
-            ...(theme.muiTheme.typography.button as any),
-            "display": "block",
-            "flex": 1,
-            "color": theme.colors.useCases.typography.textPrimary,
-        },
-    }),
-);
+    },
+    "icon": {
+        "margin": `${theme.spacing(2) - 2}px ${theme.spacing(3) - 2}px`,
+        "color": isActive ? theme.colors.useCases.typography.textFocus : undefined,
+    },
+    "searchLabel": {
+        ...(theme.muiTheme.typography.button as any),
+        "display": "block",
+        "flex": 1,
+        "color": theme.colors.useCases.typography.textPrimary,
+    },
+}));
 
 export const CatalogExplorerSearchBar = memo((props: Props) => {
     const { className, onSearchChange, search, evtAction } = props;
@@ -85,12 +80,12 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
         inputEl.focus();
         inputEl.setSelectionRange(0, search.length);
     });
-    const onInputChange = useConstCallback<
-        ChangeEventHandler<HTMLInputElement>
-    >(event => {
-        const { value } = event.target;
-        onSearchChange(value);
-    });
+    const onInputChange = useConstCallback<ChangeEventHandler<HTMLInputElement>>(
+        event => {
+            const { value } = event.target;
+            onSearchChange(value);
+        },
+    );
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -141,17 +136,9 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
     );
 
     return (
-        <div
-            ref={rootRef}
-            className={cx(classes.root, className)}
-            onClick={onRootClick}
-        >
+        <div ref={rootRef} className={cx(classes.root, className)} onClick={onRootClick}>
             <div>
-                <Icon
-                    iconId="search"
-                    onClick={onIconClick}
-                    className={classes.icon}
-                />
+                <Icon iconId="search" onClick={onIconClick} className={classes.icon} />
                 {isActive ? (
                     <>
                         <input

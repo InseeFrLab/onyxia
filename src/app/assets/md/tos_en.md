@@ -13,15 +13,14 @@ The SSP Cloud is a platform offering a "datalab" intended for _data science_ exp
 
 The SSP Cloud is aimed at officials of the official statistical system as well as teachers and students of the Group of National Schools of Economics and Statistics, allowing inter-service collaboration and cooperation with their ecosystem. Access can thus be granted on request and after decision of the governance bodies of the Cloud SSP to external collaborators and involved in the realization of experimental projects of the official statistical system. Projects involving non-open data are also subject to the decision of the governing bodies.
 
-
 The SSP Cloud allows:
 
-- the orchestration of _data science_ trainings
-- access to _data science_ services
-- secure data storage
-- management of secrets, such as encryption keys
-- access to a code management service
-- orchestration of data processing flows
+-   the orchestration of _data science_ trainings
+-   access to _data science_ services
+-   secure data storage
+-   management of secrets, such as encryption keys
+-   access to a code management service
+-   orchestration of data processing flows
 
 A user account is also used to connect to the service platform of the Inter-ministerial Mutualization Free Software community (<https://groupes.mim-libre.fr/>).
 
@@ -50,8 +49,8 @@ Internet. The use of a computer is recommended. Use of the datalab services is f
 
 The user community is accessible on:
 
-- Tchap, salon [SSP Cloud] (https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr)
-- Rocket Chat at MIM Libre, [SSP Cloud] lounge (https://chat.mim-libre.fr/channel/sspcloud)
+-   Tchap, salon [SSP Cloud] (https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr)
+-   Rocket Chat at MIM Libre, [SSP Cloud] lounge (https://chat.mim-libre.fr/channel/sspcloud)
 
 ## Limits of use of the Service
 
@@ -129,14 +128,15 @@ responsibility of INSEE.
 ** Suite to be managed with the DC POD **
 
 > RL: @Fred, I put it a bit at random, I let you complete / amend
+
 ### Profile data
 
 their first name, last name and email address (required);
 
 freely:
 
-- photo (see gitlab)
-- ...
+-   photo (see gitlab)
+-   ...
 
 ### Trace data
 
@@ -152,11 +152,11 @@ subject to periodic review by the directors for control purposes and usage stati
 These cookies are only intended to allow the service to function and
 to facilitate its use by users according to the constraints of each typology.
 
-- Session cookie: mandatory, it identifies the session of
-the user. The cookie is destroyed at the end of the session.
+-   Session cookie: mandatory, it identifies the session of
+    the user. The cookie is destroyed at the end of the session.
 
-- Reauthentication cookie: optional, it allows you to re-authenticate
-the user logged in for the duration of the cookie (one year maximum)
+-   Reauthentication cookie: optional, it allows you to re-authenticate
+    the user logged in for the duration of the cookie (one year maximum)
 
 ## Modification and evolution of the Service
 

@@ -1,5 +1,3 @@
-
-
 import { memo, useMemo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ButtonBar } from "app/components/shared/ButtonBar";
@@ -15,7 +13,6 @@ export type Props = {
 };
 
 export const MyServicesButtonBar = memo((props: Props) => {
-
     const { className, onClick } = props;
 
     const { t } = useTranslation("MyServicesButtonBar");
@@ -26,35 +23,25 @@ export const MyServicesButtonBar = memo((props: Props) => {
                 buttonId,
                 "icon": (() => {
                     switch (buttonId) {
-                        case "refresh": return "cached" as const;
-                        case "launch": return "add" as const;
-                        case "password": return "key" as const;
-                        case "trash": return "delete" as const;
+                        case "refresh":
+                            return "cached" as const;
+                        case "launch":
+                            return "add" as const;
+                        case "password":
+                            return "key" as const;
+                        case "trash":
+                            return "delete" as const;
                     }
                 })(),
                 "isDisabled": false,
-                "label": t(buttonId)
+                "label": t(buttonId),
             })),
-        [t]
+        [t],
     );
 
-    return (
-        <ButtonBar
-            className={className}
-            buttons={buttons}
-            onClick={onClick}
-        />
-    );
-
-
+    return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
 });
 
 export declare namespace MyServicesButtonBar {
-
     export type I18nScheme = Record<ButtonId, undefined>;
-
 }
-
-
-
-

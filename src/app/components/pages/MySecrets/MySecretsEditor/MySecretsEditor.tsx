@@ -3,10 +3,7 @@ import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type {
-    SecretWithMetadata,
-    Secret,
-} from "lib/ports/SecretsManagerClient";
+import type { SecretWithMetadata, Secret } from "lib/ports/SecretsManagerClient";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import memoize from "memoizee";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -38,9 +35,7 @@ export type Props = {
     onEdit(params: EditSecretParams): void;
     onCopyPath(): void;
     doDisplayUseInServiceDialog: boolean;
-    onDoDisplayUseInServiceDialogValueChange(
-        doDisplayUseInServiceDialog: boolean,
-    ): void;
+    onDoDisplayUseInServiceDialogValueChange(doDisplayUseInServiceDialog: boolean): void;
 };
 
 const useStyles = makeStyles<Props>()(theme => ({
@@ -90,10 +85,7 @@ export const MySecretsEditor = memo((props: Props) => {
     const { t } = useTranslation("MySecretsEditor");
 
     const getEvtAction = useMemo(
-        () =>
-            memoize((_key: string) =>
-                Evt.create<UnpackEvt<RowProps["evtAction"]>>(),
-            ),
+        () => memoize((_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()),
         [],
     );
 
@@ -103,11 +95,7 @@ export const MySecretsEditor = memo((props: Props) => {
         "array": Object.keys(secret),
         "callback": ({ added, removed }) => {
             if (
-                !(
-                    added.length === 1 &&
-                    removed.length === 0 &&
-                    secret[added[0]] === ""
-                )
+                !(added.length === 1 && removed.length === 0 && secret[added[0]] === "")
             ) {
                 return;
             }
@@ -122,10 +110,7 @@ export const MySecretsEditor = memo((props: Props) => {
         () =>
             memoize(
                 (key: string) =>
-                    ({
-                        editedKey,
-                        editedStrValue,
-                    }: Parameters<RowProps["onEdit"]>[0]) =>
+                    ({ editedKey, editedStrValue }: Parameters<RowProps["onEdit"]>[0]) =>
                         onEdit(
                             (() => {
                                 if (
@@ -133,8 +118,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                     editedStrValue !== undefined
                                 ) {
                                     return {
-                                        "action":
-                                            "renameKeyAndUpdateValue" as const,
+                                        "action": "renameKeyAndUpdateValue" as const,
                                         key,
                                         "newKey": editedKey,
                                         "newValue": editedStrValue,
@@ -143,8 +127,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
                                 if (editedStrValue !== undefined) {
                                     return {
-                                        "action":
-                                            "addOrOverwriteKeyValue" as const,
+                                        "action": "addOrOverwriteKeyValue" as const,
                                         key,
                                         "value": editedStrValue,
                                     };
@@ -183,9 +166,7 @@ export const MySecretsEditor = memo((props: Props) => {
                 (key: string) =>
                     ({
                         key: candidateKey,
-                    }: Parameters<
-                        RowProps["getIsValidAndAvailableKey"]
-                    >[0]) => {
+                    }: Parameters<RowProps["getIsValidAndAvailableKey"]>[0]) => {
                         {
                             const getIsValidKeyResult = getIsValidKey({
                                 "key": candidateKey,
@@ -229,17 +210,11 @@ export const MySecretsEditor = memo((props: Props) => {
                     "getEnvValue": ({ envName: keyBis }) => {
                         const indexOfKeyBis = secretKeys.indexOf(keyBis);
 
-                        if (
-                            indexOfKeyBis === -1 ||
-                            !(indexOfKeyBis < indexOfKey)
-                        ) {
+                        if (indexOfKeyBis === -1 || !(indexOfKeyBis < indexOfKey)) {
                             return undefined;
                         }
 
-                        return getResolvedValue(
-                            keyBis,
-                            stringifyValue(secret[keyBis]),
-                        );
+                        return getResolvedValue(keyBis, stringifyValue(secret[keyBis]));
                     },
                 });
             },
@@ -283,30 +258,28 @@ export const MySecretsEditor = memo((props: Props) => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const dialogCallbackFactory = useCallbackFactory(
-        ([action]: ["open" | "close"]) => {
-            const isActionOpenDialog = (() => {
-                switch (action) {
-                    case "open":
-                        return true;
-                    case "close":
-                        return false;
-                }
-            })();
-
-            onEditorRowStartEditFactory("")();
-
-            if (isActionOpenDialog) {
-                onCopyPath();
+    const dialogCallbackFactory = useCallbackFactory(([action]: ["open" | "close"]) => {
+        const isActionOpenDialog = (() => {
+            switch (action) {
+                case "open":
+                    return true;
+                case "close":
+                    return false;
             }
+        })();
 
-            if (!doDisplayUseInServiceDialog && isActionOpenDialog) {
-                return;
-            }
+        onEditorRowStartEditFactory("")();
 
-            setIsDialogOpen(isActionOpenDialog);
-        },
-    );
+        if (isActionOpenDialog) {
+            onCopyPath();
+        }
+
+        if (!doDisplayUseInServiceDialog && isActionOpenDialog) {
+            return;
+        }
+
+        setIsDialogOpen(isActionOpenDialog);
+    });
 
     const onEditorRowStartEditFactory = useCallbackFactory(([key]: [string]) =>
         Object.keys(secret)
@@ -324,15 +297,11 @@ export const MySecretsEditor = memo((props: Props) => {
                                 <Text typo="body 1">$</Text>
                             </TableCell>
                             <TableCell>
-                                <Text typo="body 1">
-                                    {t("key column name")}
-                                </Text>
+                                <Text typo="body 1">{t("key column name")}</Text>
                             </TableCell>
 
                             <TableCell>
-                                <Text typo="body 1">
-                                    {t("value column name")}
-                                </Text>
+                                <Text typo="body 1">{t("value column name")}</Text>
                             </TableCell>
 
                             <TableCell>
@@ -389,9 +358,7 @@ export const MySecretsEditor = memo((props: Props) => {
                     body={t("use secret dialog body")}
                     isOpen={isDialogOpen}
                     onClose={dialogCallbackFactory("close")}
-                    onDoShowNextTimeValueChange={
-                        onDoDisplayUseInServiceDialogValueChange
-                    }
+                    onDoShowNextTimeValueChange={onDoDisplayUseInServiceDialogValueChange}
                     buttons={
                         <Button onClick={dialogCallbackFactory("close")}>
                             {t("use secret dialog ok")}

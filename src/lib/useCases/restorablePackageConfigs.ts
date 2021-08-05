@@ -1,4 +1,3 @@
-
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
 import { allEquals } from "evt/tools/reducers/allEquals";
@@ -8,23 +7,30 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
-import { createObjectThatThrowsIfAccessedFactory, isPropertyAccessedByReduxOrStorybook } from "../tools/createObjectThatThrowsIfAccessed";
+import {
+    createObjectThatThrowsIfAccessedFactory,
+    isPropertyAccessedByReduxOrStorybook,
+} from "../tools/createObjectThatThrowsIfAccessed";
 import type { RootState } from "../setup";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 export const name = "restorablePackageConfig";
 
 export type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
-    packageIcons: {
-        areFetched: false;
-        isFetching: boolean;
-    } | {
-        areFetched: true;
-        iconsUrl: IconsUrl;
-    };
+    packageIcons:
+        | {
+              areFetched: false;
+              isFetching: boolean;
+          }
+        | {
+              areFetched: true;
+              iconsUrl: IconsUrl;
+          };
 };
 
-export type IconsUrl = { [catalogId: string]: { [packageName: string]: string; } };
+export type IconsUrl = {
+    [catalogId: string]: { [packageName: string]: string };
+};
 
 export type RestorablePackageConfig = {
     catalogId: string;
@@ -32,63 +38,68 @@ export type RestorablePackageConfig = {
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory(
-    { "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook }
-);
+const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
+    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
+});
 
 const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<RestorablePackageConfigsState>({
         "debugMessage": [
             "The restorablePackageConfigState should have been",
-            "initialized during the store initialization"
-        ].join(" ")
+            "initialized during the store initialization",
+        ].join(" "),
     }),
     "reducers": {
         "initializationCompleted": (
             _,
-            { payload }: PayloadAction<{ restorablePackageConfigs: RestorablePackageConfig[] }>
+            {
+                payload,
+            }: PayloadAction<{
+                restorablePackageConfigs: RestorablePackageConfig[];
+            }>,
         ) => {
             const { restorablePackageConfigs } = payload;
             return {
                 restorablePackageConfigs,
                 "packageIcons": {
                     "areFetched": false,
-                    "isFetching": false
-                }
+                    "isFetching": false,
+                },
             };
         },
         "fetchIconStarted": state => {
-
             assert(!state.packageIcons.areFetched);
 
             state.packageIcons.isFetching = true;
-
         },
-        "iconsFetched": (state, { payload }: PayloadAction<{ iconsUrl: IconsUrl; }>) => {
-
+        "iconsFetched": (state, { payload }: PayloadAction<{ iconsUrl: IconsUrl }>) => {
             const { iconsUrl } = payload;
 
             state.packageIcons = {
                 "areFetched": true,
-                iconsUrl
+                iconsUrl,
             };
-
         },
         "restorablePackageConfigSaved": (
             state,
-            { payload }: PayloadAction<{ restorablePackageConfig: RestorablePackageConfig; }>
+            {
+                payload,
+            }: PayloadAction<{
+                restorablePackageConfig: RestorablePackageConfig;
+            }>,
         ) => {
-
             const { restorablePackageConfig } = payload;
 
             state.restorablePackageConfigs.push(restorablePackageConfig);
-
         },
         "restorablePackageConfigDeleted": (
             state,
-            { payload }: PayloadAction<{ restorablePackageConfig: RestorablePackageConfig; }>
+            {
+                payload,
+            }: PayloadAction<{
+                restorablePackageConfig: RestorablePackageConfig;
+            }>,
         ) => {
             const { restorablePackageConfig } = payload;
 
@@ -96,8 +107,8 @@ const { reducer, actions } = createSlice({
                 restorablePackageConfig_i =>
                     areSameRestorablePackageConfig(
                         restorablePackageConfig_i,
-                        restorablePackageConfig
-                    )
+                        restorablePackageConfig,
+                    ),
             );
 
             if (index <= -1) {
@@ -105,212 +116,167 @@ const { reducer, actions } = createSlice({
             }
 
             state.restorablePackageConfigs.splice(index, 1);
-
-        }
+        },
     },
 });
 
 export { reducer };
-
 
 export const privateThunks = {
     "initialize": (): AppThunk<void> => async (dispatch, getState) =>
         dispatch(
             actions.initializationCompleted({
                 "restorablePackageConfigs": (() => {
-
-                    const { value } = getState().userConfigs.bookmarkedServiceConfigurationStr;
+                    const { value } =
+                        getState().userConfigs.bookmarkedServiceConfigurationStr;
 
                     return value === null ? [] : JSON.parse(value);
-
-                })()
-            })
+                })(),
+            }),
         ),
     "syncWithUserConfig": (): AppThunk => async (dispatch, getState) =>
         dispatch(
             userConfigsThunks.changeValue({
                 "key": "bookmarkedServiceConfigurationStr",
                 "value": JSON.stringify(
-                    getState()
-                        .restorablePackageConfig
-                        .restorablePackageConfigs
-                )
-            })
-        )
+                    getState().restorablePackageConfig.restorablePackageConfigs,
+                ),
+            }),
+        ),
 };
 
-
 export const thunks = {
-    "fetchIconsIfNotAlreadyDone": (): AppThunk => async (...args) => {
+    "fetchIconsIfNotAlreadyDone":
+        (): AppThunk =>
+        async (...args) => {
+            const [dispatch, getState, dependencies] = args;
 
-        const [dispatch, getState, dependencies] = args;
+            {
+                const state = getState().restorablePackageConfig;
 
-        {
+                if (state.packageIcons.areFetched || state.packageIcons.isFetching) {
+                    return;
+                }
+            }
 
-            const state = getState().restorablePackageConfig;
+            dispatch(actions.fetchIconStarted());
+
+            const apiRequestForIconsResult =
+                await dependencies.onyxiaApiClient.getCatalogs();
+
+            const iconsUrl: IconsUrl = {};
+
+            apiRequestForIconsResult.forEach(
+                ({ id: catalogId, catalog: { packages } }) => {
+                    const urlByPackageName: IconsUrl[string] = {};
+
+                    packages.forEach(({ name: packageName, icon }) => {
+                        if (icon === undefined) {
+                            return;
+                        }
+
+                        urlByPackageName[packageName] = icon;
+                    });
+
+                    iconsUrl[catalogId] = urlByPackageName;
+                },
+            );
+
+            dispatch(actions.iconsFetched({ iconsUrl }));
+        },
+    "saveRestorablePackageConfig":
+        (params: { restorablePackageConfig: RestorablePackageConfig }): AppThunk =>
+        async (dispatch, getState) => {
+            const { restorablePackageConfig } = params;
 
             if (
-                state.packageIcons.areFetched ||
-                state.packageIcons.isFetching
+                pure.isRestorablePackageConfigInStore({
+                    "restorablePackageConfigs":
+                        getState().restorablePackageConfig.restorablePackageConfigs,
+                    restorablePackageConfig,
+                })
             ) {
                 return;
             }
 
-        }
-
-        dispatch(actions.fetchIconStarted());
-
-        const apiRequestForIconsResult = await dependencies.onyxiaApiClient.getCatalogs();
-
-        const iconsUrl: IconsUrl = {};
-
-        apiRequestForIconsResult.forEach(({ id: catalogId, catalog: { packages } }) => {
-
-            const urlByPackageName: IconsUrl[string] = {};
-
-            packages.forEach(({ name: packageName, icon }) => {
-
-                if (icon === undefined) {
-                    return;
-                }
-
-                urlByPackageName[packageName] = icon;
-
-            });
-
-            iconsUrl[catalogId] = urlByPackageName;
-
-        });
-
-        dispatch(actions.iconsFetched({ iconsUrl }));
-
-    },
-    "saveRestorablePackageConfig": (
-        params: {
-            restorablePackageConfig: RestorablePackageConfig;
-        }
-    ): AppThunk => async (dispatch, getState) => {
-
-        const { restorablePackageConfig } = params;
-
-        if (
-            pure.isRestorablePackageConfigInStore({
-                "restorablePackageConfigs":
-                    getState().restorablePackageConfig.restorablePackageConfigs,
-                restorablePackageConfig
-            })
-        ) {
-            return;
-        }
-
-        dispatch(
-            actions.restorablePackageConfigSaved({
-                restorablePackageConfig
-            })
-        );
-
-        await dispatch(privateThunks.syncWithUserConfig());
-
-    },
-    "deleteRestorablePackageConfig": (
-        params: {
-            restorablePackageConfig: RestorablePackageConfig;
-        }
-    ): AppThunk => async dispatch => {
-        const { restorablePackageConfig } = params;
-
-        dispatch(
-            actions.restorablePackageConfigDeleted(
-                { restorablePackageConfig }
-            )
-        );
-
-        await dispatch(privateThunks.syncWithUserConfig());
-
-    }
-};
-
-
-export const pure = {
-    "isRestorablePackageConfigInStore": (
-        params: {
-            restorablePackageConfigs: RestorablePackageConfig[];
-            restorablePackageConfig: RestorablePackageConfig;
-        }
-    ) => {
-
-        const { restorablePackageConfig, restorablePackageConfigs } = params;
-
-        return !!restorablePackageConfigs
-            .find(restorablePackageConfig_i =>
-                areSameRestorablePackageConfig(
-                    restorablePackageConfig_i,
-                    restorablePackageConfig
-                )
+            dispatch(
+                actions.restorablePackageConfigSaved({
+                    restorablePackageConfig,
+                }),
             );
 
-    }
+            await dispatch(privateThunks.syncWithUserConfig());
+        },
+    "deleteRestorablePackageConfig":
+        (params: { restorablePackageConfig: RestorablePackageConfig }): AppThunk =>
+        async dispatch => {
+            const { restorablePackageConfig } = params;
+
+            dispatch(
+                actions.restorablePackageConfigDeleted({
+                    restorablePackageConfig,
+                }),
+            );
+
+            await dispatch(privateThunks.syncWithUserConfig());
+        },
+};
+
+export const pure = {
+    "isRestorablePackageConfigInStore": (params: {
+        restorablePackageConfigs: RestorablePackageConfig[];
+        restorablePackageConfig: RestorablePackageConfig;
+    }) => {
+        const { restorablePackageConfig, restorablePackageConfigs } = params;
+
+        return !!restorablePackageConfigs.find(restorablePackageConfig_i =>
+            areSameRestorablePackageConfig(
+                restorablePackageConfig_i,
+                restorablePackageConfig,
+            ),
+        );
+    },
 };
 
 function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
-    restorablePackageConfiguration2: RestorablePackageConfig
+    restorablePackageConfiguration2: RestorablePackageConfig,
 ): boolean {
-
-    return [
-        restorablePackageConfiguration1,
-        restorablePackageConfiguration2
-    ]
-        .map(({
+    return [restorablePackageConfiguration1, restorablePackageConfiguration2]
+        .map(({ catalogId, packageName, formFieldsValueDifferentFromDefault }) => [
             catalogId,
             packageName,
-            formFieldsValueDifferentFromDefault
-        }) => [
-                catalogId,
-                packageName,
-                formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-            ])
+            formFieldsValueToObject(formFieldsValueDifferentFromDefault),
+        ])
         .reduce(...allEquals(same));
-
 }
 
 export const selectors = (() => {
-
     function displayableConfigsSelector(rootState: RootState) {
+        const { restorablePackageConfigs, packageIcons } =
+            rootState.restorablePackageConfig;
 
-        const { restorablePackageConfigs, packageIcons } = rootState.restorablePackageConfig;
+        return restorablePackageConfigs.map(restorablePackageConfig => {
+            const { packageName, catalogId } = restorablePackageConfig;
 
-        return restorablePackageConfigs
-            .map(
-                restorablePackageConfig => {
+            return {
+                "logoUrl": !packageIcons.areFetched
+                    ? undefined
+                    : packageIcons.iconsUrl[catalogId][packageName],
+                "friendlyName": (() => {
+                    const friendlyName =
+                        restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
+                            ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath),
+                        )?.value ?? packageName;
 
-                    const { packageName, catalogId } = restorablePackageConfig;
+                    assert(typeof friendlyName === "string");
 
-                    return {
-                        "logoUrl":
-                            !packageIcons.areFetched ?
-                                undefined :
-                                packageIcons.iconsUrl[catalogId][packageName],
-                        "friendlyName": (() => {
-
-                            const friendlyName = restorablePackageConfig
-                                .formFieldsValueDifferentFromDefault
-                                .find(({ path }) => same(path, onyxiaFriendlyNameFormFieldPath))?.value ?? packageName;
-
-                            assert(typeof friendlyName === "string");
-
-                            return friendlyName;
-
-
-                        })(),
-                        restorablePackageConfig
-                    };
-                }
-            )
-
+                    return friendlyName;
+                })(),
+                restorablePackageConfig,
+            };
+        });
     }
 
     return { displayableConfigsSelector };
-
 })();
-

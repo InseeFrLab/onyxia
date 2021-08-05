@@ -75,10 +75,8 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId }),
     );
 
-    const [
-        postInstallInstructionsDialogBody,
-        setPostInstallInstructionsDialogBody,
-    ] = useState<string>("");
+    const [postInstallInstructionsDialogBody, setPostInstallInstructionsDialogBody] =
+        useState<string>("");
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -116,9 +114,7 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
-                            onRequestDelete={onRequestDeleteFactory(
-                                card.serviceId,
-                            )}
+                            onRequestDelete={onRequestDeleteFactory(card.serviceId)}
                             onRequestShowPostInstallInstructions={
                                 card.postInstallInstructions !== undefined
                                     ? onRequestShowPostInstallInstructionsFactory(
@@ -131,11 +127,7 @@ export const MyServicesCards = memo((props: Props) => {
                 )}
             </div>
             <Dialog
-                body={
-                    <ReactMarkdown>
-                        {postInstallInstructionsDialogBody}
-                    </ReactMarkdown>
-                }
+                body={<ReactMarkdown>{postInstallInstructionsDialogBody}</ReactMarkdown>}
                 isOpen={isDialogOpen}
                 onClose={onDialogClose}
                 buttons={<Button onClick={onDialogClose}>{t("ok")}</Button>}

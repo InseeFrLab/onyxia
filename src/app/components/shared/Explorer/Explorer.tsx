@@ -75,23 +75,14 @@ export type Props = {
     filesBeingCreated: string[];
     filesBeingRenamed: string[];
     showHidden: boolean;
-    onNavigate(params: {
-        kind: "file" | "directory";
-        relativePath: string;
-    }): void;
+    onNavigate(params: { kind: "file" | "directory"; relativePath: string }): void;
     onEditBasename(params: {
         kind: "file" | "directory";
         basename: string;
         editedBasename: string;
     }): void;
-    onDeleteItem(params: {
-        kind: "file" | "directory";
-        basename: string;
-    }): void;
-    onCreateItem(params: {
-        kind: "file" | "directory";
-        basename: string;
-    }): void;
+    onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
+    onCreateItem(params: { kind: "file" | "directory"; basename: string }): void;
     onCopyPath(params: { path: string }): void;
 };
 
@@ -137,8 +128,7 @@ export function Explorer(props: Props) {
     } = props;
 
     useMemo(
-        () =>
-            assert(!pathRelative(browsablePath, currentPath).startsWith("..")),
+        () => assert(!pathRelative(browsablePath, currentPath).startsWith("..")),
         [browsablePath, currentPath],
     );
 
@@ -183,10 +173,9 @@ export function Explorer(props: Props) {
 
     const ButtonBar = useWithProps(PolymorphExplorerButtonBar, { wordForFile });
 
-    const FileOrDirectoryHeader = useWithProps(
-        PolymorphExplorerFileOrDirectoryHeader,
-        { "visualRepresentationOfAFile": wordForFile },
-    );
+    const FileOrDirectoryHeader = useWithProps(PolymorphExplorerFileOrDirectoryHeader, {
+        "visualRepresentationOfAFile": wordForFile,
+    });
 
     const { t } = useTranslation("Explorer");
 
@@ -207,9 +196,8 @@ export function Explorer(props: Props) {
     const onIsSelectedItemInEditingStateValueChange = useConstCallback(
         ({
             isSelectedItemInEditingState,
-        }: Parameters<
-            ItemsProps["onIsSelectedItemInEditingStateValueChange"]
-        >[0]) => setIsSelectedItemInEditingState(isSelectedItemInEditingState),
+        }: Parameters<ItemsProps["onIsSelectedItemInEditingStateValueChange"]>[0]) =>
+            setIsSelectedItemInEditingState(isSelectedItemInEditingState),
     );
 
     const breadcrumbCallback = useConstCallback(
@@ -260,60 +248,58 @@ export function Explorer(props: Props) {
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
     }));
 
-    const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(
-        buttonId => {
-            switch (buttonId) {
-                case "refresh":
-                    onNavigate({
-                        "kind": !file ? "directory" : "file",
-                        "relativePath": ".",
-                    });
+    const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
+        switch (buttonId) {
+            case "refresh":
+                onNavigate({
+                    "kind": !file ? "directory" : "file",
+                    "relativePath": ".",
+                });
+                break;
+            case "rename":
+                evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
+                break;
+            case "delete":
+                evtItemsAction.post("DELETE SELECTED ITEM");
+                break;
+            case "copy path":
+                if (!!file) {
+                    itemsOnCopyPath({ "basename": "." });
                     break;
-                case "rename":
-                    evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
-                    break;
-                case "delete":
-                    evtItemsAction.post("DELETE SELECTED ITEM");
-                    break;
-                case "copy path":
-                    if (!!file) {
-                        itemsOnCopyPath({ "basename": "." });
-                        break;
-                    }
+                }
 
-                    evtItemsAction.post("COPY SELECTED ITEM PATH");
-                    break;
-                case "create directory":
-                    onCreateItem({
-                        "kind": "directory" as const,
-                        "basename": generateUniqDefaultName({
-                            "names": directories,
-                            "buildName": buildNameFactory({
-                                "defaultName": t("untitled what", {
-                                    "what": t("folder"),
-                                }),
-                                "separator": "_",
+                evtItemsAction.post("COPY SELECTED ITEM PATH");
+                break;
+            case "create directory":
+                onCreateItem({
+                    "kind": "directory" as const,
+                    "basename": generateUniqDefaultName({
+                        "names": directories,
+                        "buildName": buildNameFactory({
+                            "defaultName": t("untitled what", {
+                                "what": t("folder"),
                             }),
+                            "separator": "_",
                         }),
-                    });
-                    break;
-                case "create file":
-                    onCreateItem({
-                        "kind": "file" as const,
-                        "basename": generateUniqDefaultName({
-                            "names": files,
-                            "buildName": buildNameFactory({
-                                "defaultName": t("untitled what", {
-                                    "what": t(wordForFile),
-                                }),
-                                "separator": "_",
+                    }),
+                });
+                break;
+            case "create file":
+                onCreateItem({
+                    "kind": "file" as const,
+                    "basename": generateUniqDefaultName({
+                        "names": files,
+                        "buildName": buildNameFactory({
+                            "defaultName": t("untitled what", {
+                                "what": t(wordForFile),
                             }),
+                            "separator": "_",
                         }),
-                    });
-                    break;
-            }
-        },
-    );
+                    }),
+                });
+                break;
+        }
+    });
 
     useEvt(
         ctx =>
@@ -326,12 +312,8 @@ export function Explorer(props: Props) {
         [evtAction],
     );
 
-    const {
-        rootRef,
-        buttonBarRef,
-        cmdTranslationTop,
-        cmdTranslationMaxHeight,
-    } = useCmdTranslationPositioning();
+    const { rootRef, buttonBarRef, cmdTranslationTop, cmdTranslationMaxHeight } =
+        useCmdTranslationPositioning();
 
     const isCurrentPathBrowsablePathRoot = useMemo(
         () => pathRelative(browsablePath, currentPath) === "",
@@ -398,9 +380,7 @@ export function Explorer(props: Props) {
                         onNavigate={itemsOnNavigate}
                         onEditBasename={onEditBasename}
                         evtAction={evtItemsAction}
-                        onSelectedItemKindValueChange={
-                            onSelectedItemKindValueChange
-                        }
+                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
                         onIsSelectedItemInEditingStateValueChange={
                             onIsSelectedItemInEditingStateValueChange
                         }
@@ -435,8 +415,7 @@ function useCmdTranslationPositioning() {
 
     const [cmdTranslationTop, setCmdTranslationTop] = useState<number>(0);
 
-    const [cmdTranslationMaxHeight, setCmdTranslationMaxHeight] =
-        useState<number>(0);
+    const [cmdTranslationMaxHeight, setCmdTranslationMaxHeight] = useState<number>(0);
 
     useEffect(() => {
         setCmdTranslationTop(buttonBarHeight);

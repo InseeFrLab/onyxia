@@ -68,13 +68,9 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
         [formFieldsByTabName],
     );
 
-    const onIsCollapsedValueChange = useConstCallback(() =>
-        setIsCollapsed(!isCollapsed),
-    );
+    const onIsCollapsedValueChange = useConstCallback(() => setIsCollapsed(!isCollapsed));
 
-    const [activeTabId, setActiveTabId] = useState<string | undefined>(
-        tabs[0]?.id,
-    );
+    const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -89,8 +85,7 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                         case "dependency":
                             return {
                                 "type": "dependency",
-                                "dependencyName":
-                                    dependencyNamePackageNameOrGlobal,
+                                "dependencyName": dependencyNamePackageNameOrGlobal,
                             } as const;
                         case "global":
                             return {
@@ -100,19 +95,14 @@ export const CatalogLauncherConfigurationCard = memo((props: Props) => {
                         case "package":
                             return {
                                 "type": "package",
-                                "packageName":
-                                    dependencyNamePackageNameOrGlobal,
+                                "packageName": dependencyNamePackageNameOrGlobal,
                             } as const;
                     }
                 })()}
             />
             {activeTabId !== undefined && (
                 <Tabs
-                    className={
-                        classes[
-                            isCollapsed ? "collapsedPanel" : "expandedPanel"
-                        ]
-                    }
+                    className={classes[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
                     tabs={tabs}
                     activeTabId={activeTabId}
                     onRequestChangeActiveTab={setActiveTabId}
@@ -229,9 +219,7 @@ const { Header } = (() => {
                                     return t("global config");
                                 case "package":
                                     return t("configuration", {
-                                        "packageName": capitalize(
-                                            props.packageName,
-                                        ),
+                                        "packageName": capitalize(props.packageName),
                                     });
                             }
                         })()}
@@ -240,10 +228,7 @@ const { Header } = (() => {
                         switch (props.type) {
                             case "dependency":
                                 return (
-                                    <Text
-                                        typo="body 2"
-                                        className={classes.subtitle}
-                                    >
+                                    <Text typo="body 2" className={classes.subtitle}>
                                         {t("launch of a service", {
                                             "dependencyName": capitalize(
                                                 props.dependencyName,
@@ -252,12 +237,8 @@ const { Header } = (() => {
                                     </Text>
                                 );
                             case "global":
-                                return props.description ===
-                                    undefined ? null : (
-                                    <Text
-                                        typo="body 2"
-                                        className={classes.subtitle}
-                                    >
+                                return props.description === undefined ? null : (
+                                    <Text typo="body 2" className={classes.subtitle}>
                                         {capitalize(props.description)}
                                     </Text>
                                 );
@@ -310,34 +291,24 @@ const { TabContent } = (() => {
         const onTextFieldChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ target }]: [
-                    React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-                ],
+                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>],
             ) => onFormValueChange({ path, "value": target.value }),
         );
 
         const onTextFieldFocus = useConstCallback(
-            ({
-                target,
-            }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+            ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
                 target.setSelectionRange(0, target.value.length),
         );
 
-        const onCheckboxChangeFactory = useCallbackFactory(
-            ([path]: [string[]]) =>
-                onFormValueChange({
-                    path,
-                    "value": !formFields.find(formField =>
-                        same(formField.path, path),
-                    )!.value,
-                }),
+        const onCheckboxChangeFactory = useCallbackFactory(([path]: [string[]]) =>
+            onFormValueChange({
+                path,
+                "value": !formFields.find(formField => same(formField.path, path))!.value,
+            }),
         );
 
         const onSelectChangeFactory = useCallbackFactory(
-            (
-                [path]: [string[]],
-                [event]: [React.ChangeEvent<{ value: unknown }>],
-            ) =>
+            ([path]: [string[]], [event]: [React.ChangeEvent<{ value: unknown }>]) =>
                 onFormValueChange({
                     path,
                     "value": event.target.value as string,
@@ -347,9 +318,7 @@ const { TabContent } = (() => {
         const onNumberTextFieldChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ target }]: [
-                    React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-                ],
+                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>],
             ) =>
                 onFormValueChange({
                     path,
@@ -384,34 +353,24 @@ const { TabContent } = (() => {
 
                                                 return (
                                                     <FormControl>
-                                                        <InputLabel
-                                                            id={labelId}
-                                                        >
+                                                        <InputLabel id={labelId}>
                                                             {label}
                                                         </InputLabel>
                                                         <Select
                                                             labelId={labelId}
-                                                            value={
-                                                                formField.value
-                                                            }
+                                                            value={formField.value}
                                                             onChange={onSelectChangeFactory(
                                                                 formField.path,
                                                             )}
                                                         >
-                                                            {formField.enum.map(
-                                                                value => (
-                                                                    <MenuItem
-                                                                        key={
-                                                                            value
-                                                                        }
-                                                                        value={
-                                                                            value
-                                                                        }
-                                                                    >
-                                                                        {value}
-                                                                    </MenuItem>
-                                                                ),
-                                                            )}
+                                                            {formField.enum.map(value => (
+                                                                <MenuItem
+                                                                    key={value}
+                                                                    value={value}
+                                                                >
+                                                                    {value}
+                                                                </MenuItem>
+                                                            ))}
                                                         </Select>
                                                         <FormHelperText>
                                                             {helperText}
@@ -443,9 +402,7 @@ const { TabContent } = (() => {
                                                     control={
                                                         <Checkbox
                                                             color="primary"
-                                                            checked={
-                                                                formField.value
-                                                            }
+                                                            checked={formField.value}
                                                             onChange={onCheckboxChangeFactory(
                                                                 formField.path,
                                                             )}

@@ -107,46 +107,42 @@ export declare namespace Props {
 
 const flashDurationMs = 600;
 
-const useStyles = makeStyles<{ isFlashing: boolean }>()(
-    (theme, { isFlashing }) => ({
-        "root": {
-            "marginBottom": theme.spacing(3),
-        },
-        "mainLine": {
+const useStyles = makeStyles<{ isFlashing: boolean }>()((theme, { isFlashing }) => ({
+    "root": {
+        "marginBottom": theme.spacing(3),
+    },
+    "mainLine": {
+        "display": "flex",
+        "& > div": {
             "display": "flex",
-            "& > div": {
-                "display": "flex",
-                "alignItems": "center",
-            },
-            "marginBottom": theme.spacing(2),
+            "alignItems": "center",
         },
-        "cellTitle": {
-            "width": 360,
-        },
-        "cellMiddle": {
-            "flex": 1,
+        "marginBottom": theme.spacing(2),
+    },
+    "cellTitle": {
+        "width": 360,
+    },
+    "cellMiddle": {
+        "flex": 1,
+        "overflow": "hidden",
+        "& .MuiTypography-root": {
             "overflow": "hidden",
-            "& .MuiTypography-root": {
-                "overflow": "hidden",
-                "whiteSpace": "nowrap",
-                "textOverflow": "ellipsis",
-                "color": !isFlashing
-                    ? undefined
-                    : theme.colors.useCases.buttons.actionActive,
-            },
-            "& .MuiTextField-root": {
-                "width": "100%",
-                "top": 2,
-            },
+            "whiteSpace": "nowrap",
+            "textOverflow": "ellipsis",
+            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive,
         },
-        "cellActions": {
-            "marginRight": theme.spacing(2),
+        "& .MuiTextField-root": {
+            "width": "100%",
+            "top": 2,
         },
-        "noText": {
-            "color": theme.colors.useCases.typography.textDisabled,
-        },
-    }),
-);
+    },
+    "cellActions": {
+        "marginRight": theme.spacing(2),
+    },
+    "noText": {
+        "color": theme.colors.useCases.typography.textDisabled,
+    },
+}));
 
 export const AccountField = memo(
     <T extends string>(props: Props<T>): ReturnType<FunctionComponent> => {
@@ -159,10 +155,7 @@ export const AccountField = memo(
         useEffect(() => {
             if (!isFlashing) return;
 
-            const timer = setTimeout(
-                () => setIsFlashing(false),
-                flashDurationMs,
-            );
+            const timer = setTimeout(() => setIsFlashing(false), flashDurationMs);
 
             return () => clearTimeout(timer);
         }, [isFlashing]);
@@ -178,16 +171,12 @@ export const AccountField = memo(
         const { classes } = useStyles({ isFlashing });
 
         const TextWd = useGuaranteedMemo(
-            () =>
-                (props: {
-                    children: NonNullable<ReactNode>;
-                    className?: string;
-                }) =>
-                    (
-                        <Text typo="body 1" className={props.className}>
-                            {props.children}
-                        </Text>
-                    ),
+            () => (props: { children: NonNullable<ReactNode>; className?: string }) =>
+                (
+                    <Text typo="body 1" className={props.className}>
+                        {props.children}
+                    </Text>
+                ),
             [],
         );
 
@@ -220,9 +209,7 @@ export const AccountField = memo(
             const [isInEditingState, setIsInEditingState] = useState(false);
 
             const [evtTextFieldAction] = useState(() =>
-                Evt.create<
-                    UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>
-                >(),
+                Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
             );
 
             useEvt(
@@ -272,25 +259,25 @@ export const AccountField = memo(
 
             const [isCopyScheduled, setIsCopyScheduled] = useState(false);
 
-            const onTextFieldSubmit = useConstCallback<
-                TextFieldProps["onSubmit"]
-            >(value => {
-                assert(props.type === "editable text");
-                if (props.isLocked) return;
+            const onTextFieldSubmit = useConstCallback<TextFieldProps["onSubmit"]>(
+                value => {
+                    assert(props.type === "editable text");
+                    if (props.isLocked) return;
 
-                setIsInEditingState(false);
+                    setIsInEditingState(false);
 
-                if (value === props.text) {
-                    if (isCopyScheduled) {
-                        setIsCopyScheduled(false);
-                        onRequestCopy();
+                    if (value === props.text) {
+                        if (isCopyScheduled) {
+                            setIsCopyScheduled(false);
+                            onRequestCopy();
+                        }
+
+                        return;
                     }
 
-                    return;
-                }
-
-                props.onRequestEdit(value);
-            });
+                    props.onRequestEdit(value);
+                },
+            );
 
             useEffect(
                 () => {
@@ -332,50 +319,43 @@ export const AccountField = memo(
             };
         })();
 
-        const {
-            onS3ScriptClickFactory,
-            selectedS3Script,
-            onS3ScriptSelectChange,
-        } = (function useClosure() {
-            const [selectedS3Script, setSelectedS3Script] = useState(
-                props.type === "s3 scripts"
-                    ? props.scriptLabels[0]
-                    : (null as never),
-            );
+        const { onS3ScriptClickFactory, selectedS3Script, onS3ScriptSelectChange } =
+            (function useClosure() {
+                const [selectedS3Script, setSelectedS3Script] = useState(
+                    props.type === "s3 scripts" ? props.scriptLabels[0] : (null as never),
+                );
 
-            const onS3ScriptClickFactory = useCallbackFactory(
-                ([action]: ["download" | "copy"]) => {
-                    assert(props.type === "s3 scripts");
-                    props[
-                        (() => {
-                            switch (action) {
-                                case "copy":
-                                    return "onRequestCopyScript" as const;
-                                case "download":
-                                    return "onRequestDownloadScript" as const;
-                            }
-                        })()
-                    ](selectedS3Script);
-                },
-            );
+                const onS3ScriptClickFactory = useCallbackFactory(
+                    ([action]: ["download" | "copy"]) => {
+                        assert(props.type === "s3 scripts");
+                        props[
+                            (() => {
+                                switch (action) {
+                                    case "copy":
+                                        return "onRequestCopyScript" as const;
+                                    case "download":
+                                        return "onRequestDownloadScript" as const;
+                                }
+                            })()
+                        ](selectedS3Script);
+                    },
+                );
 
-            const onS3ScriptSelectChange = useConstCallback(
-                (event: React.ChangeEvent<{ value: unknown }>) =>
-                    setSelectedS3Script(event.target.value as T),
-            );
+                const onS3ScriptSelectChange = useConstCallback(
+                    (event: React.ChangeEvent<{ value: unknown }>) =>
+                        setSelectedS3Script(event.target.value as T),
+                );
 
-            return {
-                onS3ScriptClickFactory,
-                selectedS3Script,
-                onS3ScriptSelectChange,
-            };
-        })();
+                return {
+                    onS3ScriptClickFactory,
+                    selectedS3Script,
+                    onS3ScriptSelectChange,
+                };
+            })();
 
         const oidcAccessTokenExpiresWhen = useValidUntil({
             "millisecondsLeft":
-                props.type !== "OIDC Access token"
-                    ? 0
-                    : props.remainingValidity * 1000,
+                props.type !== "OIDC Access token" ? 0 : props.remainingValidity * 1000,
         });
 
         const helperText = (() => {
@@ -397,10 +377,8 @@ export const AccountField = memo(
             }
         })();
 
-        const [
-            isResetHelperDialogClicked,
-            setIsResetHelperDialogClickedToTrue,
-        ] = useReducer(() => true, false);
+        const [isResetHelperDialogClicked, setIsResetHelperDialogClickedToTrue] =
+            useReducer(() => true, false);
 
         const onResetHelperDialogsClick = useConstCallback(() => {
             assert(props.type === "reset helper dialogs");
@@ -424,37 +402,27 @@ export const AccountField = memo(
                                         <FormControl>
                                             <Select
                                                 value={selectedS3Script}
-                                                onChange={
-                                                    onS3ScriptSelectChange
-                                                }
+                                                onChange={onS3ScriptSelectChange}
                                             >
-                                                {props.scriptLabels.map(
-                                                    scriptLabel => (
-                                                        <MenuItem
-                                                            value={scriptLabel}
-                                                            key={scriptLabel}
-                                                        >
-                                                            {scriptLabel}
-                                                        </MenuItem>
-                                                    ),
-                                                )}
+                                                {props.scriptLabels.map(scriptLabel => (
+                                                    <MenuItem
+                                                        value={scriptLabel}
+                                                        key={scriptLabel}
+                                                    >
+                                                        {scriptLabel}
+                                                    </MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
                                     );
                                 case "language":
-                                    return (
-                                        <ChangeLanguage doShowIcon={false} />
-                                    );
+                                    return <ChangeLanguage doShowIcon={false} />;
                                 case "toggle":
                                     return null;
                                 case "service password":
-                                    return (
-                                        <TextWd>{props.servicePassword}</TextWd>
-                                    );
+                                    return <TextWd>{props.servicePassword}</TextWd>;
                                 case "OIDC Access token":
-                                    return (
-                                        <TextWd>{props.oidcAccessToken}</TextWd>
-                                    );
+                                    return <TextWd>{props.oidcAccessToken}</TextWd>;
                                 case "text":
                                     return <TextWd>{props.text}</TextWd>;
                                 case "editable text":
@@ -469,21 +437,15 @@ export const AccountField = memo(
                                     ) : (
                                         <TextField
                                             defaultValue={props.text}
-                                            onEscapeKeyDown={
-                                                onTextFieldEscapeKeyDown
-                                            }
+                                            onEscapeKeyDown={onTextFieldEscapeKeyDown}
                                             onEnterKeyDown={onSubmitButtonClick}
                                             evtAction={evtTextFieldAction}
                                             onSubmit={onTextFieldSubmit}
-                                            getIsValidValue={
-                                                props.getIsValidValue
-                                            }
+                                            getIsValidValue={props.getIsValidValue}
                                             onValueBeingTypedChange={
                                                 onValueBeingTypedChange
                                             }
-                                            doOnlyValidateInputAfterFistFocusLost={
-                                                false
-                                            }
+                                            doOnlyValidateInputAfterFistFocusLost={false}
                                             isSubmitAllowed={!props.isLocked}
                                             inputProps_autoFocus={true}
                                             selectAllTextOnFocus={true}
@@ -507,9 +469,7 @@ export const AccountField = memo(
                                                 size="small"
                                             />
                                             <IconButtonCopyToClipboard
-                                                onClick={onS3ScriptClickFactory(
-                                                    "copy",
-                                                )}
+                                                onClick={onS3ScriptClickFactory("copy")}
                                             />
                                         </>
                                     );
@@ -518,9 +478,7 @@ export const AccountField = memo(
                                         <>
                                             <IconButton
                                                 iconId={
-                                                    isInEditingState
-                                                        ? "check"
-                                                        : "edit"
+                                                    isInEditingState ? "check" : "edit"
                                                 }
                                                 disabled={
                                                     props.isLocked ||
@@ -535,12 +493,8 @@ export const AccountField = memo(
                                                 size="small"
                                             />
                                             <IconButtonCopyToClipboard
-                                                disabled={
-                                                    props.text === undefined
-                                                }
-                                                onClick={
-                                                    onEditableTextRequestCopy
-                                                }
+                                                disabled={props.text === undefined}
+                                                onClick={onEditableTextRequestCopy}
                                             />
                                         </>
                                     );
@@ -589,9 +543,7 @@ export const AccountField = memo(
                                 case "reset helper dialogs":
                                     return (
                                         <Button
-                                            disabled={
-                                                isResetHelperDialogClicked
-                                            }
+                                            disabled={isResetHelperDialogClicked}
                                             variant="secondary"
                                             onClick={onResetHelperDialogsClick}
                                         >
@@ -602,9 +554,7 @@ export const AccountField = memo(
                         })()}
                     </div>
                 </div>
-                {helperText !== undefined && (
-                    <Text typo="caption"> {helperText} </Text>
-                )}
+                {helperText !== undefined && <Text typo="caption"> {helperText} </Text>}
             </div>
         );
     },

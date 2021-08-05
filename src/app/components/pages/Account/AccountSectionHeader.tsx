@@ -39,11 +39,7 @@ export const AccountSectionHeader = memo((props: Props) => {
             </Text>
             {tooltipText && (
                 <Tooltip title={tooltipText}>
-                    <Icon
-                        className={classes.helpIcon}
-                        iconId="help"
-                        size="small"
-                    />
+                    <Icon className={classes.helpIcon} iconId="help" size="small" />
                 </Tooltip>
             )}
             {helperText && (

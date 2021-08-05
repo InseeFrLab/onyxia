@@ -13,10 +13,7 @@ import type {
     Get_MyLab_App,
     Get_User_Info,
 } from "lib/ports/OnyxiaApiClient";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    appStatuses,
-} from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -39,9 +36,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getPublicIp": memoize(() =>
-            axiosInstance
-                .get<Get_User_Info>("/user/info")
-                .then(({ data }) => data.ip),
+            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => data.ip),
         ),
         "getConfigurations": memoize(
             () =>
@@ -68,14 +63,12 @@ export function createOfficialOnyxiaApiClient(params: {
                 .then(({ data }) => ({
                     "dependencies": data.dependencies ?? [],
                     "sources": data.sources,
-                    "getPackageConfigJSONSchemaObjectWithRenderedMustachParams":
-                        ({ mustacheParams }) =>
-                            JSON.parse(
-                                Mustache.render(
-                                    JSON.stringify(data.config),
-                                    mustacheParams,
-                                ),
-                            ) as typeof data.config,
+                    "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({
+                        mustacheParams,
+                    }) =>
+                        JSON.parse(
+                            Mustache.render(JSON.stringify(data.config), mustacheParams),
+                        ) as typeof data.config,
                 })),
         ...(() => {
             const getMyLab_App = (params: { serviceId: string }) =>
@@ -172,11 +165,8 @@ export function createOfficialOnyxiaApiClient(params: {
                                 return {
                                     packageName,
                                     "friendlyName":
-                                        env[
-                                            onyxiaFriendlyNameFormFieldPath.join(
-                                                ".",
-                                            )
-                                        ] ?? packageName,
+                                        env[onyxiaFriendlyNameFormFieldPath.join(".")] ??
+                                        packageName,
                                 };
                             })(),
                             postInstallInstructions,
@@ -212,8 +202,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
                                               if (url === undefined) {
                                                   resolve({
-                                                      "isConfirmedJustStarted":
-                                                          false,
+                                                      "isConfirmedJustStarted": false,
                                                   });
                                                   return;
                                               }
@@ -245,8 +234,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                                       status === "Pending" &&
                                                       newStatus === "Running" &&
                                                       (httpStatusCode === 403 ||
-                                                          httpStatusCode ===
-                                                              200),
+                                                          httpStatusCode === 200),
                                               });
                                           }, 3000);
                                       }),
@@ -304,8 +292,7 @@ function createAxiosInstance(
 
     if (getCurrentlySelectedDeployRegionId !== null) {
         axiosInstance.interceptors.request.use(config => {
-            const currentlySelectedDeployRegionId =
-                getCurrentlySelectedDeployRegionId();
+            const currentlySelectedDeployRegionId = getCurrentlySelectedDeployRegionId();
 
             return {
                 ...config,

@@ -4,106 +4,91 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import type { AppThunk } from "lib/setup";
 
-
 export type State = {
-	redirectUri: string | null;
-	waiting: boolean;
-	displayLogin: boolean;
-	visite: boolean;
-	faviconUrl: string;
+    redirectUri: string | null;
+    waiting: boolean;
+    displayLogin: boolean;
+    visite: boolean;
+    faviconUrl: string;
 };
 
 export const name = "app";
 
 export const thunk = {
-	"logout":
-		(): AppThunk<Promise<never>> => async (...args) => {
+    "logout":
+        (): AppThunk<Promise<never>> =>
+        async (...args) => {
+            const [, , { oidcClient }] = args;
 
-			const [, , { oidcClient }] = args;
+            assert(oidcClient.isUserLoggedIn);
 
-			assert(oidcClient.isUserLoggedIn);
-
-			return oidcClient.logout({ "redirectToOrigin": true });
-
-		}
+            return oidcClient.logout({ "redirectToOrigin": true });
+        },
 };
 
-
 const slice = createSlice({
-	name,
-	"initialState": id<State>({
-		"redirectUri": null,
-		"waiting": false,
-		"displayLogin": false,
-		"visite": false,
-		"faviconUrl": "/onyxia.png"
-	}),
-	"reducers": {
-		/*
+    name,
+    "initialState": id<State>({
+        "redirectUri": null,
+        "waiting": false,
+        "displayLogin": false,
+        "visite": false,
+        "faviconUrl": "/onyxia.png",
+    }),
+    "reducers": {
+        /*
 		{
 				type: 'onyxia/app/startWaiting'
 		}
 		*/
-		"startWaiting": state => {
-			state.waiting = true;
-		},
-		/*
+        "startWaiting": state => {
+            state.waiting = true;
+        },
+        /*
 		{
 			type: 'onyxia/app/stopWaiting'
 		}
 		*/
-		"stopWaiting": state => { //USED
-			state.waiting = false;
-		},
-		"setRedirectUri": (
-			state,
-			{ payload }: PayloadAction<{ uri: State["redirectUri"]; }>
-		) => {
+        "stopWaiting": state => {
+            //USED
+            state.waiting = false;
+        },
+        "setRedirectUri": (
+            state,
+            { payload }: PayloadAction<{ uri: State["redirectUri"] }>,
+        ) => {
+            const { uri } = payload;
 
-			const { uri } = payload;
+            assert(typeof uri === "string");
 
-			assert(typeof uri === "string");
+            state.redirectUri = uri;
+        },
+        "displayLogin": (
+            state,
+            { payload }: PayloadAction<{ doDisplay: State["displayLogin"] }>,
+        ) => {
+            const { doDisplay } = payload;
 
-			state.redirectUri = uri;
+            assert(typeof doDisplay === "boolean");
 
-		},
-		"displayLogin": (
-			state,
-			{ payload }: PayloadAction<{ doDisplay: State["displayLogin"]; }>
-		) => {
+            state.displayLogin = doDisplay;
+        },
+        "setFavicon": (
+            state,
+            { payload }: PayloadAction<{ url: State["faviconUrl"] }>,
+        ) => {
+            const { url } = payload;
 
-			const { doDisplay } = payload;
+            assert(typeof url === "string");
 
-			assert(typeof doDisplay === "boolean");
-
-			state.displayLogin = doDisplay;
-
-		},
-		"setFavicon": (
-			state,
-			{ payload }: PayloadAction<{ url: State["faviconUrl"]; }>
-		) => {
-
-			const { url } = payload;
-
-			assert(typeof url === "string");
-
-			state.faviconUrl = url;
-
-		},
-		"startVisite": (state) => {
-			state.visite = true;
-		}
-	}
+            state.faviconUrl = url;
+        },
+        "startVisite": state => {
+            state.visite = true;
+        },
+    },
 });
-
 
 export const { reducer } = slice;
 
-
-
 export const actions = id<Omit<typeof slice.actions, "applicationResize">>(slice.actions);
-
-
-
-

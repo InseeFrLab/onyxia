@@ -6,14 +6,17 @@ export function getScreenTypeFromWidth(screenWidth: number) {
     return screenWidth < getScreenTypeBreakpoint("SMALL")
         ? "SMALL"
         : screenWidth < getScreenTypeBreakpoint("MEDIUM")
-            ? "MEDIUM"
-            : "LARGE";
+        ? "MEDIUM"
+        : "LARGE";
 }
 
 export function getScreenTypeBreakpoint(screenType: ScreenType): number {
     switch (screenType) {
-        case "SMALL": return 600;
-        case "MEDIUM": return 960;
-        case "LARGE": return 1280;
+        case "SMALL":
+            return 600;
+        case "MEDIUM":
+            return 960;
+        case "LARGE":
+            return 1280;
     }
 }

@@ -66,34 +66,33 @@ export async function createKeycloakOidcClient(params: {
                       },
                   ],
         ),
-        "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired":
-            async params => {
-                const { minValidity = 10 } = params ?? {};
+        "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
+            const { minValidity = 10 } = params ?? {};
 
-                if (evtLocallyStoredOidcAccessToken.state === undefined) {
-                    return;
-                }
+            if (evtLocallyStoredOidcAccessToken.state === undefined) {
+                return;
+            }
 
-                if (!keycloakInstance.isTokenExpired(minValidity)) {
-                    return;
-                }
+            if (!keycloakInstance.isTokenExpired(minValidity)) {
+                return;
+            }
 
-                evtLocallyStoredOidcAccessToken.state = undefined;
+            evtLocallyStoredOidcAccessToken.state = undefined;
 
-                const error = await keycloakInstance.updateToken(-1).then(
-                    () => undefined,
-                    (error: Error) => error,
-                );
+            const error = await keycloakInstance.updateToken(-1).then(
+                () => undefined,
+                (error: Error) => error,
+            );
 
-                if (error) {
-                    //NOTE: Never resolves
-                    await login();
-                }
+            if (error) {
+                //NOTE: Never resolves
+                await login();
+            }
 
-                assert(keycloakInstance.token !== undefined);
+            assert(keycloakInstance.token !== undefined);
 
-                evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
-            },
+            evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
+        },
         "logout": async ({ redirectToOrigin }) => {
             await keycloakInstance.logout({
                 "redirectUri": redirectToOrigin ? origin : window.location.href,

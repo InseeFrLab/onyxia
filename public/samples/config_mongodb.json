@@ -43,10 +43,7 @@
                                 "type": "string",
                                 "description": "mongodb major version",
                                 "default": "4.2",
-                                "enum": [
-                                    "4.0",
-                                    "4.2"
-                                ]
+                                "enum": ["4.0", "4.2"]
                             }
                         }
                     },

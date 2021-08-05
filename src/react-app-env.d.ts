@@ -1,11 +1,11 @@
 /// <reference types="react-scripts" />
-declare module '*.md' {
+declare module "*.md" {
     const src: string;
     export default src;
 }
 
 declare module "urlon" {
-    const URLON:{
+    const URLON: {
         parse<T>(raw: string): T;
         stringify(obj: any): string;
     };

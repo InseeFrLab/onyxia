@@ -1,8 +1,7 @@
-
 import axios from "axios";
 import { assert } from "tsafe/assert";
 
-//NOTE: Used this service: https://helloacm.com/tools/can-visit/ 
+//NOTE: Used this service: https://helloacm.com/tools/can-visit/
 //Got the hash from the page's source. Without it it doesn't work.
 
 /* spell-checker: disable */
@@ -17,15 +16,12 @@ const servers = [
     "weibomiaopai.com",
     "zhihua-lai.com",
     "steemyy.com",
-    "propagationtools.com", 
-    "slowapi.com"
+    "propagationtools.com",
+    "slowapi.com",
 ];
 /* spell-checker: enable */
 
-export async function getUrlHttpStatusCode(
-    params: { url: string }
-): Promise<number> {
-
+export async function getUrlHttpStatusCode(params: { url: string }): Promise<number> {
     const { url } = params;
 
     const server = servers[Math.floor(Math.random() * servers.length)];
@@ -33,27 +29,27 @@ export async function getUrlHttpStatusCode(
     let statusCode: number | undefined = undefined;
 
     try {
-
-        statusCode = await axios.create().get<{ code: number; }>(
-            `https://${server}/api/can-visit/?url=${encodeURIComponent(url)}`,
-            {
-                "params": {
-                    "hash": "28aad0633cf2754114dd48de220bcace"
-                        .split('').reverse().join('')
-                }
-            }
-        ).then(({ data }) => data.code);
+        statusCode = await axios
+            .create()
+            .get<{ code: number }>(
+                `https://${server}/api/can-visit/?url=${encodeURIComponent(url)}`,
+                {
+                    "params": {
+                        "hash": "28aad0633cf2754114dd48de220bcace"
+                            .split("")
+                            .reverse()
+                            .join(""),
+                    },
+                },
+            )
+            .then(({ data }) => data.code);
 
         assert(typeof statusCode === "number", "statusCode wasn't a number");
-
     } catch (error) {
-
         error.message += ` Used server ${server}`;
 
         throw error;
-
     }
 
     return statusCode;
-
 }

@@ -63,9 +63,7 @@ export const Terms = memo(
                 headerNode={null}
                 formNode={
                     <>
-                        <div className={classes.markdownWrapper}>
-                            {msg("termsText")}
-                        </div>
+                        <div className={classes.markdownWrapper}>{msg("termsText")}</div>
 
                         <form
                             className="form-actions"
@@ -73,11 +71,7 @@ export const Terms = memo(
                             method="POST"
                         >
                             <div className={classes.buttonsWrapper}>
-                                <Button
-                                    variant="secondary"
-                                    name="cancel"
-                                    type="submit"
-                                >
+                                <Button variant="secondary" name="cancel" type="submit">
                                     {msgStr("doDecline")}
                                 </Button>
                                 <Button

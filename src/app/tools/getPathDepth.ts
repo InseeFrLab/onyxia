@@ -1,4 +1,3 @@
-
 /**
 / -> 0
 /a -> 1
@@ -24,7 +23,5 @@ export function getPathDepth(path: string): number {
         .replace(/^\//, "")
         .replace(/\/$/, "")
         .split("/")
-        .filter(s => s !== "")
-        .length;
+        .filter(s => s !== "").length;
 }
-

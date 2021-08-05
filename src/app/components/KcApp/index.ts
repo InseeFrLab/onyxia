@@ -1,2 +1,2 @@
 export * from "./KcApp";
-export { kcContext } from "./kcContext";
+export { kcContext } from "./kcContext";

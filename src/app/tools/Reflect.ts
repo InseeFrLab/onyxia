@@ -1,4 +1,3 @@
-
-export function Reflect<T>(): T{
+export function Reflect<T>(): T {
     return null as any;
 }

@@ -1,16 +1,14 @@
-
 import * as myFiles from "./myFiles";
 import * as myLab from "./myLab";
 import * as user from "./user";
 import * as app from "./app";
 
 export const actions = {
-	...myFiles.actions,
-	...myLab.actions,
-	...app.actions,
-	...user.actions,
+    ...myFiles.actions,
+    ...myLab.actions,
+    ...app.actions,
+    ...user.actions,
 };
-
 
 /*
 //Use this instead of the custom type
@@ -21,5 +19,3 @@ export type ToConnected<T extends AsyncThunk<any, any, any> | ActionCreatorWitho
 	T extends ActionCreatorWithoutPayload<any> ? () => void :
 	never;
 */
-
-

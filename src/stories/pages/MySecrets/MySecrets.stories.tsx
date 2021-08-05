@@ -1,4 +1,3 @@
-
 import { css } from "tss-react";
 import { getStoryFactory } from "stories/geStory";
 import { sectionName } from "../sectionName";
@@ -11,26 +10,27 @@ type StoryProps = {
     height: number;
 };
 
-function Component(props: Omit<Props, "className" | "route" | "splashScreen"> & StoryProps) {
-
+function Component(
+    props: Omit<Props, "className" | "route" | "splashScreen"> & StoryProps,
+) {
     const { width, height } = props;
 
-    return <MySecrets
-        route={null as any}
-        className={css({
-            width,
-            height
-        })}
-    />;
-
+    return (
+        <MySecrets
+            route={null as any}
+            className={css({
+                width,
+                height,
+            })}
+        />
+    );
 }
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "doProvideMockStore": true,
-    "wrappedComponent": { [symToStr({ MySecrets })]: Component }
+    "wrappedComponent": { [symToStr({ MySecrets })]: Component },
 });
-
 
 export default {
     ...meta,
@@ -40,26 +40,20 @@ export default {
             "control": {
                 "type": "range",
                 "min": 200,
-                "max": 1920
-            }
+                "max": 1920,
+            },
         },
         "height": {
             "control": {
                 "type": "range",
                 "min": 200,
-                "max": 1080
-            }
-        }
-
-    }
+                "max": 1080,
+            },
+        },
+    },
 };
 
 export const Vue1 = getStory({
     "width": 1400,
-    "height": 1100
+    "height": 1100,
 });
-
-
-
-
-

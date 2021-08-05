@@ -111,9 +111,7 @@ export const App = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     const logoContainerWidth = Math.max(
-        Math.floor(
-            (Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100,
-        ),
+        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
         45,
     );
 
@@ -223,10 +221,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                     return <Page />;
             }
 
-            assert(
-                false,
-                "Not all cases have been dealt with in the above switch",
-            );
+            assert(false, "Not all cases have been dealt with in the above switch");
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [route],
@@ -236,10 +231,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Catalog;
 
         if (Page.routeGroup.has(route)) {
-            if (
-                Page.requireUserLoggedIn(route) &&
-                !appConstants.isUserLoggedIn
-            ) {
+            if (Page.requireUserLoggedIn(route) && !appConstants.isUserLoggedIn) {
                 appConstants.login();
 
                 return null;

@@ -7,16 +7,13 @@ export function formFieldsValueToObject(
     formFieldsValue: FormFieldValue[],
 ): Record<string, unknown> {
     return [...formFieldsValue]
-        .sort((a, b) =>
-            JSON.stringify(a.path).localeCompare(JSON.stringify(b.path)),
-        )
+        .sort((a, b) => JSON.stringify(a.path).localeCompare(JSON.stringify(b.path)))
         .reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
             (function callee(props: {
                 launchRequestOptions: Record<string, unknown>;
                 formFieldValue: FormFieldValue;
             }): void {
-                const { launchRequestOptions, formFieldValue: formField } =
-                    props;
+                const { launchRequestOptions, formFieldValue: formField } = props;
 
                 const [key, ...rest] = formField.path;
 

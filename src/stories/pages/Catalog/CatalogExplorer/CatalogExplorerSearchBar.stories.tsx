@@ -1,14 +1,12 @@
-
-
 import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import { css } from "tss-react";
-import { Evt } from "evt";
+import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { CatalogExplorerSearchBar }
+    "wrappedComponent": { CatalogExplorerSearchBar },
 });
 
 export default meta;
@@ -19,6 +17,5 @@ export const Vue1 = getStory({
     className,
     "search": "",
     "evtAction": new Evt(),
-    ...logCallbacks([ "onSearchChange" ])
+    ...logCallbacks(["onSearchChange"]),
 });
-

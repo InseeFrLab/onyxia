@@ -107,9 +107,7 @@ export function MyServices(props: Props) {
                 routes.catalogExplorer().push();
                 return;
             case "refresh":
-                dispatch(
-                    thunks.runningService.initializeOrRefreshIfNotAlreadyFetching(),
-                );
+                dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
                 return;
             case "password":
                 copyToClipboard(userServicePassword);
@@ -122,12 +120,8 @@ export function MyServices(props: Props) {
 
     useEffect(
         () => {
-            dispatch(
-                thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone(),
-            );
-            dispatch(
-                thunks.runningService.initializeOrRefreshIfNotAlreadyFetching(),
-            );
+            dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
+            dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
@@ -154,17 +148,15 @@ export function MyServices(props: Props) {
                 return;
             case "delete":
                 dispatch(
-                    thunks.restorablePackageConfig.deleteRestorablePackageConfig(
-                        {
-                            "restorablePackageConfig": displayableConfigs.find(
-                                ({ restorablePackageConfig }) =>
-                                    routes.catalogLauncher({
-                                        ...restorablePackageConfig,
-                                        "autoLaunch": true,
-                                    }).href === linkHref,
-                            )!.restorablePackageConfig,
-                        },
-                    ),
+                    thunks.restorablePackageConfig.deleteRestorablePackageConfig({
+                        "restorablePackageConfig": displayableConfigs.find(
+                            ({ restorablePackageConfig }) =>
+                                routes.catalogLauncher({
+                                    ...restorablePackageConfig,
+                                    "autoLaunch": true,
+                                }).href === linkHref,
+                        )!.restorablePackageConfig,
+                    }),
                 );
                 return;
         }
@@ -207,35 +199,31 @@ export function MyServices(props: Props) {
                               "packageIconUrl": logoUrl,
                               friendlyName,
                               packageName,
-                              "infoUrl": routes.myService({ "serviceId": id })
-                                  .href,
+                              "infoUrl": routes.myService({ "serviceId": id }).href,
                               "openUrl": urls[0],
                               monitoringUrl,
                               "startTime": isStarting ? undefined : startedAt,
-                              "isOvertime":
-                                  Date.now() - startedAt > 3600 * 1000 * 24,
+                              "isOvertime": Date.now() - startedAt > 3600 * 1000 * 24,
                               postInstallInstructions,
                           }),
                       ),
         [runningServices, isRunningServicesFetching],
     );
 
-    const catalogExplorerLink = useMemo(
-        () => routes.catalogExplorer().link,
-        [],
-    );
+    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
-    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] =
-        useState<string | undefined>();
+    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
+        string | undefined
+    >();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const onRequestDelete = useConstCallback<
-        MyServicesCardsProps["onRequestDelete"]
-    >(({ serviceId }) => {
-        setServiceIdRequestedToBeDeleted(serviceId);
-        setIsDialogOpen(true);
-    });
+    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
+        ({ serviceId }) => {
+            setServiceIdRequestedToBeDeleted(serviceId);
+            setIsDialogOpen(true);
+        },
+    );
 
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
@@ -247,9 +235,7 @@ export function MyServices(props: Props) {
                 );
             } else {
                 runningServices.map(({ id }) =>
-                    dispatch(
-                        thunks.runningService.stopService({ "serviceId": id }),
-                    ),
+                    dispatch(thunks.runningService.stopService({ "serviceId": id })),
                 );
             }
         }
@@ -281,9 +267,7 @@ export function MyServices(props: Props) {
                     savedConfigs={savedConfigs}
                     className={classes.savedConfigs}
                     callback={onSavedConfigsCallback}
-                    onRequestToggleIsShortVariant={
-                        onRequestToggleIsShortVariant
-                    }
+                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                 />
             </div>
             <Dialog
@@ -294,10 +278,7 @@ export function MyServices(props: Props) {
                 onClose={onDialogCloseFactory(false)}
                 buttons={
                     <>
-                        <Button
-                            onClick={onDialogCloseFactory(false)}
-                            variant="secondary"
-                        >
+                        <Button onClick={onDialogCloseFactory(false)} variant="secondary">
                             {t("cancel")}
                         </Button>
                         <Button onClick={onDialogCloseFactory(true)}>

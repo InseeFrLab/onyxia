@@ -62,12 +62,8 @@ export const Register = memo(
             authorizedMailDomains,
         } = kcContext;
 
-        const [firstName, setFirstName] = useState(
-            register.formData.firstName ?? "",
-        );
-        const [lastName, setLastName] = useState(
-            register.formData.lastName ?? "",
-        );
+        const [firstName, setFirstName] = useState(register.formData.firstName ?? "");
+        const [lastName, setLastName] = useState(register.formData.lastName ?? "");
 
         const usernameDefaultValue = useMemo(
             () => generateUsername({ firstName, lastName }),
@@ -81,13 +77,7 @@ export const Register = memo(
 
         const getIsValidValueFactory = useCallbackFactory(
             (
-                [target]: [
-                    | "firstName"
-                    | "lastName"
-                    | "email"
-                    | "username"
-                    | "password",
-                ],
+                [target]: ["firstName" | "lastName" | "email" | "username" | "password"],
                 [value]: [string],
             ) => {
                 if (value === "") {
@@ -122,15 +112,10 @@ export const Register = memo(
                             if (
                                 !authorizedMailDomains
                                     .map(domainWithWildcard =>
-                                        domainWithWildcard.replace(
-                                            /\^*.\?/,
-                                            "",
-                                        ),
+                                        domainWithWildcard.replace(/\^*.\?/, ""),
                                     )
                                     .find(domain =>
-                                        new RegExp(`[@.]${domain}$`, "i").test(
-                                            value,
-                                        ),
+                                        new RegExp(`[@.]${domain}$`, "i").test(value),
                                     )
                             ) {
                                 return {
@@ -184,25 +169,24 @@ export const Register = memo(
             [password, t],
         );
 
-        const { areAllTargetsValid, setIsTargetValid } =
-            (function useClosure() {
-                const [validTargets, setValidTargets] = useState(
-                    new Set<typeof targets[number]>(),
-                );
+        const { areAllTargetsValid, setIsTargetValid } = (function useClosure() {
+            const [validTargets, setValidTargets] = useState(
+                new Set<typeof targets[number]>(),
+            );
 
-                function setIsTargetValid(params: {
-                    target: typeof targets[number];
-                    isValidValue: boolean;
-                }) {
-                    const { target, isValidValue } = params;
-                    validTargets[isValidValue ? "add" : "delete"](target);
-                    setValidTargets(new Set(validTargets));
-                }
+            function setIsTargetValid(params: {
+                target: typeof targets[number];
+                isValidValue: boolean;
+            }) {
+                const { target, isValidValue } = params;
+                validTargets[isValidValue ? "add" : "delete"](target);
+                setValidTargets(new Set(validTargets));
+            }
 
-                const areAllTargetsValid = validTargets.size === targets.length;
+            const areAllTargetsValid = validTargets.size === targets.length;
 
-                return { setIsTargetValid, areAllTargetsValid };
-            })();
+            return { setIsTargetValid, areAllTargetsValid };
+        })();
 
         const onValueBeingTypedChangeFactory = useCallbackFactory(
             (
@@ -274,9 +258,7 @@ export const Register = memo(
                                                 })()}
                                                 inputProps_aria-label={target}
                                                 inputProps_tabIndex={
-                                                    target === "username"
-                                                        ? -1
-                                                        : i + 1
+                                                    target === "username" ? -1 : i + 1
                                                 }
                                                 inputProps_autoFocus={i === 0}
                                                 inputProps_spellCheck={false}
@@ -308,8 +290,7 @@ export const Register = memo(
                                                     }
                                                 })()}
                                                 label={msg(
-                                                    target ===
-                                                        "password-confirm"
+                                                    target === "password-confirm"
                                                         ? "passwordConfirm"
                                                         : target,
                                                 )}
@@ -327,12 +308,9 @@ export const Register = memo(
                                                                 "alphanumerical chars only",
                                                             );
                                                         case "password":
-                                                            return t(
-                                                                "minimum length",
-                                                                {
-                                                                    "n": `${passwordMinLength}`,
-                                                                },
-                                                            );
+                                                            return t("minimum length", {
+                                                                "n": `${passwordMinLength}`,
+                                                            });
                                                         default:
                                                             return undefined;
                                                     }
@@ -405,11 +383,7 @@ export const Register = memo(
                                 return areAllTargetsValid ? (
                                     button
                                 ) : (
-                                    <Tooltip
-                                        title={t(
-                                            "form not filled properly yet",
-                                        )}
-                                    >
+                                    <Tooltip title={t("form not filled properly yet")}>
                                         <span>{button}</span>
                                     </Tooltip>
                                 );

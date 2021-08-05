@@ -54,8 +54,7 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
-    [symToStr({ MySecretsEditorRow })]:
-        Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
     [symToStr({ PortraitModeUnsupported })]:
@@ -66,17 +65,14 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountField })]: Reflect<AccountField.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
-    [symToStr({ AccountIntegrationsTab })]:
-        Reflect<AccountIntegrationsTab.I18nScheme>(),
+    [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
     [symToStr({ AccountUserInterfaceTab })]:
         Reflect<AccountUserInterfaceTab.I18nScheme>(),
     [symToStr({ CatalogExplorerSearchBar })]:
         Reflect<CatalogExplorerSearchBar.I18nScheme>(),
-    [symToStr({ CatalogExplorerCard })]:
-        Reflect<CatalogExplorerCard.I18nScheme>(),
-    [symToStr({ CatalogExplorerCards })]:
-        Reflect<CatalogExplorerCards.I18nScheme>(),
+    [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
+    [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
     [symToStr({ CatalogLauncherMainCard })]:
@@ -84,18 +80,14 @@ const reflectedI18nSchemes = {
     [symToStr({ CatalogLauncherConfigurationCard })]:
         Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
     [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
-    [symToStr({ MyServicesButtonBar })]:
-        Reflect<MyServicesButtonBar.I18nScheme>(),
+    [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
-    [symToStr({ MyServicesRunningTime })]:
-        Reflect<MyServicesRunningTime.I18nScheme>(),
+    [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
     [symToStr({ ChangeLanguage })]: Reflect<ChangeLanguage.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigOptions })]:
         Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfig })]:
-        Reflect<MyServicesSavedConfig.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfigs })]:
-        Reflect<MyServicesSavedConfigs.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
     [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),
     [symToStr({ LoginDivider })]: Reflect<LoginDivider.I18nScheme>(),
     [symToStr({ Login })]: Reflect<Login.I18nScheme>(),
@@ -113,14 +105,7 @@ const common = id<
     Record<
         SupportedLanguage,
         Record<
-            | "file"
-            | "secret"
-            | "create"
-            | "cancel"
-            | "rename"
-            | "delete"
-            | "ok"
-            | "here",
+            "file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here",
             string
         >
     >
@@ -206,11 +191,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountUserInterfaceTab": {
             "title": "Interface preferences",
             "enable dark mode": "Enable dark mode",
-            "dark mode helper":
-                "Low light interface theme with dark colored background.",
+            "dark mode helper": "Low light interface theme with dark colored background.",
             "enable beta": "Enable beta-test mode",
-            "beta mode helper":
-                "For advanced platform configurations and features.",
+            "beta mode helper": "For advanced platform configurations and features.",
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
@@ -287,8 +270,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "invalid value cannot eval": "Invalid shell expression",
             "use this secret": `Use in services`,
             "use secret dialog title": "Use in a service",
-            "use secret dialog subtitle":
-                "The path of the secret have been copied",
+            "use secret dialog subtitle": "The path of the secret have been copied",
             "use secret dialog body": `
                 When you launch a service (RStudio, Jupyter, ect) go to the
                 secret tab and and paste the path of the secret provided for this 
@@ -331,11 +313,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "title": "Welcome ont the SSP Cloud's datalab",
             "new user": "New to the datalab?",
             "login": "Login",
-            "subtitle":
-                "Work with Python or R, enjoy all the computing power you need!",
+            "subtitle": "Work with Python or R, enjoy all the computing power you need!",
             "cardTitle1": "An ergonomic environment and on-demand services",
-            "cardTitle2":
-                "An active and enthusiastic community at your service",
+            "cardTitle2": "An active and enthusiastic community at your service",
             "cardTitle3": "Fast, flexible and online data storage",
             "cardText1":
                 "Analyze data, perform distributed computing and take advantage of a large catalog of services. Reserve the computing power you need.",
@@ -358,8 +338,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "show more": "Show more",
             "no service found": "No service found",
             "no result found": "No result found for {{forWhat}}",
-            "check spelling":
-                "Please check your spelling or try widening your search.",
+            "check spelling": "Please check your spelling or try widening your search.",
             "go back": "Back to main services",
             "main services": "Main services",
             "all services": "All services",
@@ -370,8 +349,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "header text2":
                 "Explore, launch and configure services with just a few clicks.",
             "all services are open sources": "All services are open source. ",
-            "contribute to the catalog":
-                "contribute to the {{catalogId}} catalog",
+            "contribute to the catalog": "contribute to the {{catalogId}} catalog",
             "contribute to the package":
                 "Find the sources of the {{packageName}} package ",
             "here": "here",
@@ -392,8 +370,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "global config": "Global configuration",
             "configuration": "{{packageName}} configurations",
             "dependency": "{{dependencyName}} dependency",
-            "launch of a service":
-                "A {{dependencyName}} service will be launched",
+            "launch of a service": "A {{dependencyName}} service will be launched",
         },
         "MyServices": {
             "text1": "My Services",
@@ -533,8 +510,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "username question mark helper text":
                 "Pas d'espace ni de caractères spéciaux (#,*,é, ect)",
             "minimum length": "Longueur minimum {{n}}",
-            "must be different from username":
-                "Ne peut pas être le nom d'utilisateur",
+            "must be different from username": "Ne peut pas être le nom d'utilisateur",
             "password mismatch": "Les deux mots de passe ne correspondent pas",
             "go back": "Retour",
             "form not filled properly yet":
@@ -544,8 +520,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             ...common.fr,
             "page title": "Mes secrets",
             "what this page is used for": `Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.`,
-            "to learn more":
-                "Pour en savoir plus sur l’utilisation de secrets,",
+            "to learn more": "Pour en savoir plus sur l’utilisation de secrets,",
             "read our documentation": "lisez notre documentation.",
         },
         "ExplorerItem": {
@@ -584,8 +559,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "unavailable key": "Déjà utilisé",
             "invalid key empty string": "Un nom est requis",
             "invalid key _ not valid": "Ne peut pas être juste _",
-            "invalid key start with digit":
-                "Ne doit pas commencer par un chiffre",
+            "invalid key start with digit": "Ne doit pas commencer par un chiffre",
             "invalid key invalid character": "Caractère non valide",
             "invalid value cannot eval": "Expression shell non valide",
             "use this secret": "Utiliser dans un service",
@@ -623,8 +597,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "not found": "Page non trouvée",
         },
         "PortraitModeUnsupported": {
-            "portrait mode not supported":
-                "Le mode portrait n'est pas encore supporté",
+            "portrait mode not supported": "Le mode portrait n'est pas encore supporté",
             "instructions":
                 "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone.",
         },
@@ -635,12 +608,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "new user": "Nouvel utilisateur du datalab?",
             "subtitle":
                 "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
-            "cardTitle1":
-                "Un environnement ergonomique et des services à la demande",
-            "cardTitle2":
-                "Une communauté active et enthousiaste à votre écoute",
-            "cardTitle3":
-                "Un espace de stockage de données rapide, flexible et en ligne",
+            "cardTitle1": "Un environnement ergonomique et des services à la demande",
+            "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
+            "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
             "cardText1":
                 "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
             "cardText2":
@@ -675,8 +645,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Explorez, lancez et configurez des services en quelques clics seulement.",
             "all services are open sources":
                 "Tous les services proposés sont open source, ",
-            "contribute to the catalog":
-                "contribuer au catalogue {{catalogId}}",
+            "contribute to the catalog": "contribuer au catalogue {{catalogId}}",
             "contribute to the package":
                 "Accéder aux sources du package {{packageName}} ",
             "here": "ici",

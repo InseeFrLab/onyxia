@@ -1,19 +1,17 @@
-
-
 import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css } from "tss-react";
+import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfig }
+    "wrappedComponent": { MyServicesSavedConfig },
 });
 
 export default meta;
 
-const link = { "href": "https://example.com", "onClick": () => { } };
+const link = { "href": "https://example.com", "onClick": () => {} };
 
 export const VueShortVariant = getStory({
     "className": css({ "width": 400 }),
@@ -21,7 +19,7 @@ export const VueShortVariant = getStory({
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     link,
-    ...logCallbacks([ "callback"])
+    ...logCallbacks(["callback"]),
 });
 
 export const VueLongVariant = getStory({
@@ -30,7 +28,7 @@ export const VueLongVariant = getStory({
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     link,
-    ...logCallbacks([ "callback"])
+    ...logCallbacks(["callback"]),
 });
 
 export const VueNoLogo = getStory({
@@ -39,8 +37,5 @@ export const VueNoLogo = getStory({
     "isShortVariant": false,
     "friendlyName": "My RStudio a bit long",
     link,
-    ...logCallbacks([ "callback"])
+    ...logCallbacks(["callback"]),
 });
-
-
-

@@ -91,8 +91,7 @@ export function MySecrets(props: Props) {
             ),
     );
 
-    const { secretExplorerUserHomePath: userHomePath } =
-        useSecretExplorerUserHomePath();
+    const { secretExplorerUserHomePath: userHomePath } = useSecretExplorerUserHomePath();
 
     useEffect(
         () => {
@@ -128,13 +127,8 @@ export function MySecrets(props: Props) {
 
             routes
                 .mySecrets({
-                    ...(state.state === "SHOWING SECRET"
-                        ? { "isFile": true }
-                        : {}),
-                    "secretOrDirectoryPath": state.currentPath.replace(
-                        /^\//,
-                        "",
-                    ),
+                    ...(state.state === "SHOWING SECRET" ? { "isFile": true } : {}),
+                    "secretOrDirectoryPath": state.currentPath.replace(/^\//, ""),
                 })
                 .push();
         },
@@ -149,44 +143,37 @@ export function MySecrets(props: Props) {
             editedBasename,
         }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
             dispatch(
-                thunks.secretExplorer.renameDirectoryOrSecretWithinCurrentDirectory(
-                    {
-                        "kind": (() => {
-                            switch (kind) {
-                                case "file":
-                                    return "secret";
-                                case "directory":
-                                    return "directory";
-                            }
-                        })(),
-                        basename,
-                        "newBasename": editedBasename,
-                    },
-                ),
+                thunks.secretExplorer.renameDirectoryOrSecretWithinCurrentDirectory({
+                    "kind": (() => {
+                        switch (kind) {
+                            case "file":
+                                return "secret";
+                            case "directory":
+                                return "directory";
+                        }
+                    })(),
+                    basename,
+                    "newBasename": editedBasename,
+                }),
             ),
     );
 
     const onDeleteItem = useConstCallback(
-        async ({
-            kind,
-            basename,
-        }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
+        async ({ kind, basename }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
             console.log("TODO: Deletion started");
 
             await dispatch(
-                thunks.secretExplorer.deleteDirectoryOrSecretWithinCurrentDirectory(
-                    {
-                        "kind": (() => {
-                            switch (kind) {
-                                case "file":
-                                    return "secret";
-                                case "directory":
-                                    return "directory";
-                            }
-                        })(),
-                        basename,
-                    },
-                ),
+                thunks.secretExplorer.deleteDirectoryOrSecretWithinCurrentDirectory({
+                    "kind": (() => {
+                        switch (kind) {
+                            case "file":
+                                return "secret";
+                            case "directory":
+                                return "directory";
+                        }
+                    })(),
+                    basename,
+                }),
             );
 
             console.log("TODO: Deletion completed");
@@ -298,9 +285,7 @@ export function MySecrets(props: Props) {
                             isBeingUpdated={state.isBeingUpdated}
                             secretWithMetadata={state.secretWithMetadata}
                             onEdit={onEdit}
-                            doDisplayUseInServiceDialog={
-                                doDisplayUseInServiceDialog
-                            }
+                            doDisplayUseInServiceDialog={doDisplayUseInServiceDialog}
                             onDoDisplayUseInServiceDialogValueChange={
                                 onDoDisplayUseInServiceDialogValueChange
                             }
@@ -310,9 +295,7 @@ export function MySecrets(props: Props) {
                 fileDate={
                     state.state !== "SHOWING SECRET"
                         ? undefined
-                        : new Date(
-                              state.secretWithMetadata.metadata.created_time,
-                          )
+                        : new Date(state.secretWithMetadata.metadata.created_time)
                 }
                 files={state.secrets}
                 directories={state.directories}
@@ -327,14 +310,10 @@ export function MySecrets(props: Props) {
                         : state.directoriesBeingRenamed
                 }
                 filesBeingCreated={
-                    state.state !== "SHOWING DIRECTORY"
-                        ? []
-                        : state.secretsBeingCreated
+                    state.state !== "SHOWING DIRECTORY" ? [] : state.secretsBeingCreated
                 }
                 filesBeingRenamed={
-                    state.state !== "SHOWING DIRECTORY"
-                        ? []
-                        : state.secretsBeingRenamed
+                    state.state !== "SHOWING DIRECTORY" ? [] : state.secretsBeingRenamed
                 }
                 onNavigate={onNavigate}
                 onEditBasename={onEditedBasename}

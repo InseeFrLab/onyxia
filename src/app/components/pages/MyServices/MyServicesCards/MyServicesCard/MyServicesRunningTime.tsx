@@ -4,24 +4,20 @@ import { makeStyles, Icon, Text } from "app/theme";
 import { useFromNow } from "app/i18n/useMoment";
 import { useTranslation } from "app/i18n/useTranslations";
 
-const useStyles = makeStyles<{ isOvertime: boolean }>()(
-    (theme, { isOvertime }) => {
-        const color = isOvertime
-            ? theme.colors.useCases.alertSeverity.error.main
-            : undefined;
+const useStyles = makeStyles<{ isOvertime: boolean }>()((theme, { isOvertime }) => {
+    const color = isOvertime ? theme.colors.useCases.alertSeverity.error.main : undefined;
 
-        return {
-            "root": {
-                color,
-                "display": "flex",
-                "alignItems": "center",
-            },
-            "icon": {
-                color,
-            },
-        };
-    },
-);
+    return {
+        "root": {
+            color,
+            "display": "flex",
+            "alignItems": "center",
+        },
+        "icon": {
+            color,
+        },
+    };
+});
 
 export type Props = {
     className?: string;

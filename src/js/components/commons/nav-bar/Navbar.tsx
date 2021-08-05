@@ -15,11 +15,7 @@ import type { ScreenType } from "js/model/ScreenType";
 import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
-import {
-    useSelector,
-    useDispatch,
-    useAppConstants,
-} from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/interfaceWithLib/hooks";
 import { useWindowInnerSize } from "onyxia-ui";
 
 export const Navbar: React.FC<{}> = () => {
@@ -80,10 +76,7 @@ export const Navbar: React.FC<{}> = () => {
                             <LogoMonCompte screenType={screenType} />
                         </Link>
                     ) : (
-                        <LoginButton
-                            screenType={screenType}
-                            handleClick={handleLogin}
-                        />
+                        <LoginButton screenType={screenType} handleClick={handleLogin} />
                     )}
                 </Toolbar>
                 <AppMenu

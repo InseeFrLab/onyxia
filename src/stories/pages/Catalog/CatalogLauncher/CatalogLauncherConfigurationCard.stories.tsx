@@ -9,9 +9,7 @@ import { css } from "tss-react";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
-function Container(
-    props: Omit<Props, "formFieldsByTabName" | "onFormValueChange">,
-) {
+function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange">) {
     const [formFields, setFormFields] = useState<
         Props["formFieldsByTabName"][string]["formFields"]
     >([
@@ -47,8 +45,7 @@ function Container(
             "path": ["environnement", "vault"],
             "title": "vault",
             "isReadonly": false,
-            "description":
-                "Add vault temporary identity inside your environment",
+            "description": "Add vault temporary identity inside your environment",
             "value": true,
         },
         {

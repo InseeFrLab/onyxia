@@ -1,11 +1,10 @@
-  
-import ServiceEnv from './env';
-import basicService from 'js/model/sampledata/service-basic.json';
+import ServiceEnv from "./env";
+import basicService from "js/model/sampledata/service-basic.json";
 
 export default {
-	title: 'My service',
-	component: ServiceEnv,
-	includeStories: [],
+    title: "My service",
+    component: ServiceEnv,
+    includeStories: [],
 };
 
 const { env } = basicService;
@@ -13,5 +12,5 @@ const { env } = basicService;
 export const BasicServiceEnv = () => <ServiceEnv env={env} />;
 
 BasicServiceEnv.story = {
-	title: 'Basic service env',
+    title: "Basic service env",
 };

@@ -98,10 +98,7 @@ export const KcApp = memo((props: Props) => {
         ...defaultKcProps,
         "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classes.kcHtmlClass],
         "kcLoginClass": [...defaultKcProps.kcLoginClass, classes.kcLoginClass],
-        "kcFormCardClass": [
-            ...defaultKcProps.kcFormCardClass,
-            classes.kcFormCardClass,
-        ],
+        "kcFormCardClass": [...defaultKcProps.kcFormCardClass, classes.kcFormCardClass],
         "kcButtonPrimaryClass": [
             ...defaultKcProps.kcButtonPrimaryClass,
             classes.kcButtonPrimaryClass,

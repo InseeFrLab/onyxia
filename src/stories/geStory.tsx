@@ -30,16 +30,11 @@ export function getStoryFactory<Props>(params: {
     /** https://storybook.js.org/docs/react/essentials/controls */
     argTypes?: Partial<Record<keyof Props, ArgType>>;
 }) {
-    const {
-        sectionName,
-        wrappedComponent,
-        argTypes = {},
-        doProvideMockStore,
-    } = params;
+    const { sectionName, wrappedComponent, argTypes = {}, doProvideMockStore } = params;
 
-    const Component: React.ComponentType<Props> = Object.entries(
-        wrappedComponent,
-    ).map(([, component]) => component)[0];
+    const Component: React.ComponentType<Props> = Object.entries(wrappedComponent).map(
+        ([, component]) => component,
+    )[0];
 
     function ScreenSize() {
         const { windowInnerWidth } = useWindowInnerSize();
@@ -83,14 +78,7 @@ export function getStoryFactory<Props>(params: {
             targetWindowInnerWidth: number;
             lng: SupportedLanguage;
         }
-    > = ({
-        darkMode,
-        width,
-        targetWindowInnerWidth,
-        chromeFontSize,
-        lng,
-        ...props
-    }) => {
+    > = ({ darkMode, width, targetWindowInnerWidth, chromeFontSize, lng, ...props }) => {
         const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
         useEffect(() => {
@@ -107,10 +95,8 @@ export function getStoryFactory<Props>(params: {
             NonNullable<ThemeProviderProps["getViewPortConfig"]>
         >(
             ({ windowInnerWidth }) => ({
-                "targetBrowserFontSizeFactor":
-                    chromeFontSizesFactors[chromeFontSize],
-                "targetWindowInnerWidth":
-                    targetWindowInnerWidth || windowInnerWidth,
+                "targetBrowserFontSizeFactor": chromeFontSizesFactors[chromeFontSize],
+                "targetWindowInnerWidth": targetWindowInnerWidth || windowInnerWidth,
             }),
             [targetWindowInnerWidth, chromeFontSize],
         );
@@ -213,8 +199,7 @@ export function logCallbacks<T extends string>(
     const out: Record<T, () => void> = id<Record<string, never>>({});
 
     propertyNames.forEach(
-        propertyName =>
-            (out[propertyName] = console.log.bind(console, propertyName)),
+        propertyName => (out[propertyName] = console.log.bind(console, propertyName)),
     );
 
     return out;

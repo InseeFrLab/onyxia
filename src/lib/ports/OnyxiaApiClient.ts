@@ -35,10 +35,7 @@ export type Get_Public_Catalog_CatalogId_PackageName = {
 export namespace Get_Public_Catalog_CatalogId_PackageName {
     export type JSONSchemaObject = {
         description?: string;
-        properties: Record<
-            string,
-            JSONSchemaObject | JSONSchemaFormFieldDescription
-        >;
+        properties: Record<string, JSONSchemaObject | JSONSchemaFormFieldDescription>;
         type: "object";
     };
 
@@ -86,6 +83,10 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             email: string;
             password: string;
             ip: string;
+        };
+        project: {
+            id: string;
+            password: string;
         };
         git: {
             name: string;

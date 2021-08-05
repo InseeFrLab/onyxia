@@ -1,5 +1,3 @@
-
-
 import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/geStory";
@@ -7,7 +5,7 @@ import rstudioImgUrl from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesCard }
+    "wrappedComponent": { MyServicesCard },
 });
 
 export default meta;
@@ -21,7 +19,7 @@ export const VueRegular = getStory({
     "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
     "isOvertime": false,
-    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"])
+    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"]),
 });
 
 export const VueStarting = getStory({
@@ -33,6 +31,5 @@ export const VueStarting = getStory({
     "monitoringUrl": "https://example.com",
     "startTime": undefined,
     "isOvertime": false,
-    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"])
+    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"]),
 });
-

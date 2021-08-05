@@ -75,10 +75,7 @@ export const Header = memo((props: Props) => {
                 })}
             >
                 {props.type === "core" && (
-                    <Text
-                        typo="section heading"
-                        className={css({ "fontWeight": 600 })}
-                    >
+                    <Text typo="section heading" className={css({ "fontWeight": 600 })}>
                         Onyxia -
                     </Text>
                 )}
@@ -113,16 +110,12 @@ export const Header = memo((props: Props) => {
                         <DarkModeSwitch />
                         {props.isUserLoggedIn && (
                             <ToggleCloudShell
-                                useIsCloudShellVisible={
-                                    props.useIsCloudShellVisible
-                                }
+                                useIsCloudShellVisible={props.useIsCloudShellVisible}
                             />
                         )}
                         <Button
                             onClick={props.onAuthClick}
-                            variant={
-                                props.isUserLoggedIn ? "secondary" : "primary"
-                            }
+                            variant={props.isUserLoggedIn ? "secondary" : "primary"}
                             className={css({ "marginLeft": theme.spacing(3) })}
                         >
                             {t(props.isUserLoggedIn ? "logout" : "login")}
@@ -160,11 +153,7 @@ const { ToggleCloudShell } = (() => {
         })();
 
         return (
-            <IconButton
-                iconId="bash"
-                size="large"
-                onClick={toggleCloudShellVisibility}
-            />
+            <IconButton iconId="bash" size="large" onClick={toggleCloudShellVisibility} />
         );
     });
 

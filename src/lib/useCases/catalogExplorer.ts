@@ -1,5 +1,3 @@
-
-
 import type { AppThunk } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
@@ -10,21 +8,20 @@ import { assert } from "tsafe/assert";
 export const name = "catalogExplorer";
 
 export type CatalogExplorerState =
-    CatalogExplorerState.NotFetched |
-    CatalogExplorerState.NotSelected |
-    CatalogExplorerState.Ready;
+    | CatalogExplorerState.NotFetched
+    | CatalogExplorerState.NotSelected
+    | CatalogExplorerState.Ready;
 
 export namespace CatalogExplorerState {
-
     type Common = {
         availableCatalogsId: string[];
-        '~internal': {
+        "~internal": {
             apiRequestResult: Get_Public_Catalog["catalogs"];
-        }
+        };
     };
 
     export type NotFetched = {
-        stateDescription: "not fetched"
+        stateDescription: "not fetched";
         isFetching: boolean;
     };
 
@@ -43,30 +40,33 @@ export namespace CatalogExplorerState {
             packageHomeUrl?: string;
         }[];
     };
-
 }
 
 const { reducer, actions } = createSlice({
     name,
-    "initialState": id<CatalogExplorerState>(id<CatalogExplorerState.NotFetched>({
-        "stateDescription": "not fetched",
-        "isFetching": false
-    })),
+    "initialState": id<CatalogExplorerState>(
+        id<CatalogExplorerState.NotFetched>({
+            "stateDescription": "not fetched",
+            "isFetching": false,
+        }),
+    ),
     "reducers": {
-        "catalogsFetching": state =>{
+        "catalogsFetching": state => {
             assert(state.stateDescription === "not fetched");
-            state.isFetching= true;
+            state.isFetching = true;
         },
-        "catalogsFetched": (_, { payload }: PayloadAction<NonNullable<CatalogExplorerState.NotSelected>>) =>
-            payload,
-        "catalogSelected": (state, { payload }: PayloadAction<{ catalogId: string; }>) => {
-
+        "catalogsFetched": (
+            _,
+            { payload }: PayloadAction<NonNullable<CatalogExplorerState.NotSelected>>,
+        ) => payload,
+        "catalogSelected": (state, { payload }: PayloadAction<{ catalogId: string }>) => {
             const { catalogId } = payload;
 
             assert(state.stateDescription !== "not fetched");
 
-            const apiRequestResultResultForCatalog = 
-                state["~internal"].apiRequestResult.find(({ id }) => id === catalogId)!;
+            const apiRequestResultResultForCatalog = state[
+                "~internal"
+            ].apiRequestResult.find(({ id }) => id === catalogId)!;
 
             return id<CatalogExplorerState.Ready>({
                 "stateDescription": "ready",
@@ -74,79 +74,65 @@ const { reducer, actions } = createSlice({
                 "selectedCatalogId": catalogId,
                 "locationUrl": apiRequestResultResultForCatalog.location,
                 "~internal": state["~internal"],
-                "packages": apiRequestResultResultForCatalog
-                    .catalog
-                    .packages
+                "packages": apiRequestResultResultForCatalog.catalog.packages
                     .map(o => ({
                         "packageDescription": o.description,
                         "packageHomeUrl": o.home,
                         "packageName": o.name,
-                        "packageIconUrl": o.icon
+                        "packageIconUrl": o.icon,
                     }))
-                    .sort((a, b) =>
-                        getHardCodedPackageWeight(b.packageName) -
-                        getHardCodedPackageWeight(a.packageName)
-                    )
+                    .sort(
+                        (a, b) =>
+                            getHardCodedPackageWeight(b.packageName) -
+                            getHardCodedPackageWeight(a.packageName),
+                    ),
             });
-
-        }
-    }
+        },
+    },
 });
 
 export { reducer };
 
 export const thunks = {
     "fetchCatalogs":
-        (): AppThunk => async (...args) => {
-
+        (): AppThunk =>
+        async (...args) => {
             const [dispatch, , dependencies] = args;
 
             dispatch(actions.catalogsFetching());
 
-            const apiRequestResult = await dependencies.onyxiaApiClient
-                .getCatalogs();
+            const apiRequestResult = await dependencies.onyxiaApiClient.getCatalogs();
 
             dispatch(
-                actions.catalogsFetched(id<CatalogExplorerState.NotSelected>({
-                    "stateDescription": "not selected",
-                    "availableCatalogsId": apiRequestResult.map(({ id }) => id),
-                    "~internal": {
-                        apiRequestResult
-                    }
-                }))
+                actions.catalogsFetched(
+                    id<CatalogExplorerState.NotSelected>({
+                        "stateDescription": "not selected",
+                        "availableCatalogsId": apiRequestResult.map(({ id }) => id),
+                        "~internal": {
+                            apiRequestResult,
+                        },
+                    }),
+                ),
             );
-
         },
     "selectCatalog":
-        (
-            params: {
-                catalogId: string;
-            }
-        ): AppThunk<void> => async dispatch =>
-                dispatch(actions.catalogSelected(params))
+        (params: { catalogId: string }): AppThunk<void> =>
+        async dispatch =>
+            dispatch(actions.catalogSelected(params)),
 };
 
-
-
 const { getHardCodedPackageWeight } = (() => {
-
     const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
 
     function getHardCodedPackageWeight(packageName: string) {
-
         for (let i = 0; i < mainServices.length; i++) {
-
             if (packageName.toLowerCase().includes(mainServices[i])) {
                 return mainServices.length - i;
             }
-
         }
 
         return 0;
-
     }
 
     return { getHardCodedPackageWeight };
-
 })();
-

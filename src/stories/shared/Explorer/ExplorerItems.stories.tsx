@@ -1,6 +1,4 @@
-
-
-import { css } from "tss-react";
+import { css } from "tss-react";
 import { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/shared/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
@@ -15,65 +13,76 @@ import type { UnpackEvt } from "evt";
 
 const eventEmitter = new EventEmitter();
 
-function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"> & { containerWidth: number; }) {
-
+function Component(
+    props: Omit<
+        Props,
+        "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"
+    > & {
+        containerWidth: number;
+    },
+) {
     const { containerWidth } = props;
 
     const [files, setFiles] = useState(props.files);
     const [directories, setDirectories] = useState(props.directories);
 
-    useEffect(
-        () => { setFiles(props.files); },
-        [props.files]
-    );
+    useEffect(() => {
+        setFiles(props.files);
+    }, [props.files]);
 
-    useEffect(
-        () => { setDirectories(props.directories); },
-        [props.directories]
-    );
+    useEffect(() => {
+        setDirectories(props.directories);
+    }, [props.directories]);
 
     const [filesBeingRenamed, setFilesBeingRenamed] = useState<string[]>([]);
 
     const [directoriesBeingRenamed, setDirectoriesBeingRenamed] = useState<string[]>([]);
 
+    const [toRemove, setToRemove] = useState<
+        { kind: "directory" | "file"; basename: string } | undefined
+    >(undefined);
 
-    const [toRemove, setToRemove] = useState<{ kind: "directory" | "file"; basename: string; } | undefined>(undefined);
+    useEffect(() => {
+        if (toRemove === undefined) {
+            return;
+        }
 
-    useEffect(
-        () => {
+        const { kind, basename } = toRemove;
 
-            if (toRemove === undefined) {
-                return;
+        const [beingRenamedItems, setBeingRenamedItems] = (() => {
+            switch (kind) {
+                case "directory":
+                    return [directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
+                case "file":
+                    return [filesBeingRenamed, setFilesBeingRenamed] as const;
             }
+        })();
 
-            const { kind, basename } = toRemove;
+        setBeingRenamedItems(
+            beingRenamedItems.filter(basename_i => basename_i !== basename),
+        );
 
-            const [beingRenamedItems, setBeingRenamedItems] = (() => {
-                switch (kind) {
-                    case "directory": return [directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
-                    case "file": return [filesBeingRenamed, setFilesBeingRenamed] as const;
-                }
-            })();
-
-
-            setBeingRenamedItems(beingRenamedItems.filter(basename_i => basename_i !== basename));
-
-            setToRemove(undefined);
-
-
-
-        },
-        [toRemove, filesBeingRenamed, directoriesBeingRenamed]
-    );
+        setToRemove(undefined);
+    }, [toRemove, filesBeingRenamed, directoriesBeingRenamed]);
 
     const onEditedBasename = useCallback(
         ({ basename, editedBasename, kind }: Parameters<Props["onEditBasename"]>[0]) => {
-
-
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
-                    case "directory": return [directories, setDirectories, directoriesBeingRenamed, setDirectoriesBeingRenamed] as const;
-                    case "file": return [files, setFiles, filesBeingRenamed, setFilesBeingRenamed] as const;
+                    case "directory":
+                        return [
+                            directories,
+                            setDirectories,
+                            directoriesBeingRenamed,
+                            setDirectoriesBeingRenamed,
+                        ] as const;
+                    case "file":
+                        return [
+                            files,
+                            setFiles,
+                            filesBeingRenamed,
+                            setFilesBeingRenamed,
+                        ] as const;
                 }
             })();
 
@@ -81,23 +90,17 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
 
             setItems([...items]);
 
-
             (async () => {
-
                 setBeingRenamedItems([...beingRenamedItems, editedBasename]);
 
                 if (basename !== editedBasename) {
-
                     await new Promise(resolve => setTimeout(resolve, 1000));
-
                 }
 
                 setToRemove({ kind, "basename": editedBasename });
-
             })();
-
         },
-        [files, directories, filesBeingRenamed, directoriesBeingRenamed]
+        [files, directories, filesBeingRenamed, directoriesBeingRenamed],
     );
 
     return (
@@ -111,12 +114,11 @@ function Component(props: Omit<Props, "onEditedBasename" | "filesBeingRenamed" |
             onEditBasename={onEditedBasename}
         />
     );
-
 }
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
+    "wrappedComponent": { [symToStr({ ExplorerItems })]: Component },
 });
 
 export default {
@@ -127,15 +129,15 @@ export default {
             "control": {
                 "type": "range",
                 "min": 10,
-                "max": 100
-            }
+                "max": 100,
+            },
         },
         "visualRepresentationOfAFile": {
             "control": {
                 "type": "inline-radio",
                 "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
-            }
-        }
+            },
+        },
     },
     "decorators": [
         ...(meta.decorators ? meta.decorators : []),
@@ -145,7 +147,9 @@ export default {
                 {
                     "title": "Start editing selected item",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>("START EDITING SELECTED ITEM BASENAME"),
+                    "payload": id<UnpackEvt<Props["evtAction"]>>(
+                        "START EDITING SELECTED ITEM BASENAME",
+                    ),
                 },
                 {
                     "title": "Delete selected item",
@@ -155,9 +159,11 @@ export default {
                 {
                     "title": "Copy selected item path",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>("COPY SELECTED ITEM PATH"),
-                }
-            ]
+                    "payload": id<UnpackEvt<Props["evtAction"]>>(
+                        "COPY SELECTED ITEM PATH",
+                    ),
+                },
+            ],
         }),
     ],
 };
@@ -167,15 +173,32 @@ export const Vue1 = getStory({
     "visualRepresentationOfAFile": "secret",
     "getIsValidBasename": pure.getIsValidBasename,
     "files": [
-        ...((new Array(30).fill("").map((_,i)=> `aaa${i}`))),
-        "this-is-a-file", "aFileWithAveryLongNameThatShouldNotOverlap.txt", "foo.csv",
+        ...new Array(30).fill("").map((_, i) => `aaa${i}`),
+        "this-is-a-file",
+        "aFileWithAveryLongNameThatShouldNotOverlap.txt",
+        "foo.csv",
     ],
     "directories": [
-        "My_directory-1", "dir2", "another-directory", "another_directory_2",
-        "My_directory-2", "dir3", "another-directory_1", "another_directory_3",
-        "My_directory-3", "dir4", "another-directory_2", "another_directory_4",
-        "My_directory-4", "dir5", "another-directory_3", "another_directory_5",
-        "My_directory-5", "dir6", "another-directory_4", "another_directory_6",
+        "My_directory-1",
+        "dir2",
+        "another-directory",
+        "another_directory_2",
+        "My_directory-2",
+        "dir3",
+        "another-directory_1",
+        "another_directory_3",
+        "My_directory-3",
+        "dir4",
+        "another-directory_2",
+        "another_directory_4",
+        "My_directory-4",
+        "dir5",
+        "another-directory_3",
+        "another_directory_5",
+        "My_directory-5",
+        "dir6",
+        "another-directory_4",
+        "another_directory_6",
     ],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,
@@ -187,6 +210,6 @@ export const Vue1 = getStory({
         "onDeleteItem",
         "onEditBasename",
         "onSelectedItemKindValueChange",
-        "onIsSelectedItemInEditingStateValueChange"
-    ])
+        "onIsSelectedItemInEditingStateValueChange",
+    ]),
 });

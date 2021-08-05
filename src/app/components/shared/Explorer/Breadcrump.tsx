@@ -21,8 +21,7 @@ export type Props = {
 };
 
 export const Breadcrump = memo((props: Props) => {
-    const { minDepth, isNavigationDisabled, callback, className, evtAction } =
-        props;
+    const { minDepth, isNavigationDisabled, callback, className, evtAction } = props;
 
     const [path, setPath] = useState(props.path);
 
@@ -65,20 +64,12 @@ export const Breadcrump = memo((props: Props) => {
                     setPath(evtPropsPath.state);
                 }, 500);
 
-                scopedCtx.evtDoneOrAborted.attachOnce(() =>
-                    clearTimeout(timer),
-                );
+                scopedCtx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
 
-                evtDisplayFeedback.attachOnce(scopedCtx, () =>
-                    scopedCtx.done(),
-                );
-                evtPropsPath
-                    .toStateless(scopedCtx)
-                    .attachOnce(() => scopedCtx.done());
+                evtDisplayFeedback.attachOnce(scopedCtx, () => scopedCtx.done());
+                evtPropsPath.toStateless(scopedCtx).attachOnce(() => scopedCtx.done());
 
-                ctx.evtDoneOrAborted.attachOnce(scopedCtx, () =>
-                    scopedCtx.done(),
-                );
+                ctx.evtDoneOrAborted.attachOnce(scopedCtx, () => scopedCtx.done());
             }),
         [evtDisplayFeedback, evtPropsPath],
     );
@@ -138,9 +129,7 @@ function getPartialPaths(params: {
         return {
             "partialPath": [...split].splice(0, i + 1).join("/") || "/",
             isLast,
-            "isClickable": isNavigationDisabled
-                ? false
-                : !isLast && i >= minDepth,
+            "isClickable": isNavigationDisabled ? false : !isLast && i >= minDepth,
         };
     });
 }
@@ -186,11 +175,7 @@ const { Section } = (() => {
             },
             "color":
                 theme.colors.useCases.typography[
-                    isFocused
-                        ? "textFocus"
-                        : isLast
-                        ? "textPrimary"
-                        : "textSecondary"
+                    isFocused ? "textFocus" : isLast ? "textPrimary" : "textSecondary"
                 ],
         },
     }));
