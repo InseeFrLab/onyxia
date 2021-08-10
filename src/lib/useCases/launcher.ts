@@ -508,10 +508,22 @@ export const selectors = (() => {
                     return !isHidden;
                 }
 
-                return (
-                    formFields.find(({ path }) => same(path, isHidden.path))!.value !==
-                    isHidden.value
+                const targetFormField = formFields.find(({ path }) =>
+                    same(path, isHidden.path),
                 );
+
+                assert(
+                    targetFormField !== undefined,
+                    [
+                        `We can't tell if ${path.join("/")} should be shown or hidden.`,
+                        `It is supposed to depend on the value of ${isHidden.path.join(
+                            "/",
+                        )}`,
+                        "but this field doesn't exists in the chart.",
+                    ].join(" "),
+                );
+
+                return targetFormField.value !== isHidden.value;
             });
 
             [...dependencies, "global"].forEach(dependencyOrGlobal => {
