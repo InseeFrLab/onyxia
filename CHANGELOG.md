@@ -1,3 +1,7 @@
+### **0.11.72** (2021-08-10)  
+  
+- Give more insightfull error when we can't tell if a feild should be shown    
+  
 ### **0.11.71** (2021-08-05)  
   
 - Provide dummy project infos in mustache params    
