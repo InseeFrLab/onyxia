@@ -330,7 +330,10 @@ export const thunks = {
                                     value["x-form"]?.value ??
                                     value.default ??
                                     (null as any as never),
-                                "enum": value.type === "string" ? value.enum : undefined,
+                                "enum":
+                                    value.type === "string" && "enum" in value
+                                        ? value.enum
+                                        : undefined,
                                 "minimum":
                                     value.type === "number" ? value.minimum : undefined,
                             });

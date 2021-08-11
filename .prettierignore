@@ -3,4 +3,5 @@ node_modules/
 /.yarn_home/
 /build/
 /public/keycloak_static/
+/src/env.ts
 
