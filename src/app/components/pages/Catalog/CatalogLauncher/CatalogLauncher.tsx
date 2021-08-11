@@ -192,7 +192,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 : undefined
                         }
                     />
-                    {Object.keys(indexedFormFields!).map(
+                    {Object.keys(indexedFormFields).map(
                         dependencyNamePackageNameOrGlobal => (
                             <CatalogLauncherConfigurationCard
                                 key={dependencyNamePackageNameOrGlobal}
