@@ -48,4 +48,4 @@ const doubleUp: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDesc
         //"sliderUnit": "Gi", //inferred from "down"
         //"sliderStep": 1, //inferred from "down"
         "default": "2Gi", //Optional, default max
-    } as any;
+    };
