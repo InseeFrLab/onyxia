@@ -79,7 +79,7 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
 
             export type Slider = Slider.Simple | Slider.Range;
             export namespace Slider {
-                type SliderCommon<Unit extends string> = Common<`${string}${Unit}`> & {
+                type SliderCommon<Unit extends string> = Common<`${number}${Unit}`> & {
                     type: "string";
                     render: "slider";
                     sliderUnit: Unit;
