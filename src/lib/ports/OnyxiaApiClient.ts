@@ -95,7 +95,7 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                 export namespace Range {
                     type RangeCommon<Unit extends string> = SliderCommon<Unit> & {
                         sliderExtremitySemantic: string;
-                        title: string;
+                        sliderRangeId: string;
                     };
 
                     export type Down<Unit extends string = string> = RangeCommon<Unit> & {
@@ -103,6 +103,7 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                         sliderMin: number;
                         sliderUnit: Unit;
                         sliderStep: number;
+                        title: string;
                     };
 
                     export type Up<Unit extends string = string> = RangeCommon<Unit> & {
