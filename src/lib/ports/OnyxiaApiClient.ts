@@ -61,11 +61,6 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                   };
         };
 
-        export type String = {
-            type: "string";
-            enum?: string[];
-        } & Common<string>;
-
         export type Boolean = {
             type: "boolean";
         } & Common<boolean>;
@@ -74,6 +69,43 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             type: "number";
             minimum?: string;
         } & Common<number>;
+
+        export type String = String.Enum | String.Slider;
+        export namespace String {
+            export type Enum = {
+                type: "string";
+                enum: string[];
+            } & Common<string>;
+
+            export type Slider = Slider.Simple | Slider.Range;
+            export namespace Slider {
+                export type Simple<Unit extends string = string> = {
+                    type: "string";
+                    sliderUnit: Unit;
+                    render: "slider";
+                    sliderStep: string;
+                } & Common<`${string}${Unit}`>;
+
+                export type Range = Range.Down | Range.Up;
+                export namespace Range {
+                    export type Up<Unit extends string = string> = {
+                        sliderRange: {
+                            id: string;
+                            bound: "up";
+                        };
+                        sliderMax: number;
+                    } & Simple<Unit>;
+
+                    export type Down<Unit extends string = string> = {
+                        sliderRange: {
+                            id: string;
+                            bound: "down";
+                        };
+                        sliderMin: number;
+                    } & Simple<Unit>;
+                }
+            }
+        }
     }
 
     export type MustacheParams = {
