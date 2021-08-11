@@ -83,7 +83,7 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                     type: "string";
                     sliderUnit: Unit;
                     render: "slider";
-                    sliderStep: string;
+                    sliderStep: number;
                 } & Common<`${string}${Unit}`>;
 
                 export type Range = Range.Down | Range.Up;
