@@ -82,13 +82,13 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                 type SliderCommon<Unit extends string> = Common<`${number}${Unit}`> & {
                     type: "string";
                     render: "slider";
-                    sliderUnit: Unit;
-                    sliderStep: number;
                 };
 
                 export type Simple<Unit extends string = string> = SliderCommon<Unit> & {
                     sliderMax: number;
                     sliderMin: number;
+                    sliderUnit: Unit;
+                    sliderStep: number;
                 };
 
                 export type Range = Range.Down | Range.Up;
@@ -98,14 +98,16 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                         title: string;
                     };
 
-                    export type Up<Unit extends string = string> = RangeCommon<Unit> & {
-                        sliderExtremity: "up";
-                        sliderMax: number;
-                    };
-
                     export type Down<Unit extends string = string> = RangeCommon<Unit> & {
                         sliderExtremity: "down";
                         sliderMin: number;
+                        sliderUnit: Unit;
+                        sliderStep: number;
+                    };
+
+                    export type Up<Unit extends string = string> = RangeCommon<Unit> & {
+                        sliderExtremity: "up";
+                        sliderMax: number;
                     };
                 }
             }
