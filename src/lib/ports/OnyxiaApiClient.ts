@@ -61,48 +61,52 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
                   };
         };
 
-        export type Boolean = {
+        export type Boolean = Common<boolean> & {
             type: "boolean";
-        } & Common<boolean>;
+        };
 
-        export type Integer = {
+        export type Integer = Common<number> & {
             type: "number";
             minimum?: string;
-        } & Common<number>;
+        };
 
         export type String = String.Enum | String.Slider;
         export namespace String {
-            export type Enum = {
+            export type Enum = Common<string> & {
                 type: "string";
                 enum: string[];
-            } & Common<string>;
+            };
 
             export type Slider = Slider.Simple | Slider.Range;
             export namespace Slider {
-                export type Simple<Unit extends string = string> = {
+                type SliderCommon<Unit extends string> = Common<`${string}${Unit}`> & {
                     type: "string";
-                    sliderUnit: Unit;
                     render: "slider";
+                    sliderUnit: Unit;
                     sliderStep: number;
-                } & Common<`${string}${Unit}`>;
+                };
+
+                export type Simple<Unit extends string = string> = SliderCommon<Unit> & {
+                    sliderMax: number;
+                    sliderMin: number;
+                };
 
                 export type Range = Range.Down | Range.Up;
                 export namespace Range {
-                    export type Up<Unit extends string = string> = {
-                        sliderRange: {
-                            id: string;
-                            bound: "up";
-                        };
-                        sliderMax: number;
-                    } & Simple<Unit>;
+                    type RangeCommon<Unit extends string> = SliderCommon<Unit> & {
+                        sliderExtremitySemantic: string;
+                        title: string;
+                    };
 
-                    export type Down<Unit extends string = string> = {
-                        sliderRange: {
-                            id: string;
-                            bound: "down";
-                        };
+                    export type Up<Unit extends string = string> = RangeCommon<Unit> & {
+                        sliderExtremity: "up";
+                        sliderMax: number;
+                    };
+
+                    export type Down<Unit extends string = string> = RangeCommon<Unit> & {
+                        sliderExtremity: "down";
                         sliderMin: number;
-                    } & Simple<Unit>;
+                    };
                 }
             }
         }
