@@ -35,6 +35,7 @@ const doubleDown: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDe
         "sliderUnit": "Gi",
         "sliderStep": 1,
         "default": "2Gi", //Optional, default min
+        "sliderRangeId": "foo-bar-baz",
     };
 
 const doubleUp: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDescription.String.Slider.Range.Up<Unit> =
@@ -42,10 +43,10 @@ const doubleUp: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDesc
         "sliderExtremity": "up",
         "sliderMax": 200,
         "sliderExtremitySemantic": "maximum",
-        "title": "Random-Access-Memory (RAM)",
         "type": "string",
         "render": "slider",
         //"sliderUnit": "Gi", //inferred from "down"
         //"sliderStep": 1, //inferred from "down"
         "default": "2Gi", //Optional, default max
+        "sliderRangeId": "foo-bar-baz",
     };
