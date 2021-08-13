@@ -19,18 +19,84 @@ import type { WritableDraft } from "immer/dist/types/types-external";
 import { getMinioToken } from "js/minio-client/minio-client";
 import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
 import { thunks as publicIpThunks } from "./publicIp";
+import { exclude } from "tsafe/exclude";
 
 export const name = "launcher";
 
-export type FormField = FormFieldValue & {
-    title: string;
-    description?: string;
-    isReadonly: boolean;
-    /** May only be defined when typeof value is string */
-    enum?: string[];
-    /** May only be defined when typeof value is number */
-    minimum?: string;
-};
+export type FormField =
+    | FormField.Boolean
+    | FormField.Integer
+    | FormField.Enum
+    | FormField.Text
+    | FormField.Slider;
+export declare namespace FormField {
+    type Common = {
+        path: string[];
+        title: string;
+        description: string | undefined;
+        isReadonly: boolean;
+    };
+
+    export type Boolean = Common & {
+        type: "boolean";
+        value: boolean;
+    };
+
+    export type Integer = Common & {
+        type: "integer";
+        value: number;
+        minimum: string | undefined;
+    };
+
+    export type Enum<T extends string = string> = Common & {
+        type: "enum";
+        enum: T[];
+        value: T;
+    };
+
+    export type Text = Common & {
+        type: "text";
+        value: string;
+    };
+
+    export type Slider = Slider.Simple | Slider.Range;
+
+    export namespace Slider {
+        type SliderCommon<Unit extends string> = Common & {
+            type: "slider";
+            value: `${number}${Unit}`;
+        };
+
+        export type Simple<Unit extends string = string> = SliderCommon<Unit> & {
+            sliderVariation: "simple";
+            sliderMax: number;
+            sliderMin: number;
+            sliderUnit: Unit;
+            sliderStep: number;
+        };
+
+        export type Range = Range.Down | Range.Up;
+        export namespace Range {
+            type RangeCommon<Unit extends string> = SliderCommon<Unit> & {
+                sliderVariation: "range";
+                sliderExtremitySemantic: string;
+                sliderRangeId: string;
+            };
+
+            export type Down<Unit extends string = string> = RangeCommon<Unit> & {
+                sliderExtremity: "down";
+                sliderMin: number;
+                sliderUnit: Unit;
+                sliderStep: number;
+            };
+
+            export type Up<Unit extends string = string> = RangeCommon<Unit> & {
+                sliderExtremity: "up";
+                sliderMax: number;
+            };
+        }
+    }
+}
 
 export type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
 
@@ -62,27 +128,210 @@ export declare namespace LauncherState {
     };
 }
 
-export type IndexedFormFields = {
-    [dependencyNamePackageNameOrGlobal: string]: {
-        meta:
-            | {
-                  type: "dependency";
-              }
-            | {
-                  type: "package";
-              }
-            | {
-                  type: "global";
-                  description?: string;
-              };
-        formFieldsByTabName: {
-            [tabName: string]: {
-                description?: string;
-                formFields: FormField[];
+export type IndexedFormFields = IndexedFormFields.Final;
+
+export declare namespace IndexedFormFields {
+    type Generic<T> = {
+        [dependencyNamePackageNameOrGlobal: string]: {
+            meta:
+                | {
+                      type: "dependency";
+                  }
+                | {
+                      type: "package";
+                  }
+                | {
+                      type: "global";
+                      description?: string;
+                  };
+            formFieldsByTabName: {
+                [tabName: string]: { description?: string } & T;
             };
         };
     };
-};
+
+    export type Final = Generic<{
+        formFields: Exclude<FormField, FormField.Slider.Range>[];
+        assembledSliderRangeFormFields: AssembledSliderRangeFormField[];
+    }>;
+
+    export type Scaffolding = Generic<{
+        formFields: FormField[];
+    }>;
+
+    export type AssembledSliderRangeFormField<Unit extends string = string> = {
+        title: string;
+        description?: string;
+        sliderMax: number;
+        sliderMin: number;
+        sliderUnit: Unit;
+        sliderStep: number;
+        extremities: Record<
+            "up" | "down",
+            {
+                path: string[];
+                semantic: string;
+                value: `${number}${Unit}`;
+            }
+        >;
+    };
+}
+
+const { scaffoldingIndexedFormFieldsToFinal } = (() => {
+    const { assembleFormFields } = (() => {
+        const { assembleRangeSliderFormField } = (() => {
+            const { assembleExtremities } = (() => {
+                function toExtremities(
+                    formField: FormField.Slider.Range,
+                ): IndexedFormFields.AssembledSliderRangeFormField["extremities"][
+                    | "up"
+                    | "down"] {
+                    return {
+                        "path": formField.path,
+                        "semantic": formField.sliderExtremitySemantic,
+                        "value": formField.value,
+                    };
+                }
+
+                function assembleExtremities(
+                    formField1: FormField.Slider.Range,
+                    formField2: FormField.Slider.Range,
+                ): IndexedFormFields.AssembledSliderRangeFormField {
+                    const formFieldUp =
+                        formField1.sliderExtremity === "up" ? formField1 : formField2;
+
+                    assert(formFieldUp.sliderExtremity === "up");
+
+                    const formFieldDown = [formField1, formField2].find(
+                        formField => formField !== formFieldUp,
+                    );
+
+                    assert(
+                        formFieldDown !== undefined &&
+                            formFieldDown.sliderExtremity === "down",
+                    );
+
+                    return {
+                        "extremities": {
+                            "down": toExtremities(formFieldDown),
+                            "up": toExtremities(formFieldUp),
+                        },
+                        "sliderMax": formFieldUp.sliderMax,
+                        ...formFieldDown,
+                    };
+                }
+
+                return { assembleExtremities };
+            })();
+
+            function assembleRangeSliderFormField(
+                acc: (
+                    | IndexedFormFields.AssembledSliderRangeFormField
+                    | FormField.Slider.Range
+                )[],
+                formField: FormField.Slider.Range,
+            ): void {
+                const otherExtremity = acc
+                    .map(assembledSliderRangeFormFieldOrFormFieldSliderRange =>
+                        "extremities" in
+                        assembledSliderRangeFormFieldOrFormFieldSliderRange
+                            ? undefined
+                            : assembledSliderRangeFormFieldOrFormFieldSliderRange,
+                    )
+                    .filter(exclude(undefined))
+                    .find(
+                        ({ sliderRangeId }) => sliderRangeId === formField.sliderRangeId,
+                    );
+
+                if (otherExtremity !== undefined) {
+                    acc[acc.indexOf(otherExtremity)] = assembleExtremities(
+                        otherExtremity,
+                        formField,
+                    );
+                } else {
+                    acc.push(formField);
+                }
+            }
+
+            return { assembleRangeSliderFormField };
+        })();
+
+        function assembleFormFields(
+            formFields: FormField.Slider.Range[],
+        ): IndexedFormFields.AssembledSliderRangeFormField[] {
+            let acc: (
+                | IndexedFormFields.AssembledSliderRangeFormField
+                | FormField.Slider.Range
+            )[] = [];
+
+            formFields.forEach(formField => assembleRangeSliderFormField(acc, formField));
+
+            return acc.map(assembledSliderRangeFormField => {
+                if (!("extremities" in assembledSliderRangeFormField)) {
+                    throw new Error(
+                        `${assembledSliderRangeFormField.path} only has ${assembledSliderRangeFormField.sliderExtremity} extremity`,
+                    );
+                }
+                return assembledSliderRangeFormField;
+            });
+        }
+
+        return { assembleFormFields };
+    })();
+
+    function scaffoldingIndexedFormFieldsToFinal(
+        scaffoldingIndexedFormFields: IndexedFormFields.Scaffolding,
+    ): IndexedFormFields.Final {
+        const indexedFormFields: IndexedFormFields.Final = {};
+
+        Object.entries(scaffoldingIndexedFormFields).forEach(
+            ([
+                dependencyNamePackageNameOrGlobal,
+                { meta, formFieldsByTabName: scaffoldingFormFieldsByTabName },
+            ]) => {
+                const formFieldsByTabName: IndexedFormFields.Final[string]["formFieldsByTabName"] =
+                    {};
+
+                Object.entries(scaffoldingFormFieldsByTabName).forEach(
+                    ([tabName, { description, formFields: allFormFields }]) => {
+                        const nonSliderRangeFormFields: Exclude<
+                            FormField,
+                            FormField.Slider.Range
+                        >[] = [];
+                        const sliderRangeFormFields: FormField.Slider.Range[] = [];
+
+                        allFormFields.forEach(formField => {
+                            if (
+                                formField.type === "slider" &&
+                                formField.sliderVariation === "range"
+                            ) {
+                                sliderRangeFormFields.push(formField);
+                            } else {
+                                nonSliderRangeFormFields.push(formField);
+                            }
+                        });
+
+                        formFieldsByTabName[tabName] = {
+                            description,
+                            "formFields": nonSliderRangeFormFields,
+                            "assembledSliderRangeFormFields":
+                                assembleFormFields(sliderRangeFormFields),
+                        };
+                    },
+                );
+
+                indexedFormFields[dependencyNamePackageNameOrGlobal] = {
+                    meta,
+                    formFieldsByTabName,
+                };
+            },
+        );
+
+        return indexedFormFields;
+    }
+
+    return { scaffoldingIndexedFormFieldsToFinal };
+})();
 
 const { reducer, actions } = createSlice({
     name,
@@ -312,39 +561,159 @@ export const thunks = {
                         currentPath,
                     } = params;
 
-                    Object.entries(properties).forEach(([key, value]) => {
-                        const newCurrentPath = [...currentPath, key];
+                    Object.entries(properties).forEach(
+                        ([key, jsonSchemaObjectOrFormFieldDescription]) => {
+                            const newCurrentPath = [...currentPath, key];
 
-                        if (value.type === "object") {
-                            callee({
-                                "currentPath": newCurrentPath,
-                                "jsonSchemaObject": value,
-                            });
-                        } else {
-                            formFields.push({
-                                "path": newCurrentPath,
-                                "title": value.title ?? newCurrentPath.slice(-1)[0],
-                                "description": value.description,
-                                "isReadonly": value["x-form"]?.readonly ?? false,
-                                "value":
-                                    value["x-form"]?.value ??
-                                    value.default ??
-                                    (null as any as never),
-                                "enum":
-                                    value.type === "string" && "enum" in value
-                                        ? value.enum
-                                        : undefined,
-                                "minimum":
-                                    value.type === "number" ? value.minimum : undefined,
-                            });
+                            if (
+                                jsonSchemaObjectOrFormFieldDescription.type === "object"
+                            ) {
+                                const jsonSchemaObject =
+                                    jsonSchemaObjectOrFormFieldDescription;
+
+                                callee({
+                                    "currentPath": newCurrentPath,
+                                    jsonSchemaObject,
+                                });
+                                return;
+                            }
+
+                            const jsonSchemaFormFieldDescription =
+                                jsonSchemaObjectOrFormFieldDescription;
+
+                            formFields.push(
+                                (() => {
+                                    const common = {
+                                        "path": newCurrentPath,
+                                        "title":
+                                            jsonSchemaFormFieldDescription.title ??
+                                            newCurrentPath.slice(-1)[0],
+                                        "description":
+                                            jsonSchemaFormFieldDescription.description,
+                                        "isReadonly":
+                                            jsonSchemaFormFieldDescription["x-form"]
+                                                ?.readonly ?? false,
+                                    };
+
+                                    const getValue = <
+                                        T extends Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDescription,
+                                    >(
+                                        jsonSchemaFormFieldDescription: T,
+                                    ): NonNullable<
+                                        NonNullable<T["x-form"]>["value"] | T["default"]
+                                    > =>
+                                        jsonSchemaFormFieldDescription["x-form"]?.value ??
+                                        jsonSchemaFormFieldDescription.default ??
+                                        ((() => {
+                                            throw new Error(
+                                                `${common.path} don't have any default value`,
+                                            );
+                                        })() as any);
+
+                                    if ("render" in jsonSchemaFormFieldDescription) {
+                                        assert(
+                                            jsonSchemaFormFieldDescription.render ===
+                                                "slider",
+                                            `${common.path} has render: "${jsonSchemaFormFieldDescription.render}" and it's not supported`,
+                                        );
+
+                                        const value = getValue(
+                                            jsonSchemaFormFieldDescription,
+                                        );
+
+                                        if (
+                                            "sliderExtremity" in
+                                            jsonSchemaFormFieldDescription
+                                        ) {
+                                            const scopCommon = {
+                                                ...common,
+                                                "type": "slider",
+                                                "sliderVariation": "range",
+                                            } as const;
+
+                                            switch (
+                                                jsonSchemaFormFieldDescription.sliderExtremity
+                                            ) {
+                                                case "down":
+                                                    return id<FormField.Slider.Range.Down>(
+                                                        {
+                                                            ...jsonSchemaFormFieldDescription,
+                                                            ...scopCommon,
+                                                            value,
+                                                        },
+                                                    );
+                                                case "up":
+                                                    return id<FormField.Slider.Range.Up>({
+                                                        ...jsonSchemaFormFieldDescription,
+                                                        ...scopCommon,
+                                                        value,
+                                                    });
+                                            }
+                                        }
+
+                                        return id<FormField.Slider.Simple>({
+                                            ...jsonSchemaFormFieldDescription,
+                                            ...common,
+                                            "type": "slider",
+                                            "sliderVariation": "simple",
+                                            value,
+                                        });
+                                    }
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.type === "boolean"
+                                    ) {
+                                        return id<FormField.Boolean>({
+                                            ...common,
+                                            "value": getValue(
+                                                jsonSchemaFormFieldDescription,
+                                            ),
+                                            "type": "boolean",
+                                        });
+                                    }
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.type === "number"
+                                    ) {
+                                        return id<FormField.Integer>({
+                                            ...common,
+                                            "value": getValue(
+                                                jsonSchemaFormFieldDescription,
+                                            ),
+                                            "minimum":
+                                                jsonSchemaFormFieldDescription.minimum,
+                                            "type": "integer",
+                                        });
+                                    }
+
+                                    if ("enum" in jsonSchemaFormFieldDescription) {
+                                        return id<FormField.Enum>({
+                                            ...common,
+                                            "value": getValue(
+                                                jsonSchemaFormFieldDescription,
+                                            ),
+                                            "enum": jsonSchemaFormFieldDescription.enum,
+                                            "type": "enum",
+                                        });
+                                    }
+
+                                    return id<FormField.Text>({
+                                        ...common,
+                                        "value": getValue(jsonSchemaFormFieldDescription),
+                                        "type": "text",
+                                    });
+                                })(),
+                            );
 
                             hiddenFormFields.push({
                                 "path": newCurrentPath,
                                 "isHidden": (() => {
-                                    const { hidden } = value;
+                                    const { hidden } = jsonSchemaFormFieldDescription;
 
                                     if (hidden === undefined) {
-                                        const hidden = value["x-form"]?.hidden;
+                                        const hidden =
+                                            jsonSchemaFormFieldDescription["x-form"]
+                                                ?.hidden;
 
                                         if (hidden !== undefined) {
                                             return hidden;
@@ -363,8 +732,8 @@ export const thunks = {
                                     };
                                 })(),
                             });
-                        }
-                    });
+                        },
+                    );
                 })({
                     "currentPath": [],
                     "jsonSchemaObject": config,
@@ -485,12 +854,18 @@ export const selectors = (() => {
         hiddenFormFieldsSelector,
         packageNameSelector,
         dependenciesSelector,
-        (config, formFields, hiddenFormFields, packageName, dependencies) => {
+        (
+            config,
+            formFields,
+            hiddenFormFields,
+            packageName,
+            dependencies,
+        ): IndexedFormFields | undefined => {
             if (!formFields || !packageName || !dependencies || !hiddenFormFields) {
                 return undefined;
             }
 
-            const indexedFormFields: IndexedFormFields = {};
+            const indexedFormFields: IndexedFormFields.Scaffolding = {};
 
             const formFieldsRest = formFields.filter(({ path }) => {
                 if (same(onyxiaFriendlyNameFormFieldPath, path)) {
@@ -530,7 +905,7 @@ export const selectors = (() => {
             });
 
             [...dependencies, "global"].forEach(dependencyOrGlobal => {
-                const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] =
+                const formFieldsByTabName: IndexedFormFields.Scaffolding[string]["formFieldsByTabName"] =
                     {};
 
                 formFieldsRest
@@ -576,14 +951,13 @@ export const selectors = (() => {
             });
 
             {
-                const formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"] =
+                const formFieldsByTabName: IndexedFormFields.Scaffolding[string]["formFieldsByTabName"] =
                     indexedFormFields[packageName]?.formFieldsByTabName ?? {};
 
                 formFieldsRest.forEach(formField =>
-                    //(formFieldsByTabName[formField.path[0]] ??= []).push(formField);
                     (
-                        formFieldsByTabName[formField.path[0]] ??
-                        (formFieldsByTabName[formField.path[0]] = {
+                        formFieldsByTabName[formField.path[1]] ??
+                        (formFieldsByTabName[formField.path[1]] = {
                             "description":
                                 config?.properties[formField.path[0]].description,
                             "formFields": [],
@@ -597,11 +971,11 @@ export const selectors = (() => {
                 };
             }
 
-            //Resign packageName so it appears before other cards
+            //Re assign packageName so it appears before other cards
             return Object.fromEntries(
-                Object.entries(indexedFormFields).sort(([key]) =>
-                    key === packageName ? -1 : 0,
-                ),
+                Object.entries(
+                    scaffoldingIndexedFormFieldsToFinal(indexedFormFields),
+                ).sort(([key]) => (key === packageName ? -1 : 0)),
             );
         },
     );
