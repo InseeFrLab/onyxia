@@ -32,7 +32,7 @@ export type Get_Public_Catalog_CatalogId_PackageName = {
     }[];
 };
 
-export namespace Get_Public_Catalog_CatalogId_PackageName {
+export declare namespace Get_Public_Catalog_CatalogId_PackageName {
     export type JSONSchemaObject = {
         description?: string;
         properties: Record<string, JSONSchemaObject | JSONSchemaFormFieldDescription>;
@@ -70,11 +70,15 @@ export namespace Get_Public_Catalog_CatalogId_PackageName {
             minimum?: string;
         };
 
-        export type String = String.Enum | String.Slider;
+        export type String = String.Text | String.Enum | String.Slider;
         export namespace String {
-            export type Enum = Common<string> & {
+            export type Text = Common<string> & {
                 type: "string";
-                enum: string[];
+            };
+
+            export type Enum<T extends string = string> = Common<T> & {
+                type: "string";
+                enum: T[];
             };
 
             export type Slider = Slider.Simple | Slider.Range;
