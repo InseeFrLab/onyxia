@@ -265,6 +265,7 @@ const { TabContent } = (() => {
         description?: string;
         className?: string;
         formFields: FormField[];
+        assembledSliderRangeFormFields: IndexedFormFields.AssembledSliderRangeFormField[];
         onFormValueChange(params: FormFieldValue): void;
     };
 
@@ -286,7 +287,13 @@ const { TabContent } = (() => {
     }));
 
     const TabContent = memo((props: Props) => {
-        const { className, formFields, onFormValueChange, description } = props;
+        const {
+            className,
+            formFields,
+            onFormValueChange,
+            description,
+            assembledSliderRangeFormFields,
+        } = props;
 
         const onTextFieldChangeFactory = useCallbackFactory(
             (
@@ -345,56 +352,7 @@ const { TabContent } = (() => {
                                         ? undefined
                                         : capitalize(formField.description);
 
-                                switch (typeof formField.value) {
-                                    case "string":
-                                        return formField.enum !== undefined ? (
-                                            (() => {
-                                                const labelId = `select_label_${i}`;
-
-                                                return (
-                                                    <FormControl>
-                                                        <InputLabel id={labelId}>
-                                                            {label}
-                                                        </InputLabel>
-                                                        <Select
-                                                            labelId={labelId}
-                                                            value={formField.value}
-                                                            onChange={onSelectChangeFactory(
-                                                                formField.path,
-                                                            )}
-                                                        >
-                                                            {formField.enum.map(value => (
-                                                                <MenuItem
-                                                                    key={value}
-                                                                    value={value}
-                                                                >
-                                                                    {value}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </Select>
-                                                        <FormHelperText>
-                                                            {helperText}
-                                                        </FormHelperText>
-                                                    </FormControl>
-                                                );
-                                            })()
-                                        ) : (
-                                            <MuiTextField
-                                                className={classes.textField}
-                                                label={label}
-                                                value={formField.value}
-                                                helperText={helperText}
-                                                disabled={formField.isReadonly}
-                                                onChange={onTextFieldChangeFactory(
-                                                    formField.path,
-                                                )}
-                                                autoComplete="off"
-                                                inputProps={{
-                                                    "spellCheck": false,
-                                                }}
-                                                onFocus={onTextFieldFocus}
-                                            />
-                                        );
+                                switch (formField.type) {
                                     case "boolean":
                                         return (
                                             <FormControl>
@@ -415,7 +373,55 @@ const { TabContent } = (() => {
                                                 </FormHelperText>
                                             </FormControl>
                                         );
-                                    case "number":
+                                    case "enum": {
+                                        const labelId = `select_label_${i}`;
+
+                                        return (
+                                            <FormControl>
+                                                <InputLabel id={labelId}>
+                                                    {label}
+                                                </InputLabel>
+                                                <Select
+                                                    labelId={labelId}
+                                                    value={formField.value}
+                                                    onChange={onSelectChangeFactory(
+                                                        formField.path,
+                                                    )}
+                                                >
+                                                    {formField.enum.map(value => (
+                                                        <MenuItem
+                                                            key={value}
+                                                            value={value}
+                                                        >
+                                                            {value}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                                <FormHelperText>
+                                                    {helperText}
+                                                </FormHelperText>
+                                            </FormControl>
+                                        );
+                                    }
+                                    case "text":
+                                        return (
+                                            <MuiTextField
+                                                className={classes.textField}
+                                                label={label}
+                                                value={formField.value}
+                                                helperText={helperText}
+                                                disabled={formField.isReadonly}
+                                                onChange={onTextFieldChangeFactory(
+                                                    formField.path,
+                                                )}
+                                                autoComplete="off"
+                                                inputProps={{
+                                                    "spellCheck": false,
+                                                }}
+                                                onFocus={onTextFieldFocus}
+                                            />
+                                        );
+                                    case "integer":
                                         return (
                                             <MuiTextField
                                                 value={formField.value}
@@ -433,6 +439,8 @@ const { TabContent } = (() => {
                                                 helperText={helperText}
                                             />
                                         );
+                                    case "slider":
+                                        return null;
                                 }
                             })()}
                         </div>
