@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, memo } from "react";
 import Slider from "@material-ui/core/Slider";
 import type { SliderProps } from "@material-ui/core/Slider";
@@ -11,22 +12,22 @@ import { capitalize } from "tsafe/capitalize";
 import { useWithProps } from "powerhooks/useWithProps";
 import { useDomRect } from "powerhooks/useDomRect";
 
-export type RangeSliderProps = {
+export type SimpleOrRangeSliderProps = {
     className?: string;
     label: NonNullable<ReactNode>;
     min: number;
     max: number;
     step: number;
     unit: string;
-    lowExtremitySemantic: string;
-    highExtremitySemantic: string;
+    lowExtremitySemantic?: string;
+    highExtremitySemantic?: string;
 
-    valueLow: number;
+    valueLow?: number;
     valueHigh: number;
-    setValue(params: { extremity: "low" | "high"; value: number }): void;
+    onValueChange(params: { extremity: "low" | "high"; value: number }): void;
 };
 
-const useStyles = makeStyles()(theme => ({
+const useStyles = makeStyles<{ isRange: boolean }>()((theme, { isRange }) => ({
     "label": {
         "marginBottom": theme.spacing(3),
     },
@@ -36,11 +37,12 @@ const useStyles = makeStyles()(theme => ({
     "slider": {
         "flex": 1,
         "margin": theme.spacing(0, 4),
+        "marginLeft": isRange ? undefined : 0,
         "minWidth": 150,
     },
 }));
 
-export const RangeSlider = memo((props: RangeSliderProps) => {
+export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
     const {
         className,
         label,
@@ -52,12 +54,16 @@ export const RangeSlider = memo((props: RangeSliderProps) => {
         highExtremitySemantic,
         valueLow,
         valueHigh,
-        setValue,
+        onValueChange,
     } = props;
 
-    const { classes } = useStyles();
+    const { classes } = useStyles({ "isRange": valueLow !== undefined });
 
     const muiSliderValue = useMemo(() => {
+        if (valueLow === undefined) {
+            return valueHigh;
+        }
+
         assert(
             valueLow <= valueHigh,
             `RangeSlider error, ${symToStr({
@@ -66,19 +72,27 @@ export const RangeSlider = memo((props: RangeSliderProps) => {
         );
 
         return [valueLow, valueHigh];
-    }, [valueLow, valueHigh]);
+    }, [valueLow ?? Object, valueHigh]);
 
     const onChange = useConstCallback<SliderProps["onChange"]>((...[, value]: any[]) => {
-        assert(is<[number, number]>(value));
+        const [newValueLow, newValueHigh] = (() => {
+            if (valueLow === undefined) {
+                assert(is<number>(value));
 
-        const [newValueLow, newValueHigh] = value;
+                return [undefined, value] as const;
+            } else {
+                assert(is<[number, number]>(value));
 
-        if (newValueLow !== valueLow) {
-            setValue({ "extremity": "low", "value": newValueLow });
+                return value;
+            }
+        })();
+
+        if (newValueLow !== undefined && newValueLow !== valueLow) {
+            onValueChange({ "extremity": "low", "value": newValueLow });
         }
 
         if (newValueHigh !== valueHigh) {
-            setValue({ "extremity": "high", "value": newValueHigh });
+            onValueChange({ "extremity": "high", "value": newValueHigh });
         }
     });
 
@@ -112,11 +126,13 @@ export const RangeSlider = memo((props: RangeSliderProps) => {
                 {label}
             </Text>
             <div className={classes.wrapper}>
-                <ValueDisplayWp
-                    className={undefined}
-                    semantic={lowExtremitySemantic}
-                    value={valueLow}
-                />
+                {valueLow !== undefined && (
+                    <ValueDisplayWp
+                        className={undefined}
+                        semantic={lowExtremitySemantic}
+                        value={valueLow}
+                    />
+                )}
                 <Slider
                     className={classes.slider}
                     value={muiSliderValue}
@@ -142,7 +158,7 @@ const { ValueDisplay } = (() => {
     type Props = {
         className?: string;
         unit: string;
-        semantic: string;
+        semantic: string | undefined;
         value: number;
     };
 
@@ -162,9 +178,11 @@ const { ValueDisplay } = (() => {
                 <Text typo="label 1">
                     {value} {unit}
                 </Text>
-                <Text className={classes.caption} typo="caption">
-                    {capitalize(semantic)}
-                </Text>
+                {semantic !== undefined && (
+                    <Text className={classes.caption} typo="caption">
+                        {capitalize(semantic)}
+                    </Text>
+                )}
             </div>
         );
     });

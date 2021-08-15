@@ -6,11 +6,13 @@ import { useState } from "react";
 import { symToStr } from "tsafe/symToStr";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
-function Component(props: Omit<RangeSliderProps, "setValue" | "valueHigh" | "valueLow">) {
+function Component(
+    props: Omit<RangeSliderProps, "onValueChange" | "valueHigh" | "valueLow">,
+) {
     const [valueLow, setValueLow] = useState(props.min);
     const [valueHigh, setValueHigh] = useState(props.max);
 
-    const setValue = useConstCallback<RangeSliderProps["setValue"]>(
+    const onValueChange = useConstCallback<RangeSliderProps["onValueChange"]>(
         ({ extremity, value }) => {
             switch (extremity) {
                 case "low":
@@ -28,7 +30,7 @@ function Component(props: Omit<RangeSliderProps, "setValue" | "valueHigh" | "val
             {...props}
             valueLow={valueLow}
             valueHigh={valueHigh}
-            setValue={setValue}
+            onValueChange={onValueChange}
         />
     );
 }
