@@ -49,9 +49,9 @@ export declare namespace Get_Public_Catalog_CatalogId_PackageName {
             title?: string;
             default?: T;
             "x-form"?: {
-                hidden: boolean;
-                readonly: boolean;
-                value: T;
+                hidden?: boolean;
+                readonly?: boolean;
+                value?: T;
             };
             hidden?:
                 | boolean
@@ -67,7 +67,7 @@ export declare namespace Get_Public_Catalog_CatalogId_PackageName {
 
         export type Integer = Common<number> & {
             type: "number";
-            minimum?: string;
+            minimum?: number;
         };
 
         export type String = String.Text | String.Enum | String.Slider;

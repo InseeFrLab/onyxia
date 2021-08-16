@@ -45,7 +45,7 @@ export declare namespace FormField {
     export type Integer = Common & {
         type: "integer";
         value: number;
-        minimum: string | undefined;
+        minimum: number | undefined;
     };
 
     export type Enum<T extends string = string> = Common & {
@@ -269,7 +269,9 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
             return acc.map(assembledSliderRangeFormField => {
                 if (!("extremities" in assembledSliderRangeFormField)) {
                     throw new Error(
-                        `${assembledSliderRangeFormField.path} only has ${assembledSliderRangeFormField.sliderExtremity} extremity`,
+                        `${assembledSliderRangeFormField.path.join("/")} only has ${
+                            assembledSliderRangeFormField.sliderExtremity
+                        } extremity`,
                     );
                 }
                 return assembledSliderRangeFormField;
@@ -604,17 +606,24 @@ export const thunks = {
                                     > =>
                                         jsonSchemaFormFieldDescription["x-form"]?.value ??
                                         jsonSchemaFormFieldDescription.default ??
-                                        ((() => {
-                                            throw new Error(
-                                                `${common.path} don't have any default value`,
-                                            );
-                                        })() as any);
+                                        ((): any => {
+                                            switch (jsonSchemaFormFieldDescription.type) {
+                                                case "string":
+                                                    return "";
+                                                case "boolean":
+                                                    return false;
+                                                case "number":
+                                                    return 0;
+                                            }
+                                        })();
 
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
                                             jsonSchemaFormFieldDescription.render ===
                                                 "slider",
-                                            `${common.path} has render: "${jsonSchemaFormFieldDescription.render}" and it's not supported`,
+                                            `${common.path.join("/")} has render: "${
+                                                jsonSchemaFormFieldDescription.render
+                                            }" and it's not supported`,
                                         );
 
                                         const value = getValue(
@@ -637,25 +646,48 @@ export const thunks = {
                                                 case "down":
                                                     return id<FormField.Slider.Range.Down>(
                                                         {
-                                                            ...jsonSchemaFormFieldDescription,
                                                             ...scopCommon,
+                                                            "sliderExtremitySemantic":
+                                                                jsonSchemaFormFieldDescription.sliderExtremitySemantic,
+                                                            "sliderRangeId":
+                                                                jsonSchemaFormFieldDescription.sliderRangeId,
+                                                            "sliderExtremity": "down",
+                                                            "sliderMin":
+                                                                jsonSchemaFormFieldDescription.sliderMin,
+                                                            "sliderUnit":
+                                                                jsonSchemaFormFieldDescription.sliderUnit,
+                                                            "sliderStep":
+                                                                jsonSchemaFormFieldDescription.sliderStep,
                                                             value,
                                                         },
                                                     );
                                                 case "up":
                                                     return id<FormField.Slider.Range.Up>({
-                                                        ...jsonSchemaFormFieldDescription,
                                                         ...scopCommon,
+                                                        "sliderExtremitySemantic":
+                                                            jsonSchemaFormFieldDescription.sliderExtremitySemantic,
+                                                        "sliderRangeId":
+                                                            jsonSchemaFormFieldDescription.sliderRangeId,
+                                                        "sliderExtremity": "up",
+                                                        "sliderMax":
+                                                            jsonSchemaFormFieldDescription.sliderMax,
                                                         value,
                                                     });
                                             }
                                         }
 
                                         return id<FormField.Slider.Simple>({
-                                            ...jsonSchemaFormFieldDescription,
                                             ...common,
                                             "type": "slider",
                                             "sliderVariation": "simple",
+                                            "sliderMin":
+                                                jsonSchemaFormFieldDescription.sliderMin,
+                                            "sliderUnit":
+                                                jsonSchemaFormFieldDescription.sliderUnit,
+                                            "sliderStep":
+                                                jsonSchemaFormFieldDescription.sliderStep,
+                                            "sliderMax":
+                                                jsonSchemaFormFieldDescription.sliderMax,
                                             value,
                                         });
                                     }
@@ -768,10 +800,19 @@ export const thunks = {
             );
         },
     "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
+    /*
     "changeFormFieldValue":
         (params: FormFieldValue): AppThunk<void> =>
-        dispatch =>
-            dispatch(actions.formFieldValueChanged(params)),
+            dispatch =>
+                dispatch(actions.formFieldValueChanged(params)),
+    */
+    "changeFormFieldValue":
+        (params: FormFieldValue): AppThunk<void> =>
+        dispatch => {
+            console.log("<3!", JSON.stringify(params, null, 2));
+
+            dispatch(actions.formFieldValueChanged(params));
+        },
     "launch": (): AppThunk => async dispatch => {
         dispatch(
             privateThunks.launchOrPreviewContract({
@@ -956,8 +997,8 @@ export const selectors = (() => {
 
                 formFieldsRest.forEach(formField =>
                     (
-                        formFieldsByTabName[formField.path[1]] ??
-                        (formFieldsByTabName[formField.path[1]] = {
+                        formFieldsByTabName[formField.path[0]] ??
+                        (formFieldsByTabName[formField.path[0]] = {
                             "description":
                                 config?.properties[formField.path[0]].description,
                             "formFields": [],
