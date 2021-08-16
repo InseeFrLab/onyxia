@@ -251,6 +251,7 @@ export function createOfficialOnyxiaApiClient(params: {
                 })
                 .then(({ data }) => {
                     //TODO: Wrong assertion here once, investigate
+                    //Deleted one service just running, deleted all the others.
                     assert(data.success);
                 }),
     };
