@@ -20,6 +20,10 @@ import { capitalize } from "tsafe/capitalize";
 import { Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { IndexedFormFields } from "lib/useCases/launcher";
+import { SimpleSlider } from "app/components/shared/SimpleSlider";
+import { RangeSlider } from "app/components/shared/RangeSlider";
+import type { RangeSliderProps } from "app/components/shared/RangeSlider";
+import type { Param0 } from "tsafe";
 
 export type Props = {
     className?: string;
@@ -264,7 +268,7 @@ const { TabContent } = (() => {
     type Props = {
         description?: string;
         className?: string;
-        formFields: FormField[];
+        formFields: Exclude<FormField, FormField.Slider.Range>[];
         assembledSliderRangeFormFields: IndexedFormFields.AssembledSliderRangeFormField[];
         onFormValueChange(params: FormFieldValue): void;
     };
@@ -333,6 +337,32 @@ const { TabContent } = (() => {
                 }),
         );
 
+        const onSimpleSliderValueChange = useCallbackFactory(
+            ([path, unit]: [string[], string], [value]: [number]) =>
+                onFormValueChange({
+                    path,
+                    "value": `${value}${unit}`,
+                }),
+        );
+
+        const onRangeSliderValueChange = useCallbackFactory(
+            (
+                [pathDown, pathUp, unit]: [string[], string[], string],
+                [params]: [Param0<RangeSliderProps["onValueChange"]>],
+            ) =>
+                onFormValueChange({
+                    "path": (() => {
+                        switch (params.extremity) {
+                            case "low":
+                                return pathDown;
+                            case "high":
+                                return pathUp;
+                        }
+                    })(),
+                    "value": `${params.value}${unit}`,
+                }),
+        );
+
         const { classes, cx } = useStyles();
 
         return (
@@ -343,108 +373,164 @@ const { TabContent } = (() => {
                     </Text>
                 )}
                 <div className={cx(classes.root, className)}>
-                    {formFields.map((formField, i) => (
-                        <div key={i}>
-                            {(() => {
-                                const label = capitalize(formField.title);
-                                const helperText =
-                                    formField.description === undefined
-                                        ? undefined
-                                        : capitalize(formField.description);
+                    {[
+                        ...formFields.map((formField, i) => (
+                            <div key={i}>
+                                {(() => {
+                                    const label = capitalize(formField.title);
+                                    const helperText =
+                                        formField.description === undefined
+                                            ? undefined
+                                            : capitalize(formField.description);
 
-                                switch (formField.type) {
-                                    case "boolean":
-                                        return (
-                                            <FormControl>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            color="primary"
-                                                            checked={formField.value}
-                                                            onChange={onCheckboxChangeFactory(
-                                                                formField.path,
-                                                            )}
-                                                        />
-                                                    }
+                                    switch (formField.type) {
+                                        case "boolean":
+                                            return (
+                                                <FormControl>
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                color="primary"
+                                                                checked={formField.value}
+                                                                onChange={onCheckboxChangeFactory(
+                                                                    formField.path,
+                                                                )}
+                                                            />
+                                                        }
+                                                        label={label}
+                                                    />
+                                                    <FormHelperText>
+                                                        {helperText}
+                                                    </FormHelperText>
+                                                </FormControl>
+                                            );
+                                        case "enum": {
+                                            const labelId = `select_label_${i}`;
+
+                                            return (
+                                                <FormControl>
+                                                    <InputLabel id={labelId}>
+                                                        {label}
+                                                    </InputLabel>
+                                                    <Select
+                                                        labelId={labelId}
+                                                        value={formField.value}
+                                                        onChange={onSelectChangeFactory(
+                                                            formField.path,
+                                                        )}
+                                                    >
+                                                        {formField.enum.map(value => (
+                                                            <MenuItem
+                                                                key={value}
+                                                                value={value}
+                                                            >
+                                                                {value}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                    <FormHelperText>
+                                                        {helperText}
+                                                    </FormHelperText>
+                                                </FormControl>
+                                            );
+                                        }
+                                        case "text":
+                                            return (
+                                                <MuiTextField
+                                                    className={classes.textField}
                                                     label={label}
-                                                />
-                                                <FormHelperText>
-                                                    {helperText}
-                                                </FormHelperText>
-                                            </FormControl>
-                                        );
-                                    case "enum": {
-                                        const labelId = `select_label_${i}`;
-
-                                        return (
-                                            <FormControl>
-                                                <InputLabel id={labelId}>
-                                                    {label}
-                                                </InputLabel>
-                                                <Select
-                                                    labelId={labelId}
                                                     value={formField.value}
-                                                    onChange={onSelectChangeFactory(
+                                                    helperText={helperText}
+                                                    disabled={formField.isReadonly}
+                                                    onChange={onTextFieldChangeFactory(
                                                         formField.path,
                                                     )}
-                                                >
-                                                    {formField.enum.map(value => (
-                                                        <MenuItem
-                                                            key={value}
-                                                            value={value}
-                                                        >
-                                                            {value}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>
-                                                <FormHelperText>
-                                                    {helperText}
-                                                </FormHelperText>
-                                            </FormControl>
-                                        );
+                                                    autoComplete="off"
+                                                    inputProps={{
+                                                        "spellCheck": false,
+                                                    }}
+                                                    onFocus={onTextFieldFocus}
+                                                />
+                                            );
+                                        case "integer":
+                                            return (
+                                                <MuiTextField
+                                                    value={formField.value}
+                                                    onChange={onNumberTextFieldChangeFactory(
+                                                        formField.path,
+                                                    )}
+                                                    inputProps={{
+                                                        "min": formField.minimum,
+                                                    }}
+                                                    label={label}
+                                                    type="number"
+                                                    InputLabelProps={{
+                                                        "shrink": true,
+                                                    }}
+                                                    helperText={helperText}
+                                                />
+                                            );
+                                        case "slider":
+                                            return (
+                                                <SimpleSlider
+                                                    label={formField.title}
+                                                    max={formField.sliderMax}
+                                                    min={formField.sliderMin}
+                                                    step={formField.sliderStep}
+                                                    unit={formField.sliderUnit}
+                                                    value={Number.parseFloat(
+                                                        formField.value.split(
+                                                            formField.sliderUnit,
+                                                        )[0],
+                                                    )}
+                                                    onValueChange={onSimpleSliderValueChange(
+                                                        formField.path,
+                                                        formField.sliderUnit,
+                                                    )}
+                                                    extraInfo={formField.description}
+                                                />
+                                            );
                                     }
-                                    case "text":
-                                        return (
-                                            <MuiTextField
-                                                className={classes.textField}
-                                                label={label}
-                                                value={formField.value}
-                                                helperText={helperText}
-                                                disabled={formField.isReadonly}
-                                                onChange={onTextFieldChangeFactory(
-                                                    formField.path,
-                                                )}
-                                                autoComplete="off"
-                                                inputProps={{
-                                                    "spellCheck": false,
-                                                }}
-                                                onFocus={onTextFieldFocus}
-                                            />
-                                        );
-                                    case "integer":
-                                        return (
-                                            <MuiTextField
-                                                value={formField.value}
-                                                onChange={onNumberTextFieldChangeFactory(
-                                                    formField.path,
-                                                )}
-                                                inputProps={{
-                                                    "min": formField.minimum,
-                                                }}
-                                                label={label}
-                                                type="number"
-                                                InputLabelProps={{
-                                                    "shrink": true,
-                                                }}
-                                                helperText={helperText}
-                                            />
-                                        );
-                                    case "slider":
-                                        return null;
-                                }
-                            })()}
-                        </div>
-                    ))}
+                                })()}
+                            </div>
+                        )),
+                        ...assembledSliderRangeFormFields.map(
+                            assembledSliderRangeFormField => (
+                                <RangeSlider
+                                    key={assembledSliderRangeFormField.title}
+                                    label={assembledSliderRangeFormField.title}
+                                    max={assembledSliderRangeFormField.sliderMax}
+                                    min={assembledSliderRangeFormField.sliderMin}
+                                    step={assembledSliderRangeFormField.sliderStep}
+                                    unit={assembledSliderRangeFormField.sliderUnit}
+                                    valueHigh={Number.parseFloat(
+                                        assembledSliderRangeFormField.extremities.up.value.split(
+                                            assembledSliderRangeFormField.sliderUnit,
+                                        )[0],
+                                    )}
+                                    valueLow={Number.parseFloat(
+                                        assembledSliderRangeFormField.extremities.down.value.split(
+                                            assembledSliderRangeFormField.sliderUnit,
+                                        )[0],
+                                    )}
+                                    highExtremitySemantic={
+                                        assembledSliderRangeFormField.extremities.up
+                                            .semantic
+                                    }
+                                    lowExtremitySemantic={
+                                        assembledSliderRangeFormField.extremities.down
+                                            .semantic
+                                    }
+                                    onValueChange={onRangeSliderValueChange(
+                                        assembledSliderRangeFormField.extremities.down
+                                            .path,
+                                        assembledSliderRangeFormField.extremities.up.path,
+                                        assembledSliderRangeFormField.sliderUnit,
+                                    )}
+                                />
+                            ),
+                        ),
+                    ]}
                 </div>
             </>
         );
