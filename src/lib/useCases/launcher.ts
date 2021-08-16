@@ -800,19 +800,10 @@ export const thunks = {
             );
         },
     "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
-    /*
     "changeFormFieldValue":
         (params: FormFieldValue): AppThunk<void> =>
-            dispatch =>
-                dispatch(actions.formFieldValueChanged(params)),
-    */
-    "changeFormFieldValue":
-        (params: FormFieldValue): AppThunk<void> =>
-        dispatch => {
-            console.log("<3!", JSON.stringify(params, null, 2));
-
-            dispatch(actions.formFieldValueChanged(params));
-        },
+        dispatch =>
+            dispatch(actions.formFieldValueChanged(params)),
     "launch": (): AppThunk => async dispatch => {
         dispatch(
             privateThunks.launchOrPreviewContract({
