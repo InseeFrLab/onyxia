@@ -19,6 +19,7 @@ export default meta;
 
 export const Vue1 = getStory({
     "label": "Random-access memory (RAM)",
+    "extraInfo": "This is some extra infos",
     "semantic": "maximum",
     "unit": "Mi",
     "min": 1,

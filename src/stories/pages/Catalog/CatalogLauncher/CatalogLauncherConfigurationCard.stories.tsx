@@ -14,6 +14,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
         Props["formFieldsByTabName"][string]["formFields"]
     >([
         {
+            "type": "text",
             "path": ["resources", "cpu"],
             "title": "cpu",
             "isReadonly": false,
@@ -21,6 +22,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": "0.1",
         },
         {
+            "type": "text",
             "path": ["resources", "memory"],
             "title": "memory",
             "isReadonly": false,
@@ -28,6 +30,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": "512Mi",
         },
         {
+            "type": "text",
             "path": ["resources", "memory2"],
             "title": "memory2",
             "isReadonly": false,
@@ -35,6 +38,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": "512Mi",
         },
         {
+            "type": "boolean",
             "path": ["environnement", "s3"],
             "title": "s3",
             "isReadonly": false,
@@ -42,6 +46,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": true,
         },
         {
+            "type": "boolean",
             "path": ["environnement", "vault"],
             "title": "vault",
             "isReadonly": false,
@@ -49,6 +54,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": true,
         },
         {
+            "type": "boolean",
             "path": ["environnement", "git"],
             "title": "git",
             "isReadonly": false,
@@ -56,6 +62,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": true,
         },
         {
+            "type": "boolean",
             "path": ["environnement", "git2"],
             "title": "git",
             "isReadonly": false,
@@ -63,6 +70,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": true,
         },
         {
+            "type": "boolean",
             "path": ["environnement", "git3"],
             "title": "git",
             "isReadonly": false,
@@ -70,6 +78,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "value": true,
         },
         {
+            "type": "enum",
             "path": ["r", "version"],
             "title": "version",
             "isReadonly": false,
@@ -93,6 +102,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
                 (out[formField.path[0]] = {
                     "formFields": [],
                     "description": "tab description",
+                    "assembledSliderRangeFormFields": [],
                 })
             ).formFields.push(formField),
         );
@@ -129,7 +139,6 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const VueDefault = getStory({
-    "className": css({ "width": 700 }),
     "meta": { "type": "dependency" },
     "dependencyNamePackageNameOrGlobal": "rstudio",
 });

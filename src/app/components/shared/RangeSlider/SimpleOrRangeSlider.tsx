@@ -11,9 +11,12 @@ import { symToStr } from "tsafe/symToStr";
 import { capitalize } from "tsafe/capitalize";
 import { useWithProps } from "powerhooks/useWithProps";
 import { useDomRect } from "powerhooks/useDomRect";
+import { Icon } from "app/theme";
+import { Tooltip } from "onyxia-ui/Tooltip";
 
 export type SimpleOrRangeSliderProps = {
     className?: string;
+
     label: NonNullable<ReactNode>;
     min: number;
     max: number;
@@ -21,6 +24,7 @@ export type SimpleOrRangeSliderProps = {
     unit: string;
     lowExtremitySemantic?: string;
     highExtremitySemantic?: string;
+    extraInfo?: string;
 
     valueLow?: number;
     valueHigh: number;
@@ -31,8 +35,14 @@ const useStyles = makeStyles<{ isRange: boolean }>()((theme, { isRange }) => ({
     "label": {
         "marginBottom": theme.spacing(3),
     },
+    "helpIcon": {
+        "marginLeft": theme.spacing(2),
+        "color": theme.colors.useCases.typography.textSecondary,
+        "verticalAlign": "text-bottom",
+    },
     "wrapper": {
         "display": "flex",
+        "alignItems": "center",
     },
     "slider": {
         "flex": 1,
@@ -52,6 +62,7 @@ export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
         unit,
         lowExtremitySemantic,
         highExtremitySemantic,
+        extraInfo,
         valueLow,
         valueHigh,
         onValueChange,
@@ -124,14 +135,19 @@ export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
                 componentProps={textComponentProps}
             >
                 {label}
+                {extraInfo !== undefined && (
+                    <Tooltip title={extraInfo}>
+                        <Icon
+                            iconId="help"
+                            size="extra small"
+                            className={classes.helpIcon}
+                        />
+                    </Tooltip>
+                )}
             </Text>
             <div className={classes.wrapper}>
                 {valueLow !== undefined && (
-                    <ValueDisplayWp
-                        className={undefined}
-                        semantic={lowExtremitySemantic}
-                        value={valueLow}
-                    />
+                    <ValueDisplayWp semantic={lowExtremitySemantic} value={valueLow} />
                 )}
                 <Slider
                     className={classes.slider}
@@ -144,11 +160,7 @@ export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
                     valueLabelDisplay="off"
                     aria-labelledby={textComponentProps.id}
                 />
-                <ValueDisplayWp
-                    className={undefined}
-                    semantic={highExtremitySemantic}
-                    value={valueHigh}
-                />
+                <ValueDisplayWp semantic={highExtremitySemantic} value={valueHigh} />
             </div>
         </div>
     );
@@ -156,33 +168,38 @@ export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
 
 const { ValueDisplay } = (() => {
     type Props = {
-        className?: string;
         unit: string;
         semantic: string | undefined;
         value: number;
     };
 
     const useStyles = makeStyles()(theme => ({
+        "root": {
+            "display": "flex",
+            "alignItems": "center",
+        },
         "caption": {
             "color": theme.colors.useCases.typography.textSecondary,
         },
     }));
 
     const ValueDisplay = memo((props: Props) => {
-        const { className, value, unit, semantic } = props;
+        const { value, unit, semantic } = props;
 
         const { classes } = useStyles();
 
         return (
-            <div className={className}>
-                <Text typo="label 1">
-                    {value} {unit}
-                </Text>
-                {semantic !== undefined && (
-                    <Text className={classes.caption} typo="caption">
-                        {capitalize(semantic)}
+            <div className={classes.root}>
+                <div>
+                    <Text typo="label 1">
+                        {value} {unit}
                     </Text>
-                )}
+                    {semantic !== undefined && (
+                        <Text className={classes.caption} typo="caption">
+                            {capitalize(semantic)}
+                        </Text>
+                    )}
+                </div>
             </div>
         );
     });
