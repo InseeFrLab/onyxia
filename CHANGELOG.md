@@ -1,3 +1,7 @@
+### **0.11.74** (2021-08-17)  
+  
+- Remove wigleing in sliders    
+  
 ### **0.11.73** (2021-08-16)  
   
 - feat range slider in catalog launcher  
