@@ -1,3 +1,7 @@
+### **0.11.75** (2021-08-17)  
+  
+- Capitalize slider label    
+  
 ### **0.11.74** (2021-08-17)  
   
 - Remove wigleing in sliders    
