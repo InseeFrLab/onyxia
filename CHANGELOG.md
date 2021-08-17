@@ -1,3 +1,18 @@
+### **0.11.73** (2021-08-16)  
+  
+- feat range slider in catalog launcher  
+- add todo debug log  
+- extra infos support for slider  
+- Implement simple slider  
+- Implement range slider  
+- Implement logic for range slider  
+- unit and step not needed in up extremity  
+- Add samples to help read the types def  
+- Improve slider types  
+- Fix error sliderStep is number  
+- Writing types definition for sliders  
+- First working draft of DoubleSlider    
+  
 ### **0.11.72** (2021-08-10)  
   
 - Give more insightfull error when we can't tell if a feild should be shown    
