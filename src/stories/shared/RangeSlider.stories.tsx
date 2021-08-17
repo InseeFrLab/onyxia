@@ -47,7 +47,7 @@ export const Vue1 = getStory({
     "lowExtremitySemantic": "guaranteed",
     "highExtremitySemantic": "maximum",
     "unit": "Mi",
-    "min": 1,
-    "max": 200,
+    "min": 900,
+    "max": 1100,
     "step": 1,
 });

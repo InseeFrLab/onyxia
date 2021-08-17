@@ -114,7 +114,7 @@ export const SimpleOrRangeSlider = memo((props: SimpleOrRangeSliderProps) => {
         [],
     );
 
-    const ValueDisplayWp = useWithProps(ValueDisplay, { unit });
+    const ValueDisplayWp = useWithProps(ValueDisplay, { unit, "maxValue": max });
 
     const {
         ref,
@@ -171,9 +171,10 @@ const { ValueDisplay } = (() => {
         unit: string;
         semantic: string | undefined;
         value: number;
+        maxValue: number;
     };
 
-    const useStyles = makeStyles()(theme => ({
+    const useStyles = makeStyles<{ maxText: string }>()((theme, { maxText }) => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
@@ -181,17 +182,34 @@ const { ValueDisplay } = (() => {
         "caption": {
             "color": theme.colors.useCases.typography.textSecondary,
         },
+        "label": {
+            "display": "inline-flex",
+            "flexDirection": "column",
+            "justifyContent": "space-between",
+            "alignItems": "flex-start",
+            "&::after": {
+                "content": `"${maxText}_"`,
+                "height": 0,
+                "visibility": "hidden",
+                "overflow": "hidden",
+                "userSelect": "none",
+                "pointerEvents": "none",
+                "@media speech": {
+                    "display": "none",
+                },
+            },
+        },
     }));
 
     const ValueDisplay = memo((props: Props) => {
-        const { value, unit, semantic } = props;
+        const { value, maxValue, unit, semantic } = props;
 
-        const { classes } = useStyles();
+        const { classes } = useStyles({ "maxText": `${maxValue} ${unit}` });
 
         return (
             <div className={classes.root}>
                 <div>
-                    <Text typo="label 1">
+                    <Text typo="label 1" className={classes.label}>
                         {value} {unit}
                     </Text>
                     {semantic !== undefined && (
