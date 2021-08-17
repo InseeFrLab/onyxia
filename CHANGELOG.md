@@ -1,3 +1,7 @@
+### **0.11.76** (2021-08-17)  
+  
+- link to new documentation    
+  
 ### **0.11.75** (2021-08-17)  
   
 - Capitalize slider label    
