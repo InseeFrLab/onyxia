@@ -129,6 +129,11 @@ export const App = memo((props: Props) => {
 
     const onLeftBarClick = useConstCallback(
         (target: Parameters<LeftBarProps["onClick"]>[0]) => {
+            if (target === "trainings") {
+                window.location.href = "https://www.sspcloud.fr/documentation";
+                return;
+            }
+
             if (target in routes) {
                 routes[target]().push();
                 return;
