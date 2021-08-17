@@ -473,7 +473,7 @@ const { TabContent } = (() => {
                                         case "slider":
                                             return (
                                                 <SimpleSlider
-                                                    label={formField.title}
+                                                    label={capitalize(formField.title)}
                                                     max={formField.sliderMax}
                                                     min={formField.sliderMin}
                                                     step={formField.sliderStep}
@@ -498,7 +498,9 @@ const { TabContent } = (() => {
                             assembledSliderRangeFormField => (
                                 <RangeSlider
                                     key={assembledSliderRangeFormField.title}
-                                    label={assembledSliderRangeFormField.title}
+                                    label={capitalize(
+                                        assembledSliderRangeFormField.title,
+                                    )}
                                     max={assembledSliderRangeFormField.sliderMax}
                                     min={assembledSliderRangeFormField.sliderMin}
                                     step={assembledSliderRangeFormField.sliderStep}
