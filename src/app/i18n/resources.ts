@@ -371,6 +371,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "configuration": "{{packageName}} configurations",
             "dependency": "{{dependencyName}} dependency",
             "launch of a service": "A {{dependencyName}} service will be launched",
+            "malformed input": "Malformed input.",
         },
         "MyServices": {
             "text1": "My Services",
@@ -668,6 +669,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "configuration": "Configuration {{packageName}}",
             "dependency": "Dépendance {{dependencyName}}",
             "launch of a service": "Lancement d'un service {{dependencyName}}",
+            "malformed input": "Text non valide.",
         },
         "MyServices": {
             "text1": "Mes services",
