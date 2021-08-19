@@ -117,7 +117,7 @@ export declare namespace LauncherState {
                 path: string[];
             }[];
             formFields: FormField[];
-            hiddenFormFields: {
+            infosAboutWhenFieldsShouldBeHidden: {
                 path: string[];
                 isHidden: boolean | FormFieldValue;
             }[];
@@ -354,7 +354,7 @@ const { reducer, actions } = createSlice({
                 icon: string | undefined;
                 sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
-                hiddenFormFields: LauncherState.Ready["~internal"]["hiddenFormFields"];
+                infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
                 config: LauncherState.Ready["~internal"]["config"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
@@ -366,7 +366,7 @@ const { reducer, actions } = createSlice({
                 icon,
                 sources,
                 formFields,
-                hiddenFormFields,
+                infosAboutWhenFieldsShouldBeHidden,
                 config,
                 dependencies,
                 formFieldsValueDifferentFromDefault,
@@ -382,7 +382,7 @@ const { reducer, actions } = createSlice({
                     sources,
                     "~internal": {
                         formFields,
-                        hiddenFormFields,
+                        infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
                             path,
                             value,
@@ -550,9 +550,9 @@ export const thunks = {
                 mustacheParams,
             });
 
-            const { formFields, hiddenFormFields } = (() => {
+            const { formFields, infosAboutWhenFieldsShouldBeHidden } = (() => {
                 const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
-                const hiddenFormFields: LauncherState.Ready["~internal"]["hiddenFormFields"] =
+                const infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
                     [];
 
                 (function callee(params: {
@@ -739,7 +739,7 @@ export const thunks = {
                                 })(),
                             );
 
-                            hiddenFormFields.push({
+                            infosAboutWhenFieldsShouldBeHidden.push({
                                 "path": newCurrentPath,
                                 "isHidden": (() => {
                                     const { hidden } = jsonSchemaFormFieldDescription;
@@ -773,7 +773,7 @@ export const thunks = {
                     "jsonSchemaObject": config,
                 });
 
-                return { formFields, hiddenFormFields };
+                return { formFields, infosAboutWhenFieldsShouldBeHidden };
             })();
 
             dispatch(
@@ -792,7 +792,7 @@ export const thunks = {
                         ),
                     "sources": sources ?? [],
                     formFields,
-                    hiddenFormFields,
+                    infosAboutWhenFieldsShouldBeHidden,
                     config,
                     "dependencies": dependencies
                         .filter(({ enabled }) => enabled)
@@ -853,9 +853,9 @@ export const selectors = (() => {
         state => state?.["~internal"].formFields,
     );
 
-    const hiddenFormFieldsSelector = createSelector(
+    const infosAboutWhenFieldsShouldBeHiddenSelector = createSelector(
         readyLauncherSelector,
-        state => state?.["~internal"].hiddenFormFields,
+        state => state?.["~internal"].infosAboutWhenFieldsShouldBeHidden,
     );
 
     const dependenciesSelector = createSelector(
@@ -882,67 +882,92 @@ export const selectors = (() => {
         state => state?.["~internal"].config,
     );
 
+    function createIsFieldHidden(params: {
+        formFields: FormField[];
+        infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
+    }) {
+        const { formFields, infosAboutWhenFieldsShouldBeHidden } = params;
+
+        function isFieldHidden(params: { path: string[] }) {
+            const { path } = params;
+
+            if (same(onyxiaFriendlyNameFormFieldPath, path)) {
+                return true;
+            }
+
+            const infoAboutWhenFieldsShouldBeHidden =
+                infosAboutWhenFieldsShouldBeHidden.find(({ path: path_i }) =>
+                    same(path, path_i),
+                );
+
+            if (infoAboutWhenFieldsShouldBeHidden === undefined) {
+                return false;
+            }
+
+            const { isHidden } = infoAboutWhenFieldsShouldBeHidden;
+
+            if (typeof isHidden === "boolean") {
+                return isHidden;
+            }
+
+            const targetFormField = formFields.find(({ path }) =>
+                same(path, isHidden.path),
+            );
+
+            assert(
+                targetFormField !== undefined,
+                [
+                    `We can't tell if ${path.join("/")} should be shown or hidden.`,
+                    "It is supposed to depend on the value of",
+                    isHidden.path.join("/"),
+                    "but this field doesn't exists in the chart.",
+                ].join(" "),
+            );
+
+            return targetFormField.value === isHidden.value;
+        }
+
+        return { isFieldHidden };
+    }
+
     const indexedFormFieldsSelector = createSelector(
         configSelector,
         formFieldsSelector,
-        hiddenFormFieldsSelector,
+        infosAboutWhenFieldsShouldBeHiddenSelector,
         packageNameSelector,
         dependenciesSelector,
         (
             config,
             formFields,
-            hiddenFormFields,
+            infosAboutWhenFieldsShouldBeHidden,
             packageName,
             dependencies,
         ): IndexedFormFields | undefined => {
-            if (!formFields || !packageName || !dependencies || !hiddenFormFields) {
+            if (
+                !formFields ||
+                !packageName ||
+                !dependencies ||
+                !infosAboutWhenFieldsShouldBeHidden
+            ) {
                 return undefined;
             }
 
             const indexedFormFields: IndexedFormFields.Scaffolding = {};
 
-            const formFieldsRest = formFields.filter(({ path }) => {
-                if (same(onyxiaFriendlyNameFormFieldPath, path)) {
-                    return false;
-                }
-
-                const wrap = hiddenFormFields.find(({ path: path_i }) =>
-                    same(path, path_i),
-                );
-
-                if (wrap === undefined) {
-                    return true;
-                }
-
-                const { isHidden } = wrap;
-
-                if (typeof isHidden === "boolean") {
-                    return !isHidden;
-                }
-
-                const targetFormField = formFields.find(({ path }) =>
-                    same(path, isHidden.path),
-                );
-
-                assert(
-                    targetFormField !== undefined,
-                    [
-                        `We can't tell if ${path.join("/")} should be shown or hidden.`,
-                        `It is supposed to depend on the value of ${isHidden.path.join(
-                            "/",
-                        )}`,
-                        "but this field doesn't exists in the chart.",
-                    ].join(" "),
-                );
-
-                return targetFormField.value !== isHidden.value;
+            const { isFieldHidden } = createIsFieldHidden({
+                formFields,
+                infosAboutWhenFieldsShouldBeHidden,
             });
+
+            const nonHiddenFormField = formFields.filter(
+                ({ path }) => !isFieldHidden({ path }),
+            );
 
             [...dependencies, "global"].forEach(dependencyOrGlobal => {
                 const formFieldsByTabName: IndexedFormFields.Scaffolding[string]["formFieldsByTabName"] =
                     {};
 
-                formFieldsRest
+                nonHiddenFormField
                     .filter(({ path }) => path[0] === dependencyOrGlobal)
                     .forEach(formField => {
                         //TODO: Restore: (formFieldsByTabName[formField.path[1]] ??= []).push(formField); when ??= supported
@@ -960,7 +985,10 @@ export const selectors = (() => {
                             })
                         ).formFields.push(formField);
 
-                        formFieldsRest.splice(formFieldsRest.indexOf(formField), 1);
+                        nonHiddenFormField.splice(
+                            nonHiddenFormField.indexOf(formField),
+                            1,
+                        );
                     });
 
                 if (
@@ -988,7 +1016,7 @@ export const selectors = (() => {
                 const formFieldsByTabName: IndexedFormFields.Scaffolding[string]["formFieldsByTabName"] =
                     indexedFormFields[packageName]?.formFieldsByTabName ?? {};
 
-                formFieldsRest.forEach(formField =>
+                nonHiddenFormField.forEach(formField =>
                     (
                         formFieldsByTabName[formField.path[0]] ??
                         (formFieldsByTabName[formField.path[0]] = {
