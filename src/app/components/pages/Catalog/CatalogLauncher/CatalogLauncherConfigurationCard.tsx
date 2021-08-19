@@ -131,6 +131,7 @@ export declare namespace CatalogLauncherConfigurationCard {
         "configuration": { packageName: string };
         "dependency": { dependencyName: string };
         "launch of a service": { dependencyName: string };
+        "malformed input": undefined;
     };
 }
 
@@ -308,6 +309,8 @@ const { TabContent } = (() => {
             ) => onFormValueChange({ path, value }),
         );
 
+        const { t } = useTranslation("CatalogLauncherConfigurationCard");
+
         const getIsValidValueFactory = useCallbackFactory(
             (
                 [pattern]: [string],
@@ -317,7 +320,7 @@ const { TabContent } = (() => {
                     ? { "isValidValue": true }
                     : {
                           "isValidValue": false,
-                          "message": `Input doesn't match: ${pattern}`,
+                          "message": `${t("malformed input")} ${pattern}`,
                       },
         );
 
