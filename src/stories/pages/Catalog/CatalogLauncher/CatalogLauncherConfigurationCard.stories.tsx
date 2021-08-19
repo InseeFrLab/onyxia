@@ -5,7 +5,6 @@ import {
 } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/geStory";
-import { css } from "tss-react";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
@@ -19,6 +18,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "title": "cpu",
             "isReadonly": false,
             "description": "The amount of cpu guaranteed",
+            "pattern": undefined,
             "value": "0.1",
         },
         {
@@ -27,6 +27,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "title": "memory",
             "isReadonly": false,
             "description": "The amount of memory guaranteed",
+            "pattern": undefined,
             "value": "512Mi",
         },
         {
@@ -35,6 +36,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "title": "memory2",
             "isReadonly": false,
             "description": "The amount of memory guaranteed",
+            "pattern": undefined,
             "value": "512Mi",
         },
         {
