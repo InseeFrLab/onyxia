@@ -58,6 +58,7 @@ export declare namespace FormField {
         type: "text";
         pattern: string | undefined;
         value: string;
+        defaultValue: string;
     };
 
     export type Slider = Slider.Simple | Slider.Range;
@@ -598,7 +599,7 @@ export const thunks = {
                                                 ?.readonly ?? false,
                                     };
 
-                                    const getValue = <
+                                    const getDefaultValue = <
                                         T extends Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDescription,
                                     >(
                                         jsonSchemaFormFieldDescription: T,
@@ -627,7 +628,7 @@ export const thunks = {
                                             }" and it's not supported`,
                                         );
 
-                                        const value = getValue(
+                                        const value = getDefaultValue(
                                             jsonSchemaFormFieldDescription,
                                         );
 
@@ -698,7 +699,7 @@ export const thunks = {
                                     ) {
                                         return id<FormField.Boolean>({
                                             ...common,
-                                            "value": getValue(
+                                            "value": getDefaultValue(
                                                 jsonSchemaFormFieldDescription,
                                             ),
                                             "type": "boolean",
@@ -710,7 +711,7 @@ export const thunks = {
                                     ) {
                                         return id<FormField.Integer>({
                                             ...common,
-                                            "value": getValue(
+                                            "value": getDefaultValue(
                                                 jsonSchemaFormFieldDescription,
                                             ),
                                             "minimum":
@@ -722,7 +723,7 @@ export const thunks = {
                                     if ("enum" in jsonSchemaFormFieldDescription) {
                                         return id<FormField.Enum>({
                                             ...common,
-                                            "value": getValue(
+                                            "value": getDefaultValue(
                                                 jsonSchemaFormFieldDescription,
                                             ),
                                             "enum": jsonSchemaFormFieldDescription.enum,
@@ -730,11 +731,16 @@ export const thunks = {
                                         });
                                     }
 
+                                    const value = getDefaultValue(
+                                        jsonSchemaFormFieldDescription,
+                                    );
+
                                     return id<FormField.Text>({
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
-                                        "value": getValue(jsonSchemaFormFieldDescription),
+                                        value,
                                         "type": "text",
+                                        "defaultValue": value,
                                     });
                                 })(),
                             );
