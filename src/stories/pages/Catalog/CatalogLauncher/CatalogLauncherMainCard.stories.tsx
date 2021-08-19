@@ -17,6 +17,7 @@ export const VueDefault = getStory({
     "packageIconUrl": rstudioImg,
     "isBookmarked": true,
     "friendlyName": "rstudio-1615211422",
+    "isLaunchable": true,
     ...logCallbacks([
         "onFriendlyNameChange",
         "onIsBookmarkedValueChange",

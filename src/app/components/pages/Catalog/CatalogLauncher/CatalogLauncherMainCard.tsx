@@ -3,13 +3,31 @@ import { makeStyles } from "app/theme";
 import { RoundLogo } from "app/components/shared/RoundLogo";
 import { Button, Text } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-
 import { IconButton } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { capitalize } from "tsafe/capitalize";
+
+export type Props = {
+    className?: string;
+    packageName: string;
+    packageIconUrl?: string;
+    isBookmarked: boolean;
+    onIsBookmarkedValueChange(isBookmarked: boolean): void;
+
+    friendlyName: string;
+    onFriendlyNameChange(friendlyName: string): void;
+
+    isLaunchable: boolean;
+
+    onRequestLaunch(): void;
+    onRequestCancel(): void;
+
+    //Undefined when the configuration is the default one
+    onRequestCopyLaunchUrl: (() => void) | undefined;
+};
 
 const useStyles = makeStyles()(theme => ({
     "root": {
@@ -60,23 +78,6 @@ const useStyles = makeStyles()(theme => ({
     },
 }));
 
-export type Props = {
-    className?: string;
-    packageName: string;
-    packageIconUrl?: string;
-    isBookmarked: boolean;
-    onIsBookmarkedValueChange(isBookmarked: boolean): void;
-
-    friendlyName: string;
-    onFriendlyNameChange(friendlyName: string): void;
-
-    onRequestLaunch(): void;
-    onRequestCancel(): void;
-
-    //Undefined when the configuration is the default one
-    onRequestCopyLaunchUrl: (() => void) | undefined;
-};
-
 export const CatalogLauncherMainCard = memo((props: Props) => {
     const {
         className,
@@ -84,6 +85,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         packageName,
         isBookmarked,
         friendlyName,
+        isLaunchable,
         onIsBookmarkedValueChange,
         onFriendlyNameChange,
         onRequestLaunch,
@@ -141,9 +143,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
-
                     <div style={{ "flex": 1 }} />
-
                     <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
                     </Button>
@@ -151,6 +151,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         variant="primary"
                         onClick={onRequestLaunch}
                         className={classes.launchButton}
+                        disabled={!isLaunchable}
                     >
                         {t("launch")}
                     </Button>
