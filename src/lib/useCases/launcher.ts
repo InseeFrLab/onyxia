@@ -1042,6 +1042,31 @@ export const selectors = (() => {
         },
     );
 
+    const isLaunchableSelector = createSelector(
+        formFieldsSelector,
+        infosAboutWhenFieldsShouldBeHiddenSelector,
+        (formFields, infosAboutWhenFieldsShouldBeHidden): boolean | undefined => {
+            if (!formFields || !infosAboutWhenFieldsShouldBeHidden) {
+                return undefined;
+            }
+
+            const { isFieldHidden } = createIsFieldHidden({
+                formFields,
+                infosAboutWhenFieldsShouldBeHidden,
+            });
+
+            return formFields
+                .map(formField => (formField.type === "text" ? formField : undefined))
+                .filter(exclude(undefined))
+                .filter(({ path }) => !isFieldHidden({ path }))
+                .map(({ value, pattern }) =>
+                    pattern === undefined ? undefined : { value, pattern },
+                )
+                .filter(exclude(undefined))
+                .every(({ value, pattern }) => new RegExp(pattern).test(value));
+        },
+    );
+
     const pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector = createSelector(
         readyLauncherSelector,
         state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
@@ -1086,6 +1111,7 @@ export const selectors = (() => {
     return {
         friendlyNameSelector,
         indexedFormFieldsSelector,
+        isLaunchableSelector,
         restorablePackageConfigSelector,
     };
 })();

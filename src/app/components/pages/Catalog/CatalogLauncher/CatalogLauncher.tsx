@@ -164,6 +164,7 @@ export const CatalogLauncher = memo((props: Props) => {
     ]);
 
     const indexedFormFields = useSelector(selectors.indexedFormFieldsSelector);
+    const isLaunchable = useSelector(selectors.isLaunchableSelector);
 
     if (state.stateDescription !== "ready") {
         return null;
@@ -171,6 +172,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
     assert(restorablePackageConfig !== undefined);
     assert(indexedFormFields !== undefined);
+    assert(isLaunchable !== undefined);
 
     return (
         <div className={className}>
@@ -191,6 +193,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 ? onRequestCopyLaunchUrl
                                 : undefined
                         }
+                        isLaunchable={isLaunchable}
                     />
                     {Object.keys(indexedFormFields).map(
                         dependencyNamePackageNameOrGlobal => (
