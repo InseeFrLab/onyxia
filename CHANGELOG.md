@@ -1,3 +1,7 @@
+### **0.11.78** (2021-08-19)  
+  
+- Translation for malformed values    
+  
 ### **0.11.77** (2021-08-19)  
   
 - Feat fields validation with regexp in chart    
