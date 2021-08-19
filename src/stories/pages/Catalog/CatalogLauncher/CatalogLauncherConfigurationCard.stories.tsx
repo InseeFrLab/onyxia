@@ -20,6 +20,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "description": "The amount of cpu guaranteed",
             "pattern": undefined,
             "value": "0.1",
+            "defaultValue": "0.1",
         },
         {
             "type": "text",
@@ -29,6 +30,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "description": "The amount of memory guaranteed",
             "pattern": undefined,
             "value": "512Mi",
+            "defaultValue": "512Mi",
         },
         {
             "type": "text",
@@ -38,6 +40,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "description": "The amount of memory guaranteed",
             "pattern": undefined,
             "value": "512Mi",
+            "defaultValue": "512Mi",
         },
         {
             "type": "boolean",

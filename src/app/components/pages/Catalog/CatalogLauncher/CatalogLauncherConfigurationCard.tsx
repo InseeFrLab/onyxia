@@ -324,6 +324,11 @@ const { TabContent } = (() => {
                       },
         );
 
+        const onEscapeKeyDownFactory = useCallbackFactory(
+            ([path, defaultValue]: [string[], string]) =>
+                onFormValueChange({ path, "value": defaultValue }),
+        );
+
         const onCheckboxChangeFactory = useCallbackFactory(([path]: [string[]]) =>
             onFormValueChange({
                 path,
@@ -468,6 +473,10 @@ const { TabContent } = (() => {
                                                                   formField.pattern,
                                                               )
                                                     }
+                                                    onEscapeKeyDown={onEscapeKeyDownFactory(
+                                                        formField.path,
+                                                        formField.defaultValue,
+                                                    )}
                                                 />
                                             );
                                         case "integer":
