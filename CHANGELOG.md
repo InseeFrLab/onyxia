@@ -1,3 +1,7 @@
+### **0.11.77** (2021-08-19)  
+  
+- Feat fields validation with regexp in chart    
+  
 ### **0.11.76** (2021-08-17)  
   
 - link to new documentation    
