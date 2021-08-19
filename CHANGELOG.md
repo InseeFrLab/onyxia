@@ -1,3 +1,8 @@
+### **0.11.79** (2021-08-19)  
+  
+- Make it impossible to launch service with incorrect configs  
+- Refactor hidden field feature    
+  
 ### **0.11.78** (2021-08-19)  
   
 - Translation for malformed values    
