@@ -74,6 +74,7 @@ export declare namespace Get_Public_Catalog_CatalogId_PackageName {
         export namespace String {
             export type Text = Common<string> & {
                 type: "string";
+                pattern?: string;
             };
 
             export type Enum<T extends string = string> = Common<T> & {

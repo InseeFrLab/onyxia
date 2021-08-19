@@ -23,7 +23,9 @@ import type { IndexedFormFields } from "lib/useCases/launcher";
 import { SimpleSlider } from "app/components/shared/SimpleSlider";
 import { RangeSlider } from "app/components/shared/RangeSlider";
 import type { RangeSliderProps } from "app/components/shared/RangeSlider";
-import type { Param0 } from "tsafe";
+import type { Param0, ReturnType } from "tsafe";
+import { TextField } from "onyxia-ui/TextField";
+import type { TextFieldProps } from "onyxia-ui/TextField";
 
 export type Props = {
     className?: string;
@@ -299,16 +301,24 @@ const { TabContent } = (() => {
             assembledSliderRangeFormFields,
         } = props;
 
-        const onTextFieldChangeFactory = useCallbackFactory(
+        const onValueBeingChangeFactory = useCallbackFactory(
             (
                 [path]: [string[]],
-                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>],
-            ) => onFormValueChange({ path, "value": target.value }),
+                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
+            ) => onFormValueChange({ path, value }),
         );
 
-        const onTextFieldFocus = useConstCallback(
-            ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                target.setSelectionRange(0, target.value.length),
+        const getIsValidValueFactory = useCallbackFactory(
+            (
+                [pattern]: [string],
+                [value]: [string],
+            ): ReturnType<TextFieldProps["getIsValidValue"]> =>
+                new RegExp(pattern).test(value)
+                    ? { "isValidValue": true }
+                    : {
+                          "isValidValue": false,
+                          "message": `Input doesn't match: ${pattern}`,
+                      },
         );
 
         const onCheckboxChangeFactory = useCallbackFactory(([path]: [string[]]) =>
@@ -436,20 +446,25 @@ const { TabContent } = (() => {
                                         }
                                         case "text":
                                             return (
-                                                <MuiTextField
+                                                <TextField
                                                     className={classes.textField}
                                                     label={label}
-                                                    value={formField.value}
+                                                    defaultValue={formField.value}
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
-                                                    onChange={onTextFieldChangeFactory(
+                                                    onValueBeingTypedChange={onValueBeingChangeFactory(
                                                         formField.path,
                                                     )}
+                                                    inputProps_spellCheck={false}
                                                     autoComplete="off"
-                                                    inputProps={{
-                                                        "spellCheck": false,
-                                                    }}
-                                                    onFocus={onTextFieldFocus}
+                                                    selectAllTextOnFocus={true}
+                                                    getIsValidValue={
+                                                        formField.pattern === undefined
+                                                            ? undefined
+                                                            : getIsValidValueFactory(
+                                                                  formField.pattern,
+                                                              )
+                                                    }
                                                 />
                                             );
                                         case "integer":

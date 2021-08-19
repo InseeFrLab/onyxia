@@ -56,6 +56,7 @@ export declare namespace FormField {
 
     export type Text = Common & {
         type: "text";
+        pattern: string | undefined;
         value: string;
     };
 
@@ -731,6 +732,7 @@ export const thunks = {
 
                                     return id<FormField.Text>({
                                         ...common,
+                                        "pattern": jsonSchemaFormFieldDescription.pattern,
                                         "value": getValue(jsonSchemaFormFieldDescription),
                                         "type": "text",
                                     });
