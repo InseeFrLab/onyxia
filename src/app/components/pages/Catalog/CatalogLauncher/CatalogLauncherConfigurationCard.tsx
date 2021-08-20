@@ -477,6 +477,9 @@ const { TabContent } = (() => {
                                                         formField.path,
                                                         formField.defaultValue,
                                                     )}
+                                                    doOnlyValidateInputAfterFistFocusLost={
+                                                        false
+                                                    }
                                                 />
                                             );
                                         case "integer":
