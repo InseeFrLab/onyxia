@@ -55,7 +55,7 @@ const useStyles = makeStyles()(theme => ({
         "paddingLeft": theme.spacing(2),
     },
     "divider": {
-        "margin": theme.spacing(5, 0),
+        ...theme.spacing.topBottom("margin", 5),
     },
     "providers": {
         "listStyleType": "none",

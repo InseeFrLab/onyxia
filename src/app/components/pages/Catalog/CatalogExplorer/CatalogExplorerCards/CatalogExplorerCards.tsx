@@ -38,7 +38,7 @@ const useStyles = makeStyles<{
         "flexDirection": "column",
     },
     "contextTypo": {
-        "margin": theme.spacing(4, 0),
+        ...theme.spacing.topBottom("margin", 4),
     },
     "cardsWrapper": {
         "flex": 1,
@@ -248,7 +248,7 @@ const { NoMatches } = (() => {
             "margin": 0,
         },
         "h2": {
-            "margin": theme.spacing(4, 0),
+            ...theme.spacing.topBottom("margin", 4),
         },
         "typo": {
             "marginBottom": theme.spacing(1),

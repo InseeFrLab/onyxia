@@ -18,7 +18,7 @@ const useStyles = makeStyles()(theme => ({
         "flex": 1,
     },
     "text": {
-        "margin": theme.spacing(0, 2),
+        ...theme.spacing.rightLeft("margin", 2),
         "paddingBottom": 2,
     },
 }));

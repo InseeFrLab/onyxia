@@ -151,7 +151,7 @@ const { CustomButton } = (() => {
         "icon": {
             "position": "relative",
             "zIndex": 2,
-            "margin": theme.spacing(2, 0),
+            ...theme.spacing.topBottom("margin", 2),
             ...(target !== "toggle isExpanded"
                 ? {}
                 : {

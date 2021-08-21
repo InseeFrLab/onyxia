@@ -36,7 +36,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
             "display": "flex",
-            "padding": theme.spacing(2, 0),
+            ...theme.spacing.topBottom("padding", 2),
         },
         "logoContainer": {
             "cursor": "pointer",
@@ -81,7 +81,7 @@ export const Header = memo((props: Props) => {
                 )}
                 <Text
                     typo="section heading"
-                    className={css({ "margin": theme.spacing(0, 2) })}
+                    className={css({ ...theme.spacing.rightLeft("margin", 2) })}
                 >
                     SSP Cloud
                 </Text>

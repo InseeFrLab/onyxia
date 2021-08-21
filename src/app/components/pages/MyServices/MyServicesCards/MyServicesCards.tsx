@@ -41,7 +41,7 @@ const useStyles = makeStyles<{ isThereServicesRunning: boolean }>()(
             "flexDirection": "column",
         },
         "header": {
-            "margin": theme.spacing(3, 0),
+            ...theme.spacing.topBottom("margin", 3),
         },
         "wrapper": {
             "overflow": "auto",
@@ -167,7 +167,7 @@ const { NoRunningService } = (() => {
             "margin": 0,
         },
         "h2": {
-            "margin": theme.spacing(5, 0),
+            ...theme.spacing.topBottom("margin", 5),
         },
         "typo": {
             "marginBottom": theme.spacing(2),

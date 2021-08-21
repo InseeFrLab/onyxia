@@ -12,7 +12,7 @@ export type Props = {
 
 const useStyles = makeStyles()(theme => ({
     "root": {
-        "padding": theme.spacing(2, 0),
+        ...theme.spacing.topBottom("padding", 2),
         "display": "flex",
         "justifyContent": "center",
         "borderRadius": 8,

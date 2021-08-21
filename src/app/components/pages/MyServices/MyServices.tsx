@@ -39,7 +39,7 @@ const useStyles = makeStyles<{
         "flexDirection": "column",
     },
     "contextTypo": {
-        "margin": theme.spacing(4, 0),
+        ...theme.spacing.topBottom("margin", 4),
     },
     "payload": {
         "overflow": "hidden",
