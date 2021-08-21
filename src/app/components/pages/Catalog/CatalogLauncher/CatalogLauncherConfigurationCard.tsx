@@ -5,11 +5,12 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import type { SelectChangeEvent } from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { same } from "evt/tools/inDepth/same";
 import { useState, useMemo, memo } from "react";
-import { Tabs } from "app/components/shared/Tabs";
+import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@material-ui/core/TextField";
 import { makeStyles, IconButton, Text } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -20,9 +21,9 @@ import { capitalize } from "tsafe/capitalize";
 import { Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { IndexedFormFields } from "lib/useCases/launcher";
-import { SimpleSlider } from "app/components/shared/SimpleSlider";
-import { RangeSlider } from "app/components/shared/RangeSlider";
-import type { RangeSliderProps } from "app/components/shared/RangeSlider";
+import { Slider } from "onyxia-ui/Slider";
+import { RangeSlider } from "onyxia-ui/RangeSlider";
+import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
@@ -337,10 +338,10 @@ const { TabContent } = (() => {
         );
 
         const onSelectChangeFactory = useCallbackFactory(
-            ([path]: [string[]], [event]: [React.ChangeEvent<{ value: unknown }>]) =>
+            ([path]: [string[]], [event]: [SelectChangeEvent<string>]) =>
                 onFormValueChange({
                     path,
-                    "value": event.target.value as string,
+                    "value": event.target.value,
                 }),
         );
 
@@ -502,7 +503,7 @@ const { TabContent } = (() => {
                                             );
                                         case "slider":
                                             return (
-                                                <SimpleSlider
+                                                <Slider
                                                     label={capitalize(formField.title)}
                                                     max={formField.sliderMax}
                                                     min={formField.sliderMin}

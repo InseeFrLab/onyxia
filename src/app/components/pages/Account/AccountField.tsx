@@ -13,6 +13,7 @@ import type { Param0 } from "tsafe";
 import { IconButton } from "app/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import Select from "@material-ui/core/Select";
+import type { SelectChangeEvent } from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
@@ -20,7 +21,6 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
 import { useValidUntil } from "app/i18n/useMoment";
-import { cx } from "tss-react";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
 
@@ -168,7 +168,7 @@ export const AccountField = memo(
             props.onRequestCopy();
         });
 
-        const { classes } = useStyles({ isFlashing });
+        const { classes, cx } = useStyles({ isFlashing });
 
         const TextWd = useGuaranteedMemo(
             () => (props: { children: NonNullable<ReactNode>; className?: string }) =>
@@ -224,7 +224,7 @@ export const AccountField = memo(
                         () => evtTextFieldAction.post("TRIGGER SUBMIT"),
                     );
                 },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
+
                 [props?.type === "editable text" ? props.evtAction : null],
             );
 
@@ -279,24 +279,16 @@ export const AccountField = memo(
                 },
             );
 
-            useEffect(
-                () => {
-                    if (!isCopyScheduled) return;
-                    setIsCopyScheduled(false);
-                    onRequestCopy();
-                },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [props.type === "editable text" ? props.text : null],
-            );
+            useEffect(() => {
+                if (!isCopyScheduled) return;
+                setIsCopyScheduled(false);
+                onRequestCopy();
+            }, [props.type === "editable text" ? props.text : null]);
 
-            useEffect(
-                () => {
-                    if (!isCopyScheduled) return;
-                    evtTextFieldAction.post("TRIGGER SUBMIT");
-                },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [isCopyScheduled],
-            );
+            useEffect(() => {
+                if (!isCopyScheduled) return;
+                evtTextFieldAction.post("TRIGGER SUBMIT");
+            }, [isCopyScheduled]);
 
             const onEditableTextRequestCopy = useConstCallback(() => {
                 if (isInEditingState) {
@@ -342,7 +334,7 @@ export const AccountField = memo(
                 );
 
                 const onS3ScriptSelectChange = useConstCallback(
-                    (event: React.ChangeEvent<{ value: unknown }>) =>
+                    (event: SelectChangeEvent<T>) =>
                         setSelectedS3Script(event.target.value as T),
                 );
 

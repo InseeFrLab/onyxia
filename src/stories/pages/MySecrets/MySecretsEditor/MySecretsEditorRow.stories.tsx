@@ -1,5 +1,5 @@
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { getIsValidKey } from "app/components/pages/MySecrets/MySecretsEditor";
 import { Evt } from "evt";

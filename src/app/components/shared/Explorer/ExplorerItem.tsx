@@ -16,6 +16,8 @@ import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { useWithProps } from "powerhooks/useWithProps";
 
 export type Props = {
+    className?: string;
+
     /** [HIGHER ORDER] What visual asset should be used to represent a file */
     visualRepresentationOfAFile: "secret" | "file";
 
@@ -69,7 +71,7 @@ const useStyles = makeStyles<Props>()(
             "borderRadius": "5px",
             "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
             "display": "inline-block",
-            "padding": theme.spacing("4px", "6px"),
+            "padding": theme.muiTheme.spacing("4px", "6px"),
         },
         "text": {
             //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
@@ -105,6 +107,7 @@ const useStyles = makeStyles<Props>()(
 
 export const ExplorerItem = memo((props: Props) => {
     const {
+        className,
         visualRepresentationOfAFile,
         kind,
         basename,
@@ -123,7 +126,7 @@ export const ExplorerItem = memo((props: Props) => {
 
     const { t } = useTranslation("ExplorerItem");
 
-    const { classes } = useStyles(props);
+    const { classes, cx } = useStyles(props);
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
@@ -225,7 +228,7 @@ export const ExplorerItem = memo((props: Props) => {
     );
 
     return (
-        <div className={classes.root}>
+        <div className={cx(classes.root, className)}>
             <div className={classes.frame} {...getOnMouseProps("icon")}>
                 <Icon {...{ standardizedWidth, kind }} />
             </div>

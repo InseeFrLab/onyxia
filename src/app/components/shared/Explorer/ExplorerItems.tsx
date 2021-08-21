@@ -1,5 +1,4 @@
 import { useMemo, useState, useRef, memo } from "react";
-import Grid from "@material-ui/core/Grid";
 import type { Props as ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem as SecretOrFileExplorerItem } from "./ExplorerItem";
 import { getKeyPropFactory } from "app/tools/getKeyProp";
@@ -15,7 +14,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useWithProps } from "powerhooks/useWithProps";
 import memoize from "memoizee";
-import { Text } from "app/theme";
+import { Text, makeStyles } from "app/theme";
 
 export type Props = {
     className?: string;
@@ -62,6 +61,21 @@ export type Props = {
     >;
 };
 
+const useStyles = makeStyles<{ isEmpty: boolean }>()((theme, { isEmpty }) => ({
+    "root": {
+        ...(isEmpty
+            ? {}
+            : {
+                  "display": "flex",
+                  "flexWrap": "wrap",
+                  "justifyContent": "flex-start",
+              }),
+    },
+    "item": {
+        "margin": theme.spacing(2),
+    },
+}));
+
 export const ExplorerItems = memo((props: Props) => {
     const {
         className,
@@ -82,6 +96,10 @@ export const ExplorerItems = memo((props: Props) => {
         onSelectedItemKindValueChange,
         onIsSelectedItemInEditingStateValueChange,
     } = props;
+
+    const { classes, cx } = useStyles({
+        "isEmpty": files.length === 0 && directories.length === 0,
+    });
 
     const ExplorerItem = useWithProps(SecretOrFileExplorerItem, {
         visualRepresentationOfAFile,
@@ -348,11 +366,15 @@ export const ExplorerItems = memo((props: Props) => {
     const { t } = useTranslation("ExplorerItems");
 
     return (
-        <div className={className} ref={containerRef} onMouseDown={onGridMouseDown}>
+        <div
+            className={cx(classes.root, className)}
+            ref={containerRef}
+            onMouseDown={onGridMouseDown}
+        >
             {files.length === 0 && directories.length === 0 ? (
                 <Text typo="body 1">{t("empty directory")}</Text>
             ) : (
-                <Grid container wrap="wrap" justify="flex-start" spacing={1}>
+                <>
                     {(["directory", "file"] as const).map(kind =>
                         (() => {
                             switch (kind) {
@@ -366,45 +388,42 @@ export const ExplorerItems = memo((props: Props) => {
                             const isSelected = selectedItemKeyProp === keyProp;
 
                             return (
-                                <Grid item key={keyProp}>
-                                    <ExplorerItem
-                                        kind={kind}
-                                        basename={basename}
-                                        isSelected={isSelected}
-                                        evtAction={getEvtItemAction(keyProp)}
-                                        isCircularProgressShown={(() => {
-                                            switch (kind) {
-                                                case "directory":
-                                                    return [
-                                                        ...directoriesBeingCreated,
-                                                        ...directoriesBeingRenamed,
-                                                    ];
-                                                case "file":
-                                                    return [
-                                                        ...filesBeingCreated,
-                                                        ...filesBeingRenamed,
-                                                    ];
-                                            }
-                                        })().includes(basename)}
-                                        standardizedWidth="big"
-                                        onMouseEvent={onMouseEventFactory(kind, basename)}
-                                        onEditBasename={onEditBasenameFactory(
-                                            kind,
-                                            basename,
-                                        )}
-                                        getIsValidBasename={getIsValidBasenameFactory(
-                                            kind,
-                                            basename,
-                                        )}
-                                        onIsInEditingStateValueChange={
-                                            onIsInEditingStateValueChange
+                                <ExplorerItem
+                                    className={classes.item}
+                                    key={keyProp}
+                                    kind={kind}
+                                    basename={basename}
+                                    isSelected={isSelected}
+                                    evtAction={getEvtItemAction(keyProp)}
+                                    isCircularProgressShown={(() => {
+                                        switch (kind) {
+                                            case "directory":
+                                                return [
+                                                    ...directoriesBeingCreated,
+                                                    ...directoriesBeingRenamed,
+                                                ];
+                                            case "file":
+                                                return [
+                                                    ...filesBeingCreated,
+                                                    ...filesBeingRenamed,
+                                                ];
                                         }
-                                    />
-                                </Grid>
+                                    })().includes(basename)}
+                                    standardizedWidth="big"
+                                    onMouseEvent={onMouseEventFactory(kind, basename)}
+                                    onEditBasename={onEditBasenameFactory(kind, basename)}
+                                    getIsValidBasename={getIsValidBasenameFactory(
+                                        kind,
+                                        basename,
+                                    )}
+                                    onIsInEditingStateValueChange={
+                                        onIsInEditingStateValueChange
+                                    }
+                                />
                             );
                         }),
                     )}
-                </Grid>
+                </>
             )}
         </div>
     );

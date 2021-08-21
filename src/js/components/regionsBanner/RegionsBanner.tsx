@@ -1,6 +1,12 @@
 import { useState } from "react";
-import Alert from "@material-ui/lab/Alert";
-import { IconButton, Collapse, Grid, Button, Typography } from "@material-ui/core";
+import Alert from "@material-ui/core/Alert";
+import {
+    IconButton,
+    Collapse,
+    Grid as Grid_v4,
+    Button,
+    Typography,
+} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useHistory } from "react-router-dom";
@@ -9,6 +15,8 @@ import {
     useAppConstants,
     useSelectedRegion,
 } from "app/interfaceWithLib/hooks";
+
+const Grid: any = Grid_v4;
 
 const RegionBanner = () => {
     const appConstants = useAppConstants();

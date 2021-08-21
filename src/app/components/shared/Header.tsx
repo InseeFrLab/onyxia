@@ -85,7 +85,7 @@ export const Header = memo((props: Props) => {
                 >
                     SSP Cloud
                 </Text>
-                {theme.responsive.windowInnerWidth > 450 && (
+                {theme.windowInnerWidth > 450 && (
                     <Text
                         typo="section heading"
                         className={css({ "fontWeight": 500 })}

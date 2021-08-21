@@ -100,7 +100,7 @@ export function createStoreProvider(params: { doMock: boolean }) {
 
         const asyncCreateStore = useAsync(
             () => createStore_memo(),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+
             [],
         );
 

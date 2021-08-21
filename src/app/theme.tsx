@@ -11,6 +11,7 @@ import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
 import { createText } from "onyxia-ui/Text";
+import { createPageHeader } from "onyxia-ui/PageHeader";
 import { createMakeStyles } from "tss-react";
 import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
@@ -59,7 +60,7 @@ import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRigh
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 
-export const { ThemeProvider, useTheme } = createThemeProvider({
+const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc(params),
@@ -79,7 +80,9 @@ export const { ThemeProvider, useTheme } = createThemeProvider({
     },
 });
 
-export const { makeStyles } = createMakeStyles({ useTheme });
+export { ThemeProvider };
+
+export const { makeStyles, useStyles } = createMakeStyles({ useTheme });
 
 /** @see: <https://material-ui.com/components/material-icons/> */
 export const { Icon } = createIcon({
@@ -164,3 +167,5 @@ export function getThemeProviderProps(params: {
         "splashScreen": { "Logo": OnyxiaLogoSvg },
     };
 }
+
+export const { PageHeader } = createPageHeader({ Icon });

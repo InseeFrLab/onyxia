@@ -1,10 +1,10 @@
 import { AccountField } from "app/components/pages/Account/AccountField";
 import type { Props } from "app/components/pages/Account/AccountField";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
-import { css } from "tss-react";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
+import { css } from "tss-react/@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

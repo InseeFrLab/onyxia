@@ -1,8 +1,8 @@
-import { css } from "tss-react";
+import { css } from "tss-react/@emotion/css";
 import { useState, useCallback, useEffect } from "react";
 import { ExplorerItems, Props } from "app/components/shared/Explorer/ExplorerItems";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "app/tools/symToStr";
 import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";

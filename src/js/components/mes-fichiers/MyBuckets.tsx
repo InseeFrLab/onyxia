@@ -25,7 +25,6 @@ export function MyBuckets() {
         if (!buckets) {
             dispatch(myFilesActions.loadUserBuckets());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buckets]);
 
     return (

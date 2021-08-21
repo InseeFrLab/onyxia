@@ -1,6 +1,6 @@
 import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

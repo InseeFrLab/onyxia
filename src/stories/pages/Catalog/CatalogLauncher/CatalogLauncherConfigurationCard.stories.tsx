@@ -4,7 +4,7 @@ import {
     Props,
 } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks/useConstCallback";
 

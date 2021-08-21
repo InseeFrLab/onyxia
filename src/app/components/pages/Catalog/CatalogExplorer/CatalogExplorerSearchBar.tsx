@@ -131,7 +131,7 @@ export const CatalogExplorerSearchBar = memo((props: Props) => {
                 ctx,
                 () => onInputKeyDown({ "key": "Escape" }),
             ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [evtAction],
     );
 

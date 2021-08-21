@@ -1,5 +1,5 @@
-import { default as MaterialUiAlert } from "@material-ui/lab/Alert";
-import type { AlertProps } from "@material-ui/lab/Alert";
+import { default as MaterialUiAlert } from "@material-ui/core/Alert";
+import type { AlertProps } from "@material-ui/core/Alert";
 
 export const Alert: React.FC<{
     severity?: NonNullable<AlertProps["severity"]>;

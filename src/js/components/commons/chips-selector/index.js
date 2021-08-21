@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from 'prop-types';
 import removeAccents from 'remove-accents';
 import { TextField, InputAdornment, Icon } from '@material-ui/core';
-import RootRef from '@material-ui/core/RootRef';
 import { HidablePane } from 'js/components/commons/HidablePane';
 import './chips-selector.scss';
 
@@ -112,23 +111,22 @@ class Searchbar extends React.Component {
 						chips={this.state.chipsSelected}
 						handleClikChip={this.handleClickChip}
 					/>
-					<RootRef rootRef={this.search}>
-						<TextField
-							className="searchbar"
-							variant="outlined"
-							type="text"
-							onKeyPress={this.handleKeypress}
-							value={this.state.value}
-							onChange={this.handleChange}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<Icon>search</Icon>
-									</InputAdornment>
-								),
-							}}
-						/>
-					</RootRef>
+					<TextField
+						ref={this.search}
+						className="searchbar"
+						variant="outlined"
+						type="text"
+						onKeyPress={this.handleKeypress}
+						value={this.state.value}
+						onChange={this.handleChange}
+						InputProps={{
+							endAdornment: (
+								<InputAdornment position="end">
+									<Icon>search</Icon>
+								</InputAdornment>
+							),
+						}}
+					/>
 					<HidablePane className="hidable-panel" anchor={this.search.current}>
 						<Propositions
 							handleClikChip={this.handleClickChip}

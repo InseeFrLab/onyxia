@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { PageHeader } from "app/components/shared/PageHeader";
-import { makeStyles } from "app/theme";
+import { makeStyles, PageHeader } from "app/theme";
 
 import { useTranslation } from "app/i18n/useTranslations";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
@@ -89,17 +88,13 @@ export function MyServices(props: Props) {
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
-    useEffect(
-        () => {
-            if (isRunningServicesFetching) {
-                showSplashScreen({ "enableTransparency": true });
-            } else {
-                hideSplashScreen();
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isRunningServicesFetching],
-    );
+    useEffect(() => {
+        if (isRunningServicesFetching) {
+            showSplashScreen({ "enableTransparency": true });
+        } else {
+            hideSplashScreen();
+        }
+    }, [isRunningServicesFetching]);
 
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
         switch (buttonId) {
@@ -118,14 +113,10 @@ export function MyServices(props: Props) {
         }
     });
 
-    useEffect(
-        () => {
-            dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
-            dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+    useEffect(() => {
+        dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
+        dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+    }, []);
 
     const { isSavedConfigsExtended } = route.params;
 

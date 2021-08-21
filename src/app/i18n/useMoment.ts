@@ -22,7 +22,7 @@ export const { useFormattedDate } = (() => {
 
         return useMemo(
             () => moment(date).locale(lng).format(getFormatByLng(isSameYear)[lng]),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+
             [date, lng],
         );
     }
@@ -43,7 +43,6 @@ export function useValidUntil(params: { millisecondsLeft: number }): string {
                 .calendar()
                 .toLowerCase(),
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [lng, millisecondsLeft],
     );
 
@@ -354,7 +353,7 @@ export const { useFromNow } = (() => {
 
         const fromNowText = useMemo(
             () => fromNow({ dateTime, lng }),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+
             [lng, trigger, dateTime],
         );
 

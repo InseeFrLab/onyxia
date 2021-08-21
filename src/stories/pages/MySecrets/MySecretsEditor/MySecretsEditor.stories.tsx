@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor";
 import type { Props } from "app/components/pages/MySecrets/MySecretsEditor";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { symToStr } from "app/tools/symToStr";
 

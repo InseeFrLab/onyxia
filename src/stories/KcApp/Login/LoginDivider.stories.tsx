@@ -1,6 +1,6 @@
 import { LoginDivider } from "app/components/KcApp/Login/LoginDivider";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

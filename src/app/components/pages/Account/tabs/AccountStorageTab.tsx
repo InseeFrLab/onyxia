@@ -88,7 +88,7 @@ export const AccountStorageTab = memo((props: Props) => {
     const { credentialExpiriesWhen } = (function useClosure() {
         const millisecondsLeft = useMemo(
             () => new Date(s3Credentials?.AWS_EXPIRATION ?? 0).getTime() - Date.now(),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+
             [s3Credentials?.AWS_EXPIRATION ?? null],
         );
 

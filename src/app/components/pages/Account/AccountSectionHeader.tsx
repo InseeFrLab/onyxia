@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { Icon, Text } from "app/theme";
 import { makeStyles } from "app/theme";
-import { cx } from "tss-react";
 
 export type Props = {
     className?: string;
@@ -30,7 +29,7 @@ const useStyles = makeStyles()(theme => ({
 export const AccountSectionHeader = memo((props: Props) => {
     const { title, helperText, tooltipText, className } = props;
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     return (
         <div className={cx(classes.root, className)}>

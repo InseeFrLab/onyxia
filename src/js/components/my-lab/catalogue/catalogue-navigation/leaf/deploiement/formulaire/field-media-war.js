@@ -4,7 +4,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import RootRef from '@material-ui/core/RootRef';
 import getMinioApi from 'js/minio-client/minio-api';
 import { getMinioClient } from "js/minio-client/minio-client";
 import { getValidatedEnv } from 'app/validatedEnv';
@@ -44,20 +43,19 @@ class SelectWarField extends React.Component {
 					className="champ-media-war"
 					aria-describedby={`name-helper-${path}`}
 				>
-					<RootRef rootRef={this.anchor}>
-						<TextField
-							disabled={disabled}
-							id={nom}
-							label={nom}
-							value={value || ''}
-							className="champ-texte"
-							onChange={(e) => handleChange(path)(e.target.value)}
-							margin="normal"
-							onMouseEnter={this.displayOptions}
-							onMouseLeave={this.hideOptions}
-							title={value}
-						/>
-					</RootRef>
+					<TextField
+						ref={this.anchor}
+						disabled={disabled}
+						id={nom}
+						label={nom}
+						value={value || ''}
+						className="champ-texte"
+						onChange={(e) => handleChange(path)(e.target.value)}
+						margin="normal"
+						onMouseEnter={this.displayOptions}
+						onMouseLeave={this.hideOptions}
+						title={value}
+					/>
 					<HidablePane anchor={this.anchor.current} post={() => false}>
 						<MenuList>
 							{this.state.paths.map(({ url, name }, i) => (

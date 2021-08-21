@@ -1,5 +1,5 @@
 import { LeftBar } from "app/components/App/LeftBar";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 
 const { meta, getStory } = getStoryFactory({

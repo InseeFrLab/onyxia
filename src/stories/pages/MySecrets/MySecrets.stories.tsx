@@ -1,5 +1,5 @@
-import { css } from "tss-react";
-import { getStoryFactory } from "stories/geStory";
+import { css } from "tss-react/@emotion/css";
+import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "../sectionName";
 import { MySecrets } from "app/components/pages/MySecrets";
 import type { Props } from "app/components/pages/MySecrets";

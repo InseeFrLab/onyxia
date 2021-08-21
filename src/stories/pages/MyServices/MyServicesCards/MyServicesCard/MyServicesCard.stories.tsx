@@ -1,6 +1,6 @@
 import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesCard";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({

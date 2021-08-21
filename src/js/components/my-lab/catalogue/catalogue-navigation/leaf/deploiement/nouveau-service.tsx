@@ -224,7 +224,7 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
                                 value={onglet}
                                 onChange={(...[, o]) => setOnglet(o)}
                                 variant="scrollable"
-                                scrollButtons="on"
+                                scrollButtons="auto"
                             >
                                 {mapServiceToOnglets(ongletFields as any)}
                             </Tabs>

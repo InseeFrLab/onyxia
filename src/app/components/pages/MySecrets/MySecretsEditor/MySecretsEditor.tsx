@@ -1,5 +1,4 @@
 import { makeStyles } from "app/theme";
-import { css } from "tss-react";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -254,7 +253,7 @@ export const MySecretsEditor = memo((props: Props) => {
         }),
     );
 
-    const { classes } = useStyles(props);
+    const { classes, css } = useStyles(props);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 

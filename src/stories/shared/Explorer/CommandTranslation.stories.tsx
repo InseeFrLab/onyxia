@@ -1,6 +1,6 @@
-import { css } from "tss-react";
+import { css } from "tss-react/@emotion/css";
 import { useState, useEffect, useReducer } from "react";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { CmdTranslation } from "app/components/shared/Explorer/CmdTranslation";
 import type { Props } from "app/components/shared/Explorer/CmdTranslation";

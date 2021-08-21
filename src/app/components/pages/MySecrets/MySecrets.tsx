@@ -1,5 +1,4 @@
-import { makeStyles } from "app/theme";
-import { cx } from "tss-react";
+import { makeStyles, PageHeader } from "app/theme";
 import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
@@ -12,7 +11,6 @@ import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer
 import { Props as ExplorerProps } from "app/components/shared/Explorer";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
-import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "powerhooks/useWithProps";
 import { relative as pathRelative } from "path";
@@ -93,48 +91,40 @@ export function MySecrets(props: Props) {
 
     const { secretExplorerUserHomePath: userHomePath } = useSecretExplorerUserHomePath();
 
-    useEffect(
-        () => {
-            if (state.currentPath !== "") {
-                return;
-            }
+    useEffect(() => {
+        if (state.currentPath !== "") {
+            return;
+        }
 
-            //We allow route to be null to be able to test in storybook
-            const { secretOrDirectoryPath = userHomePath, isFile = false } =
-                route?.params ?? {};
+        //We allow route to be null to be able to test in storybook
+        const { secretOrDirectoryPath = userHomePath, isFile = false } =
+            route?.params ?? {};
 
-            dispatch(
-                isFile
-                    ? thunks.secretExplorer.navigateToSecret({
-                          "fromCurrentPath": false,
-                          "secretPath": secretOrDirectoryPath,
-                      })
-                    : thunks.secretExplorer.navigateToDirectory({
-                          "fromCurrentPath": false,
-                          "directoryPath": secretOrDirectoryPath,
-                      }),
-            );
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+        dispatch(
+            isFile
+                ? thunks.secretExplorer.navigateToSecret({
+                      "fromCurrentPath": false,
+                      "secretPath": secretOrDirectoryPath,
+                  })
+                : thunks.secretExplorer.navigateToDirectory({
+                      "fromCurrentPath": false,
+                      "directoryPath": secretOrDirectoryPath,
+                  }),
+        );
+    }, []);
 
-    useEffect(
-        () => {
-            if (state.currentPath === "" || route === undefined) {
-                return;
-            }
+    useEffect(() => {
+        if (state.currentPath === "" || route === undefined) {
+            return;
+        }
 
-            routes
-                .mySecrets({
-                    ...(state.state === "SHOWING SECRET" ? { "isFile": true } : {}),
-                    "secretOrDirectoryPath": state.currentPath.replace(/^\//, ""),
-                })
-                .push();
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [state.currentPath],
-    );
+        routes
+            .mySecrets({
+                ...(state.state === "SHOWING SECRET" ? { "isFile": true } : {}),
+                "secretOrDirectoryPath": state.currentPath.replace(/^\//, ""),
+            })
+            .push();
+    }, [state.currentPath]);
 
     const onEditedBasename = useConstCallback(
         ({
@@ -209,21 +199,17 @@ export function MySecrets(props: Props) {
         dispatch(thunks.secretExplorer.editCurrentlyShownSecret(params)),
     );
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
-    useEffect(
-        () => {
-            if (state.currentPath === "") {
-                showSplashScreen({ "enableTransparency": true });
-            } else {
-                hideSplashScreen();
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [state.currentPath === ""],
-    );
+    useEffect(() => {
+        if (state.currentPath === "") {
+            showSplashScreen({ "enableTransparency": true });
+        } else {
+            hideSplashScreen();
+        }
+    }, [state.currentPath === ""]);
 
     const doDisplayUseInServiceDialog = useSelector(
         state => state.userConfigs.doDisplayMySecretsUseInServiceDialog.value,

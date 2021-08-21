@@ -50,10 +50,10 @@ const useStyles = makeStyles<{
             : {
                   "display": "grid",
                   "gridTemplateColumns": `repeat(${(() => {
-                      if (theme.responsive.windowInnerWidth >= breakpointsValues.xl) {
+                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
                           return 4;
                       }
-                      if (theme.responsive.windowInnerWidth >= breakpointsValues.lg) {
+                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
                           return 3;
                       }
 

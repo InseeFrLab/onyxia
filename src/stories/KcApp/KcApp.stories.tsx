@@ -1,6 +1,6 @@
 import { KcApp } from "app/components/KcApp";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import { kcContextLogin, kcContextRegister } from "./kcContexts";
 
 const { meta, getStory } = getStoryFactory({

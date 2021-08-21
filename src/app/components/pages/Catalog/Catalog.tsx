@@ -1,8 +1,7 @@
 import { createGroup } from "type-route";
-import { PageHeader } from "app/components/shared/PageHeader";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useLng } from "app/i18n/useLng";
-import { makeStyles } from "app/theme";
+import { makeStyles, PageHeader } from "app/theme";
 
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
