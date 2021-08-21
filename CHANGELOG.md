@@ -1,3 +1,7 @@
+### **0.11.81** (2021-08-20)  
+  
+- Launcher: Validate fields immediadly    
+  
 ### **0.11.80** (2021-08-19)  
   
 - Press escape to restore default values    
