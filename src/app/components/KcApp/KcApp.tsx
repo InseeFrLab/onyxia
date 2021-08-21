@@ -84,13 +84,9 @@ export const KcApp = memo((props: Props) => {
         "fadeOutDuration": getBrowser() === "firefox" ? 0 : undefined,
     });
 
-    useEffect(
-        () => {
-            hideRootSplashScreen();
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+    useEffect(() => {
+        hideRootSplashScreen();
+    }, []);
 
     const { classes } = useStyles();
 

@@ -1,7 +1,7 @@
 import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
-import { css } from "tss-react";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
+import { css } from "tss-react/@emotion/css";
 import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({

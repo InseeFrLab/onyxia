@@ -12,7 +12,6 @@ import Autorenew from "@material-ui/icons/Autorenew";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import DeleteIcon from "@material-ui/icons/Delete";
 import "./cloud-shell.scss";
-import { withStyles } from "@material-ui/core";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
 import { getMinioToken } from "js/minio-client/minio-client";
@@ -21,6 +20,7 @@ import {
     getValuesObject,
 } from "js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
+import { useStyles } from "app/theme";
 import { prAxiosInstance } from "lib/setup";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
@@ -50,6 +50,8 @@ export const CloudShell = memo(() => {
     const [minioCredentials, setMinioCredentials] = useState<any>();
     const [reloadCloudshell, setReloadCloudShell] = useState(0);
     const dispatch = useDispatch();
+
+    const { css } = useStyles();
 
     const { mustacheParams } = useMustacheParams();
 
@@ -123,17 +125,13 @@ export const CloudShell = memo(() => {
         }
     }, [minioCredentials]);
 
-    useEffect(
-        () => {
-            if (!isCloudShellVisible || cloudShellStatus === "UP") {
-                return;
-            }
+    useEffect(() => {
+        if (!isCloudShellVisible || cloudShellStatus === "UP") {
+            return;
+        }
 
-            launchCloudShell();
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isCloudShellVisible],
-    );
+        launchCloudShell();
+    }, [isCloudShellVisible]);
 
     if (!isCloudShellVisible || cloudShellStatus === "DOWN") {
         return null;
@@ -155,16 +153,21 @@ export const CloudShell = memo(() => {
                         borderTopRightRadius: "10px",
                         backgroundColor: "rgba(0, 0, 0, 0.35)",
                     }}
+                    className={css({
+                        "& .MuiIconButton-root": {
+                            "color": "white",
+                        },
+                    })}
                 >
-                    <CloudShellIconButton
+                    <IconButton
                         aria-label="autorenew"
                         onClick={() => setReloadCloudShell(reloadCloudshell + 1)}
                         className="renew-shell"
                     >
                         <Autorenew />
-                    </CloudShellIconButton>
+                    </IconButton>
 
-                    <CloudShellIconButton
+                    <IconButton
                         aria-label="openinnewicon"
                         onClick={() => {
                             const cloudshell = document.getElementById(
@@ -176,9 +179,9 @@ export const CloudShell = memo(() => {
                         className="opennewtab-shell"
                     >
                         <OpenInNewIcon />
-                    </CloudShellIconButton>
+                    </IconButton>
 
-                    <CloudShellIconButton
+                    <IconButton
                         aria-label="delete"
                         onClick={() => {
                             setIsCloudShellVisible(false);
@@ -187,27 +190,21 @@ export const CloudShell = memo(() => {
                         className="close-shell"
                     >
                         <DeleteIcon />
-                    </CloudShellIconButton>
+                    </IconButton>
 
-                    <CloudShellIconButton
+                    <IconButton
                         aria-label="close"
                         onClick={() => setIsCloudShellVisible(false)}
                         className="close-shell"
                     >
                         <CloseIcon />
-                    </CloudShellIconButton>
+                    </IconButton>
                 </div>
                 <CloudShellWindow reloadCloudshell={reloadCloudshell} src={url!} />
             </div>
         </div>
     );
 });
-
-const CloudShellIconButton = withStyles({
-    "root": {
-        "color": "white",
-    },
-})(IconButton);
 
 const { CloudShellWindow } = (() => {
     type Props = {

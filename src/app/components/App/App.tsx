@@ -190,47 +190,43 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
     const appConstants = useAppConstants();
 
-    const legacyRoute = useMemo(
-        () => {
-            const Page = [
-                Catalogue,
-                MyService,
-                MyBuckets,
-                NavigationFile,
-                SharedServices,
-                Trainings,
-            ].find(({ routeGroup }) => routeGroup.has(route));
+    const legacyRoute = useMemo(() => {
+        const Page = [
+            Catalogue,
+            MyService,
+            MyBuckets,
+            NavigationFile,
+            SharedServices,
+            Trainings,
+        ].find(({ routeGroup }) => routeGroup.has(route));
 
-            if (Page === undefined) {
-                return undefined;
-            }
+        if (Page === undefined) {
+            return undefined;
+        }
 
-            if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+        if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
+            appConstants.login();
 
-                return null;
-            }
+            return null;
+        }
 
-            switch (Page) {
-                case NavigationFile:
-                    assert(Page.routeGroup.has(route));
-                    return <Page route={route} />;
-                case MyService:
-                    assert(Page.routeGroup.has(route));
-                    return <Page route={route} />;
-                case SharedServices:
-                    return <Page serviceSelectionne={false} />;
-                case Catalogue:
-                case Trainings:
-                case MyBuckets:
-                    return <Page />;
-            }
+        switch (Page) {
+            case NavigationFile:
+                assert(Page.routeGroup.has(route));
+                return <Page route={route} />;
+            case MyService:
+                assert(Page.routeGroup.has(route));
+                return <Page route={route} />;
+            case SharedServices:
+                return <Page serviceSelectionne={false} />;
+            case Catalogue:
+            case Trainings:
+            case MyBuckets:
+                return <Page />;
+        }
 
-            assert(false, "Not all cases have been dealt with in the above switch");
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [route],
-    );
+        assert(false, "Not all cases have been dealt with in the above switch");
+    }, [route]);
 
     {
         const Page = Catalog;

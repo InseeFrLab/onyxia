@@ -1,4 +1,3 @@
-import { css, cx } from "tss-react";
 import { useMemo, useState, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "onyxia-ui/TextField";
@@ -7,7 +6,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "app/i18n/useTranslations";
-import { IconButton, Text, makeStyles, useTheme } from "app/theme";
+import { IconButton, Text, makeStyles } from "app/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import TableRow from "@material-ui/core/TableRow";
@@ -114,7 +113,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 () => onSubmitButtonClick(),
             );
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [evtAction, isInEditingState],
     );
 
@@ -231,7 +230,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
         },
     );
 
-    const { classes } = useStyles({ ...props, isInEditingState });
+    const { classes, theme, css, cx } = useStyles({ ...props, isInEditingState });
 
     const SmartTrim = useMemo(
         () =>
@@ -256,8 +255,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
             },
         [],
     );
-
-    const theme = useTheme();
 
     const {
         ref,

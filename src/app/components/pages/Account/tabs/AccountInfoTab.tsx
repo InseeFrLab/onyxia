@@ -44,13 +44,9 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const dispatch = useDispatch();
 
-    useEffect(
-        () => {
-            dispatch(publicIpThunks.fetch());
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+    useEffect(() => {
+        dispatch(publicIpThunks.fetch());
+    }, []);
 
     //We make the assumption that if we use OIDC we are using keycloak
     //...which is not necessarily the case.
@@ -76,7 +72,7 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const accessTokenRemainingValidity = useMemo(
         () => appConstants.getOidcTokensRemandingValidity(),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [tokenState.oidcTokens.accessToken],
     );
 

@@ -1,4 +1,4 @@
-import { Tabs } from "../../shared/Tabs";
+import { Tabs } from "onyxia-ui/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { useMemo } from "react";
@@ -9,7 +9,7 @@ import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
-import { PageHeader } from "app/components/shared/PageHeader";
+import { PageHeader } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Route } from "type-route";
 import { makeStyles } from "app/theme";

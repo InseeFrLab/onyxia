@@ -1,6 +1,6 @@
 import { MyServicesRoundLogo } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRoundLogo";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import rstudioLogoUrl from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({

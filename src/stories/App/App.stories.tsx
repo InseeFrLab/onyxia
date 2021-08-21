@@ -1,5 +1,5 @@
 import { App } from "app/components/App";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
 
 const { meta, getStory } = getStoryFactory({

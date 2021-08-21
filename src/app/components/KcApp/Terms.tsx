@@ -36,22 +36,15 @@ export const Terms = memo(
 
         const { kcLanguageTag } = useKcLanguageTag();
 
-        useEffect(
-            () => {
-                if (kcContext!.pageId !== "terms.ftl") {
-                    return;
-                }
+        useEffect(() => {
+            if (kcContext!.pageId !== "terms.ftl") {
+                return;
+            }
 
-                fetch(getTosMarkdownUrl(kcLanguageTag))
-                    .then(response => response.text())
-                    .then(
-                        rawMarkdown =>
-                            (kcMessages[kcLanguageTag].termsText = rawMarkdown),
-                    );
-            },
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            [kcLanguageTag],
-        );
+            fetch(getTosMarkdownUrl(kcLanguageTag))
+                .then(response => response.text())
+                .then(rawMarkdown => (kcMessages[kcLanguageTag].termsText = rawMarkdown));
+        }, [kcLanguageTag]);
 
         const { classes } = useStyles();
 

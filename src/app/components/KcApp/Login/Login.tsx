@@ -105,13 +105,9 @@ export const Login = memo(
                 null,
             );
 
-            useEffect(
-                () => {
-                    setPasswordInput(passwordInputRef.current);
-                },
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                [passwordInputRef.current ?? {}],
-            );
+            useEffect(() => {
+                setPasswordInput(passwordInputRef.current);
+            }, [passwordInputRef.current ?? {}]);
 
             useEvt(
                 ctx => {

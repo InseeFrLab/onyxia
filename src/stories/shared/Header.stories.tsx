@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Header } from "app/components/shared/Header";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
-import { css } from "tss-react";
+import { css } from "tss-react/@emotion/css";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 
 const { meta, getStory } = getStoryFactory({

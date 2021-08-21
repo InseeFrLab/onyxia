@@ -192,7 +192,11 @@ const { NoRunningService } = (() => {
                     <Text typo="page heading" className={classes.h2}>
                         {t("no services running")}
                     </Text>
-                    <MuiLink className={classes.link} {...catalogExplorerLink}>
+                    <MuiLink
+                        className={classes.link}
+                        {...catalogExplorerLink}
+                        underline="hover"
+                    >
                         {t("launch one")}
                     </MuiLink>
                 </div>

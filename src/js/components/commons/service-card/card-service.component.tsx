@@ -50,7 +50,7 @@ export const CarteService = ({
                         <div className="texte">
                             <Grid container direction="row" alignItems="center">
                                 <Grid item>
-                                    <WarningIcon fontSize="default" />
+                                    <WarningIcon fontSize="medium" />
                                 </Grid>
                                 <Grid item>Token Expiré</Grid>
                             </Grid>

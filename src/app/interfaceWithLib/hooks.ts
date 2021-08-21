@@ -143,32 +143,28 @@ export function useApplyLanguageSelectedAtLogin() {
 
     const { setLng } = useLng();
 
-    useEffect(
-        () => {
-            if (!appConstants.isUserLoggedIn) {
-                return;
-            }
+    useEffect(() => {
+        if (!appConstants.isUserLoggedIn) {
+            return;
+        }
 
-            const { locale } = appConstants.parsedJwt;
+        const { locale } = appConstants.parsedJwt;
 
-            if (
-                !typeGuard<SupportedLanguage>(
-                    locale,
-                    locale in
-                        id<Record<SupportedLanguage, null>>({
-                            "en": null,
-                            "fr": null,
-                        }),
-                )
-            ) {
-                return;
-            }
+        if (
+            !typeGuard<SupportedLanguage>(
+                locale,
+                locale in
+                    id<Record<SupportedLanguage, null>>({
+                        "en": null,
+                        "fr": null,
+                    }),
+            )
+        ) {
+            return;
+        }
 
-            setLng(locale);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+        setLng(locale);
+    }, []);
 }
 
 /**
@@ -189,17 +185,13 @@ export function useSyncDarkModeWithValueInProfile() {
         !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value,
     );
 
-    useEffect(
-        () => {
-            if (userConfigsIsDarkModeEnabled === undefined) {
-                return;
-            }
+    useEffect(() => {
+        if (userConfigsIsDarkModeEnabled === undefined) {
+            return;
+        }
 
-            setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
+        setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
+    }, []);
 
     useEffectOnValueChange(() => {
         if (!isUserLoggedIn) {

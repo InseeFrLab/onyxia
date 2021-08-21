@@ -15,7 +15,7 @@ import { makeStyles, IconButton, Text } from "app/theme";
 import { useDomRect, useWindowInnerSize } from "onyxia-ui";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import { Paper } from "onyxia-ui/Paper";
+import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { appendHead } from "keycloakify/lib/tools/appendHead";
 import { join as pathJoin } from "path";
@@ -83,27 +83,21 @@ export const Template = memo((props: TemplateProps) => {
 
     const { kcLanguageTag } = useKcLanguageTag();
 
-    useEffect(
-        () => {
-            if (!kcContext.realm.internationalizationEnabled) {
-                return;
-            }
+    useEffect(() => {
+        if (!kcContext.realm.internationalizationEnabled) {
+            return;
+        }
 
-            assert(kcContext.locale !== undefined);
+        assert(kcContext.locale !== undefined);
 
-            if (
-                kcLanguageTag === getBestMatchAmongKcLanguageTag(kcContext.locale.current)
-            ) {
-                return;
-            }
+        if (kcLanguageTag === getBestMatchAmongKcLanguageTag(kcContext.locale.current)) {
+            return;
+        }
 
-            window.location.href = kcContext.locale.supported.find(
-                ({ languageTag }) => languageTag === kcLanguageTag,
-            )!.url;
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [kcLanguageTag],
-    );
+        window.location.href = kcContext.locale.supported.find(
+            ({ languageTag }) => languageTag === kcLanguageTag,
+        )!.url;
+    }, [kcLanguageTag]);
 
     const {
         domRect: { width: rootWidth },
@@ -129,67 +123,63 @@ export const Template = memo((props: TemplateProps) => {
 
     const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
 
-    useEffect(
-        () => {
-            if (!doFetchDefaultThemeResources) {
-                setExtraCssLoaded();
+    useEffect(() => {
+        if (!doFetchDefaultThemeResources) {
+            setExtraCssLoaded();
+            return;
+        }
+
+        let isUnmounted = false;
+        const cleanups: (() => void)[] = [];
+
+        const toArr = (x: string | readonly string[] | undefined) =>
+            typeof x === "string" ? x.split(" ") : x ?? [];
+
+        Promise.all(
+            [
+                ...toArr(props.stylesCommon).map(relativePath =>
+                    pathJoin(kcContext.url.resourcesCommonPath, relativePath),
+                ),
+                ...toArr(props.styles).map(relativePath =>
+                    pathJoin(kcContext.url.resourcesPath, relativePath),
+                ),
+            ].map(href =>
+                appendHead({
+                    "type": "css",
+                    href,
+                }),
+            ),
+        ).then(() => {
+            if (isUnmounted) {
                 return;
             }
 
-            let isUnmounted = false;
-            const cleanups: (() => void)[] = [];
+            setExtraCssLoaded();
+        });
 
-            const toArr = (x: string | readonly string[] | undefined) =>
-                typeof x === "string" ? x.split(" ") : x ?? [];
+        toArr(props.scripts).forEach(relativePath =>
+            appendHead({
+                "type": "javascript",
+                "src": pathJoin(kcContext.url.resourcesPath, relativePath),
+            }),
+        );
 
-            Promise.all(
-                [
-                    ...toArr(props.stylesCommon).map(relativePath =>
-                        pathJoin(kcContext.url.resourcesCommonPath, relativePath),
-                    ),
-                    ...toArr(props.styles).map(relativePath =>
-                        pathJoin(kcContext.url.resourcesPath, relativePath),
-                    ),
-                ].map(href =>
-                    appendHead({
-                        "type": "css",
-                        href,
-                    }),
-                ),
-            ).then(() => {
-                if (isUnmounted) {
-                    return;
-                }
+        if (props.kcHtmlClass !== undefined) {
+            const htmlClassList = document.getElementsByTagName("html")[0].classList;
 
-                setExtraCssLoaded();
-            });
+            const tokens = cx(props.kcHtmlClass).split(" ");
 
-            toArr(props.scripts).forEach(relativePath =>
-                appendHead({
-                    "type": "javascript",
-                    "src": pathJoin(kcContext.url.resourcesPath, relativePath),
-                }),
-            );
+            htmlClassList.add(...tokens);
 
-            if (props.kcHtmlClass !== undefined) {
-                const htmlClassList = document.getElementsByTagName("html")[0].classList;
+            cleanups.push(() => htmlClassList.remove(...tokens));
+        }
 
-                const tokens = cx(props.kcHtmlClass).split(" ");
+        return () => {
+            isUnmounted = true;
 
-                htmlClassList.add(...tokens);
-
-                cleanups.push(() => htmlClassList.remove(...tokens));
-            }
-
-            return () => {
-                isUnmounted = true;
-
-                cleanups.forEach(f => f());
-            };
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [props.kcHtmlClass],
-    );
+            cleanups.forEach(f => f());
+        };
+    }, [props.kcHtmlClass]);
 
     if (!isExtraCssLoaded) {
         return null;
@@ -279,7 +269,7 @@ const { Page } = (() => {
         });
         return (
             <div ref={containerRef} className={cx(classes.root, className)}>
-                <Paper ref={paperRef} className={classes.paper}>
+                <Card ref={paperRef} className={classes.paper}>
                     {onClickCross !== undefined && (
                         <div className={classes.crossButtonWrapper}>
                             <div style={{ "flex": 1 }} />
@@ -302,7 +292,7 @@ const { Page } = (() => {
                         displayInfo={displayInfo}
                         infoNode={infoNode}
                     />
-                </Paper>
+                </Card>
             </div>
         );
     });

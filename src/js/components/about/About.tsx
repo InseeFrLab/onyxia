@@ -27,7 +27,7 @@ export function About() {
 
     const serverVersion = useMemo(
         () => [build.version, " (", dayjs(build.timestamp * 1000).format(), ")"].join(""),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [],
     );
 

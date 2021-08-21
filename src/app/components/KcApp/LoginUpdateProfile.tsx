@@ -4,7 +4,7 @@ import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "./kcContext";
 import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
 import { Template } from "./Template";
-import { cx } from "tss-react";
+import { useStyles } from "app/theme";
 
 import { generateUsername, toAlphaNumerical } from "./generateUsername";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -16,9 +16,11 @@ type KcContext_LoginUpdateProfile = Extract<
 
 export const LoginUpdateProfile = memo(
     ({ kcContext, ...props }: { kcContext: KcContext_LoginUpdateProfile } & KcProps) => {
+        const { url, user, messagesPerField, isAppInitiatedAction } = kcContext;
+
         const { msg, msgStr } = useKcMessage();
 
-        const { url, user, messagesPerField, isAppInitiatedAction } = kcContext;
+        const { cx } = useStyles();
 
         const [username, setUsername] = useState(
             generateUsername({

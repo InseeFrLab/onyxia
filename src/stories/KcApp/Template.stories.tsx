@@ -1,6 +1,6 @@
 import { Template } from "app/components/KcApp/Template";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 import { defaultKcProps } from "keycloakify";
 import { kcContextLogin } from "./kcContexts";
 

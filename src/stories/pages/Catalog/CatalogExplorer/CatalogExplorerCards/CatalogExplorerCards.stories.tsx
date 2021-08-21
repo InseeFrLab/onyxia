@@ -3,19 +3,20 @@ import {
     Props,
 } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { sectionName } from "../sectionName";
-import { getStoryFactory, logCallbacks } from "stories/geStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
-import { css } from "tss-react";
+import { css } from "tss-react/@emotion/css";
 import { id } from "tsafe/id";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCards },
+    "defaultWidth": 1550,
 });
 
 export default meta;
 
-const className = css({ "width": 1550, "height": 700 });
+const className = css({ "height": 700 });
 
 const keywords = ["python", "RStudio", "Elastic search"];
 

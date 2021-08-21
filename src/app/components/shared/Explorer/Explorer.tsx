@@ -2,8 +2,8 @@ import { makeStyles } from "app/theme";
 import { useState, useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Props as ItemsProps } from "./ExplorerItems";
-import { Breadcrump } from "./Breadcrump";
-import type { Props as BreadcrumpProps } from "./Breadcrump";
+import { Breadcrump } from "onyxia-ui/Breadcrump";
+import type { BreadcrumpProps } from "onyxia-ui/Breadcrump";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import {
@@ -21,17 +21,19 @@ import {
 } from "app/tools/generateUniqDefaultName";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { Paper } from "onyxia-ui/Paper";
+import { Card } from "onyxia-ui/Card";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 
 import { ExplorerItems as PolymorphExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar as PolymorphExplorerButtonBar } from "./ExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
-import { ExplorerFileOrDirectoryHeader as PolymorphExplorerFileOrDirectoryHeader } from "./ExplorerFileOrDirectoryHeader";
+import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "onyxia-ui";
 import { getPathDepth } from "app/tools/getPathDepth";
 import { useWithProps } from "powerhooks/useWithProps";
+import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
+import { useFormattedDate } from "app/i18n/useMoment";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -171,11 +173,11 @@ export function Explorer(props: Props) {
         getIsValidBasename,
     });
 
-    const ButtonBar = useWithProps(PolymorphExplorerButtonBar, { wordForFile });
-
-    const FileOrDirectoryHeader = useWithProps(PolymorphExplorerFileOrDirectoryHeader, {
+    const Icon = useWithProps(FileOrDirectoryIcon, {
         "visualRepresentationOfAFile": wordForFile,
     });
+
+    const ButtonBar = useWithProps(PolymorphExplorerButtonBar, { wordForFile });
 
     const { t } = useTranslation("Explorer");
 
@@ -200,11 +202,13 @@ export function Explorer(props: Props) {
             setIsSelectedItemInEditingState(isSelectedItemInEditingState),
     );
 
-    const breadcrumbCallback = useConstCallback(
-        ({ relativePath }: Parameters<BreadcrumpProps["callback"]>[0]) => {
+    const onBreadcrumpNavigate = useConstCallback(
+        ({ upCount }: Parameters<BreadcrumpProps["onNavigate"]>[0]) => {
             onNavigate({
                 "kind": "directory",
-                relativePath,
+                "relativePath": pathJoin(
+                    ...[currentPath, ...new Array(upCount).fill("..")],
+                ),
             });
         },
     );
@@ -237,7 +241,7 @@ export function Explorer(props: Props) {
             onDeleteItem({ kind, basename }),
     );
 
-    const onBack = useConstCallback(() =>
+    const onGoBack = useConstCallback(() =>
         onNavigate({
             "kind": "directory",
             "relativePath": "..",
@@ -308,7 +312,7 @@ export function Explorer(props: Props) {
                 ctx,
                 () => buttonBarCallback("copy path"),
             ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [evtAction],
     );
 
@@ -324,6 +328,18 @@ export function Explorer(props: Props) {
         ...props,
         cmdTranslationTop,
     });
+
+    const { formattedDate } = (function useClosure() {
+        let formattedDate: string | undefined = useFormattedDate({
+            "date": fileDate ?? new Date(0),
+        });
+
+        if (fileDate === undefined) {
+            formattedDate = undefined;
+        }
+
+        return { formattedDate };
+    })();
 
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
@@ -341,19 +357,24 @@ export function Explorer(props: Props) {
                 maxHeight={cmdTranslationMaxHeight}
             />
             {isCurrentPathBrowsablePathRoot ? null : (
-                <FileOrDirectoryHeader
-                    kind={file ? "file" : "directory"}
-                    fileBasename={pathBasename(currentPath)}
-                    date={fileDate}
-                    onBack={onBack}
+                <DirectoryHeader
+                    title={pathBasename(currentPath)}
+                    onGoBack={onGoBack}
+                    subtitle={formattedDate}
+                    image={
+                        <Icon
+                            kind={file ? "file" : "directory"}
+                            standardizedWidth="big"
+                        />
+                    }
                 />
             )}
             <Breadcrump
                 className={classes.breadcrump}
                 minDepth={getPathDepth(browsablePath)}
-                path={currentPath}
+                path={currentPath.split("/")}
                 isNavigationDisabled={isNavigating}
-                callback={breadcrumbCallback}
+                onNavigate={onBreadcrumpNavigate}
                 evtAction={evtBreadcrumpAction}
             />
             <div
@@ -366,7 +387,7 @@ export function Explorer(props: Props) {
                 )}
             >
                 {file ? (
-                    <Paper elevation={2}>{file}</Paper>
+                    <Card>{file}</Card>
                 ) : (
                     <Items
                         className={css({ "height": "100%" })}

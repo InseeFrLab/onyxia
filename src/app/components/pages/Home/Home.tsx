@@ -2,8 +2,7 @@ import { useEffect, useRef, useMemo, memo } from "react";
 import { Button } from "app/theme";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
-import { makeStyles, Text, useTheme } from "app/theme";
-import { cx, css } from "tss-react";
+import { makeStyles, Text, useStyles as useClasslessStyles } from "app/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { useAppConstants } from "app/interfaceWithLib/hooks";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -11,7 +10,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg";
 import { ReactComponent as IconServiceSvg } from "app/assets/svg/IconService.svg";
 import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg";
-import { Paper } from "onyxia-ui/Paper";
+import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { assert } from "tsafe/assert";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -171,7 +170,7 @@ const { Card } = (() => {
     const Card = memo((props: Props) => {
         const { title, text, buttonText, Icon, className, link } = props;
 
-        const theme = useTheme();
+        const { css, cx, theme } = useClasslessStyles();
 
         const iconRef = useRef<SVGSVGElement>(null);
 
@@ -189,7 +188,7 @@ const { Card } = (() => {
         }, [theme]);
 
         return (
-            <Paper
+            <OnyxiaUiCard
                 className={cx(
                     css({
                         "display": "flex",
@@ -241,7 +240,7 @@ const { Card } = (() => {
                         </Button>
                     </div>
                 </div>
-            </Paper>
+            </OnyxiaUiCard>
         );
     });
 

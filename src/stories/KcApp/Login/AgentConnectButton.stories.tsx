@@ -1,6 +1,6 @@
 import { AgentConnectButton } from "app/components/KcApp/Login/AgentConnectButton";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/geStory";
+import { getStoryFactory } from "stories/getStory";
 //import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({

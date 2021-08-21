@@ -15,7 +15,7 @@ export function useClickAway<T extends HTMLElement = any>(onClickAway: () => voi
                 ({ target }) => !rootRef.current?.contains(target as any),
                 onClickAway_const,
             ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         [],
     );
 
