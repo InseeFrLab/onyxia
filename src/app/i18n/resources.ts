@@ -414,7 +414,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesSavedConfigs": {
             "saved": "Saved",
-            "show all": "Show all ({{n}})",
+            "show all": "Show all",
         },
         "MyServicesCards": {
             "running services": "Running services",
@@ -713,7 +713,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesSavedConfigs": {
             "saved": "Enregistrés",
-            "show all": "Afficher tous ({{n}})",
+            "show all": "Afficher tous",
         },
         "MyServicesCards": {
             "running services": "Services en cours",

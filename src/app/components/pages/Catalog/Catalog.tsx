@@ -84,6 +84,7 @@ export function Catalog(props: Props) {
                                                   <Link
                                                       href={sourcesUrls.locationUrl}
                                                       target="_blank"
+                                                      underline="hover"
                                                   >
                                                       {t("contribute to the catalog", {
                                                           "catalogId":
@@ -107,6 +108,7 @@ export function Catalog(props: Props) {
                                                               <Link
                                                                   href={source}
                                                                   target="_blank"
+                                                                  underline="hover"
                                                               >
                                                                   {t("here")}
                                                               </Link>
