@@ -51,13 +51,13 @@ const useStyles = makeStyles()(theme => ({
     "cardsWrapper": {
         "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
         "display": "flex",
-        "padding": theme.spacing(4, 0),
+        ...theme.spacing.topBottom("padding", 4),
         "& > *": {
             "flex": 1,
         },
     },
     "middleCard": {
-        "margin": theme.spacing(0, 3),
+        ...theme.spacing.rightLeft("margin", 3),
     },
     "svg": {
         "fill": theme.colors.palette.focus.main,
@@ -208,7 +208,7 @@ const { Card } = (() => {
                             "flex": 1,
                             "display": "flex",
                             "alignItems": "center",
-                            "padding": theme.spacing(0, 4),
+                            ...theme.spacing.rightLeft("padding", 4),
                         })}
                     >
                         <Text typo="section heading">{title}</Text>

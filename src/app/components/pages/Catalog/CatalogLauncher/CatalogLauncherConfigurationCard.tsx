@@ -162,7 +162,7 @@ const { Header } = (() => {
     }>()((theme, { isCollapsed, isExpandIconVisible }) => ({
         "root": {
             "display": "flex",
-            "padding": theme.spacing(0, 4),
+            ...theme.spacing.rightLeft("padding", 4),
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "cursor": "pointer",
             "borderBottom": isCollapsed
@@ -186,7 +186,7 @@ const { Header } = (() => {
             "display": "flex",
             "flexDirection": "column",
             "justifyContent": "center",
-            "margin": theme.spacing(3, 0),
+            ...theme.spacing.topBottom("margin", 3),
         },
         "subtitle": {
             "marginTop": theme.spacing(2),

@@ -21,7 +21,7 @@ const useStyles = makeStyles()(theme => ({
         "flexDirection": "column",
     },
     "aboveDivider": {
-        "padding": theme.spacing(3, 4),
+        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
         "display": "flex",

@@ -24,12 +24,12 @@ const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
         },
         "display": "flex",
         "alignItems": "center",
-        "padding": theme.spacing(2, 2),
+        "padding": theme.spacing(2),
         "paddingRight": theme.spacing(3),
     },
     "logo": {
         "visibility": hasLogo ? undefined : "hidden",
-        "margin": theme.spacing(0, 2),
+        ...theme.spacing.rightLeft("margin", 2),
     },
     "friendlyNameWrapper": {
         "overflow": "hidden",

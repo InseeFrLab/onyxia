@@ -45,7 +45,7 @@ const useStyles = makeStyles()(theme => ({
         "display": "flex",
         "flexDirection": "column",
         "backgroundColor": theme.colors.useCases.surfaces.background,
-        "margin": theme.spacing(0, 4),
+        "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
     },
     "betweenHeaderAndFooter": {
         "flex": 1,

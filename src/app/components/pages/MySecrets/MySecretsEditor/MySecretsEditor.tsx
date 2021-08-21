@@ -52,7 +52,7 @@ const useStyles = makeStyles<Props>()(theme => ({
     },
     "tableHead": {
         "& .MuiTypography-root": {
-            "padding": theme.spacing(3, 2),
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
         },
     },
     "buttonWrapper": {

@@ -11626,10 +11626,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.10.11:
-  version "0.10.11"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.10.11.tgz#7024dd060b94f3e55ab220f2017f99bee37b835b"
-  integrity sha512-6QcbiFqnZHxTpmsC3EJRs/xm7PpyCdBJqx2ZLm8dscgfYkjr8dzjadFCtEnBhM/hK76UTaNOe57JDu90iMEA1Q==
+onyxia-ui@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.11.0.tgz#9eabdb3e9e31c4d98d92294163755e8a02602ae3"
+  integrity sha512-aPxCRvGYLFqcjbzCO0q4ROMMQXbbOcXaX8i6lMDe7p8hI9QBvsV9kSYGA/DgB4Fn0WuiORTKZa7fblxKpa0Yqw==
   dependencies:
     "@emotion/react" "^11.4.1"
     "@emotion/styled" "^11.3.0"
@@ -11638,6 +11638,7 @@ onyxia-ui@^0.10.11:
     color "3.1.3"
     evt "2.0.0-beta.29"
     memoizee "^0.4.15"
+    minimal-polyfills "^2.2.1"
     powerhooks "^0.7.1"
     tsafe "^0.4.1"
     tss-react "^0.7.3"

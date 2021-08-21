@@ -66,11 +66,13 @@ const useStyles = makeStyles<Props & { isInEditingState: boolean }>()(
                 : theme.colors.useCases.typography.textFocus,
         },
         "valueAndResolvedValue": {
-            "padding": theme.spacing(3, 2),
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
             //"wordBreak": "break-all"
         },
         "keyAndValueTableCells": {
-            "padding": isInEditingState ? theme.spacing(0, 3) : undefined,
+            "padding": isInEditingState
+                ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
+                : undefined,
         },
     }),
 );
@@ -268,7 +270,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     typo="body 1"
                     className={cx(
                         classes.dollarSign,
-                        css({ "padding": theme.spacing(3, 2) }),
+                        css({
+                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+                        }),
                     )}
                 >
                     $
@@ -278,7 +282,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 {!isInEditingState ? (
                     <Text
                         typo="body 1"
-                        className={css({ "padding": theme.spacing(3, 2) })}
+                        className={css({
+                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+                        })}
                     >
                         {key}
                     </Text>

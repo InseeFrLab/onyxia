@@ -30,7 +30,7 @@ export type Props = {
 
 const useStyles = makeStyles()(theme => ({
     "divider": {
-        "margin": theme.spacing(4, 0),
+        ...theme.spacing.topBottom("margin", 4),
     },
     "link": {
         "marginTop": theme.spacing(2),
