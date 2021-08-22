@@ -118,6 +118,7 @@ export const AccountInfoTab = memo((props: Props) => {
                         "account/password",
                     )}
                     target="_blank"
+                    underline="hover"
                 >
                     {t("password")}
                 </Link>

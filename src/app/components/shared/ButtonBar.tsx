@@ -62,18 +62,6 @@ const { CustomButton } = (() => {
             "backgroundColor": "transparent",
             "borderRadius": "unset",
             "borderColor": "transparent",
-            "&.Mui-disabled .MuiButton-label": {
-                "color": theme.colors.useCases.typography.textDisabled,
-            },
-            "& .MuiButton-label": {
-                "color": theme.colors.useCases.typography.textPrimary,
-            },
-            "&:active .MuiButton-label": {
-                "color": theme.colors.useCases.typography.textFocus,
-                "& .MuiSvgIcon-root": {
-                    "color": theme.colors.useCases.typography.textFocus,
-                },
-            },
             "& .MuiTouchRipple-root": {
                 "display": "none",
             },
@@ -81,12 +69,19 @@ const { CustomButton } = (() => {
             "& > *": {
                 "transition": "none",
             },
-            "&:hover": {
+            "&:hover.MuiButton-text": {
+                "color": theme.colors.useCases.typography.textPrimary,
                 "borderBottomColor": theme.colors.useCases.buttons.actionActive,
                 "boxSizing": "border-box",
                 "backgroundColor": "unset",
                 "& .MuiSvgIcon-root": {
                     "color": theme.colors.useCases.typography.textPrimary,
+                },
+            },
+            "&:active.MuiButton-text": {
+                "color": theme.colors.useCases.typography.textFocus,
+                "& .MuiSvgIcon-root": {
+                    "color": theme.colors.useCases.typography.textFocus,
                 },
             },
         },
