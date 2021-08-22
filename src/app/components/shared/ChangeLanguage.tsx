@@ -39,6 +39,9 @@ const useStyles = makeStyles<{ buttonWidth: number }>()((theme, { buttonWidth })
             "color": theme.colors.useCases.typography.textPrimary,
         },
     },
+    "icon": {
+        "color": theme.colors.useCases.typography.textPrimary,
+    },
 }));
 
 export const ChangeLanguage = memo((props: Props) => {
@@ -82,7 +85,7 @@ export const ChangeLanguage = memo((props: Props) => {
                     data-ga-event-category="header"
                     data-ga-event-action="language"
                 >
-                    {doShowIcon && <Icon iconId="public" />}
+                    {doShowIcon && <Icon iconId="public" className={classes.icon} />}
                     <Text
                         typo="label 1"
                         className={css({
@@ -92,7 +95,7 @@ export const ChangeLanguage = memo((props: Props) => {
                     >
                         {lngPrettyPrintByLng[lng]}
                     </Text>
-                    <Icon iconId="expandMore" />
+                    <Icon className={classes.icon} iconId="expandMore" />
                 </MuiButton>
             </Tooltip>
             <Menu
