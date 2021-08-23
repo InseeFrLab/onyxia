@@ -26,16 +26,12 @@ import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "app/components/pages/MyServices";
 
 //Legacy
-import { Catalogue } from "js/components/my-lab/catalogue/catalogue-navigation";
-import { MyService } from "js/components/my-service/home";
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
-import { SharedServices } from "js/components/services/home/services";
-import { Trainings } from "js/components/trainings/async-component";
 
 export const logoContainerWidthInPercent = 4;
 
@@ -129,11 +125,6 @@ export const App = memo((props: Props) => {
 
     const onLeftBarClick = useConstCallback(
         (target: Parameters<LeftBarProps["onClick"]>[0]) => {
-            if (target === "trainings") {
-                window.location.href = "https://www.sspcloud.fr/documentation";
-                return;
-            }
-
             if (target in routes) {
                 routes[target]().push();
                 return;
@@ -191,14 +182,9 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     const appConstants = useAppConstants();
 
     const legacyRoute = useMemo(() => {
-        const Page = [
-            Catalogue,
-            MyService,
-            MyBuckets,
-            NavigationFile,
-            SharedServices,
-            Trainings,
-        ].find(({ routeGroup }) => routeGroup.has(route));
+        const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
+            routeGroup.has(route),
+        );
 
         if (Page === undefined) {
             return undefined;
@@ -214,13 +200,6 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
             case NavigationFile:
                 assert(Page.routeGroup.has(route));
                 return <Page route={route} />;
-            case MyService:
-                assert(Page.routeGroup.has(route));
-                return <Page route={route} />;
-            case SharedServices:
-                return <Page serviceSelectionne={false} />;
-            case Catalogue:
-            case Trainings:
             case MyBuckets:
                 return <Page />;
         }

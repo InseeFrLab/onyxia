@@ -15,8 +15,6 @@ const targets = [
         const pageTarget = [
             "home",
             "account",
-            "trainings",
-            "sharedServices",
             "catalogExplorer",
             "myServices",
             "mySecrets",
@@ -87,7 +85,6 @@ export const LeftBar = memo((props: Props) => {
                         hasDivider={(() => {
                             switch (target) {
                                 case "account":
-                                case "sharedServices":
                                 case "myServices":
                                     return true;
                                 default:
@@ -191,12 +188,8 @@ const { CustomButton } = (() => {
                     return "secrets";
                 case "myServices":
                     return "services";
-                case "sharedServices":
-                    return "community";
                 case "toggle isExpanded":
                     return "chevronLeft";
-                case "trainings":
-                    return "trainings";
             }
         }, [target]);
 

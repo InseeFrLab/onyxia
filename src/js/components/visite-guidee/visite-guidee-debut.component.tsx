@@ -6,7 +6,7 @@ import { Next, LinkTo, Arrow } from "./vignette-commons";
 import D from "js/i18n";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { routes } from "app/routes/router";
-import { createGroup } from "type-route";
+//import { createGroup } from "type-route";
 const { startVisite } = actions;
 
 const ETAPES = [
@@ -65,7 +65,7 @@ const VisiteConnected: any = connect(undefined, {
     </LegacyThemeProvider>
 ));
 
-VisiteGuideeDebut.routeGroup = createGroup([routes.tour]);
+//VisiteGuideeDebut.routeGroup = createGroup([routes.tour]);
 
 VisiteGuideeDebut.requireUserLoggedIn = true;
 

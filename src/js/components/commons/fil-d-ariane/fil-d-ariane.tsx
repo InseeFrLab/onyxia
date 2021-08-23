@@ -3,7 +3,6 @@ import { Icon } from "@material-ui/core";
 import "./fil-d-ariane.scss";
 import D from "js/i18n";
 import { routes } from "app/routes/router";
-import { join as pathJoin } from "path";
 
 const home = {
     "anchorProps": routes.home().link,
@@ -134,44 +133,6 @@ export const fil: any = {
             })),
         ],
     /* */
-    serviceCatalogue: (idCatalogue: any, idService: any) => [
-        home,
-        {
-            "anchorParams": routes.catalog().link,
-            component: <span>catalogue</span>,
-        },
-        {
-            anchorParams: routes.catalogExplorer({ "catalogId": idCatalogue }).link,
-            component: <span>{idCatalogue}</span>,
-        },
-        {
-            "anchorProps": routes.catalog({ "optionalTrailingPath": idService }).link,
-            component: <span>{idService}</span>,
-        },
-    ],
-    nouveauService: (idCatalogue: any, idService: any) => [
-        home,
-        {
-            "anchorParams": routes.catalog().link,
-            component: <span>catalogue</span>,
-        },
-        {
-            anchorParams: routes.catalogExplorer({ "catalogId": idCatalogue }).link,
-            component: <span>{idCatalogue}</span>,
-        },
-        {
-            "anchorProps": routes.catalog({
-                "optionalTrailingPath": pathJoin(idCatalogue, idService),
-            }).link,
-            component: <span>{idService}</span>,
-        },
-        {
-            "anchorProps": routes.catalog({
-                "optionalTrailingPath": pathJoin(idCatalogue, idService, "deploiement"),
-            }).link,
-            component: <span>déploiement</span>,
-        },
-    ],
 };
 
 const FilDAriane = ({ fil }: { fil: any }) => makeAll(fil);
