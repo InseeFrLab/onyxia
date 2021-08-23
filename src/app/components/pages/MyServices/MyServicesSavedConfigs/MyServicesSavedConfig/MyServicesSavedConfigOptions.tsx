@@ -17,6 +17,9 @@ export type Props = {
 };
 
 const useStyles = makeStyles()(theme => ({
+    "icon": {
+        "color": theme.colors.useCases.typography.textPrimary,
+    },
     "menu": {
         "& .Mui-selected": {
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
@@ -34,6 +37,7 @@ const useStyles = makeStyles()(theme => ({
     },
     "button": {
         "minWidth": "unset",
+        "marginLeft": theme.spacing(1),
     },
 }));
 
@@ -71,7 +75,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon iconId="moreVert" />
+                <Icon iconId="moreVert" className={classes.icon} />
             </MuiButton>
             <Menu
                 id={menuId}
