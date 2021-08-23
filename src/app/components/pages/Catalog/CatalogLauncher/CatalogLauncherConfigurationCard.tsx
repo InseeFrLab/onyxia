@@ -427,7 +427,7 @@ const { TabContent } = (() => {
                                             const labelId = `select_label_${i}`;
 
                                             return (
-                                                <FormControl>
+                                                <FormControl variant="standard">
                                                     <InputLabel id={labelId}>
                                                         {label}
                                                     </InputLabel>
