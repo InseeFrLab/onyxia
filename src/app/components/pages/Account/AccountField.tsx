@@ -10,7 +10,7 @@ import { makeStyles, Text } from "app/theme";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
-import { IconButton } from "app/theme";
+import { IconButton, LanguageSelect } from "app/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import Select from "@material-ui/core/Select";
 import type { SelectChangeEvent } from "@material-ui/core/Select";
@@ -18,11 +18,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
 import { useTranslation } from "app/i18n/useTranslations";
-import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { useEvt } from "evt/hooks";
 import { useValidUntil } from "app/i18n/useMoment";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
+import { useLng } from "app/i18n/useLng";
 
 export type Props<T extends string = string> =
     | Props.ServicePassword
@@ -378,6 +378,8 @@ export const AccountField = memo(
             props.onResetHelperDialogsClick();
         });
 
+        const { lng, setLng } = useLng();
+
         return (
             <div className={cx(classes.root, className)}>
                 <div className={classes.mainLine}>
@@ -408,7 +410,14 @@ export const AccountField = memo(
                                         </FormControl>
                                     );
                                 case "language":
-                                    return <ChangeLanguage doShowIcon={false} />;
+                                    return (
+                                        <LanguageSelect
+                                            doShowIcon={false}
+                                            variant="big"
+                                            language={lng}
+                                            onLanguageChange={setLng}
+                                        />
+                                    );
                                 case "toggle":
                                     return null;
                                 case "service password":

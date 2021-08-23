@@ -1,8 +1,8 @@
 import { useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ButtonBar } from "app/components/shared/ButtonBar/ButtonBar";
-import type { ButtonBarProps } from "app/components/shared/ButtonBar/ButtonBar";
+import { ButtonBar, IconId } from "app/theme";
+import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
 
 const buttonIds = [
     "refresh",
@@ -42,7 +42,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     );
 
     const buttons = useMemo(
-        (): ButtonBarProps<ButtonId>["buttons"] =>
+        (): ButtonBarProps<ButtonId, IconId>["buttons"] =>
             buttonIds.map(buttonId => ({
                 "buttonId": buttonId,
                 "icon": (() => {

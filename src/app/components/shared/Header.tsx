@@ -1,13 +1,10 @@
 import { memo } from "react";
-import { IconButton, Button } from "app/theme";
+import { IconButton, Button, ButtonBarButton } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
-import { ChangeLanguage } from "./ChangeLanguage";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
-import { ButtonBarButton } from "./ButtonBar/ButtonBarButton";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -49,6 +46,9 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
         "svg": {
             "fill": theme.colors.palette.focus.main,
             "width": "70%",
+        },
+        "communitySpace": {
+            "marginBottom": theme.spacing(1),
         },
     }),
 );
@@ -105,16 +105,15 @@ export const Header = memo((props: Props) => {
                 })}
             >
                 <ButtonBarButton
+                    className={classes.communitySpace}
                     startIcon="language"
                     href="https://sspcloud.fr"
                     doOpenNewTabIfHref={true}
                 >
                     {t("community space")}
                 </ButtonBarButton>
-                <ChangeLanguage />
                 {props.type === "core" && (
                     <>
-                        <DarkModeSwitch />
                         {props.isUserLoggedIn && (
                             <ToggleCloudShell
                                 useIsCloudShellVisible={props.useIsCloudShellVisible}

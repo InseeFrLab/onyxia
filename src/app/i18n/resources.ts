@@ -31,7 +31,6 @@ import { MyServices } from "app/components/pages/MyServices";
 import { MyServicesButtonBar } from "app/components/pages/MyServices/MyServicesButtonBar";
 import { MyServicesCard } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard";
 import { MyServicesRunningTime } from "app/components/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRunningTime";
-import { ChangeLanguage } from "app/components/shared/ChangeLanguage";
 import { MyServicesSavedConfigOptions } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions";
 import { MyServicesSavedConfig } from "app/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
 import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServicesSavedConfigs";
@@ -83,7 +82,6 @@ const reflectedI18nSchemes = {
     [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
     [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
-    [symToStr({ ChangeLanguage })]: Reflect<ChangeLanguage.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigOptions })]:
         Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
     [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
@@ -355,6 +353,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Footer": {
             "contribute": "Contribute",
             "terms of service": "Terms of service",
+            "change language": "Change language",
         },
         "CatalogLauncherMainCard": {
             "card title": "Create your personal services",
@@ -399,9 +398,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesRunningTime": {
             "launching": "Launching...",
-        },
-        "ChangeLanguage": {
-            "change language": "Change language",
         },
         "MyServicesSavedConfigOptions": {
             "copy link": "Copy URL link",
@@ -651,6 +647,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Footer": {
             "contribute": "Contribuer au projet",
             "terms of service": "Conditions d'utilisation",
+            "change language": "Changer la langue",
         },
         "CatalogLauncherMainCard": {
             "card title": "Créer votre propre service",
@@ -697,9 +694,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "MyServicesRunningTime": {
             "launching": "En cours...",
-        },
-        "ChangeLanguage": {
-            "change language": "Changer la langue",
         },
         "MyServicesSavedConfigOptions": {
             "copy link": "Copier l'URL",

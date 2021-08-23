@@ -3,8 +3,8 @@ import Root from "./root";
 import { Leaf } from "./leaf/catalogue";
 import Node from "./node";
 import "./catalogue.scss";
-import { routes } from "app/routes/router";
-import { createGroup } from "type-route";
+//import { routes } from "app/routes/router";
+//import { createGroup } from "type-route";
 import { useLocation } from "js/utils/reactRouterPolyfills";
 
 const isLeaf = async ({ pathname }: { pathname: string }) => {
