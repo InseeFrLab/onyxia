@@ -168,7 +168,7 @@ const { CustomButton } = (() => {
         },
         "divider": {
             "marginTop": theme.spacing(2),
-            "backgroundColor": theme.colors.useCases.typography.textTertiary,
+            "borderColor": theme.colors.useCases.typography.textTertiary,
         },
     }));
 
