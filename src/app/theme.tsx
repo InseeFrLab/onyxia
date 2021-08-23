@@ -45,6 +45,7 @@ import Brightness4Icon from "@material-ui/icons/Brightness4";
 import TranslateIcon from "@material-ui/icons/Translate";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import LanguageIcon from "@material-ui/icons/Language";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ReplayIcon from "@material-ui/icons/Replay";
 import HelpIcon from "@material-ui/icons/Help";
@@ -84,7 +85,7 @@ export { ThemeProvider };
 
 export const { makeStyles, useStyles } = createMakeStyles({ useTheme });
 
-/** @see: <https://material-ui.com/components/material-icons/> */
+/** @see: <https://next.material-ui.com/components/material-icons/> */
 export const { Icon } = createIcon({
     "delete": DeleteIcon,
     "edit": EditIcon,
@@ -129,6 +130,7 @@ export const { Icon } = createIcon({
     "community": CommunitySvg,
     "catalog": CatalogSvg,
     "key": KeySvg,
+    "language": LanguageIcon,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];

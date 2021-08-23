@@ -287,6 +287,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Login",
             "logout": "Logout",
+            "community space": "Community Space",
         },
         "LeftBar": {
             "toggle isExpanded": "Reduce",
@@ -582,6 +583,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Connexion",
             "logout": "Déconnexion",
+            "community space": "Espace communautaire",
         },
         "LeftBar": {
             "toggle isExpanded": "Réduire",
