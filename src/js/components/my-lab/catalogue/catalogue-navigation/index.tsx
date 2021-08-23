@@ -28,7 +28,7 @@ const Aiguilleur = createAiguilleur({
 
 export default Aiguilleur;
 
-Catalogue.routeGroup = createGroup([routes.catalog]);
+//Catalogue.routeGroup = createGroup([routes.catalog]);
 
 Catalogue.requireUserLoggedIn = false;
 

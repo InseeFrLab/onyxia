@@ -297,9 +297,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myBuckets": "My Files",
-            "trainings": "Trainings",
-            "sharedServices": "Shared services",
-            //"tour": "Guided Tour"
         },
         "FourOhFour": {
             "not found": "Page not found",
@@ -593,8 +590,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "Mes services",
             "mySecrets": "Mes secrets",
             "myBuckets": "Mes fichiers",
-            "trainings": "Formations",
-            "sharedServices": "Services partagés",
         },
         "FourOhFour": {
             "not found": "Page non trouvée",

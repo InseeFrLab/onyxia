@@ -18,11 +18,9 @@ import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "./assets/svg/Secrets.svg";
 import { ReactComponent as AccountSvg } from "./assets/svg/Account2.svg";
 import { ReactComponent as HomeSvg } from "./assets/svg/Home2.svg";
-import { ReactComponent as TrainingsSvg } from "./assets/svg/Trainings2.svg";
 import { ReactComponent as FilesSvg } from "./assets/svg/Files.svg";
 import { ReactComponent as CollaborationToolsSvg } from "./assets/svg/CollaborationTools.svg";
 import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
-import { ReactComponent as CommunitySvg } from "./assets/svg/Community.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
@@ -123,11 +121,9 @@ export const { Icon } = createIcon({
     "secrets": SecretsSvg,
     "account": AccountSvg,
     "home": HomeSvg,
-    "trainings": TrainingsSvg,
     "files": FilesSvg,
     "collaborationTools": CollaborationToolsSvg,
     "bash": BashSvg,
-    "community": CommunitySvg,
     "catalog": CatalogSvg,
     "key": KeySvg,
     "language": LanguageIcon,

@@ -2,14 +2,14 @@ import { Typography } from "@material-ui/core";
 import Content from "./content";
 import DetailsService from "../details";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
-import { createGroup } from "type-route";
-import { routes } from "app/routes/router";
+//import { createGroup } from "type-route";
+//import { routes } from "app/routes/router";
 
 type Props = {
     serviceSelectionne: boolean;
 };
 
-SharedServices.routeGroup = createGroup([routes.sharedServices]);
+//SharedServices.routeGroup = createGroup([routes.sharedServices]);
 
 SharedServices.requireUserLoggedIn = false;
 

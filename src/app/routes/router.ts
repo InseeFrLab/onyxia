@@ -24,27 +24,6 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         ({ tabId }) => `/account/${tabId}`,
     ),
     "home": defineRoute(["/home", "/"]),
-    "tour": defineRoute("/visite-guidee"),
-    ...(() => {
-        const sharedServices = defineRoute("/services");
-
-        return {
-            sharedServices,
-            "sharedServicesDetails": sharedServices.extend(
-                { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`,
-            ),
-        };
-    })(),
-    "trainings": defineRoute(
-        { "courseCode": param.path.optional.string },
-        ({ courseCode }) => `/trainings/${courseCode}`,
-    ),
-    //TODO: Remove, legacy
-    "catalog": defineRoute(
-        { "optionalTrailingPath": param.path.trailing.optional.string },
-        ({ optionalTrailingPath }) => `/my-lab/catalogue/${optionalTrailingPath}`,
-    ),
     "catalogExplorer": defineRoute(
         {
             "catalogId": param.path.optional.string,

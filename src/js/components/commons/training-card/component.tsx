@@ -125,7 +125,7 @@ const TrainingCard = ({ training }: Props) => {
                 </CardContent>
                 <CardActions className="boutons">
                     {hasPart && hasPart.length > 0 && (
-                        <a {...routes.trainings({ courseCode }).link}>
+                        <a {...(routes as any).trainings({ courseCode }).link}>
                             <Fab
                                 id={`bouton-training-${name}`}
                                 color="primary"
