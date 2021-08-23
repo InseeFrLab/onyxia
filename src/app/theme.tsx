@@ -10,9 +10,12 @@ import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
+import { createButtonBarButton } from "onyxia-ui/ButtonBarButton";
+import { createButtonBar } from "onyxia-ui/ButtonBar";
 import { createText } from "onyxia-ui/Text";
 import { createPageHeader } from "onyxia-ui/PageHeader";
 import { createMakeStyles } from "tss-react";
+import { createLanguageSelect } from "onyxia-ui/LanguageSelect";
 import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "./assets/svg/Secrets.svg";
@@ -58,6 +61,7 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
+import type { SupportedLanguage } from "app/i18n/resources";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.
@@ -167,3 +171,12 @@ export function getThemeProviderProps(params: {
 }
 
 export const { PageHeader } = createPageHeader({ Icon });
+
+export const { ButtonBarButton } = createButtonBarButton({ Icon });
+export const { ButtonBar } = createButtonBar({ Icon });
+export const { LanguageSelect } = createLanguageSelect<SupportedLanguage>({
+    "languagesPrettyPrint": {
+        "en": "English",
+        "fr": "Français",
+    },
+});

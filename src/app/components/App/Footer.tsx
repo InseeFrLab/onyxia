@@ -1,7 +1,9 @@
 import { memo } from "react";
-import { makeStyles, Text } from "app/theme";
+import { makeStyles, Text, LanguageSelect } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { ReactComponent as GitHubSvg } from "app/assets/svg/GitHub.svg";
+import { useLng } from "app/i18n/useLng";
+import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 
 export type Props = {
     className?: string;
@@ -33,6 +35,9 @@ const useStyles = makeStyles<Props>()(theme => ({
     "spacing": {
         "width": theme.spacing(4),
     },
+    "darkModeSwitch": {
+        "padding": 0,
+    },
 }));
 
 export const Footer = memo((props: Props) => {
@@ -41,6 +46,8 @@ export const Footer = memo((props: Props) => {
     const { classes, cx } = useStyles(props);
 
     const { t } = useTranslation("Footer");
+
+    const { lng, setLng } = useLng();
 
     const spacing = <div className={classes.spacing} />;
 
@@ -59,6 +66,13 @@ export const Footer = memo((props: Props) => {
                 <Text typo="body 2">{t("contribute")}</Text>
             </a>
             <div className={classes.sep} />
+            <LanguageSelect
+                language={lng}
+                onLanguageChange={setLng}
+                variant="small"
+                changeLanguageText={t("change language")}
+            />
+            {spacing}
             <a href={tosUrl} target="_blank" rel="noreferrer">
                 {" "}
                 <Text typo="body 2">{t("terms of service")}</Text>{" "}
@@ -71,6 +85,8 @@ export const Footer = memo((props: Props) => {
             >
                 <Text typo="body 2">v{packageJsonVersion} </Text>
             </a>
+            {spacing}
+            <DarkModeSwitch size="extra small" className={classes.darkModeSwitch} />
         </footer>
     );
 });
@@ -79,5 +95,6 @@ export declare namespace Footer {
     export type I18nScheme = {
         "contribute": undefined;
         "terms of service": undefined;
+        "change language": undefined;
     };
 }
