@@ -1,8 +1,8 @@
 import { useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ButtonBar } from "app/components/shared/ButtonBar";
-import type { ButtonBarProps } from "app/components/shared/ButtonBar";
+import { ButtonBar } from "app/components/shared/ButtonBar/ButtonBar";
+import type { ButtonBarProps } from "app/components/shared/ButtonBar/ButtonBar";
 
 const buttonIds = [
     "refresh",

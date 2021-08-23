@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { IconButton } from "app/theme";
-import { Button } from "app/theme";
+import { IconButton, Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "app/theme";
@@ -8,6 +7,7 @@ import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-she
 import { ChangeLanguage } from "./ChangeLanguage";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
+import { ButtonBarButton } from "./ButtonBar/ButtonBarButton";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -104,6 +104,13 @@ export const Header = memo((props: Props) => {
                     "alignItems": "center",
                 })}
             >
+                <ButtonBarButton
+                    startIcon="language"
+                    href="https://sspcloud.fr"
+                    doOpenNewTabIfHref={true}
+                >
+                    {t("community space")}
+                </ButtonBarButton>
                 <ChangeLanguage />
                 {props.type === "core" && (
                     <>
@@ -131,6 +138,7 @@ export declare namespace Header {
     export type I18nScheme = {
         logout: undefined;
         login: undefined;
+        "community space": undefined;
     };
 }
 
