@@ -166,7 +166,7 @@ export const App = memo((props: Props) => {
                 className={classes.footer}
                 //NOTE: Defined in ./config-overrides.js
                 packageJsonVersion={process.env.VERSION!}
-                contributeUrl={"https://github.com/InseeFrLab/onyxia"}
+                contributeUrl={"https://github.com/InseeFrLab/onyxia-web"}
                 tosUrl={tosUrl}
             />
             {appConstants.isUserLoggedIn && <CloudShell />}
