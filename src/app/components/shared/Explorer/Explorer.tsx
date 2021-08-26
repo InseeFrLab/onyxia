@@ -206,9 +206,7 @@ export function Explorer(props: Props) {
         ({ upCount }: Parameters<BreadcrumpProps["onNavigate"]>[0]) => {
             onNavigate({
                 "kind": "directory",
-                "relativePath": pathJoin(
-                    ...[currentPath, ...new Array(upCount).fill("..")],
-                ),
+                "relativePath": pathJoin(...new Array(upCount).fill("..")),
             });
         },
     );
