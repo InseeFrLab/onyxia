@@ -116,7 +116,7 @@ export function getStoryFactory<Props>(params: {
                     <GlobalStyles
                         styles={{
                             "html": {
-                                "font-size": "100% !important",
+                                "fontSize": "100% !important",
                             },
                             "body": {
                                 "padding": `0 !important`,
