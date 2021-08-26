@@ -289,7 +289,10 @@ export const Login = memo(
                                         </div>
                                         <div className={classes.forgotPassword}>
                                             {realm.resetPasswordAllowed && (
-                                                <Link href={url.loginResetCredentialsUrl}>
+                                                <Link
+                                                    href={url.loginResetCredentialsUrl}
+                                                    underline="hover"
+                                                >
                                                     {msg("doForgotPassword")}
                                                 </Link>
                                             )}
@@ -332,6 +335,7 @@ export const Login = memo(
                             <Link
                                 href={url.registrationUrl}
                                 className={classes.registerLink}
+                                underline="hover"
                             >
                                 {t("doRegister")}
                             </Link>
