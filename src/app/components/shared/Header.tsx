@@ -47,7 +47,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "fill": theme.colors.palette.focus.main,
             "width": "70%",
         },
-        "communitySpace": {
+        "button": {
             "marginBottom": theme.spacing(1),
         },
     }),
@@ -105,7 +105,15 @@ export const Header = memo((props: Props) => {
                 })}
             >
                 <ButtonBarButton
-                    className={classes.communitySpace}
+                    className={classes.button}
+                    startIcon="training"
+                    href="https://www.sspcloud.fr/documentation"
+                    doOpenNewTabIfHref={true}
+                >
+                    {t("trainings and tutorials")}
+                </ButtonBarButton>
+                <ButtonBarButton
+                    className={classes.button}
                     startIcon="language"
                     href="https://sspcloud.fr"
                     doOpenNewTabIfHref={true}
@@ -138,6 +146,7 @@ export declare namespace Header {
         logout: undefined;
         login: undefined;
         "community space": undefined;
+        "trainings and tutorials": undefined;
     };
 }
 

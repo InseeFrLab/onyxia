@@ -27,6 +27,7 @@ import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { ReactComponent as TrainingsLogoSvg } from "app/assets/svg/Trainings2.svg";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PublicIcon from "@material-ui/icons/Public";
@@ -131,6 +132,7 @@ export const { Icon } = createIcon({
     "catalog": CatalogSvg,
     "key": KeySvg,
     "language": LanguageIcon,
+    "training": TrainingsLogoSvg,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
