@@ -1,3 +1,7 @@
+### **0.11.85** (2021-08-26)  
+  
+- MySecrets: Fix path navigation    
+  
 ### **0.11.84** (2021-08-26)  
   
 - MySecrets: Fix display of icons    
