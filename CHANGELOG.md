@@ -1,3 +1,16 @@
+### **0.11.82** (2021-08-26)  
+  
+- Fix storybook  
+- Launcher: Little fix on saved services  
+- Contribute to the project point to onyxia-web  
+- Align header and footer with Marc's design  
+- Remove Tranings and shared services  
+- Add link to community's website  
+- Fixing some more css bugs  
+- Many small css fixes  
+- Minor css fixes  
+- Still bugs but compiles with big library update    
+  
 ### **0.11.81** (2021-08-20)  
   
 - Launcher: Validate fields immediadly    
