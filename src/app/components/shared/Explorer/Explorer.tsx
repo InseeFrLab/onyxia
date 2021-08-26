@@ -390,7 +390,8 @@ export function Explorer(props: Props) {
                     <Card>{file}</Card>
                 ) : (
                     <Items
-                        className={css({ "height": "100%" })}
+                        //className={css({ "height": "100%" })}
+                        className={undefined}
                         files={files}
                         isNavigating={isNavigating}
                         directories={directories}
