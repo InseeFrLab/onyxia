@@ -1,3 +1,7 @@
+### **0.11.84** (2021-08-26)  
+  
+- MySecrets: Fix display of icons    
+  
 ### **0.11.83** (2021-08-26)  
   
 - remove link underline login pages    
