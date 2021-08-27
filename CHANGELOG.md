@@ -1,3 +1,7 @@
+### **0.11.86** (2021-08-27)  
+  
+- Add documentation and trainings    
+  
 ### **0.11.85** (2021-08-26)  
   
 - MySecrets: Fix path navigation    
