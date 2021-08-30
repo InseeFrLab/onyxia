@@ -150,6 +150,20 @@ export function MyServices(props: Props) {
                     }),
                 );
                 return;
+            case "edit":
+                routes
+                    .catalogLauncher({
+                        ...displayableConfigs.find(
+                            ({ restorablePackageConfig }) =>
+                                routes.catalogLauncher({
+                                    ...restorablePackageConfig,
+                                    "autoLaunch": true,
+                                }).href === linkHref,
+                        )!.restorablePackageConfig,
+                        "autoLaunch": false,
+                    })
+                    .push();
+                return;
         }
     });
 

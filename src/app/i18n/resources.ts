@@ -401,6 +401,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launching": "Launching...",
         },
         "MyServicesSavedConfigOptions": {
+            "edit": "Edit",
             "copy link": "Copy URL link",
             "remove bookmark": "Delete",
         },
@@ -698,6 +699,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launching": "En cours...",
         },
         "MyServicesSavedConfigOptions": {
+            "edit": "Modifier",
             "copy link": "Copier l'URL",
             "remove bookmark": "Supprimer",
         },

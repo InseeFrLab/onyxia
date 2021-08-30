@@ -8,12 +8,12 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useTranslation } from "app/i18n/useTranslations";
 
-const actions = ["copy link", "delete"] as const;
+const actions = ["edit", "copy link", "delete"] as const;
 
 export type SavedConfigurationAction = typeof actions[number];
 
 export type Props = {
-    callback(action: SavedConfigurationAction): void;
+    callback: (action: SavedConfigurationAction) => void;
 };
 
 const useStyles = makeStyles()(theme => ({
@@ -96,6 +96,8 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                             <Icon
                                 iconId={(() => {
                                     switch (action) {
+                                        case "edit":
+                                            return "edit";
                                         case "copy link":
                                             return "link" as const;
                                         case "delete":
@@ -107,6 +109,8 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                             {t(
                                 (() => {
                                     switch (action) {
+                                        case "edit":
+                                            return "edit" as const;
                                         case "copy link":
                                             return "copy link" as const;
                                         case "delete":
@@ -124,6 +128,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
 
 export declare namespace MyServicesSavedConfigOptions {
     export type I18nScheme = {
+        "edit": undefined;
         "remove bookmark": undefined;
         "copy link": undefined;
     };

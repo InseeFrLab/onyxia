@@ -4,15 +4,12 @@ import { RoundLogo } from "app/components/shared/RoundLogo";
 
 import { Button, Text } from "app/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
+import type { SavedConfigurationAction } from "./MyServicesSavedConfigOptions";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
-
-const actions = ["launch", "delete", "copy link"] as const;
-
-export type MyServicesSavedConfigAction = typeof actions[number];
 
 const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
     "root": {
@@ -51,7 +48,7 @@ export type Props = {
     logoUrl: string | undefined;
     friendlyName: string;
     link: Link;
-    callback(action: "delete" | "copy link"): void;
+    callback: (action: SavedConfigurationAction) => void;
 };
 
 export const MyServicesSavedConfig = memo((props: Props) => {
