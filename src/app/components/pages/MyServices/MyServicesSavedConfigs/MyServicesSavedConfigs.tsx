@@ -2,10 +2,12 @@ import { memo } from "react";
 import { makeStyles } from "app/theme";
 
 import { MyServicesSavedConfig } from "./MyServicesSavedConfig";
+import type { Props as MyServicesSavedConfigProps } from "./MyServicesSavedConfig";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { Link } from "type-route";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
+import type { Param0 } from "tsafe";
 
 const useStyles = makeStyles()(theme => ({
     "root": {
@@ -36,7 +38,10 @@ export type Props = {
         /** link.href used as id for callback */
         link: Link;
     }[];
-    callback(params: { linkHref: string; action: "delete" | "copy link" }): void;
+    callback: (params: {
+        linkHref: string;
+        action: "edit" | "delete" | "copy link";
+    }) => void;
     onRequestToggleIsShortVariant(): void;
 };
 
@@ -52,8 +57,10 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     const callbackFactory = useCallbackFactory(
-        ([linkHref]: [string], [action]: ["delete" | "copy link"]) =>
-            callback({ linkHref, action }),
+        (
+            [linkHref]: [string],
+            [action]: [Param0<MyServicesSavedConfigProps["callback"]>],
+        ) => callback({ linkHref, action }),
     );
 
     const { t } = useTranslation("MyServicesSavedConfigs");
