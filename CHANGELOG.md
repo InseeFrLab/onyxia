@@ -1,3 +1,7 @@
+### **0.11.87** (2021-08-30)  
+  
+- Feat: Edit saved services    
+  
 ### **0.11.86** (2021-08-27)  
   
 - Add documentation and trainings    
