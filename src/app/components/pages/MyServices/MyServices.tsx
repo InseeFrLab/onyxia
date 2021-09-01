@@ -136,7 +136,7 @@ export function MyServices(props: Props) {
     >(({ linkHref, action }) => {
         switch (action) {
             case "copy link":
-                copyToClipboard(linkHref);
+                copyToClipboard(window.location.origin + linkHref);
                 return;
             case "delete":
                 dispatch(
