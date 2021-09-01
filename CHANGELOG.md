@@ -1,3 +1,7 @@
+### **0.11.88** (2021-09-01)  
+  
+- Update dependencies    
+  
 ### **0.11.87** (2021-08-30)  
   
 - Feat: Edit saved services    
