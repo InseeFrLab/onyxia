@@ -62,9 +62,6 @@ const useStyles = makeStyles()(theme => ({
         "overflow": "auto",
         "paddingLeft": theme.spacing(4),
     },
-    "height100": {
-        "height": "100%",
-    },
 }));
 
 export type Props = {
@@ -177,8 +174,6 @@ export const App = memo((props: Props) => {
 const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
 
-    const { classes, cx } = useStyles();
-
     const appConstants = useAppConstants();
 
     const legacyRoute = useMemo(() => {
@@ -217,7 +212,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return <Page route={route} className={cx(classes.height100)} />;
+            return <Page route={route} />;
         }
     }
 
@@ -231,7 +226,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return <Page className={classes.height100} />;
+            return <Page />;
         }
     }
 
@@ -245,7 +240,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return <Page route={route} className={classes.height100} />;
+            return <Page route={route} />;
         }
     }
 
@@ -273,7 +268,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
                 return null;
             }
 
-            return <Page route={route} className={classes.height100} />;
+            return <Page route={route} />;
         }
     }
 
@@ -281,5 +276,5 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         return legacyRoute;
     }
 
-    return <FourOhFour className={classes.height100} />;
+    return <FourOhFour />;
 };

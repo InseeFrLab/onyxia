@@ -23,6 +23,7 @@ Home.requireUserLoggedIn = () => false;
 
 const useStyles = makeStyles()(theme => ({
     "root": {
+        "height": "100%",
         "backgroundColor": "transparent",
         "display": "flex",
         "flexDirection": "column",
