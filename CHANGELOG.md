@@ -1,3 +1,7 @@
+### **0.11.89** (2021-09-01)  
+  
+- CatalogExplorer: Better scrollable area    
+  
 ### **0.11.88** (2021-09-01)  
   
 - Update dependencies    
