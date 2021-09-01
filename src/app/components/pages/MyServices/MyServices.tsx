@@ -28,13 +28,14 @@ MyServices.requireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;
-    className: string;
+    className?: string;
 };
 
 const useStyles = makeStyles<{
     isSavedConfigsExtended: boolean;
 }>()((theme, { isSavedConfigsExtended }) => ({
     "root": {
+        "height": "100%",
         "display": "flex",
         "flexDirection": "column",
     },

@@ -37,6 +37,7 @@ export type Props = {
 
 const useStyles = makeStyles()({
     "root": {
+        "height": "100%",
         "display": "flex",
         "flexDirection": "column",
     },

@@ -8,6 +8,7 @@ export type Props = {
 
 const useStyles = makeStyles()(theme => ({
     "root": {
+        "height": "100%",
         "display": "flex",
         "alignItems": "center",
         "justifyContent": "center",

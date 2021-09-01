@@ -29,16 +29,12 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()({
     "root": {
-        "display": "flex",
-        "flexDirection": "column",
+        "height": "100%",
+        "overflow": "auto",
     },
-    "payload": {
-        "overflow": "hidden",
-        "flex": 1,
-    },
-}));
+});
 
 export function Catalog(props: Props) {
     const { className, route } = props;
@@ -116,7 +112,6 @@ export function Catalog(props: Props) {
                                                       ),
                                                       "language": lng,
                                                   })}
-                                                  .
                                               </>
                                           );
                                   }
@@ -128,13 +123,9 @@ export function Catalog(props: Props) {
             {(() => {
                 switch (route.name) {
                     case "catalogExplorer":
-                        return (
-                            <CatalogExplorer route={route} className={classes.payload} />
-                        );
+                        return <CatalogExplorer route={route} />;
                     case "catalogLauncher":
-                        return (
-                            <CatalogLauncher route={route} className={classes.payload} />
-                        );
+                        return <CatalogLauncher route={route} />;
                 }
             })()}
         </div>
