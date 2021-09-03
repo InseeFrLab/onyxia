@@ -48,5 +48,7 @@ export const VueDefault = getStory({
         "onRequestLearnMore",
         "onClearSearch",
         "setSearch",
+        "onIsPageHeaderHelpVisibleValueChange",
+        "onIsPageHeaderTitleVisibleValueChange",
     ]),
 });

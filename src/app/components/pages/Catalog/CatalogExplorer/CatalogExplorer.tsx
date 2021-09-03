@@ -13,10 +13,17 @@ import type { Route } from "type-route";
 export type Props = {
     className?: string;
     route: Route<typeof routes.catalogExplorer>;
+    onIsPageHeaderTitleVisibleValueChange: (isPageHeaderTitleVisible: boolean) => void;
+    onIsPageHeaderHelpVisibleValueChange: (isPageHeaderHelpVisible: boolean) => void;
 };
 
 export const CatalogExplorer = memo((props: Props) => {
-    const { className, route } = props;
+    const {
+        className,
+        route,
+        onIsPageHeaderTitleVisibleValueChange,
+        onIsPageHeaderHelpVisibleValueChange,
+    } = props;
 
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
     const dispatch = useDispatch();
@@ -90,6 +97,8 @@ export const CatalogExplorer = memo((props: Props) => {
             className={className}
             packages={catalogExplorerState.packages}
             onRequestLaunch={onRequestLaunch}
+            onIsPageHeaderTitleVisibleValueChange={onIsPageHeaderTitleVisibleValueChange}
+            onIsPageHeaderHelpVisibleValueChange={onIsPageHeaderHelpVisibleValueChange}
         />
     );
 });
