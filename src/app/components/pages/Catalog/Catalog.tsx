@@ -10,6 +10,7 @@ import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@material-ui/core/Link";
 import { useSelector } from "app/interfaceWithLib/hooks";
 import { elementsToSentence } from "app/tools/elementsToSentence";
+import { useState } from "react";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
@@ -65,6 +66,9 @@ export function Catalog(props: Props) {
     );
 
     const { lng } = useLng();
+
+    const [isPageHeaderTitleVisible, setIsPageHeaderTitleVisible] = useState(true);
+    const [isPageHeaderHelperVisible, setIsPageHeaderHelperVisible] = useState(true);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -124,12 +128,24 @@ export function Catalog(props: Props) {
                     </>
                 }
                 helpIcon="sentimentSatisfied"
+                isTitleVisible={isPageHeaderTitleVisible}
+                isHelpVisible={isPageHeaderHelperVisible}
             />
             <div className={classes.bodyWrapper}>
                 {(() => {
                     switch (route.name) {
                         case "catalogExplorer":
-                            return <CatalogExplorer route={route} />;
+                            return (
+                                <CatalogExplorer
+                                    route={route}
+                                    onIsPageHeaderTitleVisibleValueChange={
+                                        setIsPageHeaderTitleVisible
+                                    }
+                                    onIsPageHeaderHelpVisibleValueChange={
+                                        setIsPageHeaderHelperVisible
+                                    }
+                                />
+                            );
                         case "catalogLauncher":
                             return <CatalogLauncher route={route} />;
                     }

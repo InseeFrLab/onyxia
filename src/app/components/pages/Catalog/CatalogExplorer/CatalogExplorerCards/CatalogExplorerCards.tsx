@@ -10,9 +10,10 @@ import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
 import { CatalogExplorerSearchBar } from "../CatalogExplorerSearchBar";
 import type { Props as SearchBarProps } from "../CatalogExplorerSearchBar";
-import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { breakpointsValues } from "onyxia-ui";
+import { useElementEvt } from "evt/hooks/useElementEvt";
+import { Evt } from "evt";
 
 export type Props<PackageName extends string = string> = {
     className?: string;
@@ -25,6 +26,8 @@ export type Props<PackageName extends string = string> = {
         packageHomeUrl?: string;
     }[];
     onRequestLaunch(packageName: PackageName): void;
+    onIsPageHeaderTitleVisibleValueChange: (isPageHeaderTitleVisible: boolean) => void;
+    onIsPageHeaderHelpVisibleValueChange: (isPageHeaderHelpVisible: boolean) => void;
 };
 
 const useStyles = makeStyles<{
@@ -76,6 +79,8 @@ export const CatalogExplorerCards = memo(
             onRequestLaunch,
             search,
             setSearch,
+            onIsPageHeaderTitleVisibleValueChange,
+            onIsPageHeaderHelpVisibleValueChange,
         } = props;
 
         const onRequestLaunchFactory = useCallbackFactory(
@@ -119,6 +124,17 @@ export const CatalogExplorerCards = memo(
             evtSearchBarAction.post("CLEAR SEARCH"),
         );
 
+        const { ref: scrollableDivRef } = useElementEvt<HTMLDivElement>(
+            ({ ctx, element }) =>
+                Evt.from(ctx, element, "scroll").attach(event => {
+                    const scrollTop = (event as any).target.scrollTop;
+
+                    onIsPageHeaderHelpVisibleValueChange(scrollTop < 300);
+                    onIsPageHeaderTitleVisibleValueChange(scrollTop < 600);
+                }),
+            [onIsPageHeaderTitleVisibleValueChange, onIsPageHeaderHelpVisibleValueChange],
+        );
+
         return (
             <div className={cx(classes.root, className, "foo-bar")}>
                 <CatalogExplorerSearchBar
@@ -127,7 +143,7 @@ export const CatalogExplorerCards = memo(
                     evtAction={evtSearchBarAction}
                     onSearchChange={setSearch}
                 />
-                <div className={classes.cardsWrapper}>
+                <div ref={scrollableDivRef} className={classes.cardsWrapper}>
                     {filteredCards.length === 0 ? undefined : (
                         <Text typo="section heading" className={classes.contextTypo}>
                             {t(
