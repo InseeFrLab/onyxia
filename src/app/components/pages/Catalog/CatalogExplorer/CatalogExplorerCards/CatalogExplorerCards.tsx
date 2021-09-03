@@ -35,8 +35,11 @@ const useStyles = makeStyles<{
         "display": "flex",
         "flexDirection": "column",
     },
+    "searchBar": {
+        "marginBottom": theme.spacing(4),
+    },
     "contextTypo": {
-        ...theme.spacing.topBottom("margin", 4),
+        "marginBottom": theme.spacing(4),
     },
     "cardsWrapper": {
         "flex": 1,
@@ -59,6 +62,9 @@ const useStyles = makeStyles<{
                   })()},1fr)`,
                   "gap": theme.spacing(4),
               }),
+    },
+    "bottomScrollSpace": {
+        "height": theme.spacing(3),
     },
 }));
 
@@ -116,22 +122,23 @@ export const CatalogExplorerCards = memo(
         return (
             <div className={cx(classes.root, className, "foo-bar")}>
                 <CatalogExplorerSearchBar
+                    className={classes.searchBar}
                     search={search}
                     evtAction={evtSearchBarAction}
                     onSearchChange={setSearch}
                 />
-                {filteredCards.length === 0 ? undefined : (
-                    <Text typo="section heading" className={classes.contextTypo}>
-                        {t(
-                            search !== ""
-                                ? "search results"
-                                : isRevealed
-                                ? "all services"
-                                : "main services",
-                        )}
-                    </Text>
-                )}
                 <div className={classes.cardsWrapper}>
+                    {filteredCards.length === 0 ? undefined : (
+                        <Text typo="section heading" className={classes.contextTypo}>
+                            {t(
+                                search !== ""
+                                    ? "search results"
+                                    : isRevealed
+                                    ? "all services"
+                                    : "main services",
+                            )}
+                        </Text>
+                    )}
                     <div className={classes.cards}>
                         {filteredCards.length === 0 ? (
                             <NoMatches search={search} onGoBackClick={onGoBackClick} />
@@ -173,6 +180,7 @@ export const CatalogExplorerCards = memo(
                                 );
                             })()}
                     </div>
+                    <div className={classes.bottomScrollSpace} />
                 </div>
             </div>
         );
