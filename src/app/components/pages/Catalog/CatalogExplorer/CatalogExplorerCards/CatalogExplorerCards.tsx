@@ -31,9 +31,7 @@ const useStyles = makeStyles<{
     filteredCardCount: number;
 }>()((theme, { filteredCardCount }) => ({
     "root": {
-        //Or set by the parent,
-        //it must be constrained or the scroll will not work
-        //"height": "100%",
+        "height": "100%",
         "display": "flex",
         "flexDirection": "column",
     },
@@ -116,7 +114,7 @@ export const CatalogExplorerCards = memo(
         );
 
         return (
-            <div className={cx(classes.root, className)}>
+            <div className={cx(classes.root, className, "foo-bar")}>
                 <CatalogExplorerSearchBar
                     search={search}
                     evtAction={evtSearchBarAction}
