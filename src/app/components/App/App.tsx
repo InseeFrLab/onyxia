@@ -56,11 +56,11 @@ const useStyles = makeStyles()(theme => ({
         "height": "100%",
     },
     "main": {
-        "flex": 1,
         "height": "100%",
+        "flex": 1,
         //TODO: See if scroll delegation works if we put auto here instead of "hidden"
-        "overflow": "auto",
         "paddingLeft": theme.spacing(4),
+        "overflow": "hidden",
     },
 }));
 

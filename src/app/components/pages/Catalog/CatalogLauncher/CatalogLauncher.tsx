@@ -97,7 +97,7 @@ export const CatalogLauncher = memo((props: Props) => {
         );
     }, [restorablePackageConfigs, restorablePackageConfig]);
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     const onRequestLaunch = useConstCallback(() => dispatch(thunks.launch()));
 
@@ -175,39 +175,35 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(isLaunchable !== undefined);
 
     return (
-        <div className={className}>
-            <div className={classes.wrapperForScroll}>
-                <div className={classes.wrapperForMawWidth}>
-                    <CatalogLauncherMainCard
-                        packageName={state.packageName}
-                        packageIconUrl={state.icon}
-                        isBookmarked={isBookmarked}
-                        onIsBookmarkedValueChange={onIsBookmarkedValueChange}
-                        friendlyName={friendlyName!}
-                        onFriendlyNameChange={onFriendlyNameChange}
-                        onRequestLaunch={onRequestLaunch}
-                        onRequestCancel={onRequestCancel}
-                        onRequestCopyLaunchUrl={
-                            restorablePackageConfig.formFieldsValueDifferentFromDefault
-                                .length !== 0
-                                ? onRequestCopyLaunchUrl
-                                : undefined
+        <div className={cx(classes.wrapperForScroll, className)}>
+            <div className={classes.wrapperForMawWidth}>
+                <CatalogLauncherMainCard
+                    packageName={state.packageName}
+                    packageIconUrl={state.icon}
+                    isBookmarked={isBookmarked}
+                    onIsBookmarkedValueChange={onIsBookmarkedValueChange}
+                    friendlyName={friendlyName!}
+                    onFriendlyNameChange={onFriendlyNameChange}
+                    onRequestLaunch={onRequestLaunch}
+                    onRequestCancel={onRequestCancel}
+                    onRequestCopyLaunchUrl={
+                        restorablePackageConfig.formFieldsValueDifferentFromDefault
+                            .length !== 0
+                            ? onRequestCopyLaunchUrl
+                            : undefined
+                    }
+                    isLaunchable={isLaunchable}
+                />
+                {Object.keys(indexedFormFields).map(dependencyNamePackageNameOrGlobal => (
+                    <CatalogLauncherConfigurationCard
+                        key={dependencyNamePackageNameOrGlobal}
+                        dependencyNamePackageNameOrGlobal={
+                            dependencyNamePackageNameOrGlobal
                         }
-                        isLaunchable={isLaunchable}
+                        {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
+                        onFormValueChange={onFormValueChange}
                     />
-                    {Object.keys(indexedFormFields).map(
-                        dependencyNamePackageNameOrGlobal => (
-                            <CatalogLauncherConfigurationCard
-                                key={dependencyNamePackageNameOrGlobal}
-                                dependencyNamePackageNameOrGlobal={
-                                    dependencyNamePackageNameOrGlobal
-                                }
-                                {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                                onFormValueChange={onFormValueChange}
-                            />
-                        ),
-                    )}
-                </div>
+                ))}
             </div>
         </div>
     );

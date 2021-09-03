@@ -32,7 +32,12 @@ export type Props = {
 const useStyles = makeStyles()({
     "root": {
         "height": "100%",
-        "overflow": "auto",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "bodyWrapper": {
+        "flex": 1,
+        "overflow": "hidden",
     },
 });
 
@@ -120,14 +125,16 @@ export function Catalog(props: Props) {
                 }
                 helpIcon="sentimentSatisfied"
             />
-            {(() => {
-                switch (route.name) {
-                    case "catalogExplorer":
-                        return <CatalogExplorer route={route} />;
-                    case "catalogLauncher":
-                        return <CatalogLauncher route={route} />;
-                }
-            })()}
+            <div className={classes.bodyWrapper}>
+                {(() => {
+                    switch (route.name) {
+                        case "catalogExplorer":
+                            return <CatalogExplorer route={route} />;
+                        case "catalogLauncher":
+                            return <CatalogLauncher route={route} />;
+                    }
+                })()}
+            </div>
         </div>
     );
 }
