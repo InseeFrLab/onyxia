@@ -105,7 +105,7 @@ export declare namespace LeftBar {
 
 const { CustomButton } = (() => {
     type Props = {
-        target: Exclude<Target, "toggle expand">;
+        target: Target;
         isExpanded: boolean;
         collapsedWidth: number;
         isActive: boolean;
