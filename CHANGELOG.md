@@ -1,3 +1,8 @@
+### **0.11.92** (2021-09-05)  
+  
+- Use searchbar from onyxia-ui  
+- Remove unused component    
+  
 ### **0.11.91** (2021-09-03)  
   
 - Catalog: Feat mart scroll  
