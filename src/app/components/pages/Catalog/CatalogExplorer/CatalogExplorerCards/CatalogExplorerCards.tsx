@@ -8,8 +8,8 @@ import { Button, Text } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import Link from "@material-ui/core/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
-import { CatalogExplorerSearchBar } from "../CatalogExplorerSearchBar";
-import type { Props as SearchBarProps } from "../CatalogExplorerSearchBar";
+import { SearchBar } from "onyxia-ui/SearchBar";
+import type { SearchBarProps } from "onyxia-ui/SearchBar";
 import type { UnpackEvt } from "evt";
 import { breakpointsValues } from "onyxia-ui";
 import { useElementEvt } from "evt/hooks/useElementEvt";
@@ -137,11 +137,12 @@ export const CatalogExplorerCards = memo(
 
         return (
             <div className={cx(classes.root, className, "foo-bar")}>
-                <CatalogExplorerSearchBar
+                <SearchBar
                     className={classes.searchBar}
                     search={search}
                     evtAction={evtSearchBarAction}
                     onSearchChange={setSearch}
+                    placeholder={t("search")}
                 />
                 <div ref={scrollableDivRef} className={classes.cardsWrapper}>
                     {filteredCards.length === 0 ? undefined : (
@@ -213,6 +214,7 @@ export declare namespace CatalogExplorerCards {
         "no result found": { forWhat: string };
         "check spelling": undefined;
         "go back": undefined;
+        "search": undefined;
     };
 }
 

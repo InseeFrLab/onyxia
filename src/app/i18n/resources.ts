@@ -20,7 +20,6 @@ import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
-import { CatalogExplorerSearchBar } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerSearchBar";
 import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
 import { Catalog } from "app/components/pages/Catalog";
@@ -68,8 +67,6 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
     [symToStr({ AccountUserInterfaceTab })]:
         Reflect<AccountUserInterfaceTab.I18nScheme>(),
-    [symToStr({ CatalogExplorerSearchBar })]:
-        Reflect<CatalogExplorerSearchBar.I18nScheme>(),
     [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
@@ -324,9 +321,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cardButton2": "Join the community",
             "cardButton3": "Consult the data",
         },
-        "CatalogExplorerSearchBar": {
-            "search": "Search",
-        },
         "CatalogExplorerCard": {
             "launch": "Launch",
             "learn more": "Learn more",
@@ -340,6 +334,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "main services": "Main services",
             "all services": "All services",
             "search results": "Search result",
+            "search": "Search",
         },
         "Catalog": {
             "header text1": "Services catalog",
@@ -618,9 +613,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cardButton2": "Rejoindre la communauté",
             "cardButton3": "Consulter des données",
         },
-        "CatalogExplorerSearchBar": {
-            "search": "Rechercher",
-        },
         "CatalogExplorerCard": {
             "launch": "Lancer",
             "learn more": "En savoir plus",
@@ -635,6 +627,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "main services": "Principaux services",
             "all services": "Tous les services",
             "search results": "Résultats de la recherche",
+            "search": "Rechercher",
         },
         "Catalog": {
             "header text1": "Catalogue de services",
