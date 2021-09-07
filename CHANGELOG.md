@@ -1,3 +1,7 @@
+### **0.11.93** (2021-09-07)  
+  
+- Fix scroll    
+  
 ### **0.11.92** (2021-09-05)  
   
 - Use searchbar from onyxia-ui  
