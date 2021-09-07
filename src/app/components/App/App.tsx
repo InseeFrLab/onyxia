@@ -194,9 +194,27 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         switch (Page) {
             case NavigationFile:
                 assert(Page.routeGroup.has(route));
-                return <Page route={route} />;
+                return (
+                    <div
+                        style={{
+                            "height": "100%",
+                            "overflow": "auto",
+                        }}
+                    >
+                        <Page route={route} />
+                    </div>
+                );
             case MyBuckets:
-                return <Page />;
+                return (
+                    <div
+                        style={{
+                            "height": "100%",
+                            "overflow": "auto",
+                        }}
+                    >
+                        <Page />
+                    </div>
+                );
         }
 
         assert(false, "Not all cases have been dealt with in the above switch");

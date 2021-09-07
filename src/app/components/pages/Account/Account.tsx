@@ -26,6 +26,10 @@ export type Props = {
 };
 
 const useStyles = makeStyles()(theme => ({
+    "root": {
+        "height": "100%",
+        "overflow": "auto",
+    },
     "tabs": {
         "borderRadius": 8,
         "overflow": "hidden",
@@ -44,10 +48,10 @@ export function Account(props: Props) {
         routes.account({ tabId }).push(),
     );
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     return (
-        <div className={className}>
+        <div className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon="account"
                 title={t("text1")}
