@@ -41,6 +41,7 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
 export const VueDefault = getStory({
     className,
     packages,
+    "scrollableDivRef": { "current": null },
     "search": "",
     /* spell-checker: enable */
     ...logCallbacks([
@@ -48,7 +49,5 @@ export const VueDefault = getStory({
         "onRequestLearnMore",
         "onClearSearch",
         "setSearch",
-        "onIsPageHeaderHelpVisibleValueChange",
-        "onIsPageHeaderTitleVisibleValueChange",
     ]),
 });
