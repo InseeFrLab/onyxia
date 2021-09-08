@@ -1,11 +1,11 @@
 import { useMemo, memo } from "react";
 import { Header } from "app/components/shared/Header";
-import { LeftBar } from "./LeftBar";
-import type { Props as LeftBarProps } from "./LeftBar";
+import { LeftBar } from "app/theme";
 import { Footer } from "./Footer";
 import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "app/theme";
+import { useTranslation } from "app/i18n/useTranslations";
 import {
     useAppConstants,
     useSelector,
@@ -71,6 +71,8 @@ export type Props = {
 export const App = memo((props: Props) => {
     const { className } = props;
 
+    const { t } = useTranslation("App");
+
     useSyncDarkModeWithValueInProfile();
 
     useApplyLanguageSelectedAtLogin();
@@ -120,22 +122,50 @@ export const App = memo((props: Props) => {
             : appConstants.login(),
     );
 
-    const onLeftBarClick = useConstCallback(
-        (target: Parameters<LeftBarProps["onClick"]>[0]) => {
-            if (target in routes) {
-                routes[target]().push();
-                return;
-            }
-
-            alert(`TODO: missing page ${target}`);
-        },
-    );
-
     const { tosUrl } = (function useClosure() {
         const { lng } = useLng();
         const tosUrl = getTosMarkdownUrl(lng);
         return { tosUrl };
     })();
+
+    const leftBarItems = useMemo(
+        () =>
+            ({
+                "home": {
+                    "iconId": "home",
+                    "label": t("home"),
+                    "link": routes.home().link,
+                },
+                "account": {
+                    "iconId": "account",
+                    "label": t("account"),
+                    "link": routes.account().link,
+                    "hasDividerBelow": true,
+                },
+                "catalog": {
+                    "iconId": "catalog",
+                    "label": t("catalog"),
+                    "link": routes.catalogExplorer().link,
+                },
+                "myServices": {
+                    "iconId": "services",
+                    "label": t("myServices"),
+                    "link": routes.myServices().link,
+                    "hasDividerBelow": true,
+                },
+                "mySecrets": {
+                    "iconId": "secrets",
+                    "label": t("mySecrets"),
+                    "link": routes.mySecrets().link,
+                },
+                "myFiles": {
+                    "iconId": "files",
+                    "label": t("myFiles"),
+                    "link": routes.myBuckets().link,
+                },
+            } as const),
+        [t],
+    );
 
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
@@ -151,8 +181,28 @@ export const App = memo((props: Props) => {
                 <LeftBar
                     className={classes.leftBar}
                     collapsedWidth={logoContainerWidth}
-                    onClick={onLeftBarClick}
-                    currentPage={route.name}
+                    reduceText={t("reduce")}
+                    items={leftBarItems}
+                    currentItemId={(() => {
+                        switch (route.name) {
+                            case "home":
+                                return "home";
+                            case "account":
+                                return "account";
+                            case "catalogExplorer":
+                                return "catalog";
+                            case "catalogLauncher":
+                                return "catalog";
+                            case "myServices":
+                                return "myServices";
+                            case "mySecrets":
+                                return "mySecrets";
+                            case "myBuckets":
+                                return "myFiles";
+                            case "myFiles":
+                                return "myFiles";
+                        }
+                    })()}
                 />
 
                 <main className={classes.main}>
@@ -170,6 +220,19 @@ export const App = memo((props: Props) => {
         </div>
     );
 });
+
+export declare namespace App {
+    export type I18nScheme = Record<
+        | "reduce"
+        | "home"
+        | "account"
+        | "catalog"
+        | "myServices"
+        | "mySecrets"
+        | "myFiles",
+        undefined
+    >;
+}
 
 const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
