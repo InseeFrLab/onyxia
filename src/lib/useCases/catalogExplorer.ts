@@ -122,6 +122,7 @@ export const thunks = {
 };
 
 const { getHardCodedPackageWeight } = (() => {
+    //TODO: Address this
     const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
 
     function getHardCodedPackageWeight(packageName: string) {
