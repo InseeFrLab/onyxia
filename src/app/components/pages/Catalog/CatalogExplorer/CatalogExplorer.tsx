@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 import { memo, useEffect } from "react";
+import type { RefObject } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -13,17 +13,11 @@ import type { Route } from "type-route";
 export type Props = {
     className?: string;
     route: Route<typeof routes.catalogExplorer>;
-    onIsPageHeaderTitleVisibleValueChange: (isPageHeaderTitleVisible: boolean) => void;
-    onIsPageHeaderHelpVisibleValueChange: (isPageHeaderHelpVisible: boolean) => void;
+    scrollableDivRef: RefObject<HTMLDivElement>;
 };
 
 export const CatalogExplorer = memo((props: Props) => {
-    const {
-        className,
-        route,
-        onIsPageHeaderTitleVisibleValueChange,
-        onIsPageHeaderHelpVisibleValueChange,
-    } = props;
+    const { className, route, scrollableDivRef } = props;
 
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
     const dispatch = useDispatch();
@@ -97,8 +91,7 @@ export const CatalogExplorer = memo((props: Props) => {
             className={className}
             packages={catalogExplorerState.packages}
             onRequestLaunch={onRequestLaunch}
-            onIsPageHeaderTitleVisibleValueChange={onIsPageHeaderTitleVisibleValueChange}
-            onIsPageHeaderHelpVisibleValueChange={onIsPageHeaderHelpVisibleValueChange}
+            scrollableDivRef={scrollableDivRef}
         />
     );
 });

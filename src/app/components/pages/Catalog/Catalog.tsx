@@ -1,8 +1,8 @@
+import { useMemo, useRef } from "react";
 import { createGroup } from "type-route";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useLng } from "app/i18n/useLng";
 import { makeStyles, PageHeader } from "app/theme";
-
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
@@ -10,7 +10,7 @@ import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@material-ui/core/Link";
 import { useSelector } from "app/interfaceWithLib/hooks";
 import { elementsToSentence } from "app/tools/elementsToSentence";
-import { useState } from "react";
+import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
@@ -67,8 +67,25 @@ export function Catalog(props: Props) {
 
     const { lng } = useLng();
 
-    const [isPageHeaderTitleVisible, setIsPageHeaderTitleVisible] = useState(true);
-    const [isPageHeaderHelperVisible, setIsPageHeaderHelperVisible] = useState(true);
+    const scrollableDivRef = useRef<HTMLDivElement>(null);
+
+    const titleCollapseParams = useMemo(
+        (): CollapseParams => ({
+            "behavior": "collapses on scroll",
+            "scrollTopThreshold": 600,
+            "scrollableElementRef": scrollableDivRef,
+        }),
+        [],
+    );
+
+    const helpCollapseParams = useMemo(
+        (): CollapseParams => ({
+            "behavior": "collapses on scroll",
+            "scrollTopThreshold": 300,
+            "scrollableElementRef": scrollableDivRef,
+        }),
+        [],
+    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -128,8 +145,8 @@ export function Catalog(props: Props) {
                     </>
                 }
                 helpIcon="sentimentSatisfied"
-                isTitleVisible={isPageHeaderTitleVisible}
-                isHelpVisible={isPageHeaderHelperVisible}
+                titleCollapseParams={titleCollapseParams}
+                helpCollapseParams={helpCollapseParams}
             />
             <div className={classes.bodyWrapper}>
                 {(() => {
@@ -138,12 +155,7 @@ export function Catalog(props: Props) {
                             return (
                                 <CatalogExplorer
                                     route={route}
-                                    onIsPageHeaderTitleVisibleValueChange={
-                                        setIsPageHeaderTitleVisible
-                                    }
-                                    onIsPageHeaderHelpVisibleValueChange={
-                                        setIsPageHeaderHelperVisible
-                                    }
+                                    scrollableDivRef={scrollableDivRef}
                                 />
                             );
                         case "catalogLauncher":

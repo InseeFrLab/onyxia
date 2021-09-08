@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, memo } from "react";
+import type { RefObject } from "react";
 import { makeStyles } from "app/theme";
-
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -12,7 +12,6 @@ import { SearchBar } from "onyxia-ui/SearchBar";
 import type { SearchBarProps } from "onyxia-ui/SearchBar";
 import type { UnpackEvt } from "evt";
 import { breakpointsValues } from "onyxia-ui";
-import { useElementEvt } from "evt/hooks/useElementEvt";
 import { Evt } from "evt";
 
 export type Props<PackageName extends string = string> = {
@@ -26,8 +25,7 @@ export type Props<PackageName extends string = string> = {
         packageHomeUrl?: string;
     }[];
     onRequestLaunch(packageName: PackageName): void;
-    onIsPageHeaderTitleVisibleValueChange: (isPageHeaderTitleVisible: boolean) => void;
-    onIsPageHeaderHelpVisibleValueChange: (isPageHeaderHelpVisible: boolean) => void;
+    scrollableDivRef: RefObject<HTMLDivElement>;
 };
 
 const useStyles = makeStyles<{
@@ -79,8 +77,7 @@ export const CatalogExplorerCards = memo(
             onRequestLaunch,
             search,
             setSearch,
-            onIsPageHeaderTitleVisibleValueChange,
-            onIsPageHeaderHelpVisibleValueChange,
+            scrollableDivRef,
         } = props;
 
         const onRequestLaunchFactory = useCallbackFactory(
@@ -122,17 +119,6 @@ export const CatalogExplorerCards = memo(
 
         const onGoBackClick = useConstCallback(() =>
             evtSearchBarAction.post("CLEAR SEARCH"),
-        );
-
-        const { ref: scrollableDivRef } = useElementEvt<HTMLDivElement>(
-            ({ ctx, element }) =>
-                Evt.from(ctx, element, "scroll").attach(event => {
-                    const scrollTop = (event as any).target.scrollTop;
-
-                    onIsPageHeaderHelpVisibleValueChange(scrollTop < 300);
-                    onIsPageHeaderTitleVisibleValueChange(scrollTop < 600);
-                }),
-            [onIsPageHeaderTitleVisibleValueChange, onIsPageHeaderHelpVisibleValueChange],
         );
 
         return (
