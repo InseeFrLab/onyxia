@@ -1,3 +1,7 @@
+### **0.11.95** (2021-09-08)  
+  
+- App: Animated LeftBar    
+  
 ### **0.11.94** (2021-09-08)  
   
 - Catalog Explorer: fix colapsible section    
