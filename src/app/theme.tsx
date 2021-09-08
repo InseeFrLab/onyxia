@@ -144,31 +144,34 @@ export const { Text } = createText({ useTheme });
 
 export function getThemeProviderProps(params: {
     PortraitModeUnsupported: ComponentType;
+    doDisableViewPortAdapter: boolean;
 }): Omit<ThemeProviderProps, "children"> {
-    const { PortraitModeUnsupported } = params;
+    const { PortraitModeUnsupported, doDisableViewPortAdapter } = params;
 
     return {
-        "getViewPortConfig": ({ windowInnerWidth, windowInnerHeight }) => {
-            if (
-                getIsPortraitOrientation({
-                    windowInnerWidth,
-                    windowInnerHeight,
-                })
-            ) {
-                throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
-            }
+        "getViewPortConfig": doDisableViewPortAdapter
+            ? undefined
+            : ({ windowInnerWidth, windowInnerHeight }) => {
+                  if (
+                      getIsPortraitOrientation({
+                          windowInnerWidth,
+                          windowInnerHeight,
+                      })
+                  ) {
+                      throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
+                  }
 
-            let targetWindowInnerWidth = 1100;
+                  let targetWindowInnerWidth = 1100;
 
-            if (windowInnerWidth > breakpointsValues.md) {
-                targetWindowInnerWidth = windowInnerWidth;
-            }
+                  if (windowInnerWidth > breakpointsValues.md) {
+                      targetWindowInnerWidth = windowInnerWidth;
+                  }
 
-            return {
-                targetWindowInnerWidth,
-                "targetBrowserFontSizeFactor": 1,
-            };
-        },
+                  return {
+                      targetWindowInnerWidth,
+                      "targetBrowserFontSizeFactor": 1,
+                  };
+              },
         "splashScreen": { "Logo": OnyxiaLogoSvg },
     };
 }
