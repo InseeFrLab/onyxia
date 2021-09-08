@@ -1,3 +1,7 @@
+### **0.11.96** (2021-09-08)  
+  
+- Login: Disable ViewPortAdapter on login pages    
+  
 ### **0.11.95** (2021-09-08)  
   
 - App: Animated LeftBar    
