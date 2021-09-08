@@ -9,7 +9,7 @@ import { MySecrets } from "app/components/pages/MySecrets";
 import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor";
 import { MySecretsEditorRow } from "app/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "app/components/shared/Header";
-import { LeftBar } from "app/components/App/LeftBar";
+import { App } from "app/components/App/App";
 import { FourOhFour } from "app/components/pages/FourOhFour";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
 import { Home } from "app/components/pages/Home";
@@ -54,7 +54,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
-    [symToStr({ LeftBar })]: Reflect<LeftBar.I18nScheme>(),
+    [symToStr({ App })]: Reflect<App.I18nScheme>(),
     [symToStr({ PortraitModeUnsupported })]:
         Reflect<PortraitModeUnsupported.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
@@ -285,14 +285,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "community space": "Community Space",
             "trainings and tutorials": "Trainings and tutorials",
         },
-        "LeftBar": {
-            "toggle isExpanded": "Reduce",
+        "App": {
+            "reduce": "Reduce",
             "home": "Home",
             "account": "My account",
-            "catalogExplorer": "Services catalog",
+            "catalog": "Services catalog",
             "myServices": "My Services",
             "mySecrets": "My Secrets",
-            "myBuckets": "My Files",
+            "myFiles": "My Files",
         },
         "FourOhFour": {
             "not found": "Page not found",
@@ -576,14 +576,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "community space": "Espace communautaire",
             "trainings and tutorials": "Formations et tutories",
         },
-        "LeftBar": {
-            "toggle isExpanded": "Réduire",
+        "App": {
+            "reduce": "Réduire",
             "home": "Accueil",
             "account": "Mon compte",
-            "catalogExplorer": "Catalogue de services",
+            "catalog": "Catalogue de services",
             "myServices": "Mes services",
             "mySecrets": "Mes secrets",
-            "myBuckets": "Mes fichiers",
+            "myFiles": "Mes fichiers",
         },
         "FourOhFour": {
             "not found": "Page non trouvée",

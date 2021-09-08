@@ -16,6 +16,7 @@ import { createText } from "onyxia-ui/Text";
 import { createPageHeader } from "onyxia-ui/PageHeader";
 import { createMakeStyles } from "tss-react";
 import { createLanguageSelect } from "onyxia-ui/LanguageSelect";
+import { createLeftBar } from "onyxia-ui/LeftBar";
 import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
 import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
 import { ReactComponent as SecretsSvg } from "./assets/svg/Secrets.svg";
@@ -181,4 +182,9 @@ export const { LanguageSelect } = createLanguageSelect<SupportedLanguage>({
         "en": "English",
         "fr": "Français",
     },
+});
+
+export const { LeftBar } = createLeftBar({
+    Icon,
+    "persistIsPanelOpen": true,
 });
