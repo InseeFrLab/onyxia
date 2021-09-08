@@ -1,3 +1,7 @@
+### **0.11.94** (2021-09-08)  
+  
+- Catalog Explorer: fix colapsible section    
+  
 ### **0.11.93** (2021-09-07)  
   
 - Fix scroll    
