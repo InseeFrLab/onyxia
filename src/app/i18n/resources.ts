@@ -304,7 +304,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Home": {
             "welcome": `Welcome {{who}}!`,
-            "title": "Welcome ont the SSP Cloud's datalab",
+            "title": "Welcome to the Onyxia datalab",
             "new user": "New to the datalab?",
             "login": "Login",
             "subtitle": "Work with Python or R, enjoy all the computing power you need!",
@@ -595,7 +595,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "Home": {
             "welcome": `Bienvenue {{who}}!`,
-            "title": "Bienvenue sur le datalab du SSP Cloud",
+            "title": "Bienvenue sur le datalab",
             "login": "Connexion",
             "new user": "Nouvel utilisateur du datalab?",
             "subtitle":
