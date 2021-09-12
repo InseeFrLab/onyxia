@@ -1,3 +1,13 @@
+### **0.11.97** (2021-09-10)  
+  
+- Merge pull request #256 from InseeFrLab/fix-typo-and-ref-to-sspcloud
+
+Fix typo and remove reference to sspcloud    
+  
+### **0.11.96** (2021-09-08)  
+  
+- Login: Disable ViewPortAdapter on login pages    
+  
 ### **0.11.95** (2021-09-08)  
   
 - App: Animated LeftBar    
