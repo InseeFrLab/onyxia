@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
+import type { RefObject } from "react";
 import { makeStyles } from "app/theme";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
@@ -22,6 +23,7 @@ import { useSplashScreen } from "onyxia-ui";
 export type Props = {
     className?: string;
     route: Route<typeof routes.catalogLauncher>;
+    scrollableDivRef: RefObject<HTMLDivElement>;
 };
 
 const useStyles = makeStyles()(theme => ({
@@ -38,7 +40,7 @@ const useStyles = makeStyles()(theme => ({
 }));
 
 export const CatalogLauncher = memo((props: Props) => {
-    const { className, route } = props;
+    const { className, route, scrollableDivRef } = props;
 
     const dispatch = useDispatch();
 
@@ -175,7 +177,7 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(isLaunchable !== undefined);
 
     return (
-        <div className={cx(classes.wrapperForScroll, className)}>
+        <div className={cx(classes.wrapperForScroll, className)} ref={scrollableDivRef}>
             <div className={classes.wrapperForMawWidth}>
                 <CatalogLauncherMainCard
                     packageName={state.packageName}

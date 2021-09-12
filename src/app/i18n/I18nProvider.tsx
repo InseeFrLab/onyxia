@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState } from "react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -39,12 +39,10 @@ export function I18nProvider(props: Props) {
         i18nInstance.changeLanguage(lng);
     }, [lng]);
 
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
-
     useEvt(
-        ctx =>
+        (ctx, registerSideEffect) =>
             Evt.from(ctx, i18nInstance as any, "languagechange").attach(() =>
-                forceUpdate(),
+                registerSideEffect(() => {}),
             ),
         [i18nInstance],
     );

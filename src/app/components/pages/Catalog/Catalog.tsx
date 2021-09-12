@@ -67,24 +67,52 @@ export function Catalog(props: Props) {
 
     const { lng } = useLng();
 
-    const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const { scrollableDivRef } = (function useClosure() {
+        const explorerScrollableDivRef = useRef<HTMLDivElement>(null);
+        const launcherScrollableDivRef = useRef<HTMLDivElement>(null);
+
+        const scrollableDivRef = (() => {
+            switch (route.name) {
+                case "catalogExplorer":
+                    return explorerScrollableDivRef;
+                case "catalogLauncher":
+                    return launcherScrollableDivRef;
+            }
+        })();
+
+        return { scrollableDivRef };
+    })();
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
-            "scrollTopThreshold": 600,
+            "scrollTopThreshold": (() => {
+                switch (route.name) {
+                    case "catalogExplorer":
+                        return 600;
+                    case "catalogLauncher":
+                        return 100;
+                }
+            })(),
             "scrollableElementRef": scrollableDivRef,
         }),
-        [],
+        [scrollableDivRef, route.name],
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
-            "scrollTopThreshold": 300,
+            "scrollTopThreshold": (() => {
+                switch (route.name) {
+                    case "catalogExplorer":
+                        return 300;
+                    case "catalogLauncher":
+                        return 50;
+                }
+            })(),
             "scrollableElementRef": scrollableDivRef,
         }),
-        [],
+        [scrollableDivRef, route.name],
     );
 
     return (
@@ -159,7 +187,12 @@ export function Catalog(props: Props) {
                                 />
                             );
                         case "catalogLauncher":
-                            return <CatalogLauncher route={route} />;
+                            return (
+                                <CatalogLauncher
+                                    route={route}
+                                    scrollableDivRef={scrollableDivRef}
+                                />
+                            );
                     }
                 })()}
             </div>
