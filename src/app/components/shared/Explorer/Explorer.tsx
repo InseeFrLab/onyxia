@@ -227,7 +227,7 @@ export function Explorer(props: Props) {
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
             evtBreadcrumpAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
-                basename,
+                "basename": basename === "." ? undefined : basename,
             });
 
             onCopyPath({ "path": pathJoin(currentPath, basename) });
