@@ -47,7 +47,7 @@
         "@material-ui/icons": "next",
         "@emotion/react": "^11.4.1",
         "@emotion/styled": "^11.3.0",
-        "onyxia-ui": "^0.14.3",
+        "onyxia-ui": "^0.14.4",
         "tss-react": "^0.8.1",
         "@reduxjs/toolkit": "^1.4.0",
         "async-mutex": "^0.2.6",
