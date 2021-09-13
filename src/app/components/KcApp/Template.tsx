@@ -187,12 +187,14 @@ export const Template = memo((props: TemplateProps) => {
 
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
-            <Header
-                type="keycloak"
-                className={classes.header}
-                logoContainerWidth={logoContainerWidth}
-                onLogoClick={onHeaderLogoClick}
-            />
+            {windowInnerHeight > 700 && (
+                <Header
+                    type="keycloak"
+                    className={classes.header}
+                    logoContainerWidth={logoContainerWidth}
+                    onLogoClick={onHeaderLogoClick}
+                />
+            )}
             <section className={classes.betweenHeaderAndFooter}>
                 <Page {...props} className={classes.page} onClickCross={onClickCross} />
             </section>
