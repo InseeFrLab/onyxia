@@ -104,24 +104,24 @@ export const Header = memo((props: Props) => {
                     "alignItems": "center",
                 })}
             >
-                <ButtonBarButton
-                    className={classes.button}
-                    startIcon="training"
-                    href="https://www.sspcloud.fr/documentation"
-                    doOpenNewTabIfHref={true}
-                >
-                    {t("trainings and tutorials")}
-                </ButtonBarButton>
-                <ButtonBarButton
-                    className={classes.button}
-                    startIcon="language"
-                    href="https://sspcloud.fr"
-                    doOpenNewTabIfHref={true}
-                >
-                    {t("community space")}
-                </ButtonBarButton>
                 {props.type === "core" && (
                     <>
+                        <ButtonBarButton
+                            className={classes.button}
+                            startIcon="training"
+                            href="https://www.sspcloud.fr/documentation"
+                            doOpenNewTabIfHref={true}
+                        >
+                            {t("trainings and tutorials")}
+                        </ButtonBarButton>
+                        <ButtonBarButton
+                            className={classes.button}
+                            startIcon="language"
+                            href="https://sspcloud.fr"
+                            doOpenNewTabIfHref={true}
+                        >
+                            {t("community space")}
+                        </ButtonBarButton>
                         {props.isUserLoggedIn && (
                             <ToggleCloudShell
                                 useIsCloudShellVisible={props.useIsCloudShellVisible}
