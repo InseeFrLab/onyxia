@@ -1,3 +1,7 @@
+### **0.11.100** (2021-09-13)  
+  
+- Tabs: Fix problem with scroll tabs    
+  
 ### **0.11.99** (2021-09-13)  
   
 - Do not display header on smaller screens    
