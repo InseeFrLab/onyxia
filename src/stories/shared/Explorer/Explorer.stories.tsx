@@ -234,6 +234,7 @@ const props: Parameters<typeof getStory>[0] = {
     ...logCallbacks(["onNavigate", "onCopyPath", "onCreateItem", "onEditBasename"]),
     "height": 1000,
     "width": 1600,
+    "scrollableDivRef": { "current": null },
 };
 
 export const Vue1 = getStory(props);

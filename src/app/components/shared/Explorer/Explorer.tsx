@@ -1,5 +1,6 @@
 import { makeStyles } from "app/theme";
 import { useState, useEffect, useMemo } from "react";
+import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Props as ItemsProps } from "./ExplorerItems";
 import { Breadcrump } from "onyxia-ui/Breadcrump";
@@ -86,6 +87,7 @@ export type Props = {
     onDeleteItem(params: { kind: "file" | "directory"; basename: string }): void;
     onCreateItem(params: { kind: "file" | "directory"; basename: string }): void;
     onCopyPath(params: { path: string }): void;
+    scrollableDivRef: RefObject<any>;
 };
 
 const useStyles = makeStyles<{ cmdTranslationTop: number }>()(
@@ -127,6 +129,7 @@ export function Explorer(props: Props) {
         onCopyPath,
         onDeleteItem,
         onCreateItem,
+        scrollableDivRef,
     } = props;
 
     useMemo(
@@ -376,6 +379,7 @@ export function Explorer(props: Props) {
                 evtAction={evtBreadcrumpAction}
             />
             <div
+                ref={scrollableDivRef}
                 className={cx(
                     css({
                         "flex": 1,

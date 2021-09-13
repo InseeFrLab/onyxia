@@ -1,5 +1,5 @@
 import { makeStyles, PageHeader } from "app/theme";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import {
@@ -23,6 +23,7 @@ import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 
 MySecrets.routeGroup = createGroup([routes.mySecrets]);
 
@@ -233,6 +234,26 @@ export function MySecrets(props: Props) {
         evtButtonBarAction.post("TRIGGER COPY PATH"),
     );
 
+    const scrollableDivRef = useRef<HTMLDivElement>(null);
+
+    const titleCollapseParams = useMemo(
+        (): CollapseParams => ({
+            "behavior": "collapses on scroll",
+            "scrollTopThreshold": 100,
+            "scrollableElementRef": scrollableDivRef,
+        }),
+        [],
+    );
+
+    const helpCollapseParams = useMemo(
+        (): CollapseParams => ({
+            "behavior": "collapses on scroll",
+            "scrollTopThreshold": 50,
+            "scrollableElementRef": scrollableDivRef,
+        }),
+        [],
+    );
+
     if (state.currentPath === "") {
         return null;
     }
@@ -257,6 +278,8 @@ export function MySecrets(props: Props) {
                     </>
                 }
                 helpIcon="sentimentSatisfied"
+                titleCollapseParams={titleCollapseParams}
+                helpCollapseParams={helpCollapseParams}
             />
             <Explorer
                 className={classes.explorer}
@@ -308,6 +331,7 @@ export function MySecrets(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onCreateItem={onCreateItem}
                 onCopyPath={onCopyPath}
+                scrollableDivRef={scrollableDivRef}
             />
         </div>
     );
