@@ -1,3 +1,7 @@
+### **0.11.99** (2021-09-13)  
+  
+- Do not display header on smaller screens    
+  
 ### **0.11.98** (2021-09-12)  
   
 - Catalog: Fix header collapse problems    
