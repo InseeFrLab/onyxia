@@ -1,3 +1,7 @@
+### **0.11.98** (2021-09-12)  
+  
+- Catalog: Fix header collapse problems    
+  
 ### **0.11.97** (2021-09-10)  
   
 - Merge pull request #256 from InseeFrLab/fix-typo-and-ref-to-sspcloud
