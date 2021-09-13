@@ -1013,6 +1013,6 @@ export const pure = {
     },
     "getUserHomePath": (params: { preferred_username: string }): string => {
         const { preferred_username } = params;
-        return preferred_username;
+        return pathJoin("/", preferred_username);
     },
 };
