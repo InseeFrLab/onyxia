@@ -1,3 +1,7 @@
+### **0.11.104** (2021-09-14)  
+  
+- SavedConfigurations: Warning dialog when modifying the config    
+  
 ### **0.11.103** (2021-09-13)  
   
 - MySecrets: Fix inconsitencies in breadcrumb  
