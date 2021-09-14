@@ -1,3 +1,7 @@
+## **0.12.0** (2021-09-14)  
+  
+- Saved configuration: Edit saved configurations    
+  
 ### **0.11.104** (2021-09-14)  
   
 - SavedConfigurations: Warning dialog when modifying the config    
