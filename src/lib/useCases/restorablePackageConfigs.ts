@@ -13,6 +13,8 @@ import {
 } from "../tools/createObjectThatThrowsIfAccessed";
 import type { RootState } from "../setup";
 import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import { is } from "tsafe/is";
+
 export const name = "restorablePackageConfig";
 
 export type RestorablePackageConfigsState = {
@@ -185,9 +187,14 @@ export const thunks = {
             dispatch(actions.iconsFetched({ iconsUrl }));
         },
     "saveRestorablePackageConfig":
-        (params: { restorablePackageConfig: RestorablePackageConfig }): AppThunk =>
+        (params: {
+            restorablePackageConfig: RestorablePackageConfig;
+            getDoOverwriteConfiguration: (params: {
+                friendlyName: string;
+            }) => Promise<boolean>;
+        }): AppThunk =>
         async (dispatch, getState) => {
-            const { restorablePackageConfig } = params;
+            const { restorablePackageConfig, getDoOverwriteConfiguration } = params;
 
             if (
                 pure.isRestorablePackageConfigInStore({
@@ -197,6 +204,48 @@ export const thunks = {
                 })
             ) {
                 return;
+            }
+
+            const getFriendlyName = (formFieldsValue: FormFieldValue[]) => {
+                const friendlyName = formFieldsValue.find(({ path }) =>
+                    same(path, onyxiaFriendlyNameFormFieldPath),
+                )?.value;
+                assert(!is<number | boolean>(friendlyName));
+                return friendlyName;
+            };
+
+            const restorablePackageConfigWithSameFriendlyName = getState()
+                .restorablePackageConfig.restorablePackageConfigs.filter(
+                    ({ catalogId, packageName }) =>
+                        restorablePackageConfig.catalogId === catalogId &&
+                        restorablePackageConfig.packageName === packageName,
+                )
+                .find(
+                    ({ formFieldsValueDifferentFromDefault }) =>
+                        getFriendlyName(formFieldsValueDifferentFromDefault) ===
+                        getFriendlyName(
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault,
+                        ),
+                );
+
+            if (restorablePackageConfigWithSameFriendlyName !== undefined) {
+                if (
+                    !(await getDoOverwriteConfiguration({
+                        "friendlyName":
+                            getFriendlyName(
+                                restorablePackageConfig.formFieldsValueDifferentFromDefault,
+                            ) ?? restorablePackageConfig.packageName,
+                    }))
+                ) {
+                    return;
+                }
+
+                dispatch(
+                    actions.restorablePackageConfigDeleted({
+                        "restorablePackageConfig":
+                            restorablePackageConfigWithSameFriendlyName,
+                    }),
+                );
             }
 
             dispatch(
