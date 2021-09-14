@@ -21,6 +21,8 @@ import { assert } from "tsafe/assert";
 import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useTranslation } from "app/i18n/useTranslations";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     className?: string;
@@ -91,8 +93,38 @@ export const CatalogLauncher = memo((props: Props) => {
     const [isNoLongerBookmarkedDialogOpen, setIsNoLongerBookmarkedDialogOpen] =
         useState(false);
 
-    const onForkingAlertDialogClose = useConstCallback(() =>
+    const onNoLongerBookmarkedDialogClose = useConstCallback(() =>
         setIsNoLongerBookmarkedDialogOpen(false),
+    );
+
+    const [overwriteConfigurationDialogState, setOverwriteConfigurationDialogState] =
+        useState<
+            | {
+                  resolveDoOverwriteConfiguration: (
+                      doOverwriteConfiguration: boolean,
+                  ) => void;
+                  friendlyName: string;
+              }
+            | undefined
+        >(undefined);
+
+    const onOverwriteConfigurationDialogClickFactory = useCallbackFactory(
+        ([action]: ["overwrite" | "cancel"]) => {
+            assert(overwriteConfigurationDialogState !== undefined);
+
+            overwriteConfigurationDialogState.resolveDoOverwriteConfiguration(
+                (() => {
+                    switch (action) {
+                        case "overwrite":
+                            return true;
+                        case "cancel":
+                            return false;
+                    }
+                })(),
+            );
+
+            setOverwriteConfigurationDialogState(undefined);
+        },
     );
 
     useEffect(() => {
@@ -135,12 +167,26 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
         assert(restorablePackageConfig !== undefined);
+
         dispatch(
             restorablePackageConfigsThunks[
                 isBookmarked
                     ? "saveRestorablePackageConfig"
                     : "deleteRestorablePackageConfig"
-            ]({ restorablePackageConfig }),
+            ]({
+                restorablePackageConfig,
+                "getDoOverwriteConfiguration": async ({ friendlyName }) => {
+                    const dDoOverwriteConfiguration = new Deferred<boolean>();
+
+                    setOverwriteConfigurationDialogState({
+                        friendlyName,
+                        "resolveDoOverwriteConfiguration":
+                            dDoOverwriteConfiguration.resolve,
+                    });
+
+                    return await dDoOverwriteConfiguration.pr;
+                },
+            }),
         );
     });
 
@@ -234,12 +280,39 @@ export const CatalogLauncher = memo((props: Props) => {
                 title={t("no longer bookmarked dialog title")}
                 body={t("no longer bookmarked dialog body")}
                 buttons={
-                    <Button onClick={onForkingAlertDialogClose} autoFocus>
+                    <Button onClick={onNoLongerBookmarkedDialogClose} autoFocus>
                         {t("ok")}
                     </Button>
                 }
                 isOpen={isNoLongerBookmarkedDialogOpen}
-                onClose={onForkingAlertDialogClose}
+                onClose={onNoLongerBookmarkedDialogClose}
+            />
+            <Dialog
+                title={t("should overwrite configuration dialog title")}
+                subtitle={t("should overwrite configuration dialog subtitle", {
+                    "friendlyName": overwriteConfigurationDialogState?.friendlyName ?? "",
+                })}
+                body={t("should overwrite configuration dialog body")}
+                buttons={
+                    <>
+                        <Button
+                            onClick={onOverwriteConfigurationDialogClickFactory("cancel")}
+                            autoFocus
+                            variant="secondary"
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            onClick={onOverwriteConfigurationDialogClickFactory(
+                                "overwrite",
+                            )}
+                        >
+                            {t("replace")}
+                        </Button>
+                    </>
+                }
+                isOpen={overwriteConfigurationDialogState !== undefined}
+                onClose={onOverwriteConfigurationDialogClickFactory("cancel")}
             />
         </>
     );
@@ -250,5 +323,10 @@ export declare namespace CatalogLauncher {
         "no longer bookmarked dialog title": undefined;
         "no longer bookmarked dialog body": undefined;
         "ok": undefined;
+        "should overwrite configuration dialog title": undefined;
+        "should overwrite configuration dialog subtitle": { friendlyName: string };
+        "should overwrite configuration dialog body": undefined;
+        "cancel": undefined;
+        "replace": undefined;
     };
 }

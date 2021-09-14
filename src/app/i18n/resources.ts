@@ -353,6 +353,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no longer bookmarked dialog body":
                 "Click on the bookmark icon again to update your saved configuration",
             "ok": "Ok",
+            "should overwrite configuration dialog title":
+                "Would you like to replace it?",
+            "should overwrite configuration dialog subtitle":
+                "«{{friendlyName}}» already exists in your store.",
+            "should overwrite configuration dialog body":
+                "You already have a saved service with this name. If you replace it the previous configuration will be lost",
+            "cancel": "Annuler",
+            "replace": "Replace it",
         },
         "Footer": {
             "contribute": "Contribute",
@@ -653,6 +661,14 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no longer bookmarked dialog body":
                 "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
             "ok": "Ok",
+            "should overwrite configuration dialog title":
+                "Souhaitez-vous le remplacer ?",
+            "should overwrite configuration dialog subtitle":
+                "«{{friendlyName}}» exsiste déjà dans vos enregistrements.",
+            "should overwrite configuration dialog body":
+                "Un service enregistré du même nom exsiste déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
+            "cancel": "Annuler",
+            "replace": "Replacer",
         },
         "Footer": {
             "contribute": "Contribuer au projet",
