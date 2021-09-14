@@ -20,6 +20,7 @@ import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab
 import { AccountIntegrationsTab } from "app/components/pages/Account/tabs/AccountIntegrationsTab";
 import { AccountStorageTab } from "app/components/pages/Account/tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "app/components/pages/Account/tabs/AccountUserInterfaceTab";
+import { CatalogLauncher } from "app/components/pages/Catalog/CatalogLauncher/CatalogLauncher";
 import { CatalogExplorerCards } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { CatalogExplorerCard } from "app/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
 import { Catalog } from "app/components/pages/Catalog";
@@ -68,6 +69,7 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountUserInterfaceTab })]:
         Reflect<AccountUserInterfaceTab.I18nScheme>(),
     [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
+    [symToStr({ CatalogLauncher })]: Reflect<CatalogLauncher.I18nScheme>(),
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
@@ -345,6 +347,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "contribute to the package":
                 "Find the sources of the {{packageName}} package ",
             "here": "here",
+        },
+        "CatalogLauncher": {
+            "no longer bookmarked dialog title": "Your changes wont be saved",
+            "no longer bookmarked dialog body":
+                "Click on the bookmark icon again to update your saved configuration",
+            "ok": "Ok",
         },
         "Footer": {
             "contribute": "Contribute",
@@ -639,6 +647,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "contribute to the package":
                 "Accéder aux sources du package {{packageName}} ",
             "here": "ici",
+        },
+        "CatalogLauncher": {
+            "no longer bookmarked dialog title": "Changements non enregistrer",
+            "no longer bookmarked dialog body":
+                "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
+            "ok": "Ok",
         },
         "Footer": {
             "contribute": "Contribuer au projet",

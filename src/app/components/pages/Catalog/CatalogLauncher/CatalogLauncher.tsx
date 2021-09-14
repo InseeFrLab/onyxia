@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
 import type { RefObject } from "react";
-import { makeStyles } from "app/theme";
+import { makeStyles, Button } from "app/theme";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
@@ -19,6 +19,8 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
 import { useSplashScreen } from "onyxia-ui";
+import { Dialog } from "onyxia-ui/Dialog";
+import { useTranslation } from "app/i18n/useTranslations";
 
 export type Props = {
     className?: string;
@@ -86,17 +88,29 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
+    const [isNoLongerBookmarkedDialogOpen, setIsNoLongerBookmarkedDialogOpen] =
+        useState(false);
+
+    const onForkingAlertDialogClose = useConstCallback(() =>
+        setIsNoLongerBookmarkedDialogOpen(false),
+    );
+
     useEffect(() => {
         if (restorablePackageConfig === undefined) {
             return;
         }
 
-        setIsBookmarked(
+        const isBookmarkedNew =
             restorablePackageConfigsPure.isRestorablePackageConfigInStore({
                 restorablePackageConfigs,
                 restorablePackageConfig,
-            }),
-        );
+            });
+
+        if (isBookmarked && !isBookmarkedNew) {
+            setIsNoLongerBookmarkedDialogOpen(true);
+        }
+
+        setIsBookmarked(isBookmarkedNew);
     }, [restorablePackageConfigs, restorablePackageConfig]);
 
     const { classes, cx } = useStyles();
@@ -168,6 +182,8 @@ export const CatalogLauncher = memo((props: Props) => {
     const indexedFormFields = useSelector(selectors.indexedFormFieldsSelector);
     const isLaunchable = useSelector(selectors.isLaunchableSelector);
 
+    const { t } = useTranslation("CatalogLauncher");
+
     if (state.stateDescription !== "ready") {
         return null;
     }
@@ -177,36 +193,62 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(isLaunchable !== undefined);
 
     return (
-        <div className={cx(classes.wrapperForScroll, className)} ref={scrollableDivRef}>
-            <div className={classes.wrapperForMawWidth}>
-                <CatalogLauncherMainCard
-                    packageName={state.packageName}
-                    packageIconUrl={state.icon}
-                    isBookmarked={isBookmarked}
-                    onIsBookmarkedValueChange={onIsBookmarkedValueChange}
-                    friendlyName={friendlyName!}
-                    onFriendlyNameChange={onFriendlyNameChange}
-                    onRequestLaunch={onRequestLaunch}
-                    onRequestCancel={onRequestCancel}
-                    onRequestCopyLaunchUrl={
-                        restorablePackageConfig.formFieldsValueDifferentFromDefault
-                            .length !== 0
-                            ? onRequestCopyLaunchUrl
-                            : undefined
-                    }
-                    isLaunchable={isLaunchable}
-                />
-                {Object.keys(indexedFormFields).map(dependencyNamePackageNameOrGlobal => (
-                    <CatalogLauncherConfigurationCard
-                        key={dependencyNamePackageNameOrGlobal}
-                        dependencyNamePackageNameOrGlobal={
-                            dependencyNamePackageNameOrGlobal
+        <>
+            <div
+                className={cx(classes.wrapperForScroll, className)}
+                ref={scrollableDivRef}
+            >
+                <div className={classes.wrapperForMawWidth}>
+                    <CatalogLauncherMainCard
+                        packageName={state.packageName}
+                        packageIconUrl={state.icon}
+                        isBookmarked={isBookmarked}
+                        onIsBookmarkedValueChange={onIsBookmarkedValueChange}
+                        friendlyName={friendlyName!}
+                        onFriendlyNameChange={onFriendlyNameChange}
+                        onRequestLaunch={onRequestLaunch}
+                        onRequestCancel={onRequestCancel}
+                        onRequestCopyLaunchUrl={
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault
+                                .length !== 0
+                                ? onRequestCopyLaunchUrl
+                                : undefined
                         }
-                        {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                        onFormValueChange={onFormValueChange}
+                        isLaunchable={isLaunchable}
                     />
-                ))}
+                    {Object.keys(indexedFormFields).map(
+                        dependencyNamePackageNameOrGlobal => (
+                            <CatalogLauncherConfigurationCard
+                                key={dependencyNamePackageNameOrGlobal}
+                                dependencyNamePackageNameOrGlobal={
+                                    dependencyNamePackageNameOrGlobal
+                                }
+                                {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
+                                onFormValueChange={onFormValueChange}
+                            />
+                        ),
+                    )}
+                </div>
             </div>
-        </div>
+            <Dialog
+                title={t("no longer bookmarked dialog title")}
+                body={t("no longer bookmarked dialog body")}
+                buttons={
+                    <Button onClick={onForkingAlertDialogClose} autoFocus>
+                        {t("ok")}
+                    </Button>
+                }
+                isOpen={isNoLongerBookmarkedDialogOpen}
+                onClose={onForkingAlertDialogClose}
+            />
+        </>
     );
 });
+
+export declare namespace CatalogLauncher {
+    export type I18nScheme = {
+        "no longer bookmarked dialog title": undefined;
+        "no longer bookmarked dialog body": undefined;
+        "ok": undefined;
+    };
+}
