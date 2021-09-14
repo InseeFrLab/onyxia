@@ -1,3 +1,9 @@
+### **0.11.103** (2021-09-13)  
+  
+- MySecrets: Fix inconsitencies in breadcrumb  
+- MySecrets: Add retractable headers  
+- MySecrets: Fix feedback copy in breadcrump    
+  
 ### **0.11.100** (2021-09-13)  
   
 - Tabs: Fix problem with scroll tabs    
