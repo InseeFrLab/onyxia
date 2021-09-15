@@ -1,3 +1,7 @@
+### **0.12.4** (2021-09-15)  
+  
+- AppLayout: Fix footer shadow    
+  
 ### **0.12.3** (2021-09-15)  
   
 - App layout: Fix leftbar shadow    
