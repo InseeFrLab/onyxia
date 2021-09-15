@@ -1,3 +1,7 @@
+### **0.12.3** (2021-09-15)  
+  
+- App layout: Fix leftbar shadow    
+  
 ### **0.12.2** (2021-09-15)  
   
 - Confirmation dialog when deleting secret    
