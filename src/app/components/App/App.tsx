@@ -35,38 +35,48 @@ import {
 
 export const logoContainerWidthInPercent = 4;
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-        "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
-    },
-    "header": {
-        "paddingBottom": 0, //For the LeftBar shadow
-    },
-    "betweenHeaderAndFooter": {
-        "flex": 1,
-        "overflow": "hidden",
-        "display": "flex",
-        "paddingTop": theme.spacing(2.2), //For the LeftBar shadow
-    },
-    "footer": {
-        "height": 32,
-    },
-    "leftBar": {
-        "height": "100%",
-        "overflow": "visible", //For the LeftBar shadow
-    },
-    "main": {
-        "height": "100%",
-        "flex": 1,
-        //TODO: See if scroll delegation works if we put auto here instead of "hidden"
-        "paddingLeft": theme.spacing(4),
-        "overflow": "hidden",
-    },
-}));
+const useStyles = makeStyles()(theme => {
+    const footerHeight = 32;
+
+    return {
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
+            "position": "relative",
+        },
+        "header": {
+            "paddingBottom": 0, //For the LeftBar shadow
+        },
+        "betweenHeaderAndFooter": {
+            "flex": 1,
+            "overflow": "hidden",
+            "display": "flex",
+            "paddingTop": theme.spacing(2.3), //For the LeftBar shadow
+            "paddingBottom": footerHeight,
+        },
+        "footer": {
+            "height": footerHeight,
+            "position": "absolute",
+            "bottom": 0,
+            "width": "100%",
+            "background": "transparent",
+        },
+        "leftBar": {
+            "height": "100%",
+            "overflow": "visible", //For the LeftBar shadow
+        },
+        "main": {
+            "height": "100%",
+            "flex": 1,
+            //TODO: See if scroll delegation works if we put auto here instead of "hidden"
+            "paddingLeft": theme.spacing(4),
+            "overflow": "hidden",
+        },
+    };
+});
 
 export type Props = {
     className?: string;
