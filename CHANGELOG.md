@@ -1,3 +1,7 @@
+### **0.12.1** (2021-09-15)  
+  
+- CatalogExplorer: Show more only on over    
+  
 ## **0.12.0** (2021-09-14)  
   
 - Saved configuration: Edit saved configurations    
