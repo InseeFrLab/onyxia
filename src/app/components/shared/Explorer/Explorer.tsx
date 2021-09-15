@@ -1,4 +1,4 @@
-import { makeStyles } from "app/theme";
+import { makeStyles, Button } from "app/theme";
 import { useState, useEffect, useMemo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -35,6 +35,9 @@ import { getPathDepth } from "app/tools/getPathDepth";
 import { useWithProps } from "powerhooks/useWithProps";
 import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
 import { useFormattedDate } from "app/i18n/useMoment";
+import { Dialog } from "onyxia-ui/Dialog";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     /** [HIGHER ORDER] */
@@ -237,11 +240,6 @@ export function Explorer(props: Props) {
         },
     );
 
-    const itemsOnDeleteItem = useConstCallback(
-        ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) =>
-            onDeleteItem({ kind, basename }),
-    );
-
     const onGoBack = useConstCallback(() =>
         onNavigate({
             "kind": "directory",
@@ -282,7 +280,7 @@ export function Explorer(props: Props) {
                         "names": directories,
                         "buildName": buildNameFactory({
                             "defaultName": t("untitled what", {
-                                "what": t("folder"),
+                                "what": t("directory"),
                             }),
                             "separator": "_",
                         }),
@@ -342,86 +340,188 @@ export function Explorer(props: Props) {
         return { formattedDate };
     })();
 
-    return (
-        <div ref={rootRef} className={cx(classes.root, className)}>
-            <div ref={buttonBarRef}>
-                <ButtonBar
-                    selectedItemKind={selectedItemKind}
-                    isSelectedItemInEditingState={isSelectedItemInEditingState}
-                    isViewingFile={!!file}
-                    callback={buttonBarCallback}
-                />
-            </div>
-            <CmdTranslation
-                className={classes.cmdTranslation}
-                evtTranslation={evtTranslation}
-                maxHeight={cmdTranslationMaxHeight}
-            />
-            {isCurrentPathBrowsablePathRoot ? null : (
-                <DirectoryHeader
-                    title={pathBasename(currentPath)}
-                    onGoBack={onGoBack}
-                    subtitle={formattedDate}
-                    image={
-                        <Icon
-                            kind={file ? "file" : "directory"}
-                            standardizedWidth="big"
-                        />
+    const [doShowDeletionDialogNextTime, setDoShowDeletionDialogNextTime] =
+        useState(true);
+
+    const [deletionDialogState, setDeletionDialogState] = useState<
+        | {
+              kind: "file" | "directory";
+              basename: string;
+              resolveDoProceedToDeletion: (doProceedToDeletion: boolean) => void;
+          }
+        | undefined
+    >(undefined);
+
+    const onDeletionDialogClickFactory = useCallbackFactory(
+        ([action]: ["cancel" | "delete"]) => {
+            assert(deletionDialogState !== undefined);
+
+            deletionDialogState.resolveDoProceedToDeletion(
+                (() => {
+                    switch (action) {
+                        case "cancel":
+                            return false;
+                        case "delete":
+                            return true;
                     }
+                })(),
+            );
+        },
+    );
+
+    const itemsOnDeleteItem = useConstCallback(
+        async ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
+            if (doShowDeletionDialogNextTime) {
+                const dDoProceedToDeletion = new Deferred();
+
+                setDeletionDialogState({
+                    kind,
+                    basename,
+                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve,
+                });
+
+                const doProceedToDeletion = await dDoProceedToDeletion.pr;
+
+                setDeletionDialogState(undefined);
+
+                if (!doProceedToDeletion) {
+                    return;
+                }
+            }
+
+            onDeleteItem({ kind, basename });
+        },
+    );
+
+    return (
+        <>
+            <div ref={rootRef} className={cx(classes.root, className)}>
+                <div ref={buttonBarRef}>
+                    <ButtonBar
+                        selectedItemKind={selectedItemKind}
+                        isSelectedItemInEditingState={isSelectedItemInEditingState}
+                        isViewingFile={!!file}
+                        callback={buttonBarCallback}
+                    />
+                </div>
+                <CmdTranslation
+                    className={classes.cmdTranslation}
+                    evtTranslation={evtTranslation}
+                    maxHeight={cmdTranslationMaxHeight}
                 />
-            )}
-            <Breadcrump
-                className={classes.breadcrump}
-                minDepth={getPathDepth(browsablePath)}
-                path={currentPath.split("/")}
-                isNavigationDisabled={isNavigating}
-                onNavigate={onBreadcrumpNavigate}
-                evtAction={evtBreadcrumpAction}
-            />
-            <div
-                ref={scrollableDivRef}
-                className={cx(
-                    css({
-                        "flex": 1,
-                        "paddingRight": theme.spacing(2),
-                        "overflow": "auto",
-                    }),
-                )}
-            >
-                {file ? (
-                    <Card>{file}</Card>
-                ) : (
-                    <Items
-                        //className={css({ "height": "100%" })}
-                        className={undefined}
-                        files={files}
-                        isNavigating={isNavigating}
-                        directories={directories}
-                        directoriesBeingCreated={directoriesBeingCreated}
-                        directoriesBeingRenamed={directoriesBeingRenamed}
-                        filesBeingCreated={filesBeingCreated}
-                        filesBeingRenamed={filesBeingRenamed}
-                        onNavigate={itemsOnNavigate}
-                        onEditBasename={onEditBasename}
-                        evtAction={evtItemsAction}
-                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                        onIsSelectedItemInEditingStateValueChange={
-                            onIsSelectedItemInEditingStateValueChange
+                {isCurrentPathBrowsablePathRoot ? null : (
+                    <DirectoryHeader
+                        title={pathBasename(currentPath)}
+                        onGoBack={onGoBack}
+                        subtitle={formattedDate}
+                        image={
+                            <Icon
+                                kind={file ? "file" : "directory"}
+                                standardizedWidth="big"
+                            />
                         }
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
                     />
                 )}
+                <Breadcrump
+                    className={classes.breadcrump}
+                    minDepth={getPathDepth(browsablePath)}
+                    path={currentPath.split("/")}
+                    isNavigationDisabled={isNavigating}
+                    onNavigate={onBreadcrumpNavigate}
+                    evtAction={evtBreadcrumpAction}
+                />
+                <div
+                    ref={scrollableDivRef}
+                    className={cx(
+                        css({
+                            "flex": 1,
+                            "paddingRight": theme.spacing(2),
+                            "overflow": "auto",
+                        }),
+                    )}
+                >
+                    {file ? (
+                        <Card>{file}</Card>
+                    ) : (
+                        <Items
+                            //className={css({ "height": "100%" })}
+                            className={undefined}
+                            files={files}
+                            isNavigating={isNavigating}
+                            directories={directories}
+                            directoriesBeingCreated={directoriesBeingCreated}
+                            directoriesBeingRenamed={directoriesBeingRenamed}
+                            filesBeingCreated={filesBeingCreated}
+                            filesBeingRenamed={filesBeingRenamed}
+                            onNavigate={itemsOnNavigate}
+                            onEditBasename={onEditBasename}
+                            evtAction={evtItemsAction}
+                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                            onIsSelectedItemInEditingStateValueChange={
+                                onIsSelectedItemInEditingStateValueChange
+                            }
+                            onCopyPath={itemsOnCopyPath}
+                            onDeleteItem={itemsOnDeleteItem}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+            <Dialog
+                {...(() => {
+                    const deleteWhat =
+                        deletionDialogState === undefined
+                            ? ""
+                            : t(
+                                  (() => {
+                                      switch (deletionDialogState.kind) {
+                                          case "directory":
+                                              return "directory";
+                                          case "file":
+                                              return wordForFile;
+                                      }
+                                  })(),
+                              );
+
+                    return {
+                        "title": t("deletion dialog title", { deleteWhat }),
+                        "body": t("deletion dialog body", { deleteWhat }),
+                    };
+                })()}
+                isOpen={deletionDialogState !== undefined}
+                onClose={onDeletionDialogClickFactory("cancel")}
+                doNotShowNextTimeText={t("do not display again")}
+                onDoShowNextTimeValueChange={setDoShowDeletionDialogNextTime}
+                buttons={
+                    <>
+                        <Button
+                            variant="secondary"
+                            onClick={onDeletionDialogClickFactory("cancel")}
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            autoFocus
+                            onClick={onDeletionDialogClickFactory("delete")}
+                        >
+                            {t("delete")}
+                        </Button>
+                    </>
+                }
+            />
+        </>
     );
 }
 export declare namespace Explorer {
     export type I18nScheme = {
         "untitled what": { what: string };
-        folder: undefined;
+        directory: undefined;
         file: undefined;
         secret: undefined;
+        cancel: undefined;
+        delete: undefined;
+        "deletion dialog title": { deleteWhat: string };
+        "deletion dialog body": { deleteWhat: string };
+        "do not display again": undefined;
     };
 }
 

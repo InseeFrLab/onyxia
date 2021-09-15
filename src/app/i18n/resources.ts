@@ -102,7 +102,15 @@ const common = id<
     Record<
         SupportedLanguage,
         Record<
-            "file" | "secret" | "create" | "cancel" | "rename" | "delete" | "ok" | "here",
+            | "file"
+            | "secret"
+            | "create"
+            | "cancel"
+            | "rename"
+            | "delete"
+            | "ok"
+            | "here"
+            | "do not display again",
             string
         >
     >
@@ -116,6 +124,7 @@ const common = id<
         "delete": "delete",
         "ok": "Ok",
         "here": "here",
+        "do not display again": "Don't display again",
     },
     "fr": {
         /* spell-checker: disable */
@@ -127,6 +136,7 @@ const common = id<
         "delete": "supprimer",
         "ok": "Ok",
         "here": "ici",
+        "do not display again": "Ne plus afficher",
         /* spell-checker: enable */
     },
 });
@@ -241,12 +251,16 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Explorer": {
             ...common.en,
             "untitled what": "untitled_{{what}}",
-            "folder": "folder",
+            "directory": "folder",
+            "deletion dialog title": "Delete a {{deleteWhat}} ?",
+            "deletion dialog body": `You are about to delete {{deleteWhat}}. 
+            This action can't be reverted.`,
         },
         "ExplorerItems": {
             "empty directory": "This directory is empty",
         },
         "MySecretsEditor": {
+            ...common.en,
             "add an entry": "Add a new variable",
             "environnement variable default name": "NEW_VAR",
             "table of secret": "table of secret",
@@ -275,7 +289,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 The values will be injected as environnement variable.
             `,
             "use secret dialog ok": "Got it",
-            "do not display again": "Don't display again",
         },
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
@@ -544,14 +557,18 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Explorer": {
             ...common.fr,
             "untitled what": "{{what}}_sans_nom",
-            "folder": "dossier",
+            "directory": "dossier",
+            "deletion dialog title": "Supprimer un {{deleteWhat}} ?",
+            "deletion dialog body": `
+            Vous êtes sur le point de supprimer un {{deleteWhat}}. 
+            Cette action entraînera la perte potentielle des données liées à ce {{deleteWhat}}.
+            `,
         },
         "ExplorerItems": {
             "empty directory": "Ce répertoire est vide",
         },
         "MySecretsEditor": {
             ...common.fr,
-
             "add an entry": "Ajouter une variable",
             "environnement variable default name": "NOUVELLE_VARENV",
             "table of secret": "table de secret",
@@ -580,7 +597,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
             `,
             "use secret dialog ok": "J'ai compris",
-            "do not display again": "Ne plus afficher",
         },
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
