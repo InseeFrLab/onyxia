@@ -1,6 +1,6 @@
 import { css } from "tss-react/@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { Explorer, Props } from "app/components/shared/Explorer/Explorer";
+import { Explorer, ExplorerProps } from "app/components/shared/Explorer/Explorer";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "app/tools/symToStr";
@@ -10,7 +10,7 @@ import { Evt } from "evt";
 
 function Component(
     props: Omit<
-        Props,
+        ExplorerProps,
         | "onEditedBasename"
         | "filesBeingRenamed"
         | "directoriesBeingRenamed"
@@ -64,7 +64,11 @@ function Component(
     }, [toRemoveFromBeingEdited, filesBeingRenamed, directoriesBeingRenamed]);
 
     const onEditedBasename = useCallback(
-        ({ basename, editedBasename, kind }: Parameters<Props["onEditBasename"]>[0]) => {
+        ({
+            basename,
+            editedBasename,
+            kind,
+        }: Parameters<ExplorerProps["onEditBasename"]>[0]) => {
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
                     case "directory":
@@ -105,7 +109,7 @@ function Component(
     );
 
     const onDeleteItem = useCallback(
-        ({ kind, basename }: Parameters<Props["onDeleteItem"]>[0]) => {
+        ({ kind, basename }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
             const [items, setItems] = (() => {
                 switch (kind) {
                     case "directory":
@@ -152,7 +156,7 @@ export default {
         "type": {
             "control": {
                 "type": "inline-radio",
-                "options": id<Props["type"][]>(["file", "secret"]),
+                "options": id<ExplorerProps["useCase"][]>(["file", "secret"]),
             },
         },
         "width": {
@@ -173,7 +177,7 @@ export default {
 };
 
 const props: Parameters<typeof getStory>[0] = {
-    "type": "secret",
+    "useCase": "secret",
     "browsablePath": ".onyxia",
     "currentPath": ".onyxia/this/is/a/path",
     "evtTranslation": new Evt(),

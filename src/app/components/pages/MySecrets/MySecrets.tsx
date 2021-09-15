@@ -8,7 +8,7 @@ import {
     useEvtSecretsManagerTranslation,
 } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
-import { Props as ExplorerProps } from "app/components/shared/Explorer";
+import { ExplorerProps } from "app/components/shared/Explorer";
 import { MySecretsEditor } from "./MySecretsEditor";
 import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { useTranslation } from "app/i18n/useTranslations";
@@ -59,7 +59,7 @@ export function MySecrets(props: Props) {
     const dispatch = useDispatch();
 
     const Explorer = useWithProps(SecretOrFileExplorer, {
-        "type": "secret",
+        "useCase": "secret",
         "getIsValidBasename": pure.secretExplorer.getIsValidBasename,
     });
 

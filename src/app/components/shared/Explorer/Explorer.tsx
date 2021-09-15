@@ -1,5 +1,5 @@
 import { makeStyles, Button } from "app/theme";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Props as ItemsProps } from "./ExplorerItems";
@@ -39,9 +39,9 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 
-export type Props = {
+export type ExplorerProps = {
     /** [HIGHER ORDER] */
-    type: "secret" | "file";
+    useCase: "secret" | "file";
     /** [HIGHER ORDER] */
     getIsValidBasename(params: { basename: string }): boolean;
 
@@ -114,10 +114,10 @@ const useStyles = makeStyles<{ cmdTranslationTop: number }>()(
     }),
 );
 
-export function Explorer(props: Props) {
+export const Explorer = memo((props: ExplorerProps) => {
     const {
         className,
-        type: wordForFile,
+        useCase: wordForFile,
         getIsValidBasename,
         evtTranslation,
         browsablePath,
@@ -510,7 +510,7 @@ export function Explorer(props: Props) {
             />
         </>
     );
-}
+});
 export declare namespace Explorer {
     export type I18nScheme = {
         "untitled what": { what: string };

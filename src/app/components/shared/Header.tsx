@@ -16,11 +16,11 @@ export declare namespace Props {
     };
 
     export type Keycloak = Common & {
-        type: "keycloak";
+        useCase: "keycloak";
     };
 
     export type Core = Common & {
-        type: "core";
+        useCase: "core app";
         isUserLoggedIn: boolean;
         useIsCloudShellVisible: typeof useIsCloudShellVisible;
         onAuthClick(): void;
@@ -74,7 +74,7 @@ export const Header = memo((props: Props) => {
                     "cursor": "pointer",
                 })}
             >
-                {props.type === "core" && (
+                {props.useCase === "core app" && (
                     <Text typo="section heading" className={css({ "fontWeight": 600 })}>
                         Onyxia -
                     </Text>
@@ -104,7 +104,7 @@ export const Header = memo((props: Props) => {
                     "alignItems": "center",
                 })}
             >
-                {props.type === "core" && (
+                {props.useCase === "core app" && (
                     <>
                         <ButtonBarButton
                             className={classes.button}
@@ -169,7 +169,11 @@ const { ToggleCloudShell } = (() => {
         })();
 
         return (
-            <IconButton iconId="bash" size="large" onClick={toggleCloudShellVisibility} />
+            <IconButton
+                iconId="bash"
+                size="medium"
+                onClick={toggleCloudShellVisibility}
+            />
         );
     });
 
