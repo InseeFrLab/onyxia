@@ -43,17 +43,21 @@ const useStyles = makeStyles()(theme => ({
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
     },
+    "header": {
+        "paddingBottom": 0, //For the LeftBar shadow
+    },
     "betweenHeaderAndFooter": {
         "flex": 1,
         "overflow": "hidden",
         "display": "flex",
+        "paddingTop": theme.spacing(2.2), //For the LeftBar shadow
     },
     "footer": {
         "height": 32,
     },
-
     "leftBar": {
         "height": "100%",
+        "overflow": "visible", //For the LeftBar shadow
     },
     "main": {
         "height": "100%",
@@ -170,7 +174,8 @@ export const App = memo((props: Props) => {
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
             <Header
-                type="core"
+                className={classes.header}
+                useCase="core app"
                 logoContainerWidth={logoContainerWidth}
                 isUserLoggedIn={appConstants.isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}

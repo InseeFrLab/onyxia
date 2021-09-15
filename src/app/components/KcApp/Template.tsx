@@ -189,7 +189,7 @@ export const Template = memo((props: TemplateProps) => {
         <div ref={rootRef} className={cx(classes.root, className)}>
             {windowInnerHeight > 700 && (
                 <Header
-                    type="keycloak"
+                    useCase="keycloak"
                     className={classes.header}
                     logoContainerWidth={logoContainerWidth}
                     onLogoClick={onHeaderLogoClick}

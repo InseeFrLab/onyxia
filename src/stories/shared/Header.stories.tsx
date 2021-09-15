@@ -43,7 +43,7 @@ const { useIsCloudShellVisible } = (() => {
 export const Vue1 = getStory({
     "className": css({ width, "height": 64, paddingRight }),
     "isUserLoggedIn": false,
-    "type": "core",
+    "useCase": "core app",
     useIsCloudShellVisible,
     logoContainerWidth,
     ...logCallbacks(["onLogoClick", "onAuthClick"]),
@@ -51,7 +51,7 @@ export const Vue1 = getStory({
 
 export const Vue2 = getStory({
     "className": css({ width, "height": 64, paddingRight }),
-    "type": "keycloak",
+    "useCase": "keycloak",
     logoContainerWidth,
     ...logCallbacks(["onLogoClick"]),
 });
