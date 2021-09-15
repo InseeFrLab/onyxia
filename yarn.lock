@@ -7258,6 +7258,15 @@ evt@2.0.0-beta.36:
     run-exclusive "^2.2.14"
     tsafe "^0.4.1"
 
+evt@2.0.0-beta.38:
+  version "2.0.0-beta.38"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.0.0-beta.38.tgz#9886a08889cddba1984a236efd6d352f9d6a6539"
+  integrity sha512-b35iBAVlDHVHOqgWzjSBJZu3C0GRZ/2cIHfNFuMSWwLT/WJO2n/4x7hg6BpaNJlSRywBAtf8KcU1GUyVfEhVIA==
+  dependencies:
+    minimal-polyfills "^2.2.1"
+    run-exclusive "^2.2.14"
+    tsafe "^0.4.1"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -11617,22 +11626,22 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.14.4:
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.14.4.tgz#9ed9f83dd8e998e1765fa64b008b7e910a152d5d"
-  integrity sha512-YVHibar8nJuZBvBFtdMBoFzP5868ZzdMnumzXY1M5fyAnY6JnO81Bz+EUfl/yGKPe5V84E0ruUrx4lAAdEWsog==
+onyxia-ui@^0.14.6:
+  version "0.14.6"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.14.6.tgz#a5e7c660de91dda417424da3171db508da648832"
+  integrity sha512-PDUYqmj9/hhETMQ+sz1BXWIdp6MMKCd8foVSpSlv0dRQODBnh+n/6My+yP2VbxNvCORPpiK5wOF1f2NC+77jvQ==
   dependencies:
     "@emotion/react" "^11.4.1"
     "@emotion/styled" "^11.3.0"
     "@material-ui/core" "^5.0.0-beta.4"
     "@material-ui/icons" "^5.0.0-beta.4"
     color "3.1.3"
-    evt "2.0.0-beta.36"
+    evt "2.0.0-beta.38"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
-    powerhooks "^0.9.1"
+    powerhooks "^0.9.2"
     tsafe "^0.4.1"
-    tss-react "^0.8.1"
+    tss-react "^0.9.1"
 
 open@^7.0.2, open@^7.0.3:
   version "7.4.2"
@@ -12875,6 +12884,16 @@ powerhooks@^0.9.1:
   integrity sha512-rVdo5s4EzsbjlvXjVIR1mhIqssZhluMe1oN5qFawllZxoZBwhgR1itnvpJt0La/qZMQPMfy1n52U5/U80EMKUw==
   dependencies:
     evt "2.0.0-beta.36"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^0.4.1"
+
+powerhooks@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.9.2.tgz#d889163e3f87334a20a5c83f5ef42abd1f39a85d"
+  integrity sha512-HPZLMBSajV3tUdEeyGCBXXITVON/+OcWSHOMp1GuXeiFHxyRuTMv9ApYKwbiKreV4z8MtwdXausqMBHDTOBhLg==
+  dependencies:
+    evt "2.0.0-beta.38"
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^0.4.1"
@@ -15724,6 +15743,17 @@ tss-react@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-0.8.1.tgz#8b5379aeaf6e2aba230c79c8d69ceca6d0b6fa41"
   integrity sha512-4p7hl/ogy6UeN8FlDq4wDvccpqxFFF492QSlIEBnf911dNx1mS7bLsadhFQUj5fi7yAuN4d6xZy7/GtoTub9Mw==
+  dependencies:
+    "@emotion/cache" "^11.4.0"
+    "@emotion/serialize" "^1.0.2"
+    "@emotion/server" "^11.4.0"
+    "@emotion/utils" "^1.0.0"
+    html-react-parser "^1.2.7"
+
+tss-react@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-0.9.1.tgz#5d0b5d4bf608dd049032c3f179dba56b5716ff9f"
+  integrity sha512-FxHyTq5b3YcAE7QAd10CuDBQA2X//amAzWO+2QYO/5Hygv8jb80TQKXvKgpekzO5JR5Ry8jMpc0ZkHcjgfzs3Q==
   dependencies:
     "@emotion/cache" "^11.4.0"
     "@emotion/serialize" "^1.0.2"
