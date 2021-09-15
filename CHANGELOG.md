@@ -1,3 +1,7 @@
+### **0.12.2** (2021-09-15)  
+  
+- Confirmation dialog when deleting secret    
+  
 ### **0.12.1** (2021-09-15)  
   
 - CatalogExplorer: Show more only on over    
