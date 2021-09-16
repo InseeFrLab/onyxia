@@ -1,3 +1,8 @@
+### **0.12.5** (2021-09-16)  
+  
+- App: Fix major leftbar bug  
+- MySecrets: Fix command translation    
+  
 ### **0.12.4** (2021-09-15)  
   
 - AppLayout: Fix footer shadow    
