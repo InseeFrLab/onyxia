@@ -83,8 +83,6 @@ export const CatalogExplorerCard = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    console.log("====>", classes.learnMoreButton);
-
     const { t } = useTranslation("CatalogExplorerCard");
 
     return (

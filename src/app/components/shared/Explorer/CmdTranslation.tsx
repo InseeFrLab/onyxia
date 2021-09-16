@@ -1,9 +1,7 @@
 import { makeStyles } from "app/theme";
-import { useState, useReducer, useRef, useEffect, memo } from "react";
+import { useReducer, useRef, useEffect, memo } from "react";
 import type { NonPostableEvt } from "evt";
-import { useEvt } from "evt/hooks";
-import { id } from "tsafe/id";
-import memoize from "memoizee";
+import { useEvt } from "evt/hooks/useEvt";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton } from "app/theme";
@@ -12,11 +10,18 @@ import { assert } from "tsafe/assert";
 
 export type Props = {
     className: string;
-    evtTranslation: NonPostableEvt<{
-        type: "cmd" | "result";
-        cmdId: number;
-        translation: string;
-    }>;
+    translations: {
+        evt: NonPostableEvt<{
+            type: "cmd" | "result";
+            cmdId: number;
+            translation: string;
+        }>;
+        history: readonly {
+            cmdId: number;
+            cmd: string;
+            resp: string | undefined;
+        }[];
+    };
     /** In pixel */
     maxHeight: number;
 };
@@ -120,59 +125,19 @@ const useStyles = makeStyles<Props & { headerHeight: number; isExpended: boolean
         };
     },
 );
-
 export const CmdTranslation = memo((props: Props) => {
-    const { className, evtTranslation } = props;
-
-    const [lastTranslatedCmd, setLastTranslatedCmd] = useState("");
-
-    const [getTranslationHistory] = useState(() =>
-        memoize((_evtTranslation: Props["evtTranslation"]) =>
-            id<
-                {
-                    cmdId: number;
-                    cmd: string;
-                    resp: string | undefined;
-                }[]
-            >([]),
-        ),
-    );
-
-    const translationHistory = getTranslationHistory(evtTranslation);
-
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const { className, translations } = props;
 
     useEvt(
-        ctx => {
-            evtTranslation.attach(
-                ({ type }) => type === "cmd",
-                ctx,
-                ({ cmdId, translation }) => {
-                    setLastTranslatedCmd(translation.replace(/\\\n/g, " "));
-
-                    translationHistory.push({
-                        cmdId,
-                        "cmd": translation,
-                        "resp": undefined,
-                    });
-
-                    forceUpdate();
-
-                    evtTranslation.attachOnce(
-                        translation => translation.cmdId === cmdId,
-                        ctx,
-                        ({ translation }) => {
-                            translationHistory.find(
-                                entry => entry.cmdId === cmdId,
-                            )!.resp = translation;
-
-                            forceUpdate();
-                        },
-                    );
-                },
-            );
-        },
-        [evtTranslation, translationHistory],
+        (ctx, registerSideEffect) =>
+            translations.evt.attach(ctx, () =>
+                registerSideEffect(() => {
+                    //This will trigger an update,
+                    //translations.history will have changed.
+                    //console.log(JSON.stringify(translations.history[translations.history.length -1], null, 2));
+                }),
+            ),
+        [translations.evt],
     );
 
     const {
@@ -197,7 +162,7 @@ export const CmdTranslation = memo((props: Props) => {
             "top": element.scrollHeight,
             "behavior": "smooth",
         });
-    }, [isExpended, evtTranslation.postCount]);
+    }, [isExpended, translations.evt.postCount]);
 
     //TODO: see if classes are recomputed every time because ref object changes
     const { classes } = useStyles({ ...props, headerHeight, isExpended });
@@ -209,7 +174,9 @@ export const CmdTranslation = memo((props: Props) => {
                     <Icon className="dollarSign" iconId="attachMoney" size="small" />
                 </div>
 
-                <div className={classes.lastTranslatedCmd}>{lastTranslatedCmd}</div>
+                <div className={classes.lastTranslatedCmd}>
+                    {translations.history.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
+                </div>
 
                 <IconButton
                     iconId="expandMore"
@@ -221,7 +188,7 @@ export const CmdTranslation = memo((props: Props) => {
                 ref={panelRef}
                 className={isExpended ? classes.expandedPanel : classes.collapsedPanel}
             >
-                {translationHistory.map(({ cmdId, cmd, resp }) => (
+                {translations.history.map(({ cmdId, cmd, resp }) => (
                     <div key={cmdId} className={classes.entryRoot}>
                         <div className={classes.dollarContainer}>
                             <Icon

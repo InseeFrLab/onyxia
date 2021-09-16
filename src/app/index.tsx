@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import * as reactDom from "react-dom";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes/router";
@@ -11,25 +10,23 @@ import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupp
 const { StoreProvider } = createStoreProvider({ "doMock": false });
 
 reactDom.render(
-    <StrictMode>
-        <I18nProvider>
-            <RouteProvider>
-                <ThemeProvider
-                    {...getThemeProviderProps({
-                        PortraitModeUnsupported,
-                        "doDisableViewPortAdapter": kcContext !== undefined,
-                    })}
-                >
-                    {kcContext !== undefined ? (
-                        <KcApp kcContext={kcContext} />
-                    ) : (
-                        <StoreProvider>
-                            <App />
-                        </StoreProvider>
-                    )}
-                </ThemeProvider>
-            </RouteProvider>
-        </I18nProvider>
-    </StrictMode>,
+    <I18nProvider>
+        <RouteProvider>
+            <ThemeProvider
+                {...getThemeProviderProps({
+                    PortraitModeUnsupported,
+                    "doDisableViewPortAdapter": kcContext !== undefined,
+                })}
+            >
+                {kcContext !== undefined ? (
+                    <KcApp kcContext={kcContext} />
+                ) : (
+                    <StoreProvider>
+                        <App />
+                    </StoreProvider>
+                )}
+            </ThemeProvider>
+        </RouteProvider>
+    </I18nProvider>,
     document.getElementById("root"),
 );

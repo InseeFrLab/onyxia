@@ -5,7 +5,7 @@ import { copyToClipboard } from "app/tools/copyToClipboard";
 import {
     useSelector,
     useDispatch,
-    useEvtSecretsManagerTranslation,
+    useSecretsManagerTranslations,
 } from "app/interfaceWithLib/hooks";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { ExplorerProps } from "app/components/shared/Explorer";
@@ -195,7 +195,7 @@ export function MySecrets(props: Props) {
         copyToClipboard(pathRelative(userHomePath, path));
     });
 
-    const { evtSecretsManagerTranslation } = useEvtSecretsManagerTranslation();
+    const { secretsManagerTranslations } = useSecretsManagerTranslations();
 
     const onEdit = useConstCallback((params: EditSecretParams) =>
         dispatch(thunks.secretExplorer.editCurrentlyShownSecret(params)),
@@ -286,7 +286,7 @@ export function MySecrets(props: Props) {
                 browsablePath={userHomePath}
                 currentPath={state.currentPath}
                 isNavigating={state.isNavigationOngoing}
-                evtTranslation={evtSecretsManagerTranslation}
+                translations={secretsManagerTranslations}
                 evtAction={evtButtonBarAction}
                 showHidden={false}
                 file={

@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect } from "react";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { pure } from "lib/setup";
@@ -207,14 +207,10 @@ export function useSyncDarkModeWithValueInProfile() {
     }, [isDarkModeEnabled]);
 }
 
-export function useEvtSecretsManagerTranslation() {
-    const { getEvtSecretsManagerTranslation } = useAppConstants({
+export function useSecretsManagerTranslations() {
+    const { secretsManagerTranslations } = useAppConstants({
         "assertIsUserLoggedInIs": true,
     });
 
-    const [{ evtSecretsManagerTranslation }] = useState(() =>
-        getEvtSecretsManagerTranslation(),
-    );
-
-    return { evtSecretsManagerTranslation };
+    return { secretsManagerTranslations };
 }

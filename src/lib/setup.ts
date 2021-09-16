@@ -14,7 +14,7 @@ import * as catalogExplorerUseCase from "./useCases/catalogExplorer";
 import * as runningServiceUseCase from "./useCases/runningService";
 import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageConfigs";
 import * as publicIpUseCase from "./useCases/publicIp";
-import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
+import type { SecretsManagerClientProxy } from "./ports/SecretsManagerClient";
 import { observeSecretsManagerClientWithTranslator } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
@@ -39,7 +39,9 @@ import * as user from "js/redux/user";
 import * as app from "js/redux/app";
 
 export type Dependencies = {
-    secretsManagerClient: SecretsManagerClient;
+    /** It's actually SecretManagerClient (the port) but with an extra params
+     * that tells if the command should be logged to the translator or not. */
+    secretsManagerClient: SecretsManagerClientProxy;
     evtVaultToken: StatefulReadonlyEvt<string | undefined>;
     oidcClient: OidcClient;
     onyxiaApiClient: OnyxiaApiClient;
@@ -196,7 +198,7 @@ async function createStoreForLoggedUser(
         }
     })();
 
-    const { secretsManagerClientProxy, getEvtSecretsManagerTranslation } =
+    const { secretsManagerClientProxy, secretsManagerTranslations } =
         observeSecretsManagerClientWithTranslator({
             secretsManagerClient,
             secretsManagerTranslator,
@@ -258,7 +260,7 @@ async function createStoreForLoggedUser(
 
     store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
 
-    return { store, onyxiaApiClient, getEvtSecretsManagerTranslation };
+    return { store, onyxiaApiClient, secretsManagerTranslations };
 }
 
 async function createStoreForNonLoggedUser(params: {
@@ -334,7 +336,7 @@ export async function createStore(params: CreateStoreParams) {
         }
     })();
 
-    const { store, onyxiaApiClient, getEvtSecretsManagerTranslation } =
+    const { store, onyxiaApiClient, secretsManagerTranslations } =
         await (oidcClient.isUserLoggedIn
             ? createStoreForLoggedUser({
                   oidcClient,
@@ -347,7 +349,7 @@ export async function createStore(params: CreateStoreParams) {
                       oidcClient,
                       onyxiaApiClientConfig,
                   })),
-                  "getEvtSecretsManagerTranslation": undefined,
+                  "secretsManagerTranslations": undefined,
               });
 
     dOnyxiaApiClient.resolve(onyxiaApiClient);
@@ -394,8 +396,7 @@ export async function createStore(params: CreateStoreParams) {
                           ..._common,
                           "parsedJwt": await parseOidcAccessToken(oidcClient),
                           ...(await onyxiaApiClient.getConfigurations()),
-                          "getEvtSecretsManagerTranslation":
-                              getEvtSecretsManagerTranslation!,
+                          "secretsManagerTranslations": secretsManagerTranslations!,
                           ...oidcClient,
                       })
                     : id<appConstantsUseCase.AppConstant.NotLoggedIn>({

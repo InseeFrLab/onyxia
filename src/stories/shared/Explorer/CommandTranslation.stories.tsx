@@ -7,8 +7,10 @@ import type { Props } from "app/components/shared/Explorer/CmdTranslation";
 import { symToStr } from "app/tools/symToStr";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { id } from "tsafe/id";
+import { useEvt } from "evt/hooks/useEvt";
 
-const translations: UnpackEvt<Props["evtTranslation"][]> = [
+const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
@@ -95,7 +97,7 @@ const translations: UnpackEvt<Props["evtTranslation"][]> = [
 ];
 
 function Component(
-    props: Omit<Props, "className" | "evtTranslation"> & {
+    props: Omit<Props, "className" | "translations"> & {
         width: number;
         maxHeight: number;
         /** Toggle to fire a translation event */
@@ -105,7 +107,7 @@ function Component(
     const { tick, maxHeight, width } = props;
 
     const [index, incrementIndex] = useReducer(
-        (index: number) => (index === translations.length - 1 ? index : index + 1),
+        (index: number) => (index === translationsEvents.length - 1 ? index : index + 1),
         0,
     );
 
@@ -113,11 +115,39 @@ function Component(
         incrementIndex();
     }, [tick]);
 
-    const [evtTranslation] = useState(() => Evt.create<typeof translations[number]>());
+    const [translations] = useState(() => ({
+        "evt": Evt.create<UnpackEvt<Props["translations"]["evt"]>>(),
+        "history": id<Props["translations"]["history"][number][]>([]),
+    }));
+
+    useEvt(
+        ctx =>
+            translations.evt.attach(
+                ({ type }) => type === "cmd",
+                ctx,
+                ({ cmdId, translation }) => {
+                    translations.history.push({
+                        cmdId,
+                        "cmd": translation,
+                        "resp": undefined,
+                    });
+
+                    translations.evt.attachOnce(
+                        translation => translation.cmdId === cmdId,
+                        ctx,
+                        ({ translation }) =>
+                            (translations.history.find(
+                                entry => entry.cmdId === cmdId,
+                            )!.resp = translation),
+                    );
+                },
+            ),
+        [],
+    );
 
     useEffect(() => {
-        evtTranslation.postAsyncOnceHandled(translations[index]);
-    }, [evtTranslation, index]);
+        translations.evt.postAsyncOnceHandled(translationsEvents[index]);
+    }, [index]);
 
     return (
         <CmdTranslation
@@ -125,7 +155,7 @@ function Component(
                 "border": "1px solid black",
                 width,
             })}
-            evtTranslation={evtTranslation}
+            translations={translations}
             maxHeight={maxHeight}
         />
     );

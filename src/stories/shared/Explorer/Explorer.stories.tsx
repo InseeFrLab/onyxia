@@ -180,7 +180,10 @@ const props: Parameters<typeof getStory>[0] = {
     "useCase": "secret",
     "browsablePath": ".onyxia",
     "currentPath": ".onyxia/this/is/a/path",
-    "evtTranslation": new Evt(),
+    "translations": {
+        "evt": new Evt(),
+        "history": [],
+    },
     "evtAction": new Evt(),
     "isNavigating": false,
     "showHidden": false,
