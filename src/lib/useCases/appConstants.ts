@@ -7,8 +7,7 @@ import type {
 import { assert } from "tsafe/assert";
 import type { OidcClient, ParsedJwt } from "lib/ports/OidcClient";
 
-import type { Translation } from "../ports/SecretsManagerClient";
-import type { NonPostableEvt } from "evt";
+import type { SecretsManagerTranslations } from "../ports/SecretsManagerClient";
 import type { Get_Public_Configuration } from "lib/ports/OnyxiaApiClient";
 
 export type AppConstant = AppConstant.LoggedIn | AppConstant.NotLoggedIn;
@@ -31,9 +30,7 @@ export declare namespace AppConstant {
         parsedJwt: ParsedJwt;
         regions: Get_Public_Configuration["regions"];
         build: Get_Public_Configuration["build"];
-        getEvtSecretsManagerTranslation(): {
-            evtSecretsManagerTranslation: NonPostableEvt<Translation>;
-        };
+        secretsManagerTranslations: SecretsManagerTranslations;
     } & Omit<OidcClient.LoggedIn, "evtOidcTokens">;
 
     export type NotLoggedIn = _Common & OidcClient.NotLoggedIn;

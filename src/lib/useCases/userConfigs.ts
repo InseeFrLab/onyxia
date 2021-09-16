@@ -46,6 +46,8 @@ export type UserConfigsState = {
     };
 };
 
+const doLogCommandToTranslator = false;
+
 export const name = "userConfigs";
 
 const { reducer, actions } = createSlice({
@@ -112,6 +114,7 @@ export const thunks = {
             await secretsManagerClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
                 "secret": { "value": params.value },
+                doLogCommandToTranslator,
             });
 
             dispatch(actions.changeCompleted(params));
@@ -174,6 +177,7 @@ export const privateThunks = {
                     const secretWithMetadata = await secretsManagerClient
                         .get({
                             path,
+                            doLogCommandToTranslator,
                         })
                         .catch(() => undefined);
 
@@ -194,6 +198,7 @@ export const privateThunks = {
                         await secretsManagerClient.put({
                             path,
                             "secret": { "value": userConfigs[key] },
+                            doLogCommandToTranslator,
                         });
 
                         return;

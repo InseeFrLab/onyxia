@@ -161,27 +161,20 @@ export function getVaultClientTranslator(
         | "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >,
 ): SecretsManagerTranslator {
-    const {
-        clientType,
-        engine,
-        //baseUri, oidcAccessToken, role
-    } = params;
+    const { clientType, engine, baseUri, oidcAccessToken, role } = params;
 
     switch (clientType) {
         case "CLI":
             return {
-                "initialization": [
-                    //TODO: Fix and uncomment
-                    /*
-					{
-						"cmd": `export VAULT_ADDR='${baseUri}'`,
-						"result": ""
-					},
-					{
-						"cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
-						"result": "Success! You are now authenticated!"
-					}
-					*/
+                "initialHistory": [
+                    {
+                        "cmd": `export VAULT_ADDR='${baseUri}'`,
+                        "resp": "",
+                    },
+                    {
+                        "cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
+                        "resp": "Success! You are now authenticated!",
+                    },
                 ],
                 "methods": {
                     "list": {

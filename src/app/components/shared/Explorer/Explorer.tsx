@@ -51,7 +51,7 @@ export type ExplorerProps = {
      * */
     className: string;
 
-    evtTranslation: CmdTranslationProps["evtTranslation"];
+    translations: CmdTranslationProps["translations"];
 
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
 
@@ -119,7 +119,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         className,
         useCase: wordForFile,
         getIsValidBasename,
-        evtTranslation,
+        translations,
         browsablePath,
         currentPath,
         isNavigating,
@@ -406,7 +406,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 </div>
                 <CmdTranslation
                     className={classes.cmdTranslation}
-                    evtTranslation={evtTranslation}
+                    translations={translations}
                     maxHeight={cmdTranslationMaxHeight}
                 />
                 {isCurrentPathBrowsablePathRoot ? null : (

@@ -24,6 +24,8 @@ const getMutexes = memoize((_: Dependencies) => ({
     "navigateMutex": new Mutex(),
 }));
 
+const doLogCommandToTranslator = true;
+
 export declare type SecretExplorerState =
     | SecretExplorerState.Failure
     | SecretExplorerState.ShowingDirectory
@@ -464,7 +466,10 @@ export const thunks = {
             ).navigateMutex.acquire();
 
             const listResult = await secretsManagerClient
-                .list({ "path": directoryPath })
+                .list({
+                    "path": directoryPath,
+                    doLogCommandToTranslator,
+                })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
@@ -517,7 +522,10 @@ export const thunks = {
             ).navigateMutex.acquire();
 
             const secretWithMetadata = await secretsManagerClient
-                .get({ "path": secretPath })
+                .get({
+                    "path": secretPath,
+                    doLogCommandToTranslator,
+                })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
@@ -718,7 +726,11 @@ export const thunks = {
             const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
             const error = await (kind === "secret"
-                ? secretsManagerClient.put({ path, "secret": {} })
+                ? secretsManagerClient.put({
+                      path,
+                      "secret": {},
+                      "doLogCommandToTranslator": true,
+                  })
                 : secretsManagerClientExtension.createDirectory({ path })
             ).then(
                 () => undefined,
@@ -801,7 +813,10 @@ export const thunks = {
                 getSecretsManagerClientExtension(secretsManagerClient);
 
             const error = await (kind === "secret"
-                ? secretsManagerClient.delete({ path })
+                ? secretsManagerClient.delete({
+                      path,
+                      doLogCommandToTranslator,
+                  })
                 : secretsManagerClientExtension.deleteDirectory({ path })
             ).then(
                 () => undefined,
@@ -891,6 +906,7 @@ export const thunks = {
                                     "keysOrdering": Object.keys(secret),
                                 }),
                             },
+                            doLogCommandToTranslator,
                         };
                     })(),
                 )
