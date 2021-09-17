@@ -1,3 +1,10 @@
+### **0.12.6** (2021-09-17)  
+  
+- LeftBar: Refactor  
+- Update resources
+
+fix the typing error on header : "tutories" to "tutoriels"    
+  
 ### **0.12.5** (2021-09-16)  
   
 - App: Fix major leftbar bug  
