@@ -1,3 +1,7 @@
+### **0.12.7** (2021-09-17)  
+  
+- Login: Fix remember me    
+  
 ### **0.12.6** (2021-09-17)  
   
 - LeftBar: Refactor  
