@@ -64,11 +64,6 @@ const useStyles = makeStyles()(theme => {
             "width": "100%",
             "background": "transparent",
         },
-        "leftBarWrapper": {
-            //We wrap the LeftBar bc it can't have overflow visible.
-            "height": "100%",
-            "overflow": "visible", //For the LeftBar shadow
-        },
         "leftBar": {
             "height": "100%",
         },
@@ -197,34 +192,32 @@ export const App = memo((props: Props) => {
                 onAuthClick={onHeaderAuthClick}
             />
             <section className={classes.betweenHeaderAndFooter}>
-                <div className={classes.leftBarWrapper}>
-                    <LeftBar
-                        className={classes.leftBar}
-                        collapsedWidth={logoContainerWidth}
-                        reduceText={t("reduce")}
-                        items={leftBarItems}
-                        currentItemId={(() => {
-                            switch (route.name) {
-                                case "home":
-                                    return "home";
-                                case "account":
-                                    return "account";
-                                case "catalogExplorer":
-                                    return "catalog";
-                                case "catalogLauncher":
-                                    return "catalog";
-                                case "myServices":
-                                    return "myServices";
-                                case "mySecrets":
-                                    return "mySecrets";
-                                case "myBuckets":
-                                    return "myFiles";
-                                case "myFiles":
-                                    return "myFiles";
-                            }
-                        })()}
-                    />
-                </div>
+                <LeftBar
+                    className={classes.leftBar}
+                    collapsedWidth={logoContainerWidth}
+                    reduceText={t("reduce")}
+                    items={leftBarItems}
+                    currentItemId={(() => {
+                        switch (route.name) {
+                            case "home":
+                                return "home";
+                            case "account":
+                                return "account";
+                            case "catalogExplorer":
+                                return "catalog";
+                            case "catalogLauncher":
+                                return "catalog";
+                            case "myServices":
+                                return "myServices";
+                            case "mySecrets":
+                                return "mySecrets";
+                            case "myBuckets":
+                                return "myFiles";
+                            case "myFiles":
+                                return "myFiles";
+                        }
+                    })()}
+                />
 
                 <main className={classes.main}>
                     <PageSelector route={route} />
