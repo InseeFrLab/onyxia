@@ -11626,10 +11626,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.14.6:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.14.6.tgz#a5e7c660de91dda417424da3171db508da648832"
-  integrity sha512-PDUYqmj9/hhETMQ+sz1BXWIdp6MMKCd8foVSpSlv0dRQODBnh+n/6My+yP2VbxNvCORPpiK5wOF1f2NC+77jvQ==
+onyxia-ui@^0.14.8:
+  version "0.14.8"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.14.8.tgz#127153f5ba46f1336858468dfa30609e70cb273e"
+  integrity sha512-b7DFnfiiFq25OY9kUYLvbh/Glxg0VB8hm9qjbwtiVrTZZ5ucwsy444xPWjAL7l0Vabu82JtJoqYqaOunuKWLBA==
   dependencies:
     "@emotion/react" "^11.4.1"
     "@emotion/styled" "^11.3.0"
