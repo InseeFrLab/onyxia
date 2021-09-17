@@ -273,7 +273,10 @@ export const Login = memo(
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
-                                                                defaultChecked={true}
+                                                                defaultChecked={
+                                                                    !!login.rememberMe
+                                                                }
+                                                                id="rememberMe"
                                                                 name="rememberMe"
                                                                 color="primary"
                                                             />
