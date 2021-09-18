@@ -1,3 +1,14 @@
+### **0.12.8** (2021-09-18)  
+  
+- Fix remember me  
+- Merge pull request #257 from py-b/patch-1
+
+corrections orthographiques  
+- corrections orthographiques  
+- Merge pull request #253 from InseeFrLab/marchufschmitt-patch-2-1
+
+Update CatalogLauncherConfigurationCard.tsx    
+  
 ### **0.12.7** (2021-09-17)  
   
 - Login: Fix remember me    
