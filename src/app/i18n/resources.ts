@@ -475,7 +475,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "AccountIntegrationsTab": {
             "git section title": "Configurations Git",
-            "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
+            "git section helper": `Pour vous assurer que vous apparaissiez depuis vos
             services comme l'auteur des contributions Git`,
             "gitName": "Nom d'utilisateur pour Git",
             "gitEmail": "Email pour Git",
@@ -491,7 +491,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "AccountStorageTab": {
             "credentials section title": "Connecter vos données à vos services",
             "credentials section helper":
-                "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
+                "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignées automatiquement.",
             "accessible as env":
                 "Accessible au sein de vos services en tant que la variable d'environnement",
             "init script section title":
@@ -509,7 +509,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Pour des configurations et fonctionnalités avancées de la plateforme.",
         },
         "AccountField": {
-            "copy tooltip": "Copier dans le press papier",
+            "copy tooltip": "Copier dans le presse-papier",
             "language": "Changer la langue",
             "s3 scripts": "Script d'initialisation",
             "service password": "Mot de passe pour vos services",
@@ -680,9 +680,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "should overwrite configuration dialog title":
                 "Souhaitez-vous le remplacer ?",
             "should overwrite configuration dialog subtitle":
-                "«{{friendlyName}}» exsiste déjà dans vos enregistrements.",
+                "«{{friendlyName}}» existe déjà dans vos enregistrements.",
             "should overwrite configuration dialog body":
-                "Un service enregistré du même nom exsiste déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
+                "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
             "cancel": "Annuler",
             "replace": "Remplacer",
         },
