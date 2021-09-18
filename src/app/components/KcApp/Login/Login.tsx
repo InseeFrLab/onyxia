@@ -9,7 +9,7 @@ import { makeStyles, Text } from "app/theme";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Checkbox } from "onyxia-ui/Checkbox";
 import { useSplashScreen } from "onyxia-ui";
 import { getBrowser } from "app/tools/getBrowser";
 import { useEvt } from "evt/hooks";
@@ -273,10 +273,10 @@ export const Login = memo(
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
+                                                                tabIndex={3}
                                                                 defaultChecked={
                                                                     !!login.rememberMe
                                                                 }
-                                                                id="rememberMe"
                                                                 name="rememberMe"
                                                                 color="primary"
                                                             />
