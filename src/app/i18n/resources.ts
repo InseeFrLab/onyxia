@@ -673,7 +673,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "here": "ici",
         },
         "CatalogLauncher": {
-            "no longer bookmarked dialog title": "Changements non enregistrer",
+            "no longer bookmarked dialog title": "Changements non enregistrés",
             "no longer bookmarked dialog body":
                 "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
             "ok": "Ok",
@@ -684,7 +684,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "should overwrite configuration dialog body":
                 "Un service enregistré du même nom exsiste déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
             "cancel": "Annuler",
-            "replace": "Replacer",
+            "replace": "Remplacer",
         },
         "Footer": {
             "contribute": "Contribuer au projet",
