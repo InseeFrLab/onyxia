@@ -18,7 +18,8 @@ export const VueShortVariant = getStory({
     "isShortVariant": true,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
-    link,
+    "launchLink": link,
+    "editLink": link,
     ...logCallbacks(["callback"]),
 });
 
@@ -27,7 +28,8 @@ export const VueLongVariant = getStory({
     "isShortVariant": false,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
-    link,
+    "launchLink": link,
+    "editLink": link,
     ...logCallbacks(["callback"]),
 });
 
@@ -36,6 +38,7 @@ export const VueNoLogo = getStory({
     "logoUrl": undefined,
     "isShortVariant": false,
     "friendlyName": "My RStudio a bit long",
-    link,
+    "launchLink": link,
+    "editLink": link,
     ...logCallbacks(["callback"]),
 });

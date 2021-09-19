@@ -6,6 +6,9 @@ import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
+import { getLocalStorage } from "../tools/safeLocalStorage";
+
+console.log("c'est go!!");
 
 export async function createKeycloakOidcClient(params: {
     keycloakConfig: KeycloakConfig;
@@ -13,6 +16,10 @@ export async function createKeycloakOidcClient(params: {
     const { keycloakConfig } = params;
 
     const keycloakInstance = keycloak_js(keycloakConfig);
+
+    const { evtLocallyStoredTokens } = getEvtLocallyStoredTokens();
+
+    console.log(JSON.stringify(evtLocallyStoredTokens.state, null, 2));
 
     const { origin } = window.location;
 
@@ -26,6 +33,11 @@ export async function createKeycloakOidcClient(params: {
                 "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
                 keycloakInstance,
             }),
+            /*
+            "token": evtLocallyStoredTokens.state?.accessToken,
+            "idToken": evtLocallyStoredTokens.state?.idToken,
+            "refreshToken": evtLocallyStoredTokens.state?.refreshToken
+            */
         })
         .catch((error: Error) => error);
 
@@ -41,46 +53,43 @@ export async function createKeycloakOidcClient(params: {
     };
 
     if (!isAuthenticated) {
+        evtLocallyStoredTokens.state = undefined;
+
         return id<OidcClient.NotLoggedIn>({
             "isUserLoggedIn": false,
             login,
         });
     }
 
-    assert(keycloakInstance.token !== undefined);
+    console.log(keycloakInstance.tokenParsed);
 
-    const evtLocallyStoredOidcAccessToken = Evt.create<string | undefined>(
-        keycloakInstance.token,
-    );
+    evtLocallyStoredTokens.state = {
+        "idToken": keycloakInstance.idToken!,
+        "refreshToken": keycloakInstance.refreshToken!,
+        "accessToken": keycloakInstance.token!,
+    };
 
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        "evtOidcTokens": evtLocallyStoredOidcAccessToken.pipe(oidcAccessToken =>
-            oidcAccessToken === undefined
-                ? [undefined]
-                : [
-                      {
-                          "accessToken": oidcAccessToken,
-                          "idToken": keycloakInstance.idToken!,
-                          "refreshToken": keycloakInstance.refreshToken!,
-                      },
-                  ],
-        ),
+        "evtOidcTokens": evtLocallyStoredTokens,
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
-            const { minValidity = 10 } = params ?? {};
+            const { minValidityMs = 10000 } = params ?? {};
 
-            if (evtLocallyStoredOidcAccessToken.state === undefined) {
+            if (evtLocallyStoredTokens.state === undefined) {
                 return;
             }
 
-            if (!keycloakInstance.isTokenExpired(minValidity)) {
+            if (!keycloakInstance.isTokenExpired(Math.floor(minValidityMs / 1000))) {
                 return;
             }
 
-            evtLocallyStoredOidcAccessToken.state = undefined;
+            evtLocallyStoredTokens.state = undefined;
 
             const error = await keycloakInstance.updateToken(-1).then(
-                () => undefined,
+                isRefreshed => {
+                    console.log({ isRefreshed });
+                    return undefined;
+                },
                 (error: Error) => error,
             );
 
@@ -91,7 +100,11 @@ export async function createKeycloakOidcClient(params: {
 
             assert(keycloakInstance.token !== undefined);
 
-            evtLocallyStoredOidcAccessToken.state = keycloakInstance.token;
+            evtLocallyStoredTokens.state = {
+                "idToken": keycloakInstance.idToken!,
+                "refreshToken": keycloakInstance.refreshToken!,
+                "accessToken": keycloakInstance.token!,
+            };
         },
         "logout": async ({ redirectToOrigin }) => {
             await keycloakInstance.logout({
@@ -100,19 +113,49 @@ export async function createKeycloakOidcClient(params: {
 
             return new Promise<never>(() => {});
         },
-        "getOidcTokensRemandingValidity": () =>
+        "getOidcTokensRemandingValidityMs": () =>
             (function callee(low: number, up: number): number {
                 const middle = Math.floor(low + (up - low) / 2);
 
-                if (up - low <= 3) {
+                if (up - low <= 3000) {
                     return middle;
                 }
 
                 return callee(
-                    ...(keycloakInstance.isTokenExpired(middle)
+                    ...(keycloakInstance.isTokenExpired(Math.floor(middle / 1000))
                         ? ([low, middle] as const)
                         : ([middle, up] as const)),
                 );
-            })(0, 360 * 12 * 30 * 24 * 60 * 60 /*One year*/),
+            })(0, 360 * 12 * 30 * 24 * 60 * 60 * 1000 /*One year*/),
     });
 }
+
+const getEvtLocallyStoredTokens = () => {
+    const { localStorage } = getLocalStorage();
+
+    const key = "onyxia/localStorage/user/tokens";
+
+    const evtLocallyStoredTokens = Evt.create(
+        (() => {
+            const item = localStorage.getItem(key);
+
+            return item === null
+                ? undefined
+                : (JSON.parse(item) as Readonly<{
+                      accessToken: string;
+                      idToken: string;
+                      refreshToken: string;
+                  }>);
+        })(),
+    );
+
+    evtLocallyStoredTokens.toStateless().attach(tokens => {
+        if (tokens === undefined) {
+            localStorage.removeItem(key);
+        } else {
+            localStorage.setItem(key, JSON.stringify(tokens));
+        }
+    });
+
+    return { evtLocallyStoredTokens };
+};

@@ -16,7 +16,7 @@ export async function createPhonyOidcClient(params: {
         "isUserLoggedIn": true,
         evtOidcTokens,
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
-            const { minValidity = 10 } = params ?? {};
+            const { minValidityMs = 10000 } = params ?? {};
 
             const oidcTokens = evtOidcTokens.state;
 
@@ -28,7 +28,7 @@ export async function createPhonyOidcClient(params: {
                 oidcTokens,
             });
 
-            if (!tokenStatus.isExpired && tokenStatus.expiresInMs * 1000 > minValidity) {
+            if (!tokenStatus.isExpired && tokenStatus.expiresInMs > minValidityMs) {
                 return;
             }
 
@@ -43,7 +43,7 @@ export async function createPhonyOidcClient(params: {
 
             return new Promise<never>(() => {});
         },
-        "getOidcTokensRemandingValidity": () => {
+        "getOidcTokensRemandingValidityMs": () => {
             const oidcTokens = evtOidcTokens.state;
 
             if (oidcTokens === undefined) {
@@ -51,7 +51,7 @@ export async function createPhonyOidcClient(params: {
             }
 
             const wrap = getDelayBeforeTokensExpiration({ oidcTokens });
-            return wrap.isExpired ? 0 : Math.floor(wrap.expiresInMs / 1000);
+            return wrap.isExpired ? 0 : wrap.expiresInMs;
         },
     });
 }

@@ -133,10 +133,10 @@ export function MyServices(props: Props) {
 
     const onSavedConfigsCallback = useConstCallback<
         MyServicesSavedConfigsProps["callback"]
-    >(({ linkHref, action }) => {
+    >(({ launchLinkHref, action }) => {
         switch (action) {
             case "copy link":
-                copyToClipboard(window.location.origin + linkHref);
+                copyToClipboard(window.location.origin + launchLinkHref);
                 return;
             case "delete":
                 dispatch(
@@ -146,24 +146,10 @@ export function MyServices(props: Props) {
                                 routes.catalogLauncher({
                                     ...restorablePackageConfig,
                                     "autoLaunch": true,
-                                }).href === linkHref,
+                                }).href === launchLinkHref,
                         )!.restorablePackageConfig,
                     }),
                 );
-                return;
-            case "edit":
-                routes
-                    .catalogLauncher({
-                        ...displayableConfigs.find(
-                            ({ restorablePackageConfig }) =>
-                                routes.catalogLauncher({
-                                    ...restorablePackageConfig,
-                                    "autoLaunch": true,
-                                }).href === linkHref,
-                        )!.restorablePackageConfig,
-                        "autoLaunch": false,
-                    })
-                    .push();
                 return;
         }
     });
@@ -171,14 +157,20 @@ export function MyServices(props: Props) {
     const savedConfigs = useMemo(
         (): MyServicesSavedConfigsProps["savedConfigs"] =>
             displayableConfigs.map(
-                ({ logoUrl, friendlyName, restorablePackageConfig }) => ({
-                    logoUrl,
-                    friendlyName,
-                    "link": routes.catalogLauncher({
-                        ...restorablePackageConfig,
-                        "autoLaunch": true,
-                    }).link,
-                }),
+                ({ logoUrl, friendlyName, restorablePackageConfig }) => {
+                    const buildLink = (autoLaunch: boolean) =>
+                        routes.catalogLauncher({
+                            ...restorablePackageConfig,
+                            autoLaunch,
+                        }).link;
+
+                    return {
+                        logoUrl,
+                        friendlyName,
+                        "launchLink": buildLink(true),
+                        "editLink": buildLink(false),
+                    };
+                },
             ),
         [displayableConfigs],
     );

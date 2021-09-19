@@ -23,6 +23,7 @@ import { useValidUntil } from "app/i18n/useMoment";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
 import { useLng } from "app/i18n/useLng";
+import { convertSecondsToReadableString } from "./format";
 
 export type Props<T extends string = string> =
     | Props.ServicePassword
@@ -62,8 +63,7 @@ export declare namespace Props {
         oidcAccessToken: string;
         onRequestOidcAccessTokenRenewal(): void;
         isLocked: boolean;
-        /** In seconds */
-        remainingValidity: number;
+        remainingValidityMs: number;
     } & ICopyable;
 
     export type Toggle = Common & {
@@ -347,7 +347,14 @@ export const AccountField = memo(
 
         const oidcAccessTokenExpiresWhen = useValidUntil({
             "millisecondsLeft":
-                props.type !== "OIDC Access token" ? 0 : props.remainingValidity * 1000,
+                props.type !== "OIDC Access token"
+                    ? 0
+                    : (console.log(
+                          convertSecondsToReadableString(
+                              props.remainingValidityMs / 1000,
+                          ),
+                      ),
+                      props.remainingValidityMs * 1000),
         });
 
         const helperText = (() => {
@@ -537,9 +544,19 @@ export const AccountField = memo(
                                     return null;
                                 case "OIDC Access token":
                                     return (
-                                        <IconButtonCopyToClipboard
-                                            onClick={onRequestCopy}
-                                        />
+                                        <>
+                                            <IconButton
+                                                iconId="replay"
+                                                size="small"
+                                                disabled={props.isLocked}
+                                                onClick={
+                                                    props.onRequestOidcAccessTokenRenewal
+                                                }
+                                            />
+                                            <IconButtonCopyToClipboard
+                                                onClick={onRequestCopy}
+                                            />
+                                        </>
                                     );
                                 case "reset helper dialogs":
                                     return (

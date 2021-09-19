@@ -36,10 +36,11 @@ export type Props = {
         logoUrl: string | undefined;
         friendlyName: string;
         /** link.href used as id for callback */
-        link: Link;
+        launchLink: Link;
+        editLink: Link;
     }[];
     callback: (params: {
-        linkHref: string;
+        launchLinkHref: string;
         action: "edit" | "delete" | "copy link";
     }) => void;
     onRequestToggleIsShortVariant(): void;
@@ -58,9 +59,9 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
 
     const callbackFactory = useCallbackFactory(
         (
-            [linkHref]: [string],
+            [launchLinkHref]: [string],
             [action]: [Param0<MyServicesSavedConfigProps["callback"]>],
-        ) => callback({ linkHref, action }),
+        ) => callback({ launchLinkHref, action }),
     );
 
     const { t } = useTranslation("MyServicesSavedConfigs");
@@ -84,15 +85,16 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
                             ? (...[, i]) => i < maxConfigCountInShortVariant
                             : () => true,
                     )
-                    .map(({ logoUrl, friendlyName, link }) => (
+                    .map(({ logoUrl, friendlyName, launchLink, editLink }) => (
                         <MyServicesSavedConfig
-                            key={link.href}
+                            key={launchLink.href}
                             className={classes.entry}
                             isShortVariant={isShortVariant}
                             logoUrl={logoUrl}
                             friendlyName={friendlyName}
-                            link={link}
-                            callback={callbackFactory(link.href)}
+                            launchLink={launchLink}
+                            editLink={editLink}
+                            callback={callbackFactory(launchLink.href)}
                         />
                     ))}
             </div>

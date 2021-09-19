@@ -1,7 +1,6 @@
-import { memo, useReducer } from "react";
+import { memo, useRef, useReducer } from "react";
 import { makeStyles } from "app/theme";
 import { RoundLogo } from "app/components/shared/RoundLogo";
-
 import { Button, Text } from "app/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
 import type { SavedConfigurationAction } from "./MyServicesSavedConfigOptions";
@@ -10,6 +9,7 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { IconButton } from "app/theme";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
+import { assert } from "tsafe/assert";
 
 const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
     "root": {
@@ -40,6 +40,9 @@ const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
     "linkIcon": {
         "marginRight": theme.spacing(3),
     },
+    "editIcon": {
+        "marginRight": theme.spacing(3),
+    },
 }));
 
 export type Props = {
@@ -47,12 +50,21 @@ export type Props = {
     isShortVariant: boolean;
     logoUrl: string | undefined;
     friendlyName: string;
-    link: Link;
-    callback: (action: SavedConfigurationAction) => void;
+    launchLink: Link;
+    editLink: Link;
+    callback: (action: "copy link" | "delete") => void;
 };
 
 export const MyServicesSavedConfig = memo((props: Props) => {
-    const { isShortVariant, friendlyName, logoUrl, className, link, callback } = props;
+    const {
+        isShortVariant,
+        friendlyName,
+        logoUrl,
+        className,
+        launchLink,
+        editLink,
+        callback,
+    } = props;
 
     const { classes, cx } = useStyles({ "hasLogo": logoUrl !== undefined });
 
@@ -70,6 +82,21 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         };
     }, [isDeletionScheduled]);
 
+    const editButtonRef = useRef<HTMLButtonElement>(null);
+
+    const configOptionsCallback = useConstCallback((action: SavedConfigurationAction) => {
+        switch (action) {
+            case "copy link":
+            case "delete":
+                callback(action);
+                break;
+            case "edit":
+                assert(editButtonRef.current !== null);
+                editButtonRef.current.click();
+                break;
+        }
+    });
+
     return (
         <div className={cx(classes.root, className)}>
             {!isShortVariant && (
@@ -85,22 +112,35 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                 </Text>
             </div>
             {!isShortVariant && (
-                <IconButton
-                    className={classes.linkIcon}
-                    iconId="link"
-                    onClick={onLinkClick}
-                />
+                <>
+                    <IconButton
+                        className={classes.linkIcon}
+                        iconId="link"
+                        onClick={onLinkClick}
+                    />
+                    <Button
+                        className={classes.editIcon}
+                        ref={editButtonRef}
+                        {...editLink}
+                        variant="secondary"
+                    >
+                        {t("edit")}
+                    </Button>
+                </>
             )}
-            <Button {...link} variant="secondary">
+            <Button {...launchLink} variant="secondary">
                 {t("launch")}
             </Button>
-            {isShortVariant && <MyServicesSavedConfigOptions callback={callback} />}
+            {isShortVariant && (
+                <MyServicesSavedConfigOptions callback={configOptionsCallback} />
+            )}
         </div>
     );
 });
 
 export declare namespace MyServicesSavedConfig {
     export type I18nScheme = {
+        "edit": undefined;
         "launch": undefined;
     };
 }
