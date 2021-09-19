@@ -430,6 +430,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "remove bookmark": "Delete",
         },
         "MyServicesSavedConfig": {
+            "edit": "Edit",
             "launch": "Launch",
         },
         "MyServicesSavedConfigs": {
@@ -743,6 +744,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "remove bookmark": "Supprimer",
         },
         "MyServicesSavedConfig": {
+            "edit": "Modifier",
             "launch": "Lancer",
         },
         "MyServicesSavedConfigs": {

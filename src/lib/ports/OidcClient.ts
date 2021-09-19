@@ -24,15 +24,15 @@ export declare namespace OidcClient {
         evtOidcTokens: StatefulReadonlyEvt<OidcTokens | undefined>;
 
         /** Returns number of seconds before the tokens expires */
-        getOidcTokensRemandingValidity(): number;
+        getOidcTokensRemandingValidityMs(): number;
 
         /**
-         * Renew the token if it has less than minValidity seconds left before it expires.
+         * Renew the token if it has less than minValidity ms left before it expires.
          *
-         * @param minValidity — If not specified, 10 is used.
+         * @param minValidity — If not specified, 10 000 (10 second) is used.
          */
         renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(params?: {
-            minValidity?: number;
+            minValidityMs?: number;
         }): Promise<void>;
 
         logout(params: { redirectToOrigin: boolean }): Promise<never>;

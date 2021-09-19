@@ -90,7 +90,7 @@ export const OidcAccessToken = getStory(
         "oidcAccessToken":
             "OiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYROiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYR",
         "isLocked": false,
-        "remainingValidity": 2000,
+        "remainingValidityMs": 2000,
         ...logCallbacks(["onRequestOidcAccessTokenRenewal", "onRequestCopy"]),
     }),
 );

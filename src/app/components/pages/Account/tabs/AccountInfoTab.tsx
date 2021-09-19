@@ -70,19 +70,15 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const appConstants = useAppConstants({ "assertIsUserLoggedInIs": true });
 
-    const accessTokenRemainingValidity = useMemo(
-        () => appConstants.getOidcTokensRemandingValidity(),
-
+    const accessTokenRemainingValidityMs = useMemo(
+        () => appConstants.getOidcTokensRemandingValidityMs(),
         [tokenState.oidcTokens.accessToken],
     );
 
-    const onRequestOidcAccessTokenRenewal = useConstCallback(
-        () => console.log("TODO: Trigger login"),
-        /*
-        appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired(
-            { "minValidity": Infinity }
-        )
-        */
+    const onRequestOidcAccessTokenRenewal = useConstCallback(() =>
+        appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired({
+            "minValidityMs": Infinity,
+        }),
     );
 
     const { classes } = useStyles();
@@ -138,7 +134,7 @@ export const AccountInfoTab = memo((props: Props) => {
             <AccountField
                 type="OIDC Access token"
                 isLocked={tokenState.areTokensBeingRefreshed}
-                remainingValidity={accessTokenRemainingValidity}
+                remainingValidityMs={accessTokenRemainingValidityMs}
                 oidcAccessToken={smartTrim({
                     "maxLength": 50,
                     "minCharAtTheEnd": 20,

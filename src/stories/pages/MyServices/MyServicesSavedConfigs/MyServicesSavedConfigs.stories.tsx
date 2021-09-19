@@ -17,11 +17,18 @@ export default meta;
 const props: Props = {
     "className": css({ "width": 300 }),
     "isShortVariant": true,
-    "savedConfigs": [1, 2, 3, 4, 5, 6, 7].map(i => ({
-        "logoUrl": rstudioImgUrl,
-        "friendlyName": `RStudio ${i}`,
-        "link": { "href": `https://example.com/${i}`, "onClick": () => {} },
-    })),
+    "savedConfigs": [1, 2, 3, 4, 5, 6, 7].map(i => {
+        const link = { "href": `https://example.com/${i}`, "onClick": () => {} };
+
+        const out = {
+            "launchLink": link,
+            "editLink": link,
+            "logoUrl": rstudioImgUrl,
+            "friendlyName": `RStudio ${i}`,
+        };
+
+        return out;
+    }),
     ...logCallbacks(["callback", "onRequestToggleIsShortVariant"]),
 };
 
