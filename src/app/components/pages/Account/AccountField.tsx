@@ -23,7 +23,6 @@ import { useValidUntil } from "app/i18n/useMoment";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
 import { useLng } from "app/i18n/useLng";
-import { convertSecondsToReadableString } from "./format";
 
 export type Props<T extends string = string> =
     | Props.ServicePassword
@@ -347,14 +346,7 @@ export const AccountField = memo(
 
         const oidcAccessTokenExpiresWhen = useValidUntil({
             "millisecondsLeft":
-                props.type !== "OIDC Access token"
-                    ? 0
-                    : (console.log(
-                          convertSecondsToReadableString(
-                              props.remainingValidityMs / 1000,
-                          ),
-                      ),
-                      props.remainingValidityMs * 1000),
+                props.type !== "OIDC Access token" ? 0 : props.remainingValidityMs * 1000,
         });
 
         const helperText = (() => {
