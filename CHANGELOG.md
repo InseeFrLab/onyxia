@@ -1,3 +1,7 @@
+### **0.12.9** (2021-09-20)  
+  
+- Saved Configuration: Saved services in expaded mode    
+  
 ### **0.12.8** (2021-09-18)  
   
 - Fix remember me  
