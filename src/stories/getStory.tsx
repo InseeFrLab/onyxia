@@ -21,7 +21,7 @@ import type { SupportedLanguage } from "app/i18n/resources";
 import { RouteProvider } from "app/routes/router";
 import { useLng } from "app/i18n/useLng";
 
-const { StoreProvider } = createStoreProvider({ "doMock": true });
+const { StoreProvider } = createStoreProvider({ "isStorybook": true });
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;

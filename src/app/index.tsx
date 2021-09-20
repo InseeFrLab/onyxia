@@ -6,8 +6,11 @@ import { ThemeProvider, getThemeProviderProps } from "./theme";
 import { App } from "app/components/App";
 import { KcApp, kcContext } from "app/components/KcApp";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
+import { validateEnvs } from "validateEnv";
 
-const { StoreProvider } = createStoreProvider({ "doMock": false });
+validateEnvs();
+
+const { StoreProvider } = createStoreProvider({ "isStorybook": false });
 
 reactDom.render(
     <I18nProvider>

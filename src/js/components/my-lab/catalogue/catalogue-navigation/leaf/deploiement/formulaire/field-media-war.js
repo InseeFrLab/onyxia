@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import getMinioApi from 'js/minio-client/minio-api';
 import { getMinioClient } from "js/minio-client/minio-client";
-import { getValidatedEnv } from 'app/validatedEnv';
+import { getValidatedEnv } from 'js/validatedEnv';
 import { HidablePane } from 'js/components/commons/HidablePane';
 
 class SelectWarField extends React.Component {

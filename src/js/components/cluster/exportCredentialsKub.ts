@@ -1,4 +1,4 @@
-import { getValidatedEnv } from "app/validatedEnv";
+import { getValidatedEnv } from "js/validatedEnv";
 
 const env = getValidatedEnv();
 
