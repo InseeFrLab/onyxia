@@ -2,13 +2,11 @@ import type { OidcClient } from "../ports/OidcClient";
 import keycloak_js from "keycloak-js";
 import type { KeycloakConfig } from "keycloak-js";
 import { id } from "tsafe/id";
-import { Evt } from "evt";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { getLocalStorage } from "../tools/safeLocalStorage";
-
-console.log("c'est go!!");
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
 
 export async function createKeycloakOidcClient(params: {
     keycloakConfig: KeycloakConfig;
@@ -16,10 +14,6 @@ export async function createKeycloakOidcClient(params: {
     const { keycloakConfig } = params;
 
     const keycloakInstance = keycloak_js(keycloakConfig);
-
-    const { evtLocallyStoredTokens } = getEvtLocallyStoredTokens();
-
-    console.log(JSON.stringify(evtLocallyStoredTokens.state, null, 2));
 
     const { origin } = window.location;
 
@@ -33,11 +27,6 @@ export async function createKeycloakOidcClient(params: {
                 "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
                 keycloakInstance,
             }),
-            /*
-            "token": evtLocallyStoredTokens.state?.accessToken,
-            "idToken": evtLocallyStoredTokens.state?.idToken,
-            "refreshToken": evtLocallyStoredTokens.state?.refreshToken
-            */
         })
         .catch((error: Error) => error);
 
@@ -53,29 +42,27 @@ export async function createKeycloakOidcClient(params: {
     };
 
     if (!isAuthenticated) {
-        evtLocallyStoredTokens.state = undefined;
-
         return id<OidcClient.NotLoggedIn>({
             "isUserLoggedIn": false,
             login,
         });
     }
 
-    console.log(keycloakInstance.tokenParsed);
-
-    evtLocallyStoredTokens.state = {
+    const evtOidcTokens = Evt.create<
+        UnpackEvt<OidcClient.LoggedIn["evtOidcTokens"]> | undefined
+    >({
         "idToken": keycloakInstance.idToken!,
         "refreshToken": keycloakInstance.refreshToken!,
         "accessToken": keycloakInstance.token!,
-    };
+    } as const);
 
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        "evtOidcTokens": evtLocallyStoredTokens,
+        evtOidcTokens,
         "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
             const { minValidityMs = 10000 } = params ?? {};
 
-            if (evtLocallyStoredTokens.state === undefined) {
+            if (evtOidcTokens.state === undefined) {
                 return;
             }
 
@@ -83,7 +70,7 @@ export async function createKeycloakOidcClient(params: {
                 return;
             }
 
-            evtLocallyStoredTokens.state = undefined;
+            evtOidcTokens.state = undefined;
 
             const error = await keycloakInstance.updateToken(-1).then(
                 isRefreshed => {
@@ -100,7 +87,7 @@ export async function createKeycloakOidcClient(params: {
 
             assert(keycloakInstance.token !== undefined);
 
-            evtLocallyStoredTokens.state = {
+            evtOidcTokens.state = {
                 "idToken": keycloakInstance.idToken!,
                 "refreshToken": keycloakInstance.refreshToken!,
                 "accessToken": keycloakInstance.token!,
@@ -129,33 +116,3 @@ export async function createKeycloakOidcClient(params: {
             })(0, 360 * 12 * 30 * 24 * 60 * 60 * 1000 /*One year*/),
     });
 }
-
-const getEvtLocallyStoredTokens = () => {
-    const { localStorage } = getLocalStorage();
-
-    const key = "onyxia/localStorage/user/tokens";
-
-    const evtLocallyStoredTokens = Evt.create(
-        (() => {
-            const item = localStorage.getItem(key);
-
-            return item === null
-                ? undefined
-                : (JSON.parse(item) as Readonly<{
-                      accessToken: string;
-                      idToken: string;
-                      refreshToken: string;
-                  }>);
-        })(),
-    );
-
-    evtLocallyStoredTokens.toStateless().attach(tokens => {
-        if (tokens === undefined) {
-            localStorage.removeItem(key);
-        } else {
-            localStorage.setItem(key, JSON.stringify(tokens));
-        }
-    });
-
-    return { evtLocallyStoredTokens };
-};
