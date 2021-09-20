@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core/";
 import { Clear, Home } from "@material-ui/icons";
 import { BecherIcon, CatalogueIcon, PokerHandIcon } from "js/components/commons/icons";
-import { getValidatedEnv } from "app/validatedEnv";
+import { getValidatedEnv } from "js/validatedEnv";
 import D from "js/i18n";
 
 import { useIsBetaModeEnabled, useSelectedRegion } from "app/interfaceWithLib/hooks";

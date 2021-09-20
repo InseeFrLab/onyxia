@@ -2,7 +2,7 @@ import Typography from "@material-ui/core/Typography";
 import { Button, Icon } from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import "./footer.scss";
-import { getValidatedEnv } from "app/validatedEnv";
+import { getValidatedEnv } from "js/validatedEnv";
 
 const env = getValidatedEnv();
 

@@ -7,7 +7,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
-import { getValidatedEnv } from "app/validatedEnv";
+import { getEnv } from "env";
 import { urlJoin } from "url-join-ts";
 import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -47,14 +47,6 @@ export const AccountInfoTab = memo((props: Props) => {
     useEffect(() => {
         dispatch(publicIpThunks.fetch());
     }, []);
-
-    //We make the assumption that if we use OIDC we are using keycloak
-    //...which is not necessarily the case.
-    const keycloakConfig = (() => {
-        const { AUTHENTICATION } = getValidatedEnv();
-
-        return AUTHENTICATION.TYPE !== "oidc" ? undefined : AUTHENTICATION.OIDC;
-    })();
 
     const userServicePasswordState = useSelector(
         state => state.userConfigs.userServicePassword,
@@ -104,13 +96,13 @@ export const AccountInfoTab = memo((props: Props) => {
                 text={parsedJwt.email}
                 onRequestCopy={onRequestCopyFactory(parsedJwt.email)}
             />
-            {keycloakConfig !== undefined && (
+            {getEnv().OIDC_URL !== "" && (
                 <Link
                     className={classes.link}
                     href={urlJoin(
-                        keycloakConfig.url,
+                        getEnv().OIDC_URL,
                         "realms",
-                        keycloakConfig.realm,
+                        getEnv().OIDC_REALM,
                         "account/password",
                     )}
                     target="_blank"

@@ -4,7 +4,7 @@ import { Fab, IconButton, Icon } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Next, CarteMask } from './../vignette-commons';
 import { MinioIcon, GitlabIcon } from 'js/components/commons/icons';
-import { getValidatedEnv } from "app/validatedEnv";
+import { getValidatedEnv } from "js/validatedEnv";
 import D from 'js/i18n';
 
 export default {

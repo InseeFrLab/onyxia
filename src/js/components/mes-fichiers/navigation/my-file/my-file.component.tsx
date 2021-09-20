@@ -9,7 +9,7 @@ import Details from "./details.component";
 import * as minioTools from "js/minio-client/minio-tools";
 import * as minioPolicy from "js/minio-client/minio-policy";
 import { MyPolicy } from "../my-policy.component";
-import { getValidatedEnv } from "app/validatedEnv";
+import { getValidatedEnv } from "js/validatedEnv";
 import "./my-file.scss";
 import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";

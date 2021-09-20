@@ -73,10 +73,7 @@ export async function createKeycloakOidcClient(params: {
             evtOidcTokens.state = undefined;
 
             const error = await keycloakInstance.updateToken(-1).then(
-                isRefreshed => {
-                    console.log({ isRefreshed });
-                    return undefined;
-                },
+                () => undefined,
                 (error: Error) => error,
             );
 
