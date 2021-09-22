@@ -70,9 +70,7 @@ function useMonitoringUrl(params: { serviceId: string }) {
     const idep = (function useClosure() {
         const appConstants = useAppConstants();
 
-        return appConstants.isUserLoggedIn
-            ? appConstants.parsedJwt.preferred_username
-            : undefined;
+        return appConstants.isUserLoggedIn ? appConstants.parsedJwt.username : undefined;
     })();
 
     const monitoringUrl = monitoringURLPattern

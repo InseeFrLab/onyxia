@@ -506,7 +506,7 @@ export const thunks = {
                 const { parsedJwt, vaultClientConfig } = appConstants;
 
                 const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
-                    "preferred_username": parsedJwt.preferred_username,
+                    "username": parsedJwt.username,
                 });
 
                 const userConfigs = userConfigsStateToUserConfigs(getState().userConfigs);
@@ -514,14 +514,14 @@ export const thunks = {
                 const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams =
                     {
                         "user": {
-                            "idep": parsedJwt.preferred_username,
-                            "name": `${parsedJwt.family_name} ${parsedJwt.given_name}`,
+                            "idep": parsedJwt.username,
+                            "name": `${parsedJwt.familyName} ${parsedJwt.firstName}`,
                             "email": parsedJwt.email,
                             "password": userConfigs.userServicePassword,
                             "ip": publicIp,
                         },
                         "project": {
-                            "id": parsedJwt.preferred_username,
+                            "id": parsedJwt.username,
                             "password": userConfigs.userServicePassword,
                         },
                         "git": {
@@ -540,7 +540,7 @@ export const thunks = {
                         "kaggleApiToken": userConfigs.kaggleApiToken,
                         "s3": {
                             ...s3,
-                            "AWS_BUCKET_NAME": parsedJwt.preferred_username,
+                            "AWS_BUCKET_NAME": parsedJwt.username,
                         },
                     };
 

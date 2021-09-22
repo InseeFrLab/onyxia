@@ -2,6 +2,7 @@ import type { StatefulReadonlyEvt } from "evt";
 import { nonNullable } from "evt";
 import * as jwtSimple from "jwt-simple";
 import type { KcLanguageTag } from "keycloakify";
+import { getEnv } from "env";
 
 export type OidcTokens = Readonly<{
     accessToken: string;
@@ -41,6 +42,34 @@ export declare namespace OidcClient {
 
 export type ParsedJwt = {
     email: string;
+    familyName: string; //Obama
+    firstName: string; //Barack
+    username: string; //obarack, the idep
+    groups: string[];
+    kcLanguageTag: KcLanguageTag;
+};
+
+export async function parseOidcAccessToken(
+    oidcClient: Pick<OidcClient.LoggedIn, "evtOidcTokens">,
+): Promise<ParsedJwt> {
+    const obj: Record<string, any> = jwtSimple.decode(
+        (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
+        "",
+        true,
+    );
+
+    return {
+        "email": obj[getEnv().OIDC_EMAIL_CLAIM] ?? "",
+        "familyName": obj[getEnv().OIDC_FAMILY_NAME_CLAIM] ?? "",
+        "firstName": obj[getEnv().OIDC_FIRST_NAME_CLAIM] ?? "",
+        "username": obj[getEnv().OIDC_USERNAME_CLAIM] ?? "",
+        "groups": obj[getEnv().OIDC_GROUPS_CLAIM] ?? [],
+        "kcLanguageTag": obj[getEnv().OIDC_LOCALE_CLAIM] ?? "en",
+    };
+}
+
+export type ParsedJwt_Legacy = {
+    email: string;
     family_name: string; //Obama
     given_name: string; //Barack
     preferred_username: string; //obarack, the idep
@@ -48,17 +77,17 @@ export type ParsedJwt = {
     locale: KcLanguageTag;
 };
 
-export async function parseOidcAccessToken(
+export async function parseOidcAccessToken_legacy(
     oidcClient: Pick<
         OidcClient.LoggedIn,
         "evtOidcTokens" | "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired"
     >,
-): Promise<ParsedJwt> {
+): Promise<ParsedJwt_Legacy> {
     const parsedJwt = jwtSimple.decode(
         (await oidcClient.evtOidcTokens.waitFor(nonNullable())).accessToken,
         "",
         true,
-    ) as ParsedJwt;
+    ) as ParsedJwt_Legacy;
 
     return parsedJwt;
 }

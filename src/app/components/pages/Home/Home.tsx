@@ -96,7 +96,7 @@ export function Home(props: Props) {
                     <Text typo="display heading">
                         {appConstants.isUserLoggedIn
                             ? t("welcome", {
-                                  "who": appConstants.parsedJwt.given_name,
+                                  "who": appConstants.parsedJwt.firstName,
                               })
                             : t("title")}
                     </Text>

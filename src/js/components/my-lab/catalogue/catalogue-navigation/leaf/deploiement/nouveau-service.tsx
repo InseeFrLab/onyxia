@@ -242,7 +242,7 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
                         <Formulaire
                             user={{
                                 "idep": appConstants.isUserLoggedIn
-                                    ? appConstants.parsedJwt.preferred_username
+                                    ? appConstants.parsedJwt.username
                                     : "",
                             }}
                             name={ongletContent.nom}

@@ -36,7 +36,11 @@ export function createOfficialOnyxiaApiClient(params: {
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getPublicIp": memoize(() =>
-            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => data.ip),
+            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => {
+                console.log("user info: ", JSON.stringify(data, null, 2));
+
+                return data.ip;
+            }),
         ),
         "getConfigurations": memoize(
             () =>

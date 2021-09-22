@@ -65,11 +65,9 @@ export function useSelectedRegion() {
 
 export function useSecretExplorerUserHomePath() {
     const {
-        parsedJwt: { preferred_username },
+        parsedJwt: { username },
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
-    const secretExplorerUserHomePath = pure.secretExplorer.getUserHomePath({
-        preferred_username,
-    });
+    const secretExplorerUserHomePath = pure.secretExplorer.getUserHomePath({ username });
     return { secretExplorerUserHomePath };
 }
 
@@ -148,12 +146,12 @@ export function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        const { locale } = appConstants.parsedJwt;
+        const { kcLanguageTag } = appConstants.parsedJwt;
 
         if (
             !typeGuard<SupportedLanguage>(
-                locale,
-                locale in
+                kcLanguageTag,
+                kcLanguageTag in
                     id<Record<SupportedLanguage, null>>({
                         "en": null,
                         "fr": null,
@@ -163,7 +161,7 @@ export function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        setLng(locale);
+        setLng(kcLanguageTag);
     }, []);
 }
 

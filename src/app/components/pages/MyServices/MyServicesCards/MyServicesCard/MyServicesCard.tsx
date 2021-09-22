@@ -73,7 +73,6 @@ export const MyServicesCard = memo((props: Props) => {
         packageIconUrl,
         friendlyName,
         packageName,
-        infoUrl,
         onRequestDelete,
         onRequestShowPostInstallInstructions,
         monitoringUrl,
@@ -123,11 +122,12 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                 </div>
                 <div className={classes.belowDividerBottom}>
+                    {/* TODO: Restore
                     <IconButton
                         iconId="infoOutlined"
                         doOpenNewTabIfHref={false}
                         href={infoUrl}
-                    />
+                    />*/}
                     <IconButton iconId="delete" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />
