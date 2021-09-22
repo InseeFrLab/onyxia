@@ -6,6 +6,11 @@ import { ThemeProvider, getThemeProviderProps } from "./theme";
 import { App } from "app/components/App";
 import { KcApp, kcContext } from "app/components/KcApp";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
+import { validateEnvs } from "validateEnv";
+
+if (kcContext === undefined) {
+    validateEnvs();
+}
 
 const { StoreProvider } = createStoreProvider({ "isStorybook": false });
 

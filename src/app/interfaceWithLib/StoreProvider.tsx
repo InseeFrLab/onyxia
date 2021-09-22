@@ -12,12 +12,9 @@ import type {
 } from "lib/setup";
 import { getEnv } from "env";
 import * as mockData from "./mockData";
-import { validateEnvs } from "validateEnv";
 
 export function createStoreProvider(params: { isStorybook: boolean }) {
     const { isStorybook } = params;
-
-    validateEnvs();
 
     //NOTE: Create store can only be called once
     const createStore_memo = memoize(
