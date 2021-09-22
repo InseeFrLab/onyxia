@@ -1,3 +1,8 @@
+## **0.13.0** (2021-09-22)  
+  
+- Cleanup ENV needed to start the app  
+- Cleanup the envs    
+  
 ### **0.12.9** (2021-09-20)  
   
 - Saved Configuration: Saved services in expaded mode    
