@@ -65,7 +65,7 @@ export function MonCompte() {
         <LegacyThemeProvider>
             <div className="en-tete">
                 <Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-                    {D.hello} {parsedJwt.given_name}
+                    {D.hello} {parsedJwt.firstName}
                 </Typography>
             </div>
             <FilDAriane fil={fil.monCompte} />
@@ -155,15 +155,11 @@ export function MonCompte() {
                         <Typography variant="h3" align="left">
                             {D.user}
                         </Typography>
-                        <CopyableField
-                            copy
-                            label="Idep"
-                            value={parsedJwt.preferred_username}
-                        />
+                        <CopyableField copy label="Idep" value={parsedJwt.username} />
                         <CopyableField
                             copy
                             label="Nom complet"
-                            value={parsedJwt.family_name + " " + parsedJwt.given_name}
+                            value={parsedJwt.familyName + " " + parsedJwt.firstName}
                         />
                         <CopyableField copy label="Email" value={parsedJwt.email} />
                         <CopyableField copy label="IP" value={publicIp ?? "0.0.0.0"} />

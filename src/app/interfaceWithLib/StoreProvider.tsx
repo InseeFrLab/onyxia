@@ -27,11 +27,11 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                               "tokenValidityDurationMs": Infinity,
                               "parsedJwt": {
                                   "email": "john.doe@insee.fr",
-                                  "preferred_username": "jdoe",
-                                  "family_name": "Doe",
-                                  "given_name": "John",
+                                  "username": "jdoe",
+                                  "familyName": "Doe",
+                                  "firstName": "John",
                                   "groups": ["sspcloud-admin", "dsi-ddc"],
-                                  "locale": "en",
+                                  "kcLanguageTag": "en",
                               },
                           })
                         : id<OidcClientConfig.Keycloak>({

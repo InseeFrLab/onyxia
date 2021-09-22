@@ -20,7 +20,7 @@ export type BuildMustacheViewParams = {
     publicIp: string;
     parsedJwt: Pick<
         AppConstant.LoggedIn["parsedJwt"],
-        "preferred_username" | "email" | "family_name" | "given_name"
+        "username" | "email" | "familyName" | "firstName"
     >;
     secretExplorerUserHomePath: string;
     userConfigs: UserConfigs;
@@ -45,8 +45,8 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 
     return {
         "user": {
-            "idep": parsedJwt.preferred_username,
-            "name": `${parsedJwt.family_name} ${parsedJwt.given_name}`,
+            "idep": parsedJwt.username,
+            "name": `${parsedJwt.familyName} ${parsedJwt.firstName}`,
             "email": parsedJwt.email,
             "password": userConfigs.userServicePassword,
             "key": "https://example.com/placeholder.gpg",
@@ -73,7 +73,7 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
         "kaggleApiToken": userConfigs.kaggleApiToken,
         "s3": {
             ...s3,
-            "AWS_BUCKET_NAME": parsedJwt.preferred_username,
+            "AWS_BUCKET_NAME": parsedJwt.username,
         },
     };
 };

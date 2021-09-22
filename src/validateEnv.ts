@@ -10,8 +10,6 @@ export function validateEnvs() {
     }
 
     if (env.OIDC_URL !== "") {
-        assert(env.OIDC_CLIENT_ID !== "");
         assert(env.OIDC_REALM !== "");
-        assert(env.OIDC_ONYXIA_USERNAME_CLAIM !== "");
     }
 }

@@ -146,7 +146,7 @@ export const thunks = {
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const { selectedRegion, preferred_username } = (() => {
+                const { selectedRegion, username } = (() => {
                     const appConstants = dispatch(appConstantsThunks.getAppConstants());
 
                     assert(appConstants.isUserLoggedIn);
@@ -158,16 +158,16 @@ export const thunks = {
                         ({ id }) => id === deploymentRegionId,
                     )!;
 
-                    const { preferred_username } = appConstants.parsedJwt;
+                    const { username } = appConstants.parsedJwt;
 
-                    return { selectedRegion, preferred_username };
+                    return { selectedRegion, username };
                 })();
 
                 const namespacePrefix = selectedRegion.services.namespacePrefix;
 
                 return selectedRegion.services.monitoring?.URLPattern?.replace(
                     "$NAMESPACE",
-                    `${namespacePrefix}${preferred_username}`,
+                    `${namespacePrefix}${username}`,
                 ).replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 

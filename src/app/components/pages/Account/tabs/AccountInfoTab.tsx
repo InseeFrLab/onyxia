@@ -56,7 +56,7 @@ export const AccountInfoTab = memo((props: Props) => {
         dispatch(thunks.userConfigs.renewUserServicePassword()),
     );
 
-    const fullName = `${parsedJwt.given_name} ${parsedJwt.family_name}`;
+    const fullName = `${parsedJwt.firstName} ${parsedJwt.familyName}`;
 
     const tokenState = useSelector(state => state.tokens);
 
@@ -81,8 +81,8 @@ export const AccountInfoTab = memo((props: Props) => {
             <AccountField
                 type="text"
                 title={t("user id")}
-                text={parsedJwt.preferred_username}
-                onRequestCopy={onRequestCopyFactory(parsedJwt.preferred_username)}
+                text={parsedJwt.username}
+                onRequestCopy={onRequestCopyFactory(parsedJwt.username)}
             />
             <AccountField
                 type="text"

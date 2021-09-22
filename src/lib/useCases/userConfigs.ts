@@ -103,12 +103,12 @@ export const thunks = {
                 return;
             }
 
-            const { preferred_username } = await parseOidcAccessToken(oidcClient);
+            const { username } = await parseOidcAccessToken(oidcClient);
 
             dispatch(actions.changeStarted(params));
 
             const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({
-                preferred_username,
+                username,
             });
 
             await secretsManagerClient.put({
@@ -148,17 +148,15 @@ export const privateThunks = {
 
             assert(oidcClient.isUserLoggedIn);
 
-            const { preferred_username, email } = await parseOidcAccessToken(oidcClient);
+            const { username, email } = await parseOidcAccessToken(oidcClient);
 
-            const { getConfigKeyPath } = getConfigKeyPathFactory({
-                preferred_username,
-            });
+            const { getConfigKeyPath } = getConfigKeyPathFactory({ username });
 
             //Default values
             const userConfigs: UserConfigs = {
                 "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
-                "gitName": preferred_username,
+                "gitName": username,
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
@@ -218,13 +216,13 @@ const generatePassword = () =>
         .map(() => Math.random().toString(36).slice(-10))
         .join("");
 
-const getConfigKeyPathFactory = (params: { preferred_username: string }) => {
-    const { preferred_username } = params;
+const getConfigKeyPathFactory = (params: { username: string }) => {
+    const { username } = params;
 
     const getConfigKeyPath = (params: { key: keyof UserConfigs }) => {
         const { key } = params;
 
-        return pathJoin(preferred_username, ".onyxia", key);
+        return pathJoin(username, ".onyxia", key);
     };
 
     return { getConfigKeyPath };

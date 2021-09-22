@@ -1027,8 +1027,8 @@ export const pure = {
         const { basename } = params;
         return basename !== "" && !basename.includes(" ");
     },
-    "getUserHomePath": (params: { preferred_username: string }): string => {
-        const { preferred_username } = params;
-        return pathJoin("/", preferred_username);
+    "getUserHomePath": (params: { username: string }): string => {
+        const { username } = params;
+        return pathJoin("/", username);
     },
 };

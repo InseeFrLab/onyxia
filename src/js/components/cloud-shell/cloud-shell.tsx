@@ -40,7 +40,7 @@ interface CloudShellData {
 
 export const CloudShell = memo(() => {
     const {
-        parsedJwt: { preferred_username },
+        parsedJwt: { username: preferred_username },
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
     const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(
         undefined,

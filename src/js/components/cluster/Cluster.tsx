@@ -21,7 +21,7 @@ const EnTete = () => (
 const Cluster = () => {
     const oidcAccessToken = useSelector(state => state.tokens.oidcTokens.accessToken);
     const {
-        parsedJwt: { preferred_username },
+        parsedJwt: { username: preferred_username },
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
 
     return (
