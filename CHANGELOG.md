@@ -1,3 +1,7 @@
+### **0.13.1** (2021-09-22)  
+  
+- Fix previous build    
+  
 ## **0.13.0** (2021-09-22)  
   
 - Cleanup ENV needed to start the app  
