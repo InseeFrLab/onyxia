@@ -18,6 +18,8 @@ import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
+import { getEnv } from "env";
+import { symToStr } from "tsafe/symToStr";
 
 export function createOfficialOnyxiaApiClient(params: {
     baseUrl: string;
@@ -294,6 +296,20 @@ function createAxiosInstance(
             },
         );
     }
+
+    axiosInstance.interceptors.response.use(res => {
+        assert(
+            res.status !== 404 && res.headers["content-type"] === "application/json",
+            [
+                `There isn't an onyxia-api hosted at ${baseUrl}`,
+                `Check the ${(() => {
+                    const { ONYXIA_API_URL } = getEnv();
+                    return symToStr({ ONYXIA_API_URL });
+                })()} environnement variable you provided with docker run.`,
+            ].join(" "),
+        );
+        return res;
+    });
 
     if (getCurrentlySelectedDeployRegionId !== null) {
         axiosInstance.interceptors.request.use(config => {
