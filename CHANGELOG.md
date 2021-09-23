@@ -1,3 +1,7 @@
+### **0.13.3** (2021-09-23)  
+  
+- Provide meaningfull error message when no url for onyxia-api provided    
+  
 ### **0.13.2** (2021-09-22)  
   
 - Fix previous build    
