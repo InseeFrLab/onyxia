@@ -60,9 +60,9 @@ export async function getMinioToken() {
         const store = await import("lib/setup").then(({ prStore }) => prStore);
 
         const credentials = {
-            "accessKey": "<S3 accessKey>",
-            "secretAccessKey": "<S3 secretAccessKey>",
-            "sessionToken": "<S3 Session token>",
+            "accessKey": "",
+            "secretAccessKey": "",
+            "sessionToken": "",
             "expiration": "99999999999",
         };
 
