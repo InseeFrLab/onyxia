@@ -1,3 +1,8 @@
+## **0.14.0** (2021-09-29)  
+  
+- Feat: Pop without MINIO (dirty)  
+- Update Bash Icon    
+  
 ### **0.13.3** (2021-09-23)  
   
 - Provide meaningfull error message when no url for onyxia-api provided    
