@@ -55,6 +55,22 @@ export async function getMinioToken() {
     const { actions } = await import("js/redux/legacyActions");
     const store = await import("lib/setup").then(({ prStore }) => prStore);
 
+    if (!getValidatedEnv().MINIO.END_POINT) {
+        const { actions } = await import("js/redux/legacyActions");
+        const store = await import("lib/setup").then(({ prStore }) => prStore);
+
+        const credentials = {
+            "accessKey": "<S3 accessKey>",
+            "secretAccessKey": "<S3 secretAccessKey>",
+            "sessionToken": "<S3 Session token>",
+            "expiration": "99999999999",
+        };
+
+        store.dispatch(actions.newS3Credentials(credentials));
+
+        return credentials;
+    }
+
     const { s3 } = store.getState().user;
 
     if (
@@ -80,10 +96,16 @@ export async function getMinioToken() {
 /** Get an instance of Minio.Client, only instantiated the first time */
 export const getMinioClient = memoize(
     async () => {
+        const minioEndpoint = getValidatedEnv().MINIO.END_POINT;
+
         const credentials = await getMinioToken();
 
+        if (!minioEndpoint) {
+            return {} as any;
+        }
+
         return new Minio.Client({
-            "endPoint": getValidatedEnv().MINIO.END_POINT,
+            "endPoint": minioEndpoint,
             "port": getValidatedEnv().MINIO.PORT,
             "useSSL": true,
             "accessKey": credentials.accessKey,

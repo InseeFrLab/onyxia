@@ -36,9 +36,23 @@ export const getValidatedEnv = memoizee(() => ({
     },
     "MINIO": {
         "BASE_URI": getEnv().MINIO_URL,
-        "END_POINT": getEnv().MINIO_URL.split("//")[1].split(":")[0],
+        "END_POINT": (() => {
+            const url = getEnv().MINIO_URL;
+
+            if (!url) {
+                return "";
+            }
+
+            return url.split("//")[1].split(":")[0];
+        })(),
         "PORT": (() => {
-            const str = getEnv().MINIO_URL.split(":")[1];
+            const url = getEnv().MINIO_URL;
+
+            if (!url) {
+                return 0;
+            }
+
+            const str = url.split(":")[1];
 
             return str === undefined
                 ? getEnv().MINIO_URL.split("://")[1].toLowerCase() === "https"
