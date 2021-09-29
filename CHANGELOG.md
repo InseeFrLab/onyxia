@@ -1,3 +1,7 @@
+### **0.14.1** (2021-09-29)  
+  
+- Update minio-client.ts    
+  
 ## **0.14.0** (2021-09-29)  
   
 - Feat: Pop without MINIO (dirty)  
