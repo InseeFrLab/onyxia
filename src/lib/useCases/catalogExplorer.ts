@@ -7,12 +7,12 @@ import { assert } from "tsafe/assert";
 
 export const name = "catalogExplorer";
 
-export type CatalogExplorerState =
+type CatalogExplorerState =
     | CatalogExplorerState.NotFetched
     | CatalogExplorerState.NotSelected
     | CatalogExplorerState.Ready;
 
-export namespace CatalogExplorerState {
+namespace CatalogExplorerState {
     type Common = {
         availableCatalogsId: string[];
         "~internal": {

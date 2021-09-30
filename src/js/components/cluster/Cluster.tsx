@@ -19,7 +19,7 @@ const EnTete = () => (
 );
 
 const Cluster = () => {
-    const oidcAccessToken = useSelector(state => state.tokens.oidcTokens.accessToken);
+    const oidcAccessToken = "";
     const {
         parsedJwt: { username: preferred_username },
     } = useAppConstants({ "assertIsUserLoggedInIs": true });

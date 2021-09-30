@@ -12,7 +12,7 @@ function formatPath(path: string): string {
 export function createLocalStorageSecretManagerClient(params: {
     artificialDelayMs: number;
     doReset: boolean;
-}): { secretsManagerClient: SecretsManagerClient } {
+}): SecretsManagerClient {
     const { artificialDelayMs, doReset } = params;
 
     if (doReset) {
@@ -30,7 +30,7 @@ export function createLocalStorageSecretManagerClient(params: {
 
     const sleep = () => new Promise(resolve => setTimeout(resolve, artificialDelayMs));
 
-    const secretsManagerClient: SecretsManagerClient = {
+    return {
         "list": async params => {
             const path = formatPath(params.path);
 
@@ -89,9 +89,8 @@ export function createLocalStorageSecretManagerClient(params: {
 
             await sleep();
         },
+        "getFreshToken": () => Promise.resolve(""),
     };
-
-    return { secretsManagerClient };
 }
 
 const storageKey = symToStr({ createLocalStorageSecretManagerClient });

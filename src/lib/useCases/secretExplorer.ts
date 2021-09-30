@@ -6,7 +6,9 @@ import type {
     SecretWithMetadata,
     SecretsManagerClient,
     Secret,
+    SecretsManagerTranslations,
 } from "lib/ports/SecretsManagerClient";
+import { observeSecretsManagerClientWithTranslator } from "lib/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
 import {
     basename as pathBasename,
@@ -18,6 +20,7 @@ import memoize from "memoizee";
 import { crawlFactory } from "lib/tools/crawl";
 import { unwrapWritableDraft } from "lib/tools/unwrapWritableDraft";
 import { Mutex } from "async-mutex";
+import { getVaultClientTranslator } from "../secondaryAdapters/vaultSecretsManagerClient";
 
 const getMutexes = memoize((_: Dependencies) => ({
     "createOrRename": new Mutex(),
@@ -26,12 +29,12 @@ const getMutexes = memoize((_: Dependencies) => ({
 
 const doLogCommandToTranslator = true;
 
-export declare type SecretExplorerState =
+declare type SecretExplorerState =
     | SecretExplorerState.Failure
     | SecretExplorerState.ShowingDirectory
     | SecretExplorerState.ShowingSecret;
 
-export declare namespace SecretExplorerState {
+declare namespace SecretExplorerState {
     export type _Common = {
         currentPath: string;
         directories: string[];
@@ -446,7 +449,9 @@ export const thunks = {
         ): AppThunk =>
         async (...args) => {
             const [dispatch, getState, dependencies] = args;
-            const { secretsManagerClient } = dependencies;
+
+            const { secretsManagerClientProxy } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             dispatch(actions.navigationStarted());
 
@@ -465,11 +470,8 @@ export const thunks = {
                 dependencies,
             ).navigateMutex.acquire();
 
-            const listResult = await secretsManagerClient
-                .list({
-                    "path": directoryPath,
-                    doLogCommandToTranslator,
-                })
+            const listResult = await secretsManagerClientProxy
+                .list({ "path": directoryPath })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
@@ -502,7 +504,8 @@ export const thunks = {
         ): AppThunk =>
         async (...args) => {
             const [dispatch, getState, dependencies] = args;
-            const { secretsManagerClient } = dependencies;
+            const { secretsManagerClientProxy } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             dispatch(actions.navigationStarted());
 
@@ -521,11 +524,8 @@ export const thunks = {
                 dependencies,
             ).navigateMutex.acquire();
 
-            const secretWithMetadata = await secretsManagerClient
-                .get({
-                    "path": secretPath,
-                    doLogCommandToTranslator,
-                })
+            const secretWithMetadata = await secretsManagerClientProxy
+                .get({ "path": secretPath })
                 .catch((error: Error) => error);
 
             releaseNavigationMutex();
@@ -597,7 +597,9 @@ export const thunks = {
             const { newSecretBasename } = params;
 
             const [dispatch, getState, dependencies] = args;
-            const { secretsManagerClient } = dependencies;
+
+            const { secretsManagerClientExtension } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             const { secretExplorer: state } = getState();
 
@@ -608,9 +610,6 @@ export const thunks = {
                     newSecretBasename,
                 }),
             );
-
-            const { secretsManagerClientExtension } =
-                getSecretsManagerClientExtension(secretsManagerClient);
 
             const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
@@ -651,7 +650,9 @@ export const thunks = {
             const { basename, newBasename, kind } = params;
 
             const [dispatch, getState, dependencies] = args;
-            const { secretsManagerClient } = dependencies;
+
+            const { secretsManagerClientExtension } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             const { secretExplorer: state } = getState();
 
@@ -666,9 +667,6 @@ export const thunks = {
                     newBasename,
                 }),
             );
-
-            const { secretsManagerClientExtension } =
-                getSecretsManagerClientExtension(secretsManagerClient);
 
             const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
@@ -710,7 +708,9 @@ export const thunks = {
             const { basename, kind } = params;
 
             const [dispatch, getState, dependencies] = args;
-            const { secretsManagerClient } = dependencies;
+
+            const { secretsManagerClientProxy, secretsManagerClientExtension } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             const { secretExplorer: state } = getState();
 
@@ -720,16 +720,12 @@ export const thunks = {
 
             dispatch(actions.createSecretOrDirectoryStarted({ basename, kind }));
 
-            const { secretsManagerClientExtension } =
-                getSecretsManagerClientExtension(secretsManagerClient);
-
             const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
 
             const error = await (kind === "secret"
-                ? secretsManagerClient.put({
+                ? secretsManagerClientProxy.put({
                       path,
                       "secret": {},
-                      "doLogCommandToTranslator": true,
                   })
                 : secretsManagerClientExtension.createDirectory({ path })
             ).then(
@@ -794,7 +790,10 @@ export const thunks = {
         async (...args) => {
             const { basename, kind } = params;
 
-            const [dispatch, getState, { secretsManagerClient }] = args;
+            const [dispatch, getState, dependencies] = args;
+
+            const { secretsManagerClientExtension, secretsManagerClientProxy } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             const { secretExplorer: state } = getState();
 
@@ -809,13 +808,9 @@ export const thunks = {
                 }),
             );
 
-            const { secretsManagerClientExtension } =
-                getSecretsManagerClientExtension(secretsManagerClient);
-
             const error = await (kind === "secret"
-                ? secretsManagerClient.delete({
+                ? secretsManagerClientProxy.delete({
                       path,
-                      doLogCommandToTranslator,
                   })
                 : secretsManagerClientExtension.deleteDirectory({ path })
             ).then(
@@ -830,7 +825,10 @@ export const thunks = {
     "editCurrentlyShownSecret":
         (params: EditSecretParams): AppThunk =>
         async (...args) => {
-            const [dispatch, , { secretsManagerClient }] = args;
+            const [dispatch, , dependencies] = args;
+
+            const { secretsManagerClientProxy } =
+                augmentedClientByDependencies.get(dependencies)!;
 
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
@@ -891,7 +889,7 @@ export const thunks = {
 
             dispatch(actions.editSecretStarted(params));
 
-            const error = await secretsManagerClient
+            const error = await secretsManagerClientProxy
                 .put(
                     (() => {
                         const { path, secret, hiddenKeys } =
@@ -921,105 +919,168 @@ export const thunks = {
                     : actions.editSecretCompleted(),
             );
         },
+    "getSecretsManagerTranslations":
+        (): AppThunk<{ secretsManagerTranslations: SecretsManagerTranslations }> =>
+        (...args) => {
+            const [, , dependencies] = args;
+
+            const { secretsManagerTranslations } =
+                augmentedClientByDependencies.get(dependencies)!;
+
+            return { secretsManagerTranslations };
+        },
 };
 
-const getSecretsManagerClientExtension = memoize(
-    (secretsManagerClient: SecretsManagerClient) => {
-        const { crawl } = crawlFactory({
-            "list": async ({ directoryPath }) => {
-                const { directories, secrets } = await secretsManagerClient.list({
-                    "path": directoryPath,
+const augmentedClientByDependencies = new WeakMap<
+    Dependencies,
+    ReturnType<typeof getSecretsManagerClientExtension> &
+        ReturnType<typeof observeSecretsManagerClientWithTranslator>
+>();
+
+export const privateThunks = {
+    "initialize":
+        (): AppThunk<void> =>
+        async (...args) => {
+            const [, , dependencies] = args;
+
+            const { secretsManagerClientProxy, secretsManagerTranslations } =
+                observeSecretsManagerClientWithTranslator({
+                    "secretsManagerClient": dependencies.secretsManagerClient,
+                    "secretsManagerTranslator": getVaultClientTranslator({
+                        "clientType": "CLI",
+                        "engine": (() => {
+                            const { secretsManagerClientConfig } =
+                                dependencies.createStoreParams;
+                            switch (secretsManagerClientConfig.implementation) {
+                                case "VAULT":
+                                    return secretsManagerClientConfig.engine;
+                                case "LOCAL STORAGE":
+                                    return secretsManagerClientConfig.paramsForTranslator
+                                        .engine;
+                            }
+                        })(),
+                    }),
                 });
 
-                return {
-                    "fileBasenames": secrets,
-                    "directoryBasenames": directories,
-                };
-            },
-        });
-
-        async function mvSecret(params: {
-            srcPath: string;
-            dstPath: string;
-            secret?: Secret;
-        }) {
-            const { srcPath, dstPath } = params;
-
-            if (pathRelative(srcPath, dstPath) === "") {
-                return;
-            }
-
-            const {
-                secret = (await secretsManagerClient.get({ "path": srcPath })).secret,
-            } = params;
-
-            await secretsManagerClient.delete({ "path": srcPath });
-
-            await secretsManagerClient.put({
-                "path": dstPath,
-                secret,
+            const { secretsManagerClientExtension } = getSecretsManagerClientExtension({
+                "secretsManagerClient": secretsManagerClientProxy,
             });
+
+            augmentedClientByDependencies.set(dependencies, {
+                secretsManagerClientProxy,
+                secretsManagerTranslations,
+                secretsManagerClientExtension,
+            });
+        },
+};
+
+function getSecretsManagerClientExtension(props: {
+    secretsManagerClient: SecretsManagerClient;
+}) {
+    const { secretsManagerClient } = props;
+
+    const { crawl } = crawlFactory({
+        "list": async ({ directoryPath }) => {
+            const { directories, secrets } = await secretsManagerClient.list({
+                "path": directoryPath,
+            });
+
+            return {
+                "fileBasenames": secrets,
+                "directoryBasenames": directories,
+            };
+        },
+    });
+
+    async function mvSecret(params: {
+        srcPath: string;
+        dstPath: string;
+        secret?: Secret;
+    }) {
+        const { srcPath, dstPath } = params;
+
+        if (pathRelative(srcPath, dstPath) === "") {
+            return;
         }
 
-        const secretsManagerClientExtension = {
-            "renameSecret": async (params: {
-                path: string;
-                newSecretBasename: string;
-                secret?: Secret;
-            }) => {
-                const { path, newSecretBasename, secret } = params;
+        const {
+            secret = (
+                await secretsManagerClient.get({
+                    "path": srcPath,
+                })
+            ).secret,
+        } = params;
 
-                await mvSecret({
-                    "srcPath": path,
-                    "dstPath": pathJoin(pathDirname(path), newSecretBasename),
-                    secret,
-                });
-            },
-            "renameDirectory": async (params: { path: string; newBasename: string }) => {
-                const { path, newBasename } = params;
+        await secretsManagerClient.delete({
+            "path": srcPath,
+        });
 
-                const { filePaths } = await crawl({ "directoryPath": path });
+        await secretsManagerClient.put({
+            "path": dstPath,
+            secret,
+        });
+    }
 
-                await Promise.all(
-                    filePaths.map(filePath =>
-                        mvSecret({
-                            "srcPath": pathJoin(path, filePath),
-                            "dstPath": pathJoin(pathDirname(path), newBasename, filePath),
+    const secretsManagerClientExtension = {
+        "renameSecret": async (params: {
+            path: string;
+            newSecretBasename: string;
+            secret?: Secret;
+        }) => {
+            const { path, newSecretBasename, secret } = params;
+
+            await mvSecret({
+                "srcPath": path,
+                "dstPath": pathJoin(pathDirname(path), newSecretBasename),
+                secret,
+            });
+        },
+        "renameDirectory": async (params: { path: string; newBasename: string }) => {
+            const { path, newBasename } = params;
+
+            const { filePaths } = await crawl({ "directoryPath": path });
+
+            await Promise.all(
+                filePaths.map(filePath =>
+                    mvSecret({
+                        "srcPath": pathJoin(path, filePath),
+                        "dstPath": pathJoin(pathDirname(path), newBasename, filePath),
+                    }),
+                ),
+            );
+        },
+        "createDirectory": async (params: { path: string }) => {
+            const { path } = params;
+
+            await secretsManagerClient.put({
+                "path": pathJoin(path, ".keep"),
+                "secret": {
+                    "info": [
+                        "This is a dummy secret so that this directory is kept even if there",
+                        "is no other secrets in it",
+                    ].join(" "),
+                },
+            });
+        },
+        "deleteDirectory": async (params: { path: string }) => {
+            const { path } = params;
+
+            const { filePaths } = await crawl({ "directoryPath": path });
+
+            await Promise.all(
+                filePaths
+                    .map(filePathRelative => pathJoin(path, filePathRelative))
+                    .map(filePath =>
+                        secretsManagerClient.delete({
+                            "path": filePath,
                         }),
                     ),
-                );
-            },
-            "createDirectory": async (params: { path: string }) => {
-                const { path } = params;
+            );
+        },
+    };
 
-                await secretsManagerClient.put({
-                    "path": pathJoin(path, ".keep"),
-                    "secret": {
-                        "info": [
-                            "This is a dummy secret so that this directory is kept even if there",
-                            "is no other secrets in it",
-                        ].join(" "),
-                    },
-                });
-            },
-            "deleteDirectory": async (params: { path: string }) => {
-                const { path } = params;
-
-                const { filePaths } = await crawl({ "directoryPath": path });
-
-                await Promise.all(
-                    filePaths
-                        .map(filePathRelative => pathJoin(path, filePathRelative))
-                        .map(filePath =>
-                            secretsManagerClient.delete({ "path": filePath }),
-                        ),
-                );
-            },
-        };
-
-        return { secretsManagerClientExtension };
-    },
-);
+    return { secretsManagerClientExtension };
+}
 
 export const pure = {
     //TODO!!!

@@ -4,8 +4,7 @@ import { id } from "tsafe/id";
 import * as jwtSimple from "jwt-simple";
 
 export async function createPhonyOidcClient(params: {
-    tokenValidityDurationMs: number;
-    parsedJwt: ParsedJwt;
+    isUserLoggedIn: boolean;
 }): Promise<OidcClient.LoggedIn> {
     const { generateFakeTokens, getDelayBeforeTokensExpiration } =
         createFakeTokenApi(params);

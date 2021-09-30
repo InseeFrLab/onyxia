@@ -1,6 +1,5 @@
 import type { OidcClient } from "../ports/OidcClient";
 import keycloak_js from "keycloak-js";
-import type { KeycloakConfig } from "keycloak-js";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
@@ -9,11 +8,13 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 
 export async function createKeycloakOidcClient(params: {
-    keycloakConfig: KeycloakConfig;
+    url: string;
+    realm: string;
+    clientId: string;
 }): Promise<OidcClient> {
-    const { keycloakConfig } = params;
+    const { url, realm, clientId } = params;
 
-    const keycloakInstance = keycloak_js(keycloakConfig);
+    const keycloakInstance = keycloak_js({ url, realm, clientId });
 
     const { origin } = window.location;
 

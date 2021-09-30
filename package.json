@@ -95,7 +95,7 @@
         "remove-accents": "^0.4.2",
         "resize-observer-polyfill": "^1.5.1",
         "shell-quote": "^1.7.2",
-        "tsafe": "^0.4.1",
+        "tsafe": "^0.7.1",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5",

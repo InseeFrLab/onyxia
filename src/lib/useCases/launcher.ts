@@ -4,7 +4,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { thunks as appConstantsThunks } from "./appConstants";
 import { pure as secretExplorerPure } from "./secretExplorer";
 import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import { same } from "evt/tools/inDepth/same";
@@ -19,7 +18,9 @@ import type { WritableDraft } from "immer/dist/types/types-external";
 import { getMinioToken } from "js/minio-client/minio-client";
 import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
 import { thunks as publicIpThunks } from "./publicIp";
+import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { exclude } from "tsafe/exclude";
+import { getEnv } from "env";
 
 export const name = "launcher";
 
@@ -100,7 +101,7 @@ export declare namespace FormField {
     }
 }
 
-export type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
+type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
 
 export declare namespace LauncherState {
     export type NotInitialized = {
@@ -468,7 +469,11 @@ export const thunks = {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
 
-            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
+            const [
+                dispatch,
+                getState,
+                { onyxiaApiClient, oidcClient, createStoreParams },
+            ] = args;
 
             assert(
                 getState().launcher.stateDescription === "not initialized",
@@ -493,20 +498,15 @@ export const thunks = {
             const { mustacheParams } = await (async () => {
                 const { publicIp } = await dispatch(publicIpThunks.fetch());
 
-                const { vaultToken } = getState().tokens;
+                const {
+                    vault: { token: vaultToken },
+                    s3,
+                } = await dispatch(thunks.getVaultAndS3Tokens());
 
-                await getMinioToken();
-
-                const s3 = getState().user.s3!;
-
-                const appConstants = dispatch(appConstantsThunks.getAppConstants());
-
-                assert(appConstants.isUserLoggedIn);
-
-                const { parsedJwt, vaultClientConfig } = appConstants;
+                const user = dispatch(userAuthenticationThunk.getUser());
 
                 const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
-                    "username": parsedJwt.username,
+                    "username": user.username,
                 });
 
                 const userConfigs = userConfigsStateToUserConfigs(getState().userConfigs);
@@ -514,14 +514,14 @@ export const thunks = {
                 const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams =
                     {
                         "user": {
-                            "idep": parsedJwt.username,
-                            "name": `${parsedJwt.familyName} ${parsedJwt.firstName}`,
-                            "email": parsedJwt.email,
+                            "idep": user.username,
+                            "name": `${user.familyName} ${user.firstName}`,
+                            "email": user.email,
                             "password": userConfigs.userServicePassword,
                             "ip": publicIp,
                         },
                         "project": {
-                            "id": parsedJwt.username,
+                            "id": user.username,
                             "password": userConfigs.userServicePassword,
                         },
                         "git": {
@@ -531,16 +531,33 @@ export const thunks = {
                                 userConfigs.gitCredentialCacheDuration,
                             "token": userConfigs.githubPersonalAccessToken,
                         },
-                        "vault": {
-                            "VAULT_ADDR": vaultClientConfig.baseUri,
-                            "VAULT_TOKEN": vaultToken,
-                            "VAULT_MOUNT": vaultClientConfig.engine,
-                            "VAULT_TOP_DIR": secretExplorerUserHomePath,
-                        },
+                        "vault": (() => {
+                            const { secretsManagerClientConfig } = createStoreParams;
+
+                            if (secretsManagerClientConfig.implementation !== "VAULT") {
+                                return {
+                                    "VAULT_ADDR": "",
+                                    "VAULT_TOKEN": "",
+                                    "VAULT_MOUNT": "",
+                                    "VAULT_TOP_DIR": "",
+                                };
+                            }
+
+                            return {
+                                "VAULT_ADDR": secretsManagerClientConfig.baseUri,
+                                "VAULT_TOKEN": vaultToken,
+                                "VAULT_MOUNT": secretsManagerClientConfig.engine,
+                                "VAULT_TOP_DIR": secretExplorerUserHomePath,
+                            };
+                        })(),
                         "kaggleApiToken": userConfigs.kaggleApiToken,
                         "s3": {
-                            ...s3,
-                            "AWS_BUCKET_NAME": parsedJwt.username,
+                            "AWS_ACCESS_KEY_ID": s3.accessKeyId,
+                            "AWS_BUCKET_NAME": user.username,
+                            "AWS_DEFAULT_REGION": "us-east-1",
+                            "AWS_S3_ENDPOINT": getEnv().MINIO_URL,
+                            "AWS_SECRET_ACCESS_KEY": s3.secretAccessKey,
+                            "AWS_SESSION_TOKEN": s3.sessionToken,
                         },
                     };
 
@@ -834,6 +851,42 @@ export const thunks = {
                     "value": friendlyName,
                 }),
             ),
+    /** This thunk can be used outside of the launcher page,
+     *  even if the slice isn't initialized */
+    "getVaultAndS3Tokens":
+        (): AppThunk<
+            Promise<{
+                vault: {
+                    token: string;
+                    expirationTime: number;
+                };
+                s3: {
+                    accessKeyId: string;
+                    secretAccessKey: string;
+                    sessionToken: string;
+                    expirationTime: number;
+                };
+            }>
+        > =>
+        async (...args) => {
+            const [, getState, { secretsManagerClient }] = args;
+
+            return {
+                "vault": await secretsManagerClient.getToken(),
+                "s3": await (async () => {
+                    await getMinioToken();
+
+                    const s3 = getState().user.s3!;
+
+                    return {
+                        "accessKeyId": s3.AWS_ACCESS_KEY_ID,
+                        "secretAccessKey": s3.AWS_SECRET_ACCESS_KEY,
+                        "sessionToken": s3.AWS_SESSION_TOKEN,
+                        "expirationTime": Infinity,
+                    };
+                })(),
+            };
+        },
 };
 
 export const selectors = (() => {

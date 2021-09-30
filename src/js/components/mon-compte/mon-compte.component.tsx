@@ -39,9 +39,7 @@ export function MonCompte() {
 
     const userConfigsState = useSelector(state => state.userConfigs);
 
-    const { accessToken: oidcAccessToken } = useSelector(
-        state => state.tokens.oidcTokens,
-    );
+    const oidcAccessToken = "";
 
     const dispatch = useDispatch();
 

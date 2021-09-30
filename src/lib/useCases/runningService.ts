@@ -3,14 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AppThunk } from "../setup";
 import { id } from "tsafe/id";
-import { thunks as appConstantsThunks } from "./appConstants";
+import { thunks as userAuthenticationThunks } from "./userAuthentication";
+import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 export const name = "runningService";
 
-export type RunningServicesState =
-    | RunningServicesState.NotFetched
-    | RunningServicesState.Ready;
+type RunningServicesState = RunningServicesState.NotFetched | RunningServicesState.Ready;
 
-export namespace RunningServicesState {
+namespace RunningServicesState {
     type Common = {
         isFetching: boolean;
     };
@@ -146,29 +145,19 @@ export const thunks = {
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const { selectedRegion, username } = (() => {
-                    const appConstants = dispatch(appConstantsThunks.getAppConstants());
+                const { username } = dispatch(userAuthenticationThunks.getUser());
 
-                    assert(appConstants.isUserLoggedIn);
+                const selectedDeploymentRegion =
+                    deploymentRegionSelectors.selectedDeploymentRegionSelector(
+                        getState(),
+                    );
 
-                    const deploymentRegionId =
-                        getState().userConfigs.deploymentRegionId.value;
-
-                    const selectedRegion = appConstants.regions.find(
-                        ({ id }) => id === deploymentRegionId,
-                    )!;
-
-                    const { username } = appConstants.parsedJwt;
-
-                    return { selectedRegion, username };
-                })();
-
-                const namespacePrefix = selectedRegion.services.namespacePrefix;
-
-                return selectedRegion.services.monitoring?.URLPattern?.replace(
-                    "$NAMESPACE",
-                    `${namespacePrefix}${username}`,
-                ).replace("$INSTANCE", serviceId.replace(/^\//, ""));
+                return selectedDeploymentRegion.s3MonitoringUrlPattern
+                    ?.replace(
+                        "$NAMESPACE",
+                        `${selectedDeploymentRegion.namespacePrefix}${username}`,
+                    )
+                    .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
             dispatch(

@@ -1,13 +1,11 @@
 import type { ReturnType as TsafeReturnType } from "tsafe/ReturnType";
 import type { NonPostableEvt, UnpackEvt } from "evt";
 import { Evt } from "evt";
-import type { MethodNames } from "tsafe/MethodNames";
-import type { Param0 } from "tsafe/Param0";
+import type { Param0, MethodNames } from "tsafe";
 
 export declare type Secret = { [key: string]: Secret.Value };
 
 export declare namespace Secret {
-    //TODO: Restore the real definition once TS 4.x will be supported by CRA
     export type Value =
         | string
         | boolean
@@ -28,16 +26,21 @@ export type SecretWithMetadata = {
 };
 
 export type SecretsManagerClient = {
-    list(params: { path: string }): Promise<{
+    list: (params: { path: string }) => Promise<{
         directories: string[];
         secrets: string[];
     }>;
 
-    get(params: { path: string }): Promise<SecretWithMetadata>;
+    get: (params: { path: string }) => Promise<SecretWithMetadata>;
 
-    put(params: { path: string; secret: Secret }): Promise<void>;
+    put: (params: { path: string; secret: Secret }) => Promise<void>;
 
-    delete(params: { path: string }): Promise<void>;
+    delete: (params: { path: string }) => Promise<void>;
+
+    getToken: () => Promise<{
+        token: string;
+        expirationTime: number;
+    }>;
 };
 
 export type SecretsManagerTranslator = {
@@ -54,16 +57,6 @@ export type SecretsManagerTranslator = {
             }): string;
         };
     };
-};
-
-/** Same as SecretManagerClient but we can, for every method tell
- * if we wish that the command be logged to the command translator */
-export type SecretsManagerClientProxy = {
-    [MethodName in keyof SecretsManagerClient]: (
-        params: Param0<SecretsManagerClient[MethodName]> & {
-            doLogCommandToTranslator: boolean;
-        },
-    ) => ReturnType<SecretsManagerClient[MethodName]>;
 };
 
 export type SecretsManagerTranslations = {
@@ -83,7 +76,7 @@ export function observeSecretsManagerClientWithTranslator(params: {
     secretsManagerClient: SecretsManagerClient;
     secretsManagerTranslator: SecretsManagerTranslator;
 }): {
-    secretsManagerClientProxy: SecretsManagerClientProxy;
+    secretsManagerClientProxy: SecretsManagerClient;
     secretsManagerTranslations: SecretsManagerTranslations;
 } {
     const { secretsManagerClient, secretsManagerTranslator } = params;
@@ -130,7 +123,7 @@ export function observeSecretsManagerClientWithTranslator(params: {
                 MethodName extends MethodNames<SecretsManagerClient>,
             >(
                 _methodName: MethodName,
-            ): SecretsManagerClientProxy[MethodName] => {
+            ): SecretsManagerClient[MethodName] => {
                 //NOTE: Mitigate type vulnerability.
                 const methodName = _methodName as "get";
 
@@ -171,12 +164,15 @@ export function observeSecretsManagerClientWithTranslator(params: {
                 return methodProxy as any;
             };
 
-            return {
+            const out = {
                 "list": createMethodProxy("list"),
                 "get": createMethodProxy("get"),
                 "put": createMethodProxy("put"),
                 "delete": createMethodProxy("delete"),
+                "getToken": createMethodProxy("getToken"),
             };
+
+            return out;
         })(),
     };
 }

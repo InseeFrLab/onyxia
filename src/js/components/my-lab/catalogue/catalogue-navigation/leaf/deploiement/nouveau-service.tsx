@@ -25,12 +25,13 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
 import {
     useDispatch,
-    useMustacheParams,
     useIsBetaModeEnabled,
     useAppConstants,
 } from "app/interfaceWithLib/hooks";
+import { useMustacheParams } from "js/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prOidcClient, prAxiosInstance } from "lib/setup";
+import { prOidcClient } from "lib/setup";
+import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
 import { routes } from "app/routes/router";
 
 type Service = {

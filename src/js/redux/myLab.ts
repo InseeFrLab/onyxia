@@ -12,7 +12,10 @@ import memoize from "memoizee";
 
 /** We avoid importing app right away to prevent require cycles */
 const getAxiosInstance = memoize(
-    () => import("lib/setup").then(ns => ns.prAxiosInstance),
+    () =>
+        import("lib/secondaryAdapters/officialOnyxiaApiClient").then(
+            ns => ns.prAxiosInstance,
+        ),
     {
         "promise": true,
     },

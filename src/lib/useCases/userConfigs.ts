@@ -4,13 +4,13 @@ import type { AppThunk } from "../setup";
 import { join as pathJoin } from "path";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
-import { parseOidcAccessToken } from "../ports/OidcClient";
 import { assert } from "tsafe/assert";
 import {
     createObjectThatThrowsIfAccessedFactory,
     isPropertyAccessedByReduxOrStorybook,
 } from "../tools/createObjectThatThrowsIfAccessed";
 import "minimal-polyfills/Object.fromEntries";
+import { thunks as userAuthenticationThunks } from "./userAuthentication";
 
 /*
  * Values of the user profile that can be changed.
@@ -32,7 +32,7 @@ export type UserConfigs = Id<
         gitCredentialCacheDuration: number;
         isBetaModeEnabled: boolean;
         isDarkModeEnabled: boolean;
-        deploymentRegionId: string;
+        deploymentRegionId: string | null;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
@@ -45,8 +45,6 @@ export type UserConfigsState = {
         isBeingChanged: boolean;
     };
 };
-
-const doLogCommandToTranslator = false;
 
 export const name = "userConfigs";
 
@@ -103,7 +101,7 @@ export const thunks = {
                 return;
             }
 
-            const { username } = await parseOidcAccessToken(oidcClient);
+            const { username } = dispatch(userAuthenticationThunks.getUser());
 
             dispatch(actions.changeStarted(params));
 
@@ -114,7 +112,6 @@ export const thunks = {
             await secretsManagerClient.put({
                 "path": getProfileKeyPath({ "key": params.key }),
                 "secret": { "value": params.value },
-                doLogCommandToTranslator,
             });
 
             dispatch(actions.changeCompleted(params));
@@ -137,18 +134,23 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (params: {
-            getIsDarkModeEnabledValueForProfileInitialization(): boolean;
-        }): AppThunk =>
+        (): AppThunk =>
         async (...args) => {
-            const { getIsDarkModeEnabledValueForProfileInitialization } = params;
-
-            const [dispatch, , { secretsManagerClient, oidcClient, onyxiaApiClient }] =
-                args;
+            const [
+                dispatch,
+                ,
+                {
+                    secretsManagerClient,
+                    oidcClient,
+                    createStoreParams: {
+                        getIsDarkModeEnabledValueForProfileInitialization,
+                    },
+                },
+            ] = args;
 
             assert(oidcClient.isUserLoggedIn);
 
-            const { username, email } = await parseOidcAccessToken(oidcClient);
+            const { username, email } = dispatch(userAuthenticationThunks.getUser());
 
             const { getConfigKeyPath } = getConfigKeyPathFactory({ username });
 
@@ -161,8 +163,7 @@ export const privateThunks = {
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
-                "deploymentRegionId": (await onyxiaApiClient.getConfigurations())
-                    .regions[0].id,
+                "deploymentRegionId": null,
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
@@ -173,10 +174,7 @@ export const privateThunks = {
                     const path = getConfigKeyPath({ key });
 
                     const secretWithMetadata = await secretsManagerClient
-                        .get({
-                            path,
-                            doLogCommandToTranslator,
-                        })
+                        .get({ path })
                         .catch(() => undefined);
 
                     const isLegacyValue = (value: unknown) => {
@@ -196,7 +194,6 @@ export const privateThunks = {
                         await secretsManagerClient.put({
                             path,
                             "secret": { "value": userConfigs[key] },
-                            doLogCommandToTranslator,
                         });
 
                         return;

@@ -18,21 +18,25 @@ import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
+import { Deferred } from "evt/tools/Deferred";
+
+/** @deprecated */
+const dAxiosInstance = new Deferred<AxiosInstance>();
+
+export const { pr: prAxiosInstance } = dAxiosInstance;
 
 export function createOfficialOnyxiaApiClient(params: {
     baseUrl: string;
-
+    /** returns undefined before region initially fetched */
+    getCurrentlySelectedDeployRegionId: () => string | undefined;
     /** undefined if user not logged in */
-    getCurrentlySelectedDeployRegionId: (() => string | undefined) | null;
-
-    /** null if user not logged in */
-    oidcClient: OidcClient.LoggedIn | null;
-}): {
-    onyxiaApiClient: OnyxiaApiClient;
-    //TODO: Eventually this should not be returned.
-    axiosInstance: AxiosInstance;
-} {
+    getOidcAccessToken: (() => Promise<string>) | undefined;
+}): OnyxiaApiClient {
     const { axiosInstance } = createAxiosInstance(params);
+
+    if (axiosInstance !== undefined) {
+        dAxiosInstance.resolve(axiosInstance);
+    }
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getPublicIp": memoize(() =>
