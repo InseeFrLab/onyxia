@@ -1,11 +1,17 @@
-import type { Region } from "js/model/Region";
-
 export type Get_Public_Configuration = {
-    regions: Region[];
-    build: {
-        version: string;
-        timestamp: number;
-    };
+    regions: {
+        id: string;
+        services: {
+            namespacePrefix: string;
+        };
+        data: {
+            S3: {
+                monitoring?: {
+                    URLPattern: string;
+                };
+            };
+        };
+    }[];
 };
 
 export type Get_Public_Catalog = {
@@ -151,7 +157,6 @@ export declare namespace Get_Public_Catalog_CatalogId_PackageName {
             AWS_SESSION_TOKEN: string;
             AWS_DEFAULT_REGION: "us-east-1";
             AWS_S3_ENDPOINT: string;
-            AWS_EXPIRATION: string;
             AWS_BUCKET_NAME: string;
         };
     };
@@ -179,21 +184,26 @@ export type Put_MyLab_App = Record<string, unknown>[][];
 
 export type Get_MyLab_App = {};
 
-export type Get_User_Info = {
+export type Get_Public_Ip = {
     ip: string;
+};
+
+export type DeploymentRegion = {
+    id: string;
+    s3MonitoringUrlPattern?: string;
+    namespacePrefix: string;
 };
 
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
-    getPublicIp: {
+    getIp: {
         (): Promise<string>;
         clear(): void;
     };
 
-    getConfigurations: {
-        (): Promise<Get_Public_Configuration>;
-        /* Result is memoized, clear the cache with this method */
+    getAvailableRegions: {
+        (): Promise<DeploymentRegion[]>;
         clear(): void;
     };
 

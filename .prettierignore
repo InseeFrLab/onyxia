@@ -2,6 +2,7 @@ node_modules/
 /CHANGELOG.md
 /.yarn_home/
 /build/
-/public/keycloak_static/
+/public/
 /src/env.ts
+/build_keycloak/
 

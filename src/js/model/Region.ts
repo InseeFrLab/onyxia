@@ -1,7 +1,8 @@
 import { CloudshellConfiguration } from "./CloudshellConfiguration";
 
 export interface Region {
-    id: "datalab" | "gke";
+    //id: "datalab" | "gke";
+    id: string;
     name: string;
     description?: string;
     services: Services;

@@ -1,9 +1,6 @@
 import { useState, useEffect, memo } from "react";
-import {
-    useDispatch,
-    useMustacheParams,
-    useAppConstants,
-} from "app/interfaceWithLib/hooks";
+import { useDispatch, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useMustacheParams } from "js/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
 import IconButton from "@material-ui/core/IconButton";
@@ -21,7 +18,7 @@ import {
 } from "js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { useStyles } from "app/theme";
-import { prAxiosInstance } from "lib/setup";
+import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
 export const { useIsCloudShellVisible } = createUseGlobalState(

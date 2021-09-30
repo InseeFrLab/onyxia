@@ -3,6 +3,13 @@ export type FormFieldValue = {
     value: string | boolean | number;
 };
 
+/**
+ *
+ * in:  [{ "path": ["a", "b"], "value": 32 }, { "path": ["a", "c"], "value": 33 }]
+ * out: { "a": { "b": 32, "c": 33 } }
+ *
+ *
+ */
 export function formFieldsValueToObject(
     formFieldsValue: FormFieldValue[],
 ): Record<string, unknown> {

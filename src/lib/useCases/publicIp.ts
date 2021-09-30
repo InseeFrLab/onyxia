@@ -7,7 +7,7 @@ import type { Dependencies } from "../setup";
 
 export const name = "publicIp";
 
-export type PublicIpState = string | null;
+type PublicIpState = string | null;
 
 const { reducer, actions } = createSlice({
     name,
@@ -30,13 +30,13 @@ export const thunks = {
 
             const { onyxiaApiClient } = dependencies;
 
-            const publicIp = await onyxiaApiClient.getPublicIp();
+            const publicIp = await onyxiaApiClient.getIp();
 
             if (!isEvtOnlineRegisteredByDependencyRef.has(dependencies)) {
                 Evt.from(window, "online").attach(() => {
                     dispatch(actions.publicIpMightHaveChanged());
 
-                    onyxiaApiClient.getPublicIp.clear();
+                    onyxiaApiClient.getIp.clear();
 
                     dispatch(thunks.fetch());
                 });

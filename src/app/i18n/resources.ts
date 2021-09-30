@@ -209,8 +209,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "service password": "Password for your services",
             "service password helper text": `This password is required to log in to all of your services. 
             It is generated automatically and renews itself regularly.`,
-            "OIDC Access token": "OIDC Personal access token",
-            "OIDC Access token helper text": `Valid until {{when}}`,
             "not yet defined": "Not yet defined",
             "reset helper dialogs": "Reset instructions windows",
             "reset": "Reset",
@@ -516,8 +514,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "service password": "Mot de passe pour vos services",
             "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
             Il est généré automatiquement et se renouvelle régulièrement.`,
-            "OIDC Access token": "Jeton d'accès personnel OIDC",
-            "OIDC Access token helper text": `Valide jusqu'a {{when}}`,
             "not yet defined": "Non définie",
             "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
             "reset": "Réinitialiser",

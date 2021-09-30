@@ -6,7 +6,7 @@ import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
 import { getAvatar } from 'js/utils/service-utils';
 import { restApiPaths } from 'js/restApiPaths';
-import { prAxiosInstance } from "lib/setup";
+import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
 import { routes } from "app/routes/router";
 
 export const Service = ({ idCatalogue, idService }) => {

@@ -3,9 +3,7 @@ import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
 import { pure } from "lib/setup";
 import { thunks } from "lib/setup";
-import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
-import type { BuildMustacheViewParams } from "js/utils/form-field";
-import type { AppConstant } from "lib/useCases/appConstants";
+import type { AppConstant } from "lib/useCases/userAuthentication";
 import { assert } from "tsafe/assert";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
@@ -13,8 +11,6 @@ import { useLng } from "app/i18n/useLng";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
-import { getPublicIp } from "lib/tools/getPublicIp";
-import { useAsync } from "react-async-hook";
 
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -69,38 +65,6 @@ export function useSecretExplorerUserHomePath() {
     } = useAppConstants({ "assertIsUserLoggedInIs": true });
     const secretExplorerUserHomePath = pure.secretExplorer.getUserHomePath({ username });
     return { secretExplorerUserHomePath };
-}
-
-export function useMustacheParams() {
-    const { oidcTokens, vaultToken } = useSelector(state => state.tokens);
-    const { s3 } = useSelector(state => state.user);
-
-    const { parsedJwt, vaultClientConfig } = useAppConstants({
-        "assertIsUserLoggedInIs": true,
-    });
-
-    const { secretExplorerUserHomePath } = useSecretExplorerUserHomePath();
-
-    const userConfigs = useSelector(state =>
-        userConfigsStateToUserConfigs(state.userConfigs),
-    );
-
-    const { result: publicIp } = useAsync(getPublicIp, []);
-
-    const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & {
-        s3: BuildMustacheViewParams["s3"] | undefined;
-    } = {
-        s3,
-        "publicIp": publicIp ?? "0.0.0.0",
-        parsedJwt,
-        secretExplorerUserHomePath,
-        userConfigs,
-        vaultClientConfig,
-        oidcTokens,
-        vaultToken,
-    };
-
-    return { mustacheParams };
 }
 
 export function useIsBetaModeEnabled(): {

@@ -1,16 +1,15 @@
-import type { OnyxiaApiClient, Get_Public_Configuration } from "../ports/OnyxiaApiClient";
+import type { OnyxiaApiClient, DeploymentRegion } from "../ports/OnyxiaApiClient";
 import Mustache from "mustache";
 
 import memoize from "memoizee";
 
 export function createMockOnyxiaApiClient(params: {
-    regions: Get_Public_Configuration["regions"];
-    build: Get_Public_Configuration["build"];
-}): { onyxiaApiClient: OnyxiaApiClient } {
+    availableDeploymentRegions: DeploymentRegion[];
+}): OnyxiaApiClient {
     const { regions, build } = params;
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        "getPublicIp": memoize(() => Promise.resolve("0.0.0.0")),
+        "getIp": memoize(() => Promise.resolve("0.0.0.0")),
         "getConfigurations": memoize(() => Promise.resolve({ regions, build }), {
             "promise": true,
         }),

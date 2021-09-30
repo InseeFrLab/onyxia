@@ -31,7 +31,6 @@ export type Props<T extends string = string> =
     | Props.Toggle
     | Props.Text
     | Props.EditableText
-    | Props.OidcAccessToken
     | Props.ResetHelperDialogs;
 
 export declare namespace Props {
@@ -56,14 +55,6 @@ export declare namespace Props {
     export type Language = Common & {
         type: "language";
     };
-
-    export type OidcAccessToken = Common & {
-        type: "OIDC Access token";
-        oidcAccessToken: string;
-        onRequestOidcAccessTokenRenewal(): void;
-        isLocked: boolean;
-        remainingValidityMs: number;
-    } & ICopyable;
 
     export type Toggle = Common & {
         type: "toggle";
@@ -344,11 +335,6 @@ export const AccountField = memo(
                 };
             })();
 
-        const oidcAccessTokenExpiresWhen = useValidUntil({
-            "millisecondsLeft":
-                props.type !== "OIDC Access token" ? 0 : props.remainingValidityMs * 1000,
-        });
-
         const helperText = (() => {
             switch (props.type) {
                 case "text":
@@ -357,10 +343,6 @@ export const AccountField = memo(
                     return props.helperText;
                 case "service password":
                     return t("service password helper text");
-                case "OIDC Access token":
-                    return t("OIDC Access token helper text", {
-                        "when": oidcAccessTokenExpiresWhen,
-                    });
                 case "reset helper dialogs":
                     return t("reset helper dialogs helper text");
                 default:
@@ -421,8 +403,6 @@ export const AccountField = memo(
                                     return null;
                                 case "service password":
                                     return <TextWd>{props.servicePassword}</TextWd>;
-                                case "OIDC Access token":
-                                    return <TextWd>{props.oidcAccessToken}</TextWd>;
                                 case "text":
                                     return <TextWd>{props.text}</TextWd>;
                                 case "editable text":
@@ -534,22 +514,6 @@ export const AccountField = memo(
                                     );
                                 case "language":
                                     return null;
-                                case "OIDC Access token":
-                                    return (
-                                        <>
-                                            <IconButton
-                                                iconId="replay"
-                                                size="small"
-                                                disabled={props.isLocked}
-                                                onClick={
-                                                    props.onRequestOidcAccessTokenRenewal
-                                                }
-                                            />
-                                            <IconButtonCopyToClipboard
-                                                onClick={onRequestCopy}
-                                            />
-                                        </>
-                                    );
                                 case "reset helper dialogs":
                                     return (
                                         <Button
@@ -577,7 +541,6 @@ export declare namespace AccountField {
     > & {
         "copy tooltip": undefined;
         "service password helper text": undefined;
-        "OIDC Access token helper text": { when: string };
         "not yet defined": undefined;
         "reset helper dialogs helper text": undefined;
         "reset": undefined;

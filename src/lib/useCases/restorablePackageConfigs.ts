@@ -17,7 +17,7 @@ import { is } from "tsafe/is";
 
 export const name = "restorablePackageConfig";
 
-export type RestorablePackageConfigsState = {
+type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
     packageIcons:
         | {
@@ -30,7 +30,7 @@ export type RestorablePackageConfigsState = {
           };
 };
 
-export type IconsUrl = {
+type IconsUrl = {
     [catalogId: string]: { [packageName: string]: string };
 };
 

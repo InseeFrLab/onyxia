@@ -82,15 +82,3 @@ export const EditableText = getStory(
         ...logCallbacks(["onRequestCopy", "onRequestEdit", "onStartEdit"]),
     }),
 );
-
-export const OidcAccessToken = getStory(
-    id<Props.OidcAccessToken>({
-        className,
-        "type": "OIDC Access token",
-        "oidcAccessToken":
-            "OiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYROiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUHNCSzhYR",
-        "isLocked": false,
-        "remainingValidityMs": 2000,
-        ...logCallbacks(["onRequestOidcAccessTokenRenewal", "onRequestCopy"]),
-    }),
-);

@@ -9,9 +9,8 @@ import type {
     SecretsManagerTranslator,
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
-import { StatefulReadonlyEvt } from "evt";
-import { Evt, nonNullable } from "evt";
-import memoizee from "memoizee";
+import { createKeycloakOidcClient } from "./keycloakOidcClient";
+import { Param0 } from "tsafe";
 
 const version = "v1";
 
@@ -19,17 +18,13 @@ type Params = {
     baseUri: string;
     engine: string;
     role: string;
-    evtOidcAccessToken: StatefulReadonlyEvt<string | undefined>;
-    renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired(): Promise<void>;
+    keycloakParams: Param0<typeof createKeycloakOidcClient>;
 };
 
-export function createVaultSecretsManagerClient(params: Params): {
-    secretsManagerClient: SecretsManagerClient;
-    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
-} {
-    const { engine } = params;
+export function createVaultSecretsManagerClient(params: Params): SecretsManagerClient {
+    const { engine, ...rest } = params;
 
-    const { axiosInstance, evtVaultToken } = getAxiosInstanceAndEvtVaultToken(params);
+    const { axiosInstance, getFreshVaultToken } = xxx(rest);
 
     const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
         pathJoin(version, engine, ...args);
@@ -83,7 +78,7 @@ export function createVaultSecretsManagerClient(params: Params): {
 
     dVaultClient.resolve(secretsManagerClient);
 
-    return { secretsManagerClient, evtVaultToken };
+    return secretsManagerClient;
 }
 
 const dVaultClient = new Deferred<SecretsManagerClient>();
@@ -91,91 +86,66 @@ const dVaultClient = new Deferred<SecretsManagerClient>();
 /** @deprecated */
 export const { pr: prVaultClient } = dVaultClient;
 
-function getAxiosInstanceAndEvtVaultToken(
-    params: Pick<
-        Params,
-        | "baseUri"
-        | "role"
-        | "evtOidcAccessToken"
-        | "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
-    >,
-): {
+function xxx(params: {
+    baseUri: string;
+    role: string;
+    getOidcAccessToken: () => Promise<string>;
+}): {
     axiosInstance: AxiosInstance;
-    evtVaultToken: StatefulReadonlyEvt<string | undefined>;
+    getToken: () => Promise<string>;
 } {
-    const {
-        baseUri,
-        role,
-        evtOidcAccessToken,
-        renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired,
-    } = params;
+    const { baseUri, role, getOidcAccessToken } = params;
+
+    const dTokensValidityMs = new Deferred<number>();
 
     const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
 
-    const fetchVaultToken = memoizee(
-        async (oidcAccessToken: string): Promise<string> => {
-            const axiosResponse = await createAxiosInstance().post(
-                `/${version}/auth/jwt/login`,
-                {
-                    role,
-                    "jwt": oidcAccessToken,
-                },
-            );
+    let cache:
+        | Readonly<{
+              token: string;
+              createTime: number;
+          }>
+        | undefined = undefined;
 
-            return axiosResponse.data.auth.client_token;
-        },
-        { "promise": true },
-    );
+    async function requestNewToken() {
+        const {
+            data: { auth },
+        } = await createAxiosInstance().post(`/${version}/auth/jwt/login`, {
+            role,
+            "jwt": await getOidcAccessToken(),
+        });
 
-    const evtVaultToken = Evt.asyncPipe(evtOidcAccessToken.evtChange, oidcAccessToken =>
-        oidcAccessToken === undefined
-            ? [undefined]
-            : fetchVaultToken(oidcAccessToken).then(vaultToken => [vaultToken]),
-    );
+        if (dTokensValidityMs.isPending) {
+            dTokensValidityMs.resolve(auth.lease_duration);
+        }
+
+        return auth.client_token;
+    }
 
     const axiosInstance = createAxiosInstance();
 
-    axiosInstance.interceptors.request.use(async axiosRequestConfig => {
-        await renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired();
+    axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
+        ...axiosRequestConfig,
+        "headers": {
+            "X-Vault-Token": await requestNewToken(),
+        },
+        "Content-Type": "application/json;charset=utf-8",
+        "Accept": "application/json;charset=utf-8",
+    }));
 
-        return {
-            ...axiosRequestConfig,
-            "headers": {
-                "X-Vault-Token": await evtVaultToken.waitFor(nonNullable()),
-            },
-            "Content-Type": "application/json;charset=utf-8",
-            "Accept": "application/json;charset=utf-8",
-        };
-    });
-
-    return { axiosInstance, evtVaultToken };
+    return { axiosInstance, getFreshVaultToken };
 }
 
-export function getVaultClientTranslator(
-    params: {
-        clientType: "CLI";
-        oidcAccessToken: string;
-    } & Omit<
-        Parameters<typeof createVaultSecretsManagerClient>[0],
-        | "evtOidcAccessToken"
-        | "renewOidcAccessTokenIfItExpiresSoonOrRedirectToLoginIfAlreadyExpired"
-    >,
-): SecretsManagerTranslator {
-    const { clientType, engine, baseUri, oidcAccessToken, role } = params;
+export function getVaultClientTranslator(params: {
+    clientType: "CLI";
+    engine: string;
+}): SecretsManagerTranslator {
+    const { clientType, engine } = params;
 
     switch (clientType) {
         case "CLI":
             return {
-                "initialHistory": [
-                    {
-                        "cmd": `export VAULT_ADDR='${baseUri}'`,
-                        "resp": "",
-                    },
-                    {
-                        "cmd": `vault write auth/jwt/login role=${role} jwt=${oidcAccessToken}`,
-                        "resp": "Success! You are now authenticated!",
-                    },
-                ],
+                "initialHistory": [],
                 "methods": {
                     "list": {
                         "buildCmd": (...[{ path }]) =>
@@ -250,6 +220,15 @@ export function getVaultClientTranslator(
                                 engine,
                                 path,
                             )}`,
+                    },
+                    "getToken": {
+                        "buildCmd": () =>
+                            [
+                                `# We generate a token`,
+                                `# See https://www.vaultproject.io/docs/auth/jwt`,
+                            ].join("\n"),
+                        "fmtResult": ({ result: vaultToken }) =>
+                            `The token we got is ${vaultToken}`,
                     },
                 },
             };

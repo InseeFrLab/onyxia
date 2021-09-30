@@ -1,4 +1,4 @@
-import { useEffect, useMemo, memo } from "react";
+import { useEffect, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
@@ -11,7 +11,6 @@ import { getEnv } from "env";
 import { urlJoin } from "url-join-ts";
 import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { smartTrim } from "app/tools/smartTrim";
 import { makeStyles } from "app/theme";
 import { thunks as publicIpThunks } from "lib/useCases/publicIp";
 
@@ -57,21 +56,6 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 
     const fullName = `${parsedJwt.firstName} ${parsedJwt.familyName}`;
-
-    const tokenState = useSelector(state => state.tokens);
-
-    const appConstants = useAppConstants({ "assertIsUserLoggedInIs": true });
-
-    const accessTokenRemainingValidityMs = useMemo(
-        () => appConstants.getOidcTokensRemandingValidityMs(),
-        [tokenState.oidcTokens.accessToken],
-    );
-
-    const onRequestOidcAccessTokenRenewal = useConstCallback(() =>
-        appConstants.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired({
-            "minValidityMs": Infinity,
-        }),
-    );
 
     const { classes } = useStyles();
 
@@ -122,18 +106,6 @@ export const AccountInfoTab = memo((props: Props) => {
                 servicePassword={userServicePasswordState.value}
                 onRequestCopy={onRequestCopyFactory(userServicePasswordState.value)}
                 onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
-            />
-            <AccountField
-                type="OIDC Access token"
-                isLocked={tokenState.areTokensBeingRefreshed}
-                remainingValidityMs={accessTokenRemainingValidityMs}
-                oidcAccessToken={smartTrim({
-                    "maxLength": 50,
-                    "minCharAtTheEnd": 20,
-                    "text": tokenState.oidcTokens.accessToken,
-                })}
-                onRequestOidcAccessTokenRenewal={onRequestOidcAccessTokenRenewal}
-                onRequestCopy={onRequestCopyFactory(tokenState.oidcTokens.accessToken)}
             />
             <AccountField
                 type="text"

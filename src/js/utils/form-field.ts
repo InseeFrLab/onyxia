@@ -1,7 +1,7 @@
 import Mustache from "mustache";
 import type { RootState } from "lib/setup";
 import { getValidatedEnv } from "js/validatedEnv";
-import type { AppConstant } from "lib/useCases/appConstants";
+import type { AppConstant } from "lib/useCases/userAuthentication";
 import type { OidcTokens } from "lib/ports/OidcClient";
 import type { UserConfigs } from "lib/useCases/userConfigs";
 
