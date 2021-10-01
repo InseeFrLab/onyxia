@@ -26,7 +26,7 @@ const dAxiosInstance = new Deferred<AxiosInstance>();
 export const { pr: prAxiosInstance } = dAxiosInstance;
 
 export function createOfficialOnyxiaApiClient(params: {
-    baseUrl: string;
+    url: string;
     /** returns undefined before region initially fetched */
     getCurrentlySelectedDeployRegionId: () => string | undefined;
     /** undefined if user not logged in */
