@@ -1,5 +1,5 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
 import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
@@ -27,6 +27,7 @@ import { createMockJwtUserApiClient } from "./secondaryAdapters/mockUserApiClien
 import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
 import type { KcLanguageTag } from "keycloakify";
+import { id } from "tsafe/id";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -210,133 +211,6 @@ export type Dependencies = {
     onyxiaApiClient: OnyxiaApiClient;
 };
 
-const getMiddleware = (params: { dependencies: Dependencies }) => ({
-    "middleware": getDefaultMiddleware({
-        "thunk": {
-            "extraArgument": params.dependencies,
-        },
-    }),
-});
-
-async function createStoreForLoggedUser(params: {
-    createStoreParams: CreateStoreParams;
-    oidcClient: OidcClient.LoggedIn;
-}) {
-    const { oidcClient, createStoreParams } = params;
-
-    const secretsManagerClient = (() => {
-        const { secretsManagerClientConfig } = createStoreParams;
-        switch (secretsManagerClientConfig.implementation) {
-            case "LOCAL STORAGE":
-                return createLocalStorageSecretManagerClient(secretsManagerClientConfig);
-            case "VAULT":
-                return createVaultSecretsManagerClient(secretsManagerClientConfig);
-        }
-    })();
-
-    let getCurrentlySelectedDeployRegionId: (() => string) | undefined = undefined;
-
-    const onyxiaApiClient = (() => {
-        const { onyxiaApiClientConfig } = createStoreParams;
-        switch (onyxiaApiClientConfig.implementation) {
-            case "MOCK":
-                return createMockOnyxiaApiClient(onyxiaApiClientConfig);
-            case "OFFICIAL":
-                return createOfficialOnyxiaApiClient({
-                    "baseUrl": onyxiaApiClientConfig.baseUrl,
-                    "getCurrentlySelectedDeployRegionId": () =>
-                        getCurrentlySelectedDeployRegionId?.(),
-                    "getOidcAccessToken": oidcClient.getAccessToken,
-                });
-        }
-    })();
-
-    const userApiClient = (() => {
-        const { userApiClientConfig } = createStoreParams;
-        switch (userApiClientConfig.implementation) {
-            case "JWT":
-                return createJwtUserApiClient({
-                    "oidcClaims": userApiClientConfig.oidcClaims,
-                    "getOidcAccessToken": oidcClient.getAccessToken,
-                });
-            case "MOCK":
-                return createMockJwtUserApiClient({
-                    "user": userApiClientConfig.user,
-                });
-        }
-    })();
-
-    const store = configureStore({
-        reducer,
-        ...getMiddleware({
-            "dependencies": {
-                secretsManagerClient,
-                oidcClient,
-                onyxiaApiClient,
-                createStoreParams,
-                userApiClient,
-            },
-        }),
-    });
-
-    store.dispatch(secretExplorerUseCase.privateThunks.initialize());
-    await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
-    await store.dispatch(userConfigsUseCase.privateThunks.initialize());
-    store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
-    await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
-    getCurrentlySelectedDeployRegionId = () =>
-        store.getState().deploymentRegion.selectedDeploymentRegionId;
-
-    return store;
-}
-
-async function createStoreForNonLoggedUser(params: {
-    createStoreParams: CreateStoreParams;
-    oidcClient: OidcClient.NotLoggedIn;
-}) {
-    const { oidcClient, createStoreParams } = params;
-
-    const onyxiaApiClient = (() => {
-        const { onyxiaApiClientConfig } = createStoreParams;
-        switch (onyxiaApiClientConfig.implementation) {
-            case "MOCK":
-                return createMockOnyxiaApiClient(onyxiaApiClientConfig);
-            case "OFFICIAL":
-                return createOfficialOnyxiaApiClient({
-                    "baseUrl": onyxiaApiClientConfig.baseUrl,
-                    "getCurrentlySelectedDeployRegionId": undefined,
-                    "getOidcAccessToken": undefined,
-                });
-        }
-    })();
-
-    const store = configureStore({
-        reducer,
-        ...getMiddleware({
-            "dependencies": {
-                oidcClient,
-                onyxiaApiClient,
-                createStoreParams,
-                "secretsManagerClient":
-                    createObjectThatThrowsIfAccessed<
-                        Dependencies["secretsManagerClient"]
-                    >(),
-                "userApiClient":
-                    createObjectThatThrowsIfAccessed<Dependencies["userApiClient"]>(),
-            },
-        }),
-    });
-
-    await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
-    await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
-    getCurrentlySelectedDeployRegionId = () =>
-        store.getState().deploymentRegion.selectedDeploymentRegionId;
-
-    assert<Equals<typeof store, ReturnType<typeof createStoreForLoggedUser>>>();
-
-    return store;
-}
-
 createStore.isFirstInvocation = true;
 
 export async function createStore(params: CreateStoreParams) {
@@ -362,17 +236,88 @@ export async function createStore(params: CreateStoreParams) {
 
     dOidcClient.resolve(oidcClient);
 
-    const store = await (oidcClient.isUserLoggedIn
-        ? createStoreForLoggedUser({
-              oidcClient,
-              "createStoreParams": params,
-          })
-        : createStoreForNonLoggedUser({
-              oidcClient,
-              "createStoreParams": params,
-          }));
+    let getCurrentlySelectedDeployRegionId: (() => string) | undefined = undefined;
+
+    const onyxiaApiClient = (() => {
+        const { onyxiaApiClientConfig } = params;
+        switch (onyxiaApiClientConfig.implementation) {
+            case "MOCK":
+                return createMockOnyxiaApiClient(onyxiaApiClientConfig);
+            case "OFFICIAL":
+                return createOfficialOnyxiaApiClient({
+                    "baseUrl": onyxiaApiClientConfig.baseUrl,
+                    "getCurrentlySelectedDeployRegionId": () =>
+                        getCurrentlySelectedDeployRegionId?.(),
+                    "getOidcAccessToken": !oidcClient.isUserLoggedIn
+                        ? undefined
+                        : oidcClient.getAccessToken,
+                });
+        }
+    })();
+
+    const secretsManagerClient = oidcClient.isUserLoggedIn
+        ? (() => {
+              const { secretsManagerClientConfig } = params;
+              switch (secretsManagerClientConfig.implementation) {
+                  case "LOCAL STORAGE":
+                      return createLocalStorageSecretManagerClient(
+                          secretsManagerClientConfig,
+                      );
+                  case "VAULT":
+                      return createVaultSecretsManagerClient(secretsManagerClientConfig);
+              }
+          })()
+        : createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>();
+
+    const userApiClient = oidcClient.isUserLoggedIn
+        ? (() => {
+              const { userApiClientConfig } = params;
+              switch (userApiClientConfig.implementation) {
+                  case "JWT":
+                      return createJwtUserApiClient({
+                          "oidcClaims": userApiClientConfig.oidcClaims,
+                          "getOidcAccessToken": oidcClient.getAccessToken,
+                      });
+                  case "MOCK":
+                      return createMockJwtUserApiClient({
+                          "user": userApiClientConfig.user,
+                      });
+              }
+          })()
+        : createObjectThatThrowsIfAccessed<Dependencies["userApiClient"]>();
+
+    const store = configureStore({
+        reducer,
+        "middleware": getDefaultMiddleware =>
+            getDefaultMiddleware({
+                "thunk": {
+                    "extraArgument": id<Dependencies>({
+                        "createStoreParams": params,
+                        oidcClient,
+                        onyxiaApiClient,
+                        secretsManagerClient,
+                        userApiClient,
+                    }),
+                },
+            }),
+    });
 
     dStoreInstance.resolve(store);
+
+    if (oidcClient.isUserLoggedIn) {
+        store.dispatch(secretExplorerUseCase.privateThunks.initialize());
+    }
+
+    await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
+    await store.dispatch(userConfigsUseCase.privateThunks.initialize());
+
+    if (oidcClient.isUserLoggedIn) {
+        store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
+    }
+
+    await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
+    getCurrentlySelectedDeployRegionId = () =>
+        store.getState().deploymentRegion.selectedDeploymentRegionId;
 
     return store;
 }

@@ -43,16 +43,20 @@ export const thunks = {
     "changeDeploymentRegion":
         (params: { deploymentRegionId: string }): AppThunk =>
         async (...args) => {
-            const [dispatch] = args;
+            const [dispatch, , { oidcClient }] = args;
 
             const { deploymentRegionId } = params;
 
-            await dispatch(
-                userConfigsThunks.changeValue({
-                    "key": "deploymentRegionId",
-                    "value": deploymentRegionId,
-                }),
-            );
+            if (oidcClient.isUserLoggedIn) {
+                await dispatch(
+                    userConfigsThunks.changeValue({
+                        "key": "deploymentRegionId",
+                        "value": deploymentRegionId,
+                    }),
+                );
+            } else {
+                localStorage.setItem(localStorageKey, deploymentRegionId);
+            }
 
             dispatch(actions.deploymentRegionChanged({ deploymentRegionId }));
         },
@@ -67,24 +71,48 @@ export const privateThunks = {
             const availableDeploymentRegions =
                 await dependencies.onyxiaApiClient.getAvailableRegions();
 
-            //TODO: Local storage for region when not logged in.
+            if (!dependencies.oidcClient.isUserLoggedIn) {
+                const selectedDeploymentRegionId = localStorage.getItem(localStorageKey);
 
-            if (getState().userConfigs.deploymentRegionId.value === null) {
-                await dispatch(
-                    userConfigsThunks.changeValue({
-                        "key": "deploymentRegionId",
-                        "value": availableDeploymentRegions[0].id,
+                if (selectedDeploymentRegionId === null) {
+                    localStorage.setItem(
+                        localStorageKey,
+                        availableDeploymentRegions[0].id,
+                    );
+                }
+
+                dispatch(
+                    actions.initialize({
+                        availableDeploymentRegions,
+                        "selectedDeploymentRegionId":
+                            localStorage.getItem(localStorageKey)!,
+                    }),
+                );
+            } else {
+                if (
+                    localStorage.getItem(localStorageKey) !== null ||
+                    getState().userConfigs.deploymentRegionId.value === null
+                ) {
+                    await dispatch(
+                        userConfigsThunks.changeValue({
+                            "key": "deploymentRegionId",
+                            "value":
+                                localStorage.getItem(localStorageKey) ??
+                                availableDeploymentRegions[0].id,
+                        }),
+                    );
+
+                    localStorage.removeItem(localStorageKey);
+                }
+
+                dispatch(
+                    actions.initialize({
+                        availableDeploymentRegions,
+                        "selectedDeploymentRegionId":
+                            getState().userConfigs.deploymentRegionId.value!,
                     }),
                 );
             }
-
-            dispatch(
-                actions.initialize({
-                    availableDeploymentRegions,
-                    "selectedDeploymentRegionId":
-                        getState().userConfigs.deploymentRegionId.value!,
-                }),
-            );
         },
 };
 
@@ -104,3 +132,5 @@ export const selectors = (() => {
 
     return { selectedDeploymentRegionSelector };
 })();
+
+const localStorageKey = "selectedDeploymentRegionId";
