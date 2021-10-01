@@ -1,4 +1,4 @@
-import { useMemo, memo } from "react";
+import { useMemo, useEffect, memo } from "react";
 import { Header } from "app/components/shared/Header";
 import { LeftBar } from "app/theme";
 import { Footer } from "./Footer";
@@ -6,12 +6,7 @@ import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import {
-    useAppConstants,
-    useSelector,
-    useSyncDarkModeWithValueInProfile,
-    useApplyLanguageSelectedAtLogin,
-} from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/routes/router";
@@ -24,7 +19,12 @@ import { Account } from "app/components/pages/Account";
 import { FourOhFour } from "app/components/pages/FourOhFour";
 import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "app/components/pages/MyServices";
-
+import { thunks as userAuthenticationThunks } from "lib/useCases/userAuthentication";
+import { thunks as userConfigsThunks } from "lib/useCases/userConfigs";
+import { typeGuard } from "tsafe/typeGuard";
+import type { SupportedLanguage } from "app/i18n/resources";
+import { id } from "tsafe/id";
+import { useIsDarkModeEnabled } from "onyxia-ui";
 //Legacy
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -251,7 +251,9 @@ export declare namespace App {
 const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
 
-    const appConstants = useAppConstants();
+    const dispatch = useDispatch();
+
+    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
 
     const legacyRoute = useMemo(() => {
         const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
@@ -262,8 +264,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
             return undefined;
         }
 
-        if (Page.requireUserLoggedIn && !appConstants.isUserLoggedIn) {
-            appConstants.login();
+        if (Page.requireUserLoggedIn && !isUserLoggedIn) {
+            dispatch(userAuthenticationThunks.login());
 
             return null;
         }
@@ -301,8 +303,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Catalog;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn(route) && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+            if (Page.requireUserLoggedIn(route) && !isUserLoggedIn) {
+                dispatch(userAuthenticationThunks.login());
 
                 return null;
             }
@@ -315,8 +317,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Home;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+                dispatch(userAuthenticationThunks.login());
 
                 return null;
             }
@@ -329,8 +331,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = MySecrets;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+                dispatch(userAuthenticationThunks.login());
 
                 return null;
             }
@@ -343,8 +345,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Account;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+                dispatch(userAuthenticationThunks.login());
 
                 return null;
             }
@@ -357,8 +359,8 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         const Page = MyServices;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !appConstants.isUserLoggedIn) {
-                appConstants.login();
+            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+                dispatch(userAuthenticationThunks.login());
 
                 return null;
             }
@@ -373,3 +375,80 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
     return <FourOhFour />;
 };
+
+/** On the login pages hosted by keycloak the user can select
+ * a language, we want to use this language on the app.
+ * For example we want that if a user selects english on the
+ * register page while signing in that the app be set to english
+ * automatically.
+ */
+function useApplyLanguageSelectedAtLogin() {
+    const dispatch = useDispatch();
+
+    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
+
+    const { setLng } = useLng();
+
+    useEffect(() => {
+        if (!isUserLoggedIn) {
+            return;
+        }
+
+        const { kcLanguageTag } = dispatch(userAuthenticationThunks.getUser());
+
+        if (
+            !typeGuard<SupportedLanguage>(
+                kcLanguageTag,
+                kcLanguageTag in
+                    id<Record<SupportedLanguage, null>>({
+                        "en": null,
+                        "fr": null,
+                    }),
+            )
+        ) {
+            return;
+        }
+
+        setLng(kcLanguageTag);
+    }, []);
+}
+
+/**
+ * This hook to two things:
+ * - It sets whether or not the dark mode is enabled based on
+ * the value stored in user configs.
+ * - Each time the dark mode it changed it changes the value in
+ * user configs.
+ */
+function useSyncDarkModeWithValueInProfile() {
+    const dispatch = useDispatch();
+
+    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
+
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
+
+    const userConfigsIsDarkModeEnabled = useSelector(state =>
+        !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value,
+    );
+
+    useEffect(() => {
+        if (userConfigsIsDarkModeEnabled === undefined) {
+            return;
+        }
+
+        setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
+    }, []);
+
+    useEffectOnValueChange(() => {
+        if (!isUserLoggedIn) {
+            return;
+        }
+
+        dispatch(
+            userConfigsThunks.changeValue({
+                "key": "isDarkModeEnabled",
+                "value": isDarkModeEnabled,
+            }),
+        );
+    }, [isDarkModeEnabled]);
+}

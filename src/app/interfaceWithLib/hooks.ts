@@ -1,178 +1,104 @@
-import { useMemo, useEffect } from "react";
+import "minimal-polyfills/Object.fromEntries";
 import * as reactRedux from "react-redux";
 import type { Store, RootState } from "lib/setup";
-import { pure } from "lib/setup";
-import { thunks } from "lib/setup";
-import type { AppConstant } from "lib/useCases/userAuthentication";
-import { assert } from "tsafe/assert";
-import { useIsDarkModeEnabled } from "onyxia-ui";
-import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { useLng } from "app/i18n/useLng";
-import type { SupportedLanguage } from "app/i18n/resources";
-import { typeGuard } from "tsafe/typeGuard";
-import { id } from "tsafe/id";
+import type { Param0 } from "tsafe";
 
-/** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
-export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
+import type { AppThunk as Xxx } from "lib/setup";
+import { objectKeys } from "tsafe/objectKeys";
+import type { Action, ThunkAction as GenericThunkAction } from "@reduxjs/toolkit";
+
+import * as secretExplorerUseCase from "lib/useCases/secretExplorer";
+import * as userConfigsUseCase from "lib/useCases/userConfigs";
+import * as launcherUseCase from "lib/useCases/launcher";
+import * as catalogExplorerUseCase from "lib/useCases/catalogExplorer";
+import * as runningServiceUseCase from "lib/useCases/runningService";
+import * as restorablePackageConfigsUseCase from "lib/useCases/restorablePackageConfigs";
+import * as publicIpUseCase from "lib/useCases/publicIp";
+import * as userAuthenticationUseCase from "lib/useCases/userAuthentication";
+import * as deploymentRegionUseCase from "lib/useCases/deploymentRegion";
 
 export const useSelector: reactRedux.TypedUseSelectorHook<RootState> =
     reactRedux.useSelector;
 
-export function useAppConstants(): AppConstant;
-export function useAppConstants(params: {
-    assertIsUserLoggedInIs: true;
-}): AppConstant.LoggedIn;
-export function useAppConstants(params: {
-    assertIsUserLoggedInIs: false;
-}): AppConstant.NotLoggedIn;
-export function useAppConstants(params?: {
-    assertIsUserLoggedInIs: boolean;
-}): AppConstant {
-    const { assertIsUserLoggedInIs } = params ?? {};
+function useThunksToRegularFunction<
+    DefaultThunkAction extends GenericThunkAction<
+        Promise<void>,
+        any,
+        any,
+        Action<string>
+    >,
+>() {
+    type ThunkAction<ReturnType = Promise<void>> = GenericThunkAction<
+        ReturnType,
+        DefaultThunkAction extends GenericThunkAction<any, infer RootState, any, any>
+            ? RootState
+            : never,
+        DefaultThunkAction extends GenericThunkAction<
+            any,
+            any,
+            infer ThunksExtraArgument,
+            any
+        >
+            ? ThunksExtraArgument
+            : never,
+        Action<string>
+    >;
 
-    const dispatch = useDispatch();
+    type ThunkToRegularFunction<Thunk extends (params: any) => ThunkAction<any>> = (
+        params: Param0<Thunk>,
+    ) => Thunk extends () => ThunkAction<infer R> ? R : Promise<void>;
 
-    const appConstants = useMemo(
-        () => dispatch(thunks.appConstants.getAppConstants()),
-        [dispatch],
-    );
+    const dispatch = reactRedux.useDispatch<(appThunk: ThunkAction<any>) => any>();
 
-    assert(
-        assertIsUserLoggedInIs === undefined ||
-            assertIsUserLoggedInIs === appConstants.isUserLoggedIn,
-    );
+    function thunksToRegularFunctions<
+        Thunks extends Record<string, (params: any) => ThunkAction<any>>,
+    >(thunks: Thunks): { [Key in keyof Thunks]: ThunkToRegularFunction<Thunks[Key]> } {
+        return Object.fromEntries(
+            objectKeys(thunks).map(name => [
+                name,
+                (params: any) => dispatch(thunks[name](params)),
+            ]),
+        ) as any;
+    }
 
-    return appConstants;
+    return { thunksToRegularFunctions };
 }
 
-export function useSelectedRegion() {
-    const appConstants = useAppConstants();
+export function useThunks() {
+    const { thunksToRegularFunctions } = useThunksToRegularFunction<Xxx>();
 
-    const deploymentRegionId = useSelector(state =>
-        appConstants.isUserLoggedIn ? state.userConfigs.deploymentRegionId.value : null,
-    );
-
-    const selectedRegion = !appConstants.isUserLoggedIn
-        ? undefined
-        : appConstants.regions.find(({ id }) => id === deploymentRegionId);
-
-    return selectedRegion;
-}
-
-export function useSecretExplorerUserHomePath() {
-    const {
-        parsedJwt: { username },
-    } = useAppConstants({ "assertIsUserLoggedInIs": true });
-    const secretExplorerUserHomePath = pure.secretExplorer.getUserHomePath({ username });
-    return { secretExplorerUserHomePath };
-}
-
-export function useIsBetaModeEnabled(): {
-    isBetaModeEnabled: boolean;
-    setIsBetaModeEnabled(value: boolean): void;
-} {
-    const dispatch = useDispatch();
-
-    const { isUserLoggedIn } = useAppConstants();
-
-    const isBetaModeEnabled = useSelector(state =>
-        !isUserLoggedIn ? false : state.userConfigs.isBetaModeEnabled.value,
-    );
+    const wordId = "Thunks" as const;
 
     return {
-        isBetaModeEnabled,
-        "setIsBetaModeEnabled": value =>
-            dispatch(
-                thunks.userConfigs.changeValue({
-                    "key": "isBetaModeEnabled",
-                    value,
-                }),
-            ),
+        [`${secretExplorerUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            secretExplorerUseCase.thunks,
+        ),
+        [`${userConfigsUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            userConfigsUseCase.thunks,
+        ),
+        [`${launcherUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            launcherUseCase.thunks,
+        ),
+        [`${catalogExplorerUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            catalogExplorerUseCase.thunks,
+        ),
+        [`${runningServiceUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            runningServiceUseCase.thunks,
+        ),
+        [`${restorablePackageConfigsUseCase.name}${wordId}` as const]:
+            thunksToRegularFunctions(restorablePackageConfigsUseCase.thunks),
+        [`${publicIpUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            publicIpUseCase.thunks,
+        ),
+        [`${userAuthenticationUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            userAuthenticationUseCase.thunks,
+        ),
+        [`${deploymentRegionUseCase.name}${wordId}` as const]: thunksToRegularFunctions(
+            deploymentRegionUseCase.thunks,
+        ),
     };
 }
 
-/** On the login pages hosted by keycloak the user can select
- * a language, we want to use this language on the app.
- * For example we want that if a user selects english on the
- * register page while signing in that the app be set to english
- * automatically.
- * This is what this hook does it look for the language selected
- * at login time in the oidc JWT and if it is a language available
- * on the app, it applies it.
- */
-export function useApplyLanguageSelectedAtLogin() {
-    const appConstants = useAppConstants();
+//type Out = ThunksToRegularFunctions<typeof secretExplorerUseCase["thunks"]>;
 
-    const { setLng } = useLng();
-
-    useEffect(() => {
-        if (!appConstants.isUserLoggedIn) {
-            return;
-        }
-
-        const { kcLanguageTag } = appConstants.parsedJwt;
-
-        if (
-            !typeGuard<SupportedLanguage>(
-                kcLanguageTag,
-                kcLanguageTag in
-                    id<Record<SupportedLanguage, null>>({
-                        "en": null,
-                        "fr": null,
-                    }),
-            )
-        ) {
-            return;
-        }
-
-        setLng(kcLanguageTag);
-    }, []);
-}
-
-/**
- * This hook to two things:
- * - It sets whether or not the dark mode is enabled based on
- * the value stored in user configs.
- * - Each time the dark mode it changed it changes the value in
- * user configs.
- */
-export function useSyncDarkModeWithValueInProfile() {
-    const { isUserLoggedIn } = useAppConstants();
-
-    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
-
-    const dispatch = useDispatch();
-
-    const userConfigsIsDarkModeEnabled = useSelector(state =>
-        !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value,
-    );
-
-    useEffect(() => {
-        if (userConfigsIsDarkModeEnabled === undefined) {
-            return;
-        }
-
-        setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
-    }, []);
-
-    useEffectOnValueChange(() => {
-        if (!isUserLoggedIn) {
-            return;
-        }
-
-        dispatch(
-            thunks.userConfigs.changeValue({
-                "key": "isDarkModeEnabled",
-                "value": isDarkModeEnabled,
-            }),
-        );
-    }, [isDarkModeEnabled]);
-}
-
-export function useSecretsManagerTranslations() {
-    const { secretsManagerTranslations } = useAppConstants({
-        "assertIsUserLoggedInIs": true,
-    });
-
-    return { secretsManagerTranslations };
-}
+//const x: Out = null as any;
