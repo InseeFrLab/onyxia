@@ -186,23 +186,6 @@ assert<
     >
 >();
 
-const reducer = {
-    // Legacy
-    [myFiles.name]: myFiles.reducer,
-    [myLab.name]: myLab.reducer,
-    [app.name]: app.reducer,
-    [user.name]: user.reducer,
-
-    [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
-    [userConfigsUseCase.name]: userConfigsUseCase.reducer,
-    [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer,
-    [launcherUseCase.name]: launcherUseCase.reducer,
-    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.reducer,
-    [runningServiceUseCase.name]: runningServiceUseCase.reducer,
-    [publicIpUseCase.name]: publicIpUseCase.reducer,
-    [deploymentRegionUseCase.name]: deploymentRegionUseCase.reducer,
-};
-
 export type Dependencies = {
     createStoreParams: CreateStoreParams;
     secretsManagerClient: SecretsManagerClient;
@@ -287,7 +270,23 @@ export async function createStore(params: CreateStoreParams) {
         : createObjectThatThrowsIfAccessed<Dependencies["userApiClient"]>();
 
     const store = configureStore({
-        reducer,
+        "reducer": {
+            // Legacy
+            [myFiles.name]: myFiles.reducer,
+            [myLab.name]: myLab.reducer,
+            [app.name]: app.reducer,
+            [user.name]: user.reducer,
+
+            [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
+            [userConfigsUseCase.name]: userConfigsUseCase.reducer,
+            [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer,
+            [launcherUseCase.name]: launcherUseCase.reducer,
+            [restorablePackageConfigsUseCase.name]:
+                restorablePackageConfigsUseCase.reducer,
+            [runningServiceUseCase.name]: runningServiceUseCase.reducer,
+            [publicIpUseCase.name]: publicIpUseCase.reducer,
+            [deploymentRegionUseCase.name]: deploymentRegionUseCase.reducer,
+        },
         "middleware": getDefaultMiddleware =>
             getDefaultMiddleware({
                 "thunk": {
