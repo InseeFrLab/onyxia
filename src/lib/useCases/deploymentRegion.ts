@@ -66,12 +66,12 @@ export const privateThunks = {
     "initialize":
         (): AppThunk =>
         async (...args) => {
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
             const availableDeploymentRegions =
-                await dependencies.onyxiaApiClient.getAvailableRegions();
+                await onyxiaApiClient.getAvailableRegions();
 
-            if (!dependencies.oidcClient.isUserLoggedIn) {
+            if (!oidcClient.isUserLoggedIn) {
                 const selectedDeploymentRegionId = localStorage.getItem(localStorageKey);
 
                 if (selectedDeploymentRegionId === null) {

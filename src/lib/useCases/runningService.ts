@@ -204,10 +204,10 @@ export const thunks = {
         async (...args) => {
             const { serviceId } = params;
 
-            const [dispatch, , dependencies] = args;
+            const [dispatch, , { onyxiaApiClient }] = args;
 
             dispatch(actions.serviceStopped({ serviceId }));
 
-            await dependencies.onyxiaApiClient.stopService({ serviceId });
+            await onyxiaApiClient.stopService({ serviceId });
         },
 };
