@@ -4,7 +4,7 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
-import type { AppThunk } from "lib/setup";
+import type { ThunkAction } from "lib/setup";
 import { parseOidcAccessToken_legacy } from "lib/ports/OidcClient";
 
 export type State = {
@@ -170,7 +170,7 @@ const asyncThunks = {
         };
     })(),
     "loadUserBuckets":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [dispatch, , { oidcClient }] = args;
 

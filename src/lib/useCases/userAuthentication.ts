@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { User } from "../ports/UserApiClient";
-import type { AppThunk, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, ThunksExtraArgument } from "../setup";
 
 const userByStoreInst = new WeakMap<ThunksExtraArgument, User>();
 
@@ -8,7 +8,7 @@ export const name = "userAuthentication";
 
 export const thunks = {
     "getUser":
-        (): AppThunk<User> =>
+        (): ThunkAction<User> =>
         (...args) => {
             const [, , extraArg] = args;
 
@@ -17,14 +17,14 @@ export const thunks = {
             return userByStoreInst.get(extraArg)!;
         },
     "getIsUserLoggedIn":
-        (): AppThunk<boolean> =>
+        (): ThunkAction<boolean> =>
         (...args) => {
             const [, , { oidcClient }] = args;
 
             return oidcClient.isUserLoggedIn;
         },
     "login":
-        (): AppThunk<Promise<never>> =>
+        (): ThunkAction<Promise<never>> =>
         (...args) => {
             const [, , { oidcClient }] = args;
 
@@ -33,7 +33,7 @@ export const thunks = {
             return oidcClient.login();
         },
     "logout":
-        (params: { redirectTo: "home" | "current page" }): AppThunk<Promise<never>> =>
+        (params: { redirectTo: "home" | "current page" }): ThunkAction<Promise<never>> =>
         (...args) => {
             const { redirectTo } = params;
 
@@ -47,7 +47,7 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [, , extraArg] = args;
 

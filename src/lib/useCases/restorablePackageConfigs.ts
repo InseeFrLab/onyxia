@@ -5,7 +5,7 @@ import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import {
     createObjectThatThrowsIfAccessedFactory,
@@ -125,7 +125,7 @@ const { reducer, actions } = createSlice({
 export { reducer };
 
 export const privateThunks = {
-    "initialize": (): AppThunk<void> => async (dispatch, getState) =>
+    "initialize": (): ThunkAction<void> => async (dispatch, getState) =>
         dispatch(
             actions.initializationCompleted({
                 "restorablePackageConfigs": (() => {
@@ -136,7 +136,7 @@ export const privateThunks = {
                 })(),
             }),
         ),
-    "syncWithUserConfig": (): AppThunk => async (dispatch, getState) =>
+    "syncWithUserConfig": (): ThunkAction => async (dispatch, getState) =>
         dispatch(
             userConfigsThunks.changeValue({
                 "key": "bookmarkedServiceConfigurationStr",
@@ -149,7 +149,7 @@ export const privateThunks = {
 
 export const thunks = {
     "fetchIconsIfNotAlreadyDone":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApiClient }] = args;
 
@@ -191,7 +191,7 @@ export const thunks = {
             getDoOverwriteConfiguration: (params: {
                 friendlyName: string;
             }) => Promise<boolean>;
-        }): AppThunk =>
+        }): ThunkAction =>
         async (dispatch, getState) => {
             const { restorablePackageConfig, getDoOverwriteConfiguration } = params;
 
@@ -256,7 +256,7 @@ export const thunks = {
             await dispatch(privateThunks.syncWithUserConfig());
         },
     "deleteRestorablePackageConfig":
-        (params: { restorablePackageConfig: RestorablePackageConfig }): AppThunk =>
+        (params: { restorablePackageConfig: RestorablePackageConfig }): ThunkAction =>
         async dispatch => {
             const { restorablePackageConfig } = params;
 

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import { join as pathJoin } from "path";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
@@ -91,7 +91,7 @@ export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> =
 
 export const thunks = {
     "changeValue":
-        <K extends keyof UserConfigs>(params: ChangeValueParams<K>): AppThunk =>
+        <K extends keyof UserConfigs>(params: ChangeValueParams<K>): ThunkAction =>
         async (...args) => {
             const [dispatch, getState, { secretsManagerClient, oidcClient }] = args;
 
@@ -116,14 +116,14 @@ export const thunks = {
 
             dispatch(actions.changeCompleted(params));
         },
-    "renewUserServicePassword": (): AppThunk => dispatch =>
+    "renewUserServicePassword": (): ThunkAction => dispatch =>
         dispatch(
             thunks.changeValue({
                 "key": "userServicePassword",
                 "value": generatePassword(),
             }),
         ),
-    "resetHelperDialogs": (): AppThunk => dispatch =>
+    "resetHelperDialogs": (): ThunkAction => dispatch =>
         dispatch(
             thunks.changeValue({
                 "key": "doDisplayMySecretsUseInServiceDialog",
@@ -134,7 +134,7 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [
                 dispatch,

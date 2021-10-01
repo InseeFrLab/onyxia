@@ -1,4 +1,4 @@
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { Get_Public_Catalog } from "../ports/OnyxiaApiClient";
@@ -95,7 +95,7 @@ export { reducer };
 
 export const thunks = {
     "fetchCatalogs":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [dispatch, , { onyxiaApiClient }] = args;
 
@@ -116,7 +116,7 @@ export const thunks = {
             );
         },
     "selectCatalog":
-        (params: { catalogId: string }): AppThunk<void> =>
+        (params: { catalogId: string }): ThunkAction<void> =>
         async dispatch =>
             dispatch(actions.catalogSelected(params)),
 };

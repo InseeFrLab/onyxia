@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { AppThunk } from "lib/setup";
+import type { ThunkAction } from "lib/setup";
 
 export type State = {
     redirectUri: string | null;
@@ -16,7 +16,7 @@ export const name = "app";
 
 export const thunk = {
     "logout":
-        (): AppThunk<Promise<never>> =>
+        (): ThunkAction<Promise<never>> =>
         async (...args) => {
             const [, , { oidcClient }] = args;
 

@@ -1,4 +1,4 @@
-import type { AppThunk, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, ThunksExtraArgument } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -23,7 +23,7 @@ const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>(
 
 export const thunks = {
     "fetch":
-        (): AppThunk<Promise<{ publicIp: string }>> =>
+        (): ThunkAction<Promise<{ publicIp: string }>> =>
         async (...args) => {
             const [dispatch, , extraArg] = args;
 
