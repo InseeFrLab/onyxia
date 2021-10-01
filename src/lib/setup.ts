@@ -186,7 +186,7 @@ assert<
     >
 >();
 
-export type Dependencies = {
+export type ThunksExtraArgument = {
     createStoreParams: CreateStoreParams;
     secretsManagerClient: SecretsManagerClient;
     userApiClient: UserApiClient;
@@ -250,7 +250,7 @@ export async function createStore(params: CreateStoreParams) {
                       return createVaultSecretsManagerClient(secretsManagerClientConfig);
               }
           })()
-        : createObjectThatThrowsIfAccessed<Dependencies["secretsManagerClient"]>();
+        : createObjectThatThrowsIfAccessed<SecretsManagerClient>();
 
     const userApiClient = oidcClient.isUserLoggedIn
         ? (() => {
@@ -267,7 +267,7 @@ export async function createStore(params: CreateStoreParams) {
                       });
               }
           })()
-        : createObjectThatThrowsIfAccessed<Dependencies["userApiClient"]>();
+        : createObjectThatThrowsIfAccessed<UserApiClient>();
 
     const store = configureStore({
         "reducer": {
@@ -290,7 +290,7 @@ export async function createStore(params: CreateStoreParams) {
         "middleware": getDefaultMiddleware =>
             getDefaultMiddleware({
                 "thunk": {
-                    "extraArgument": id<Dependencies>({
+                    "extraArgument": id<ThunksExtraArgument>({
                         "createStoreParams": params,
                         oidcClient,
                         onyxiaApiClient,
@@ -328,7 +328,7 @@ export type RootState = ReturnType<Store["getState"]>;
 export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
     ReturnType,
     RootState,
-    Dependencies,
+    ThunksExtraArgument,
     Action<string>
 >;
 
