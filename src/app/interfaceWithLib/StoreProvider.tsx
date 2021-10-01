@@ -9,9 +9,9 @@ import type {
     OidcClientConfig,
     SecretsManagerClientConfig,
     OnyxiaApiClientConfig,
+    UserApiClientConfig,
 } from "lib/setup";
 import { getEnv } from "env";
-import * as mockData from "./mockData";
 
 export function createStoreProvider(params: { isStorybook: boolean }) {
     const { isStorybook } = params;
@@ -20,26 +20,63 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
     const createStore_memo = memoize(
         () =>
             createStore({
+                "getIsDarkModeEnabledValueForProfileInitialization":
+                    getIsDarkModeEnabledOsDefault,
+
                 "oidcClientConfig":
                     isStorybook || getEnv().OIDC_URL === ""
                         ? id<OidcClientConfig.Phony>({
                               "implementation": "PHONY",
-                              "tokenValidityDurationMs": Infinity,
-                              "parsedJwt": {
-                                  "email": "john.doe@insee.fr",
-                                  "username": "jdoe",
-                                  "familyName": "Doe",
-                                  "firstName": "John",
-                                  "groups": ["sspcloud-admin", "dsi-ddc"],
-                                  "kcLanguageTag": "en",
-                              },
+                              "isUserLoggedIn": true,
                           })
                         : id<OidcClientConfig.Keycloak>({
                               "implementation": "KEYCLOAK",
-                              "keycloakConfig": {
-                                  "clientId": getEnv().OIDC_CLIENT_ID,
-                                  "realm": getEnv().OIDC_REALM,
-                                  "url": getEnv().OIDC_URL,
+                              "url": getEnv().OIDC_URL,
+                              "realm": getEnv().OIDC_REALM,
+                              "clientId": getEnv().OIDC_CLIENT_ID,
+                          }),
+                "onyxiaApiClientConfig": isStorybook
+                    ? id<OnyxiaApiClientConfig.Mock>({
+                          "implementation": "MOCK",
+                          "availableDeploymentRegions": [
+                              {
+                                  "id": "nowhere",
+                                  "namespacePrefix": "users",
+                              },
+                          ],
+                      })
+                    : id<OnyxiaApiClientConfig.Official>({
+                          "implementation": "OFFICIAL",
+                          "url":
+                              getEnv().ONYXIA_API_URL ||
+                              (() => {
+                                  const { protocol, host } = window.location;
+
+                                  return `${protocol}//${host}/api`;
+                              })(),
+                      }),
+                "userApiClientConfig":
+                    isStorybook || getEnv().OIDC_URL === ""
+                        ? id<UserApiClientConfig.Mock>({
+                              "implementation": "MOCK",
+                              "user": {
+                                  "email": "john.doe@example.com",
+                                  "familyName": "Doe",
+                                  "firstName": "John",
+                                  "username": "jdoe",
+                                  "groups": [],
+                                  "kcLanguageTag": "en",
+                              },
+                          })
+                        : id<UserApiClientConfig.Jwt>({
+                              "implementation": "JWT",
+                              "oidcClaims": {
+                                  "email": getEnv().OIDC_EMAIL_CLAIM,
+                                  "familyName": getEnv().OIDC_FAMILY_NAME_CLAIM,
+                                  "fistName": getEnv().OIDC_FIRST_NAME_CLAIM,
+                                  "userName": getEnv().OIDC_USERNAME_CLAIM,
+                                  "groups": getEnv().OIDC_GROUPS_CLAIM,
+                                  "local": getEnv().OIDC_LOCALE_CLAIM,
                               },
                           }),
                 "secretsManagerClientConfig":
@@ -48,41 +85,24 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                               "implementation": "LOCAL STORAGE",
                               "artificialDelayMs": 0,
                               "doReset": false,
-                              "paramsForTranslator": isStorybook
-                                  ? {
-                                        "baseUri": "https://vault.lab.sspcloud.fr",
-                                        "engine": "onyxia-kv",
-                                        "role": "onyxia-user",
-                                    }
-                                  : {
-                                        "baseUri": "",
-                                        "engine": "",
-                                        "role": "",
-                                    },
+                              "paramsForTranslator": {
+                                  "engine": isStorybook ? "onyxia-kv" : "",
+                              },
                           })
                         : id<SecretsManagerClientConfig.Vault>({
                               "implementation": "VAULT",
                               "baseUri": getEnv().VAULT_URL,
                               "engine": getEnv().VAULT_KV_ENGINE,
                               "role": getEnv().VAULT_ROLE,
+                              "keycloakParams": {
+                                  "url": getEnv().OIDC_VAULT_URL || getEnv().OIDC_URL,
+                                  "realm":
+                                      getEnv().OIDC_VAULT_REALM || getEnv().OIDC_REALM,
+                                  "clientId":
+                                      getEnv().OIDC_VAULT_CLIENT_ID ||
+                                      getEnv().OIDC_CLIENT_ID,
+                              },
                           }),
-                "onyxiaApiClientConfig": isStorybook
-                    ? id<OnyxiaApiClientConfig.Mock>({
-                          "implementation": "MOCK",
-                          ...mockData,
-                      })
-                    : id<OnyxiaApiClientConfig.Official>({
-                          "implementation": "OFFICIAL",
-                          "baseUrl":
-                              getEnv().ONYXIA_API_URL ||
-                              (() => {
-                                  const { protocol, host } = window.location;
-
-                                  return `${protocol}//${host}/api`;
-                              })(),
-                      }),
-                "getIsDarkModeEnabledValueForProfileInitialization":
-                    getIsDarkModeEnabledOsDefault,
             }),
         { "promise": true },
     );
@@ -94,11 +114,7 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
     function StoreProvider(props: Props) {
         const { children } = props;
 
-        const asyncCreateStore = useAsync(
-            () => createStore_memo(),
-
-            [],
-        );
+        const asyncCreateStore = useAsync(() => createStore_memo(), []);
 
         if (asyncCreateStore.error) {
             throw asyncCreateStore.error;

@@ -42,10 +42,10 @@ export type CreateStoreParams = {
      * when it's the first time the user logs in and the value hasn't been stored yet in vault.
      * */
     getIsDarkModeEnabledValueForProfileInitialization(): boolean;
-    secretsManagerClientConfig: SecretsManagerClientConfig;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     userApiClientConfig: UserApiClientConfig;
+    secretsManagerClientConfig: SecretsManagerClientConfig;
 };
 
 export type UserApiClientConfig = UserApiClientConfig.Jwt | UserApiClientConfig.Mock;
@@ -181,7 +181,7 @@ assert<
           }
         | {
               implementation: "OFFICIAL";
-              baseUrl: string;
+              url: string;
           }
     >
 >();
@@ -228,7 +228,7 @@ export async function createStore(params: CreateStoreParams) {
                 return createMockOnyxiaApiClient(onyxiaApiClientConfig);
             case "OFFICIAL":
                 return createOfficialOnyxiaApiClient({
-                    "baseUrl": onyxiaApiClientConfig.baseUrl,
+                    "url": onyxiaApiClientConfig.url,
                     "getCurrentlySelectedDeployRegionId": () =>
                         getCurrentlySelectedDeployRegionId?.(),
                     "getOidcAccessToken": !oidcClient.isUserLoggedIn
