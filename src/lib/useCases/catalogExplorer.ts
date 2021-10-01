@@ -97,11 +97,11 @@ export const thunks = {
     "fetchCatalogs":
         (): AppThunk =>
         async (...args) => {
-            const [dispatch, , dependencies] = args;
+            const [dispatch, , { onyxiaApiClient }] = args;
 
             dispatch(actions.catalogsFetching());
 
-            const apiRequestResult = await dependencies.onyxiaApiClient.getCatalogs();
+            const apiRequestResult = await onyxiaApiClient.getCatalogs();
 
             dispatch(
                 actions.catalogsFetched(

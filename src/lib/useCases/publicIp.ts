@@ -1,9 +1,8 @@
-import type { AppThunk } from "../setup";
+import type { AppThunk, ThunksExtraArgument } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import type { Dependencies } from "../setup";
 
 export const name = "publicIp";
 
@@ -20,19 +19,19 @@ const { reducer, actions } = createSlice({
 
 export { reducer };
 
-const isEvtOnlineRegisteredByDependencyRef = new WeakMap<Dependencies, true>();
+const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>();
 
 export const thunks = {
     "fetch":
         (): AppThunk<Promise<{ publicIp: string }>> =>
         async (...args) => {
-            const [dispatch, , dependencies] = args;
+            const [dispatch, , extraArg] = args;
 
-            const { onyxiaApiClient } = dependencies;
+            const { onyxiaApiClient } = extraArg;
 
             const publicIp = await onyxiaApiClient.getIp();
 
-            if (!isEvtOnlineRegisteredByDependencyRef.has(dependencies)) {
+            if (!isEvtOnlineRegisteredByStoreInst.has(extraArg)) {
                 Evt.from(window, "online").attach(() => {
                     dispatch(actions.publicIpMightHaveChanged());
 
@@ -41,7 +40,7 @@ export const thunks = {
                     dispatch(thunks.fetch());
                 });
 
-                isEvtOnlineRegisteredByDependencyRef.set(dependencies, true);
+                isEvtOnlineRegisteredByStoreInst.set(extraArg, true);
             }
 
             dispatch(actions.fetched(publicIp));

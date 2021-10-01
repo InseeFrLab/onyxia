@@ -151,7 +151,7 @@ export const thunks = {
     "fetchIconsIfNotAlreadyDone":
         (): AppThunk =>
         async (...args) => {
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, { onyxiaApiClient }] = args;
 
             {
                 const state = getState().restorablePackageConfig;
@@ -163,8 +163,7 @@ export const thunks = {
 
             dispatch(actions.fetchIconStarted());
 
-            const apiRequestForIconsResult =
-                await dependencies.onyxiaApiClient.getCatalogs();
+            const apiRequestForIconsResult = await onyxiaApiClient.getCatalogs();
 
             const iconsUrl: IconsUrl = {};
 

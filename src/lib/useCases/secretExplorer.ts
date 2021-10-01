@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { AppThunk, Dependencies } from "../setup";
+import type { AppThunk, ThunksExtraArgument } from "../setup";
 import type {
     SecretWithMetadata,
     SecretsManagerClient,
@@ -22,7 +22,7 @@ import { unwrapWritableDraft } from "lib/tools/unwrapWritableDraft";
 import { Mutex } from "async-mutex";
 import { getVaultClientTranslator } from "../secondaryAdapters/vaultSecretsManagerClient";
 
-const getMutexes = memoize((_: Dependencies) => ({
+const getMutexes = memoize((_: ThunksExtraArgument) => ({
     "createOrRename": new Mutex(),
     "navigateMutex": new Mutex(),
 }));
@@ -448,14 +448,14 @@ export const thunks = {
                   },
         ): AppThunk =>
         async (...args) => {
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
 
             const { secretsManagerClientProxy } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             dispatch(actions.navigationStarted());
 
-            (await getMutexes(dependencies).createOrRename.acquire())();
+            (await getMutexes(extraArg).createOrRename.acquire())();
 
             const directoryPath = (() => {
                 const { currentPath } = getState().secretExplorer;
@@ -467,7 +467,7 @@ export const thunks = {
             })();
 
             const releaseNavigationMutex = await getMutexes(
-                dependencies,
+                extraArg,
             ).navigateMutex.acquire();
 
             const listResult = await secretsManagerClientProxy
@@ -503,13 +503,13 @@ export const thunks = {
                   },
         ): AppThunk =>
         async (...args) => {
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
             const { secretsManagerClientProxy } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             dispatch(actions.navigationStarted());
 
-            (await getMutexes(dependencies).createOrRename.acquire())();
+            (await getMutexes(extraArg).createOrRename.acquire())();
 
             const secretPath = (() => {
                 const { currentPath } = getState().secretExplorer;
@@ -521,7 +521,7 @@ export const thunks = {
             })();
 
             const releaseNavigationMutex = await getMutexes(
-                dependencies,
+                extraArg,
             ).navigateMutex.acquire();
 
             const secretWithMetadata = await secretsManagerClientProxy
@@ -596,10 +596,10 @@ export const thunks = {
         async (...args) => {
             const { newSecretBasename } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
 
             const { secretsManagerClientExtension } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             const { secretExplorer: state } = getState();
 
@@ -611,7 +611,7 @@ export const thunks = {
                 }),
             );
 
-            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
+            const prReleaseMutex = getMutexes(extraArg).createOrRename.acquire();
 
             const error = await secretsManagerClientExtension
                 .renameSecret({
@@ -649,10 +649,10 @@ export const thunks = {
         async (...args) => {
             const { basename, newBasename, kind } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
 
             const { secretsManagerClientExtension } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             const { secretExplorer: state } = getState();
 
@@ -668,7 +668,7 @@ export const thunks = {
                 }),
             );
 
-            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
+            const prReleaseMutex = getMutexes(extraArg).createOrRename.acquire();
 
             const error = await (kind === "secret"
                 ? secretsManagerClientExtension.renameSecret({
@@ -707,10 +707,10 @@ export const thunks = {
         async (...args) => {
             const { basename, kind } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
 
             const { secretsManagerClientProxy, secretsManagerClientExtension } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             const { secretExplorer: state } = getState();
 
@@ -720,7 +720,7 @@ export const thunks = {
 
             dispatch(actions.createSecretOrDirectoryStarted({ basename, kind }));
 
-            const prReleaseMutex = getMutexes(dependencies).createOrRename.acquire();
+            const prReleaseMutex = getMutexes(extraArg).createOrRename.acquire();
 
             const error = await (kind === "secret"
                 ? secretsManagerClientProxy.put({
@@ -790,10 +790,10 @@ export const thunks = {
         async (...args) => {
             const { basename, kind } = params;
 
-            const [dispatch, getState, dependencies] = args;
+            const [dispatch, getState, extraArg] = args;
 
             const { secretsManagerClientExtension, secretsManagerClientProxy } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             const { secretExplorer: state } = getState();
 
@@ -825,10 +825,10 @@ export const thunks = {
     "editCurrentlyShownSecret":
         (params: EditSecretParams): AppThunk =>
         async (...args) => {
-            const [dispatch, , dependencies] = args;
+            const [dispatch, , extraArg] = args;
 
             const { secretsManagerClientProxy } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
@@ -922,17 +922,17 @@ export const thunks = {
     "getSecretsManagerTranslations":
         (): AppThunk<{ secretsManagerTranslations: SecretsManagerTranslations }> =>
         (...args) => {
-            const [, , dependencies] = args;
+            const [, , extraArg] = args;
 
             const { secretsManagerTranslations } =
-                augmentedClientByDependencies.get(dependencies)!;
+                augmentedClientBySoreInst.get(extraArg)!;
 
             return { secretsManagerTranslations };
         },
 };
 
-const augmentedClientByDependencies = new WeakMap<
-    Dependencies,
+const augmentedClientBySoreInst = new WeakMap<
+    ThunksExtraArgument,
     ReturnType<typeof getSecretsManagerClientExtension> &
         ReturnType<typeof observeSecretsManagerClientWithTranslator>
 >();
@@ -941,16 +941,16 @@ export const privateThunks = {
     "initialize":
         (): AppThunk<void> =>
         async (...args) => {
-            const [, , dependencies] = args;
+            const [, , extraArg] = args;
 
             const { secretsManagerClientProxy, secretsManagerTranslations } =
                 observeSecretsManagerClientWithTranslator({
-                    "secretsManagerClient": dependencies.secretsManagerClient,
+                    "secretsManagerClient": extraArg.secretsManagerClient,
                     "secretsManagerTranslator": getVaultClientTranslator({
                         "clientType": "CLI",
                         "engine": (() => {
                             const { secretsManagerClientConfig } =
-                                dependencies.createStoreParams;
+                                extraArg.createStoreParams;
                             switch (secretsManagerClientConfig.implementation) {
                                 case "VAULT":
                                     return secretsManagerClientConfig.engine;
@@ -966,7 +966,7 @@ export const privateThunks = {
                 "secretsManagerClient": secretsManagerClientProxy,
             });
 
-            augmentedClientByDependencies.set(dependencies, {
+            augmentedClientBySoreInst.set(extraArg, {
                 secretsManagerClientProxy,
                 secretsManagerTranslations,
                 secretsManagerClientExtension,
