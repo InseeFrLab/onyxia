@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import { createSlice } from "@reduxjs/toolkit";
 import { thunks as userConfigsThunks } from "./userConfigs";
@@ -41,7 +41,7 @@ export { reducer };
 
 export const thunks = {
     "changeDeploymentRegion":
-        (params: { deploymentRegionId: string }): AppThunk =>
+        (params: { deploymentRegionId: string }): ThunkAction =>
         async (...args) => {
             const [dispatch, , { oidcClient }] = args;
 
@@ -64,7 +64,7 @@ export const thunks = {
 
 export const privateThunks = {
     "initialize":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 

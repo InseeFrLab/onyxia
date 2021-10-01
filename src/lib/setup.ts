@@ -1,4 +1,4 @@
-import type { Action, ThunkAction } from "@reduxjs/toolkit";
+import type { Action, ThunkAction as GenericThunkAction } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
@@ -325,7 +325,7 @@ export type Store = ReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
 
-export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
+export type ThunkAction<ReturnType = Promise<void>> = GenericThunkAction<
     ReturnType,
     RootState,
     ThunksExtraArgument,

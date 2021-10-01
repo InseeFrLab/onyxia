@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { AppThunk, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, ThunksExtraArgument } from "../setup";
 import type {
     SecretWithMetadata,
     SecretsManagerClient,
@@ -446,7 +446,7 @@ export const thunks = {
                       fromCurrentPath: false;
                       directoryPath: string;
                   },
-        ): AppThunk =>
+        ): ThunkAction =>
         async (...args) => {
             const [dispatch, getState, extraArg] = args;
 
@@ -501,7 +501,7 @@ export const thunks = {
                       fromCurrentPath: false;
                       secretPath: string;
                   },
-        ): AppThunk =>
+        ): ThunkAction =>
         async (...args) => {
             const [dispatch, getState, extraArg] = args;
             const { secretsManagerClientProxy } =
@@ -592,7 +592,7 @@ export const thunks = {
      * The secret is not already being renamed or deleted.
      */
     "renameCurrentlyShownSecret":
-        (params: { newSecretBasename: string }): AppThunk =>
+        (params: { newSecretBasename: string }): ThunkAction =>
         async (...args) => {
             const { newSecretBasename } = params;
 
@@ -645,7 +645,7 @@ export const thunks = {
             basename: string;
             newBasename: string;
             kind: "secret" | "directory";
-        }): AppThunk =>
+        }): ThunkAction =>
         async (...args) => {
             const { basename, newBasename, kind } = params;
 
@@ -703,7 +703,7 @@ export const thunks = {
      * We are currently showing a directory (state === "SHOWING DIRECTORY")
      */
     "createSecretOrDirectory":
-        (params: { basename: string; kind: "secret" | "directory" }): AppThunk =>
+        (params: { basename: string; kind: "secret" | "directory" }): ThunkAction =>
         async (...args) => {
             const { basename, kind } = params;
 
@@ -754,7 +754,7 @@ export const thunks = {
      * The secret is not already being renamed.
      */
     "deleteCurrentlyShownSecret":
-        (): AppThunk =>
+        (): ThunkAction =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -786,7 +786,7 @@ export const thunks = {
      * created or renamed.
      */
     "deleteDirectoryOrSecretWithinCurrentDirectory":
-        (params: { basename: string; kind: "secret" | "directory" }): AppThunk =>
+        (params: { basename: string; kind: "secret" | "directory" }): ThunkAction =>
         async (...args) => {
             const { basename, kind } = params;
 
@@ -823,7 +823,7 @@ export const thunks = {
             }
         },
     "editCurrentlyShownSecret":
-        (params: EditSecretParams): AppThunk =>
+        (params: EditSecretParams): ThunkAction =>
         async (...args) => {
             const [dispatch, , extraArg] = args;
 
@@ -920,7 +920,7 @@ export const thunks = {
             );
         },
     "getSecretsManagerTranslations":
-        (): AppThunk<{ secretsManagerTranslations: SecretsManagerTranslations }> =>
+        (): ThunkAction<{ secretsManagerTranslations: SecretsManagerTranslations }> =>
         (...args) => {
             const [, , extraArg] = args;
 
@@ -939,7 +939,7 @@ const augmentedClientBySoreInst = new WeakMap<
 
 export const privateThunks = {
     "initialize":
-        (): AppThunk<void> =>
+        (): ThunkAction<void> =>
         async (...args) => {
             const [, , extraArg] = args;
 

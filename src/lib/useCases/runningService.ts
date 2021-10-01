@@ -1,7 +1,7 @@
 import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import { id } from "tsafe/id";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -105,7 +105,7 @@ export { reducer };
 
 export const thunks = {
     "initializeOrRefreshIfNotAlreadyFetching":
-        (): AppThunk<void> =>
+        (): ThunkAction<void> =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApiClient }] = args;
 
@@ -200,7 +200,7 @@ export const thunks = {
             );
         },
     "stopService":
-        (params: { serviceId: string }): AppThunk<void> =>
+        (params: { serviceId: string }): ThunkAction<void> =>
         async (...args) => {
             const { serviceId } = params;
 

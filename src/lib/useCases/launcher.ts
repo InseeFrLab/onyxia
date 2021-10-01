@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { AppThunk } from "../setup";
+import type { ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -429,7 +429,7 @@ const privateThunks = {
     "launchOrPreviewContract":
         (params: {
             isForContractPreview: boolean;
-        }): AppThunk<Promise<{ contract: Put_MyLab_App }>> =>
+        }): ThunkAction<Promise<{ contract: Put_MyLab_App }>> =>
         async (...args) => {
             const { isForContractPreview } = params;
 
@@ -464,7 +464,7 @@ export const thunks = {
             catalogId: string;
             packageName: string;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
-        }): AppThunk =>
+        }): ThunkAction =>
         async (...args) => {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
@@ -824,26 +824,27 @@ export const thunks = {
                 }),
             );
         },
-    "reset": (): AppThunk<void> => dispatch => dispatch(actions.reset()),
+    "reset": (): ThunkAction<void> => dispatch => dispatch(actions.reset()),
     "changeFormFieldValue":
-        (params: FormFieldValue): AppThunk<void> =>
+        (params: FormFieldValue): ThunkAction<void> =>
         dispatch =>
             dispatch(actions.formFieldValueChanged(params)),
-    "launch": (): AppThunk => async dispatch => {
+    "launch": (): ThunkAction => async dispatch => {
         dispatch(
             privateThunks.launchOrPreviewContract({
                 "isForContractPreview": false,
             }),
         );
     },
-    "getContract": (): AppThunk<Promise<{ contract: Put_MyLab_App }>> => async dispatch =>
-        dispatch(
-            privateThunks.launchOrPreviewContract({
-                "isForContractPreview": true,
-            }),
-        ),
+    "getContract":
+        (): ThunkAction<Promise<{ contract: Put_MyLab_App }>> => async dispatch =>
+            dispatch(
+                privateThunks.launchOrPreviewContract({
+                    "isForContractPreview": true,
+                }),
+            ),
     "changeFriendlyName":
-        (friendlyName: string): AppThunk<void> =>
+        (friendlyName: string): ThunkAction<void> =>
         dispatch =>
             dispatch(
                 thunks.changeFormFieldValue({
@@ -854,7 +855,7 @@ export const thunks = {
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
     "getVaultAndS3Tokens":
-        (): AppThunk<
+        (): ThunkAction<
             Promise<{
                 vault: {
                     token: string;
