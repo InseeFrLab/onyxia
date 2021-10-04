@@ -891,9 +891,7 @@ export const thunks = {
 };
 
 export const selectors = (() => {
-    const readyLauncherSelector = (
-        rootState: RootState,
-    ): LauncherState.Ready | undefined => {
+    const readyLauncher = (rootState: RootState): LauncherState.Ready | undefined => {
         const state = rootState.launcher;
         switch (state.stateDescription) {
             case "ready":
@@ -903,27 +901,24 @@ export const selectors = (() => {
         }
     };
 
-    const packageNameSelector = createSelector(
-        readyLauncherSelector,
-        state => state?.packageName,
-    );
+    const packageName = createSelector(readyLauncher, state => state?.packageName);
 
-    const formFieldsSelector = createSelector(
-        readyLauncherSelector,
+    const formFields = createSelector(
+        readyLauncher,
         state => state?.["~internal"].formFields,
     );
 
-    const infosAboutWhenFieldsShouldBeHiddenSelector = createSelector(
-        readyLauncherSelector,
+    const infosAboutWhenFieldsShouldBeHidden = createSelector(
+        readyLauncher,
         state => state?.["~internal"].infosAboutWhenFieldsShouldBeHidden,
     );
 
-    const dependenciesSelector = createSelector(
-        readyLauncherSelector,
+    const dependencies = createSelector(
+        readyLauncher,
         state => state?.["~internal"].dependencies,
     );
 
-    const friendlyNameSelector = createSelector(formFieldsSelector, formFields => {
+    const friendlyName = createSelector(formFields, formFields => {
         if (formFields === undefined) {
             return undefined;
         }
@@ -937,10 +932,7 @@ export const selectors = (() => {
         return friendlyName;
     });
 
-    const configSelector = createSelector(
-        readyLauncherSelector,
-        state => state?.["~internal"].config,
-    );
+    const config = createSelector(readyLauncher, state => state?.["~internal"].config);
 
     function createIsFieldHidden(params: {
         formFields: FormField[];
@@ -990,12 +982,12 @@ export const selectors = (() => {
         return { isFieldHidden };
     }
 
-    const indexedFormFieldsSelector = createSelector(
-        configSelector,
-        formFieldsSelector,
-        infosAboutWhenFieldsShouldBeHiddenSelector,
-        packageNameSelector,
-        dependenciesSelector,
+    const indexedFormFields = createSelector(
+        config,
+        formFields,
+        infosAboutWhenFieldsShouldBeHidden,
+        packageName,
+        dependencies,
         (
             config,
             formFields,
@@ -1102,9 +1094,9 @@ export const selectors = (() => {
         },
     );
 
-    const isLaunchableSelector = createSelector(
-        formFieldsSelector,
-        infosAboutWhenFieldsShouldBeHiddenSelector,
+    const isLaunchable = createSelector(
+        formFields,
+        infosAboutWhenFieldsShouldBeHidden,
         (formFields, infosAboutWhenFieldsShouldBeHidden): boolean | undefined => {
             if (!formFields || !infosAboutWhenFieldsShouldBeHidden) {
                 return undefined;
@@ -1127,21 +1119,18 @@ export const selectors = (() => {
         },
     );
 
-    const pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector = createSelector(
-        readyLauncherSelector,
+    const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
+        readyLauncher,
         state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
     );
 
-    const catalogIdSelector = createSelector(
-        readyLauncherSelector,
-        state => state?.catalogId,
-    );
+    const catalogId = createSelector(readyLauncher, state => state?.catalogId);
 
-    const restorablePackageConfigSelector = createSelector(
-        catalogIdSelector,
-        packageNameSelector,
-        formFieldsSelector,
-        pathOfFormFieldsWhoseValuesAreDifferentFromDefaultSelector,
+    const restorablePackageConfig = createSelector(
+        catalogId,
+        packageName,
+        formFields,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
         (
             catalogId,
             packageName,
@@ -1169,10 +1158,10 @@ export const selectors = (() => {
     );
 
     return {
-        friendlyNameSelector,
-        indexedFormFieldsSelector,
-        isLaunchableSelector,
-        restorablePackageConfigSelector,
+        friendlyName,
+        indexedFormFields,
+        isLaunchable,
+        restorablePackageConfig,
     };
 })();
 

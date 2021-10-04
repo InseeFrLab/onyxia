@@ -300,7 +300,7 @@ function areSameRestorablePackageConfig(
 }
 
 export const selectors = (() => {
-    function displayableConfigsSelector(rootState: RootState) {
+    function displayableConfigs(rootState: RootState) {
         const { restorablePackageConfigs, packageIcons } =
             rootState.restorablePackageConfig;
 
@@ -326,5 +326,5 @@ export const selectors = (() => {
         });
     }
 
-    return { displayableConfigsSelector };
+    return { displayableConfigs };
 })();

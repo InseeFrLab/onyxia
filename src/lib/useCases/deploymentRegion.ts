@@ -117,7 +117,7 @@ export const privateThunks = {
 };
 
 export const selectors = (() => {
-    const selectedDeploymentRegionSelector = (rootState: RootState): DeploymentRegion => {
+    const selectedDeploymentRegion = (rootState: RootState): DeploymentRegion => {
         const { selectedDeploymentRegionId, availableDeploymentRegions } =
             rootState.deploymentRegion;
 
@@ -130,7 +130,7 @@ export const selectors = (() => {
         return selectedDeploymentRegion;
     };
 
-    return { selectedDeploymentRegionSelector };
+    return { selectedDeploymentRegion };
 })();
 
 const localStorageKey = "selectedDeploymentRegionId";
