@@ -8,7 +8,7 @@ import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@material-ui/core/Link";
-import { useSelector } from "app/interfaceWithLib/hooks";
+import { useSelector } from "app/interfaceWithLib";
 import { elementsToSentence } from "app/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 

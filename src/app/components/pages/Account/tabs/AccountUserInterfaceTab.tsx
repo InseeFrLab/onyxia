@@ -4,9 +4,9 @@ import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useIsBetaModeEnabled } from "app/interfaceWithLib/hooks";
+import { useIsBetaModeEnabled } from "app/interfaceWithLib";
 import { thunks } from "lib/setup";
-import { useDispatch } from "app/interfaceWithLib/hooks";
+import { useDispatch } from "app/interfaceWithLib";
 
 export type Props = {
     className?: string;

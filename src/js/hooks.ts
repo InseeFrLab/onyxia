@@ -6,7 +6,7 @@ import {
     useSelector,
     useAppConstants,
     useSecretExplorerUserHomePath,
-} from "app/interfaceWithLib/hooks";
+} from "app/interfaceWithLib";
 
 export function useMustacheParams() {
     const { s3 } = useSelector(state => state.user);

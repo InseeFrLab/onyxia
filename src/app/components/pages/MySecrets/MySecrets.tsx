@@ -6,7 +6,7 @@ import {
     useSelector,
     useDispatch,
     useSecretsManagerTranslations,
-} from "app/interfaceWithLib/hooks";
+} from "app/interfaceWithLib";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { ExplorerProps } from "app/components/shared/Explorer";
 import { MySecretsEditor } from "./MySecretsEditor";
@@ -17,7 +17,7 @@ import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
-import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";
+import { useSecretExplorerUserHomePath } from "app/interfaceWithLib";
 import { useSplashScreen } from "onyxia-ui";
 import type { Route } from "type-route";
 import { thunks, pure } from "lib/setup";

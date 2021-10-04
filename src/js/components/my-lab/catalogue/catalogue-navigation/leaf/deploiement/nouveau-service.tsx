@@ -23,11 +23,7 @@ import { is } from "tsafe/is";
 import type { ReturnType } from "tsafe/ReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import {
-    useDispatch,
-    useIsBetaModeEnabled,
-    useAppConstants,
-} from "app/interfaceWithLib/hooks";
+import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "app/interfaceWithLib";
 import { useMustacheParams } from "js/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prOidcClient } from "lib/setup";

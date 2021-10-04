@@ -20,7 +20,7 @@ import {
     useSelector,
     useIsBetaModeEnabled,
     useAppConstants,
-} from "app/interfaceWithLib/hooks";
+} from "app/interfaceWithLib";
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";

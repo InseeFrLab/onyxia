@@ -9,7 +9,7 @@ import {
     CatalogLauncherConfigurationCard,
     Props as CatalogLauncherConfigurationCardProps,
 } from "./CatalogLauncherConfigurationCard";
-import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
+import { useDispatch, useSelector } from "app/interfaceWithLib";
 import { thunks, selectors } from "lib/useCases/launcher";
 import {
     thunks as restorablePackageConfigsThunks,

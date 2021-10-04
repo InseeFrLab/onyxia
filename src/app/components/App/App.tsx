@@ -6,7 +6,7 @@ import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useSelector, useDispatch } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch } from "app/interfaceWithLib";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/routes/router";

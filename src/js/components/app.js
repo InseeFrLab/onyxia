@@ -36,7 +36,7 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getValidatedEnv } from "js/validatedEnv";
-import { useAppConstants } from "app/interfaceWithLib/hooks";
+import { useAppConstants } from "app/interfaceWithLib";
 import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
 import { Alert } from "app/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'

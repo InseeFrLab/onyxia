@@ -15,7 +15,7 @@ import type { ScreenType } from "js/model/ScreenType";
 import { thunks } from "lib/setup";
 
 import { actions } from "js/redux/legacyActions";
-import { useSelector, useDispatch, useAppConstants } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useAppConstants } from "app/interfaceWithLib";
 import { useWindowInnerSize } from "onyxia-ui";
 
 export const Navbar: React.FC<{}> = () => {
