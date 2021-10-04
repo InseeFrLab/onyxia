@@ -10,7 +10,7 @@ import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConf
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { thunks, selectors } from "lib/setup";
-import { useDispatch, useSelector } from "app/interfaceWithLib/hooks";
+import { useDispatch, useSelector } from "app/interfaceWithLib";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { routes } from "app/routes";
 import { createGroup } from "type-route";

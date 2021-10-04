@@ -14,7 +14,7 @@ import {
     useIsBetaModeEnabled,
     useAppConstants,
     useSelectedRegion,
-} from "app/interfaceWithLib/hooks";
+} from "app/interfaceWithLib";
 
 const Grid: any = Grid_v4;
 

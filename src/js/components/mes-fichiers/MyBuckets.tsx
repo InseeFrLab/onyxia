@@ -3,7 +3,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from "@material-ui/core";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "./myBuckets.scss";
 import { Region } from "js/model/Region";
-import { useSelector, useDispatch, useSelectedRegion } from "app/interfaceWithLib/hooks";
+import { useSelector, useDispatch, useSelectedRegion } from "app/interfaceWithLib";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 

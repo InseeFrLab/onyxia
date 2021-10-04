@@ -4,7 +4,7 @@ import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "app/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { useAppConstants } from "app/interfaceWithLib/hooks";
+import { useAppConstants } from "app/interfaceWithLib";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg";

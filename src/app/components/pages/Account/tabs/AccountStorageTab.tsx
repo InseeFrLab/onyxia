@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useSelector } from "app/interfaceWithLib/hooks";
+import { useSelector } from "app/interfaceWithLib";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
