@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { useDispatch, useAppConstants } from "app/interfaceWithLib";
+import { useDispatch, useAppConstants } from "app/libApi";
 import { useMustacheParams } from "js/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";

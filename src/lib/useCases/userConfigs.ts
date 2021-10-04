@@ -11,6 +11,7 @@ import {
 } from "../tools/createObjectThatThrowsIfAccessed";
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
+import type { RootState } from "../setup";
 
 /*
  * Values of the user profile that can be changed.
@@ -225,10 +226,17 @@ const getConfigKeyPathFactory = (params: { username: string }) => {
     return { getConfigKeyPath };
 };
 
-export function userConfigsStateToUserConfigs(state: UserConfigsState): UserConfigs {
-    const userProfileInVault: any = {};
+export const selectors = (() => {
+    /** Give the value directly (without isBeingChanged) */
+    const userConfigs = (rootState: RootState): UserConfigs => {
+        const userConfigs: any = {};
 
-    objectKeys(state).forEach(key => (userProfileInVault[key] = state[key].value));
+        const state = rootState.userConfigs;
 
-    return userProfileInVault;
-}
+        objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
+
+        return userConfigs;
+    };
+
+    return { userConfigs };
+})();

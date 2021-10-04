@@ -5,16 +5,8 @@ import { makeStyles, Button } from "app/theme";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
-import {
-    CatalogLauncherConfigurationCard,
-    Props as CatalogLauncherConfigurationCardProps,
-} from "./CatalogLauncherConfigurationCard";
-import { useDispatch, useSelector } from "app/interfaceWithLib";
-import { thunks, selectors } from "lib/useCases/launcher";
-import {
-    thunks as restorablePackageConfigsThunks,
-    pure as restorablePackageConfigsPure,
-} from "lib/useCases/restorablePackageConfigs";
+import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
+import { useSelector, selectors, pure, useThunks } from "app/libApi";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { assert } from "tsafe/assert";
@@ -46,25 +38,23 @@ const useStyles = makeStyles()(theme => ({
 export const CatalogLauncher = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
-    const dispatch = useDispatch();
+    const { launcherThunks, restorablePackageConfigThunks } = useThunks();
 
     useEffect(() => {
         const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
             route.params;
 
-        dispatch(
-            thunks.initialize({
-                catalogId,
-                packageName,
-                formFieldsValueDifferentFromDefault,
-            }),
-        );
+        launcherThunks.initialize({
+            catalogId,
+            packageName,
+            formFieldsValueDifferentFromDefault,
+        });
 
-        return () => dispatch(thunks.reset());
+        return () => launcherThunks.reset();
     }, []);
 
-    const restorablePackageConfig = useSelector(
-        selectors.restorablePackageConfigSelector,
+    const { restorablePackageConfig } = useSelector(
+        selectors.launcher.restorablePackageConfig,
     );
 
     useEffect(() => {
@@ -133,7 +123,7 @@ export const CatalogLauncher = memo((props: Props) => {
         }
 
         const isBookmarkedNew =
-            restorablePackageConfigsPure.isRestorablePackageConfigInStore({
+            pure.restorablePackageConfig.isRestorablePackageConfigInStore({
                 restorablePackageConfigs,
                 restorablePackageConfig,
             });
@@ -147,50 +137,35 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    const onRequestLaunch = useConstCallback(() => dispatch(thunks.launch()));
-
     const onRequestCancel = useConstCallback(() =>
         routes.catalogExplorer({ "catalogId": route.params.catalogId }).push(),
     );
-
-    const onFormValueChange = useConstCallback<
-        CatalogLauncherConfigurationCardProps["onFormValueChange"]
-    >(({ path, value }) => dispatch(thunks.changeFormFieldValue({ path, value })));
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
         copyToClipboard(window.location.href),
     );
 
-    const onFriendlyNameChange = useConstCallback((friendlyName: string) =>
-        dispatch(thunks.changeFriendlyName(friendlyName)),
-    );
-
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
         assert(restorablePackageConfig !== undefined);
 
-        dispatch(
-            restorablePackageConfigsThunks[
-                isBookmarked
-                    ? "saveRestorablePackageConfig"
-                    : "deleteRestorablePackageConfig"
-            ]({
-                restorablePackageConfig,
-                "getDoOverwriteConfiguration": async ({ friendlyName }) => {
-                    const dDoOverwriteConfiguration = new Deferred<boolean>();
+        restorablePackageConfigThunks[
+            isBookmarked ? "saveRestorablePackageConfig" : "deleteRestorablePackageConfig"
+        ]({
+            restorablePackageConfig,
+            "getDoOverwriteConfiguration": async ({ friendlyName }) => {
+                const dDoOverwriteConfiguration = new Deferred<boolean>();
 
-                    setOverwriteConfigurationDialogState({
-                        friendlyName,
-                        "resolveDoOverwriteConfiguration":
-                            dDoOverwriteConfiguration.resolve,
-                    });
+                setOverwriteConfigurationDialogState({
+                    friendlyName,
+                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve,
+                });
 
-                    return await dDoOverwriteConfiguration.pr;
-                },
-            }),
-        );
+                return await dDoOverwriteConfiguration.pr;
+            },
+        });
     });
 
-    const friendlyName = useSelector(selectors.friendlyNameSelector);
+    const { friendlyName } = useSelector(selectors.launcher.friendlyName);
 
     const state = useSelector(state => state.launcher);
 
@@ -205,7 +180,7 @@ export const CatalogLauncher = memo((props: Props) => {
                 switch (state.launchState) {
                     case "not launching":
                         if (route.params.autoLaunch) {
-                            onRequestLaunch();
+                            launcherThunks.launch();
                         }
                         hideSplashScreen();
                         break;
@@ -225,8 +200,8 @@ export const CatalogLauncher = memo((props: Props) => {
             : state.launchState,
     ]);
 
-    const indexedFormFields = useSelector(selectors.indexedFormFieldsSelector);
-    const isLaunchable = useSelector(selectors.isLaunchableSelector);
+    const { indexedFormFields } = useSelector(selectors.launcher.indexedFormFields);
+    const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
 
     const { t } = useTranslation("CatalogLauncher");
 
@@ -251,8 +226,8 @@ export const CatalogLauncher = memo((props: Props) => {
                         isBookmarked={isBookmarked}
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                         friendlyName={friendlyName!}
-                        onFriendlyNameChange={onFriendlyNameChange}
-                        onRequestLaunch={onRequestLaunch}
+                        onFriendlyNameChange={launcherThunks.changeFriendlyName}
+                        onRequestLaunch={launcherThunks.launch}
                         onRequestCancel={onRequestCancel}
                         onRequestCopyLaunchUrl={
                             restorablePackageConfig.formFieldsValueDifferentFromDefault
@@ -270,7 +245,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                     dependencyNamePackageNameOrGlobal
                                 }
                                 {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                                onFormValueChange={onFormValueChange}
+                                onFormValueChange={launcherThunks.changeFormFieldValue}
                             />
                         ),
                     )}

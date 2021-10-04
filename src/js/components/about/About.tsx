@@ -6,7 +6,7 @@ import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import SelectRegion from "./SelectRegion";
 import type { Region } from "js/model/Region";
 import CopyableField from "../commons/copyable-field";
-import { useDispatch, useSelector, useAppConstants } from "app/interfaceWithLib";
+import { useDispatch, useSelector, useAppConstants } from "app/libApi";
 import { thunks } from "lib/setup";
 
 export function About() {

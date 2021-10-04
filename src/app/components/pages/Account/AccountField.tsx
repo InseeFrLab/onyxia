@@ -19,7 +19,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Switch from "@material-ui/core/Switch";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useEvt } from "evt/hooks";
-import { useValidUntil } from "app/i18n/useMoment";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
 import { useLng } from "app/i18n/useLng";

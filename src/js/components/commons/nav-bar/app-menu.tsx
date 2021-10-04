@@ -13,7 +13,7 @@ import { BecherIcon, CatalogueIcon, PokerHandIcon } from "js/components/commons/
 import { getValidatedEnv } from "js/validatedEnv";
 import D from "js/i18n";
 
-import { useIsBetaModeEnabled, useSelectedRegion } from "app/interfaceWithLib";
+import { useIsBetaModeEnabled, useSelectedRegion } from "app/libApi";
 
 const env = getValidatedEnv();
 

@@ -6,7 +6,7 @@ import { useLng } from "app/i18n/useLng";
 import { getTosMarkdownUrl } from "app/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useSelector, useDispatch } from "app/interfaceWithLib";
+import { useSelector, useThunks } from "app/libApi";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { MySecrets } from "app/components/pages/MySecrets";
 import { useRoute } from "app/routes/router";
@@ -19,8 +19,6 @@ import { Account } from "app/components/pages/Account";
 import { FourOhFour } from "app/components/pages/FourOhFour";
 import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "app/components/pages/MyServices";
-import { thunks as userAuthenticationThunks } from "lib/useCases/userAuthentication";
-import { thunks as userConfigsThunks } from "lib/useCases/userConfigs";
 import { typeGuard } from "tsafe/typeGuard";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { id } from "tsafe/id";
@@ -127,12 +125,14 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const appConstants = useAppConstants();
+    const { userAuthenticationThunks } = useThunks();
+
+    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
     const onHeaderAuthClick = useConstCallback(() =>
-        appConstants.isUserLoggedIn
-            ? appConstants.logout({ "redirectToOrigin": true })
-            : appConstants.login(),
+        isUserLoggedIn
+            ? userAuthenticationThunks.logout({ "redirectTo": "home" })
+            : userAuthenticationThunks.login(),
     );
 
     const { tosUrl } = (function useClosure() {
@@ -186,7 +186,7 @@ export const App = memo((props: Props) => {
                 className={classes.header}
                 useCase="core app"
                 logoContainerWidth={logoContainerWidth}
-                isUserLoggedIn={appConstants.isUserLoggedIn}
+                isUserLoggedIn={isUserLoggedIn}
                 useIsCloudShellVisible={useIsCloudShellVisible}
                 onLogoClick={onHeaderLogoClick}
                 onAuthClick={onHeaderAuthClick}
@@ -230,7 +230,7 @@ export const App = memo((props: Props) => {
                 contributeUrl={"https://github.com/InseeFrLab/onyxia-web"}
                 tosUrl={tosUrl}
             />
-            {appConstants.isUserLoggedIn && <CloudShell />}
+            {isUserLoggedIn && <CloudShell />}
         </div>
     );
 });
@@ -251,9 +251,9 @@ export declare namespace App {
 const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
 
-    const dispatch = useDispatch();
+    const { userAuthenticationThunks } = useThunks();
 
-    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
+    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
     const legacyRoute = useMemo(() => {
         const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
@@ -265,8 +265,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         }
 
         if (Page.requireUserLoggedIn && !isUserLoggedIn) {
-            dispatch(userAuthenticationThunks.login());
-
+            userAuthenticationThunks.login();
             return null;
         }
 
@@ -304,8 +303,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn(route) && !isUserLoggedIn) {
-                dispatch(userAuthenticationThunks.login());
-
+                userAuthenticationThunks.login();
                 return null;
             }
 
@@ -318,8 +316,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
-                dispatch(userAuthenticationThunks.login());
-
+                userAuthenticationThunks.login();
                 return null;
             }
 
@@ -332,8 +329,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
-                dispatch(userAuthenticationThunks.login());
-
+                userAuthenticationThunks.login();
                 return null;
             }
 
@@ -346,8 +342,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
-                dispatch(userAuthenticationThunks.login());
-
+                userAuthenticationThunks.login();
                 return null;
             }
 
@@ -360,8 +355,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
-                dispatch(userAuthenticationThunks.login());
-
+                userAuthenticationThunks.login();
                 return null;
             }
 
@@ -383,9 +377,9 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
  * automatically.
  */
 function useApplyLanguageSelectedAtLogin() {
-    const dispatch = useDispatch();
+    const { userAuthenticationThunks } = useThunks();
 
-    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
+    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
     const { setLng } = useLng();
 
@@ -394,7 +388,7 @@ function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        const { kcLanguageTag } = dispatch(userAuthenticationThunks.getUser());
+        const { kcLanguageTag } = userAuthenticationThunks.getUser();
 
         if (
             !typeGuard<SupportedLanguage>(
@@ -421,9 +415,9 @@ function useApplyLanguageSelectedAtLogin() {
  * user configs.
  */
 function useSyncDarkModeWithValueInProfile() {
-    const dispatch = useDispatch();
+    const { userAuthenticationThunks, userConfigsThunks } = useThunks();
 
-    const isUserLoggedIn = dispatch(userAuthenticationThunks.getIsUserLoggedIn());
+    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
@@ -444,11 +438,9 @@ function useSyncDarkModeWithValueInProfile() {
             return;
         }
 
-        dispatch(
-            userConfigsThunks.changeValue({
-                "key": "isDarkModeEnabled",
-                "value": isDarkModeEnabled,
-            }),
-        );
+        userConfigsThunks.changeValue({
+            "key": "isDarkModeEnabled",
+            "value": isDarkModeEnabled,
+        });
     }, [isDarkModeEnabled]);
 }

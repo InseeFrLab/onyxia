@@ -2,11 +2,7 @@ import { makeStyles, PageHeader } from "app/theme";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import {
-    useSelector,
-    useDispatch,
-    useSecretsManagerTranslations,
-} from "app/interfaceWithLib";
+import { useSelector, selectors, useThunks, pure } from "app/libApi";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { ExplorerProps } from "app/components/shared/Explorer";
 import { MySecretsEditor } from "./MySecretsEditor";
@@ -17,10 +13,8 @@ import { relative as pathRelative } from "path";
 import Link from "@material-ui/core/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
-import { useSecretExplorerUserHomePath } from "app/interfaceWithLib";
 import { useSplashScreen } from "onyxia-ui";
 import type { Route } from "type-route";
-import { thunks, pure } from "lib/setup";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
@@ -56,7 +50,6 @@ export function MySecrets(props: Props) {
     const { t } = useTranslation("MySecrets");
 
     const state = useSelector(state => state.secretExplorer);
-    const dispatch = useDispatch();
 
     const Explorer = useWithProps(SecretOrFileExplorer, {
         "useCase": "secret",
@@ -71,27 +64,31 @@ export function MySecrets(props: Props) {
         alert(state.errorMessage);
     }, [state]);
 
+    const { secretExplorerThunks, userAuthenticationThunks, userConfigsThunks } =
+        useThunks();
+
     const onNavigate = useConstCallback(
-        ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) =>
-            dispatch(
-                (() => {
-                    switch (kind) {
-                        case "directory":
-                            return thunks.secretExplorer.navigateToDirectory({
-                                "fromCurrentPath": true,
-                                "directoryRelativePath": relativePath,
-                            });
-                        case "file":
-                            return thunks.secretExplorer.navigateToSecret({
-                                "fromCurrentPath": true,
-                                "secretRelativePath": relativePath,
-                            });
-                    }
-                })(),
-            ),
+        ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) => {
+            switch (kind) {
+                case "directory":
+                    secretExplorerThunks.navigateToDirectory({
+                        "fromCurrentPath": true,
+                        "directoryRelativePath": relativePath,
+                    });
+                    return;
+                case "file":
+                    secretExplorerThunks.navigateToSecret({
+                        "fromCurrentPath": true,
+                        "secretRelativePath": relativePath,
+                    });
+                    return;
+            }
+        },
     );
 
-    const { secretExplorerUserHomePath: userHomePath } = useSecretExplorerUserHomePath();
+    const userHomePath = pure.secretExplorer.getUserHomePath({
+        "username": userAuthenticationThunks.getUser().username,
+    });
 
     useEffect(() => {
         if (state.currentPath !== "") {
@@ -102,17 +99,17 @@ export function MySecrets(props: Props) {
         const { secretOrDirectoryPath = userHomePath, isFile = false } =
             route?.params ?? {};
 
-        dispatch(
-            isFile
-                ? thunks.secretExplorer.navigateToSecret({
-                      "fromCurrentPath": false,
-                      "secretPath": secretOrDirectoryPath,
-                  })
-                : thunks.secretExplorer.navigateToDirectory({
-                      "fromCurrentPath": false,
-                      "directoryPath": secretOrDirectoryPath,
-                  }),
-        );
+        if (isFile) {
+            secretExplorerThunks.navigateToSecret({
+                "fromCurrentPath": false,
+                "secretPath": secretOrDirectoryPath,
+            });
+        } else {
+            secretExplorerThunks.navigateToDirectory({
+                "fromCurrentPath": false,
+                "directoryPath": secretOrDirectoryPath,
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -134,39 +131,35 @@ export function MySecrets(props: Props) {
             basename,
             editedBasename,
         }: Parameters<ExplorerProps["onEditBasename"]>[0]) =>
-            dispatch(
-                thunks.secretExplorer.renameDirectoryOrSecretWithinCurrentDirectory({
-                    "kind": (() => {
-                        switch (kind) {
-                            case "file":
-                                return "secret";
-                            case "directory":
-                                return "directory";
-                        }
-                    })(),
-                    basename,
-                    "newBasename": editedBasename,
-                }),
-            ),
+            secretExplorerThunks.renameDirectoryOrSecretWithinCurrentDirectory({
+                "kind": (() => {
+                    switch (kind) {
+                        case "file":
+                            return "secret";
+                        case "directory":
+                            return "directory";
+                    }
+                })(),
+                basename,
+                "newBasename": editedBasename,
+            }),
     );
 
     const onDeleteItem = useConstCallback(
         async ({ kind, basename }: Parameters<ExplorerProps["onDeleteItem"]>[0]) => {
             console.log("TODO: Deletion started");
 
-            await dispatch(
-                thunks.secretExplorer.deleteDirectoryOrSecretWithinCurrentDirectory({
-                    "kind": (() => {
-                        switch (kind) {
-                            case "file":
-                                return "secret";
-                            case "directory":
-                                return "directory";
-                        }
-                    })(),
-                    basename,
-                }),
-            );
+            await secretExplorerThunks.deleteDirectoryOrSecretWithinCurrentDirectory({
+                "kind": (() => {
+                    switch (kind) {
+                        case "file":
+                            return "secret";
+                        case "directory":
+                            return "directory";
+                    }
+                })(),
+                basename,
+            });
 
             console.log("TODO: Deletion completed");
         },
@@ -174,19 +167,17 @@ export function MySecrets(props: Props) {
 
     const onCreateItem = useConstCallback(
         ({ kind, basename }: Parameters<ExplorerProps["onCreateItem"]>[0]) =>
-            dispatch(
-                thunks.secretExplorer.createSecretOrDirectory({
-                    "kind": (() => {
-                        switch (kind) {
-                            case "file":
-                                return "secret";
-                            case "directory":
-                                return "directory";
-                        }
-                    })(),
-                    basename,
-                }),
-            ),
+            secretExplorerThunks.createSecretOrDirectory({
+                "kind": (() => {
+                    switch (kind) {
+                        case "file":
+                            return "secret";
+                        case "directory":
+                            return "directory";
+                    }
+                })(),
+                basename,
+            }),
     );
 
     const onCopyPath = useConstCallback((params?: { path: string }): void => {
@@ -195,10 +186,11 @@ export function MySecrets(props: Props) {
         copyToClipboard(pathRelative(userHomePath, path));
     });
 
-    const { secretsManagerTranslations } = useSecretsManagerTranslations();
+    const { secretsManagerTranslations } =
+        secretExplorerThunks.getSecretsManagerTranslations();
 
     const onEdit = useConstCallback((params: EditSecretParams) =>
-        dispatch(thunks.secretExplorer.editCurrentlyShownSecret(params)),
+        secretExplorerThunks.editCurrentlyShownSecret(params),
     );
 
     const { classes, cx } = useStyles();
@@ -213,17 +205,13 @@ export function MySecrets(props: Props) {
         }
     }, [state.currentPath === ""]);
 
-    const doDisplayUseInServiceDialog = useSelector(
-        state => state.userConfigs.doDisplayMySecretsUseInServiceDialog.value,
-    );
+    const { doDisplayMySecretsUseInServiceDialog } = useSelector(selectors.userConfigs);
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
-        dispatch(
-            thunks.userConfigs.changeValue({
-                "key": "doDisplayMySecretsUseInServiceDialog",
-                value,
-            }),
-        ),
+        userConfigsThunks.changeValue({
+            "key": "doDisplayMySecretsUseInServiceDialog",
+            value,
+        }),
     );
 
     const [evtButtonBarAction] = useState(() =>
@@ -296,7 +284,9 @@ export function MySecrets(props: Props) {
                             isBeingUpdated={state.isBeingUpdated}
                             secretWithMetadata={state.secretWithMetadata}
                             onEdit={onEdit}
-                            doDisplayUseInServiceDialog={doDisplayUseInServiceDialog}
+                            doDisplayUseInServiceDialog={
+                                doDisplayMySecretsUseInServiceDialog
+                            }
                             onDoDisplayUseInServiceDialogValueChange={
                                 onDoDisplayUseInServiceDialogValueChange
                             }

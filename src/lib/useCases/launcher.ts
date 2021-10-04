@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { pure as secretExplorerPure } from "./secretExplorer";
-import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
+import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { Get_Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
@@ -509,7 +509,7 @@ export const thunks = {
                     "username": user.username,
                 });
 
-                const userConfigs = userConfigsStateToUserConfigs(getState().userConfigs);
+                const userConfigs = userConfigsSelectors.userConfigs(getState());
 
                 const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams =
                     {
