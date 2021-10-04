@@ -2,11 +2,7 @@ import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { getPublicIp } from "lib/tools/getPublicIp";
 import { useAsync } from "react-async-hook";
-import {
-    useSelector,
-    useAppConstants,
-    useSecretExplorerUserHomePath,
-} from "app/interfaceWithLib";
+import { useSelector, useAppConstants, useSecretExplorerUserHomePath } from "app/libApi";
 
 export function useMustacheParams() {
     const { s3 } = useSelector(state => state.user);

@@ -11,21 +11,19 @@ import * as restorablePackageConfigsUseCase from "lib/useCases/restorablePackage
 import * as publicIpUseCase from "lib/useCases/publicIp";
 import * as userAuthenticationUseCase from "lib/useCases/userAuthentication";
 import * as deploymentRegionUseCase from "lib/useCases/deploymentRegion";
-import { useThunksToRegularFunction } from "app/tools/useThunksToRegularFunction";
+import { useThunksToRegularFunction } from "app/tools/react-redux-tools/useThunksToRegularFunction";
+import { wrapSelectorsReturnValue } from "app/tools/react-redux-tools/wrapSelectorsReturnValue";
 
 export const useSelector: reactRedux.TypedUseSelectorHook<RootState> =
     reactRedux.useSelector;
 
-export const selectors = (() => {
-    const wordId = "Selector" as const;
-
-    // prettier-ignore
-    return {
-        [`${launcherUseCase.name}${wordId}` as const]: launcherUseCase.selectors,
-        [`${restorablePackageConfigsUseCase.name}${wordId}` as const]: restorablePackageConfigsUseCase.selectors,
-        [`${deploymentRegionUseCase.name}${wordId}` as const]: deploymentRegionUseCase.selectors,
-    };
-})();
+// prettier-ignore
+export const selectors = {
+    [launcherUseCase.name]: wrapSelectorsReturnValue(launcherUseCase.selectors),
+    [restorablePackageConfigsUseCase.name]: wrapSelectorsReturnValue(restorablePackageConfigsUseCase.selectors),
+    [deploymentRegionUseCase.name]: wrapSelectorsReturnValue(deploymentRegionUseCase.selectors),
+    [userConfigsUseCase.name]: userConfigsUseCase.selectors.userConfigs,
+};
 
 export function useThunks() {
     const { thunksToRegularFunctions } = useThunksToRegularFunction<ThunkAction>();
@@ -48,3 +46,8 @@ export function useThunks() {
         [thunksToRegularFunctions]
     );
 }
+
+export const pure = {
+    [secretExplorerUseCase.name]: secretExplorerUseCase.pure,
+    [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.pure,
+};

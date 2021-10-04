@@ -4,14 +4,12 @@ import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "app/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { useAppConstants } from "app/interfaceWithLib";
+import { useThunks } from "app/libApi";
 import { useTranslation } from "app/i18n/useTranslations";
-import { useConstCallback } from "powerhooks/useConstCallback";
 import { ReactComponent as IconCommunitySvg } from "app/assets/svg/IconCommunity.svg";
 import { ReactComponent as IconServiceSvg } from "app/assets/svg/IconService.svg";
 import { ReactComponent as IconStorageSvg } from "app/assets/svg/IconStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
-import { assert } from "tsafe/assert";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
@@ -76,14 +74,11 @@ export function Home(props: Props) {
 
     const { classes, cx } = useStyles();
 
-    const appConstants = useAppConstants();
+    const { userAuthenticationThunks } = useThunks();
+
+    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
     const { t } = useTranslation("Home");
-
-    const onHeroButtonClick = useConstCallback(() => {
-        assert(!appConstants.isUserLoggedIn);
-        appConstants.login();
-    });
 
     const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
@@ -94,17 +89,19 @@ export function Home(props: Props) {
                 <div className={classes.heroTextWrapper}>
                     <OnyxiaLogoSvg className={classes.svg} />
                     <Text typo="display heading">
-                        {appConstants.isUserLoggedIn
+                        {isUserLoggedIn
                             ? t("welcome", {
-                                  "who": appConstants.parsedJwt.firstName,
+                                  "who": userAuthenticationThunks.getUser().firstName,
                               })
                             : t("title")}
                     </Text>
                     <Text typo="subtitle" className={classes.heroSubtitle}>
                         {t("subtitle")}
                     </Text>
-                    {!appConstants.isUserLoggedIn ? (
-                        <Button onClick={onHeroButtonClick}>{t("login")}</Button>
+                    {!isUserLoggedIn ? (
+                        <Button onClick={userAuthenticationThunks.login}>
+                            {t("login")}
+                        </Button>
                     ) : (
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}

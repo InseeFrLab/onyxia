@@ -9,8 +9,7 @@ import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { thunks, selectors } from "lib/setup";
-import { useDispatch, useSelector } from "app/interfaceWithLib";
+import { useThunks, useSelector, selectors } from "app/libApi";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import { routes } from "app/routes";
 import { createGroup } from "type-route";
@@ -71,14 +70,13 @@ export function MyServices(props: Props) {
 
     const { t } = useTranslation("MyServices");
 
-    const dispatch = useDispatch();
-    const displayableConfigs = useSelector(
-        selectors.restorablePackageConfig.displayableConfigsSelector,
+    const { runningServiceThunks, restorablePackageConfigThunks } = useThunks();
+
+    const { displayableConfigs } = useSelector(
+        selectors.restorablePackageConfig.displayableConfigs,
     );
 
-    const userServicePassword = useSelector(
-        state => state.userConfigs.userServicePassword.value,
-    );
+    const { userServicePassword } = useSelector(selectors.userConfigs);
 
     const { isRunningServicesFetching, runningServices } = useSelector(
         ({ runningService: state }) => ({
@@ -103,7 +101,7 @@ export function MyServices(props: Props) {
                 routes.catalogExplorer().push();
                 return;
             case "refresh":
-                dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+                runningServiceThunks.initializeOrRefreshIfNotAlreadyFetching();
                 return;
             case "password":
                 copyToClipboard(userServicePassword);
@@ -115,8 +113,8 @@ export function MyServices(props: Props) {
     });
 
     useEffect(() => {
-        dispatch(thunks.restorablePackageConfig.fetchIconsIfNotAlreadyDone());
-        dispatch(thunks.runningService.initializeOrRefreshIfNotAlreadyFetching());
+        restorablePackageConfigThunks.fetchIconsIfNotAlreadyDone();
+        runningServiceThunks.initializeOrRefreshIfNotAlreadyFetching();
     }, []);
 
     const { isSavedConfigsExtended } = route.params;
@@ -139,17 +137,15 @@ export function MyServices(props: Props) {
                 copyToClipboard(window.location.origin + launchLinkHref);
                 return;
             case "delete":
-                dispatch(
-                    thunks.restorablePackageConfig.deleteRestorablePackageConfig({
-                        "restorablePackageConfig": displayableConfigs.find(
-                            ({ restorablePackageConfig }) =>
-                                routes.catalogLauncher({
-                                    ...restorablePackageConfig,
-                                    "autoLaunch": true,
-                                }).href === launchLinkHref,
-                        )!.restorablePackageConfig,
-                    }),
-                );
+                restorablePackageConfigThunks.deleteRestorablePackageConfig({
+                    "restorablePackageConfig": displayableConfigs.find(
+                        ({ restorablePackageConfig }) =>
+                            routes.catalogLauncher({
+                                ...restorablePackageConfig,
+                                "autoLaunch": true,
+                            }).href === launchLinkHref,
+                    )!.restorablePackageConfig,
+                });
                 return;
         }
     });
@@ -226,14 +222,12 @@ export function MyServices(props: Props) {
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
-                dispatch(
-                    thunks.runningService.stopService({
-                        "serviceId": serviceIdRequestedToBeDeleted,
-                    }),
-                );
+                runningServiceThunks.stopService({
+                    "serviceId": serviceIdRequestedToBeDeleted,
+                });
             } else {
                 runningServices.map(({ id }) =>
-                    dispatch(thunks.runningService.stopService({ "serviceId": id })),
+                    runningServiceThunks.stopService({ "serviceId": id }),
                 );
             }
         }

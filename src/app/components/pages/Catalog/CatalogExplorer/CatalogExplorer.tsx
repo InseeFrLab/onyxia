@@ -5,8 +5,7 @@ import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useSplashScreen } from "onyxia-ui";
-import { useSelector, useDispatch } from "app/interfaceWithLib";
-import { thunks } from "lib/setup";
+import { useSelector, useThunks } from "app/libApi";
 import { routes } from "app/routes/router";
 import type { Route } from "type-route";
 
@@ -20,7 +19,8 @@ export const CatalogExplorer = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
     const catalogExplorerState = useSelector(state => state.catalogExplorer);
-    const dispatch = useDispatch();
+
+    const { catalogExplorerThunks } = useThunks();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -29,17 +29,15 @@ export const CatalogExplorer = memo((props: Props) => {
             case "not fetched":
                 if (!catalogExplorerState.isFetching) {
                     showSplashScreen({ "enableTransparency": true });
-                    dispatch(thunks.catalogExplorer.fetchCatalogs());
+                    catalogExplorerThunks.fetchCatalogs();
                 }
                 break;
             case "not selected":
-                dispatch(
-                    thunks.catalogExplorer.selectCatalog({
-                        "catalogId":
-                            route.params.catalogId ??
-                            catalogExplorerState.availableCatalogsId[0],
-                    }),
-                );
+                catalogExplorerThunks.selectCatalog({
+                    "catalogId":
+                        route.params.catalogId ??
+                        catalogExplorerState.availableCatalogsId[0],
+                });
                 break;
             case "ready":
                 hideSplashScreen();

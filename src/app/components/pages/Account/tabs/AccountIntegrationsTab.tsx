@@ -3,12 +3,11 @@ import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import type { Props as AccountFieldProps } from "../AccountField";
-import { useSelector, useDispatch } from "app/interfaceWithLib";
+import { useSelector, useThunks } from "app/libApi";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
-import { thunks } from "lib/setup";
 import { makeStyles } from "app/theme";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -50,15 +49,15 @@ export const AccountIntegrationsTab = memo((props: Props) => {
         copyToClipboard(textToCopy),
     );
 
-    const dispatch = useDispatch();
-
     const { classes } = useStyles();
 
     const userConfigsState = useSelector(state => state.userConfigs);
 
+    const { userConfigsThunks } = useThunks();
+
     const onRequestEditFactory = useCallbackFactory(
         ([key]: [EditableFieldKey], [value]: [string]) =>
-            dispatch(thunks.userConfigs.changeValue({ key, value })),
+            userConfigsThunks.changeValue({ key, value }),
     );
 
     const getEvtFieldAction = useMemo(

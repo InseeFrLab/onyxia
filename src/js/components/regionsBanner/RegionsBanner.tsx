@@ -10,11 +10,7 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useHistory } from "react-router-dom";
-import {
-    useIsBetaModeEnabled,
-    useAppConstants,
-    useSelectedRegion,
-} from "app/interfaceWithLib";
+import { useIsBetaModeEnabled, useAppConstants, useSelectedRegion } from "app/libApi";
 
 const Grid: any = Grid_v4;
 

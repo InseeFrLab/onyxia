@@ -1,6 +1,6 @@
 import { NouveauService } from "./deploiement/nouveau-service";
 import { Service } from "./service.component";
-import { useAppConstants } from "app/interfaceWithLib";
+import { useAppConstants } from "app/libApi";
 
 export const Leaf: React.FC<{ location: string }> = ({ location }) => {
     const [idCatalogue, idService] = getId(location);

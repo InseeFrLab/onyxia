@@ -1,7 +1,7 @@
 import * as reactDom from "react-dom";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes/router";
-import { createStoreProvider } from "app/interfaceWithLib/StoreProvider";
+import { createStoreProvider } from "app/libApi/StoreProvider";
 import { ThemeProvider, getThemeProviderProps } from "./theme";
 import { App } from "app/components/App";
 import { KcApp, kcContext } from "app/components/KcApp";

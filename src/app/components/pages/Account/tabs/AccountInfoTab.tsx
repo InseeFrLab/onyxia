@@ -2,17 +2,15 @@ import { useEffect, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useAppConstants, useSelector, useDispatch } from "app/interfaceWithLib";
+import { useSelector, useThunks } from "app/libApi";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@material-ui/core/Divider";
 import Link from "@material-ui/core/Link";
 import { getEnv } from "env";
 import { urlJoin } from "url-join-ts";
-import { thunks } from "lib/setup";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles } from "app/theme";
-import { thunks as publicIpThunks } from "lib/useCases/publicIp";
 
 export type Props = {
     className?: string;
@@ -33,7 +31,7 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation("AccountInfoTab");
 
-    const { parsedJwt } = useAppConstants({ "assertIsUserLoggedInIs": true });
+    const { publicIpThunks, userConfigsThunks, userAuthenticationThunks } = useThunks();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
@@ -41,10 +39,8 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
-        dispatch(publicIpThunks.fetch());
+        publicIpThunks.fetch();
     }, []);
 
     const userServicePasswordState = useSelector(
@@ -52,10 +48,12 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 
     const onRequestServicePasswordRenewal = useConstCallback(() =>
-        dispatch(thunks.userConfigs.renewUserServicePassword()),
+        userConfigsThunks.renewUserServicePassword(),
     );
 
-    const fullName = `${parsedJwt.firstName} ${parsedJwt.familyName}`;
+    const user = userAuthenticationThunks.getUser();
+
+    const fullName = `${user.firstName} ${user.familyName}`;
 
     const { classes } = useStyles();
 
@@ -65,8 +63,8 @@ export const AccountInfoTab = memo((props: Props) => {
             <AccountField
                 type="text"
                 title={t("user id")}
-                text={parsedJwt.username}
-                onRequestCopy={onRequestCopyFactory(parsedJwt.username)}
+                text={user.username}
+                onRequestCopy={onRequestCopyFactory(user.username)}
             />
             <AccountField
                 type="text"
@@ -77,8 +75,8 @@ export const AccountInfoTab = memo((props: Props) => {
             <AccountField
                 type="text"
                 title={t("email")}
-                text={parsedJwt.email}
-                onRequestCopy={onRequestCopyFactory(parsedJwt.email)}
+                text={user.email}
+                onRequestCopy={onRequestCopyFactory(user.email)}
             />
             {getEnv().OIDC_URL !== "" && (
                 <Link

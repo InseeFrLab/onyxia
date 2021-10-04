@@ -4,9 +4,7 @@ import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useIsBetaModeEnabled } from "app/interfaceWithLib";
-import { thunks } from "lib/setup";
-import { useDispatch } from "app/interfaceWithLib";
+import { useThunks, useSelector, selectors } from "app/libApi";
 
 export type Props = {
     className?: string;
@@ -23,16 +21,15 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
         setIsDarkModeEnabled(!isDarkModeEnabled),
     );
 
-    const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
+    const { userConfigsThunks } = useThunks();
+
+    const { isBetaModeEnabled } = useSelector(selectors.userConfigs);
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() =>
-        setIsBetaModeEnabled(!isBetaModeEnabled),
-    );
-
-    const dispatch = useDispatch();
-
-    const onResetHelperDialogsClick = useConstCallback(() =>
-        dispatch(thunks.userConfigs.resetHelperDialogs()),
+        userConfigsThunks.changeValue({
+            "key": "isBetaModeEnabled",
+            "value": !isBetaModeEnabled,
+        }),
     );
 
     return (
@@ -56,7 +53,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
             />
             <AccountField
                 type="reset helper dialogs"
-                onResetHelperDialogsClick={onResetHelperDialogsClick}
+                onResetHelperDialogsClick={userConfigsThunks.resetHelperDialogs}
             />
             <AccountField type="language" />
         </div>
