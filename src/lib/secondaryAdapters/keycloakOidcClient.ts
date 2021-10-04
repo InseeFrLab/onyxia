@@ -4,8 +4,6 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
 
 export async function createKeycloakOidcClient(params: {
     url: string;
@@ -16,12 +14,10 @@ export async function createKeycloakOidcClient(params: {
 
     const keycloakInstance = keycloak_js({ url, realm, clientId });
 
-    const { origin } = window.location;
-
     const isAuthenticated = await keycloakInstance
         .init({
             "onLoad": "check-sso",
-            "silentCheckSsoRedirectUri": `${origin}/silent-sso.html`,
+            "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
             "responseMode": "query",
             "checkLoginIframe": false,
             "adapter": createKeycloakAdapter({
@@ -49,29 +45,12 @@ export async function createKeycloakOidcClient(params: {
         });
     }
 
-    const evtOidcTokens = Evt.create<
-        UnpackEvt<OidcClient.LoggedIn["evtOidcTokens"]> | undefined
-    >({
-        "idToken": keycloakInstance.idToken!,
-        "refreshToken": keycloakInstance.refreshToken!,
-        "accessToken": keycloakInstance.token!,
-    } as const);
-
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        evtOidcTokens,
-        "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
-            const { minValidityMs = 10000 } = params ?? {};
-
-            if (evtOidcTokens.state === undefined) {
-                return;
+        "getAccessToken": async () => {
+            if (!keycloakInstance.isTokenExpired(10)) {
+                return keycloakInstance.token!;
             }
-
-            if (!keycloakInstance.isTokenExpired(Math.floor(minValidityMs / 1000))) {
-                return;
-            }
-
-            evtOidcTokens.state = undefined;
 
             const error = await keycloakInstance.updateToken(-1).then(
                 () => undefined,
@@ -85,32 +64,21 @@ export async function createKeycloakOidcClient(params: {
 
             assert(keycloakInstance.token !== undefined);
 
-            evtOidcTokens.state = {
-                "idToken": keycloakInstance.idToken!,
-                "refreshToken": keycloakInstance.refreshToken!,
-                "accessToken": keycloakInstance.token!,
-            };
+            return keycloakInstance.token;
         },
-        "logout": async ({ redirectToOrigin }) => {
+        "logout": async ({ redirectTo }) => {
             await keycloakInstance.logout({
-                "redirectUri": redirectToOrigin ? origin : window.location.href,
+                "redirectUri": (() => {
+                    switch (redirectTo) {
+                        case "current page":
+                            return window.location.href;
+                        case "home":
+                            return window.location.origin;
+                    }
+                })(),
             });
 
             return new Promise<never>(() => {});
         },
-        "getOidcTokensRemandingValidityMs": () =>
-            (function callee(low: number, up: number): number {
-                const middle = Math.floor(low + (up - low) / 2);
-
-                if (up - low <= 3000) {
-                    return middle;
-                }
-
-                return callee(
-                    ...(keycloakInstance.isTokenExpired(Math.floor(middle / 1000))
-                        ? ([low, middle] as const)
-                        : ([middle, up] as const)),
-                );
-            })(0, 360 * 12 * 30 * 24 * 60 * 60 * 1000 /*One year*/),
     });
 }
