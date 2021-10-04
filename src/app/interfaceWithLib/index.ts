@@ -19,16 +19,13 @@ export const useSelector: reactRedux.TypedUseSelectorHook<RootState> =
 export const selectors = (() => {
     const wordId = "Selector" as const;
 
+    // prettier-ignore
     return {
         [`${launcherUseCase.name}${wordId}` as const]: launcherUseCase.selectors,
-        [`${restorablePackageConfigsUseCase.name}${wordId}` as const]:
-            restorablePackageConfigsUseCase.selectors,
-        [`${deploymentRegionUseCase.name}${wordId}` as const]:
-            deploymentRegionUseCase.selectors,
+        [`${restorablePackageConfigsUseCase.name}${wordId}` as const]: restorablePackageConfigsUseCase.selectors,
+        [`${deploymentRegionUseCase.name}${wordId}` as const]: deploymentRegionUseCase.selectors,
     };
 })();
-
-//launcherUseCase.selectors
 
 export function useThunks() {
     const { thunksToRegularFunctions } = useThunksToRegularFunction<ThunkAction>();
