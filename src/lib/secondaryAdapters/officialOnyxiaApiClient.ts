@@ -38,11 +38,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getPublicIp": memoize(() =>
-            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => {
-                console.log("user info: ", JSON.stringify(data, null, 2));
-
-                return data.ip;
-            }),
+            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => data.ip),
         ),
         "getConfigurations": memoize(
             () =>
@@ -297,19 +293,31 @@ function createAxiosInstance(
         );
     }
 
-    axiosInstance.interceptors.response.use(res => {
-        assert(
-            res.status !== 404 && res.headers["content-type"] === "application/json",
-            [
-                `There isn't an onyxia-api hosted at ${baseUrl}`,
-                `Check the ${(() => {
-                    const { ONYXIA_API_URL } = getEnv();
-                    return symToStr({ ONYXIA_API_URL });
-                })()} environnement variable you provided with docker run.`,
-            ].join(" "),
+    {
+        const errorMessage = [
+            `There isn't an onyxia-api hosted at ${baseUrl}`,
+            `Check the ${(() => {
+                const { ONYXIA_API_URL } = getEnv();
+                return symToStr({ ONYXIA_API_URL });
+            })()} environnement variable you provided with docker run.`,
+        ].join(" ");
+
+        axiosInstance.interceptors.response.use(
+            res => {
+                if (res.headers["content-type"] !== "application/json") {
+                    alert(errorMessage);
+                    throw new Error(errorMessage);
+                }
+
+                return res;
+            },
+            error => {
+                alert(errorMessage);
+
+                throw error;
+            },
         );
-        return res;
-    });
+    }
 
     if (getCurrentlySelectedDeployRegionId !== null) {
         axiosInstance.interceptors.request.use(config => {
