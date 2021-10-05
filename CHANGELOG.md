@@ -1,3 +1,10 @@
+### **0.14.2** (2021-10-05)  
+  
+- #263  
+- Merge pull request #258 from py-b/py-b-patch-ortho
+
+d'autres corrections orthographiques    
+  
 ### **0.14.1** (2021-09-29)  
   
 - Update minio-client.ts    
