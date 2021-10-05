@@ -24,6 +24,7 @@ import { Account } from "app/components/pages/Account";
 import { FourOhFour } from "app/components/pages/FourOhFour";
 import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "app/components/pages/MyServices";
+import { getEnv } from "env";
 
 //Legacy
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
@@ -141,44 +142,58 @@ export const App = memo((props: Props) => {
         return { tosUrl };
     })();
 
-    const leftBarItems = useMemo(
-        () =>
-            ({
-                "home": {
-                    "iconId": "home",
-                    "label": t("home"),
-                    "link": routes.home().link,
-                },
-                "account": {
-                    "iconId": "account",
-                    "label": t("account"),
-                    "link": routes.account().link,
-                    "hasDividerBelow": true,
-                },
-                "catalog": {
-                    "iconId": "catalog",
-                    "label": t("catalog"),
-                    "link": routes.catalogExplorer().link,
-                },
-                "myServices": {
-                    "iconId": "services",
-                    "label": t("myServices"),
-                    "link": routes.myServices().link,
-                    "hasDividerBelow": true,
-                },
-                "mySecrets": {
-                    "iconId": "secrets",
-                    "label": t("mySecrets"),
-                    "link": routes.mySecrets().link,
-                },
-                "myFiles": {
-                    "iconId": "files",
-                    "label": t("myFiles"),
-                    "link": routes.myBuckets().link,
-                },
-            } as const),
-        [t],
-    );
+    const { leftBarItems } = useMemo(() => {
+        const leftBarItems = {
+            "home": {
+                "iconId": "home",
+                "label": t("home"),
+                "link": routes.home().link,
+            },
+            "account": {
+                "iconId": "account",
+                "label": t("account"),
+                "link": routes.account().link,
+                "hasDividerBelow": true,
+            },
+            "catalog": {
+                "iconId": "catalog",
+                "label": t("catalog"),
+                "link": routes.catalogExplorer().link,
+            },
+            "myServices": {
+                "iconId": "services",
+                "label": t("myServices"),
+                "link": routes.myServices().link,
+                "hasDividerBelow": true,
+            },
+            "mySecrets": {
+                "iconId": "secrets",
+                "label": t("mySecrets"),
+                "link": routes.mySecrets().link,
+            },
+            "myFiles": {
+                "iconId": "files",
+                "label": t("myFiles"),
+                "link": routes.myBuckets().link,
+            },
+        } as const;
+
+        {
+            type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+            const o = leftBarItems as Partial<Writeable<typeof leftBarItems>>;
+
+            if (getEnv().VAULT_URL === "") {
+                delete o.mySecrets;
+            }
+
+            if (getEnv().MINIO_URL === "") {
+                delete o.myFiles;
+            }
+        }
+
+        return { leftBarItems };
+    }, [t]);
 
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
