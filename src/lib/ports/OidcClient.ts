@@ -58,7 +58,7 @@ export async function parseOidcAccessToken(
         true,
     );
 
-    return {
+    const out = {
         "email": obj[getEnv().OIDC_EMAIL_CLAIM] ?? "",
         "familyName": obj[getEnv().OIDC_FAMILY_NAME_CLAIM] ?? "",
         "firstName": obj[getEnv().OIDC_FIRST_NAME_CLAIM] ?? "",
@@ -66,6 +66,12 @@ export async function parseOidcAccessToken(
         "groups": obj[getEnv().OIDC_GROUPS_CLAIM] ?? [],
         "kcLanguageTag": obj[getEnv().OIDC_LOCALE_CLAIM] ?? "en",
     };
+
+    if (!out.groups) {
+        out.groups = [];
+    }
+
+    return out;
 }
 
 export type ParsedJwt_Legacy = {
@@ -88,6 +94,10 @@ export async function parseOidcAccessToken_legacy(
         "",
         true,
     ) as ParsedJwt_Legacy;
+
+    if (!parsedJwt.groups) {
+        parsedJwt.groups = [];
+    }
 
     return parsedJwt;
 }
