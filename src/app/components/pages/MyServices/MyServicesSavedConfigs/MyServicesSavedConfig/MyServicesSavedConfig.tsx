@@ -111,23 +111,21 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     {friendlyName}
                 </Text>
             </div>
-            {!isShortVariant && (
-                <>
-                    <IconButton
-                        className={classes.linkIcon}
-                        iconId="link"
-                        onClick={onLinkClick}
-                    />
-                    <Button
-                        className={classes.editIcon}
-                        ref={editButtonRef}
-                        {...editLink}
-                        variant="secondary"
-                    >
-                        {t("edit")}
-                    </Button>
-                </>
-            )}
+            <div style={{ "visibility": isShortVariant ? "hidden" : "visible" }}>
+                <IconButton
+                    className={classes.linkIcon}
+                    iconId="link"
+                    onClick={onLinkClick}
+                />
+                <Button
+                    className={classes.editIcon}
+                    ref={editButtonRef}
+                    {...editLink}
+                    variant="secondary"
+                >
+                    {t("edit")}
+                </Button>
+            </div>
             <Button {...launchLink} variant="secondary">
                 {t("launch")}
             </Button>
