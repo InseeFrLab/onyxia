@@ -1,8 +1,6 @@
 import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
-import type { OidcClient } from "../ports/OidcClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
-import { nonNullable } from "evt";
 import memoize from "memoizee";
 import type {
     Get_Public_Configuration,
@@ -11,7 +9,7 @@ import type {
     Get_MyLab_Services,
     Put_MyLab_App,
     Get_MyLab_App,
-    Get_User_Info,
+    Get_Public_Ip,
 } from "lib/ports/OnyxiaApiClient";
 import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
@@ -19,6 +17,10 @@ import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
 import { Deferred } from "evt/tools/Deferred";
+import { symToStr } from "tsafe/symToStr";
+//This should be used only in app/libApi/StoreProvider but we break the rule
+//here because we use it only for debugging purpose.
+import { getEnv } from "env";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -32,26 +34,91 @@ export function createOfficialOnyxiaApiClient(params: {
     /** undefined if user not logged in */
     getOidcAccessToken: (() => Promise<string>) | undefined;
 }): OnyxiaApiClient {
-    const { axiosInstance } = createAxiosInstance(params);
+    const { url, getCurrentlySelectedDeployRegionId, getOidcAccessToken } = params;
+
+    const { axiosInstance } = (() => {
+        const axiosInstance = axios.create({ "baseURL": url });
+
+        if (getOidcAccessToken !== undefined) {
+            axiosInstance.interceptors.request.use(
+                async config => ({
+                    ...(config as any),
+                    "headers": {
+                        ...config.headers,
+                        "Authorization": `Bearer ${await getOidcAccessToken()}`,
+                    },
+                    "Content-Type": "application/json;charset=utf-8",
+                    "Accept": "application/json;charset=utf-8",
+                }),
+                error => {
+                    throw error;
+                },
+            );
+        }
+
+        {
+            const errorMessage = [
+                `There isn't an onyxia-api hosted at ${url}`,
+                `Check the ${(() => {
+                    const { ONYXIA_API_URL } = getEnv();
+                    return symToStr({ ONYXIA_API_URL });
+                })()} environnement variable you provided with docker run.`,
+            ].join(" ");
+
+            axiosInstance.interceptors.response.use(
+                res => {
+                    if (res.headers["content-type"] !== "application/json") {
+                        alert(errorMessage);
+                        throw new Error(errorMessage);
+                    }
+
+                    return res;
+                },
+                error => {
+                    alert(errorMessage);
+
+                    throw error;
+                },
+            );
+        }
+
+        axiosInstance.interceptors.request.use(config => {
+            const currentlySelectedDeployRegionId = getCurrentlySelectedDeployRegionId();
+
+            return {
+                ...config,
+                ...(currentlySelectedDeployRegionId === undefined
+                    ? {}
+                    : {
+                          "headers": {
+                              ...config?.headers,
+                              "ONYXIA-REGION": currentlySelectedDeployRegionId,
+                          },
+                      }),
+            };
+        });
+
+        return { axiosInstance };
+    })();
 
     if (axiosInstance !== undefined) {
         dAxiosInstance.resolve(axiosInstance);
     }
 
     const onyxiaApiClient: OnyxiaApiClient = {
-        "getPublicIp": memoize(() =>
-            axiosInstance.get<Get_User_Info>("/user/info").then(({ data }) => {
-                console.log("user info: ", JSON.stringify(data, null, 2));
-
-                return data.ip;
-            }),
+        "getIp": memoize(() =>
+            axiosInstance.get<Get_Public_Ip>("/public/ip").then(({ data }) => data.ip),
         ),
-        "getConfigurations": memoize(
-            () =>
-                axiosInstance
-                    .get<Get_Public_Configuration>("/public/configuration")
-                    .then(({ data }) => data),
-            { "promise": true },
+        "getAvailableRegions": memoize(() =>
+            axiosInstance
+                .get<Get_Public_Configuration>("/public/configuration")
+                .then(({ data }) =>
+                    data.regions.map(region => ({
+                        "id": region.id,
+                        "s3MonitoringUrlPattern": region.data.S3.monitoring?.URLPattern,
+                        "namespacePrefix": region.services.namespacePrefix,
+                    })),
+                ),
         ),
         "getCatalogs": memoize(
             () =>
@@ -264,58 +331,5 @@ export function createOfficialOnyxiaApiClient(params: {
                 }),
     };
 
-    return { onyxiaApiClient, axiosInstance };
-}
-
-function createAxiosInstance(
-    params: Parameters<typeof createOfficialOnyxiaApiClient>[0],
-) {
-    const { baseUrl, getCurrentlySelectedDeployRegionId, oidcClient } = params;
-
-    const axiosInstance = axios.create({ "baseURL": baseUrl });
-
-    if (oidcClient !== null) {
-        axiosInstance.interceptors.request.use(
-            async config => {
-                oidcClient.renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired();
-
-                const { accessToken } = await oidcClient.evtOidcTokens.waitFor(
-                    nonNullable(),
-                );
-
-                return {
-                    ...(config as any),
-                    "headers": {
-                        ...config.headers,
-                        "Authorization": `Bearer ${accessToken}`,
-                    },
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json;charset=utf-8",
-                };
-            },
-            error => {
-                throw error;
-            },
-        );
-    }
-
-    if (getCurrentlySelectedDeployRegionId !== null) {
-        axiosInstance.interceptors.request.use(config => {
-            const currentlySelectedDeployRegionId = getCurrentlySelectedDeployRegionId();
-
-            return {
-                ...config,
-                ...(currentlySelectedDeployRegionId === undefined
-                    ? {}
-                    : {
-                          "headers": {
-                              ...config?.headers,
-                              "ONYXIA-REGION": currentlySelectedDeployRegionId,
-                          },
-                      }),
-            };
-        });
-    }
-
-    return { axiosInstance };
+    return onyxiaApiClient;
 }
