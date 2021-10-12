@@ -40,8 +40,8 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                           "implementation": "MOCK",
                           "availableDeploymentRegions": [
                               {
-                                  "id": "nowhere",
-                                  "namespacePrefix": "users",
+                                  "id": "dummy region",
+                                  "namespacePrefix": "user-",
                               },
                           ],
                       })

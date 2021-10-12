@@ -6,13 +6,14 @@ import memoize from "memoizee";
 export function createMockOnyxiaApiClient(params: {
     availableDeploymentRegions: DeploymentRegion[];
 }): OnyxiaApiClient {
-    const { regions, build } = params;
+    const { availableDeploymentRegions } = params;
 
-    const onyxiaApiClient: OnyxiaApiClient = {
-        "getIp": memoize(() => Promise.resolve("0.0.0.0")),
-        "getConfigurations": memoize(() => Promise.resolve({ regions, build }), {
-            "promise": true,
-        }),
+    return {
+        "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
+        "getAvailableRegions": memoize(
+            () => Promise.resolve(availableDeploymentRegions),
+            { "promise": true },
+        ),
         "getCatalogs": memoize(() => Promise.resolve(data1), {
             "promise": true,
         }),
@@ -31,8 +32,6 @@ export function createMockOnyxiaApiClient(params: {
         "getRunningServices": () => Promise.resolve([]),
         "stopService": () => Promise.resolve(),
     };
-
-    return { onyxiaApiClient };
 }
 
 const data1 = [
