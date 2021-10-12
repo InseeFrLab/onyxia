@@ -1,5 +1,4 @@
 import axios from "axios";
-import type { AxiosInstance } from "axios";
 import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
 import type {
@@ -9,8 +8,10 @@ import type {
     SecretsManagerTranslator,
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
+import type { Param0, ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
-import { Param0 } from "tsafe";
+import { assert } from "tsafe/assert";
+import { is } from "tsafe/is";
 
 const version = "v1";
 
@@ -21,10 +22,83 @@ type Params = {
     keycloakParams: Param0<typeof createKeycloakOidcClient>;
 };
 
-export function createVaultSecretsManagerClient(params: Params): SecretsManagerClient {
-    const { engine, ...rest } = params;
+export async function createVaultSecretsManagerClient(
+    params: Params,
+): Promise<SecretsManagerClient> {
+    const { baseUri, engine, role, keycloakParams } = params;
 
-    const { axiosInstance, getFreshVaultToken } = xxx(rest);
+    const oidcClient = await createKeycloakOidcClient(keycloakParams);
+
+    if (!oidcClient.isUserLoggedIn) {
+        return oidcClient.login();
+    }
+
+    const { getAccessToken } = oidcClient;
+
+    const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
+
+    const { getToken } = (() => {
+        const requestNewToken: SecretsManagerClient["getToken"] = async () => {
+            const now = Date.now();
+
+            const {
+                data: { auth },
+            } = await createAxiosInstance().post(`/${version}/auth/jwt/login`, {
+                role,
+                "jwt": await getAccessToken(),
+            });
+
+            assert(is<{ lease_duration: number; client_token: string }>(auth));
+
+            return {
+                "token": auth.client_token,
+                "expirationTime": now + auth.lease_duration * 1000,
+            };
+        };
+
+        let cache:
+            | (ReturnType<SecretsManagerClient["getToken"]> & {
+                  ttl: number;
+              })
+            | undefined = undefined;
+
+        const getToken: SecretsManagerClient["getToken"] = async () => {
+            if (
+                cache !== undefined &&
+                //It token in cache have more than 90% of it's TTL left
+                //we use it instead of renewing the token.
+                cache.expirationTime - Date.now() > 0.9 * cache.ttl
+            ) {
+                return cache;
+            }
+
+            const token = await requestNewToken();
+
+            cache = {
+                ...token,
+                "ttl": token.expirationTime - Date.now(),
+            };
+
+            return getToken();
+        };
+
+        return { getToken };
+    })();
+
+    const { axiosInstance } = (() => {
+        const axiosInstance = createAxiosInstance();
+
+        axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
+            ...axiosRequestConfig,
+            "headers": {
+                "X-Vault-Token": await getToken(),
+            },
+            "Content-Type": "application/json;charset=utf-8",
+            "Accept": "application/json;charset=utf-8",
+        }));
+
+        return { axiosInstance };
+    })();
 
     const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
         pathJoin(version, engine, ...args);
@@ -74,6 +148,7 @@ export function createVaultSecretsManagerClient(params: Params): SecretsManagerC
 
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
+        getToken,
     };
 
     dVaultClient.resolve(secretsManagerClient);
@@ -85,56 +160,6 @@ const dVaultClient = new Deferred<SecretsManagerClient>();
 
 /** @deprecated */
 export const { pr: prVaultClient } = dVaultClient;
-
-function xxx(params: {
-    baseUri: string;
-    role: string;
-    getOidcAccessToken: () => Promise<string>;
-}): {
-    axiosInstance: AxiosInstance;
-    getToken: () => Promise<string>;
-} {
-    const { baseUri, role, getOidcAccessToken } = params;
-
-    const dTokensValidityMs = new Deferred<number>();
-
-    const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
-
-    let cache:
-        | Readonly<{
-              token: string;
-              createTime: number;
-          }>
-        | undefined = undefined;
-
-    async function requestNewToken() {
-        const {
-            data: { auth },
-        } = await createAxiosInstance().post(`/${version}/auth/jwt/login`, {
-            role,
-            "jwt": await getOidcAccessToken(),
-        });
-
-        if (dTokensValidityMs.isPending) {
-            dTokensValidityMs.resolve(auth.lease_duration);
-        }
-
-        return auth.client_token;
-    }
-
-    const axiosInstance = createAxiosInstance();
-
-    axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
-        ...axiosRequestConfig,
-        "headers": {
-            "X-Vault-Token": await requestNewToken(),
-        },
-        "Content-Type": "application/json;charset=utf-8",
-        "Accept": "application/json;charset=utf-8",
-    }));
-
-    return { axiosInstance, getFreshVaultToken };
-}
 
 export function getVaultClientTranslator(params: {
     clientType: "CLI";
