@@ -1,5 +1,5 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Next } from './../vignette-commons';
 import { WarnIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';

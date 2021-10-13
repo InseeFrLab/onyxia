@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Paper, Fab, Icon, Tooltip } from "@material-ui/core/";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import { Paper, Fab, Icon, Tooltip } from "@mui/material/";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import Dialog from "js/components/commons/dialog";
 import D from "js/i18n";
 import * as clipboard from "clipboard-polyfill";

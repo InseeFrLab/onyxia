@@ -1,7 +1,7 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { Fab, IconButton, Icon } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@mui/material/Typography';
+import { Fab, IconButton, Icon } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import { Next, CarteMask } from './../vignette-commons';
 import { MinioIcon, GitlabIcon } from 'js/components/commons/icons';
 import { getValidatedEnv } from "js/validatedEnv";

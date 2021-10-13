@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Typography, Grid as Grid_v4, Select, MenuItem } from "@material-ui/core";
+import { Typography, Grid as Grid_v4, Select, MenuItem } from "@mui/material";
 import { ExportFileButton, CopyButton } from "js/components/commons/buttons";
 
 //This won't work but we just want it to compile for now and remove all the js directory later.

@@ -1,6 +1,6 @@
   
 import { Link } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 
 const Option = ({
 	width = 20,

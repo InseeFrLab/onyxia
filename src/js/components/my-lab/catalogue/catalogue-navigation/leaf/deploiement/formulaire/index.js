@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import StringField from './field-string';
 import BooleanField from './field-boolean';
 import NumberField from './field-number';

@@ -6,11 +6,11 @@ import {
 } from "app/interfaceWithLib/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Autorenew from "@material-ui/icons/Autorenew";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Autorenew from "@mui/icons-material/Autorenew";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "./cloud-shell.scss";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";

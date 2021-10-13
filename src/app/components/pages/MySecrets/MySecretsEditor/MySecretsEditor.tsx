@@ -20,12 +20,12 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { id } from "tsafe/id";
 import type { Id } from "tsafe/id";
 import { evaluateShellExpression } from "app/tools/evaluateShellExpression";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import Table from "@material-ui/core/Table";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableBody from "@material-ui/core/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Table from "@mui/material/Table";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
 import { Dialog } from "onyxia-ui/Dialog";
 
 export type Props = {

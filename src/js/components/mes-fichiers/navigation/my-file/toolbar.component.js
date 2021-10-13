@@ -1,6 +1,6 @@
   
 import PropTypes from 'prop-types';
-import { Paper, Fab, Icon } from '@material-ui/core';
+import { Paper, Fab, Icon } from '@mui/material';
 
 const Toolbar = ({ linkToParentPathProps, download, deleteFile }) => (
 	<Paper className="onyxia-toolbar" elevation={1}>

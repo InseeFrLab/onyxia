@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import Paper from "@material-ui/core/Paper";
-import Fade from "@material-ui/core/Fade";
+import Paper from "@mui/material/Paper";
+import Fade from "@mui/material/Fade";
 import classnames from "classnames";
 import "./style.scss";
 import { Evt } from "evt";

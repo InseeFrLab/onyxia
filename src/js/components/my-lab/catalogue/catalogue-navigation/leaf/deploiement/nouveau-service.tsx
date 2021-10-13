@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { Tabs, Tab } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import { AppBar, Chip, Button } from "@material-ui/core/";
+import { Tabs, Tab } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import { AppBar, Chip, Button } from "@mui/material/";
 // @ts-ignore
 import queryString from "query-params";
 import Formulaire from "./formulaire";
@@ -11,8 +11,8 @@ import { getMinioToken } from "js/minio-client/minio-client";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import { getDefaultSingleOption } from "js/universe/universeContractFiller";
 import "./nouveau-service.scss";
-import IconButton from "@material-ui/core/IconButton";
-import VisibilityIcon from "@material-ui/icons/Visibility";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import Loader from "js/components/commons/loader";
 import JSONEditor from "js/components/commons/json-editor";
 import { mustacheRender, filterOnglets } from "js/utils";

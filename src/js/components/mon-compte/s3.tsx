@@ -4,9 +4,9 @@ import {
     InputLabel,
     IconButton,
     FormControl,
-} from "@material-ui/core";
-import FileCopy from "@material-ui/icons/FileCopy";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
+} from "@mui/material";
+import FileCopy from "@mui/icons-material/FileCopy";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import * as clipboard from "clipboard-polyfill";
 import D from "js/i18n";
 

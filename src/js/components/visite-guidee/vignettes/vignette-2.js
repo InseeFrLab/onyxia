@@ -1,7 +1,7 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Both } from './../vignette-commons';
-import { Icon, IconButton } from '@material-ui/core';
+import { Icon, IconButton } from '@mui/material';
 import { WorkInProgress } from 'js/components/commons/icons';
 import D from 'js/i18n';
 

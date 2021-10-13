@@ -12,9 +12,9 @@ import {
     TableCell,
     TableBody,
     Radio,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Region } from "js/model/Region";
-import { SentimentSatisfiedAlt, SentimentVeryDissatisfied } from "@material-ui/icons";
+import { SentimentSatisfiedAlt, SentimentVeryDissatisfied } from "@mui/icons-material";
 
 // Hack, see https://stackoverflow.com/a/56411961
 // Without it, marker image is broken

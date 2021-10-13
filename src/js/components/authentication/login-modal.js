@@ -6,7 +6,7 @@ import {
 	DialogTitle,
 	Button,
 	Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';

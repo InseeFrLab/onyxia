@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import dayjs from "dayjs";
 import GitInfo from "react-git-info/macro";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";

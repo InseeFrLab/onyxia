@@ -1,9 +1,9 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
+import { TextField } from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import getMinioApi from 'js/minio-client/minio-api';
 import { getMinioClient } from "js/minio-client/minio-client";
 import { getValidatedEnv } from 'js/validatedEnv';

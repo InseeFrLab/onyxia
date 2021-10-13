@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import removeAccents from 'remove-accents';
-import { TextField, InputAdornment, Icon } from '@material-ui/core';
+import { TextField, InputAdornment, Icon } from '@mui/material';
 import { HidablePane } from 'js/components/commons/HidablePane';
 import './chips-selector.scss';
 

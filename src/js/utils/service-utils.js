@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar } from '@material-ui/core/';
+import { Avatar } from '@mui/material/';
 
 export const getAvatar = (service) =>
 	service && service.resource && service.resource.images ? (

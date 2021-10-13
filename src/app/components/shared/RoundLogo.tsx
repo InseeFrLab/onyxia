@@ -1,5 +1,5 @@
 import { memo } from "react";
-import Avatar from "@material-ui/core/Avatar";
+import Avatar from "@mui/material/Avatar";
 import { ReactComponent as FallbackSvg } from "app/assets/svg/singlePackage.svg";
 import { makeStyles } from "app/theme";
 import type { IconSizeName } from "onyxia-ui";

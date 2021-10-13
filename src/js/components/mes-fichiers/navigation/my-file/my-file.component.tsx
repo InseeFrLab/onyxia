@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import Status from "./status.component";
 import Toolbar from "./toolbar.component";

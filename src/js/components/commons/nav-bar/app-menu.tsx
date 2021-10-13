@@ -7,8 +7,8 @@ import {
     ListItemText,
     ListItemIcon,
     Icon,
-} from "@material-ui/core/";
-import { Clear, Home } from "@material-ui/icons";
+} from "@mui/material/";
+import { Clear, Home } from "@mui/icons-material";
 import { BecherIcon, CatalogueIcon, PokerHandIcon } from "js/components/commons/icons";
 import { getValidatedEnv } from "js/validatedEnv";
 import D from "js/i18n";

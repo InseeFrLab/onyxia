@@ -1,4 +1,4 @@
-import { Icon, Avatar } from "@material-ui/core/";
+import { Icon, Avatar } from "@mui/material/";
 import type { FunctionComponent } from "react";
 
 export const ServiceCreeMessage: FunctionComponent<{

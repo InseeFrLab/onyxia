@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Paper, Fab, Icon, Tooltip } from "@material-ui/core/";
+import { Paper, Fab, Icon, Tooltip } from "@mui/material/";
 import Dialog from "js/components/commons/dialog";
 import D from "js/i18n";
 

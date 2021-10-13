@@ -1,6 +1,6 @@
 import React from 'react';
 import { GithubIcon } from 'js/components/commons/icons';
-import { Typography, Paper, Fab, Icon } from '@material-ui/core';
+import { Typography, Paper, Fab, Icon } from '@mui/material';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import CopyableField from 'js/components/commons/copyable-field';
 import { axiosURL } from "js/utils/axios-config";

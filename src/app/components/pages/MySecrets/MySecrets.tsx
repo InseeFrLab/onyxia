@@ -14,7 +14,7 @@ import type { EditSecretParams } from "lib/useCases/secretExplorer";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useWithProps } from "powerhooks/useWithProps";
 import { relative as pathRelative } from "path";
-import Link from "@material-ui/core/Link";
+import Link from "@mui/material/Link";
 import { routes } from "app/routes/router";
 import { createGroup } from "type-route";
 import { useSecretExplorerUserHomePath } from "app/interfaceWithLib/hooks";

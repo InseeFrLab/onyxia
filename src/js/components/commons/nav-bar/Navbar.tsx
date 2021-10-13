@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { Fab } from "@material-ui/core";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { Fab } from "@mui/material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-import { IconButton, Icon } from "@material-ui/core/";
-import MenuIcon from "@material-ui/icons/Menu";
+import { IconButton, Icon } from "@mui/material/";
+import MenuIcon from "@mui/icons-material/Menu";
 import AppMenu from "./app-menu";
 import { LoginModal } from "js/components/authentication";
 import "./style.scss";

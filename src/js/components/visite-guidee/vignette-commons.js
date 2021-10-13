@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import Tooltip from '@material-ui/core/Tooltip';
-import { Fab, Icon } from '@material-ui/core';
+import Tooltip from '@mui/material/Tooltip';
+import { Fab, Icon } from '@mui/material';
 import { ArrowIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
 import { routes } from "app/routes/router";
