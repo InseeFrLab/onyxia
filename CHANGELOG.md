@@ -1,3 +1,8 @@
+### **0.14.7** (2021-10-13)  
+  
+- Feature: Theme customization  
+- update dependencies    
+  
 ### **0.14.6** (2021-10-06)  
   
 - Update cloudshell icon    
