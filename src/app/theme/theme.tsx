@@ -1,6 +1,8 @@
 import {
     createThemeProvider,
     defaultPalette,
+    defaultAUSPalette,
+    defaultFrancePalette,
     defaultGetTypographyDesc,
     getIsPortraitOrientation,
     ViewPortOutOfRangeError,
@@ -17,16 +19,16 @@ import { createPageHeader } from "onyxia-ui/PageHeader";
 import { createMakeStyles } from "tss-react";
 import { createLanguageSelect } from "onyxia-ui/LanguageSelect";
 import { createLeftBar } from "onyxia-ui/LeftBar";
-import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
-import { ReactComponent as ServicesSvg } from "./assets/svg/Services.svg";
-import { ReactComponent as SecretsSvg } from "./assets/svg/Secrets.svg";
-import { ReactComponent as AccountSvg } from "./assets/svg/Account2.svg";
-import { ReactComponent as HomeSvg } from "./assets/svg/Home2.svg";
-import { ReactComponent as FilesSvg } from "./assets/svg/Files.svg";
-import { ReactComponent as CollaborationToolsSvg } from "./assets/svg/CollaborationTools.svg";
-import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
-import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
-import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
+import { ReactComponent as TourSvg } from "../assets/svg/Tour.svg";
+import { ReactComponent as ServicesSvg } from "../assets/svg/Services.svg";
+import { ReactComponent as SecretsSvg } from "../assets/svg/Secrets.svg";
+import { ReactComponent as AccountSvg } from "../assets/svg/Account2.svg";
+import { ReactComponent as HomeSvg } from "../assets/svg/Home2.svg";
+import { ReactComponent as FilesSvg } from "../assets/svg/Files.svg";
+import { ReactComponent as CollaborationToolsSvg } from "../assets/svg/CollaborationTools.svg";
+import { ReactComponent as BashSvg } from "../assets/svg/Bash.svg";
+import { ReactComponent as CatalogSvg } from "../assets/svg/Catalog.svg";
+import { ReactComponent as KeySvg } from "../assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { ReactComponent as TrainingsLogoSvg } from "app/assets/svg/Trainings2.svg";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
@@ -64,15 +66,34 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/resources";
+import { getEnv } from "env";
+import type { PaletteId } from "./PaletteId";
+export const paletteId = getEnv().THEME as PaletteId;
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc(params),
-        "fontFamily": '"Work Sans", sans-serif',
+        "fontFamily": (() => {
+            switch (paletteId) {
+                case "france":
+                    return "Marianne, sans-serif";
+                default:
+                    return '"Work Sans", sans-serif';
+            }
+        })(),
     }),
     "palette": {
-        ...defaultPalette,
+        ...(() => {
+            switch (paletteId) {
+                case "onyxia":
+                    return defaultPalette;
+                case "france":
+                    return defaultFrancePalette;
+                case "AUS":
+                    return defaultAUSPalette;
+            }
+        })(),
         "limeGreen": {
             "main": "#BAFF29",
             "light": "#E2FFA6",

@@ -5,6 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
+import { getEnv } from "env";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -83,7 +84,7 @@ export const Header = memo((props: Props) => {
                     typo="section heading"
                     className={css({ ...theme.spacing.rightLeft("margin", 2) })}
                 >
-                    SSP Cloud
+                    {getEnv().TITLE}
                 </Text>
                 {theme.windowInnerWidth > 450 && (
                     <Text
