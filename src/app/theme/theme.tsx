@@ -68,7 +68,17 @@ import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { getEnv } from "env";
 import type { PaletteId } from "./PaletteId";
-export const paletteId = getEnv().THEME as PaletteId;
+export const { paletteId } = (() => {
+    let paletteId: PaletteId | undefined = undefined;
+
+    try {
+        paletteId = getEnv().THEME as PaletteId;
+    } catch {
+        paletteId = "onyxia";
+    }
+
+    return { paletteId };
+})();
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     //We keep the default color palette but we add a custom color: a shiny pink.

@@ -7,6 +7,16 @@ import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-she
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { getEnv } from "env";
 
+export const title = (() => {
+    let title = "";
+
+    try {
+        title = getEnv().TITLE;
+    } catch {}
+
+    return title || "SSP Cloud";
+})();
+
 export type Props = Props.Core | Props.Keycloak;
 
 export declare namespace Props {
@@ -84,7 +94,7 @@ export const Header = memo((props: Props) => {
                     typo="section heading"
                     className={css({ ...theme.spacing.rightLeft("margin", 2) })}
                 >
-                    {getEnv().TITLE}
+                    {title}
                 </Text>
                 {theme.windowInnerWidth > 450 && (
                     <Text
