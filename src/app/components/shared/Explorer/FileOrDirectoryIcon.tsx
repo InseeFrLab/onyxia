@@ -21,7 +21,7 @@ const useStyles = makeStyles<Props>()((theme, { kind, standardizedWidth }) => ({
         "color": (() => {
             switch (kind) {
                 case "directory":
-                    return theme.colors.palette.focus.main;
+                    return theme.colors.useCases.typography.textFocus;
                 case "file":
                     return theme.colors.palette[
                         theme.isDarkModeEnabled ? "light" : "dark"

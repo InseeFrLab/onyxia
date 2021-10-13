@@ -55,7 +55,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "justifyContent": "center",
         },
         "svg": {
-            "fill": theme.colors.palette.focus.main,
+            "fill": theme.colors.useCases.typography.textFocus,
             "width": "70%",
         },
         "button": {

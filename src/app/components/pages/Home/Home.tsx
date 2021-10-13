@@ -62,7 +62,7 @@ const useStyles = makeStyles()(theme => ({
         ...theme.spacing.rightLeft("margin", 3),
     },
     "svg": {
-        "fill": theme.colors.palette.focus.main,
+        "fill": theme.colors.useCases.typography.textFocus,
         "width": 122,
     },
 }));
@@ -183,7 +183,7 @@ const { Card } = (() => {
                     g.setAttribute(
                         "fill",
                         g.classList.contains("colorPrimary")
-                            ? theme.colors.palette.focus.main
+                            ? theme.colors.useCases.typography.textFocus
                             : theme.colors.useCases.typography.textPrimary,
                     ),
                 );
