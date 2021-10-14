@@ -21,7 +21,7 @@ export function createJwtUserApiClient(params: {
                 "familyName": parsedJwt[oidcClaims.familyName] ?? "FAMILY NAME",
                 "firstName": parsedJwt[oidcClaims.firstName] ?? "FIRST NAME",
                 "username": (() => {
-                    const username = parsedJwt[oidcClaims.firstName];
+                    const username = parsedJwt[oidcClaims.username];
 
                     assert(!!username, `Could not read ${oidcClaims.username} in JWT`);
 
