@@ -2,13 +2,13 @@ import { useEffect } from "react";
 import { Typography, Paper, Tooltip, Fab, Icon } from "@material-ui/core";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "./myBuckets.scss";
-import { Region } from "js/model/Region";
-import { useSelector, useDispatch, useSelectedRegion } from "app/libApi";
+import { useSelector, selectors } from "app/libApi";
 import { actions as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
-
+import { useDispatch } from "js/hooks";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
+import type { DeploymentRegion } from "lib/ports/OnyxiaApiClient";
 
 MyBuckets.routeGroup = createGroup([routes.myBuckets]);
 
@@ -17,9 +17,11 @@ MyBuckets.requireUserLoggedIn = true as const;
 export function MyBuckets() {
     const dispatch = useDispatch();
 
-    const region = useSelectedRegion();
-
     const buckets = useSelector(state => state.myFiles.userBuckets);
+
+    const { selectedDeploymentRegion } = useSelector(
+        selectors.deploymentRegion.selectedDeploymentRegion,
+    );
 
     useEffect(() => {
         if (!buckets) {
@@ -53,7 +55,7 @@ export function MyBuckets() {
                                     key={i}
                                     description={description}
                                     id={id}
-                                    region={region as any}
+                                    region={selectedDeploymentRegion}
                                 />
                             );
                         })}
@@ -71,12 +73,9 @@ const Bucket = ({
 }: {
     id: string;
     description: string;
-    region: Region;
+    region: DeploymentRegion;
 }) => {
-    const monitoringUrl = region?.data?.S3?.monitoring?.URLPattern?.replace(
-        "$BUCKET_ID",
-        id,
-    );
+    const monitoringUrl = region.s3MonitoringUrlPattern?.replace("$BUCKET_ID", id);
 
     return (
         <>

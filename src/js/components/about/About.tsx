@@ -6,16 +6,20 @@ import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import SelectRegion from "./SelectRegion";
 import type { Region } from "js/model/Region";
 import CopyableField from "../commons/copyable-field";
-import { useDispatch, useSelector, useAppConstants } from "app/libApi";
-import { thunks } from "lib/setup";
+//import { useDispatch, useSelector, useAppConstants } from "app/libApi";
+//import { thunks } from "lib/setup";
 
 export function About() {
+    //@ts-ignore
     const dispatch = useDispatch();
 
+    //@ts-ignore
     const { regions, build } = useAppConstants({
         "assertIsUserLoggedInIs": true,
     });
+    //@ts-ignore
     const deploymentRegionId = useSelector(
+        //@ts-ignore
         state => state.userConfigs.deploymentRegionId.value,
     );
 
@@ -34,6 +38,7 @@ export function About() {
     const onRegionSelected = useCallback(
         (region: Region) =>
             dispatch(
+                //@ts-ignore
                 thunks.userConfigs.changeValue({
                     "key": "deploymentRegionId",
                     "value": region.id,

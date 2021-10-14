@@ -1,12 +1,12 @@
 import Typography from "@material-ui/core/Typography";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
-import { useSelector, useAppConstants } from "app/libApi";
 import { Paper } from "@material-ui/core";
 import CopyableField from "../commons/copyable-field";
 import ExportCredentialsField from "../mon-compte/export-credentials-component";
 import D from "js/i18n";
 import exportKub from "./exportCredentialsKub";
 import { getValidatedEnv } from "js/validatedEnv";
+import { useThunks } from "app/libApi";
 
 const env = getValidatedEnv();
 
@@ -20,9 +20,10 @@ const EnTete = () => (
 
 const Cluster = () => {
     const oidcAccessToken = "";
-    const {
-        parsedJwt: { username: preferred_username },
-    } = useAppConstants({ "assertIsUserLoggedInIs": true });
+
+    const { userAuthenticationThunks } = useThunks();
+
+    const { username: preferred_username } = userAuthenticationThunks.getUser();
 
     return (
         <>

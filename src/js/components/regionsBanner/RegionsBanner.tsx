@@ -10,17 +10,20 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useHistory } from "react-router-dom";
-import { useIsBetaModeEnabled, useAppConstants, useSelectedRegion } from "app/libApi";
+//import { useIsBetaModeEnabled, useAppConstants, useSelectedRegion } from "app/libApi";
 
 const Grid: any = Grid_v4;
 
 const RegionBanner = () => {
+    //@ts-ignore
     const appConstants = useAppConstants();
+    //@ts-ignore
     const selectedRegion = useSelectedRegion();
     const regions = appConstants.isUserLoggedIn ? appConstants.regions : [];
 
     const [open, setOpen] = useState(true);
     const history = useHistory();
+    //@ts-ignore
     const { isBetaModeEnabled } = useIsBetaModeEnabled();
 
     return selectedRegion && regions.length > 1 && isBetaModeEnabled ? (

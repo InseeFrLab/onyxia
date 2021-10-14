@@ -3,13 +3,14 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useSelector } from "app/libApi";
+import { useSelector } from "app/libApi";
 import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
 import { useLocation } from "js/utils/reactRouterPolyfills";
 import type { Route } from "type-route";
+import { useDispatch } from "js/hooks";
 
 NavigationFile.routeGroup = createGroup([routes.myFiles]);
 

@@ -14,18 +14,20 @@ import "./mon-compte.scss";
 import exportMinio from "./export-credentials-minio";
 import D from "js/i18n";
 import S3Field from "./s3";
-import { thunks } from "lib/setup";
+//import { thunks } from "lib/setup";
+/*
 import {
     useDispatch,
     useSelector,
     useIsBetaModeEnabled,
     useAppConstants,
 } from "app/libApi";
+*/
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "app/routes/router";
-import { getPublicIp } from "lib/tools/getPublicIp";
+//import { getPublicIp } from "lib/tools/getPublicIp";
 import { useAsync } from "react-async-hook";
 
 MonCompte.routeGroup = createGroup([routes.account]);
@@ -33,19 +35,25 @@ MonCompte.routeGroup = createGroup([routes.account]);
 MonCompte.requireUserLoggedIn = true;
 
 export function MonCompte() {
+    //@ts-ignore
     const { isBetaModeEnabled, setIsBetaModeEnabled } = useIsBetaModeEnabled();
 
     const [s3loading, setS3Loading] = useState(false);
 
+    //@ts-ignore
     const userConfigsState = useSelector(state => state.userConfigs);
 
     const oidcAccessToken = "";
 
+    //@ts-ignore
     const dispatch = useDispatch();
 
+    //@ts-ignore
     const { result: publicIp } = useAsync(getPublicIp, []);
 
+    //@ts-ignore
     const { parsedJwt } = useAppConstants({ "assertIsUserLoggedInIs": true });
+    //@ts-ignore
     const { s3 } = useSelector(state => state.user);
 
     useEffect(() => {
@@ -73,6 +81,7 @@ export function MonCompte() {
                         className="bouton-rouge"
                         color="primary"
                         title="logout"
+                        //@ts-ignore
                         onClick={() => dispatch(thunks.app.logout())}
                     >
                         <Icon>power_settings_new_icon</Icon>
@@ -85,6 +94,7 @@ export function MonCompte() {
                     </Typography>
                     <S3Field
                         value={userConfigsState.userServicePassword.value}
+                        //@ts-ignore
                         handleReset={() =>
                             dispatch(thunks.userConfigs.renewUserServicePassword())
                         }
@@ -97,6 +107,7 @@ export function MonCompte() {
                         type="string"
                         onValidate={(value: string) =>
                             dispatch(
+                                //@ts-ignore
                                 thunks.userConfigs.changeValue({
                                     "key": "gitName",
                                     value,
@@ -111,6 +122,7 @@ export function MonCompte() {
                         type="string"
                         onValidate={(value: string) =>
                             dispatch(
+                                //@ts-ignore
                                 thunks.userConfigs.changeValue({
                                     "key": "gitEmail",
                                     value,
@@ -125,6 +137,7 @@ export function MonCompte() {
                         type="string"
                         onValidate={(value: string) =>
                             dispatch(
+                                //@ts-ignore
                                 thunks.userConfigs.changeValue({
                                     "key": "gitCredentialCacheDuration",
                                     "value": parseInt(value) || 0,
@@ -139,6 +152,7 @@ export function MonCompte() {
                         type="string"
                         onValidate={(value: string) =>
                             dispatch(
+                                //@ts-ignore
                                 thunks.userConfigs.changeValue({
                                     "key": "kaggleApiToken",
                                     value,
@@ -160,6 +174,7 @@ export function MonCompte() {
                             value={parsedJwt.familyName + " " + parsedJwt.firstName}
                         />
                         <CopyableField copy label="Email" value={parsedJwt.email} />
+                        {/*@ts-ignore*/}
                         <CopyableField copy label="IP" value={publicIp ?? "0.0.0.0"} />
                     </>
                     <CopyableField copy label={D.oidcToken} value={oidcAccessToken} />

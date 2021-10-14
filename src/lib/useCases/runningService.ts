@@ -148,9 +148,7 @@ export const thunks = {
                 const { username } = dispatch(userAuthenticationThunks.getUser());
 
                 const selectedDeploymentRegion =
-                    deploymentRegionSelectors.selectedDeploymentRegionSelector(
-                        getState(),
-                    );
+                    deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
                 return selectedDeploymentRegion.s3MonitoringUrlPattern
                     ?.replace(

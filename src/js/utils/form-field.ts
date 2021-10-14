@@ -1,7 +1,6 @@
 import Mustache from "mustache";
 import type { RootState } from "lib/setup";
 import { getValidatedEnv } from "js/validatedEnv";
-import type { AppConstant } from "lib/useCases/userAuthentication";
 import type { OidcTokens } from "lib/ports/OidcClient";
 import type { UserConfigs } from "lib/useCases/userConfigs";
 
@@ -18,13 +17,13 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 export type BuildMustacheViewParams = {
     s3: NonNullable<RootState["user"]["s3"]>;
     publicIp: string;
-    parsedJwt: Pick<
-        AppConstant.LoggedIn["parsedJwt"],
-        "username" | "email" | "familyName" | "firstName"
-    >;
+    parsedJwt: Record<"username" | "email" | "familyName" | "firstName", string>;
     secretExplorerUserHomePath: string;
     userConfigs: UserConfigs;
-    vaultClientConfig: AppConstant["vaultClientConfig"];
+    vaultClientConfig: {
+        baseUri: string;
+        engine: string;
+    };
     oidcTokens: OidcTokens;
     vaultToken: string;
 };

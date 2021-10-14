@@ -1,16 +1,9 @@
 import * as jwtSimple from "jwt-simple";
-import type { UserApiClient } from "../ports/UserApiClient";
+import type { UserApiClient, User } from "../ports/UserApiClient";
 import { assert } from "tsafe/assert";
 
 export function createJwtUserApiClient(params: {
-    oidcClaims: {
-        email: string;
-        familyName: string;
-        fistName: string;
-        userName: string;
-        groups: string;
-        local: string;
-    };
+    oidcClaims: Record<keyof User, string>;
     getOidcAccessToken: () => Promise<string>;
 }): UserApiClient {
     const { oidcClaims, getOidcAccessToken } = params;
@@ -26,16 +19,16 @@ export function createJwtUserApiClient(params: {
             return {
                 "email": parsedJwt[oidcClaims.email] ?? "no-email-in-jwt@example.com",
                 "familyName": parsedJwt[oidcClaims.familyName] ?? "FAMILY NAME",
-                "firstName": parsedJwt[oidcClaims.fistName] ?? "FIRST NAME",
+                "firstName": parsedJwt[oidcClaims.firstName] ?? "FIRST NAME",
                 "username": (() => {
-                    const username = parsedJwt[oidcClaims.fistName];
+                    const username = parsedJwt[oidcClaims.firstName];
 
-                    assert(!!username, `Could not read ${oidcClaims.userName} in JWT`);
+                    assert(!!username, `Could not read ${oidcClaims.username} in JWT`);
 
                     return username;
                 })(),
                 "groups": parsedJwt[oidcClaims.groups] ?? [],
-                "kcLanguageTag": parsedJwt[oidcClaims.local] ?? "en",
+                "local": parsedJwt[oidcClaims.local] ?? "en",
             };
         },
     };

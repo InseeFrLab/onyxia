@@ -1,12 +1,13 @@
 import { NouveauService } from "./deploiement/nouveau-service";
 import { Service } from "./service.component";
-import { useAppConstants } from "app/libApi";
+//import { useAppConstants } from "app/libApi";
 
 export const Leaf: React.FC<{ location: string }> = ({ location }) => {
     const [idCatalogue, idService] = getId(location);
 
     //TODO: Checks for if the user is logged in or not shouldn't be done here
     //but this is legacy code...
+    //@ts-ignore
     const appConstants = useAppConstants();
 
     const isDeploiementValue = isDeploiement(location);

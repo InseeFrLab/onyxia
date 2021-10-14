@@ -59,13 +59,14 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                     isStorybook || getEnv().OIDC_URL === ""
                         ? id<UserApiClientConfig.Mock>({
                               "implementation": "MOCK",
+
                               "user": {
                                   "email": "john.doe@example.com",
                                   "familyName": "Doe",
                                   "firstName": "John",
                                   "username": "jdoe",
                                   "groups": [],
-                                  "kcLanguageTag": "en",
+                                  "local": "en",
                               },
                           })
                         : id<UserApiClientConfig.Jwt>({
@@ -73,8 +74,8 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                               "oidcClaims": {
                                   "email": getEnv().OIDC_EMAIL_CLAIM,
                                   "familyName": getEnv().OIDC_FAMILY_NAME_CLAIM,
-                                  "fistName": getEnv().OIDC_FIRST_NAME_CLAIM,
-                                  "userName": getEnv().OIDC_USERNAME_CLAIM,
+                                  "firstName": getEnv().OIDC_FIRST_NAME_CLAIM,
+                                  "username": getEnv().OIDC_USERNAME_CLAIM,
                                   "groups": getEnv().OIDC_GROUPS_CLAIM,
                                   "local": getEnv().OIDC_LOCALE_CLAIM,
                               },

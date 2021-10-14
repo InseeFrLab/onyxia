@@ -22,7 +22,7 @@ export const thunk = {
 
             assert(oidcClient.isUserLoggedIn);
 
-            return oidcClient.logout({ "redirectToOrigin": true });
+            return oidcClient.logout({ "redirectTo": "home" });
         },
 };
 

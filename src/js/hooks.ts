@@ -1,40 +1,48 @@
-import { userConfigsStateToUserConfigs } from "lib/useCases/userConfigs";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { getPublicIp } from "lib/tools/getPublicIp";
-import { useAsync } from "react-async-hook";
-import { useSelector, useAppConstants, useSecretExplorerUserHomePath } from "app/libApi";
+import { useSelector, selectors } from "app/libApi";
+import { useThunks } from "app/libApi";
+import { pure as secretExplorerPure } from "lib/useCases/secretExplorer";
+import type { Store } from "lib/setup";
+import * as reactRedux from "react-redux";
+/** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
+export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
 
-export function useMustacheParams() {
-    const { s3 } = useSelector(state => state.user);
+export function useGetBuildMustacheViewParams() {
+    const { launcherThunks } = useThunks();
 
-    const { parsedJwt, vaultClientConfig } = useAppConstants({
-        "assertIsUserLoggedInIs": true,
-    });
+    const userConfigs = useSelector(selectors.userConfigs);
 
-    const { secretExplorerUserHomePath } = useSecretExplorerUserHomePath();
+    async function getBuildMustacheViewParams(): Promise<BuildMustacheViewParams> {
+        const mustacheParams = await launcherThunks.getMustacheParams();
 
-    const userConfigs = useSelector(state =>
-        userConfigsStateToUserConfigs(state.userConfigs),
-    );
+        return {
+            "s3": {
+                ...mustacheParams.s3,
+                "AWS_EXPIRATION": "",
+            },
+            "publicIp": mustacheParams.user.ip,
+            "parsedJwt": {
+                "email": mustacheParams.user.email,
+                "familyName": mustacheParams.user.name,
+                "firstName": mustacheParams.user.name,
+                "username": mustacheParams.user.idep,
+            },
+            "secretExplorerUserHomePath": secretExplorerPure.getUserHomePath({
+                "username": mustacheParams.user.idep,
+            }),
+            userConfigs,
+            "vaultClientConfig": {
+                "baseUri": mustacheParams.vault.VAULT_ADDR,
+                "engine": mustacheParams.vault.VAULT_MOUNT,
+            },
+            "oidcTokens": {
+                "accessToken": "",
+                "idToken": "",
+                "refreshToken": "",
+            },
+            "vaultToken": mustacheParams.vault.VAULT_TOKEN,
+        };
+    }
 
-    const { result: publicIp } = useAsync(getPublicIp, []);
-
-    const mustacheParams: Omit<BuildMustacheViewParams, "s3"> & {
-        s3: BuildMustacheViewParams["s3"] | undefined;
-    } = {
-        s3,
-        "publicIp": publicIp ?? "0.0.0.0",
-        parsedJwt,
-        secretExplorerUserHomePath,
-        userConfigs,
-        vaultClientConfig,
-        "oidcTokens": {
-            "accessToken": "",
-            "idToken": "",
-            "refreshToken": "",
-        },
-        "vaultToken": "",
-    };
-
-    return { mustacheParams };
+    return { getBuildMustacheViewParams };
 }
