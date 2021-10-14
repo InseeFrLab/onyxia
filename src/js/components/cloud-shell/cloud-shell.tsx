@@ -1,6 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { useDispatch, useAppConstants } from "app/libApi";
-import { useMustacheParams } from "js/hooks";
+import { useGetBuildMustacheViewParams, useDispatch } from "js/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
 import IconButton from "@material-ui/core/IconButton";
@@ -20,6 +19,7 @@ import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { useStyles } from "app/theme";
 import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { useThunks } from "app/libApi";
 
 export const { useIsCloudShellVisible } = createUseGlobalState(
     "isCloudShellVisible",
@@ -36,9 +36,10 @@ interface CloudShellData {
 }
 
 export const CloudShell = memo(() => {
-    const {
-        parsedJwt: { username: preferred_username },
-    } = useAppConstants({ "assertIsUserLoggedInIs": true });
+    const { userAuthenticationThunks } = useThunks();
+
+    const { username } = userAuthenticationThunks.getUser();
+
     const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(
         undefined,
     );
@@ -50,10 +51,12 @@ export const CloudShell = memo(() => {
 
     const { css } = useStyles();
 
-    const { mustacheParams } = useMustacheParams();
+    const { getBuildMustacheViewParams } = useGetBuildMustacheViewParams();
 
     const launchCloudShell = useConstCallback(async () => {
         const axiosAuth = await prAxiosInstance;
+
+        const buildMustacheViewParams = await getBuildMustacheViewParams();
 
         axiosAuth
             .get<CloudShellData>(`${restApiPaths.cloudShell}`)
@@ -71,14 +74,7 @@ export const CloudShell = memo(() => {
                                     ...catalogId,
                                 },
                                 "options": getValuesObject(
-                                    getOptions(
-                                        {
-                                            ...mustacheParams,
-                                            "s3": mustacheParams.s3!,
-                                        },
-                                        service,
-                                        {},
-                                    ).fV,
+                                    getOptions(buildMustacheViewParams, service, {}).fV,
                                 ) as any,
                                 "dryRun": false,
                             }),
@@ -182,7 +178,7 @@ export const CloudShell = memo(() => {
                         aria-label="delete"
                         onClick={() => {
                             setIsCloudShellVisible(false);
-                            (deleteCloudShell as any)(preferred_username);
+                            (deleteCloudShell as any)(username);
                         }}
                         className="close-shell"
                     >

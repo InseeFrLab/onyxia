@@ -469,11 +469,7 @@ export const thunks = {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
 
-            const [
-                dispatch,
-                getState,
-                { onyxiaApiClient, oidcClient, createStoreParams },
-            ] = args;
+            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
             assert(
                 getState().launcher.stateDescription === "not initialized",
@@ -493,79 +489,8 @@ export const thunks = {
 
             assert(oidcClient.isUserLoggedIn);
 
-            //TODO: Renew VAULT and MINIO token
-
-            const { mustacheParams } = await (async () => {
-                const { publicIp } = await dispatch(publicIpThunks.fetch());
-
-                const {
-                    vault: { token: vaultToken },
-                    s3,
-                } = await dispatch(thunks.getVaultAndS3Tokens());
-
-                const user = dispatch(userAuthenticationThunk.getUser());
-
-                const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
-                    "username": user.username,
-                });
-
-                const userConfigs = userConfigsSelectors.userConfigs(getState());
-
-                const mustacheParams: Get_Public_Catalog_CatalogId_PackageName.MustacheParams =
-                    {
-                        "user": {
-                            "idep": user.username,
-                            "name": `${user.familyName} ${user.firstName}`,
-                            "email": user.email,
-                            "password": userConfigs.userServicePassword,
-                            "ip": publicIp,
-                        },
-                        "project": {
-                            "id": user.username,
-                            "password": userConfigs.userServicePassword,
-                        },
-                        "git": {
-                            "name": userConfigs.gitName,
-                            "email": userConfigs.gitEmail,
-                            "credentials_cache_duration":
-                                userConfigs.gitCredentialCacheDuration,
-                            "token": userConfigs.githubPersonalAccessToken,
-                        },
-                        "vault": (() => {
-                            const { secretsManagerClientConfig } = createStoreParams;
-
-                            if (secretsManagerClientConfig.implementation !== "VAULT") {
-                                return {
-                                    "VAULT_ADDR": "",
-                                    "VAULT_TOKEN": "",
-                                    "VAULT_MOUNT": "",
-                                    "VAULT_TOP_DIR": "",
-                                };
-                            }
-
-                            return {
-                                "VAULT_ADDR": secretsManagerClientConfig.baseUri,
-                                "VAULT_TOKEN": vaultToken,
-                                "VAULT_MOUNT": secretsManagerClientConfig.engine,
-                                "VAULT_TOP_DIR": secretExplorerUserHomePath,
-                            };
-                        })(),
-                        "kaggleApiToken": userConfigs.kaggleApiToken,
-                        "s3": {
-                            "AWS_ACCESS_KEY_ID": s3.accessKeyId,
-                            "AWS_BUCKET_NAME": user.username,
-                            "AWS_DEFAULT_REGION": "us-east-1",
-                            "AWS_S3_ENDPOINT": getEnv().MINIO_URL,
-                            "AWS_SECRET_ACCESS_KEY": s3.secretAccessKey,
-                            "AWS_SESSION_TOKEN": s3.sessionToken,
-                        },
-                    };
-
-                return { mustacheParams };
-            })();
-
             const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams({
-                mustacheParams,
+                "mustacheParams": await dispatch(thunks.getMustacheParams()),
             });
 
             const { formFields, infosAboutWhenFieldsShouldBeHidden } = (() => {
@@ -886,6 +811,80 @@ export const thunks = {
                         "expirationTime": Infinity,
                     };
                 })(),
+            };
+        },
+
+    /** This thunk can be used outside of the launcher page,
+     *  even if the slice isn't initialized */
+    //@deprecated should be moved to privateThunks
+    "getMustacheParams":
+        (): ThunkAction<
+            Promise<Get_Public_Catalog_CatalogId_PackageName.MustacheParams>
+        > =>
+        async (...args) => {
+            const [dispatch, getState, { createStoreParams }] = args;
+
+            const { publicIp } = await dispatch(publicIpThunks.fetch());
+
+            const {
+                vault: { token: vaultToken },
+                s3,
+            } = await dispatch(thunks.getVaultAndS3Tokens());
+
+            const user = dispatch(userAuthenticationThunk.getUser());
+
+            const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
+                "username": user.username,
+            });
+
+            const userConfigs = userConfigsSelectors.userConfigs(getState());
+
+            return {
+                "user": {
+                    "idep": user.username,
+                    "name": `${user.familyName} ${user.firstName}`,
+                    "email": user.email,
+                    "password": userConfigs.userServicePassword,
+                    "ip": publicIp,
+                },
+                "project": {
+                    "id": user.username,
+                    "password": userConfigs.userServicePassword,
+                },
+                "git": {
+                    "name": userConfigs.gitName,
+                    "email": userConfigs.gitEmail,
+                    "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
+                    "token": userConfigs.githubPersonalAccessToken,
+                },
+                "vault": (() => {
+                    const { secretsManagerClientConfig } = createStoreParams;
+
+                    if (secretsManagerClientConfig.implementation !== "VAULT") {
+                        return {
+                            "VAULT_ADDR": "",
+                            "VAULT_TOKEN": "",
+                            "VAULT_MOUNT": "",
+                            "VAULT_TOP_DIR": "",
+                        };
+                    }
+
+                    return {
+                        "VAULT_ADDR": secretsManagerClientConfig.baseUri,
+                        "VAULT_TOKEN": vaultToken,
+                        "VAULT_MOUNT": secretsManagerClientConfig.engine,
+                        "VAULT_TOP_DIR": secretExplorerUserHomePath,
+                    };
+                })(),
+                "kaggleApiToken": userConfigs.kaggleApiToken,
+                "s3": {
+                    "AWS_ACCESS_KEY_ID": s3.accessKeyId,
+                    "AWS_BUCKET_NAME": user.username,
+                    "AWS_DEFAULT_REGION": "us-east-1",
+                    "AWS_S3_ENDPOINT": getEnv().MINIO_URL,
+                    "AWS_SECRET_ACCESS_KEY": s3.secretAccessKey,
+                    "AWS_SESSION_TOKEN": s3.sessionToken,
+                },
             };
         },
 };

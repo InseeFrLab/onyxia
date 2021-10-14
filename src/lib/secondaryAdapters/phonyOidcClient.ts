@@ -1,104 +1,84 @@
-import type { OidcClient, OidcTokens, ParsedJwt } from "../ports/OidcClient";
-import { Evt } from "evt";
+import "minimal-polyfills/Object.fromEntries";
+import type { OidcClient } from "../ports/OidcClient";
 import { id } from "tsafe/id";
 import * as jwtSimple from "jwt-simple";
+import { urlSearchParams } from "powerhooks/tools/urlSearchParams";
+import type { createJwtUserApiClient } from "./jwtUserApiClient";
+import type { Param0 } from "tsafe";
+import { objectKeys } from "tsafe/objectKeys";
+import type { User } from "../ports/UserApiClient";
 
 export async function createPhonyOidcClient(params: {
     isUserLoggedIn: boolean;
-}): Promise<OidcClient.LoggedIn> {
-    const { generateFakeTokens, getDelayBeforeTokensExpiration } =
-        createFakeTokenApi(params);
+    user: User;
+}): Promise<OidcClient> {
+    const isUserLoggedIn = (() => {
+        const urlParamValue: string | undefined = urlSearchParams.retrieve({
+            "locationSearch": window.location.search,
+            "prefix": urlParam,
+        }).values[urlParam];
 
-    const evtOidcTokens = Evt.create<OidcTokens | undefined>(generateFakeTokens());
+        return urlParamValue !== undefined
+            ? urlParamValue === "true"
+            : params.isUserLoggedIn;
+    })();
+
+    if (!isUserLoggedIn) {
+        return id<OidcClient.NotLoggedIn>({
+            "isUserLoggedIn": false,
+            "login": async () => {
+                const { newUrl } = urlSearchParams.add({
+                    "url": window.location.href,
+                    "name": urlParam,
+                    "value": "true",
+                });
+
+                window.location.href = newUrl;
+
+                return new Promise<never>(() => {});
+            },
+        });
+    }
 
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        evtOidcTokens,
-        "renewOidcTokensIfExpiresSoonOrRedirectToLoginIfAlreadyExpired": async params => {
-            const { minValidityMs = 10000 } = params ?? {};
+        "getAccessToken": (() => {
+            const { user } = params;
 
-            const oidcTokens = evtOidcTokens.state;
+            const accessToken = jwtSimple.encode(
+                Object.fromEntries(
+                    objectKeys(phonyClientOidcClaims).map(key => [
+                        phonyClientOidcClaims[key],
+                        user[key],
+                    ]),
+                ),
+                "xxx",
+            );
 
-            if (oidcTokens === undefined) {
-                return;
-            }
-
-            const tokenStatus = getDelayBeforeTokensExpiration({
-                oidcTokens,
+            return () => Promise.resolve(accessToken);
+        })(),
+        "logout": () => {
+            const { newUrl } = urlSearchParams.add({
+                "url": window.location.href,
+                "name": urlParam,
+                "value": "false",
             });
 
-            if (!tokenStatus.isExpired && tokenStatus.expiresInMs > minValidityMs) {
-                return;
-            }
-
-            evtOidcTokens.state = undefined;
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            evtOidcTokens.state = generateFakeTokens();
-        },
-        "logout": async () => {
-            alert("oidcClient logout() called");
+            window.location.href = newUrl;
 
             return new Promise<never>(() => {});
-        },
-        "getOidcTokensRemandingValidityMs": () => {
-            const oidcTokens = evtOidcTokens.state;
-
-            if (oidcTokens === undefined) {
-                return 0;
-            }
-
-            const wrap = getDelayBeforeTokensExpiration({ oidcTokens });
-            return wrap.isExpired ? 0 : wrap.expiresInMs;
         },
     });
 }
 
-function createFakeTokenApi(params: Parameters<typeof createPhonyOidcClient>[0]) {
-    const { tokenValidityDurationMs, parsedJwt } = params;
+const urlParam = "isUserAuthenticated";
 
-    const creationTimeByOidcToken = new WeakMap<OidcTokens, number>();
-
-    const getCount = (() => {
-        let count = 0;
-
-        return () => count++;
-    })();
-
-    function generateFakeTokens(): OidcTokens {
-        const count = getCount();
-
-        const oidcTokens: OidcTokens = {
-            "accessToken": jwtSimple.encode(parsedJwt, "xxx"),
-            "idToken": `fake id token n°${count}`,
-            "refreshToken": `fake refresh token n°${count}`,
-        };
-
-        creationTimeByOidcToken.set(oidcTokens, Date.now());
-
-        return oidcTokens;
-    }
-
-    function getDelayBeforeTokensExpiration(params: {
-        oidcTokens: OidcTokens;
-    }): { isExpired: true } | { isExpired: false; expiresInMs: number } {
-        const { oidcTokens } = params;
-
-        const creationTime = creationTimeByOidcToken.get(oidcTokens)!;
-
-        const elapsed = Date.now() - creationTime;
-
-        return elapsed > tokenValidityDurationMs
-            ? { "isExpired": true }
-            : {
-                  "isExpired": false,
-                  "expiresInMs": tokenValidityDurationMs - elapsed,
-              };
-    }
-
-    return {
-        generateFakeTokens,
-        getDelayBeforeTokensExpiration,
+export const phonyClientOidcClaims: Param0<typeof createJwtUserApiClient>["oidcClaims"] =
+    {
+        "email": "a",
+        "familyName": "b",
+        "firstName": "c",
+        "username": "d",
+        "groups": "e",
+        "local": "f",
     };
-}

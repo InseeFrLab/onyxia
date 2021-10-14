@@ -23,8 +23,8 @@ import { is } from "tsafe/is";
 import type { ReturnType } from "tsafe/ReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "app/libApi";
-import { useMustacheParams } from "js/hooks";
+//import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "app/libApi";
+//import { useMustacheParams } from "js/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { prOidcClient } from "lib/setup";
 import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
@@ -73,7 +73,9 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
             }[];
         }[]
     >([]);
+    //@ts-ignore
     const { isUserLoggedIn } = useAppConstants();
+    //@ts-ignore
     const dispatch = useDispatch();
 
     const [minioCredentials, setMinioCredentials] = useState<
@@ -81,7 +83,9 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
     >(undefined);
     const [contract, setContract] = useState<object | undefined>(undefined);
     const [loading, setLoading] = useState(true);
+    //@ts-ignore
     const { isBetaModeEnabled } = useIsBetaModeEnabled();
+    //@ts-ignore
     const appConstants = useAppConstants();
 
     const queryParams = queryString.decode(getCleanParams());
@@ -101,6 +105,7 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
                 }),
             )
                 .then(unwrapResult)
+                //@ts-ignore
                 .then(response => {
                     if (preview && !contract) {
                         setContract(response);
@@ -146,6 +151,7 @@ export const NouveauService: React.FC<Props> = ({ idCatalogue, idService }) => {
         }
     }, [queryParams.auto, handleClickCreer]);
 
+    //@ts-ignore
     const { mustacheParams } = useMustacheParams();
 
     useEffect(() => {

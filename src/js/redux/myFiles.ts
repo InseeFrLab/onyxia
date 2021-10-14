@@ -5,7 +5,7 @@ import { assert } from "tsafe/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
 import type { ThunkAction } from "lib/setup";
-import { parseOidcAccessToken_legacy } from "lib/ports/OidcClient";
+import { thunks as userAuthenticationThunks } from "lib/useCases/userAuthentication";
 
 export type State = {
     currentObjects: (Blob & { name: string })[];
@@ -172,24 +172,19 @@ const asyncThunks = {
     "loadUserBuckets":
         (): ThunkAction =>
         async (...args) => {
-            const [dispatch, , { oidcClient }] = args;
+            const [dispatch] = args;
 
-            assert(oidcClient.isUserLoggedIn);
-
-            const { preferred_username, groups } = await parseOidcAccessToken_legacy(
-                oidcClient,
-            );
+            const { username, groups } = dispatch(userAuthenticationThunks.getUser());
 
             dispatch(
                 syncActions.loadUserBuckets({
-                    "buckets": [
-                        preferred_username,
-                        ...groups.map(g => `projet-${g}`),
-                    ].map((id, i) => ({
-                        id,
-                        "description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
-                        "isPublic": false,
-                    })),
+                    "buckets": [username, ...groups.map(g => `projet-${g}`)].map(
+                        (id, i) => ({
+                            id,
+                            "description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
+                            "isPublic": false,
+                        }),
+                    ),
                 }),
             );
         },

@@ -4,7 +4,6 @@ import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 import { getValidatedEnv } from "js/validatedEnv";
 //import { prKeycloakClient } from "lib/setup";
-import { nonNullable } from "evt";
 
 /** We avoid importing app right away to prevent require cycles */
 const getOidcClient = memoize(() => import("lib/setup").then(ns => ns.prOidcClient), {
@@ -16,9 +15,7 @@ const fetchMinioToken = async () => {
 
     assert(oidcClient.isUserLoggedIn);
 
-    const { accessToken: oidcAccessToken } = await oidcClient.evtOidcTokens.waitFor(
-        nonNullable(),
-    );
+    const oidcAccessToken = await oidcClient.getAccessToken();
 
     const url = `${
         getValidatedEnv().MINIO.BASE_URI

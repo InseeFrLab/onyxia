@@ -12,22 +12,24 @@ import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageCo
 import * as publicIpUseCase from "./useCases/publicIp";
 import * as userAuthenticationUseCase from "./useCases/userAuthentication";
 import * as deploymentRegionUseCase from "./useCases/deploymentRegion";
-import type { UserApiClient } from "./ports/UserApiClient";
+import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
 import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
-import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
+import {
+    createPhonyOidcClient,
+    phonyClientOidcClaims,
+} from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
 import { createMockOnyxiaApiClient } from "./secondaryAdapters/mockOnyxiaApiClient";
 import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxiaApiClient";
-import { createMockJwtUserApiClient } from "./secondaryAdapters/mockUserApiClient";
 import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
-import type { KcLanguageTag } from "keycloakify";
 import { id } from "tsafe/id";
+import type { KcLanguageTag } from "keycloakify";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -56,7 +58,8 @@ export declare namespace UserApiClientConfig {
 
     export type Mock = {
         implementation: "MOCK";
-    } & Param0<typeof createMockJwtUserApiClient>;
+        user: User;
+    };
 }
 
 assert<
@@ -67,8 +70,8 @@ assert<
               oidcClaims: {
                   email: string;
                   familyName: string;
-                  fistName: string;
-                  userName: string;
+                  firstName: string;
+                  username: string;
                   groups: string;
                   local: string;
               };
@@ -81,7 +84,7 @@ assert<
                   firstName: string; //Barack
                   username: string; //obarack, the idep
                   groups: string[];
-                  kcLanguageTag: KcLanguageTag;
+                  local: KcLanguageTag;
               };
           }
     >
@@ -128,7 +131,7 @@ export declare type OidcClientConfig = OidcClientConfig.Phony | OidcClientConfig
 export declare namespace OidcClientConfig {
     export type Phony = {
         implementation: "PHONY";
-    } & Param0<typeof createPhonyOidcClient>;
+    } & Omit<Param0<typeof createPhonyOidcClient>, "user">;
 
     export type Keycloak = {
         implementation: "KEYCLOAK";
@@ -211,7 +214,22 @@ export async function createStore(params: CreateStoreParams) {
     const oidcClient = await (() => {
         switch (oidcClientConfig.implementation) {
             case "PHONY":
-                return createPhonyOidcClient(oidcClientConfig);
+                return createPhonyOidcClient({
+                    "isUserLoggedIn": oidcClientConfig.isUserLoggedIn,
+                    "user": (() => {
+                        const { userApiClientConfig } = params;
+
+                        assert(
+                            userApiClientConfig.implementation === "MOCK",
+                            [
+                                "if oidcClientConfig.implementation is 'PHONY' then",
+                                "userApiClientConfig.implementation should be 'MOCK'",
+                            ].join(" "),
+                        );
+
+                        return userApiClientConfig.user;
+                    })(),
+                });
             case "KEYCLOAK":
                 return createKeycloakOidcClient(oidcClientConfig);
         }
@@ -239,7 +257,7 @@ export async function createStore(params: CreateStoreParams) {
     })();
 
     const secretsManagerClient = oidcClient.isUserLoggedIn
-        ? (() => {
+        ? await (async () => {
               const { secretsManagerClientConfig } = params;
               switch (secretsManagerClientConfig.implementation) {
                   case "LOCAL STORAGE":
@@ -253,20 +271,19 @@ export async function createStore(params: CreateStoreParams) {
         : createObjectThatThrowsIfAccessed<SecretsManagerClient>();
 
     const userApiClient = oidcClient.isUserLoggedIn
-        ? (() => {
-              const { userApiClientConfig } = params;
-              switch (userApiClientConfig.implementation) {
-                  case "JWT":
-                      return createJwtUserApiClient({
-                          "oidcClaims": userApiClientConfig.oidcClaims,
-                          "getOidcAccessToken": oidcClient.getAccessToken,
-                      });
-                  case "MOCK":
-                      return createMockJwtUserApiClient({
-                          "user": userApiClientConfig.user,
-                      });
-              }
-          })()
+        ? createJwtUserApiClient({
+              "oidcClaims": (() => {
+                  const { userApiClientConfig } = params;
+
+                  switch (userApiClientConfig.implementation) {
+                      case "JWT":
+                          return userApiClientConfig.oidcClaims;
+                      case "MOCK":
+                          return phonyClientOidcClaims;
+                  }
+              })(),
+              "getOidcAccessToken": oidcClient.getAccessToken,
+          })
         : createObjectThatThrowsIfAccessed<UserApiClient>();
 
     const store = configureStore({

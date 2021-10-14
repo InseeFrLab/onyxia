@@ -388,12 +388,12 @@ function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        const { kcLanguageTag } = userAuthenticationThunks.getUser();
+        const { local } = userAuthenticationThunks.getUser();
 
         if (
             !typeGuard<SupportedLanguage>(
-                kcLanguageTag,
-                kcLanguageTag in
+                local,
+                local in
                     id<Record<SupportedLanguage, null>>({
                         "en": null,
                         "fr": null,
@@ -403,7 +403,7 @@ function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        setLng(kcLanguageTag);
+        setLng(local);
     }, []);
 }
 

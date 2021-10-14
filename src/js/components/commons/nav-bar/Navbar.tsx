@@ -12,15 +12,15 @@ import { LoginModal } from "js/components/authentication";
 import "./style.scss";
 import { getScreenTypeFromWidth } from "js/model/ScreenType";
 import type { ScreenType } from "js/model/ScreenType";
-import { thunks } from "lib/setup";
-
-import { actions } from "js/redux/legacyActions";
-import { useSelector, useDispatch, useAppConstants } from "app/libApi";
+//import { thunks } from "lib/setup";
+//import { actions } from "js/redux/legacyActions";
+//import { useSelector, useDispatch, useAppConstants } from "app/libApi";
 import { useWindowInnerSize } from "onyxia-ui";
 
 export const Navbar: React.FC<{}> = () => {
     const [isOpen, setIsOpen] = useState(false);
 
+    //@ts-ignore
     const { isUserLoggedIn } = useAppConstants();
 
     const { windowInnerWidth } = useWindowInnerSize();
@@ -30,20 +30,28 @@ export const Navbar: React.FC<{}> = () => {
         [windowInnerWidth],
     );
 
+    //@ts-ignore
     const displayLogin = useSelector(state => state.app.displayLogin);
+    //@ts-ignore
     const redirectUri = useSelector(state => state.app.redirectUri);
+    //@ts-ignore
     const dispatch = useDispatch();
 
     const handleClickMenu = useCallback(() => setIsOpen(true), []);
     const handleClose = useCallback(() => setIsOpen(false), []);
+    //@ts-ignore
     const handleLogout = useCallback(() => {
+        //@ts-ignore
         dispatch(thunks.app.logout());
     }, [dispatch]);
+    //@ts-ignore
     const handleLogin = useCallback(
+        //@ts-ignore
         () => dispatch(actions.displayLogin({ "doDisplay": true })),
         [dispatch],
     );
     const handleCloseLoginModal = useCallback(
+        //@ts-ignore
         () => dispatch(actions.displayLogin({ "doDisplay": false })),
         [dispatch],
     );
@@ -85,6 +93,7 @@ export const Navbar: React.FC<{}> = () => {
                     login={handleLogin}
                     logout={handleLogout}
                     handleClose={handleClose}
+                    //@ts-ignore
                     startVisite={actions.startVisite}
                 />
                 <LoginModal

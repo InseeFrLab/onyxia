@@ -4,7 +4,7 @@ import ServiceDetails from "./service-details";
 import { getService, deleteServices } from "js/api/my-lab";
 import { Service } from "js/model";
 import Toolbar from "./toolbar";
-import { useAppConstants, useSelectedRegion } from "app/libApi";
+//import { useAppConstants, useSelectedRegion } from "app/libApi";
 import { routes } from "app/routes/router";
 
 interface Props {
@@ -62,12 +62,14 @@ export default MyService;
 function useMonitoringUrl(params: { serviceId: string }) {
     const { serviceId } = params;
 
+    //@ts-ignore
     const selectedRegion = useSelectedRegion();
 
     const monitoringURLPattern = selectedRegion?.services.monitoring?.URLPattern;
     const namespacePrefix = selectedRegion?.services.namespacePrefix;
 
     const idep = (function useClosure() {
+        //@ts-ignore
         const appConstants = useAppConstants();
 
         return appConstants.isUserLoggedIn ? appConstants.parsedJwt.username : undefined;

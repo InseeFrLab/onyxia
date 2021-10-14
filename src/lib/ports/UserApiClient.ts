@@ -6,7 +6,7 @@ export type User = {
     firstName: string; //Barack
     username: string; //obarack, the idep
     groups: string[];
-    kcLanguageTag: KcLanguageTag;
+    local: KcLanguageTag;
 };
 
 export type UserApiClient = {

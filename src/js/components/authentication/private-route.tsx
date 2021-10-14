@@ -20,7 +20,9 @@ prOidcClient.then(v => {
         return;
     }
 
+    //@ts-ignore
     oidcClient.evtOidcTokens.attach(
+        //@ts-ignore
         oidcTokens => (oidcAccessToken = oidcTokens?.accessToken),
     );
 });
