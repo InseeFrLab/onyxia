@@ -12,6 +12,7 @@ import type { Param0, ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
+import * as runExclusive from "run-exclusive";
 
 const version = "v1";
 
@@ -62,25 +63,27 @@ export async function createVaultSecretsManagerClient(
               })
             | undefined = undefined;
 
-        const getToken: SecretsManagerClient["getToken"] = async () => {
-            if (
-                cache !== undefined &&
-                //It token in cache have more than 90% of it's TTL left
-                //we use it instead of renewing the token.
-                cache.expirationTime - Date.now() > 0.9 * cache.ttl
-            ) {
+        const getToken = runExclusive.build<SecretsManagerClient["getToken"]>(
+            async () => {
+                if (
+                    cache !== undefined &&
+                    //It token in cache have more than 90% of it's TTL left
+                    //we use it instead of renewing the token.
+                    cache.expirationTime - Date.now() > 0.9 * cache.ttl
+                ) {
+                    return cache;
+                }
+
+                const token = await requestNewToken();
+
+                cache = {
+                    ...token,
+                    "ttl": token.expirationTime - Date.now(),
+                };
+
                 return cache;
-            }
-
-            const token = await requestNewToken();
-
-            cache = {
-                ...token,
-                "ttl": token.expirationTime - Date.now(),
-            };
-
-            return getToken();
-        };
+            },
+        );
 
         return { getToken };
     })();
@@ -91,7 +94,7 @@ export async function createVaultSecretsManagerClient(
         axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
             ...axiosRequestConfig,
             "headers": {
-                "X-Vault-Token": await getToken(),
+                "X-Vault-Token": (await getToken()).token,
             },
             "Content-Type": "application/json;charset=utf-8",
             "Accept": "application/json;charset=utf-8",

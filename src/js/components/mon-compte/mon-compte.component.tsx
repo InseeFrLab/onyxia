@@ -96,6 +96,7 @@ export function MonCompte() {
                         value={userConfigsState.userServicePassword.value}
                         //@ts-ignore
                         handleReset={() =>
+                            //@ts-ignore
                             dispatch(thunks.userConfigs.renewUserServicePassword())
                         }
                     />

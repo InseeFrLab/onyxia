@@ -325,7 +325,9 @@ export async function createStore(params: CreateStoreParams) {
     }
 
     await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
-    await store.dispatch(userConfigsUseCase.privateThunks.initialize());
+    if (oidcClient.isUserLoggedIn) {
+        await store.dispatch(userConfigsUseCase.privateThunks.initialize());
+    }
 
     if (oidcClient.isUserLoggedIn) {
         store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
