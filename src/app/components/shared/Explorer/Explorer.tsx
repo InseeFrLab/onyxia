@@ -106,6 +106,8 @@ const useStyles = makeStyles<{ cmdTranslationTop: number }>()(
             "width": "40%",
             "top": cmdTranslationTop,
             "zIndex": 1,
+            "opacity": cmdTranslationTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear",
         },
         "breadcrump": {
             "marginTop": theme.spacing(3),
