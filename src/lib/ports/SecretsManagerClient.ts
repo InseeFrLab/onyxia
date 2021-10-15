@@ -127,17 +127,10 @@ export function observeSecretsManagerClientWithTranslator(params: {
                 //NOTE: Mitigate type vulnerability.
                 const methodName = _methodName as "get";
 
-                const methodProxy = async ({
-                    doLogCommandToTranslator,
-                    ...params
-                }: Param0<SecretsManagerClient[typeof methodName]> & {
-                    doLogCommandToTranslator: boolean;
-                }) => {
+                const methodProxy = async (
+                    params: Param0<SecretsManagerClient[typeof methodName]>,
+                ) => {
                     const runMethod = () => secretsManagerClient[methodName](params);
-
-                    if (!doLogCommandToTranslator) {
-                        return runMethod();
-                    }
 
                     const cmdId = getCounter();
 
