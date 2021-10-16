@@ -20,20 +20,8 @@ export async function createKeycloakOidcClient(params: {
             "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
             "responseMode": "query",
             "checkLoginIframe": false,
-            /*
             "adapter": createKeycloakAdapter({
                 "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
-                keycloakInstance,
-            }),
-            */
-            "adapter": createKeycloakAdapter({
-                "transformUrlBeforeRedirect": url => {
-                    const modifiedUrl = injectGlobalStatesInSearchParams(url);
-
-                    console.log({ url, modifiedUrl });
-
-                    return modifiedUrl;
-                },
                 keycloakInstance,
             }),
         })
