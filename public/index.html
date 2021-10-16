@@ -3,47 +3,125 @@
 
 <head>
 
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/WorkSans/font.css">-->
+	<!-- 
+		We need to put it plain in the html because of Keycloakify, in case we decide to remove --external-assets 
+		SEE: https://github.com/InseeFrLab/keycloakify#font-face-importing-fonts-from-thesrc-dir 
+	-->
 	<style>
-
-		/*@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap");*/
-
 		/* latin */
 		@font-face {
-		  font-family: 'Work Sans';
-		  font-style: normal;
-		  font-weight: normal; /*400*/
-		  font-display: swap;
-		  src: url("%PUBLIC_URL%/fonts/worksans-regular-webfont.woff2") format("woff2");
-		}
-		/* latin */
-		@font-face {
-		  font-family: 'Work Sans';
-		  font-style: normal;
-		  font-weight: 500;
-		  font-display: swap;
-		  src: url("%PUBLIC_URL%/fonts/worksans-medium-webfont.woff2") format("woff2");
-		}
-		/* latin */
-		@font-face {
-		  font-family: 'Work Sans';
-		  font-style: normal;
-		  font-weight: 600;
-		  font-display: swap;
-		  src: url("%PUBLIC_URL%/fonts/worksans-semibold-webfont.woff2") format("woff2");
-		}
-		/* latin */
-		@font-face {
-		  font-family: 'Work Sans';
-		  font-style: normal;
-		  font-weight: bold; /*700*/
-		  font-display: swap;
-		  src: url("%PUBLIC_URL%/fonts/worksans-bold-webfont.woff2") format("woff2");
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: normal;
+			/*400*/
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
 		}
 
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
+		}
+
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
+		}
+
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: bold;
+			/*700*/
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
+		}
 	</style>
+	<!-- We only preload the default font -->
+	<!--
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2" as="font" crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2" as="font" crossorigin="anonymous">
+	-->
+	<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/Marianne/font.css">-->
+	<style>
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2") format("woff2");
+			font-weight: 300;
+			font-style: normal;
+		}
 
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2") format("woff2");
+			font-weight: 300;
+			font-style: italic;
+		}
 
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2") format("woff2");
+			font-weight: 400;
+			font-style: normal;
+		}
 
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2") format("woff2");
+			font-weight: 400;
+			font-style: italic;
+		}
+
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2") format("woff2");
+			font-weight: 700;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2") format("woff2");
+			font-weight: 700;
+			font-style: italic;
+		}
+
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2") format("woff2");
+			font-weight: 700;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: Marianne;
+			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2") format("woff2");
+			font-weight: 700;
+			font-style: italic;
+		}
+	</style>
 
 	<script>
 		/*
@@ -128,20 +206,23 @@
 	<!-- Primary Meta Tags -->
 	<title>Onyxia - SSP Cloud Datalab</title>
 	<meta name="title" content="Onyxia - SSP Cloud Datalab">
-	<meta name="description" content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
+	<meta name="description"
+		content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="https://datalab.sspcloud.fr/">
 	<meta property="og:title" content="Onyxia - SSP Cloud Datalab">
-	<meta property="og:description" content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
+	<meta property="og:description"
+		content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
 	<meta property="og:image" content="%PUBLIC_URL%/PrewiewOnyxia.png">
 
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image">
 	<meta property="twitter:url" content="https://datalab.sspcloud.fr/">
 	<meta property="twitter:title" content="Onyxia - SSP Cloud Datalab">
-	<meta property="twitter:description" content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
+	<meta property="twitter:description"
+		content="Plateforme mutualisée de services de traitement des données statistiques et de datascience!">
 	<meta property="twitter:image" content="%PUBLIC_URL%/PrewiewOnyxia.png">
 	<!-- cspell: enable -->
 
