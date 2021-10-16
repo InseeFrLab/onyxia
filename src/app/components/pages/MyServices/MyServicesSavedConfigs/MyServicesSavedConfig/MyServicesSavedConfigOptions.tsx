@@ -1,11 +1,11 @@
 import { useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import MuiButton from "@material-ui/core/Button";
-import type { ButtonProps as MuiButtonProps } from "@material-ui/core/Button";
+import MuiButton from "@mui/material/Button";
+import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
 import { makeStyles, Icon, Text } from "app/theme";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "app/i18n/useTranslations";
 
 const actions = ["edit", "copy link", "delete"] as const;

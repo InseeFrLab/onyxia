@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core/";
+import { Grid } from "@mui/material/";
 import { CardMyGroup } from "js/components/commons/service-card";
 import CardChecker from "./card-checker";
 import { Service, Group } from "js/model";

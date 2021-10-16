@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Catalogue from '../catalogue.component';
 import { restApiPaths } from 'js/restApiPaths';
 import { useIsBetaModeEnabled } from "app/libApi";

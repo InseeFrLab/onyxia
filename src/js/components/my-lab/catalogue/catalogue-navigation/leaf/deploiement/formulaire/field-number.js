@@ -1,7 +1,7 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
+import { TextField } from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
 
  
 export default ({

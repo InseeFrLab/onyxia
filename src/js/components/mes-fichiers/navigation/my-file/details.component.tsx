@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
-import { Typography, Paper } from "@material-ui/core";
+import { Typography, Paper } from "@mui/material";
 
 const Details: React.FC<{ file: any; statusPolicy?: string }> = ({
     file,

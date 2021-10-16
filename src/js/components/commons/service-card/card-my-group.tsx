@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Icon, IconButton, Badge } from "@material-ui/core/";
-import { Avatar } from "@material-ui/core";
+import { Icon, IconButton, Badge } from "@mui/material/";
+import { Avatar } from "@mui/material";
 import Pile from "js/components/commons/pile";
 import { groupeType } from "js/components/commons/prop-types";
 import { CarteService } from "./card-service.component";

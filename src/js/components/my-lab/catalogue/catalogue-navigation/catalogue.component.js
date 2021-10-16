@@ -1,12 +1,12 @@
   
 import PropTypes from 'prop-types';
-import Card from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardActions from '@material-ui/core/CardActions';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CardActions from '@mui/material/CardActions';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
 import { routes } from "app/routes/router";
 
 const Catalogue = ({ catalogue: { id, name, description } }) => (

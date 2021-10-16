@@ -1,6 +1,6 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { Icon } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import { Icon } from '@mui/material';
 import { Prec, LinkTo, Arrow } from './../vignette-commons';
 import D from 'js/i18n';
 

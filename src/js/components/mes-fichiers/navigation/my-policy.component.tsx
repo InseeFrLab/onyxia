@@ -1,5 +1,5 @@
-import { Typography, Paper } from "@material-ui/core";
-import { Table, TableBody, TableCell, TableRow, Icon, Fab } from "@material-ui/core";
+import { Typography, Paper } from "@mui/material";
+import { Table, TableBody, TableCell, TableRow, Icon, Fab } from "@mui/material";
 
 export const MyPolicy: React.FC<{
     policy?: { Resource: string[] };

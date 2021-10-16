@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import Option from './option';
-import { IconButton, Icon } from '@material-ui/core/';
+import { IconButton, Icon } from '@mui/material/';
 import {
 	CatalogueIcon,
 	BecherIcon,

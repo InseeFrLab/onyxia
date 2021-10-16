@@ -11,9 +11,9 @@ import {
     DialogContent,
     DialogActions,
     MenuItem,
-} from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
+} from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import TextField from "@mui/material/TextField";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import { Ligne } from "js/components/commons/Ligne";
 import Toolbar from "./toolbar.component";

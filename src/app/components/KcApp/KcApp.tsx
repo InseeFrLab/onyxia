@@ -8,7 +8,7 @@ import { Login } from "./Login";
 import { Register } from "./Register";
 import { Terms } from "./Terms";
 import { Info } from "keycloakify/lib/components/Info";
-import { Error } from "keycloakify/lib/components/Error";
+import { Error as KcError } from "keycloakify/lib/components/Error";
 import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPassword";
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail";
 import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
@@ -112,7 +112,7 @@ export const KcApp = memo((props: Props) => {
         case "info.ftl":
             return <Info {...{ kcContext, ...kcProps }} />;
         case "error.ftl":
-            return <Error {...{ kcContext, ...kcProps }} />;
+            return <KcError {...{ kcContext, ...kcProps }} />;
         case "login-reset-password.ftl":
             return <LoginResetPassword {...{ kcContext, ...kcProps }} />;
         case "login-verify-email.ftl":
@@ -123,5 +123,7 @@ export const KcApp = memo((props: Props) => {
             return <LoginUpdateProfile {...{ kcContext, ...kcProps }} />;
         case "login-idp-link-confirm.ftl":
             return <LoginIdpLinkConfirm {...{ kcContext, ...kcProps }} />;
+        case "register-user-profile.ftl":
+            throw new Error("TODO");
     }
 });

@@ -1,11 +1,11 @@
 import React from "react";
-import { InputAdornment, Input, InputLabel, Typography } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
+import { InputAdornment, Input, InputLabel, Typography } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
 import * as clipboard from "clipboard-polyfill";
-import { IconButton, Icon } from "@material-ui/core";
-import FileCopy from "@material-ui/icons/FileCopy";
-import OpenInNew from "@material-ui/icons/OpenInNew";
-import Delete from "@material-ui/icons/Delete";
+import { IconButton, Icon } from "@mui/material";
+import FileCopy from "@mui/icons-material/FileCopy";
+import OpenInNew from "@mui/icons-material/OpenInNew";
+import Delete from "@mui/icons-material/Delete";
 
 export interface Props {
     value: string;

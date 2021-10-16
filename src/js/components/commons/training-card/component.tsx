@@ -8,7 +8,7 @@ import {
     Avatar,
     Fab,
     Icon,
-} from "@material-ui/core";
+} from "@mui/material";
 import "./training-card.scss";
 import { routes } from "app/routes/router";
 

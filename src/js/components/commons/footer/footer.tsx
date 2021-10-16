@@ -1,6 +1,6 @@
-import Typography from "@material-ui/core/Typography";
-import { Button, Icon } from "@material-ui/core";
-import Divider from "@material-ui/core/Divider";
+import Typography from "@mui/material/Typography";
+import { Button, Icon } from "@mui/material";
+import Divider from "@mui/material/Divider";
 import "./footer.scss";
 import { getValidatedEnv } from "js/validatedEnv";
 

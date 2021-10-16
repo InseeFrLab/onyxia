@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Typography, Paper, Tooltip, Fab, Icon } from "@material-ui/core";
+import { Typography, Paper, Tooltip, Fab, Icon } from "@mui/material";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "./myBuckets.scss";
 import { useSelector, selectors } from "app/libApi";

@@ -5,7 +5,7 @@ import { makeStyles, Text } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
-import MuiLink from "@material-ui/core/Link";
+import MuiLink from "@mui/material/Link";
 import type { Link } from "type-route";
 import { Dialog } from "onyxia-ui/Dialog";
 import { assert } from "tsafe/assert";

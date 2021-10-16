@@ -1,11 +1,11 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Card, CardHeader, Grid } from "@material-ui/core";
+import { Card, CardHeader, Grid } from "@mui/material";
 import { PauseIcon } from "js/components/commons/icons";
-import { CardContent, CardActions } from "@material-ui/core";
+import { CardContent, CardActions } from "@mui/material";
 import { WorkInProgress } from "js/components/commons/icons";
 import Preloader from "js/components/commons/preloader";
-import WarningIcon from "@material-ui/icons/Warning";
+import WarningIcon from "@mui/icons-material/Warning";
 
 export const CarteService = ({
     id = "",

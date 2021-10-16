@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
 import createTheme from "./material-ui-theme";
 
 const theme = createTheme();

@@ -1,6 +1,6 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { Button } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import { Button } from '@mui/material';
 import { Arrow } from './../vignette-commons';
 import D from 'js/i18n';
 
