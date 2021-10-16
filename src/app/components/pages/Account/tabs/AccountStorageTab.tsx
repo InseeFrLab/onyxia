@@ -5,7 +5,7 @@ import { AccountField } from "../AccountField";
 import { useSelector } from "app/libApi";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import Divider from "@material-ui/core/Divider";
+import Divider from "@mui/material/Divider";
 import { makeStyles } from "app/theme";
 import { getMinioToken } from "js/minio-client/minio-client";
 import exportMinio from "js/components/mon-compte/export-credentials-minio";

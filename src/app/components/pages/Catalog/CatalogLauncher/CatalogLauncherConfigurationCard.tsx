@@ -1,17 +1,17 @@
 /* eslint-disable array-callback-return */
 
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import type { SelectChangeEvent } from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import type { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
 import { same } from "evt/tools/inDepth/same";
 import { useState, useMemo, memo } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
-import MuiTextField from "@material-ui/core/TextField";
+import MuiTextField from "@mui/material/TextField";
 import { makeStyles, IconButton, Text } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { FormField, IndexedFormFields } from "lib/useCases/launcher";

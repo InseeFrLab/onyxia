@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Fab, Icon } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
+import { Typography, Fab, Icon } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import Loader from 'js/components/commons/loader';
 import { getAvatar } from 'js/utils/service-utils';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import AsyncCatalogues from './catalogues-async';
 

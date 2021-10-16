@@ -8,8 +8,8 @@ import {
     CardActions,
     IconButton,
     Paper,
-} from "@material-ui/core";
-import DescriptionIcon from "@material-ui/icons/Description";
+} from "@mui/material";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { getLogs } from "js/api/my-lab";
 import "./tasks.scss";
 

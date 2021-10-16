@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Paper } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Typography, Paper } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import { restApiPaths } from 'js/restApiPaths';
 import ChipsSelector from 'js/components/commons/chips-selector';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid } from '@mui/material';
 import FilDAriane, { fil } from 'js/components/commons/fil-d-ariane';
 import TrainingCard from 'js/components/commons/training-card';
 import { wrapPromise } from 'js/utils';

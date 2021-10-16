@@ -1,5 +1,5 @@
-import { FileCopy, Save } from '@material-ui/icons';
-import { IconButton } from '@material-ui/core';
+import { FileCopy, Save } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import { saveAs } from 'file-saver';
 import * as clipboard from 'clipboard-polyfill';
 import D from 'js/i18n';

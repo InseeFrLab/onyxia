@@ -1,4 +1,4 @@
-import { Paper, Icon, Fab } from "@material-ui/core";
+import { Paper, Icon, Fab } from "@mui/material";
 
 const Toolbar = ({
     isInPublicDirectory,

@@ -7,7 +7,7 @@ import * as fs from "fs";
 const webAppProjectRootDirPath = pathJoin(__dirname, "..", "..");
 
 const commonThirdPartyDeps = (() => {
-    const namespaceModuleNames = ["@emotion", "@material-ui"];
+    const namespaceModuleNames = ["@emotion", "@mui"];
     const standaloneModuleNames = ["react", "@types/react"];
 
     return [

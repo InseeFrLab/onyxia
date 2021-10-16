@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import Content from "./content";
 import DetailsService from "../details";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";

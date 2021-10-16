@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Service } from "js/model";
-import { AppBar, Tabs, Tab } from "@material-ui/core";
+import { AppBar, Tabs, Tab } from "@mui/material";
 import ServiceConf from "./service-conf";
 import ServiceTasks from "./service-tasks";
 import D from "js/i18n";

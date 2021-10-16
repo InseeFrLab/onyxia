@@ -1,4 +1,4 @@
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import CopyableField from "js/components/commons/copyable-field";
 import { objDiff, buildParamsFromObj } from "js/utils";
 import D from "js/i18n";

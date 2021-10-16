@@ -1,5 +1,5 @@
-import { Typography, Button } from "@material-ui/core/";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
+import { Typography, Button } from "@mui/material/";
+import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { WarnIcon } from "js/components/commons/icons";
 import D from "js/i18n";
 import "js/components/onyxia-modal.scss";

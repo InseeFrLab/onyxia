@@ -1,6 +1,6 @@
   
-import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
-import { DialogTitle, Button } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent } from '@mui/material';
+import { DialogTitle, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 
 class Confirm extends React.Component {

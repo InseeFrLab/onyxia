@@ -7,13 +7,13 @@ import {
     DialogTitle,
     DialogContent,
     DialogContentText,
-} from "@material-ui/core/";
+} from "@mui/material/";
 import dayjs from "dayjs";
 import { CarteService } from "js/components/commons/service-card/card-service.component";
 import Pile from "js/components/commons/pile";
 import Chronometer from "js/components/commons/chronometer";
 import { getServiceAvatar, getTitle, getSubtitle } from "./card-utils";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Service, ServiceStatus } from "js/model";
 import "./card.scss";
 import { routes } from "app/routes/router";

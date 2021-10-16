@@ -6,7 +6,7 @@ import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "app/i18n/useTranslations";
 import { Button, Text } from "app/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import Link from "@material-ui/core/Link";
+import Link from "@mui/material/Link";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import type { SearchBarProps } from "onyxia-ui/SearchBar";

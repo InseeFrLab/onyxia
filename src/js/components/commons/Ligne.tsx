@@ -1,6 +1,6 @@
-import { Button, Icon } from "@material-ui/core";
-import type { IconTypeMap } from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Button, Icon } from "@mui/material";
+import type { IconTypeMap } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
 import type { Link } from "type-route";
 
 type Props = {

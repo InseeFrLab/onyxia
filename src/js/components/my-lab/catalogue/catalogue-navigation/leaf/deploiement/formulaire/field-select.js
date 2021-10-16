@@ -1,8 +1,8 @@
 import React from 'react';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import { FormControl, InputLabel } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import { FormControl, InputLabel } from '@mui/material';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
  
 export default ({

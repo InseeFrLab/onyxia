@@ -6,7 +6,7 @@ import {
     TableRow,
     TableCell,
     TableBody,
-} from "@material-ui/core";
+} from "@mui/material";
 import Titre from "js/components/commons/titre";
 import CopyableField from "js/components/commons/copyable-field";
 

@@ -1,4 +1,4 @@
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { connect } from "react-redux";
 import { actions } from "js/redux/legacyActions";
 import VisiteGuide from "./visite-guidee.component";

@@ -1,6 +1,6 @@
   
-import { Typography, Paper, Button } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Typography, Paper, Button } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import CopyableField from 'js/components/commons/copyable-field';
 
 const Public = ({ isPublicFile, isInPublicDirectory }) => (
