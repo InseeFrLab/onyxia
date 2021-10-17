@@ -38,7 +38,7 @@ const useStyles = makeStyles()(theme => ({
         },
         "background": `${theme.colors.useCases.surfaces.background} !important`,
         "& a": {
-            "color": `${theme.colors.palette.focus.main} !important`,
+            "color": `${theme.colors.useCases.typography.textFocus} !important`,
         },
         "& #kc-current-locale-link": {
             "color": `${theme.colors.palette.light.greyVariant3} !important`,
@@ -59,10 +59,10 @@ const useStyles = makeStyles()(theme => ({
     "kcButtonPrimaryClass": {
         "backgroundColor": "unset !important",
         "backgroundImage": "unset !important",
-        "borderColor": `${theme.colors.palette.focus.main} !important`,
+        "borderColor": `${theme.colors.useCases.typography.textFocus} !important`,
         "borderWidth": "2px !important",
         "borderRadius": `20px !important`,
-        "color": `${theme.colors.palette.focus.main} !important`,
+        "color": `${theme.colors.useCases.typography.textFocus} !important`,
         "textTransform": "uppercase",
     },
     "kcInputClass": {
