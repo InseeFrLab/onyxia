@@ -2,7 +2,7 @@ import "minimal-polyfills/Object.fromEntries";
 import type { OidcClient } from "../ports/OidcClient";
 import { id } from "tsafe/id";
 import * as jwtSimple from "jwt-simple";
-import { urlSearchParams } from "powerhooks/tools/urlSearchParams";
+import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import type { createJwtUserApiClient } from "./jwtUserApiClient";
 import type { Param0 } from "tsafe";
 import { objectKeys } from "tsafe/objectKeys";
@@ -13,23 +13,21 @@ export async function createPhonyOidcClient(params: {
     user: User;
 }): Promise<OidcClient> {
     const isUserLoggedIn = (() => {
-        const urlParamValue: string | undefined = urlSearchParams.retrieve({
-            "locationSearch": window.location.search,
-            "prefix": urlParam,
-        }).values[urlParam];
+        const result = retrieveParamFromUrl({
+            "url": window.location.href,
+            "name": urlParamName,
+        });
 
-        return urlParamValue !== undefined
-            ? urlParamValue === "true"
-            : params.isUserLoggedIn;
+        return result.wasPresent ? result.value === "true" : params.isUserLoggedIn;
     })();
 
     if (!isUserLoggedIn) {
         return id<OidcClient.NotLoggedIn>({
             "isUserLoggedIn": false,
             "login": async () => {
-                const { newUrl } = urlSearchParams.add({
+                const { newUrl } = addParamToUrl({
                     "url": window.location.href,
-                    "name": urlParam,
+                    "name": urlParamName,
                     "value": "true",
                 });
 
@@ -58,9 +56,9 @@ export async function createPhonyOidcClient(params: {
             return () => Promise.resolve(accessToken);
         })(),
         "logout": () => {
-            const { newUrl } = urlSearchParams.add({
+            const { newUrl } = addParamToUrl({
                 "url": window.location.href,
-                "name": urlParam,
+                "name": urlParamName,
                 "value": "false",
             });
 
@@ -71,7 +69,7 @@ export async function createPhonyOidcClient(params: {
     });
 }
 
-const urlParam = "isUserAuthenticated";
+const urlParamName = "isUserAuthenticated";
 
 export const phonyClientOidcClaims: Param0<typeof createJwtUserApiClient>["oidcClaims"] =
     {

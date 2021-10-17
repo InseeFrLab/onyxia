@@ -4,6 +4,7 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
+import { injectPaletteIdAndTitleInSearchParams } from "getPaletteIdAndTitle";
 
 export async function createKeycloakOidcClient(params: {
     url: string;
@@ -21,7 +22,14 @@ export async function createKeycloakOidcClient(params: {
             "responseMode": "query",
             "checkLoginIframe": false,
             "adapter": createKeycloakAdapter({
-                "transformUrlBeforeRedirect": injectGlobalStatesInSearchParams,
+                "transformUrlBeforeRedirect": url => {
+                    let newUrl = url;
+
+                    newUrl = injectGlobalStatesInSearchParams(newUrl);
+                    newUrl = injectPaletteIdAndTitleInSearchParams(newUrl);
+
+                    return newUrl;
+                },
                 keycloakInstance,
             }),
         })

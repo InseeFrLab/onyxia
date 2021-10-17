@@ -49,7 +49,7 @@
         "onyxia-ui": "^0.16.0",
         "tss-react": "^1.1.0",
         "@mui/icons-material": "^5.0.4",
-        "keycloakify": "^3.0.0",
+        "keycloakify": "^3.0.1",
         "@reduxjs/toolkit": "^1.4.0",
         "async-mutex": "^0.2.6",
         "axios": "^0.21.1",
@@ -76,7 +76,7 @@
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
         "path": "^0.12.7",
-        "powerhooks": "^0.9.7",
+        "powerhooks": "^0.10.0",
         "public-ip": "^4.0.3",
         "query-params": "0.0.1",
         "re-resizable": "^6.3.2",
@@ -127,7 +127,8 @@
             "@typescript-eslint/no-redeclare": "off",
             "import/no-anonymous-default-export": "off",
             "react-hooks/rules-of-hooks": "warn",
-            "react-hooks/exhaustive-deps": "off"
+            "react-hooks/exhaustive-deps": "off",
+            "no-labels": "off"
         }
     },
     "husky": {

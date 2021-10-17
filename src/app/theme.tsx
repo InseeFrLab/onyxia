@@ -1,6 +1,8 @@
 import {
     createThemeProvider,
     defaultPalette,
+    francePalette,
+    ultravioletPalette,
     defaultGetTypographyDesc,
     getIsPortraitOrientation,
     ViewPortOutOfRangeError,
@@ -64,15 +66,32 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/resources";
+import { getPaletteId } from "getPaletteIdAndTitle";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
-    //We keep the default color palette but we add a custom color: a shiny pink.
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc(params),
-        "fontFamily": '"Work Sans", sans-serif',
+        "fontFamily": `${(() => {
+            switch (getPaletteId()) {
+                case "france":
+                    return "Marianne";
+                case "onyxia":
+                case "ultraviolet":
+                    return '"Work Sans"';
+            }
+        })()}, sans-serif`,
     }),
     "palette": {
-        ...defaultPalette,
+        ...(() => {
+            switch (getPaletteId()) {
+                case "onyxia":
+                    return defaultPalette;
+                case "france":
+                    return francePalette;
+                case "ultraviolet":
+                    return ultravioletPalette;
+            }
+        })(),
         "limeGreen": {
             "main": "#BAFF29",
             "light": "#E2FFA6",
