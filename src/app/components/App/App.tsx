@@ -30,6 +30,8 @@ import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
+//TODO: Move in a slice, we shouldn't access env directly here.
+import { getEnv } from "env";
 
 export const logoContainerWidthInPercent = 4;
 
@@ -125,7 +127,7 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const { userAuthenticationThunks } = useThunks();
+    const { userAuthenticationThunks, secretExplorerThunks } = useThunks();
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
@@ -170,11 +172,15 @@ export const App = memo((props: Props) => {
                     "iconId": "secrets",
                     "label": t("mySecrets"),
                     "link": routes.mySecrets().link,
+                    "availability": secretExplorerThunks.getIsEnabled()
+                        ? "available"
+                        : "greyed",
                 },
                 "myFiles": {
                     "iconId": "files",
                     "label": t("myFiles"),
                     "link": routes.myBuckets().link,
+                    "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                 },
             } as const),
         [t],
