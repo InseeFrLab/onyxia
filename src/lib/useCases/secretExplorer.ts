@@ -929,6 +929,16 @@ export const thunks = {
 
             return { secretsManagerTranslations };
         },
+    "getIsEnabled":
+        (): ThunkAction<boolean> =>
+        (...args) => {
+            const [, , { createStoreParams }] = args;
+
+            return (
+                createStoreParams.secretsManagerClientConfig.implementation !==
+                "LOCAL STORAGE"
+            );
+        },
 };
 
 const augmentedClientBySoreInst = new WeakMap<
