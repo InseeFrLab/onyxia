@@ -1,4 +1,5 @@
-import { getEnv } from "env";
+import "minimal-polyfills/Object.fromEntries";
+import { getEnv, envNames } from "env";
 import { kcContext } from "app/components/KcApp/kcContext";
 import {
     retrieveParamFromUrl,
@@ -8,6 +9,7 @@ import {
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
+import { symToStr } from "tsafe/symToStr";
 
 const paletteIdParamName = "palette";
 const titleParamName = "title";
@@ -17,49 +19,83 @@ const paletteIds = ["onyxia", "france", "ultraviolet"] as const;
 export type PaletteId = typeof paletteIds[number];
 
 export const getPaletteId = memoize(() => {
-    let paletteId: PaletteId | undefined = undefined;
-
-    {
-        const result = retrieveParamFromUrl({
-            "url": window.location.href,
-            "name": paletteIdParamName,
-        });
-
-        if (result.wasPresent) {
-            updateSearchBarUrl(result.newUrl);
-
-            paletteId = result.value as PaletteId;
-        }
+    function matchPaletteId(paletteId: string): paletteId is PaletteId {
+        return id<readonly string[]>(paletteIds).includes(paletteId);
     }
 
-    scope: {
-        if (paletteId !== undefined || kcContext === undefined) {
-            break scope;
+    const paletteId = (() => {
+        {
+            const result = retrieveParamFromUrl({
+                "url": window.location.href,
+                "name": paletteIdParamName,
+            });
+
+            if (result.wasPresent) {
+                updateSearchBarUrl(result.newUrl);
+
+                return result.value;
+            }
         }
 
-        const match = kcContext.client.description?.match(/THEME=([^;]+);/);
+        scope: {
+            if (kcContext === undefined) {
+                break scope;
+            }
 
-        if (!match) {
-            break scope;
+            const match = (() => {
+                const { THEME } = Object.fromEntries(
+                    envNames.map(envName => [envName, ""]),
+                ) as ReturnType<typeof getEnv>;
+
+                return kcContext.client.description?.match(
+                    new RegExp(`${symToStr({ THEME })}=([^;]+);`),
+                );
+            })();
+
+            if (!match) {
+                break scope;
+            }
+
+            const paletteId = match[1];
+
+            localStorage.setItem(paletteIdParamName, paletteId);
+
+            return paletteId;
         }
 
-        paletteId = match[1] as PaletteId;
-    }
+        scope: {
+            if (kcContext !== undefined) {
+                break scope;
+            }
 
-    scope: {
-        if (paletteId !== undefined || kcContext !== undefined) {
-            break scope;
+            return getEnv().THEME;
         }
 
-        paletteId = getEnv().THEME as PaletteId;
-    }
+        scope: {
+            if (kcContext === undefined) {
+                break scope;
+            }
 
-    if (paletteId === undefined) {
-        paletteId = "onyxia";
-    }
+            const value = localStorage.getItem(paletteIdParamName);
+
+            if (value === null) {
+                break scope;
+            }
+
+            if (!matchPaletteId(value)) {
+                localStorage.removeItem(paletteIdParamName);
+
+                break scope;
+            }
+
+            return value;
+        }
+
+        return id<PaletteId>("onyxia");
+    })();
 
     assert(
-        id<readonly string[]>(paletteIds).includes(paletteId),
+        matchPaletteId(paletteId),
         `${paletteId} is not a valid theme. Available themes are: ${paletteIds}`,
     );
 
@@ -67,8 +103,6 @@ export const getPaletteId = memoize(() => {
 });
 
 export const getTitle = memoize(() => {
-    let title: string | undefined = undefined;
-
     {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
@@ -78,31 +112,49 @@ export const getTitle = memoize(() => {
         if (result.wasPresent) {
             updateSearchBarUrl(result.newUrl);
 
-            title = result.value;
+            return result.value;
         }
     }
 
     scope: {
-        if (title !== undefined || kcContext === undefined) {
+        if (kcContext === undefined) {
             break scope;
         }
 
-        title = kcContext.client.name;
+        const value = kcContext.client.name;
+
+        if (!value) {
+            break scope;
+        }
+
+        localStorage.setItem(titleParamName, value);
+
+        return value;
     }
 
     scope: {
-        if (title !== undefined || kcContext !== undefined) {
+        if (kcContext !== undefined) {
             break scope;
         }
 
-        title = getEnv().TITLE;
+        return getEnv().TITLE;
     }
 
-    if (title === undefined) {
-        title = "";
+    scope: {
+        if (kcContext === undefined) {
+            break scope;
+        }
+
+        const value = localStorage.getItem(titleParamName);
+
+        if (value === null) {
+            break scope;
+        }
+
+        return value;
     }
 
-    return title;
+    return "";
 });
 
 export function injectPaletteIdAndTitleInSearchParams(url: string): string {

@@ -13400,10 +13400,10 @@ react-element-to-jsx-string@^14.3.2:
     "@base2/pretty-print-object" "1.0.0"
     is-plain-object "3.0.1"
 
-react-envs@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/react-envs/-/react-envs-0.1.6.tgz#aa575ba159aa59bebc6b8f863dd80fa119809761"
-  integrity sha512-VC7KRJisHtKJxN+G/6ikzIS3IRkKyhzHTTOIq7M2fN2STVwbyNuT2w5QHb2VUlo2s3naNnJDByRtwvqG96FowA==
+react-envs@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-envs/-/react-envs-0.2.0.tgz#446d690c902c1dfcb1827cbfb20753bd44639d04"
+  integrity sha512-RNV2dCzEw6ZBU7txSynx3ZuokqseOVAlipsCNVXNVYa0EsufCjxJlwo7O7vJtR6+YXohTt/sjroMFHGKI3Lp7Q==
   dependencies:
     cheerio "^1.0.0-rc.5"
     dotenv "^8.2.0"
