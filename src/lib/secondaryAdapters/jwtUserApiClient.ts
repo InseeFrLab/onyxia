@@ -27,7 +27,7 @@ export function createJwtUserApiClient(params: {
 
                     return username;
                 })(),
-                "groups": parsedJwt[oidcClaims.groups] ?? [],
+                "groups": parsedJwt[oidcClaims.groups] || [],
                 "local": parsedJwt[oidcClaims.local] ?? "en",
             };
         },
