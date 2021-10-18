@@ -1,3 +1,7 @@
+### **0.15.2** (2021-10-18)  
+  
+- Remove ability to customize theme from keycloak admin    
+  
 ### **0.15.1** (2021-10-18)  
   
 - Fix theme hot customization    
