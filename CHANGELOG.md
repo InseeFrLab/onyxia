@@ -1,3 +1,41 @@
+## **0.15.0** (2021-10-18)  
+  
+- Fix sotrybook  
+- Add gif in the readme  
+- #260  
+- #263  
+- Login: Put default register user profil app  
+- Do not restore deployment region that no longer exsist  
+- Improve theme customizability  
+- Items greyed in the leftbar when no backend  
+- Fix focus color  
+- Fix Marianne font  
+- Feature theme configurability  
+- Update fonts and onyxia-ui  
+- Update font, Fix FOIT  
+- Update Cloudshell icon  
+- Update powerhooks  
+- Update all deps  
+- SecretsTranslator: Smooth fade-in of cmd translator  
+- Fix command translator  
+- JwtUserApiClient: Fix bug  
+- Fix vault client fetching  
+- compiles!  
+- Fix real adapter of onyxiaClient  
+- Fix onyxia mock adapter  
+- Implement secret manager client mock adapter  
+- Re-implement vault adapter  
+- Implement keycloakOidcClient  
+- Use the new lib api in app  
+- Index selectors  
+- index selectors  
+- factorize previous commit  
+- Make it so we never need dispatch in app/  
+- Update store provider  
+- Rename type Dependencies -> ExtraThunkArgument  
+- Store setup refactor  
+- half way through refactoring    
+  
 ### **0.13.1** (2021-09-22)  
   
 - Fix previous build    
