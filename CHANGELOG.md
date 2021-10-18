@@ -1,3 +1,7 @@
+### **0.15.3** (2021-10-18)  
+  
+- Fix: read palette and title from url    
+  
 ### **0.15.2** (2021-10-18)  
   
 - Remove ability to customize theme from keycloak admin    
