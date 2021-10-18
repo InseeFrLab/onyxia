@@ -80,12 +80,14 @@ export const Header = memo((props: Props) => {
                         Onyxia -
                     </Text>
                 )}
-                <Text
-                    typo="section heading"
-                    className={css({ ...theme.spacing.rightLeft("margin", 2) })}
-                >
-                    {getTitle()}
-                </Text>
+                {getTitle() && (
+                    <Text
+                        typo="section heading"
+                        className={css({ ...theme.spacing.rightLeft("margin", 2) })}
+                    >
+                        {getTitle()}
+                    </Text>
+                )}
                 {theme.windowInnerWidth > 450 && (
                     <Text
                         typo="section heading"

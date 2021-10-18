@@ -24,17 +24,27 @@ export const getPaletteId = memoize(() => {
     }
 
     const paletteId = (() => {
-        {
+        scope: {
             const result = retrieveParamFromUrl({
                 "url": window.location.href,
                 "name": paletteIdParamName,
             });
 
-            if (result.wasPresent) {
-                updateSearchBarUrl(result.newUrl);
-
-                return result.value;
+            if (!result.wasPresent) {
+                break scope;
             }
+
+            const { newUrl, value: paletteId } = result;
+
+            updateSearchBarUrl(newUrl);
+
+            if (kcContext !== undefined) {
+                localStorage.setItem(paletteIdParamName, paletteId);
+            }
+
+            console.log("Get paletteId from URL");
+
+            return paletteId;
         }
 
         scope: {
@@ -48,7 +58,7 @@ export const getPaletteId = memoize(() => {
                 ) as ReturnType<typeof getEnv>;
 
                 return kcContext.client.description?.match(
-                    new RegExp(`${symToStr({ THEME })}=([^;]+);`),
+                    new RegExp(`${symToStr({ THEME })}=([^;]+);?`),
                 );
             })();
 
@@ -58,7 +68,7 @@ export const getPaletteId = memoize(() => {
 
             const paletteId = match[1];
 
-            localStorage.setItem(paletteIdParamName, paletteId);
+            console.log("Get paletteId from Keycloak's client description");
 
             return paletteId;
         }
@@ -68,6 +78,8 @@ export const getPaletteId = memoize(() => {
                 break scope;
             }
 
+            console.log("Get paletteId from ENV");
+
             return getEnv().THEME;
         }
 
@@ -76,19 +88,21 @@ export const getPaletteId = memoize(() => {
                 break scope;
             }
 
-            const value = localStorage.getItem(paletteIdParamName);
+            const paletteId = localStorage.getItem(paletteIdParamName);
 
-            if (value === null) {
+            if (paletteId === null) {
                 break scope;
             }
 
-            if (!matchPaletteId(value)) {
+            if (!matchPaletteId(paletteId)) {
                 localStorage.removeItem(paletteIdParamName);
 
                 break scope;
             }
 
-            return value;
+            console.log("Get paletteId from localStorage");
+
+            return paletteId;
         }
 
         return id<PaletteId>("onyxia");
@@ -103,17 +117,27 @@ export const getPaletteId = memoize(() => {
 });
 
 export const getTitle = memoize(() => {
-    {
+    scope: {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
             "name": titleParamName,
         });
 
-        if (result.wasPresent) {
-            updateSearchBarUrl(result.newUrl);
-
-            return result.value;
+        if (!result.wasPresent) {
+            break scope;
         }
+
+        const { newUrl, value: title } = result;
+
+        updateSearchBarUrl(newUrl);
+
+        if (kcContext !== undefined) {
+            localStorage.setItem(titleParamName, title);
+        }
+
+        console.log("Get title from url param");
+
+        return title;
     }
 
     scope: {
@@ -121,21 +145,23 @@ export const getTitle = memoize(() => {
             break scope;
         }
 
-        const value = kcContext.client.name;
+        const title = kcContext.client.name;
 
-        if (!value) {
+        if (!title) {
             break scope;
         }
 
-        localStorage.setItem(titleParamName, value);
+        console.log("Get title from Keycloak's client name");
 
-        return value;
+        return title;
     }
 
     scope: {
         if (kcContext !== undefined) {
             break scope;
         }
+
+        console.log("Get title from ENV");
 
         return getEnv().TITLE;
     }
@@ -145,13 +171,15 @@ export const getTitle = memoize(() => {
             break scope;
         }
 
-        const value = localStorage.getItem(titleParamName);
+        const title = localStorage.getItem(titleParamName);
 
-        if (value === null) {
+        if (title === null) {
             break scope;
         }
 
-        return value;
+        console.log("Get title from localStorage");
+
+        return title;
     }
 
     return "";
