@@ -1,3 +1,7 @@
+### **0.15.1** (2021-10-18)  
+  
+- Fix theme hot customization    
+  
 ## **0.15.0** (2021-10-18)  
   
 - Fix sotrybook  
