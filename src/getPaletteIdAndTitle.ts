@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { getEnv, envNames } from "env";
+import { getEnv } from "env";
 import { kcContext } from "app/components/KcApp/kcContext";
 import {
     retrieveParamFromUrl,
@@ -9,7 +9,6 @@ import {
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { symToStr } from "tsafe/symToStr";
 
 const paletteIdParamName = "palette";
 const titleParamName = "title";
@@ -42,34 +41,6 @@ export const getPaletteId = memoize(() => {
                 localStorage.setItem(paletteIdParamName, paletteId);
             }
 
-            console.log("Get paletteId from URL");
-
-            return paletteId;
-        }
-
-        scope: {
-            if (kcContext === undefined) {
-                break scope;
-            }
-
-            const match = (() => {
-                const { THEME } = Object.fromEntries(
-                    envNames.map(envName => [envName, ""]),
-                ) as ReturnType<typeof getEnv>;
-
-                return kcContext.client.description?.match(
-                    new RegExp(`${symToStr({ THEME })}=([^;]+);?`),
-                );
-            })();
-
-            if (!match) {
-                break scope;
-            }
-
-            const paletteId = match[1];
-
-            console.log("Get paletteId from Keycloak's client description");
-
             return paletteId;
         }
 
@@ -77,8 +48,6 @@ export const getPaletteId = memoize(() => {
             if (kcContext !== undefined) {
                 break scope;
             }
-
-            console.log("Get paletteId from ENV");
 
             return getEnv().THEME;
         }
@@ -99,8 +68,6 @@ export const getPaletteId = memoize(() => {
 
                 break scope;
             }
-
-            console.log("Get paletteId from localStorage");
 
             return paletteId;
         }
@@ -135,24 +102,6 @@ export const getTitle = memoize(() => {
             localStorage.setItem(titleParamName, title);
         }
 
-        console.log("Get title from url param");
-
-        return title;
-    }
-
-    scope: {
-        if (kcContext === undefined) {
-            break scope;
-        }
-
-        const title = kcContext.client.name;
-
-        if (!title) {
-            break scope;
-        }
-
-        console.log("Get title from Keycloak's client name");
-
         return title;
     }
 
@@ -160,8 +109,6 @@ export const getTitle = memoize(() => {
         if (kcContext !== undefined) {
             break scope;
         }
-
-        console.log("Get title from ENV");
 
         return getEnv().TITLE;
     }
@@ -176,8 +123,6 @@ export const getTitle = memoize(() => {
         if (title === null) {
             break scope;
         }
-
-        console.log("Get title from localStorage");
 
         return title;
     }
