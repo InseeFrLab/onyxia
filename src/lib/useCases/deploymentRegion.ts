@@ -71,8 +71,23 @@ export const privateThunks = {
             const availableDeploymentRegions =
                 await onyxiaApiClient.getAvailableRegions();
 
+            const localStorageGetItem = () => {
+                const value = localStorage.getItem(localStorageKey);
+
+                if (
+                    value !== null &&
+                    !availableDeploymentRegions.map(({ id }) => id).includes(value)
+                ) {
+                    localStorage.removeItem(localStorageKey);
+
+                    return null;
+                }
+
+                return value;
+            };
+
             if (!oidcClient.isUserLoggedIn) {
-                const selectedDeploymentRegionId = localStorage.getItem(localStorageKey);
+                const selectedDeploymentRegionId = localStorageGetItem();
 
                 if (selectedDeploymentRegionId === null) {
                     localStorage.setItem(
@@ -84,21 +99,30 @@ export const privateThunks = {
                 dispatch(
                     actions.initialize({
                         availableDeploymentRegions,
-                        "selectedDeploymentRegionId":
-                            localStorage.getItem(localStorageKey)!,
+                        "selectedDeploymentRegionId": localStorageGetItem()!,
                     }),
                 );
             } else {
                 if (
-                    localStorage.getItem(localStorageKey) !== null ||
-                    getState().userConfigs.deploymentRegionId.value === null
+                    localStorageGetItem() !== null ||
+                    (() => {
+                        const deploymentRegionId =
+                            getState().userConfigs.deploymentRegionId.value;
+
+                        if (deploymentRegionId === null) {
+                            return true;
+                        }
+
+                        return !availableDeploymentRegions
+                            .map(({ id }) => id)
+                            .includes(deploymentRegionId);
+                    })()
                 ) {
                     await dispatch(
                         userConfigsThunks.changeValue({
                             "key": "deploymentRegionId",
                             "value":
-                                localStorage.getItem(localStorageKey) ??
-                                availableDeploymentRegions[0].id,
+                                localStorageGetItem() ?? availableDeploymentRegions[0].id,
                         }),
                     );
 
