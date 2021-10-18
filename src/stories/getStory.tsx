@@ -12,7 +12,7 @@ import {
 import type { ThemeProviderProps, ChromeFontSize } from "onyxia-ui";
 import { ThemeProvider, Text, useStyles } from "app/theme";
 import { id } from "tsafe/id";
-import "onyxia-ui/assets/fonts/work-sans.css";
+import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
 import { createStoreProvider } from "app/libApi/StoreProvider";
