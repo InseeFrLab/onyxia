@@ -4,7 +4,7 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { injectPaletteIdAndTitleInSearchParams } from "getPaletteIdAndTitle";
+import { injectPaletteIdAndTitleInSearchParams } from "paletteIdAndTitle";
 
 export async function createKeycloakOidcClient(params: {
     url: string;

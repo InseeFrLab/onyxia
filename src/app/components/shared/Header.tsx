@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
-import { getTitle } from "getPaletteIdAndTitle";
+import { title } from "paletteIdAndTitle";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -80,12 +80,12 @@ export const Header = memo((props: Props) => {
                         Onyxia -
                     </Text>
                 )}
-                {getTitle() && (
+                {title && (
                     <Text
                         typo="section heading"
                         className={css({ ...theme.spacing.rightLeft("margin", 2) })}
                     >
-                        {getTitle()}
+                        {title}
                     </Text>
                 )}
                 {theme.windowInnerWidth > 450 && (
