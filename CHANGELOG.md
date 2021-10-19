@@ -1,3 +1,7 @@
+### **0.15.7** (2021-10-19)  
+  
+- Launcher: Loading until service is really available (503)    
+  
 ### **0.15.6** (2021-10-19)  
   
 - Reload app when project changes    
