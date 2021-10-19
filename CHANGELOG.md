@@ -1,3 +1,7 @@
+### **0.15.4** (2021-10-18)  
+  
+- AWS_S3_ENDPOINT should have no http    
+  
 ### **0.15.3** (2021-10-18)  
   
 - Fix: read palette and title from url    
