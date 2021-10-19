@@ -11,39 +11,47 @@ import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
 import { assert } from "tsafe/assert";
 
-const useStyles = makeStyles<{ hasLogo: boolean }>()((theme, { hasLogo }) => ({
-    "root": {
-        "borderRadius": 16,
-        "boxShadow": theme.shadows[1],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "&:hover": {
-            "boxShadow": theme.shadows[6],
+const useStyles = makeStyles<{ hasLogo: boolean; isShortVariant: boolean }>()(
+    (theme, { hasLogo, isShortVariant }) => ({
+        "root": {
+            "borderRadius": 16,
+            "boxShadow": theme.shadows[1],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "&:hover": {
+                "boxShadow": theme.shadows[6],
+            },
+            "display": "flex",
+            "alignItems": "center",
+            "padding": theme.spacing(2),
+            "paddingRight": theme.spacing(3),
         },
-        "display": "flex",
-        "alignItems": "center",
-        "padding": theme.spacing(2),
-        "paddingRight": theme.spacing(3),
-    },
-    "logo": {
-        "visibility": hasLogo ? undefined : "hidden",
-        ...theme.spacing.rightLeft("margin", 2),
-    },
-    "friendlyNameWrapper": {
-        "overflow": "hidden",
-        "whiteSpace": "nowrap",
-        "flex": 1,
-    },
-    "friendlyName": {
-        "overflow": "hidden",
-        "textOverflow": "ellipsis",
-    },
-    "linkIcon": {
-        "marginRight": theme.spacing(3),
-    },
-    "editIcon": {
-        "marginRight": theme.spacing(3),
-    },
-}));
+        "logo": {
+            "visibility": hasLogo ? undefined : "hidden",
+            ...theme.spacing.rightLeft("margin", 2),
+        },
+        "friendlyNameWrapper": {
+            "overflow": "hidden",
+            "whiteSpace": "nowrap",
+            "flex": 1,
+        },
+        "friendlyName": {
+            "overflow": "hidden",
+            "textOverflow": "ellipsis",
+        },
+        "linkIcon": {
+            "marginRight": theme.spacing(3),
+        },
+        "editIcon": {
+            "marginRight": theme.spacing(3),
+        },
+        "linkAndEditButtonWrapper": !isShortVariant
+            ? {}
+            : {
+                  "width": 0,
+                  "overflow": "hidden",
+              },
+    }),
+);
 
 export type Props = {
     className?: string;
@@ -66,7 +74,10 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         callback,
     } = props;
 
-    const { classes, cx } = useStyles({ "hasLogo": logoUrl !== undefined });
+    const { classes, cx } = useStyles({
+        "hasLogo": logoUrl !== undefined,
+        isShortVariant,
+    });
 
     const onLinkClick = useConstCallback(() => callback("copy link"));
 
@@ -111,7 +122,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     {friendlyName}
                 </Text>
             </div>
-            <div style={{ "visibility": isShortVariant ? "hidden" : "visible" }}>
+            <div className={classes.linkAndEditButtonWrapper}>
                 <IconButton
                     className={classes.linkIcon}
                     iconId="link"
