@@ -71,7 +71,7 @@ export const privateThunks = {
             const availableDeploymentRegions =
                 await onyxiaApiClient.getAvailableRegions();
 
-            const localStorageGetItem = () => {
+            const getAvailablePreviouslySelectedRegionIdFromLocalStorage = () => {
                 const value = localStorage.getItem(localStorageKey);
 
                 if (
@@ -87,53 +87,80 @@ export const privateThunks = {
             };
 
             if (!oidcClient.isUserLoggedIn) {
-                const selectedDeploymentRegionId = localStorageGetItem();
-
-                if (selectedDeploymentRegionId === null) {
-                    localStorage.setItem(
-                        localStorageKey,
-                        availableDeploymentRegions[0].id,
-                    );
-                }
-
-                dispatch(
-                    actions.initialize({
-                        availableDeploymentRegions,
-                        "selectedDeploymentRegionId": localStorageGetItem()!,
-                    }),
-                );
-            } else {
-                if (
-                    localStorageGetItem() !== null ||
-                    (() => {
-                        const deploymentRegionId =
-                            getState().userConfigs.deploymentRegionId.value;
-
-                        if (deploymentRegionId === null) {
-                            return true;
-                        }
-
-                        return !availableDeploymentRegions
-                            .map(({ id }) => id)
-                            .includes(deploymentRegionId);
-                    })()
-                ) {
-                    await dispatch(
-                        userConfigsThunks.changeValue({
-                            "key": "deploymentRegionId",
-                            "value":
-                                localStorageGetItem() ?? availableDeploymentRegions[0].id,
-                        }),
-                    );
-
-                    localStorage.removeItem(localStorageKey);
-                }
-
                 dispatch(
                     actions.initialize({
                         availableDeploymentRegions,
                         "selectedDeploymentRegionId":
-                            getState().userConfigs.deploymentRegionId.value!,
+                            getAvailablePreviouslySelectedRegionIdFromLocalStorage() ??
+                            availableDeploymentRegions[0].id,
+                    }),
+                );
+
+                return;
+            }
+
+            {
+                const deploymentRegionId =
+                    getAvailablePreviouslySelectedRegionIdFromLocalStorage();
+
+                if (deploymentRegionId !== null) {
+                    await dispatch(
+                        userConfigsThunks.changeValue({
+                            "key": "deploymentRegionId",
+                            "value": deploymentRegionId,
+                        }),
+                    );
+
+                    localStorage.removeItem(localStorageKey);
+
+                    dispatch(
+                        actions.initialize({
+                            availableDeploymentRegions,
+                            "selectedDeploymentRegionId": deploymentRegionId,
+                        }),
+                    );
+
+                    return;
+                }
+
+                localStorage.removeItem(localStorageKey);
+            }
+
+            {
+                const deploymentRegionId =
+                    getState().userConfigs.deploymentRegionId.value;
+
+                if (
+                    deploymentRegionId !== null &&
+                    availableDeploymentRegions
+                        .map(({ id }) => id)
+                        .includes(deploymentRegionId)
+                ) {
+                    dispatch(
+                        actions.initialize({
+                            availableDeploymentRegions,
+                            "selectedDeploymentRegionId": deploymentRegionId,
+                        }),
+                    );
+
+                    return;
+                }
+            }
+
+            {
+                const deploymentRegionId = availableDeploymentRegions[0].id;
+
+                await dispatch(
+                    userConfigsThunks.changeValue({
+                        "key": "deploymentRegionId",
+                        "value": deploymentRegionId,
+                    }),
+                );
+
+                dispatch(
+                    actions.initialize({
+                        availableDeploymentRegions,
+                        "selectedDeploymentRegionId": deploymentRegionId,
                     }),
                 );
             }
