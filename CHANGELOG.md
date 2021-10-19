@@ -1,3 +1,10 @@
+### **0.15.5** (2021-10-19)  
+  
+- Feat: Minimal project support  
+- refactor  
+- improve deployment region selection algorithm  
+- Update README    
+  
 ### **0.15.4** (2021-10-18)  
   
 - AWS_S3_ENDPOINT should have no http    
