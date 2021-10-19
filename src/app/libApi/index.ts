@@ -11,6 +11,7 @@ import * as restorablePackageConfigsUseCase from "lib/useCases/restorablePackage
 import * as publicIpUseCase from "lib/useCases/publicIp";
 import * as userAuthenticationUseCase from "lib/useCases/userAuthentication";
 import * as deploymentRegionUseCase from "lib/useCases/deploymentRegion";
+import * as projectsUseCase from "lib/useCases/projects";
 import { useThunksToRegularFunction } from "app/tools/react-redux-tools/useThunksToRegularFunction";
 import { wrapSelectorsReturnValue } from "app/tools/react-redux-tools/wrapSelectorsReturnValue";
 
@@ -22,6 +23,7 @@ export const selectors = {
     [launcherUseCase.name]: wrapSelectorsReturnValue(launcherUseCase.selectors),
     [restorablePackageConfigsUseCase.name]: wrapSelectorsReturnValue(restorablePackageConfigsUseCase.selectors),
     [deploymentRegionUseCase.name]: wrapSelectorsReturnValue(deploymentRegionUseCase.selectors),
+    [projectsUseCase.name]: wrapSelectorsReturnValue(projectsUseCase.selectors),
     [userConfigsUseCase.name]: userConfigsUseCase.selectors.userConfigs,
 };
 
@@ -42,6 +44,7 @@ export function useThunks() {
             [`${publicIpUseCase.name}${wordId}` as const]: thunksToRegularFunctions(publicIpUseCase.thunks),
             [`${userAuthenticationUseCase.name}${wordId}` as const]: thunksToRegularFunctions(userAuthenticationUseCase.thunks),
             [`${deploymentRegionUseCase.name}${wordId}` as const]: thunksToRegularFunctions(deploymentRegionUseCase.thunks),
+            [`${projectsUseCase.name}${wordId}` as const]: thunksToRegularFunctions(projectsUseCase.thunks),
         }),
         [thunksToRegularFunctions]
     );

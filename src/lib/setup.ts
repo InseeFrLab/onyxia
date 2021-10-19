@@ -12,6 +12,7 @@ import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageCo
 import * as publicIpUseCase from "./useCases/publicIp";
 import * as userAuthenticationUseCase from "./useCases/userAuthentication";
 import * as deploymentRegionUseCase from "./useCases/deploymentRegion";
+import * as projectsUseCase from "./useCases/projects";
 import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
@@ -167,7 +168,9 @@ export declare namespace OnyxiaApiClientConfig {
         implementation: "OFFICIAL";
     } & Omit<
         Param0<typeof createOfficialOnyxiaApiClient>,
-        "getCurrentlySelectedDeployRegionId" | "getOidcAccessToken"
+        | "getCurrentlySelectedDeployRegionId"
+        | "getOidcAccessToken"
+        | "getCurrentlySelectedProjectId"
     >;
 }
 
@@ -238,6 +241,7 @@ export async function createStore(params: CreateStoreParams) {
     dOidcClient.resolve(oidcClient);
 
     let getCurrentlySelectedDeployRegionId: (() => string) | undefined = undefined;
+    let getCurrentlySelectedProjectId: (() => string) | undefined = undefined;
 
     const onyxiaApiClient = (() => {
         const { onyxiaApiClientConfig } = params;
@@ -252,6 +256,8 @@ export async function createStore(params: CreateStoreParams) {
                     "getOidcAccessToken": !oidcClient.isUserLoggedIn
                         ? undefined
                         : oidcClient.getAccessToken,
+                    "getCurrentlySelectedProjectId": () =>
+                        getCurrentlySelectedProjectId?.(),
                 });
         }
     })();
@@ -303,6 +309,7 @@ export async function createStore(params: CreateStoreParams) {
             [runningServiceUseCase.name]: runningServiceUseCase.reducer,
             [publicIpUseCase.name]: publicIpUseCase.reducer,
             [deploymentRegionUseCase.name]: deploymentRegionUseCase.reducer,
+            [projectsUseCase.name]: projectsUseCase.reducer,
         },
         "middleware": getDefaultMiddleware =>
             getDefaultMiddleware({
@@ -336,6 +343,11 @@ export async function createStore(params: CreateStoreParams) {
     await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
     getCurrentlySelectedDeployRegionId = () =>
         store.getState().deploymentRegion.selectedDeploymentRegionId;
+
+    if (oidcClient.isUserLoggedIn) {
+        await store.dispatch(projectsUseCase.privateThunks.initialize());
+        getCurrentlySelectedProjectId = () => store.getState().projects.selectedProjectId;
+    }
 
     return store;
 }

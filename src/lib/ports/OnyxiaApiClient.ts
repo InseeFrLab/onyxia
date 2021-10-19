@@ -14,6 +14,13 @@ export type Get_Public_Configuration = {
     }[];
 };
 
+export type Get_User_Info = {
+    projects: {
+        id: string;
+        name: string;
+    }[];
+};
+
 export type Get_Public_Catalog = {
     catalogs: {
         id: string;
@@ -194,6 +201,11 @@ export type DeploymentRegion = {
     namespacePrefix: string;
 };
 
+export type Project = {
+    id: string;
+    name: string;
+};
+
 export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
 
 export type OnyxiaApiClient = {
@@ -206,6 +218,8 @@ export type OnyxiaApiClient = {
         (): Promise<DeploymentRegion[]>;
         clear(): void;
     };
+
+    getUserProjects: () => Promise<Project[]>;
 
     getCatalogs: {
         (): Promise<Get_Public_Catalog["catalogs"]>;

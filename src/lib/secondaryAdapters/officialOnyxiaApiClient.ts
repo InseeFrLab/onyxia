@@ -10,6 +10,7 @@ import type {
     Put_MyLab_App,
     Get_MyLab_App,
     Get_Public_Ip,
+    Get_User_Info,
 } from "lib/ports/OnyxiaApiClient";
 import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
@@ -33,8 +34,15 @@ export function createOfficialOnyxiaApiClient(params: {
     getCurrentlySelectedDeployRegionId: () => string | undefined;
     /** undefined if user not logged in */
     getOidcAccessToken: (() => Promise<string>) | undefined;
+    /** undefined if user not logged in, return undefined before projects initially fetched */
+    getCurrentlySelectedProjectId: (() => string | undefined) | undefined;
 }): OnyxiaApiClient {
-    const { url, getCurrentlySelectedDeployRegionId, getOidcAccessToken } = params;
+    const {
+        url,
+        getCurrentlySelectedDeployRegionId,
+        getOidcAccessToken,
+        getCurrentlySelectedProjectId,
+    } = params;
 
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url });
@@ -84,17 +92,23 @@ export function createOfficialOnyxiaApiClient(params: {
 
         axiosInstance.interceptors.request.use(config => {
             const currentlySelectedDeployRegionId = getCurrentlySelectedDeployRegionId();
+            const currentlySelectedProjectId = getCurrentlySelectedProjectId?.();
 
             return {
                 ...config,
-                ...(currentlySelectedDeployRegionId === undefined
-                    ? {}
-                    : {
-                          "headers": {
-                              ...config?.headers,
+                "headers": {
+                    ...config?.headers,
+                    ...(currentlySelectedDeployRegionId === undefined
+                        ? {}
+                        : {
                               "ONYXIA-REGION": currentlySelectedDeployRegionId,
-                          },
-                      }),
+                          }),
+                    ...(currentlySelectedDeployRegionId === undefined
+                        ? {}
+                        : {
+                              "ONYXIA-PROJECT": currentlySelectedProjectId,
+                          }),
+                },
             };
         });
 
@@ -329,6 +343,10 @@ export function createOfficialOnyxiaApiClient(params: {
                     //Deleted one service just running, deleted all the others.
                     assert(data.success);
                 }),
+        "getUserProjects": () =>
+            axiosInstance
+                .get<Get_User_Info>("/user/info")
+                .then(({ data }) => data.projects),
     };
 
     return onyxiaApiClient;
