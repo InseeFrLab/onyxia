@@ -1,3 +1,7 @@
+### **0.15.6** (2021-10-19)  
+  
+- Reload app when project changes    
+  
 ### **0.15.5** (2021-10-19)  
   
 - Feat: Minimal project support  
