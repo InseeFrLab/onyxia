@@ -209,11 +209,12 @@ const { ProjectSelect } = (() => {
 
         const { t } = useTranslation("Header");
 
-        const onChange = useConstCallback((event: SelectChangeEvent<string>) =>
-            projectsThunks.changeProject({
+        const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
+            await projectsThunks.changeProject({
                 "projectId": event.target.value,
-            }),
-        );
+            });
+            window.location.reload();
+        });
 
         if (projectsState === undefined) {
             return null;
