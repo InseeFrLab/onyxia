@@ -12,11 +12,10 @@ import type {
     Get_Public_Ip,
     Get_User_Info,
 } from "lib/ports/OnyxiaApiClient";
-import { onyxiaFriendlyNameFormFieldPath, appStatuses } from "lib/ports/OnyxiaApiClient";
+import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
-import { getUrlHttpStatusCode } from "lib/tools/getPageStatus";
 import { Deferred } from "evt/tools/Deferred";
 import { symToStr } from "tsafe/symToStr";
 //This should be used only in app/libApi/StoreProvider but we break the rule
@@ -207,19 +206,25 @@ export function createOfficialOnyxiaApiClient(params: {
                 { "promise": true, "maxAge": 1000 },
             );
 
-            function getAppStatus(params: {
+            type PodsStatus = {
+                podRunningCount: number;
+                totalPodCount: number;
+            };
+
+            function getPodsStatus(params: {
                 tasks: Get_MyLab_Services["apps"][number]["tasks"];
                 /** For debug */
                 id?: string;
-            }): Get_MyLab_Services.AppStatus | undefined {
+            }): PodsStatus | undefined {
                 const { tasks, id } = params;
 
                 try {
-                    const status = tasks[0]?.status.status;
+                    const { containers } = tasks[0];
 
-                    assert(appStatuses.includes(status));
-
-                    return status;
+                    return {
+                        "podRunningCount": containers.filter(({ ready }) => ready).length,
+                        "totalPodCount": containers.length,
+                    };
                 } catch {
                     if (id !== undefined) {
                         console.warn(
@@ -231,12 +236,25 @@ export function createOfficialOnyxiaApiClient(params: {
                 }
             }
 
+            function getAreAllPodsRunning(podStatus: PodsStatus) {
+                return (
+                    podStatus !== undefined &&
+                    podStatus.podRunningCount === podStatus.totalPodCount
+                );
+            }
+
             const getRunningServices = async () =>
                 (await getMyLab_Services()).apps
                     .map(({ tasks, id, ...rest }) => ({
                         ...rest,
                         id,
-                        "status": getAppStatus({ tasks, id }),
+                        "areAllPodsRunning": (() => {
+                            const podsStatus = getPodsStatus({ tasks, id });
+
+                            return podsStatus === undefined
+                                ? false
+                                : getAreAllPodsRunning(podsStatus);
+                        })(),
                     }))
                     .map(
                         ({
@@ -245,7 +263,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             urls,
                             startedAt,
                             postInstallInstructions,
-                            status,
+                            areAllPodsRunning,
                         }) => ({
                             id,
                             ...(() => {
@@ -261,7 +279,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             postInstallInstructions,
                             urls,
                             startedAt,
-                            ...(status === "Running"
+                            ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)
                                 : ({
                                       "isStarting": true,
@@ -278,53 +296,24 @@ export function createOfficialOnyxiaApiClient(params: {
                                                   return;
                                               }
 
-                                              const newStatus = getAppStatus({
+                                              const podsStatus = getPodsStatus({
                                                   "tasks": app.tasks,
                                               });
 
-                                              if (newStatus === "Pending") {
-                                                  callee(resolve);
-                                                  return;
-                                              }
-
-                                              const url = app.urls[0];
-
-                                              if (url === undefined) {
+                                              if (podsStatus === undefined) {
                                                   resolve({
                                                       "isConfirmedJustStarted": false,
                                                   });
+
                                                   return;
                                               }
 
-                                              //NOTE: When he get 403 (unauthorized) it mean that the service is running.
-                                              //By defaults services are IP protected.
-                                              //We don't ping directly from front because of CORS
-                                              const httpStatusCode =
-                                                  await getUrlHttpStatusCode({
-                                                      url,
-                                                  }).catch(error => {
-                                                      console.warn(
-                                                          [
-                                                              `Seems like the https://helloacm.com/tools/can-visit/`,
-                                                              `no longer works for checking 503: ${error.message}`,
-                                                          ].join(" "),
-                                                      );
-
-                                                      return undefined;
-                                                  });
-
-                                              if (httpStatusCode === 503) {
+                                              if (!getAreAllPodsRunning(podsStatus)) {
                                                   callee(resolve);
                                                   return;
                                               }
 
-                                              resolve({
-                                                  "isConfirmedJustStarted":
-                                                      status === "Pending" &&
-                                                      newStatus === "Running" &&
-                                                      (httpStatusCode === 403 ||
-                                                          httpStatusCode === 200),
-                                              });
+                                              resolve({ "isConfirmedJustStarted": true });
                                           }, 3000);
                                       }),
                                   } as const)),
