@@ -2,52 +2,32 @@
     <img src="https://user-images.githubusercontent.com/6702424/111553867-7fd50880-8785-11eb-8942-75f161864b5f.png">
 </p>
 <p align="center">
-    <i>A data science oriented container launcher</i>
+    🥼  <i>The <a href="https://datalab.sspcloud.fr">Onyxia</a> frontend</i> 🥼
     <br>
     <br>
     <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
-    <img src="https://img.shields.io/npm/l/evt">
+    <img src="https://img.shields.io/npm/l/onyxia-ui">
 </p>
 
 </p>
 <p align="center">
   <a href="https://datalab.sspcloud.fr" title="Instance of Onyxia hosted in INSEE's data center">Onyxia @ INSEE</a>
   -
-  <a href="https://docs.sspcloud.fr/" title="A website for the states workers responsible of producing the french official statistics">Community website</a>
-  -
   <a href="https://storybook.onyxia.dev/" title="A website for testing the app components in isolation">Storybook</a>
 </p>
 
----
+<p align="center">
+    <a href="https://github.com/InseeFrLab/onyxia">
+        <b>Learn about Onyxia </b>
+    </a>
+</p>
 
-Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
-provide a state of the art data analysis experience.  
-Onyxia is developed by the French National institute of statistic and economic studies ([INSEE](https://insee.fr)).
+-   [Setting up the development environnement](#setting-up-the-development-environnement)
+-   [Architecture](#architecture)
+-   [OPS](#ops)
+-   [NOTE (for self)](#note-for-self)
 
-Core feature set:
-
--   A web GUI where users can upload/download files to/from a S3 servers. (S3 as the open standard, not the AWS service)
--   An interface for launching docker images (e.g: Jupyter, RStudio) on demand on a Kubernetes cluster.
-    The catalog of available images is not part of the app and is fully customizable. (You can checkout [here](https://github.com/inseefrlab/helm-charts-datascience) the catalog we offer to our staff on the instance of Onyxia hosted @ INSEE)
--   Users can define the amount of RAM, CPU and GPU they would like to allocate for their containers.
--   When the user log into it's container (e.g: RStudio, Jupyter), the environnement is pre configured according
-    to he's profile, the user don't have to fill in it's credentials. For example he can easily access the file
-    he previously uploaded from the GUI using the pre-configured minio client. He can also push to GitHub without having to to
-    type he's password.
--   Users can provide a bash script to be executed at the start of a container. (e.g: `git clone ... && pip install` )
-
-# Screenshots
-
-![gif_onyxia](https://user-images.githubusercontent.com/6702424/136545513-f623d8c7-260d-4d93-a01e-2dc5af6ad473.gif)
-![image](https://user-images.githubusercontent.com/6702424/122631126-8c8d3380-d0c9-11eb-968f-af3e605b0e07.png)
-![scree_myservices](https://user-images.githubusercontent.com/6702424/121828699-a8a36600-ccc0-11eb-903c-1cd4b6cbb0ff.png)
-![screen_launcher](https://user-images.githubusercontent.com/6702424/121828696-a80acf80-ccc0-11eb-86fb-c7d0bca55d4f.png)
-![screen_main_services](https://user-images.githubusercontent.com/6702424/121828700-a93bfc80-ccc0-11eb-8149-f6c85c06cffd.png)
-![my_secrets](https://user-images.githubusercontent.com/6702424/121828695-a5a87580-ccc0-11eb-9e86-295fdac6c497.png)
-
-# Contributing
-
-## Development
+# Setting up the development environnement
 
 onyxia-web relies following open sources backend technologies:
 
@@ -71,7 +51,7 @@ yarn storybook # To test the React's component in isolation.
 yarn keycloak # To spin up Keycloak container and test the login/register page. See https://github.com/InseeFrLab/keycloakify
 ```
 
-## Architecture
+# Architecture
 
 The is four source directories:
 
