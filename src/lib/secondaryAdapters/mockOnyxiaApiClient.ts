@@ -10,6 +10,8 @@ export function createMockOnyxiaApiClient(params: {
 
     return {
         "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
+        "getUserProjects": () =>
+            Promise.resolve([{ "id": "my-project", "name": "my project" }]),
         "getAvailableRegions": memoize(
             () => Promise.resolve(availableDeploymentRegions),
             { "promise": true },

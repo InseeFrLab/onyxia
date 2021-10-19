@@ -297,6 +297,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "logout": "Logout",
             "community space": "Community Space",
             "trainings and tutorials": "Trainings and tutorials",
+            "project": "Project",
         },
         "App": {
             "reduce": "Reduce",
@@ -604,6 +605,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "logout": "Déconnexion",
             "community space": "Espace communautaire",
             "trainings and tutorials": "Formations et tutoriels",
+            "project": "Projet",
         },
         "App": {
             "reduce": "Réduire",

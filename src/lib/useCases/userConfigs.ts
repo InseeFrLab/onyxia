@@ -37,6 +37,7 @@ export type UserConfigs = Id<
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
+        selectedProjectId: string | null;
     }
 >;
 
@@ -168,6 +169,7 @@ export const privateThunks = {
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
+                "selectedProjectId": null,
             };
 
             await Promise.all(

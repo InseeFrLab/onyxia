@@ -6,6 +6,12 @@ import { makeStyles, Text } from "app/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { title } from "paletteIdAndTitle";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { useThunks, useSelector } from "app/libApi";
+import { kcContext } from "app/components/KcApp/kcContext";
 
 export type Props = Props.Core | Props.Keycloak;
 
@@ -44,12 +50,27 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "alignItems": "center",
             "justifyContent": "center",
         },
+        "mainTextContainer": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "cursor": "pointer",
+        },
         "svg": {
             "fill": theme.colors.useCases.typography.textFocus,
             "width": "70%",
         },
         "button": {
             "marginBottom": theme.spacing(1),
+        },
+        "rightEndActionsContainer": {
+            "flex": 1,
+            "display": "flex",
+            "justifyContent": "flex-end",
+            "alignItems": "center",
+        },
+        "projectSelect": {
+            "marginLeft": theme.spacing(2),
         },
     }),
 );
@@ -66,15 +87,7 @@ export const Header = memo((props: Props) => {
             <div onClick={onLogoClick} className={classes.logoContainer}>
                 <OnyxiaLogoSvg className={classes.svg} />
             </div>
-            <div
-                onClick={onLogoClick}
-                className={css({
-                    "display": "flex",
-                    "justifyContent": "center",
-                    "alignItems": "center",
-                    "cursor": "pointer",
-                })}
-            >
+            <div onClick={onLogoClick} className={classes.mainTextContainer}>
                 {props.useCase === "core app" && (
                     <Text typo="section heading" className={css({ "fontWeight": 600 })}>
                         Onyxia -
@@ -98,15 +111,10 @@ export const Header = memo((props: Props) => {
                     </Text>
                 )}
             </div>
-
-            <div
-                className={css({
-                    "flex": 1,
-                    "display": "flex",
-                    "justifyContent": "flex-end",
-                    "alignItems": "center",
-                })}
-            >
+            {kcContext === undefined && (
+                <ProjectSelect className={classes.projectSelect} />
+            )}
+            <div className={classes.rightEndActionsContainer}>
                 {props.useCase === "core app" && (
                     <>
                         <ButtonBarButton
@@ -150,6 +158,7 @@ export declare namespace Header {
         login: undefined;
         "community space": undefined;
         "trainings and tutorials": undefined;
+        project: undefined;
     };
 }
 
@@ -181,4 +190,59 @@ const { ToggleCloudShell } = (() => {
     });
 
     return { ToggleCloudShell };
+})();
+
+const { ProjectSelect } = (() => {
+    const labelId = "project-select-id";
+
+    type Props = {
+        className?: string;
+    };
+
+    const ProjectSelect = memo((props: Props) => {
+        const { className } = props;
+
+        const { projectsThunks, userAuthenticationThunks } = useThunks();
+        const projectsState = useSelector(state =>
+            !userAuthenticationThunks.getIsUserLoggedIn() ? undefined : state.projects,
+        );
+
+        const { t } = useTranslation("Header");
+
+        const onChange = useConstCallback((event: SelectChangeEvent<string>) =>
+            projectsThunks.changeProject({
+                "projectId": event.target.value,
+            }),
+        );
+
+        if (projectsState === undefined) {
+            return null;
+        }
+
+        const { projects, selectedProjectId } = projectsState;
+
+        if (projects.length === 1) {
+            return null;
+        }
+
+        return (
+            <FormControl className={className}>
+                <InputLabel id={labelId}>{t("project")}</InputLabel>
+                <Select
+                    labelId={labelId}
+                    value={selectedProjectId}
+                    label="Project"
+                    onChange={onChange}
+                >
+                    {projects.map(({ id, name }) => (
+                        <MenuItem key={id} value={id}>
+                            {name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        );
+    });
+
+    return { ProjectSelect };
 })();
