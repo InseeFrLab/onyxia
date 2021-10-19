@@ -100,46 +100,44 @@ export const privateThunks = {
             }
 
             {
-                const deploymentRegionId =
+                const selectedDeploymentRegionId =
                     getAvailablePreviouslySelectedRegionIdFromLocalStorage();
 
-                if (deploymentRegionId !== null) {
+                localStorage.removeItem(localStorageKey);
+
+                if (selectedDeploymentRegionId !== null) {
                     await dispatch(
                         userConfigsThunks.changeValue({
                             "key": "deploymentRegionId",
-                            "value": deploymentRegionId,
+                            "value": selectedDeploymentRegionId,
                         }),
                     );
-
-                    localStorage.removeItem(localStorageKey);
 
                     dispatch(
                         actions.initialize({
                             availableDeploymentRegions,
-                            "selectedDeploymentRegionId": deploymentRegionId,
+                            selectedDeploymentRegionId,
                         }),
                     );
 
                     return;
                 }
-
-                localStorage.removeItem(localStorageKey);
             }
 
             {
-                const deploymentRegionId =
+                const selectedDeploymentRegionId =
                     getState().userConfigs.deploymentRegionId.value;
 
                 if (
-                    deploymentRegionId !== null &&
+                    selectedDeploymentRegionId !== null &&
                     availableDeploymentRegions
                         .map(({ id }) => id)
-                        .includes(deploymentRegionId)
+                        .includes(selectedDeploymentRegionId)
                 ) {
                     dispatch(
                         actions.initialize({
                             availableDeploymentRegions,
-                            "selectedDeploymentRegionId": deploymentRegionId,
+                            selectedDeploymentRegionId,
                         }),
                     );
 
