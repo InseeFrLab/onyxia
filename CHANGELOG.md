@@ -1,3 +1,7 @@
+### **0.15.8** (2021-10-19)  
+  
+- Laucher: Fix display bug on saved services    
+  
 ### **0.15.7** (2021-10-19)  
   
 - Launcher: Loading until service is really available (503)    
