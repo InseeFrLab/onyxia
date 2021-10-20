@@ -1,3 +1,7 @@
+### **0.15.9** (2021-10-20)  
+  
+- fix: MyServicesSavedConfig    
+  
 ### **0.15.8** (2021-10-19)  
   
 - Laucher: Fix display bug on saved services    
