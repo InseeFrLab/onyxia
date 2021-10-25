@@ -1,3 +1,10 @@
+### **0.15.11** (2021-10-25)  
+  
+- Merge pull request #267 from InseeFrLab/injection-region-form
+
+propal  
+- Mustache: provide defaultIpProtection and defaultIpPolicy    
+  
 ### **0.15.10** (2021-10-25)  
   
 - MyServices: Fix blue screen when opening services    
