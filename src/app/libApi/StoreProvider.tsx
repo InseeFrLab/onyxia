@@ -42,6 +42,8 @@ export function createStoreProvider(params: { isStorybook: boolean }) {
                               {
                                   "id": "dummy region",
                                   "namespacePrefix": "user-",
+                                  "defaultIpProtection": undefined,
+                                  "defaultNetworkPolicy": undefined
                               },
                           ],
                       })
