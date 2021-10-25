@@ -1,3 +1,7 @@
+### **0.15.10** (2021-10-25)  
+  
+- MyServices: Fix blue screen when opening services    
+  
 ### **0.15.9** (2021-10-20)  
   
 - fix: MyServicesSavedConfig    
