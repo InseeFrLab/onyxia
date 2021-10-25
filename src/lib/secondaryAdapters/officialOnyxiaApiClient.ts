@@ -239,6 +239,7 @@ export function createOfficialOnyxiaApiClient(params: {
             function getAreAllPodsRunning(podStatus: PodsStatus) {
                 return (
                     podStatus !== undefined &&
+                    podStatus.totalPodCount !== 0 &&
                     podStatus.podRunningCount === podStatus.totalPodCount
                 );
             }
