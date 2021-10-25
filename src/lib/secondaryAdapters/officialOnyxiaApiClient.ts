@@ -130,6 +130,8 @@ export function createOfficialOnyxiaApiClient(params: {
                         "id": region.id,
                         "s3MonitoringUrlPattern": region.data.S3.monitoring?.URLPattern,
                         "namespacePrefix": region.services.namespacePrefix,
+                        "defaultIpProtection": region.services.ipprotection,
+                        "defaultNetworkPolicy": region.services.networkPolicy
                     })),
                 ),
         ),

@@ -183,6 +183,8 @@ assert<
                   id: string;
                   s3MonitoringUrlPattern?: string;
                   namespacePrefix: string;
+                  defaultIpProtection: boolean | undefined;
+                  defaultNetworkPolicy: boolean | undefined;
               }[];
           }
         | {
