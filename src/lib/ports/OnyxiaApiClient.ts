@@ -3,6 +3,8 @@ export type Get_Public_Configuration = {
         id: string;
         services: {
             namespacePrefix: string;
+            ipprotection?: boolean;
+            networkPolicy?: boolean;
         };
         data: {
             S3: {
@@ -166,6 +168,10 @@ export declare namespace Get_Public_Catalog_CatalogId_PackageName {
             AWS_S3_ENDPOINT: string;
             AWS_BUCKET_NAME: string;
         };
+        region: {
+            defaultIpProtection: boolean | undefined;
+            defaultNetworkPolicy: boolean | undefined;
+        };
     };
 }
 
@@ -204,6 +210,8 @@ export type DeploymentRegion = {
     id: string;
     s3MonitoringUrlPattern?: string;
     namespacePrefix: string;
+    defaultIpProtection: boolean | undefined;
+    defaultNetworkPolicy: boolean | undefined;
 };
 
 export type Project = {

@@ -19,6 +19,7 @@ import { getMinioToken } from "js/minio-client/minio-client";
 import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
+import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
 import { getEnv } from "env";
 
@@ -839,6 +840,8 @@ export const thunks = {
 
             const userConfigs = userConfigsSelectors.userConfigs(getState());
 
+            const selectedDeploymentRegion = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+
             return {
                 "user": {
                     "idep": user.username,
@@ -885,6 +888,10 @@ export const thunks = {
                     "AWS_SECRET_ACCESS_KEY": s3.secretAccessKey,
                     "AWS_SESSION_TOKEN": s3.sessionToken,
                 },
+                "region": {
+                    "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
+                    "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy
+                }
             };
         },
 };
