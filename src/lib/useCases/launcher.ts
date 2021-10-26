@@ -549,22 +549,53 @@ export const thunks = {
                                     ): NonNullable<
                                         NonNullable<T["x-form"]>["value"] | T["default"]
                                     > => {
-                                        const valuePotentiallyWronglyTyped =
-                                            jsonSchemaFormFieldDescription["x-form"]
-                                                ?.value ??
-                                            jsonSchemaFormFieldDescription.default ??
-                                            (() => {
-                                                switch (
-                                                    jsonSchemaFormFieldDescription.type
-                                                ) {
-                                                    case "string":
-                                                        return "";
-                                                    case "boolean":
-                                                        return false;
-                                                    case "number":
-                                                        return 0;
-                                                }
-                                            })();
+                                        const valuePotentiallyWronglyTyped = (() => {
+                                            const idOrUndefinedIfEmptyStringForBooleanOrNumber =
+                                                <
+                                                    T extends
+                                                        | string
+                                                        | boolean
+                                                        | number
+                                                        | undefined,
+                                                >(
+                                                    v: T,
+                                                ): T | undefined => {
+                                                    switch (
+                                                        jsonSchemaFormFieldDescription.type
+                                                    ) {
+                                                        case "boolean":
+                                                        case "number":
+                                                            return v === ""
+                                                                ? undefined
+                                                                : v;
+                                                        case "string":
+                                                            return v;
+                                                    }
+                                                };
+
+                                            return (
+                                                idOrUndefinedIfEmptyStringForBooleanOrNumber(
+                                                    jsonSchemaFormFieldDescription[
+                                                        "x-form"
+                                                    ]?.value,
+                                                ) ??
+                                                idOrUndefinedIfEmptyStringForBooleanOrNumber(
+                                                    jsonSchemaFormFieldDescription.default,
+                                                ) ??
+                                                (() => {
+                                                    switch (
+                                                        jsonSchemaFormFieldDescription.type
+                                                    ) {
+                                                        case "string":
+                                                            return "";
+                                                        case "boolean":
+                                                            return false;
+                                                        case "number":
+                                                            return 0;
+                                                    }
+                                                })()
+                                            );
+                                        })();
 
                                         const value = (() => {
                                             switch (jsonSchemaFormFieldDescription.type) {
