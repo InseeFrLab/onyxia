@@ -1,3 +1,7 @@
+### **0.15.12** (2021-10-26)  
+  
+- Form: Accept string as boolean values in value.shema.json    
+  
 ### **0.15.11** (2021-10-25)  
   
 - Merge pull request #267 from InseeFrLab/injection-region-form
