@@ -1,3 +1,7 @@
+### **0.15.13** (2021-10-26)  
+  
+- Fix previous build    
+  
 ### **0.15.12** (2021-10-26)  
   
 - Form: Accept string as boolean values in value.shema.json    
