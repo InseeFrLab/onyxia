@@ -548,19 +548,102 @@ export const thunks = {
                                         jsonSchemaFormFieldDescription: T,
                                     ): NonNullable<
                                         NonNullable<T["x-form"]>["value"] | T["default"]
-                                    > =>
-                                        jsonSchemaFormFieldDescription["x-form"]?.value ??
-                                        jsonSchemaFormFieldDescription.default ??
-                                        ((): any => {
+                                    > => {
+                                        const valuePotentiallyWronglyTyped =
+                                            jsonSchemaFormFieldDescription["x-form"]
+                                                ?.value ??
+                                            jsonSchemaFormFieldDescription.default ??
+                                            (() => {
+                                                switch (
+                                                    jsonSchemaFormFieldDescription.type
+                                                ) {
+                                                    case "string":
+                                                        return "";
+                                                    case "boolean":
+                                                        return false;
+                                                    case "number":
+                                                        return 0;
+                                                }
+                                            })();
+
+                                        const value = (() => {
                                             switch (jsonSchemaFormFieldDescription.type) {
-                                                case "string":
-                                                    return "";
-                                                case "boolean":
-                                                    return false;
-                                                case "number":
-                                                    return 0;
+                                                case "string": {
+                                                    assert(
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                            "string",
+                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be a string`,
+                                                    );
+
+                                                    return valuePotentiallyWronglyTyped;
+                                                }
+                                                case "boolean": {
+                                                    const errorMessage = [
+                                                        `${jsonSchemaFormFieldDescription.title}'s default value`,
+                                                        `should be a boolean, "true" or "false"`,
+                                                    ].join(" ");
+
+                                                    if (
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                        "string"
+                                                    ) {
+                                                        switch (
+                                                            valuePotentiallyWronglyTyped
+                                                        ) {
+                                                            case "true":
+                                                                return true;
+                                                            case "false":
+                                                                return false;
+                                                            default:
+                                                                throw new Error(
+                                                                    errorMessage,
+                                                                );
+                                                        }
+                                                    }
+
+                                                    assert(
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                            "boolean",
+                                                        errorMessage,
+                                                    );
+
+                                                    return valuePotentiallyWronglyTyped;
+                                                }
+                                                case "number": {
+                                                    const errorMessage = [
+                                                        `${jsonSchemaFormFieldDescription.title}'s default value`,
+                                                        `should be a number, or a string that can be interpreted as a number`,
+                                                    ].join(" ");
+
+                                                    if (
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                        "string"
+                                                    ) {
+                                                        const value = parseFloat(
+                                                            valuePotentiallyWronglyTyped,
+                                                        );
+
+                                                        assert(
+                                                            !isNaN(value),
+                                                            errorMessage,
+                                                        );
+
+                                                        return value;
+                                                    }
+
+                                                    assert(
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                            "number",
+                                                        errorMessage,
+                                                    );
+
+                                                    return valuePotentiallyWronglyTyped;
+                                                }
                                             }
                                         })();
+
+                                        return value as any;
+                                    };
 
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
@@ -840,7 +923,8 @@ export const thunks = {
 
             const userConfigs = userConfigsSelectors.userConfigs(getState());
 
-            const selectedDeploymentRegion = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const selectedDeploymentRegion =
+                deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             return {
                 "user": {
@@ -890,8 +974,8 @@ export const thunks = {
                 },
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
-                    "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy
-                }
+                    "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
+                },
             };
         },
 };
