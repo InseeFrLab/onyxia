@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/6702424/111553867-7fd50880-8785-11eb-8942-75f161864b5f.png">
+    <img src="https://user-images.githubusercontent.com/6702424/139264787-37efc793-1d55-4fa4-a4a9-782af8357cff.png">
 </p>
 <p align="center">
     🥼  <i>The <a href="https://datalab.sspcloud.fr">Onyxia</a> frontend</i> 🥼
