@@ -8,6 +8,7 @@ import {
 } from "powerhooks/tools/urlSearchParams";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
+import { isStorybook } from "app/tools/isStorybook";
 
 const titleParamName = "title";
 
@@ -44,7 +45,7 @@ export const paletteId = (() => {
         }
 
         scope: {
-            if (kcContext !== undefined) {
+            if (kcContext !== undefined || isStorybook) {
                 break scope;
             }
 
@@ -105,7 +106,7 @@ export const title = (() => {
     }
 
     scope: {
-        if (kcContext !== undefined) {
+        if (kcContext !== undefined || isStorybook) {
             break scope;
         }
 

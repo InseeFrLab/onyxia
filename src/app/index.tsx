@@ -1,7 +1,7 @@
 import * as reactDom from "react-dom";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes/router";
-import { createStoreProvider } from "app/libApi/StoreProvider";
+import { LibProvider } from "app/libApi/LibProvider";
 import { ThemeProvider, getThemeProviderProps } from "./theme";
 import { App } from "app/components/App";
 import { KcApp, kcContext } from "app/components/KcApp";
@@ -11,8 +11,6 @@ import { validateEnvs } from "validateEnv";
 if (kcContext === undefined) {
     validateEnvs();
 }
-
-const { StoreProvider } = createStoreProvider({ "isStorybook": false });
 
 reactDom.render(
     <I18nProvider>
@@ -26,9 +24,9 @@ reactDom.render(
                 {kcContext !== undefined ? (
                     <KcApp kcContext={kcContext} />
                 ) : (
-                    <StoreProvider>
+                    <LibProvider>
                         <App />
-                    </StoreProvider>
+                    </LibProvider>
                 )}
             </ThemeProvider>
         </RouteProvider>

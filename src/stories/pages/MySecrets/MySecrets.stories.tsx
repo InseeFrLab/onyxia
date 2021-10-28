@@ -28,7 +28,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "doProvideMockStore": true,
+    "doUseLib": true,
     "wrappedComponent": { [symToStr({ MySecrets })]: Component },
 });
 
