@@ -10,11 +10,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useThunks, useSelector } from "app/libApi";
-import { kcContext } from "app/components/KcApp/kcContext";
 
-export type Props = Props.Core | Props.Keycloak;
-
+export type Props = Props.LoginPages | Props.UserNotLoggedIn | Props.UserLoggedIn;
 export declare namespace Props {
     export type Common = {
         className?: string;
@@ -22,16 +19,22 @@ export declare namespace Props {
         onLogoClick(): void;
     };
 
-    export type Keycloak = Common & {
-        useCase: "keycloak";
+    export type LoginPages = Common & {
+        useCase: "login pages";
     };
 
-    export type Core = Common & {
+    export type UserNotLoggedIn = Common & {
         useCase: "core app";
-        isUserLoggedIn: boolean;
-        useIsCloudShellVisible: typeof useIsCloudShellVisible;
-        onAuthClick(): void;
+        isUserLoggedIn: false;
+        onLoginClick: () => void;
     };
+
+    export type UserLoggedIn = Common & {
+        useCase: "core app";
+        isUserLoggedIn: true;
+        useIsCloudShellVisible: typeof useIsCloudShellVisible;
+        onLogoutClick: () => void;
+    } & Omit<ProjectSelectProps, "className">;
 }
 
 const useStyles = makeStyles<{ logoContainerWidth: number }>()(
@@ -40,6 +43,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>()(
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
             "display": "flex",
+            "alignItems": "center",
             ...theme.spacing.topBottom("padding", 2),
         },
         "logoContainer": {
@@ -111,8 +115,8 @@ export const Header = memo((props: Props) => {
                     </Text>
                 )}
             </div>
-            {kcContext === undefined && (
-                <ProjectSelect className={classes.projectSelect} />
+            {props.useCase === "core app" && props.isUserLoggedIn && (
+                <ProjectSelect {...props} className={classes.projectSelect} />
             )}
             <div className={classes.rightEndActionsContainer}>
                 {props.useCase === "core app" && (
@@ -139,7 +143,11 @@ export const Header = memo((props: Props) => {
                             />
                         )}
                         <Button
-                            onClick={props.onAuthClick}
+                            onClick={
+                                props.isUserLoggedIn
+                                    ? props.onLogoutClick
+                                    : props.onLoginClick
+                            }
                             variant={props.isUserLoggedIn ? "secondary" : "primary"}
                             className={css({ "marginLeft": theme.spacing(3) })}
                         >
@@ -192,58 +200,48 @@ const { ToggleCloudShell } = (() => {
     return { ToggleCloudShell };
 })();
 
-const { ProjectSelect } = (() => {
-    const labelId = "project-select-id";
+const labelId = "project-select-id";
 
-    type Props = {
-        className?: string;
-    };
+type ProjectSelectProps = {
+    className?: string;
+    onSelectedProjectChange: (params: { projectId: string }) => void;
+    selectedProjectId: string;
+    projects: {
+        id: string;
+        name: string;
+    }[];
+};
 
-    const ProjectSelect = memo((props: Props) => {
-        const { className } = props;
+const ProjectSelect = memo((props: ProjectSelectProps) => {
+    const { className, projects, onSelectedProjectChange, selectedProjectId } = props;
 
-        const { projectsThunks, userAuthenticationThunks } = useThunks();
-        const projectsState = useSelector(state =>
-            !userAuthenticationThunks.getIsUserLoggedIn() ? undefined : state.projects,
-        );
+    const { t } = useTranslation("Header");
 
-        const { t } = useTranslation("Header");
-
-        const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
-            await projectsThunks.changeProject({
-                "projectId": event.target.value,
-            });
-            window.location.reload();
+    const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
+        onSelectedProjectChange({
+            "projectId": event.target.value,
         });
-
-        if (projectsState === undefined) {
-            return null;
-        }
-
-        const { projects, selectedProjectId } = projectsState;
-
-        if (projects.length === 1) {
-            return null;
-        }
-
-        return (
-            <FormControl className={className}>
-                <InputLabel id={labelId}>{t("project")}</InputLabel>
-                <Select
-                    labelId={labelId}
-                    value={selectedProjectId}
-                    label="Project"
-                    onChange={onChange}
-                >
-                    {projects.map(({ id, name }) => (
-                        <MenuItem key={id} value={id}>
-                            {name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        );
     });
 
-    return { ProjectSelect };
-})();
+    if (projects.length === 1) {
+        return null;
+    }
+
+    return (
+        <FormControl className={className}>
+            <InputLabel id={labelId}>{t("project")}</InputLabel>
+            <Select
+                labelId={labelId}
+                value={selectedProjectId}
+                label="Project"
+                onChange={onChange}
+            >
+                {projects.map(({ id, name }) => (
+                    <MenuItem key={id} value={id}>
+                        {name}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
+});

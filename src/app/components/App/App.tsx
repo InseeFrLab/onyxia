@@ -143,6 +143,8 @@ export const App = memo((props: Props) => {
         return { tosUrl };
     })();
 
+    const projectsSlice = useProjectsSlice();
+
     const leftBarItems = useMemo(
         () =>
             ({
@@ -188,15 +190,30 @@ export const App = memo((props: Props) => {
 
     return (
         <div ref={rootRef} className={cx(classes.root, className)}>
-            <Header
-                className={classes.header}
-                useCase="core app"
-                logoContainerWidth={logoContainerWidth}
-                isUserLoggedIn={isUserLoggedIn}
-                useIsCloudShellVisible={useIsCloudShellVisible}
-                onLogoClick={onHeaderLogoClick}
-                onAuthClick={onHeaderAuthClick}
-            />
+            {(() => {
+                const common = {
+                    "className": classes.header,
+                    "useCase": "core app",
+                    logoContainerWidth,
+                    "onLogoClick": onHeaderLogoClick,
+                } as const;
+
+                return isUserLoggedIn ? (
+                    <Header
+                        {...common}
+                        isUserLoggedIn={true}
+                        useIsCloudShellVisible={useIsCloudShellVisible}
+                        onLogoutClick={onHeaderAuthClick}
+                        {...projectsSlice!}
+                    />
+                ) : (
+                    <Header
+                        {...common}
+                        isUserLoggedIn={false}
+                        onLoginClick={onHeaderAuthClick}
+                    />
+                );
+            })()}
             <section className={classes.betweenHeaderAndFooter}>
                 <LeftBar
                     className={classes.leftBar}
@@ -449,4 +466,26 @@ function useSyncDarkModeWithValueInProfile() {
             "value": isDarkModeEnabled,
         });
     }, [isDarkModeEnabled]);
+}
+
+function useProjectsSlice() {
+    const { projectsThunks, userAuthenticationThunks } = useThunks();
+    const projectsState = useSelector(state =>
+        !userAuthenticationThunks.getIsUserLoggedIn() ? undefined : state.projects,
+    );
+
+    const onSelectedProjectChange = useConstCallback(
+        async (props: { projectId: string }) => {
+            await projectsThunks.changeProject(props);
+            window.location.reload();
+        },
+    );
+
+    if (projectsState === undefined) {
+        return null;
+    }
+
+    const { projects, selectedProjectId } = projectsState;
+
+    return { projects, selectedProjectId, onSelectedProjectChange };
 }

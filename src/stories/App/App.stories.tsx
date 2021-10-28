@@ -5,7 +5,7 @@ import { sectionName } from "./sectionName";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { App },
-    "doProvideMockStore": true,
+    "doUseLib": true,
 });
 
 export default meta;

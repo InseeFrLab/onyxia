@@ -15,18 +15,16 @@ import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
-import { createStoreProvider } from "app/libApi/StoreProvider";
+import { LibProvider } from "app/libApi/LibProvider";
 import { I18nProvider } from "app/i18n/I18nProvider";
 import type { SupportedLanguage } from "app/i18n/resources";
 import { RouteProvider } from "app/routes/router";
 import { useLng } from "app/i18n/useLng";
 
-const { StoreProvider } = createStoreProvider({ "isStorybook": true });
-
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
-    doProvideMockStore?: boolean;
+    doUseLib?: boolean;
     /** https://storybook.js.org/docs/react/essentials/controls */
     argTypes?: Partial<Record<keyof Props, ArgType>>;
     defaultWidth?: number;
@@ -35,7 +33,7 @@ export function getStoryFactory<Props>(params: {
         sectionName,
         wrappedComponent,
         argTypes = {},
-        doProvideMockStore,
+        doUseLib,
         defaultWidth,
     } = params;
 
@@ -73,9 +71,9 @@ export function getStoryFactory<Props>(params: {
         );
     }
 
-    const StoreProviderOrFragment: React.ComponentType = !doProvideMockStore
+    const StoreProviderOrFragment: React.ComponentType = !doUseLib
         ? ({ children }) => <>{children}</>
-        : ({ children }) => <StoreProvider>{children}</StoreProvider>;
+        : ({ children }) => <LibProvider>{children}</LibProvider>;
 
     const Template: Story<
         Props & {
@@ -188,9 +186,9 @@ export function getStoryFactory<Props>(params: {
                     "control": { "type": "select" },
                 },
                 "lng": {
+                    "options": id<SupportedLanguage[]>(["fr", "en"]),
                     "control": {
                         "type": "inline-radio",
-                        "options": id<SupportedLanguage[]>(["fr", "en"]),
                     },
                 },
                 ...argTypes,
