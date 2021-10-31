@@ -27,6 +27,7 @@ module.exports = function override(config) {
             // set the current working directory for displaying module paths
             "cwd": process.cwd()
         }),
+        // This let us display the version number in the footer of the app.
         new DefinePlugin({
             "process.env.VERSION": JSON.stringify(process.env.npm_package_version)
         })
