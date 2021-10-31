@@ -1,5 +1,10 @@
-// This is an webpack extension to detect circular import (example:  A imports B that imports A)
+/*
+We use this file to in order to be able to use webpack plugin without
+ejecting from CRA.
+This file is picked up by react-app-rewired that we use in place or react-scripts
+*/
 
+// This is an webpack extension to detect circular import (example:  A imports B that imports A)
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const { DefinePlugin } = require("webpack");
 
