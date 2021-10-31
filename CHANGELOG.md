@@ -1,3 +1,11 @@
+### **0.15.14** (2021-10-31)  
+  
+- i18n: Rename resources.ts -> translations.ts  
+- Header: Refactor and fix storybook  
+- Remove Dockerfile.ci  
+- Delete Dockerfile  
+- Delete CONTRIBUTING.md    
+  
 ### **0.15.13** (2021-10-26)  
   
 - Fix previous build    
