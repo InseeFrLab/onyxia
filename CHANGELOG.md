@@ -1,3 +1,7 @@
+### **0.15.15** (2021-10-31)  
+  
+- Stories: rename width -> containerWidth    
+  
 ### **0.15.14** (2021-10-31)  
   
 - i18n: Rename resources.ts -> translations.ts  
