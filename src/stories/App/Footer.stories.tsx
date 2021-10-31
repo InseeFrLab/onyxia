@@ -5,7 +5,7 @@ import { sectionName } from "./sectionName";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Footer },
-    "defaultWidth": 1000,
+    "defaultContainerWidth": 1000,
 });
 
 export default meta;
