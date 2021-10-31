@@ -11,7 +11,7 @@ import { id } from "tsafe/id";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCards },
-    "defaultWidth": 1550,
+    "defaultContainerWidth": 1550,
 });
 
 export default meta;

@@ -4,7 +4,7 @@ import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { css } from "tss-react/@emotion/css";
 
-const defaultWidth = 1200;
+const defaultContainerWidth = 1200;
 
 function useIsCloudShellVisible() {
     const [isCloudShellVisible, setIsCloudShellVisible] = useState(false);
@@ -19,14 +19,14 @@ function useIsCloudShellVisible() {
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Header },
-    "defaultWidth": defaultWidth,
+    defaultContainerWidth,
 });
 
 export default meta;
 
 const propsCommon = {
-    "className": css({ "height": 64, "paddingRight": (defaultWidth * 2) / 100 }),
-    "logoContainerWidth": (defaultWidth * 4) / 100,
+    "className": css({ "height": 64, "paddingRight": (defaultContainerWidth * 2) / 100 }),
+    "logoContainerWidth": (defaultContainerWidth * 4) / 100,
     ...logCallbacks(["onLogoClick"]),
 };
 

@@ -27,14 +27,14 @@ export function getStoryFactory<Props>(params: {
     doUseLib?: boolean;
     /** https://storybook.js.org/docs/react/essentials/controls */
     argTypes?: Partial<Record<keyof Props, ArgType>>;
-    defaultWidth?: number;
+    defaultContainerWidth?: number;
 }) {
     const {
         sectionName,
         wrappedComponent,
         argTypes = {},
         doUseLib,
-        defaultWidth,
+        defaultContainerWidth,
     } = params;
 
     const Component: React.ComponentType<Props> = Object.entries(wrappedComponent).map(
@@ -78,12 +78,19 @@ export function getStoryFactory<Props>(params: {
     const Template: Story<
         Props & {
             darkMode: boolean;
-            width: number;
+            containerWidth: number;
             chromeFontSize: ChromeFontSize;
             targetWindowInnerWidth: number;
             lng: SupportedLanguage;
         }
-    > = ({ darkMode, width, targetWindowInnerWidth, chromeFontSize, lng, ...props }) => {
+    > = ({
+        darkMode,
+        containerWidth,
+        targetWindowInnerWidth,
+        chromeFontSize,
+        lng,
+        ...props
+    }) => {
         const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
         useEffect(() => {
@@ -127,7 +134,7 @@ export function getStoryFactory<Props>(params: {
                     <ScreenSize />
                     <div
                         style={{
-                            "width": width || undefined,
+                            "width": containerWidth || undefined,
                             "border": "1px dotted grey",
                             "display": "inline-block",
                         }}
@@ -150,7 +157,7 @@ export function getStoryFactory<Props>(params: {
 
         out.args = {
             "darkMode": false,
-            "width": defaultWidth ?? 0,
+            "containerWidth": defaultContainerWidth ?? 0,
             "targetWindowInnerWidth": 0,
             "chromeFontSize": "Medium (Recommended)",
             "lng": id<SupportedLanguage>("en"),
@@ -165,7 +172,7 @@ export function getStoryFactory<Props>(params: {
             "title": `${sectionName}/${symToStr(wrappedComponent)}`,
             "component": Component,
             "argTypes": {
-                "width": {
+                "containerWidth": {
                     "control": {
                         "type": "range",
                         "min": 0,

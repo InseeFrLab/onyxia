@@ -7,7 +7,7 @@ import { css } from "tss-react/@emotion/css";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCard },
-    "defaultWidth": 450,
+    "defaultContainerWidth": 450,
 });
 
 export default meta;
