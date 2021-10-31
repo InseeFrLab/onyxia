@@ -20,7 +20,7 @@ import { FourOhFour } from "app/components/pages/FourOhFour";
 import { Catalog } from "app/components/pages/Catalog";
 import { MyServices } from "app/components/pages/MyServices";
 import { typeGuard } from "tsafe/typeGuard";
-import type { SupportedLanguage } from "app/i18n/resources";
+import type { SupportedLanguage } from "app/i18n/translations";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 //Legacy

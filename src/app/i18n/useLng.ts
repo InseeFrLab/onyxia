@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import type { SupportedLanguage } from "./resources";
+import type { SupportedLanguage } from "./translations";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { id } from "tsafe/id";
 import { createUseGlobalState } from "powerhooks/useGlobalState";

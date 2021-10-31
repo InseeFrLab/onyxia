@@ -17,7 +17,7 @@ import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
 import { LibProvider } from "app/libApi/LibProvider";
 import { I18nProvider } from "app/i18n/I18nProvider";
-import type { SupportedLanguage } from "app/i18n/resources";
+import type { SupportedLanguage } from "app/i18n/translations";
 import { RouteProvider } from "app/routes/router";
 import { useLng } from "app/i18n/useLng";
 

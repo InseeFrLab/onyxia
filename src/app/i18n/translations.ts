@@ -46,6 +46,7 @@ type ToTranslations<S extends Scheme> = {
     [key in keyof S]: string;
 };
 
+// prettier-ignore
 const reflectedI18nSchemes = {
     [symToStr({ MySecrets })]: Reflect<MySecrets.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
@@ -56,8 +57,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ App })]: Reflect<App.I18nScheme>(),
-    [symToStr({ PortraitModeUnsupported })]:
-        Reflect<PortraitModeUnsupported.I18nScheme>(),
+    [symToStr({ PortraitModeUnsupported })]: Reflect<PortraitModeUnsupported.I18nScheme>(),
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
@@ -66,23 +66,19 @@ const reflectedI18nSchemes = {
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
     [symToStr({ AccountIntegrationsTab })]: Reflect<AccountIntegrationsTab.I18nScheme>(),
     [symToStr({ AccountStorageTab })]: Reflect<AccountStorageTab.I18nScheme>(),
-    [symToStr({ AccountUserInterfaceTab })]:
-        Reflect<AccountUserInterfaceTab.I18nScheme>(),
+    [symToStr({ AccountUserInterfaceTab })]: Reflect<AccountUserInterfaceTab.I18nScheme>(),
     [symToStr({ CatalogExplorerCard })]: Reflect<CatalogExplorerCard.I18nScheme>(),
     [symToStr({ CatalogLauncher })]: Reflect<CatalogLauncher.I18nScheme>(),
     [symToStr({ CatalogExplorerCards })]: Reflect<CatalogExplorerCards.I18nScheme>(),
     [symToStr({ Catalog })]: Reflect<Catalog.I18nScheme>(),
     [symToStr({ Footer })]: Reflect<Footer.I18nScheme>(),
-    [symToStr({ CatalogLauncherMainCard })]:
-        Reflect<CatalogLauncherMainCard.I18nScheme>(),
-    [symToStr({ CatalogLauncherConfigurationCard })]:
-        Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherMainCard })]: Reflect<CatalogLauncherMainCard.I18nScheme>(),
+    [symToStr({ CatalogLauncherConfigurationCard })]: Reflect<CatalogLauncherConfigurationCard.I18nScheme>(),
     [symToStr({ MyServices })]: Reflect<MyServices.I18nScheme>(),
     [symToStr({ MyServicesButtonBar })]: Reflect<MyServicesButtonBar.I18nScheme>(),
     [symToStr({ MyServicesCard })]: Reflect<MyServicesCard.I18nScheme>(),
     [symToStr({ MyServicesRunningTime })]: Reflect<MyServicesRunningTime.I18nScheme>(),
-    [symToStr({ MyServicesSavedConfigOptions })]:
-        Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
+    [symToStr({ MyServicesSavedConfigOptions })]: Reflect<MyServicesSavedConfigOptions.I18nScheme>(),
     [symToStr({ MyServicesSavedConfig })]: Reflect<MyServicesSavedConfig.I18nScheme>(),
     [symToStr({ MyServicesSavedConfigs })]: Reflect<MyServicesSavedConfigs.I18nScheme>(),
     [symToStr({ MyServicesCards })]: Reflect<MyServicesCards.I18nScheme>(),

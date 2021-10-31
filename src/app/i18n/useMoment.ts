@@ -3,7 +3,7 @@ import moment from "moment";
 import "moment/locale/fr";
 import { useLng } from "./useLng";
 import { assert } from "tsafe/assert";
-import type { SupportedLanguage } from "./resources";
+import type { SupportedLanguage } from "./translations";
 
 export const { useFormattedDate } = (() => {
     const getFormatByLng = (isSameYear: boolean) => ({
