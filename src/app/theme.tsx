@@ -65,7 +65,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
-import type { SupportedLanguage } from "app/i18n/resources";
+import type { SupportedLanguage } from "app/i18n/translations";
 import { paletteId } from "paletteIdAndTitle";
 
 const { ThemeProvider, useTheme } = createThemeProvider({

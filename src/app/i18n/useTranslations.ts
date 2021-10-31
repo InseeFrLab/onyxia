@@ -1,4 +1,4 @@
-import type { Scheme, I18nSchemes, Translations } from "./resources";
+import type { Scheme, I18nSchemes, Translations } from "./translations";
 import * as reactI18next from "react-i18next";
 import { id } from "tsafe/id";
 
