@@ -1,5 +1,25 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+/*
+This script enable to link the module we develop inhouse ("onyxia-ui", "powerhooks", "tss-react", "evt").
+Without it, if we want for example to add a new component to onyxia-ui we have publish a new version
+before being able to test it in the project. 
+
+To work, you should have the following directory structure
+
+onyxia-web/
+evt/
+tss-react/
+powerhooks/
+onyxia-ui/
+
+you must have cloned all the projects and run:
+yarn && yarn build in every directory.
+
+then after you can
+cd onyxia-web
+yarn link_inhouse_deps
+*/
 import { execSync } from "child_process";
 import { join as pathJoin, relative as pathRelative } from "path";
 import * as fs from "fs";
