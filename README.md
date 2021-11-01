@@ -18,8 +18,10 @@
   <a href="https://github.com/InseeFrLab/onyxia">The Onyxia Project</a>
 </p>
 
-Want to contribute? There is a website to help you get started: [docs.onyxia.dev](https://docs.onyxia.dev)  
-  
+<p align="center">
+    Want to contribute? There is a website to help you get started: [docs.onyxia.dev](https://docs.onyxia.dev)  
+</p> 
+
 To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
 the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-web)
 and creating a GitHub release.
