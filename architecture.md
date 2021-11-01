@@ -28,6 +28,21 @@ We want the search to be restricted to a given GitHub organization. (Example: In
 
 ```yaml
   UI:
+    image:
+      name: inseefrlab/onyxia-web
+      version: 0.15.13
+    env:
+      MINIO_URL: https://minio.lab.sspcloud.fr
+      VAULT_URL: https://vault.lab.sspcloud.fr
+      OIDC_URL: https://auth.lab.sspcloud.fr/auth
+      OIDC_REALM: sspcloud
+      TITLE: SSP Cloud
+      ORG_NAME:
+      
+```
+
+```diff
+  UI:
     replicaCount: 2
     image:
       name: inseefrlab/onyxia-web
@@ -37,7 +52,8 @@ We want the search to be restricted to a given GitHub organization. (Example: In
       VAULT_URL: https://vault.lab.sspcloud.fr
       OIDC_URL: https://auth.lab.sspcloud.fr/auth
       OIDC_REALM: sspcloud
-      TITLE: SSP Clo
+      TITLE: SSP Cloud
+  +   ORG_NAME: InseeFrLab
 ```
 
 If the administrator has't specify any&#x20;
