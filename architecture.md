@@ -24,7 +24,9 @@
 
 Let's say we want to create a new page in onyxia-web where users can type in a repo name and get the current number of stars the repo has on github.&#x20;
 
-We want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environement variable by the person in chage of deploying Onyxia. e.g:
+{% embed url="https://youtu.be/RDxAag3Iq0o" %}
+
+Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environement variable by the person in chage of deploying Onyxia. e.g:
 
 ```yaml
   UI:
@@ -37,23 +39,10 @@ We want the search to be restricted to a given GitHub organization. (Example: In
       OIDC_URL: https://auth.lab.sspcloud.fr/auth
       OIDC_REALM: sspcloud
       TITLE: SSP Cloud
-      ORG_NAME:
+      ORG_NAME: InseeFrLab #<==========
       
 ```
 
-```diff
-  UI:
-    replicaCount: 2
-    image:
-      name: inseefrlab/onyxia-web
-      version: 0.15.13
-    env:
-      MINIO_URL: https://minio.lab.sspcloud.fr
-      VAULT_URL: https://vault.lab.sspcloud.fr
-      OIDC_URL: https://auth.lab.sspcloud.fr/auth
-      OIDC_REALM: sspcloud
-      TITLE: SSP Cloud
-  +   ORG_NAME: InseeFrLab
-```
+If no ORG\_NAME is provided by the administrator the app should always show 999 stars for any repo.
 
-If the administrator has't specify any&#x20;
+TODO: Insert video
