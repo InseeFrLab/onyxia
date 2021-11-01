@@ -12,7 +12,9 @@
 </p>
 <p align="center">
   <a href="https://docs.onyxia.dev">Documentation</a>
+    -
   <a href="https://datalab.sspcloud.fr">The app live</a>
+    -
   <a href="https://github.com/InseeFrLab/onyxia">The Onyxia Project</a>
 </p>
 
