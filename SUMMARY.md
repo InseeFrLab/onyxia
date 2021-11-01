@@ -2,4 +2,4 @@
 
 * [🚀 Quick start](README.md)
 * [🕸 Dependencies](dependencies.md)
-* [CI/CD](ci-cd.md)
+* [📐 Architecture](architecture.md)
