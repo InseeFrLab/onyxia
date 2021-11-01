@@ -2,28 +2,23 @@
 
 ## Main rules
 
-* ``[`src/app`](https://github.com/InseeFrLab/onyxia-web/tree/main/src/app) contains the React application, it's the UI of the app.
-  * All the import of src/lib should be made in [`src/app/libApi`](https://github.com/InseeFrLab/onyxia-web/tree/main/src/app/libApi).&#x20;
-* ``[`src/lib`](https://github.com/InseeFrLab/onyxia-web/tree/main/src/lib) containse the 🧠 of the app.
-  * Nothing in the `src/lib` directory should make any reference to React at all. A concept like react hooks for example is ouf of scope for the src/lib directory.&#x20;
-  * `src/lib` should never import anything from src/app, even type.&#x20;
-  * It should be possible for example to port onyxia-web to Vue.js or React Native without changing anything to the src/lib directory.
-  * The goal of `src/lib` is to expose an API that make it realy easy to build a user interface around it.
-  * The API exposed should be reactive. We should not expose to the UI functions that returns promise instead the function we expose should update states and the UI should react to thoes states update.
+* src/app contains the React application, it's the UI of the app.
+  * All the import of src/lib should be made in src/app/libApi. ( It's possible to import type anywhere though).
+*   src/lib containse the 🧠 of the app.
 
-{% hint style="warning" %}
-The src/js directory is legacy. It will be removed soon.
-{% endhint %}
+    * Nothing in the src/lib directory should make any reference to React at all. A concept like react hooks for example is ouf of scope for the src/lib directory.&#x20;
+    * src/lib should never import anything from src/app, even type.&#x20;
+    * It should be possible for example to port onyxia-web to Vue.js or React Native without changing anything to the src/lib directory.
+    * The goal of src/lib is to expose an API that make it realy easy to build a user interface around it.
+    * The API exposed should be reactive. We should not expose to the UI functions that returns promise instead the function we expose should update states and the UI should react to thoes states update.
 
-## Clean Archi
 
-* Whenever we need to interact with the infrastructure we define a port in [`src/lib/port`](https://github.com/InseeFrLab/onyxia-web/tree/main/src/lib/ports). A port is only a type definition. In our case the infrastructure is the Keycloak server, the Vault server, the Minio server the and Kubernetes API (Onyxia-API).
-* In [`src/lib/secondaryAdapter`](https://github.com/InseeFrLab/onyxia-web/tree/main/src/lib/secondaryAdapters) are the implementation of the ports. For each port we should have at least two implementation a dummy and a real one. It enabled the app to still run, be it in degrated mode, if one peace of the infrastructure is missing. Say we don'y have a Vault server for example we should still be able to launch containers.&#x20;
-* In [src/lib/useCase](https://github.com/InseeFrLab/onyxia-web/tree/main/src/lib/useCases) we expose APIs for the UI to consume.
 
-{% hint style="info" %}
-You might be surprised not to find a port for S3. It's because handled by the legacy code (src/js)
-{% endhint %}
+## Clean architecture principles
+
+* Whenever we need to interact with the infrastructure we define a port /src/lib/port. A port is only a type definition. In our case the infrastructure is the Keycloak server, the Vault server, the Minio server the and Kubernetes API (Onyxia-API).
+* In src/lib/secondaryAdapter are the implementation of the ports. For each port we should have at least two implementation a dummy and a real one. It enabled the app to still run, be it in degrated mode, if one peace of the infrastructure is missing. Say we don'y have a Vault server for example we should still be able to launch containers.&#x20;
+* In src/lib/useCase we expose APIs for the UI to consume.
 
 ## In practice
 
@@ -51,9 +46,3 @@ Now let's say we want the search to be restricted to a given GitHub organization
 If no ORG\_NAME is provided by the administrator the app should always show 999 stars for any repo.
 
 TODO: Insert video
-
-## Another example: Recording user's GitLab token
-
-Currently users can save their GitHub Personal access token in their Onyxia account but not yet their GitLab token. Let's see how we would implement that.
-
-{% embed url="https://www.youtube.com/watch?v=WVFKCR1QfVk" %}

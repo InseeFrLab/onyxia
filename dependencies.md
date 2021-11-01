@@ -26,14 +26,6 @@ We also heavily rely on [tsafe](https://github.com/garronej/tsafe). It's a colle
 
 We try, whenever we see an opportunity for it, to publish as standalone NPM module chunks of the code we write for Onyxia-web. It help gets the complexity in check. We use TS-CI as a starter for everything we publish on NPM.
 
-EVT is an event management library (like [RxJS ](https://rxjs.dev)is).
-
-A lot of the things we do is powered under the hood by EVT. You don't need to know EVT to work on onyxia-web however, in order to demystify the parts of the codes that involve it, here are the key ideas to take away:
-
-* If we need to perform particular actions when a value gets changed, we use[`StatefullEvt`](https://docs.evt.land/api/statefulevt).
-* We use `Ctx`to detaches event handlers when we no longer need them. (See line 108 on [this playground](https://stackblitz.com/edit/evt-playground?embed=1\&file=index.ts\&hideExplorer=1))
-* In React, we use the [useEvt](https://docs.evt.land/react-hooks) hook to work with DOM events.
-
 ## For working on what the end user 👁
 
 Anything contained in the [src/app](https://github.com/InseeFrLab/onyxia-web/tree/main/src/app) directory.
@@ -237,3 +229,11 @@ It's toolset for redux. No need to dig too deep. Getting familiar with the core 
 ### EVT [🐔](https://apps.timwhitlock.info/emoji/tables/unicode#emoji-modal)
 
 {% embed url="https://www.evt.land" %}
+
+EVT is an event management library (like [RxJS ](https://rxjs.dev)is).
+
+A lot of the things we do is powered under the hood by EVT. You don't need to know EVT to work on onyxia-web however, in order to demystify the parts of the codes that involve it, here are the key ideas to take away:
+
+* If we need to perform particular actions when a value gets changed, we use[`StatefullEvt`](https://docs.evt.land/api/statefulevt).
+* We use `Ctx`to detaches event handlers when we no longer need them. (See line 108 on [this playground](https://stackblitz.com/edit/evt-playground?embed=1\&file=index.ts\&hideExplorer=1))
+* In React, we use the [useEvt](https://docs.evt.land/react-hooks) hook to work with DOM events.
