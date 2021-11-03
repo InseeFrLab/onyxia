@@ -37,6 +37,8 @@ import { MyServicesSavedConfigs } from "app/components/pages/MyServices/MyServic
 import { MyServicesCards } from "app/components/pages/MyServices/MyServicesCards";
 import { LoginDivider } from "app/components/KcApp/Login/LoginDivider";
 import { Login } from "app/components/KcApp/Login";
+import type { KcLanguageTag } from "keycloakify";
+import { assert } from "tsafe/assert";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -93,6 +95,8 @@ export type Translations = {
 };
 
 export type SupportedLanguage = "en" | "fr";
+
+assert<SupportedLanguage extends KcLanguageTag ? true : false>();
 
 const common = id<
     Record<
