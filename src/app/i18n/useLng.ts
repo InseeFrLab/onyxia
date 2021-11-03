@@ -1,20 +1,26 @@
-import i18n from "i18next";
 import type { SupportedLanguage } from "./translations";
-import LanguageDetector from "i18next-browser-languagedetector";
-import { id } from "tsafe/id";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { getEvtKcLanguage } from "keycloakify";
+import { assert } from "tsafe/assert";
+import type { Equals } from "tsafe";
 
-export const { useLng, evtLng } = createUseGlobalState("lng", () => {
-    i18n.use(LanguageDetector).init({
-        "fallbackLng": id<SupportedLanguage>("en"),
-        "resources": id<Record<SupportedLanguage, {}>>({
-            "en": {},
-            "fr": {},
-        }),
-    });
+const supportedLanguage = ["en", "fr"] as const;
 
-    return i18n.language.split("-")[0] as SupportedLanguage;
+assert<Equals<SupportedLanguage, typeof supportedLanguage[number]>>();
+
+export const { useLng, evtLng } = createUseGlobalState("lng", (): SupportedLanguage => {
+    const iso2LanguageLike = navigator.language.split("-")[0].toLowerCase();
+
+    const lng = supportedLanguage.find(lng =>
+        lng.toLowerCase().includes(iso2LanguageLike),
+    );
+
+    if (lng !== undefined) {
+        return lng;
+    }
+
+    return "en";
 });
 
+//NOTE: When we change langue in the main APP we change as well for the login pages
 evtLng.attach(lng => (getEvtKcLanguage().state = lng));
