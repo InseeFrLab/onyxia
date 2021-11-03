@@ -63,6 +63,12 @@ export declare namespace UserApiClientConfig {
     };
 }
 
+// All these assert<Equals<...>> is just to help visualize what the type
+// actually is. It's hard to tell just at looking at the definition
+// with all these Omit, Pick Param0<typeof ...>.
+// It could have been just a comment but comment lies. Instead here
+// we are forced if we update the types to update the asserts statement
+// or else we get red squiggly lines.
 assert<
     Equals<
         UserApiClientConfig,
