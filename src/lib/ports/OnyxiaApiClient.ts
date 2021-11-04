@@ -2,9 +2,11 @@ export type Get_Public_Configuration = {
     regions: {
         id: string;
         services: {
+            defaultConfiguration?: {
+                ipprotection?: boolean;
+                networkPolicy?: boolean;
+            };
             namespacePrefix: string;
-            ipprotection?: boolean;
-            networkPolicy?: boolean;
         };
         data: {
             S3: {
