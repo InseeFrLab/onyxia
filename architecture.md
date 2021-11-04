@@ -34,11 +34,16 @@ Let's say we want to create a new page in onyxia-web where users can type in a r
 {% hint style="info" %}
 You might wonder why some values, instead of being state are returned by thunks. &#x20;
 
-For example it might more natural to do: &#x20;
+For example, it might more natural to do: &#x20;
 
 ```tsx
-userAuthentication
+const { isUserLoggedIn } = useSelector(state => state.userAuthentication);
+
 ```
+
+Instead of how we actually do it: &#x20;
+
+
 {% endhint %}
 
 Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environnement variable by the person in charge of deploying Onyxia. e.g:
