@@ -31,6 +31,26 @@ Let's say we want to create a new page in onyxia-web where users can type in a r
 
 {% embed url="https://youtu.be/RDxAag3Iq0o" %}
 
+Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environnement variable by the person in charge of deploying Onyxia. e.g:
+
+```yaml
+  UI:
+    image:
+      name: inseefrlab/onyxia-web
+      version: 0.15.13
+    env:
+      MINIO_URL: https://minio.lab.sspcloud.fr
+      VAULT_URL: https://vault.lab.sspcloud.fr
+      OIDC_URL: https://auth.lab.sspcloud.fr/auth
+      OIDC_REALM: sspcloud
+      TITLE: SSP Cloud
+      ORG_NAME: InseeFrLab #<==========
+      
+```
+
+If no ORG\_NAME is provided by the administrator the app should always show 999 stars for any repo.
+
+{% embed url="https://youtu.be/eaU-tYFzWwA" %}
 
 ## Another example: Recording user's GitLab token
 
