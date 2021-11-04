@@ -43,6 +43,8 @@ const { isUserLoggedIn } = useSelector(state => state.userAuthentication);
 
 Instead of how we actually do it: &#x20;
 
+\`\`\`
+
 
 {% endhint %}
 
