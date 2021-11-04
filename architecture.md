@@ -32,23 +32,29 @@ Let's say we want to create a new page in onyxia-web where users can type in a r
 {% embed url="https://youtu.be/RDxAag3Iq0o" %}
 
 {% hint style="info" %}
-You might wonder why some values, instead of being state are returned by thunks. &#x20;
+You might wonder why some values, instead of being redux state, are returned by thunks functions. &#x20;
 
-For example, it might more natural to do: &#x20;
+For example, it might seem more natural to do: &#x20;
 
 ```tsx
 const { isUserLoggedIn } = useSelector(state => state.userAuthentication);
-
 ```
 
-Instead of how we actually do it: &#x20;
+Instead of what we actually do, which is: &#x20;
 
-\`\`\`
+```tsx
+const { userAuthenticationThunks } = useThunks();
+const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+```
 
+However the rule is to never store as a redux state, values that are not susceptible to change. Redux states are values that we observe, any redux state changes should trigger a re-render of the React components that uses them. Conversely, there is no need to observe a value that will never change. We can get it once and never again, get it in a callback or wherever.&#x20;
 
+But, you may object, users do login and logout, `isUserLoggedIn` is not a constant!&#x20;
+
+Actually, from the standpoint of the web app, it is. When a user that isn't authenticated click on the login button, it is being redirected away. When he returns to the app everything is reloaded from scratch.
 {% endhint %}
 
-Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environnement variable by the person in charge of deploying Onyxia. e.g:
+Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab.) The GitHub organization should be specified as an environment variable by the person in charge of deploying Onyxia. e.g.:
 
 ```yaml
   UI:
@@ -65,7 +71,7 @@ Now let's say we want the search to be restricted to a given GitHub organization
       
 ```
 
-If no ORG\_NAME is provided by the administrator the app should always show 999 stars for any repo.
+If no `ORG_NAME` is provided by the administrator, the app should always show 999 stars for any repo name queried.
 
 {% embed url="https://youtu.be/eaU-tYFzWwA" %}
 
