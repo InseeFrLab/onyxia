@@ -1,3 +1,11 @@
+### **0.15.16** (2021-11-04)  
+  
+- Fix language auto detection  
+- Add comment to explains assert<Equals<...>> in setup.ts  
+- Doc: explain what link_inhouse_deps script is  
+- Doc: update doc about config-overrides.js  
+- Doc: Explain what config-overrides.js is    
+  
 ### **0.15.15** (2021-10-31)  
   
 - Stories: rename width -> containerWidth    
