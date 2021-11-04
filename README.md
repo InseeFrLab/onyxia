@@ -9,17 +9,12 @@
     <img src="https://img.shields.io/npm/l/onyxia-ui">
 </p>
 
-</p>
 <p align="center">
-  <a href="https://docs.onyxia.dev">Documentation</a>
-    -
-  <a href="https://datalab.sspcloud.fr">The app live</a>
-    -
-  <a href="https://github.com/InseeFrLab/onyxia">The Onyxia Project</a>
-</p>
-
-<p align="center">
-    Want to contribute? There is a website to help you get started: <a href="https://docs.onyxia.dev">docs.onyxia.dev</a>
+    <b>Don't know Onyxia yet?</b> <a href="https://github.com/InseeFrLab/onyxia">Learn about the project</a>
+    <br>
+    <b>Want to see the app live?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
+    <br>
+    <b>New contributor?</b> <a href="https://docs.onyxia.dev">docs.onyxia.dev</a>
 </p> 
 
 To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
