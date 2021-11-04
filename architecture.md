@@ -31,6 +31,16 @@ Let's say we want to create a new page in onyxia-web where users can type in a r
 
 {% embed url="https://youtu.be/RDxAag3Iq0o" %}
 
+{% hint style="info" %}
+You might wonder why some values, instead of being state are returned by thunks. &#x20;
+
+For example it might more natural to do: &#x20;
+
+```tsx
+userAuthentication
+```
+{% endhint %}
+
 Now let's say we want the search to be restricted to a given GitHub organization. (Example: InseeFrLab). The github organization should be specified as an environnement variable by the person in charge of deploying Onyxia. e.g:
 
 ```yaml
