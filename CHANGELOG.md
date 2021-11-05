@@ -1,3 +1,7 @@
+### **0.15.18** (2021-11-05)  
+  
+- Refactor interface with Onyxia API    
+  
 ### **0.15.17** (2021-11-05)  
   
 - Update README.md  
