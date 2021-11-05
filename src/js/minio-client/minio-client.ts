@@ -19,7 +19,7 @@ const fetchMinioToken = async () => {
 
     const url = `${
         getValidatedEnv().MINIO.BASE_URI
-    }?Action=AssumeRoleWithClientGrants&Token=${oidcAccessToken}&DurationSeconds=43200&Version=2011-06-15`;
+    }?Action=AssumeRoleWithClientGrants&Token=${oidcAccessToken}&DurationSeconds=604800&Version=2011-06-15`;
     const minioResponse = await axios.post(url);
 
     assert(!!minioResponse.data);
