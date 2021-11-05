@@ -12,7 +12,7 @@
 <p align="center">
     <b>Don't know Onyxia yet?</b> <a href="https://github.com/InseeFrLab/onyxia">Learn about the project</a>
     <br>
-    <b>Want to see the app live?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
+    <b>Want to see the app live?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
     <br>
     <b>New contributor?</b> <a href="https://docs.onyxia.dev">docs.onyxia.dev</a>
 </p> 
