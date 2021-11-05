@@ -1,3 +1,8 @@
+### **0.15.17** (2021-11-05)  
+  
+- Update README.md  
+- Fix ipprotection and network policies yet again    
+  
 ### **0.15.16** (2021-11-04)  
   
 - Fix language auto detection  
