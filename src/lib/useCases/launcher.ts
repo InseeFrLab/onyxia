@@ -7,21 +7,24 @@ import { assert } from "tsafe/assert";
 import { pure as secretExplorerPure } from "./secretExplorer";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
-import { Get_Public_Catalog_CatalogId_PackageName } from "../ports/OnyxiaApiClient";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
 import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import type { Contract, MustacheParams } from "lib/ports/OnyxiaApiClient";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { getMinioToken } from "js/minio-client/minio-client";
-import { Put_MyLab_App } from "../ports/OnyxiaApiClient";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
 import { getEnv } from "env";
+import type {
+    JSONSchemaObject,
+    JSONSchemaFormFieldDescription,
+} from "app/tools/types/JSONSchemaObject";
 
 export const name = "launcher";
 
@@ -126,7 +129,7 @@ export declare namespace LauncherState {
             }[];
             defaultFormFieldsValue: FormFieldValue[];
             dependencies?: string[];
-            config: Get_Public_Catalog_CatalogId_PackageName["config"];
+            config: JSONSchemaObject;
         };
         launchState: "not launching" | "launching" | "launched";
     };
@@ -430,7 +433,7 @@ const privateThunks = {
     "launchOrPreviewContract":
         (params: {
             isForContractPreview: boolean;
-        }): ThunkAction<Promise<{ contract: Put_MyLab_App }>> =>
+        }): ThunkAction<Promise<{ contract: Contract }>> =>
         async (...args) => {
             const { isForContractPreview } = params;
 
@@ -500,7 +503,7 @@ export const thunks = {
                     [];
 
                 (function callee(params: {
-                    jsonSchemaObject: Get_Public_Catalog_CatalogId_PackageName.JSONSchemaObject;
+                    jsonSchemaObject: JSONSchemaObject;
                     currentPath: string[];
                 }): void {
                     const {
@@ -543,7 +546,7 @@ export const thunks = {
                                     };
 
                                     const getDefaultValue = <
-                                        T extends Get_Public_Catalog_CatalogId_PackageName.JSONSchemaFormFieldDescription,
+                                        T extends JSONSchemaFormFieldDescription,
                                     >(
                                         jsonSchemaFormFieldDescription: T,
                                     ): NonNullable<
@@ -853,7 +856,7 @@ export const thunks = {
                                         ({ name }) => name === packageName,
                                     )!.icon,
                         ),
-                    "sources": sources ?? [],
+                    sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
@@ -876,13 +879,12 @@ export const thunks = {
             }),
         );
     },
-    "getContract":
-        (): ThunkAction<Promise<{ contract: Put_MyLab_App }>> => async dispatch =>
-            dispatch(
-                privateThunks.launchOrPreviewContract({
-                    "isForContractPreview": true,
-                }),
-            ),
+    "getContract": (): ThunkAction<Promise<{ contract: Contract }>> => async dispatch =>
+        dispatch(
+            privateThunks.launchOrPreviewContract({
+                "isForContractPreview": true,
+            }),
+        ),
     "changeFriendlyName":
         (friendlyName: string): ThunkAction<void> =>
         dispatch =>
@@ -933,9 +935,7 @@ export const thunks = {
      *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getMustacheParams":
-        (): ThunkAction<
-            Promise<Get_Public_Catalog_CatalogId_PackageName.MustacheParams>
-        > =>
+        (): ThunkAction<Promise<MustacheParams>> =>
         async (...args) => {
             const [dispatch, getState, { createStoreParams }] = args;
 

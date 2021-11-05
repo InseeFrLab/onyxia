@@ -2,16 +2,6 @@ import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
-import type {
-    Get_Public_Configuration,
-    Get_Public_Catalog,
-    Get_Public_Catalog_CatalogId_PackageName,
-    Get_MyLab_Services,
-    Put_MyLab_App,
-    Get_MyLab_App,
-    Get_Public_Ip,
-    Get_User_Info,
-} from "lib/ports/OnyxiaApiClient";
 import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
@@ -21,6 +11,7 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in app/libApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
+import type { JSONSchemaObject } from "app/tools/types/JSONSchemaObject";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -120,11 +111,29 @@ export function createOfficialOnyxiaApiClient(params: {
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getIp": memoize(() =>
-            axiosInstance.get<Get_Public_Ip>("/public/ip").then(({ data }) => data.ip),
+            axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip),
         ),
         "getAvailableRegions": memoize(() =>
             axiosInstance
-                .get<Get_Public_Configuration>("/public/configuration")
+                .get<{
+                    regions: {
+                        id: string;
+                        services: {
+                            defaultConfiguration?: {
+                                ipprotection?: boolean;
+                                networkPolicy?: boolean;
+                            };
+                            namespacePrefix: string;
+                        };
+                        data: {
+                            S3: {
+                                monitoring?: {
+                                    URLPattern: string;
+                                };
+                            };
+                        };
+                    }[];
+                }>("/public/configuration")
                 .then(({ data }) =>
                     data.regions.map(region => ({
                         "id": region.id,
@@ -140,7 +149,20 @@ export function createOfficialOnyxiaApiClient(params: {
         "getCatalogs": memoize(
             () =>
                 axiosInstance
-                    .get<Get_Public_Catalog>("/public/catalog")
+                    .get<{
+                        catalogs: {
+                            id: string;
+                            location: string;
+                            catalog: {
+                                packages: {
+                                    description: string;
+                                    icon?: string;
+                                    name: string;
+                                    home?: string;
+                                }[];
+                            };
+                        }[];
+                    }>("/public/catalog")
                     .then(({ data }) => data.catalogs),
             { "promise": true },
         ),
@@ -149,12 +171,17 @@ export function createOfficialOnyxiaApiClient(params: {
             packageName,
         }) =>
             axiosInstance
-                .get<Get_Public_Catalog_CatalogId_PackageName>(
-                    `/public/catalog/${catalogId}/${packageName}`,
-                )
+                .get<{
+                    config: JSONSchemaObject;
+                    sources?: string[];
+                    dependencies?: {
+                        enabled: boolean;
+                        name: string;
+                    }[];
+                }>(`/public/catalog/${catalogId}/${packageName}`)
                 .then(({ data }) => ({
                     "dependencies": data.dependencies ?? [],
-                    "sources": data.sources,
+                    "sources": data.sources ?? [],
                     "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({
                         mustacheParams,
                     }) =>
@@ -164,49 +191,55 @@ export function createOfficialOnyxiaApiClient(params: {
                 })),
         ...(() => {
             const getMyLab_App = (params: { serviceId: string }) =>
-                axiosInstance
-                    .get<Get_MyLab_App>("/my-lab/app", { params })
-                    .then(({ data }) => data);
+                axiosInstance.get("/my-lab/app", { params });
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
-                ({ catalogId, packageName, options, isDryRun }) => {
+                async ({ catalogId, packageName, options, isDryRun }) => {
                     const serviceId = `${packageName}-${Math.floor(
                         Math.random() * 1000000,
                     )}`;
 
-                    return axiosInstance
-                        .put<Put_MyLab_App>(`/my-lab/app`, {
-                            catalogId,
-                            packageName,
-                            "name": serviceId,
-                            options,
-                            "dryRun": isDryRun,
-                        })
-                        .then(async ({ data: contract }) => {
-                            while (true) {
-                                try {
-                                    await getMyLab_App({ serviceId });
-                                    break;
-                                } catch {
-                                    await new Promise(resolve =>
-                                        setTimeout(resolve, 1000),
-                                    );
-                                }
-                            }
+                    const { data: contract } = await axiosInstance.put<
+                        Record<string, unknown>[][]
+                    >(`/my-lab/app`, {
+                        catalogId,
+                        packageName,
+                        "name": serviceId,
+                        options,
+                        "dryRun": isDryRun,
+                    });
 
-                            return { contract };
-                        });
+                    while (true) {
+                        try {
+                            await getMyLab_App({ serviceId });
+                            break;
+                        } catch {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                    }
+
+                    return { contract };
                 },
             );
 
             return { launchPackage };
         })(),
         ...(() => {
+            type T = {
+                apps: {
+                    id: string;
+                    urls: string[];
+                    env: Record<string, string>;
+                    startedAt: number;
+                    tasks: {
+                        containers: { ready: boolean }[];
+                    }[];
+                    postInstallInstructions: string | undefined;
+                }[];
+            };
+
             const getMyLab_Services = memoize(
-                () =>
-                    axiosInstance
-                        .get<Get_MyLab_Services>("/my-lab/services")
-                        .then(({ data }) => data),
+                () => axiosInstance.get<T>("/my-lab/services").then(({ data }) => data),
                 { "promise": true, "maxAge": 1000 },
             );
 
@@ -216,7 +249,7 @@ export function createOfficialOnyxiaApiClient(params: {
             };
 
             function getPodsStatus(params: {
-                tasks: Get_MyLab_Services["apps"][number]["tasks"];
+                tasks: T["apps"][number]["tasks"];
                 /** For debug */
                 id?: string;
             }): PodsStatus | undefined {
@@ -339,7 +372,12 @@ export function createOfficialOnyxiaApiClient(params: {
                 }),
         "getUserProjects": () =>
             axiosInstance
-                .get<Get_User_Info>("/user/info")
+                .get<{
+                    projects: {
+                        id: string;
+                        name: string;
+                    }[];
+                }>("/user/info")
                 .then(({ data }) => data.projects),
     };
 
