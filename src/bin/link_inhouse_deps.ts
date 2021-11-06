@@ -5,20 +5,36 @@ This script enable to link the module we develop inhouse ("onyxia-ui", "powerhoo
 Without it, if we want for example to add a new component to onyxia-ui we have publish a new version
 before being able to test it in the project. 
 
-To work, you should have the following directory structure
+By default the script will link all the libraries we have control over, 
+so, if you like to link them all, you should have the following directory structure
 
 onyxia-web/
-evt/
 tss-react/
 powerhooks/
 onyxia-ui/
+keycloakify/
+evt/
+react-envs/
+tsafe/
 
 you must have cloned all the projects and run:
-yarn && yarn build in every directory.
+yarn && yarn build 
+in every directory.
 
 then after you can
 cd onyxia-web
 yarn link_inhouse_deps
+
+If you only want to link some specific package you can do, for example:
+yarn link_inhouse_deps onyxia-ui tss-react
+
+When you change what's linked it is a good idea to first:
+rm -rf node_modules .yarn_home
+yarn
+
+In the repo you are working on (for example onyxia-ui) you probably want to run
+npx tsc -w
+to enable realtime compilation. 
 */
 import { execSync } from "child_process";
 import { join as pathJoin, relative as pathRelative } from "path";
@@ -26,9 +42,34 @@ import * as fs from "fs";
 
 const webAppProjectRootDirPath = pathJoin(__dirname, "..", "..");
 
+const inHouseModulePeerDepNames = ["powerhooks", "tss-react"];
+
+const inHouseModuleNames = (() => {
+    const inHouseModuleNamesFromArgv = process.argv.slice(2);
+
+    return inHouseModuleNamesFromArgv.length !== 0
+        ? inHouseModuleNamesFromArgv
+        : [
+              ...inHouseModulePeerDepNames,
+              "onyxia-ui",
+              "keycloakify",
+              "evt",
+              "tsafe",
+              "react-envs",
+          ];
+})();
+
+console.log(`Linking following modules: ${inHouseModuleNames.join(" ")}`);
+
 const commonThirdPartyDeps = (() => {
     const namespaceModuleNames = ["@emotion", "@mui"];
-    const standaloneModuleNames = ["react", "@types/react"];
+    const standaloneModuleNames = [
+        "react",
+        "@types/react",
+        ...inHouseModulePeerDepNames.filter(
+            moduleName => !inHouseModuleNames.includes(moduleName),
+        ),
+    ];
 
     return [
         ...namespaceModuleNames
@@ -71,8 +112,6 @@ const execYarnLink = (params: { targetModuleName?: string; cwd: string }) => {
         },
     });
 };
-
-const inHouseModuleNames = ["onyxia-ui", "powerhooks", "tss-react", "evt"];
 
 console.log("=== Linking common dependencies ===");
 
