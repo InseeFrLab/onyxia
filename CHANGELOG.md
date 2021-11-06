@@ -1,3 +1,8 @@
+### **0.15.19** (2021-11-06)  
+  
+- Update package.json  
+- increase minio token lifespan to 7 days    
+  
 ### **0.15.18** (2021-11-05)  
   
 - Refactor interface with Onyxia API    
