@@ -37,7 +37,7 @@ export const RegisterUserProfile = memo(
             [cx, css],
         );
 
-        const { t } = useTranslation("Register");
+        const { t } = useTranslation("RegisterUserProfile");
 
         const redirectToLogin = useConstCallback(
             () => (window.location.href = url.loginUrl),
@@ -370,6 +370,17 @@ export const RegisterUserProfile = memo(
         );
     },
 );
+
+export declare namespace RegisterUserProfile {
+    export type I18nScheme = {
+        "allowed email domains": undefined;
+        "minimum length": { n: string };
+        "must be different from username": undefined;
+        "password mismatch": undefined;
+        "go back": undefined;
+        "form not filled properly yet": undefined;
+    };
+}
 
 const { getHardCodedFieldWeight } = (() => {
     const orderedFields = [
