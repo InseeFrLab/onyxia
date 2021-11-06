@@ -14,6 +14,7 @@ import { FourOhFour } from "app/components/pages/FourOhFour";
 import { PortraitModeUnsupported } from "app/components/pages/PortraitModeUnsupported";
 import { Home } from "app/components/pages/Home";
 import { Register } from "app/components/KcApp/Register";
+import { RegisterUserProfile } from "app/components/KcApp/RegisterUserProfile";
 import { AccountField } from "app/components/pages/Account/AccountField";
 import { Account } from "app/components/pages/Account/Account";
 import { AccountInfoTab } from "app/components/pages/Account/tabs/AccountInfoTab";
@@ -63,6 +64,7 @@ const reflectedI18nSchemes = {
     [symToStr({ FourOhFour })]: Reflect<FourOhFour.I18nScheme>(),
     [symToStr({ Home })]: Reflect<Home.I18nScheme>(),
     [symToStr({ Register })]: Reflect<Register.I18nScheme>(),
+    [symToStr({ RegisterUserProfile })]: Reflect<RegisterUserProfile.I18nScheme>(),
     [symToStr({ AccountField })]: Reflect<AccountField.I18nScheme>(),
     [symToStr({ Account })]: Reflect<Account.I18nScheme>(),
     [symToStr({ AccountInfoTab })]: Reflect<AccountInfoTab.I18nScheme>(),
@@ -222,6 +224,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "alphanumerical chars only": "Only alphanumerical characters",
             "username question mark helper text":
                 "No spaces or special characters (#,*,é,...)",
+            "minimum length": "Minimum length: {{n}}",
+            "must be different from username": "Pass can't be the username",
+            "password mismatch": "Passwords mismatch",
+            "go back": "Go back",
+            "form not filled properly yet":
+                "Please make sure the form is properly filled out",
+        },
+        "RegisterUserProfile": {
+            "allowed email domains": "Allowed domains",
             "minimum length": "Minimum length: {{n}}",
             "must be different from username": "Pass can't be the username",
             "password mismatch": "Passwords mismatch",
@@ -528,6 +539,15 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "alphanumerical chars only": "Caractère alphanumérique uniquement",
             "username question mark helper text":
                 "Pas d'espace ni de caractères spéciaux (#,*,é, ect)",
+            "minimum length": "Longueur minimum {{n}}",
+            "must be different from username": "Ne peut pas être le nom d'utilisateur",
+            "password mismatch": "Les deux mots de passe ne correspondent pas",
+            "go back": "Retour",
+            "form not filled properly yet":
+                "Veuillez vérifier que vous avez bien rempli le formulaire",
+        },
+        "RegisterUserProfile": {
+            "allowed email domains": "Domaines autorisés",
             "minimum length": "Longueur minimum {{n}}",
             "must be different from username": "Ne peut pas être le nom d'utilisateur",
             "password mismatch": "Les deux mots de passe ne correspondent pas",
