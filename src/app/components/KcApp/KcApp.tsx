@@ -14,7 +14,7 @@ import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail";
 import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConfirm";
 import { LoginUpdateProfile } from "./LoginUpdateProfile";
-import { RegisterUserProfile } from "keycloakify/lib/components/RegisterUserProfile";
+import { RegisterUserProfile } from "./RegisterUserProfile";
 import { getBrowser } from "app/tools/getBrowser";
 import type { KcContext } from "./kcContext";
 
@@ -34,22 +34,25 @@ const useStyles = makeStyles()(theme => ({
                 theme.isDarkModeEnabled
                     ? onyxiaNeumorphismDarkModeUrl
                     : onyxiaNeumorphismLightModeUrl
-            }) no-repeat center center fixed !important`,
+            }) no-repeat center center fixed`,
             "fontFamily": theme.typography.fontFamily,
         },
-        "background": `${theme.colors.useCases.surfaces.background} !important`,
+        "background": `${theme.colors.useCases.surfaces.background}`,
         "& a": {
-            "color": `${theme.colors.useCases.typography.textFocus} !important`,
+            "color": `${theme.colors.useCases.typography.textFocus}`,
         },
         "& #kc-current-locale-link": {
-            "color": `${theme.colors.palette.light.greyVariant3} !important`,
+            "color": `${theme.colors.palette.light.greyVariant3}`,
         },
         "& label": {
             "fontSize": 14,
             "color": theme.colors.palette.light.greyVariant3,
             "fontWeight": "normal",
         },
-        "& #kc-page-title": theme.typography.variants["page heading"].style,
+        "& #kc-page-title": {
+            ...theme.typography.variants["page heading"].style,
+            "color": theme.colors.palette.dark.main,
+        },
         "& #kc-header-wrapper": {
             "visibility": "hidden",
         },
@@ -58,22 +61,22 @@ const useStyles = makeStyles()(theme => ({
         "borderRadius": 10,
     },
     "kcButtonPrimaryClass": {
-        "backgroundColor": "unset !important",
-        "backgroundImage": "unset !important",
-        "borderColor": `${theme.colors.useCases.typography.textFocus} !important`,
-        "borderWidth": "2px !important",
-        "borderRadius": `20px !important`,
-        "color": `${theme.colors.useCases.typography.textFocus} !important`,
+        "backgroundColor": "unset",
+        "backgroundImage": "unset",
+        "borderColor": `${theme.colors.useCases.typography.textFocus}`,
+        "borderWidth": "2px",
+        "borderRadius": `20px`,
+        "color": `${theme.colors.useCases.typography.textFocus}`,
         "textTransform": "uppercase",
     },
     "kcInputClass": {
-        "borderRadius": "unset !important",
-        "border": "unset !important",
-        "boxShadow": "unset !important",
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary} !important`,
+        "borderRadius": "unset",
+        "border": "unset",
+        "boxShadow": "unset",
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "&:focus": {
-            "borderColor": `unset !important`,
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus} !important`,
+            "borderColor": "unset",
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus}`,
         },
     },
 }));

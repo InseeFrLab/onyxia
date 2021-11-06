@@ -17,7 +17,7 @@ import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMo
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
-import { appendHead } from "keycloakify/lib/tools/appendHead";
+import { headInsert } from "keycloakify/lib/tools/headInsert";
 import { join as pathJoin } from "path";
 import type { KcContext } from "./kcContext";
 
@@ -144,9 +144,10 @@ export const Template = memo((props: TemplateProps) => {
                     pathJoin(kcContext.url.resourcesPath, relativePath),
                 ),
             ].map(href =>
-                appendHead({
+                headInsert({
                     "type": "css",
                     href,
+                    "position": "prepend",
                 }),
             ),
         ).then(() => {
@@ -158,7 +159,7 @@ export const Template = memo((props: TemplateProps) => {
         });
 
         toArr(props.scripts).forEach(relativePath =>
-            appendHead({
+            headInsert({
                 "type": "javascript",
                 "src": pathJoin(kcContext.url.resourcesPath, relativePath),
             }),
