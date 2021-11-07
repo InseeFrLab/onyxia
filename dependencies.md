@@ -24,7 +24,7 @@ We also heavily rely on [tsafe](https://github.com/garronej/tsafe). It's a colle
 
 {% embed url="https://github.com/garronej/ts-ci" %}
 
-We try, whenever we see an opportunity for it, to publish as standalone NPM module chunks of the code we write for Onyxia-web. It help gets the complexity in check. We use TS-CI as a starter for everything we publish on NPM.
+We try, whenever we see an opportunity for it, to publish as standalone NPM module chunks of the code we write for Onyxia-web. It help keep the complexity in check. We use TS-CI as a starter for everything we publish on NPM.
 
 ## For working on what the end user 👁
 
@@ -198,7 +198,7 @@ Everything related to routing in the app is contained in the [`src/app/roues`](h
 
 We bend the framework a little bit in [formFieldsQueryParameters](https://github.com/InseeFrLab/onyxia-web/blob/main/src/app/routes/formFieldsQueryParameters.ts) to implement the dynamic url of [the service configuration page](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/jupyter?s3.enabled=false\&resources.limits.memory=%C2%AB55Gi%C2%BB). See [the relevant discussion](https://github.com/typehero/type-route/issues/75) with the library author.
 
-This is a video to demonstrate how to setup a new page and add it to the `<Leftbar/>`.&#x20;
+This is a video to demonstrate how to setup a new page and add it to the `<Leftbar/>`.
 
 {% embed url="https://youtu.be/ZL9dY7mCW3s?t=1" %}
 
