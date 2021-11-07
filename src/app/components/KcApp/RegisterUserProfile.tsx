@@ -278,7 +278,7 @@ export const RegisterUserProfile = memo(
                                                     return displayableErrors.map(
                                                         ({ errorMessage }, i) => (
                                                             <span key={i}>
-                                                                {errorMessage}
+                                                                {errorMessage}&nbsp;
                                                             </span>
                                                         ),
                                                     );
@@ -306,7 +306,9 @@ export const RegisterUserProfile = memo(
                                                         attribute.validators;
 
                                                     if (pattern !== undefined) {
-                                                        return pattern.pattern;
+                                                        return t(
+                                                            "must respect the pattern",
+                                                        );
                                                     }
                                                 }
 
@@ -320,7 +322,11 @@ export const RegisterUserProfile = memo(
                                                     ? undefined
                                                     : attribute.name === "email"
                                                     ? formatEmailPattern(pattern)
-                                                    : pattern;
+                                                    : fieldStateByAttributeName[
+                                                          attribute.name
+                                                      ].displayableErrors.length === 0
+                                                    ? pattern
+                                                    : undefined;
                                             })()}
                                             inputProps_aria-invalid={
                                                 fieldStateByAttributeName[attribute.name]
@@ -386,6 +392,7 @@ export declare namespace RegisterUserProfile {
         "password mismatch": undefined;
         "go back": undefined;
         "form not filled properly yet": undefined;
+        "must respect the pattern": undefined;
     };
 }
 

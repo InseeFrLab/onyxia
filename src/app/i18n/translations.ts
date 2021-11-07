@@ -239,6 +239,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "go back": "Go back",
             "form not filled properly yet":
                 "Please make sure the form is properly filled out",
+            "must respect the pattern": "Must respect the pattern",
         },
         "MySecrets": {
             ...common.en,
@@ -554,6 +555,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "go back": "Retour",
             "form not filled properly yet":
                 "Veuillez vérifier que vous avez bien rempli le formulaire",
+            "must respect the pattern": "Dois respecter le format",
         },
         "MySecrets": {
             ...common.fr,
