@@ -1,3 +1,7 @@
+### **0.16.2** (2021-11-07)  
+  
+- Login: Format pattern in register page    
+  
 ### **0.16.1** (2021-11-07)  
   
 - Update onyxia-ui    
