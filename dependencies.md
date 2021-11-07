@@ -52,6 +52,31 @@ When you create a new react component, you should ask yourself:
 
 {% hint style="info" %}
 To release a new version of [Onyxia-UI](dependencies.md#typescript). You just need to bump the [package.json's version](https://github.com/InseeFrLab/onyxia-ui/blob/470fdb4e54e2b16051ff8b7442ea4d765d76ba92/package.json#L3) and push. [The CI](https://github.com/garronej/ts-ci) will automate publish [a new version on NPM](dependencies.md#typescript).
+
+If you want to test some changes made to onyxia-ui in onyxia-web before releasing a new version of onyxia-ui to NPM you can link locally onyxia-ui in onyxia-web.
+
+The setup to do that, starting from scratch
+
+```bash
+cd ~/github #This is just a suggestion, clone wherever you see fit.
+git clone https://github.com/InseeFrLab/onyxia-ui
+cd onyxia-ui
+yarn && yarn build
+npx tsc -w
+```
+
+On an other terminal:
+
+```bash
+cd ~/github
+git clone https//github.com/InseeFrLab/onyxia-web
+cd onyxia-web
+yarn
+yarn link_inhouse_deps onyxia-ui
+yarn start
+```
+
+Now you can make changes in `~/github/onyxia-ui/src`/ and see the changes directly in onyxia-web. You just need to reload the page.
 {% endhint %}
 
 #### Palettes
