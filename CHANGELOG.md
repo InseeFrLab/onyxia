@@ -1,3 +1,7 @@
+### **0.16.3** (2021-11-07)  
+  
+- Login: Inprove parsing of authorized emails    
+  
 ### **0.16.2** (2021-11-07)  
   
 - Login: Format pattern in register page    
