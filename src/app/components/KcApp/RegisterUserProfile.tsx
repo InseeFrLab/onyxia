@@ -312,9 +312,16 @@ export const RegisterUserProfile = memo(
 
                                                 return undefined;
                                             })()}
-                                            questionMarkHelperText={
-                                                attribute.validators.pattern?.pattern
-                                            }
+                                            questionMarkHelperText={(() => {
+                                                const { pattern } =
+                                                    attribute.validators.pattern ?? {};
+
+                                                return pattern === undefined
+                                                    ? undefined
+                                                    : attribute.name === "email"
+                                                    ? formatEmailPattern(pattern)
+                                                    : pattern;
+                                            })()}
                                             inputProps_aria-invalid={
                                                 fieldStateByAttributeName[attribute.name]
                                                     .displayableErrors.length !== 0
@@ -404,6 +411,22 @@ const { getHardCodedFieldWeight } = (() => {
 
     return { getHardCodedFieldWeight };
 })();
+
+function formatEmailPattern(pattern: string) {
+    try {
+        return pattern
+            .split("|")
+            .map(part =>
+                part
+                    .match(/\(?([^)]+)\)?$/)![1]
+                    .replace(/\\./, ".")
+                    .replace(/\$$/, ""),
+            )
+            .join(" ");
+    } catch {
+        return pattern;
+    }
+}
 
 const useStyles = makeStyles()(theme => ({
     "root": {
