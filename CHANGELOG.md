@@ -1,3 +1,11 @@
+## **0.16.0** (2021-11-07)  
+  
+- Update powerhooks, fixes errors in logs  
+- Login: Move over translation  
+- Login: Refactor register page and fix tabIndex  
+- Add missing files from previous commit  
+- Login: Minimal working version of new register pages    
+  
 ### **0.15.19** (2021-11-06)  
   
 - Update package.json  
