@@ -10225,10 +10225,10 @@ keycloak-js@^15.0.2:
     base64-js "1.3.1"
     js-sha256 "0.9.0"
 
-keycloakify@^4.2.4:
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-4.2.4.tgz#ebb867a8da43564d4ebbea988cbdad486190d0a4"
-  integrity sha512-lxKbId1jON0Vd7PdRSDZcpE3OPXz7ZIDd2tDyXkdS4FyfQY2pF5xc+qiYD9WjbyGIJfq0N++629IDpac65v9dQ==
+keycloakify@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-4.2.5.tgz#b84e97e10816ae506f4d42e7bb88fc27fe3220dd"
+  integrity sha512-Sfg12Q2hY1ecvUlLAVw+U5lqYBZfU+Kp84Cziu+UULahdyVQFl6zFJ24oym3gOtjI9uaZlXvh+ame+lw0CG4PQ==
   dependencies:
     cheerio "^1.0.0-rc.5"
     evt "2.0.0-beta.38"
