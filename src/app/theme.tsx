@@ -66,13 +66,13 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/translations";
-import { paletteId } from "paletteIdAndTitle";
+import { palette } from "transferableEnvs";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc(params),
         "fontFamily": `${(() => {
-            switch (paletteId) {
+            switch (palette) {
                 case "france":
                     return "Marianne";
                 case "onyxia":
@@ -83,7 +83,7 @@ const { ThemeProvider, useTheme } = createThemeProvider({
     }),
     "palette": {
         ...(() => {
-            switch (paletteId) {
+            switch (palette) {
                 case "onyxia":
                     return defaultPalette;
                 case "france":
