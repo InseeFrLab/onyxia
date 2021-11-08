@@ -102,7 +102,9 @@ export const RegisterUserProfile = memo(
             attributesWithPassword
                 .filter(
                     ({ name }) =>
-                        !["email", "password", "password-confirm"].includes(name),
+                        !["username", "email", "password", "password-confirm"].includes(
+                            name,
+                        ),
                 )
                 .map(({ name }) =>
                     formValidationReducer({
