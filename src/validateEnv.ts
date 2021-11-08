@@ -1,4 +1,4 @@
-import "./paletteIdAndTitle";
+import "./transferableEnvs";
 import { getEnv } from "env";
 import { assert } from "tsafe/assert";
 
