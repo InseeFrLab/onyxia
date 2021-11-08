@@ -197,7 +197,7 @@ export function MyServices(props: Props) {
                               "openUrl": urls[0],
                               monitoringUrl,
                               "startTime": isStarting ? undefined : startedAt,
-                              "isOvertime": Date.now() - startedAt > 3600 * 1000 * 24,
+                              "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
                               postInstallInstructions,
                           }),
                       ),
