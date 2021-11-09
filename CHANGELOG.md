@@ -1,3 +1,8 @@
+### **0.16.6** (2021-11-08)  
+  
+- refactor transferable envs  
+- Login: Improve UX on new register page    
+  
 ### **0.16.5** (2021-11-08)  
   
 - MyServices: Services turn red only after 7 days    
