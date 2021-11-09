@@ -84,7 +84,7 @@ Now you can make changes in `~/github/onyxia-ui/src`/ and see the changes direct
 We currently offers builtin support for [three color palettes](https://github.com/InseeFrLab/onyxia-web/blob/f6e2907e43eea825d39f350207705d564360eb23/src/app/theme.tsx#L84-L93):
 
 * France: [datalab.sspcloud.fr?**palette=france**](https://datalab.sspcloud.fr/?palette=france)
-* Ultraviolet: [datalb.sspcloud.fr?**palette=ultraviolet**](https://datalb.sspcloud.fr/?palette=ultraviolet)
+* Ultraviolet: [datalab.sspcloud.fr?**palette=ultraviolet**](https://datalab.sspcloud.fr/?palette=ultraviolet)
 * [Default](https://datalab.sspcloud.fr)
 
 #### Fonts
