@@ -1,3 +1,7 @@
+### **0.16.7** (2021-11-09)  
+  
+- Update keycloakify    
+  
 ### **0.16.6** (2021-11-08)  
   
 - refactor transferable envs  
