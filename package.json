@@ -49,7 +49,7 @@
         "onyxia-ui": "^0.18.7",
         "tss-react": "^2.0.2",
         "@mui/icons-material": "^5.0.4",
-        "keycloakify": "^4.2.7",
+        "keycloakify": "^4.2.9",
         "@reduxjs/toolkit": "^1.4.0",
         "async-mutex": "^0.2.6",
         "axios": "^0.21.1",

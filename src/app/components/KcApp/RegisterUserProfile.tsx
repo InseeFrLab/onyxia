@@ -22,7 +22,7 @@ export const RegisterUserProfile = memo(
     }: { kcContext: KcContextBase.RegisterUserProfile } & KcProps) => {
         const { url, messagesPerField, recaptchaRequired, recaptchaSiteKey } = kcContext;
 
-        const { msg, msgStr } = useKcMessage();
+        const { msg, msgStr, advancedMsg } = useKcMessage();
 
         const { classes, cx, css } = useStyles();
 
@@ -42,8 +42,6 @@ export const RegisterUserProfile = memo(
         const redirectToLogin = useConstCallback(
             () => (window.location.href = url.loginUrl),
         );
-
-        const { advancedMsg } = useKcMessage();
 
         const passwordValidators = useMemo(
             () => ({
@@ -308,9 +306,17 @@ export const RegisterUserProfile = memo(
                                                         attribute.validators;
 
                                                     if (pattern !== undefined) {
-                                                        return t(
-                                                            "must respect the pattern",
-                                                        );
+                                                        const {
+                                                            "error-message":
+                                                                errorMessageKey,
+                                                        } = pattern;
+
+                                                        return errorMessageKey !==
+                                                            undefined
+                                                            ? advancedMsg(errorMessageKey)
+                                                            : t(
+                                                                  "must respect the pattern",
+                                                              );
                                                     }
                                                 }
 
