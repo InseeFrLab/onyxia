@@ -1,3 +1,7 @@
+### **0.16.11** (2021-11-11)  
+  
+- Login fix email confirmation    
+  
 ### **0.16.10** (2021-11-11)  
   
 - Try hotfix    
