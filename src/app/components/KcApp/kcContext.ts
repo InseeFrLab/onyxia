@@ -1,4 +1,8 @@
+import "minimal-polyfills/Object.fromEntries";
 import { getKcContext } from "keycloakify";
+import { kcMessages } from "keycloakify/lib/i18n/useKcMessage";
+import type { KcLanguageTag } from "keycloakify";
+import { id } from "tsafe/id";
 
 /** It's the Keycloak context, it is undefined unless we are on Keycloak, rendering the login pages. */
 export const { kcContext } = getKcContext<{
@@ -9,7 +13,7 @@ export const { kcContext } = getKcContext<{
      */
     authorizedMailDomains?: string[];
 }>({
-    //"mockPageId": "register-user-profile.ftl",
+    "mockPageId": "register-user-profile.ftl",
     /**
      * Customize the simulated kcContext that will let us
      * dev the page outside keycloak (with auto-reload)
@@ -93,6 +97,8 @@ export const { kcContext } = getKcContext<{
                             "pattern": {
                                 "pattern": "^[a-zA-Z0-9]+$",
                                 "ignore.empty.value": true,
+                                // eslint-disable-next-line no-template-curly-in-string
+                                "error-message": "${alphanumericalCharsOnly}",
                             },
                         },
                         "value": undefined,
@@ -116,3 +122,26 @@ export const { kcContext } = getKcContext<{
 });
 
 export type KcContext = NonNullable<typeof kcContext>;
+
+{
+    const extraKeys: Record<string, Partial<Record<KcLanguageTag, string>>> = {
+        "alphanumericalCharsOnly": {
+            "en": "Only alphanumerical characters",
+            /* spell-checker: disable */
+            "fr": "Caractère alphanumérique uniquement",
+            /* spell-checker: enable */
+        },
+    };
+
+    id<KcLanguageTag[]>(["fr", "en"]).forEach(kcLanguageTag =>
+        Object.assign(
+            kcMessages[kcLanguageTag],
+            Object.fromEntries(
+                Object.entries(extraKeys).map(([key, wrap]) => [
+                    key,
+                    wrap[kcLanguageTag],
+                ]),
+            ),
+        ),
+    );
+}
