@@ -1,3 +1,9 @@
+### **0.16.9** (2021-11-11)  
+  
+- Fix previous build  
+- Login: Fix username regexp  
+- Fix email regular expression in mock kcContext    
+  
 ### **0.16.7** (2021-11-09)  
   
 - Update keycloakify    
