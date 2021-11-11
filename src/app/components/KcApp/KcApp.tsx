@@ -5,7 +5,6 @@ import { makeStyles } from "app/theme";
 import onyxiaNeumorphismDarkModeUrl from "app/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "app/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Login } from "./Login";
-import { Register } from "./Register";
 import { Terms } from "./Terms";
 import { Info } from "keycloakify/lib/components/Info";
 import { Error } from "keycloakify/lib/components/Error";
@@ -15,6 +14,7 @@ import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConfirm";
 import { LoginUpdateProfile } from "./LoginUpdateProfile";
 import { RegisterUserProfile } from "./RegisterUserProfile";
+import { Register } from "keycloakify/lib/components/Register";
 import { getBrowser } from "app/tools/getBrowser";
 import type { KcContext } from "./kcContext";
 
