@@ -3,7 +3,6 @@ import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { getEvtKcLanguage } from "keycloakify";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
-import { kcContext } from "app/components/KcApp/kcContext";
 
 const supportedLanguage = ["en", "fr"] as const;
 
@@ -24,11 +23,4 @@ export const { useLng, evtLng } = createUseGlobalState("lng", (): SupportedLangu
 });
 
 //NOTE: When we change langue in the main APP we change as well for the login pages
-evtLng.attach(lng => {
-    if (kcContext !== undefined && kcContext.pageId === "login-verify-email.ftl") {
-        console.log("Prevent switch here");
-        return;
-    }
-
-    getEvtKcLanguage().state = lng;
-});
+evtLng.toStateless().attach(lng => (getEvtKcLanguage().state = lng));
