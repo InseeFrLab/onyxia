@@ -1,3 +1,7 @@
+### **0.17.1** (2021-11-12)  
+  
+- Fix previous build to make it compatible with HELM    
+  
 ## **0.17.0** (2021-11-12)  
   
 - Provide therms of services from envs    
