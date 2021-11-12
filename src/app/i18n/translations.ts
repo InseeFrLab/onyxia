@@ -98,6 +98,10 @@ export type SupportedLanguage = "en" | "fr";
 
 assert<SupportedLanguage extends KcLanguageTag ? true : false>();
 
+export const fallbackLanguage = "en";
+
+assert<typeof fallbackLanguage extends SupportedLanguage ? true : false>();
+
 const common = id<
     Record<
         SupportedLanguage,
