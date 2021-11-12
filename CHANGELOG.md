@@ -1,3 +1,9 @@
+### **0.16.13** (2021-11-12)  
+  
+- Refactors envs that are caried over to keycloak  
+- Remove old register from translations  
+- Remove old register page, force the use of Keycloak user attribute    
+  
 ### **0.16.11** (2021-11-11)  
   
 - Login fix email confirmation    
