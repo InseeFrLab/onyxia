@@ -1,8 +1,13 @@
 /**
- * Here we deal with the envs that should be transferred over to the
- * Keycloak pages. (kcApp).
- * Remember that in the pages served by Keycloak we cant use getEnv()
- * so we need to pass the params as url query parameters
+ * Here are the envs that are both accessible in the regular app and on
+ * the Keycloak pages.
+ * When redirecting to the login page we transfer those values as url
+ * query parameters.
+ * In the pages served by Keycloak we can't use getEnv()
+ * so we need to pass the params as url query parameters.
+ *
+ * BE MINDFUL: This module should be evaluated as soon as possible
+ * to cleanup the url query parameter.
  */
 
 import "minimal-polyfills/Object.fromEntries";
@@ -23,10 +28,10 @@ const paletteIds = ["onyxia", "france", "ultraviolet"] as const;
 
 export type PaletteId = typeof paletteIds[number];
 
-const { palette, injectPaletteInSearchParams } = getTransferableEnv({
-    "name": "palette" as const,
-    "getSerializedValueFromEnv": () => getEnv().THEME,
-    "parse": (valueStr): PaletteId =>
+const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
+    "name": "THEME_ID" as const,
+    "getSerializedValueFromEnv": () => getEnv().THEME_ID,
+    "validateAndParseOrGetDefault": (valueStr): PaletteId =>
         valueStr === ""
             ? "onyxia"
             : (() => {
@@ -44,21 +49,21 @@ const { palette, injectPaletteInSearchParams } = getTransferableEnv({
               })(),
 });
 
-export { palette };
+export { THEME_ID };
 
-const { title, injectTitleInSearchParams } = getTransferableEnv({
-    "name": "title" as const,
-    "getSerializedValueFromEnv": () => getEnv().TITLE,
-    "parse": (valueStr): string => valueStr,
+const { HEADER_TITLE, injectHEADER_TITLEInSearchParams } = getTransferableEnv({
+    "name": "HEADER_TITLE" as const,
+    "getSerializedValueFromEnv": () => getEnv().HEADER_TITLE,
+    "validateAndParseOrGetDefault": (valueStr): string => valueStr,
 });
 
-export { title };
+export { HEADER_TITLE };
 
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
 
-    newUrl = injectPaletteInSearchParams(newUrl);
-    newUrl = injectTitleInSearchParams(newUrl);
+    newUrl = injectTHEME_IDInSearchParams(newUrl);
+    newUrl = injectHEADER_TITLEInSearchParams(newUrl);
 
     return newUrl;
 }
@@ -66,10 +71,10 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
 function getTransferableEnv<T, Name extends string>(params: {
     name: Name;
     getSerializedValueFromEnv: () => string;
-    parse: (serializedValue: string) => T;
+    validateAndParseOrGetDefault: (serializedValue: string) => T;
 }): Record<Name, T> &
     Record<`inject${Capitalize<Name>}InSearchParams`, (url: string) => string> {
-    const { name, getSerializedValueFromEnv, parse } = params;
+    const { name, getSerializedValueFromEnv, validateAndParseOrGetDefault } = params;
 
     const serializedValue = (() => {
         scope: {
@@ -119,7 +124,7 @@ function getTransferableEnv<T, Name extends string>(params: {
     })();
 
     return {
-        [name]: parse(serializedValue),
+        [name]: validateAndParseOrGetDefault(serializedValue),
         [`inject${capitalize(name)}InSearchParams`]: (url: string) =>
             addParamToUrl({ url, name, "value": serializedValue }).newUrl,
     } as any;
