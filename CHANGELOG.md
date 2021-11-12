@@ -1,3 +1,7 @@
+## **0.17.0** (2021-11-12)  
+  
+- Provide therms of services from envs    
+  
 ### **0.16.13** (2021-11-12)  
   
 - Refactors envs that are caried over to keycloak  
