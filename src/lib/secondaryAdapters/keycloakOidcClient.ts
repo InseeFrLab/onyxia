@@ -4,7 +4,7 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { injectTransferableEnvsInSearchParams } from "transferableEnvs";
+import { injectTransferableEnvsInSearchParams } from "app/envCarriedOverToKc";
 
 export async function createKeycloakOidcClient(params: {
     url: string;

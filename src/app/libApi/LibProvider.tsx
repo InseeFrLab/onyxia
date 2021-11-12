@@ -13,25 +13,32 @@ import type {
 } from "lib/setup";
 import { getEnv } from "env";
 import { isStorybook } from "app/tools/isStorybook";
+import { assert } from "tsafe/assert";
 
 //NOTE: Create store can only be called once
 const createStore_memo = memoize(
-    () =>
-        createStore({
+    () => {
+        const env = getEnv();
+
+        if (env.OIDC_URL !== "") {
+            assert(env.OIDC_REALM !== "");
+        }
+
+        return createStore({
             "getIsDarkModeEnabledValueForProfileInitialization":
                 getIsDarkModeEnabledOsDefault,
 
             "oidcClientConfig":
-                isStorybook || getEnv().OIDC_URL === ""
+                isStorybook || env.OIDC_URL === ""
                     ? id<OidcClientConfig.Phony>({
                           "implementation": "PHONY",
                           "isUserLoggedIn": true,
                       })
                     : id<OidcClientConfig.Keycloak>({
                           "implementation": "KEYCLOAK",
-                          "url": getEnv().OIDC_URL,
-                          "realm": getEnv().OIDC_REALM,
-                          "clientId": getEnv().OIDC_CLIENT_ID,
+                          "url": env.OIDC_URL,
+                          "realm": env.OIDC_REALM,
+                          "clientId": env.OIDC_CLIENT_ID,
                       }),
             "onyxiaApiClientConfig": isStorybook
                 ? id<OnyxiaApiClientConfig.Mock>({
@@ -48,7 +55,7 @@ const createStore_memo = memoize(
                 : id<OnyxiaApiClientConfig.Official>({
                       "implementation": "OFFICIAL",
                       "url":
-                          getEnv().ONYXIA_API_URL ||
+                          env.ONYXIA_API_URL ||
                           (() => {
                               const { protocol, host } = window.location;
 
@@ -56,7 +63,7 @@ const createStore_memo = memoize(
                           })(),
                   }),
             "userApiClientConfig":
-                isStorybook || getEnv().OIDC_URL === ""
+                isStorybook || env.OIDC_URL === ""
                     ? id<UserApiClientConfig.Mock>({
                           "implementation": "MOCK",
 
@@ -72,16 +79,16 @@ const createStore_memo = memoize(
                     : id<UserApiClientConfig.Jwt>({
                           "implementation": "JWT",
                           "oidcClaims": {
-                              "email": getEnv().OIDC_EMAIL_CLAIM,
-                              "familyName": getEnv().OIDC_FAMILY_NAME_CLAIM,
-                              "firstName": getEnv().OIDC_FIRST_NAME_CLAIM,
-                              "username": getEnv().OIDC_USERNAME_CLAIM,
-                              "groups": getEnv().OIDC_GROUPS_CLAIM,
-                              "local": getEnv().OIDC_LOCALE_CLAIM,
+                              "email": env.OIDC_EMAIL_CLAIM,
+                              "familyName": env.OIDC_FAMILY_NAME_CLAIM,
+                              "firstName": env.OIDC_FIRST_NAME_CLAIM,
+                              "username": env.OIDC_USERNAME_CLAIM,
+                              "groups": env.OIDC_GROUPS_CLAIM,
+                              "local": env.OIDC_LOCALE_CLAIM,
                           },
                       }),
             "secretsManagerClientConfig":
-                isStorybook || getEnv().VAULT_URL === ""
+                isStorybook || env.VAULT_URL === ""
                     ? id<SecretsManagerClientConfig.LocalStorage>({
                           "implementation": "LOCAL STORAGE",
                           "artificialDelayMs": 0,
@@ -92,18 +99,17 @@ const createStore_memo = memoize(
                       })
                     : id<SecretsManagerClientConfig.Vault>({
                           "implementation": "VAULT",
-                          "baseUri": getEnv().VAULT_URL,
-                          "engine": getEnv().VAULT_KV_ENGINE,
-                          "role": getEnv().VAULT_ROLE,
+                          "baseUri": env.VAULT_URL,
+                          "engine": env.VAULT_KV_ENGINE,
+                          "role": env.VAULT_ROLE,
                           "keycloakParams": {
-                              "url": getEnv().OIDC_VAULT_URL || getEnv().OIDC_URL,
-                              "realm": getEnv().OIDC_VAULT_REALM || getEnv().OIDC_REALM,
-                              "clientId":
-                                  getEnv().OIDC_VAULT_CLIENT_ID ||
-                                  getEnv().OIDC_CLIENT_ID,
+                              "url": env.OIDC_VAULT_URL || env.OIDC_URL,
+                              "realm": env.OIDC_VAULT_REALM || env.OIDC_REALM,
+                              "clientId": env.OIDC_VAULT_CLIENT_ID || env.OIDC_CLIENT_ID,
                           },
                       }),
-        }),
+        });
+    },
     { "promise": true },
 );
 
