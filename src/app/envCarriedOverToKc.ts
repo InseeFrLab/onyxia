@@ -23,6 +23,9 @@ import { isStorybook } from "app/tools/isStorybook";
 import { capitalize } from "tsafe/capitalize";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
+import type { KcLanguageTag } from "keycloakify";
+import { kcLanguageTags } from "keycloakify";
+import { objectKeys } from "tsafe/objectKeys";
 
 const paletteIds = ["onyxia", "france", "ultraviolet"] as const;
 
@@ -59,11 +62,64 @@ const { HEADER_TITLE, injectHEADER_TITLEInSearchParams } = getTransferableEnv({
 
 export { HEADER_TITLE };
 
+const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransferableEnv(
+    {
+        "name": "THERMS_OF_SERVICES" as const,
+        "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
+        "validateAndParseOrGetDefault": (
+            valueStr,
+        ): Partial<Record<KcLanguageTag, string>> | string | undefined => {
+            if (valueStr === "") {
+                return undefined;
+            }
+
+            if (!valueStr.startsWith("{")) {
+                return valueStr;
+            }
+
+            let tosUrlByLng: Partial<Record<KcLanguageTag, string>>;
+
+            try {
+                tosUrlByLng = JSON.parse(valueStr);
+            } catch {
+                throw new Error("Terms of services malformed");
+            }
+
+            {
+                const languages = objectKeys(tosUrlByLng);
+
+                languages.forEach(lng =>
+                    assert(
+                        id<readonly string[]>(kcLanguageTags).includes(lng),
+                        `${lng} is not a supported languages, supported languages are: ${kcLanguageTags}`,
+                    ),
+                );
+
+                languages.forEach(lng =>
+                    assert(
+                        typeof tosUrlByLng[lng] === "string",
+                        `therms of service malformed (${lng})`,
+                    ),
+                );
+            }
+
+            if (Object.keys(tosUrlByLng).length === 0) {
+                return undefined;
+            }
+
+            return tosUrlByLng;
+        },
+    },
+);
+
+export { THERMS_OF_SERVICES };
+
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
 
     newUrl = injectTHEME_IDInSearchParams(newUrl);
     newUrl = injectHEADER_TITLEInSearchParams(newUrl);
+    newUrl = injectTHERMS_OF_SERVICESInSearchParams(newUrl);
 
     return newUrl;
 }
@@ -75,6 +131,8 @@ function getTransferableEnv<T, Name extends string>(params: {
 }): Record<Name, T> &
     Record<`inject${Capitalize<Name>}InSearchParams`, (url: string) => string> {
     const { name, getSerializedValueFromEnv, validateAndParseOrGetDefault } = params;
+
+    const isKeycloak = process.env.NODE_ENV === "production" && kcContext !== undefined;
 
     const serializedValue = (() => {
         scope: {
@@ -91,7 +149,7 @@ function getTransferableEnv<T, Name extends string>(params: {
 
             updateSearchBarUrl(newUrl);
 
-            if (kcContext !== undefined) {
+            if (isKeycloak) {
                 localStorage.setItem(name, serializedValue);
             }
 
@@ -99,7 +157,7 @@ function getTransferableEnv<T, Name extends string>(params: {
         }
 
         scope: {
-            if (kcContext !== undefined || isStorybook) {
+            if (isKeycloak || isStorybook) {
                 break scope;
             }
 
@@ -107,7 +165,7 @@ function getTransferableEnv<T, Name extends string>(params: {
         }
 
         scope: {
-            if (kcContext === undefined) {
+            if (!isKeycloak) {
                 break scope;
             }
 
