@@ -359,7 +359,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     />
                     <IconButton
                         disabled={isLocked}
-                        iconId="delete"
+                        iconId="block"
                         onClick={onDelete}
                         size="small"
                     />
