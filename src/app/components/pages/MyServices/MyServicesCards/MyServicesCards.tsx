@@ -22,6 +22,7 @@ export type Props = {
               friendlyName: string;
               packageName: string;
               infoUrl: string;
+              env: Record<string, string>;
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
               startTime: number | undefined;
@@ -76,22 +77,31 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId }),
     );
 
-    const [postInstallInstructionsDialogBody, setPostInstallInstructionsDialogBody] =
-        useState<string>("");
+    const [dialogBody, setDialogBody] = useState<string>("");
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const onRequestShowPostInstallInstructionsFactory = useCallbackFactory(
-        ([serviceId]: [string]) => {
+    const onRequestShowEnvOrPostInstallInstructionFactory = useCallbackFactory(
+        ([showWhat, serviceId]: ["env" | "postInstallInstructions", string]) => {
             assert(cards !== undefined);
 
-            const { postInstallInstructions } = cards.find(
+            const { postInstallInstructions, env } = cards.find(
                 card => card.serviceId === serviceId,
             )!;
+            setDialogBody(
+                (() => {
+                    switch (showWhat) {
+                        case "postInstallInstructions":
+                            assert(postInstallInstructions !== undefined);
 
-            assert(postInstallInstructions !== undefined);
-
-            setPostInstallInstructionsDialogBody(postInstallInstructions);
+                            return postInstallInstructions;
+                        case "env":
+                            return Object.entries(env)
+                                .map(([key, value]) => `**${key}**: \`${value}\`  `)
+                                .join("\n");
+                    }
+                })(),
+            );
 
             setIsDialogOpen(true);
         },
@@ -115,10 +125,15 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
+                            onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
+                                "env",
+                                card.serviceId,
+                            )}
                             onRequestDelete={onRequestDeleteFactory(card.serviceId)}
                             onRequestShowPostInstallInstructions={
                                 card.postInstallInstructions !== undefined
-                                    ? onRequestShowPostInstallInstructionsFactory(
+                                    ? onRequestShowEnvOrPostInstallInstructionFactory(
+                                          "postInstallInstructions",
                                           card.serviceId,
                                       )
                                     : undefined
@@ -128,7 +143,7 @@ export const MyServicesCards = memo((props: Props) => {
                 )}
             </div>
             <Dialog
-                body={<Markdown>{postInstallInstructionsDialogBody}</Markdown>}
+                body={<Markdown>{dialogBody}</Markdown>}
                 isOpen={isDialogOpen}
                 onClose={onDialogClose}
                 buttons={<Button onClick={onDialogClose}>{t("ok")}</Button>}

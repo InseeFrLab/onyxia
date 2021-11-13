@@ -28,6 +28,11 @@ const props: Props = {
         "postInstallInstructions":
             i % 3 === 0 ? `Post install instruction ${i}` : undefined,
         "isShared": i % 2 === 0,
+        "env": {
+            "foo": "foo value",
+            "bar": "bar value",
+            "baz": "baz value",
+        },
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     ...logCallbacks(["onRequestDelete"]),
