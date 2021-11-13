@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { makeStyles } from "app/theme";
-import { Button, Text } from "app/theme";
+import { Button, Text, Icon } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
@@ -108,6 +108,8 @@ export const MyServicesCard = memo((props: Props) => {
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
+                <div style={{ "flex": 1 }} />
+                {isShared && <Icon iconId="people" />}
             </div>
             <div className={classes.belowDivider}>
                 <div className={classes.belowDividerTop}>
