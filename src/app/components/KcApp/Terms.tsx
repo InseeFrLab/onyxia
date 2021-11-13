@@ -41,9 +41,17 @@ export const Terms = memo(
                 return;
             }
 
-            fetch(getTosMarkdownUrl(kcLanguageTag))
-                .then(response => response.text())
-                .then(rawMarkdown => (kcMessages[kcLanguageTag].termsText = rawMarkdown));
+            const url = getTosMarkdownUrl(kcLanguageTag);
+
+            (url === undefined
+                ? Promise.resolve(
+                      [
+                          "There was no therms of service provided in the Onyxia-web configuration.",
+                          "Provide it or disable therms as required action in Keycloak",
+                      ].join(" "),
+                  )
+                : fetch(url).then(response => response.text())
+            ).then(rawMarkdown => (kcMessages[kcLanguageTag].termsText = rawMarkdown));
         }, [kcLanguageTag]);
 
         const { classes } = useStyles();
