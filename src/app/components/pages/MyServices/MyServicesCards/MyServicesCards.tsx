@@ -27,6 +27,7 @@ export type Props = {
               startTime: number | undefined;
               isOvertime: boolean;
               postInstallInstructions: string | undefined;
+              isShared: boolean;
           }[]
         | undefined;
     catalogExplorerLink: Link;

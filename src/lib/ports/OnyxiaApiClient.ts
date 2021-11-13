@@ -126,6 +126,7 @@ export declare namespace RunningService {
         urls: string[];
         startedAt: number;
         postInstallInstructions: string | undefined;
+        isShared: boolean;
     };
 
     export type Started = Common & {
@@ -140,4 +141,4 @@ export declare namespace RunningService {
 
 export type Contract = Record<string, unknown>[][];
 
-export const onyxiaFriendlyNameFormFieldPath = ["onyxia", "friendlyName"];
+export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";

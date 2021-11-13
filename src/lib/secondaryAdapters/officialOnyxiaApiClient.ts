@@ -225,11 +225,14 @@ export function createOfficialOnyxiaApiClient(params: {
             return { launchPackage };
         })(),
         ...(() => {
-            type T = {
+            type Data = {
                 apps: {
                     id: string;
                     urls: string[];
-                    env: Record<string, string>;
+                    env: {
+                        "onyxia.share": "true" | "false";
+                        "onyxia.friendlyName": string;
+                    };
                     startedAt: number;
                     tasks: {
                         containers: { ready: boolean }[];
@@ -239,7 +242,8 @@ export function createOfficialOnyxiaApiClient(params: {
             };
 
             const getMyLab_Services = memoize(
-                () => axiosInstance.get<T>("/my-lab/services").then(({ data }) => data),
+                () =>
+                    axiosInstance.get<Data>("/my-lab/services").then(({ data }) => data),
                 { "promise": true, "maxAge": 1000 },
             );
 
@@ -249,7 +253,7 @@ export function createOfficialOnyxiaApiClient(params: {
             };
 
             function getPodsStatus(params: {
-                tasks: T["apps"][number]["tasks"];
+                tasks: Data["apps"][number]["tasks"];
                 /** For debug */
                 id?: string;
             }): PodsStatus | undefined {
@@ -310,13 +314,14 @@ export function createOfficialOnyxiaApiClient(params: {
                                 return {
                                     packageName,
                                     "friendlyName":
-                                        env[onyxiaFriendlyNameFormFieldPath.join(".")] ??
+                                        env[onyxiaFriendlyNameFormFieldPath] ??
                                         packageName,
                                 };
                             })(),
                             postInstallInstructions,
                             urls,
                             startedAt,
+                            "isShared": env["onyxia.share"] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)
                                 : ({
