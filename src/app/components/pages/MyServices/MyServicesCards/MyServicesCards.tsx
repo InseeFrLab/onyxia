@@ -1,7 +1,7 @@
 import { useState, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { makeStyles, Text } from "app/theme";
-
+import { smartTrim } from "app/tools/smartTrim";
 import { useTranslation } from "app/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { ReactComponent as ServiceNotFoundSvg } from "app/assets/svg/ServiceNotFound.svg";
@@ -96,9 +96,25 @@ export const MyServicesCards = memo((props: Props) => {
 
                             return postInstallInstructions;
                         case "env":
-                            return Object.entries(env)
-                                .map(([key, value]) => `**${key}**: \`${value}\`  `)
-                                .join("\n");
+                            console.log(JSON.stringify(env, null, 2));
+                            return [
+                                Object.entries(env)
+                                    .filter(([, value]) => value !== "")
+                                    .map(
+                                        ([key, value]) =>
+                                            `**${key}**: \`${smartTrim({
+                                                "text": value,
+                                                "minCharAtTheEnd": 4,
+                                                "maxLength": 40,
+                                            })}\`  `,
+                                    )
+                                    .join("\n"),
+                                "  \n",
+                                `**${t("need to copy")}**`,
+                                t("everything have been printed to the console"),
+                                "*Windows/Linux*: `Shift + CTRL + J`",
+                                "*Mac*: `⌥ + ⌘ + J`",
+                            ].join("  \n");
                     }
                 })(),
             );
@@ -143,7 +159,11 @@ export const MyServicesCards = memo((props: Props) => {
                 )}
             </div>
             <Dialog
-                body={<Markdown>{dialogBody}</Markdown>}
+                body={
+                    <div style={{ height: 450, "overflow": "auto" }}>
+                        <Markdown>{dialogBody}</Markdown>
+                    </div>
+                }
                 isOpen={isDialogOpen}
                 onClose={onDialogClose}
                 buttons={<Button onClick={onDialogClose}>{t("ok")}</Button>}
@@ -158,6 +178,8 @@ export declare namespace MyServicesCards {
         "no services running": undefined;
         "launch one": undefined;
         ok: undefined;
+        "need to copy": undefined;
+        "everything have been printed to the console": undefined;
     };
 }
 
