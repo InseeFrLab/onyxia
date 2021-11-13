@@ -11,7 +11,7 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { assert } from "tsafe/assert";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Button } from "app/theme";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "app/tools/Markdown";
 
 export type Props = {
     className?: string;
@@ -128,7 +128,7 @@ export const MyServicesCards = memo((props: Props) => {
                 )}
             </div>
             <Dialog
-                body={<ReactMarkdown>{postInstallInstructionsDialogBody}</ReactMarkdown>}
+                body={<Markdown>{postInstallInstructionsDialogBody}</Markdown>}
                 isOpen={isDialogOpen}
                 onClose={onDialogClose}
                 buttons={<Button onClick={onDialogClose}>{t("ok")}</Button>}
