@@ -176,6 +176,7 @@ export function MyServices(props: Props) {
             isRunningServicesFetching
                 ? undefined
                 : [...runningServices]
+                      .filter(({ isShared, isOwned }) => isOwned || !isShared)
                       .sort((a, b) => b.startedAt - a.startedAt)
                       .map(
                           ({

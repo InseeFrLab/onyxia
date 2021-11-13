@@ -100,6 +100,7 @@ export const MyServicesCards = memo((props: Props) => {
                             return [
                                 Object.entries(env)
                                     .filter(([, value]) => value !== "")
+                                    .sort(([a], [b]) => a.localeCompare(b))
                                     .map(
                                         ([key, value]) =>
                                             `**${key}**: \`${smartTrim({
