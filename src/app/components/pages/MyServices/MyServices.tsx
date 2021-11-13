@@ -189,6 +189,7 @@ export function MyServices(props: Props) {
                               isStarting,
                               postInstallInstructions,
                               isShared,
+                              env,
                           }) => ({
                               "serviceId": id,
                               "packageIconUrl": logoUrl,
@@ -201,6 +202,7 @@ export function MyServices(props: Props) {
                               "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
                               postInstallInstructions,
                               isShared,
+                              env,
                           }),
                       ),
         [runningServices, isRunningServicesFetching],

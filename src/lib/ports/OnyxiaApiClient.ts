@@ -127,6 +127,7 @@ export declare namespace RunningService {
         startedAt: number;
         postInstallInstructions: string | undefined;
         isShared: boolean;
+        env: Record<string, string>;
     };
 
     export type Started = Common & {

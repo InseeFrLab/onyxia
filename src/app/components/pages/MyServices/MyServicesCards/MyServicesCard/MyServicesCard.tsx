@@ -65,9 +65,9 @@ export type Props = {
     packageIconUrl?: string;
     friendlyName: string;
     packageName: string;
-    infoUrl: string;
-    onRequestDelete(): void;
+    onRequestDelete: () => void;
     onRequestShowPostInstallInstructions: (() => void) | undefined;
+    onRequestShowEnv: () => void;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     //Undefined when the service is not yey launched
@@ -82,9 +82,9 @@ export const MyServicesCard = memo((props: Props) => {
         packageIconUrl,
         friendlyName,
         packageName,
-        infoUrl,
         onRequestDelete,
         onRequestShowPostInstallInstructions,
+        onRequestShowEnv,
         monitoringUrl,
         openUrl,
         startTime,
@@ -138,11 +138,7 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                 </div>
                 <div className={classes.belowDividerBottom}>
-                    <IconButton
-                        iconId="infoOutlined"
-                        doOpenNewTabIfHref={false}
-                        href={infoUrl}
-                    />
+                    <IconButton iconId="infoOutlined" onClick={onRequestShowEnv} />
                     <IconButton iconId="delete" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />

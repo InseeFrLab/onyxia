@@ -15,24 +15,30 @@ export const VueRegular = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
-    "infoUrl": "https://example.com",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
     "isOvertime": false,
     "isShared": true,
-    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"]),
+    ...logCallbacks([
+        "onRequestDelete",
+        "onRequestShowPostInstallInstructions",
+        "onRequestShowEnv",
+    ]),
 });
 
 export const VueStarting = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
-    "infoUrl": "https://example.com",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": undefined,
     "isOvertime": false,
     "isShared": true,
-    ...logCallbacks(["onRequestDelete", "onRequestShowPostInstallInstructions"]),
+    ...logCallbacks([
+        "onRequestDelete",
+        "onRequestShowPostInstallInstructions",
+        "onRequestShowEnv",
+    ]),
 });

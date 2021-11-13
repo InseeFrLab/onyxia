@@ -232,6 +232,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     env: {
                         "onyxia.share": "true" | "false";
                         "onyxia.friendlyName": string;
+                        [key: string]: string;
                     };
                     startedAt: number;
                     tasks: {
@@ -321,6 +322,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             postInstallInstructions,
                             urls,
                             startedAt,
+                            env,
                             "isShared": env["onyxia.share"] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)

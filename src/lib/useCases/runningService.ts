@@ -35,6 +35,7 @@ export type RunningService = {
     urls: string[];
     postInstallInstructions: string | undefined;
     isShared: boolean;
+    env: Record<string, string>;
 };
 
 const { reducer, actions } = createSlice({
@@ -170,12 +171,14 @@ export const thunks = {
                             startedAt,
                             postInstallInstructions,
                             isShared,
+                            env,
                             ...rest
                         }) => ({
                             id,
                             packageName,
                             friendlyName,
                             isShared,
+                            env,
                             "logoUrl": getLogoUrl({ packageName }),
                             "monitoringUrl": getMonitoringUrl({
                                 "serviceId": id,
