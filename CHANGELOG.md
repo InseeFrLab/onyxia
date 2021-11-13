@@ -1,3 +1,8 @@
+### **0.18.1** (2021-11-13)  
+  
+- Do not display shared services that are not owned  
+- Add an icon to show when share    
+  
 ## **0.18.0** (2021-11-13)  
   
 - Enable to show services env  
