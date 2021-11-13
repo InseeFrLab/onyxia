@@ -141,7 +141,7 @@ export const MyServicesCard = memo((props: Props) => {
                 </div>
                 <div className={classes.belowDividerBottom}>
                     <IconButton iconId="infoOutlined" onClick={onRequestShowEnv} />
-                    <IconButton iconId="delete" onClick={onRequestDelete} />
+                    <IconButton iconId="block" onClick={onRequestDelete} />
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />
                     )}

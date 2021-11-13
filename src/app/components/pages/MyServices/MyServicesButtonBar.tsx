@@ -31,7 +31,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                         case "password":
                             return "key" as const;
                         case "trash":
-                            return "delete" as const;
+                            return "block" as const;
                     }
                 })(),
                 "isDisabled": false,
