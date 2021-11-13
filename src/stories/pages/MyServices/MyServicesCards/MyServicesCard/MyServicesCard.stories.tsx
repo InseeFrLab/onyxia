@@ -6,6 +6,7 @@ import rstudioImgUrl from "stories/assets/img/rstudio.png";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MyServicesCard },
+    "defaultContainerWidth": 400,
 });
 
 export default meta;
