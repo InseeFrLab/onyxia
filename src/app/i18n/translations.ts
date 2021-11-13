@@ -442,6 +442,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "no services running": "You don't have any service running",
             "launch one": "Click here to launch one",
             "ok": "ok",
+            "need to copy": "Need to copy untruncated values?",
+            "everything have been printed to the console":
+                "Everything have been printed to the console",
         },
         "LoginDivider": {
             "or": "or",
@@ -753,6 +756,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Vous n'avez actuellement aucun service en cours d'exécution",
             "launch one": "Cliquez ici pour en lancer un",
             "ok": "ok",
+            "need to copy": "Besoin de copier les valeurs non tronquées?",
+            "everything have been printed to the console":
+                "Tout a été loggé dans la console",
         },
         "LoginDivider": {
             "or": "ou",
