@@ -63,6 +63,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+import PeopleIcon from "@mui/icons-material/People";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/translations";
@@ -153,6 +154,7 @@ export const { Icon } = createIcon({
     "key": KeySvg,
     "language": LanguageIcon,
     "training": TrainingsLogoSvg,
+    "people": PeopleIcon,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
