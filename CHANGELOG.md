@@ -1,3 +1,7 @@
+### **0.17.2** (2021-11-13)  
+  
+- Fix problem with missing tos    
+  
 ### **0.17.1** (2021-11-12)  
   
 - Fix previous build to make it compatible with HELM    
