@@ -9,7 +9,7 @@ export type Props = {
     className?: string;
     packageJsonVersion: string;
     contributeUrl: string;
-    tosUrl: string;
+    tosUrl: string | undefined;
 };
 
 const useStyles = makeStyles<Props>()(theme => ({
@@ -73,11 +73,15 @@ export const Footer = memo((props: Props) => {
                 changeLanguageText={t("change language")}
             />
             {spacing}
-            <a href={tosUrl} target="_blank" rel="noreferrer">
-                {" "}
-                <Text typo="body 2">{t("terms of service")}</Text>{" "}
-            </a>
-            {spacing}
+            {tosUrl !== undefined && (
+                <>
+                    <a href={tosUrl} target="_blank" rel="noreferrer">
+                        {" "}
+                        <Text typo="body 2">{t("terms of service")}</Text>{" "}
+                    </a>
+                    {spacing}
+                </>
+            )}
             <a
                 href={`https://github.com/InseeFrLab/onyxia-web/tree/v${packageJsonVersion}`}
                 target="_blank"
