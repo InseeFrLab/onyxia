@@ -890,7 +890,7 @@ export const thunks = {
         dispatch =>
             dispatch(
                 thunks.changeFormFieldValue({
-                    "path": onyxiaFriendlyNameFormFieldPath,
+                    "path": onyxiaFriendlyNameFormFieldPath.split("."),
                     "value": friendlyName,
                 }),
             ),
@@ -1045,7 +1045,7 @@ export const selectors = (() => {
         }
 
         const friendlyName = formFields.find(({ path }) =>
-            same(path, onyxiaFriendlyNameFormFieldPath),
+            same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
         )!.value;
 
         assert(typeof friendlyName === "string");
@@ -1064,7 +1064,7 @@ export const selectors = (() => {
         function isFieldHidden(params: { path: string[] }) {
             const { path } = params;
 
-            if (same(onyxiaFriendlyNameFormFieldPath, path)) {
+            if (same(onyxiaFriendlyNameFormFieldPath.split("."), path)) {
                 return true;
             }
 

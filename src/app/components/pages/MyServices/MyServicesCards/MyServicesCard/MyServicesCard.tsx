@@ -2,12 +2,12 @@ import { memo } from "react";
 import { makeStyles } from "app/theme";
 import { Button, Text } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
-
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { IconButton } from "app/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { Tag } from "onyxia-ui/Tag";
 
 const useStyles = makeStyles()(theme => ({
     "root": {
@@ -36,7 +36,7 @@ const useStyles = makeStyles()(theme => ({
         "flex": 1,
     },
     "timeContainer": {
-        "marginLeft": theme.spacing(5),
+        "marginLeft": theme.spacing(6),
     },
     "belowDividerTop": {
         "display": "flex",
@@ -45,6 +45,14 @@ const useStyles = makeStyles()(theme => ({
     "captions": {
         "display": "inline-block",
         "marginBottom": theme.spacing(2),
+    },
+    "packageNameWrapper": {
+        "& > *": {
+            "display": "inline-block",
+        },
+    },
+    "sharedTag": {
+        "marginLeft": theme.spacing(2),
     },
     "belowDividerBottom": {
         "display": "flex",
@@ -65,6 +73,7 @@ export type Props = {
     //Undefined when the service is not yey launched
     startTime: number | undefined;
     isOvertime: boolean;
+    isShared: boolean;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -80,6 +89,7 @@ export const MyServicesCard = memo((props: Props) => {
         openUrl,
         startTime,
         isOvertime,
+        isShared,
     } = props;
 
     const { classes, cx } = useStyles();
@@ -105,7 +115,12 @@ export const MyServicesCard = memo((props: Props) => {
                         <Text typo="caption" className={classes.captions}>
                             {t("service")}
                         </Text>
-                        <Text typo="label 1">{capitalize(packageName)}</Text>
+                        <div className={classes.packageNameWrapper}>
+                            <Text typo="label 1">{capitalize(packageName)}</Text>
+                            {isShared && (
+                                <Tag className={classes.sharedTag} text={t("shared")} />
+                            )}
+                        </div>
                     </div>
                     <div className={classes.timeContainer}>
                         <Text typo="caption" className={classes.captions}>
@@ -161,6 +176,7 @@ export declare namespace MyServicesCard {
         service: undefined;
         "running since": undefined;
         open: undefined;
-        "readme": undefined;
+        readme: undefined;
+        shared: undefined;
     };
 }

@@ -419,6 +419,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "running since": "Running since: ",
             "open": "open",
             "readme": "readme",
+            "shared": "Shared",
         },
         "MyServicesRunningTime": {
             "launching": "Launching...",
@@ -728,6 +729,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "running since": "En exécution depuis: ",
             "open": "ouvrir",
             "readme": "readme",
+            "shared": "partagé",
         },
         "MyServicesRunningTime": {
             "launching": "En cours...",

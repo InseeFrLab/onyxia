@@ -27,6 +27,7 @@ const props: Props = {
         "isOvertime": false,
         "postInstallInstructions":
             i % 3 === 0 ? `Post install instruction ${i}` : undefined,
+        "isShared": i % 2 === 0,
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     ...logCallbacks(["onRequestDelete"]),

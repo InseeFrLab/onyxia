@@ -207,7 +207,7 @@ export const thunks = {
 
             const getFriendlyName = (formFieldsValue: FormFieldValue[]) => {
                 const friendlyName = formFieldsValue.find(({ path }) =>
-                    same(path, onyxiaFriendlyNameFormFieldPath),
+                    same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
                 )?.value;
                 assert(!is<number | boolean>(friendlyName));
                 return friendlyName;
@@ -314,7 +314,8 @@ export const selectors = (() => {
                 "friendlyName": (() => {
                     const friendlyName =
                         restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
-                            ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath),
+                            ({ path }) =>
+                                same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
                         )?.value ?? packageName;
 
                     assert(typeof friendlyName === "string");

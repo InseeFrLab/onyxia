@@ -188,6 +188,7 @@ export function MyServices(props: Props) {
                               monitoringUrl,
                               isStarting,
                               postInstallInstructions,
+                              isShared,
                           }) => ({
                               "serviceId": id,
                               "packageIconUrl": logoUrl,
@@ -199,6 +200,7 @@ export function MyServices(props: Props) {
                               "startTime": isStarting ? undefined : startedAt,
                               "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
                               postInstallInstructions,
+                              isShared,
                           }),
                       ),
         [runningServices, isRunningServicesFetching],
