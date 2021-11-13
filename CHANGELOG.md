@@ -1,3 +1,11 @@
+## **0.18.0** (2021-11-13)  
+  
+- Enable to show services env  
+- Running service: allow show env  
+- Fix unstyled link in rendere markdown  
+- Display shared services  
+- MyService: Restore infoUrl    
+  
 ### **0.17.2** (2021-11-13)  
   
 - Fix problem with missing tos    
