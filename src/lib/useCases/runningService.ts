@@ -36,6 +36,7 @@ export type RunningService = {
     postInstallInstructions: string | undefined;
     isShared: boolean;
     env: Record<string, string>;
+    isOwned: boolean;
 };
 
 const { reducer, actions } = createSlice({
@@ -109,7 +110,7 @@ export const thunks = {
     "initializeOrRefreshIfNotAlreadyFetching":
         (): ThunkAction<void> =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient }] = args;
+            const [dispatch, getState, { onyxiaApiClient, userApiClient }] = args;
 
             {
                 const state = getState().runningService;
@@ -160,6 +161,8 @@ export const thunks = {
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
+            const { username } = await userApiClient.getUser();
+
             dispatch(
                 actions.fetchCompleted({
                     "runningServices": runningServicesRaw.map(
@@ -172,6 +175,7 @@ export const thunks = {
                             postInstallInstructions,
                             isShared,
                             env,
+                            owner,
                             ...rest
                         }) => ({
                             id,
@@ -198,6 +202,7 @@ export const thunks = {
                                   ),
                                   true),
                             postInstallInstructions,
+                            "isOwned": owner === username,
                         }),
                     ),
                 }),
