@@ -9,57 +9,6 @@ import { IconButton } from "app/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Tag } from "onyxia-ui/Tag";
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[1],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "&:hover": {
-            "boxShadow": theme.shadows[6],
-        },
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "aboveDivider": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box",
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "title": {
-        "marginLeft": theme.spacing(3),
-    },
-    "belowDivider": {
-        "padding": theme.spacing(4),
-        "paddingTop": theme.spacing(3),
-        "flex": 1,
-    },
-    "timeContainer": {
-        "marginLeft": theme.spacing(6),
-    },
-    "belowDividerTop": {
-        "display": "flex",
-        "marginBottom": theme.spacing(4),
-    },
-    "captions": {
-        "display": "inline-block",
-        "marginBottom": theme.spacing(2),
-    },
-    "packageNameWrapper": {
-        "& > *": {
-            "display": "inline-block",
-        },
-    },
-    "sharedTag": {
-        "marginLeft": theme.spacing(2),
-    },
-    "belowDividerBottom": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-}));
-
 export type Props = {
     className?: string;
     packageIconUrl?: string;
@@ -178,3 +127,54 @@ export declare namespace MyServicesCard {
         shared: undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { MyServicesCard } })(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[1],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "&:hover": {
+            "boxShadow": theme.shadows[6],
+        },
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "aboveDivider": {
+        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "boxSizing": "border-box",
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "title": {
+        "marginLeft": theme.spacing(3),
+    },
+    "belowDivider": {
+        "padding": theme.spacing(4),
+        "paddingTop": theme.spacing(3),
+        "flex": 1,
+    },
+    "timeContainer": {
+        "marginLeft": theme.spacing(6),
+    },
+    "belowDividerTop": {
+        "display": "flex",
+        "marginBottom": theme.spacing(4),
+    },
+    "captions": {
+        "display": "inline-block",
+        "marginBottom": theme.spacing(2),
+    },
+    "packageNameWrapper": {
+        "& > *": {
+            "display": "inline-block",
+        },
+    },
+    "sharedTag": {
+        "marginLeft": theme.spacing(2),
+    },
+    "belowDividerBottom": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+}));
