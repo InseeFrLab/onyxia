@@ -30,18 +30,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "bodyWrapper": {
-        "flex": 1,
-        "overflow": "hidden",
-    },
-});
-
 export function Catalog(props: Props) {
     const { className, route } = props;
 
@@ -209,3 +197,15 @@ export declare namespace Catalog {
         "here": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { Catalog } })({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "bodyWrapper": {
+        "flex": 1,
+        "overflow": "hidden",
+    },
+});

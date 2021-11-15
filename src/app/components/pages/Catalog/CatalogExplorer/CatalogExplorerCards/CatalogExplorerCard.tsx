@@ -5,63 +5,6 @@ import { Button } from "app/theme";
 import { useTranslation } from "app/i18n/useTranslations";
 import { capitalize } from "tsafe/capitalize";
 
-const useStyles = makeStyles()((theme, _params, createRef) => {
-    const learnMoreButton = {
-        "ref": createRef(),
-        "marginRight": theme.spacing(2),
-        "visibility": "hidden",
-    } as const;
-
-    return {
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "&:hover": {
-                "boxShadow": theme.shadows[6],
-                [`& .${learnMoreButton.ref}`]: {
-                    "visibility": "visible",
-                },
-            },
-            "display": "flex",
-            "flexDirection": "column",
-        },
-        "aboveDivider": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box",
-            "display": "flex",
-            "alignItems": "center",
-        },
-        "title": {
-            "marginLeft": theme.spacing(3),
-        },
-        "belowDivider": {
-            "padding": theme.spacing(4),
-            "paddingTop": theme.spacing(3),
-            "flex": 1,
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "hidden",
-        },
-        "body": {
-            "margin": 0,
-            "flex": 1,
-            //TODO: Commented out for mozilla (longer one always have scroll in a grid)
-            //"overflow": "auto"
-        },
-        "bodyTypo": {
-            "color": theme.colors.useCases.typography.textSecondary,
-        },
-        "buttonsWrapper": {
-            "display": "flex",
-            "justifyContent": "flex-end",
-            "marginTop": theme.spacing(4),
-        },
-        learnMoreButton,
-    };
-});
-
 export type Props = {
     className?: string;
     packageIconUrl?: string;
@@ -126,3 +69,62 @@ export declare namespace CatalogExplorerCard {
         launch: undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { CatalogExplorerCard } })(
+    (theme, _params, createRef) => {
+        const learnMoreButton = {
+            "ref": createRef(),
+            "marginRight": theme.spacing(2),
+            "visibility": "hidden",
+        } as const;
+
+        return {
+            "root": {
+                "borderRadius": 8,
+                "boxShadow": theme.shadows[1],
+                "backgroundColor": theme.colors.useCases.surfaces.surface1,
+                "&:hover": {
+                    "boxShadow": theme.shadows[6],
+                    [`& .${learnMoreButton.ref}`]: {
+                        "visibility": "visible",
+                    },
+                },
+                "display": "flex",
+                "flexDirection": "column",
+            },
+            "aboveDivider": {
+                "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
+                "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+                "boxSizing": "border-box",
+                "display": "flex",
+                "alignItems": "center",
+            },
+            "title": {
+                "marginLeft": theme.spacing(3),
+            },
+            "belowDivider": {
+                "padding": theme.spacing(4),
+                "paddingTop": theme.spacing(3),
+                "flex": 1,
+                "display": "flex",
+                "flexDirection": "column",
+                "overflow": "hidden",
+            },
+            "body": {
+                "margin": 0,
+                "flex": 1,
+                //TODO: Commented out for mozilla (longer one always have scroll in a grid)
+                //"overflow": "auto"
+            },
+            "bodyTypo": {
+                "color": theme.colors.useCases.typography.textSecondary,
+            },
+            "buttonsWrapper": {
+                "display": "flex",
+                "justifyContent": "flex-end",
+                "marginTop": theme.spacing(4),
+            },
+            learnMoreButton,
+        };
+    },
+);

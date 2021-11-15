@@ -11,21 +11,6 @@ export type Props = {
     tooltipText?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "marginBottom": theme.spacing(4),
-    },
-    "title": {
-        "display": "inline-block",
-    },
-    "helperText": {
-        "marginTop": theme.spacing(2),
-    },
-    "helpIcon": {
-        "marginLeft": theme.spacing(2),
-    },
-}));
-
 export const AccountSectionHeader = memo((props: Props) => {
     const { title, helperText, tooltipText, className } = props;
 
@@ -49,3 +34,18 @@ export const AccountSectionHeader = memo((props: Props) => {
         </div>
     );
 });
+
+const useStyles = makeStyles({ "label": { AccountSectionHeader } })(theme => ({
+    "root": {
+        "marginBottom": theme.spacing(4),
+    },
+    "title": {
+        "display": "inline-block",
+    },
+    "helperText": {
+        "marginTop": theme.spacing(2),
+    },
+    "helpIcon": {
+        "marginLeft": theme.spacing(2),
+    },
+}));

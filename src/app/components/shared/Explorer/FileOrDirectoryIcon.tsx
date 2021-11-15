@@ -15,35 +15,6 @@ export type Props = {
     kind: "file" | "directory";
 };
 
-const useStyles = makeStyles<Props>()((theme, { kind, standardizedWidth }) => ({
-    "root": {
-        "fill": "currentColor",
-        "color": (() => {
-            switch (kind) {
-                case "directory":
-                    return theme.colors.useCases.typography.textFocus;
-                case "file":
-                    return theme.colors.palette[
-                        theme.isDarkModeEnabled ? "light" : "dark"
-                    ].main;
-            }
-        })(),
-        ...(() => {
-            const width = (() => {
-                switch (standardizedWidth) {
-                    case "big":
-                        return 100;
-                    case "normal":
-                        return 60;
-                }
-            })();
-
-            return { width, "height": ~~((width * 8) / 10) };
-        })(),
-        "display": "block",
-    },
-}));
-
 export const FileOrDirectoryIcon = memo((props: Props) => {
     const { visualRepresentationOfAFile, kind } = props;
 
@@ -65,3 +36,34 @@ export const FileOrDirectoryIcon = memo((props: Props) => {
 
     return <SvgComponent className={classes.root} />;
 });
+
+const useStyles = makeStyles<Props>({ "label": { FileOrDirectoryIcon } })(
+    (theme, { kind, standardizedWidth }) => ({
+        "root": {
+            "fill": "currentColor",
+            "color": (() => {
+                switch (kind) {
+                    case "directory":
+                        return theme.colors.useCases.typography.textFocus;
+                    case "file":
+                        return theme.colors.palette[
+                            theme.isDarkModeEnabled ? "light" : "dark"
+                        ].main;
+                }
+            })(),
+            ...(() => {
+                const width = (() => {
+                    switch (standardizedWidth) {
+                        case "big":
+                            return 100;
+                        case "normal":
+                            return 60;
+                    }
+                })();
+
+                return { width, "height": ~~((width * 8) / 10) };
+            })(),
+            "display": "block",
+        },
+    }),
+);

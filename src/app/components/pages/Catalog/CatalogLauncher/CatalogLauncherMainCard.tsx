@@ -29,55 +29,6 @@ export type Props = {
     onRequestCopyLaunchUrl: (() => void) | undefined;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[7],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "aboveDivider": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box",
-        "display": "flex",
-    },
-    "cardTitle": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "belowDivider": {
-        "padding": theme.spacing(4),
-        "paddingLeft": theme.spacing(5),
-        "paddingTop": theme.spacing(3),
-        "flex": 1,
-    },
-    "logoAndTitleWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3),
-    },
-    "title": {
-        "display": "flex",
-        "alignItems": "center",
-        "marginLeft": theme.spacing(3),
-    },
-    "textFieldAndButtonWrapper": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "bellowDividerLeft": {
-        "flex": 1,
-    },
-    "bellowDividerRight": {
-        "display": "flex",
-        "alignItems": "flex-end",
-    },
-    "launchButton": {
-        "marginLeft": theme.spacing(2),
-    },
-}));
-
 export const CatalogLauncherMainCard = memo((props: Props) => {
     const {
         className,
@@ -171,3 +122,52 @@ export declare namespace CatalogLauncherMainCard {
         "save configuration": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { CatalogLauncherMainCard } })(theme => ({
+    "root": {
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[7],
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "aboveDivider": {
+        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "boxSizing": "border-box",
+        "display": "flex",
+    },
+    "cardTitle": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "belowDivider": {
+        "padding": theme.spacing(4),
+        "paddingLeft": theme.spacing(5),
+        "paddingTop": theme.spacing(3),
+        "flex": 1,
+    },
+    "logoAndTitleWrapper": {
+        "display": "flex",
+        "marginBottom": theme.spacing(3),
+    },
+    "title": {
+        "display": "flex",
+        "alignItems": "center",
+        "marginLeft": theme.spacing(3),
+    },
+    "textFieldAndButtonWrapper": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "bellowDividerLeft": {
+        "flex": 1,
+    },
+    "bellowDividerRight": {
+        "display": "flex",
+        "alignItems": "flex-end",
+    },
+    "launchButton": {
+        "marginLeft": theme.spacing(2),
+    },
+}));

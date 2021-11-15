@@ -16,31 +16,6 @@ export type Props = {
     callback: (action: SavedConfigurationAction) => void;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "icon": {
-        "color": theme.colors.useCases.typography.textPrimary,
-    },
-    "menu": {
-        "& .Mui-selected": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        },
-        "& .MuiPaper-root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background,
-        },
-        "& a": {
-            "color": theme.colors.useCases.typography.textPrimary,
-        },
-    },
-    "menuTypo": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "button": {
-        "minWidth": "unset",
-        "marginLeft": theme.spacing(1),
-    },
-}));
-
 export const MyServicesSavedConfigOptions = memo((props: Props) => {
     const { callback } = props;
 
@@ -133,5 +108,30 @@ export declare namespace MyServicesSavedConfigOptions {
         "copy link": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { MyServicesSavedConfigOptions } })(theme => ({
+    "icon": {
+        "color": theme.colors.useCases.typography.textPrimary,
+    },
+    "menu": {
+        "& .Mui-selected": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        },
+        "& .MuiPaper-root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+        },
+        "& a": {
+            "color": theme.colors.useCases.typography.textPrimary,
+        },
+    },
+    "menuTypo": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "button": {
+        "minWidth": "unset",
+        "marginLeft": theme.spacing(1),
+    },
+}));
 
 const menuId = "saved-configurations";

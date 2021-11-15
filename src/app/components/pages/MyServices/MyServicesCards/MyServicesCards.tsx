@@ -12,6 +12,7 @@ import { assert } from "tsafe/assert";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Button } from "app/theme";
 import { Markdown } from "app/tools/Markdown";
+import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
@@ -34,35 +35,6 @@ export type Props = {
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
 };
-
-const useStyles = makeStyles<{ isThereServicesRunning: boolean }>()(
-    (theme, { isThereServicesRunning }) => ({
-        "root": {
-            "overflow": "hidden",
-            "display": "flex",
-            "flexDirection": "column",
-        },
-        "header": {
-            ...theme.spacing.topBottom("margin", 3),
-        },
-        "wrapper": {
-            "overflow": "auto",
-            ...(!isThereServicesRunning
-                ? {
-                      "flex": 1,
-                  }
-                : {
-                      "paddingRight": theme.spacing(3),
-                      "display": "grid",
-                      "gridTemplateColumns": "repeat(2,1fr)",
-                      "gap": theme.spacing(4),
-                  }),
-        },
-        "noRunningServices": {
-            "height": "100%",
-        },
-    }),
-);
 
 export const MyServicesCards = memo((props: Props) => {
     const { className, onRequestDelete, cards, catalogExplorerLink } = props;
@@ -184,38 +156,40 @@ export declare namespace MyServicesCards {
     };
 }
 
+const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
+    "label": { MyServicesCards },
+})((theme, { isThereServicesRunning }) => ({
+    "root": {
+        "overflow": "hidden",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "header": {
+        ...theme.spacing.topBottom("margin", 3),
+    },
+    "wrapper": {
+        "overflow": "auto",
+        ...(!isThereServicesRunning
+            ? {
+                  "flex": 1,
+              }
+            : {
+                  "paddingRight": theme.spacing(3),
+                  "display": "grid",
+                  "gridTemplateColumns": "repeat(2,1fr)",
+                  "gap": theme.spacing(4),
+              }),
+    },
+    "noRunningServices": {
+        "height": "100%",
+    },
+}));
+
 const { NoRunningService } = (() => {
     type Props = {
         className: string;
         catalogExplorerLink: Link;
     };
-
-    const useStyles = makeStyles()(theme => ({
-        "root": {
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center",
-        },
-        "innerDiv": {
-            "textAlign": "center",
-            "maxWidth": 500,
-        },
-        "svg": {
-            "fill": theme.colors.palette.dark.greyVariant2,
-            "width": 100,
-            "margin": 0,
-        },
-        "h2": {
-            ...theme.spacing.topBottom("margin", 5),
-        },
-        "typo": {
-            "marginBottom": theme.spacing(2),
-            "color": theme.colors.palette.light.greyVariant3,
-        },
-        "link": {
-            "cursor": "pointer",
-        },
-    }));
 
     const NoRunningService = memo((props: Props) => {
         const { className, catalogExplorerLink } = props;
@@ -242,6 +216,35 @@ const { NoRunningService } = (() => {
             </div>
         );
     });
+
+    const useStyles = makeStyles({
+        "label": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
+    })(theme => ({
+        "root": {
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+        },
+        "innerDiv": {
+            "textAlign": "center",
+            "maxWidth": 500,
+        },
+        "svg": {
+            "fill": theme.colors.palette.dark.greyVariant2,
+            "width": 100,
+            "margin": 0,
+        },
+        "h2": {
+            ...theme.spacing.topBottom("margin", 5),
+        },
+        "typo": {
+            "marginBottom": theme.spacing(2),
+            "color": theme.colors.palette.light.greyVariant3,
+        },
+        "link": {
+            "cursor": "pointer",
+        },
+    }));
 
     return { NoRunningService };
 })();

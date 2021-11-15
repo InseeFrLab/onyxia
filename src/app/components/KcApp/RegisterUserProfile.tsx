@@ -444,7 +444,7 @@ function formatEmailPattern(pattern: string) {
     }
 }
 
-const useStyles = makeStyles()(theme => ({
+const useStyles = makeStyles({ "label": { RegisterUserProfile } })(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",

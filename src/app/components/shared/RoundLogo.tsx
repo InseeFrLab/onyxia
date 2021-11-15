@@ -10,24 +10,6 @@ export type RoundLogoProps = {
     size?: IconSizeName;
 };
 
-const useStyles = makeStyles<{ iconSizeName: IconSizeName }>()(
-    (theme, { iconSizeName }) => ({
-        "fallback": {
-            "fill": theme.colors.useCases.typography.textPrimary,
-        },
-        "root": {
-            ...(() => {
-                const size = theme.iconSizesInPxByName[iconSizeName];
-
-                return {
-                    "width": size,
-                    "height": size,
-                };
-            })(),
-        },
-    }),
-);
-
 export const RoundLogo = memo((props: RoundLogoProps) => {
     const { url, size = "default", className } = props;
 
@@ -39,3 +21,21 @@ export const RoundLogo = memo((props: RoundLogoProps) => {
         </Avatar>
     );
 });
+
+const useStyles = makeStyles<{ iconSizeName: IconSizeName }>({
+    "label": { RoundLogo },
+})((theme, { iconSizeName }) => ({
+    "fallback": {
+        "fill": theme.colors.useCases.typography.textPrimary,
+    },
+    "root": {
+        ...(() => {
+            const size = theme.iconSizesInPxByName[iconSizeName];
+
+            return {
+                "width": size,
+                "height": size,
+            };
+        })(),
+    },
+}));

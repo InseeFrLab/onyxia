@@ -20,6 +20,7 @@ import { Alert } from "onyxia-ui/Alert";
 import { headInsert } from "keycloakify/lib/tools/headInsert";
 import { join as pathJoin } from "path";
 import type { KcContext } from "./kcContext";
+import { symToStr } from "tsafe/symToStr";
 
 export type TemplateProps = {
     doFetchDefaultThemeResources: boolean;
@@ -218,29 +219,6 @@ const { Page } = (() => {
         onClickCross: (() => void) | undefined;
     } & { kcContext: KcContext } & KcTemplateProps;
 
-    const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>()(
-        (theme, { isPaperBiggerThanContainer }) => ({
-            "root": {
-                "display": "flex",
-                "justifyContent": "center",
-                "alignItems": isPaperBiggerThanContainer ? undefined : "center",
-            },
-            "paper": {
-                "padding": theme.spacing(5),
-                "width": 490,
-                "height": "fit-content",
-                "marginBottom": theme.spacing(4),
-                "borderRadius": 8,
-            },
-            "alert": {
-                "alignItems": "center",
-            },
-            "crossButtonWrapper": {
-                "display": "flex",
-            },
-        }),
-    );
-
     const Page = memo((props: Props) => {
         const {
             className,
@@ -300,20 +278,35 @@ const { Page } = (() => {
         );
     });
 
+    const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>({
+        "label": { Page },
+    })((theme, { isPaperBiggerThanContainer }) => ({
+        "root": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": isPaperBiggerThanContainer ? undefined : "center",
+        },
+        "paper": {
+            "padding": theme.spacing(5),
+            "width": 490,
+            "height": "fit-content",
+            "marginBottom": theme.spacing(4),
+            "borderRadius": 8,
+        },
+        "alert": {
+            "alignItems": "center",
+        },
+        "crossButtonWrapper": {
+            "display": "flex",
+        },
+    }));
+
     const { Head } = (() => {
         type Props = {
             displayRequiredFields: boolean;
             headerNode: ReactNode;
             showUsernameNode?: ReactNode;
         } & { kcContext: KcContext } & KcTemplateProps;
-
-        const useStyles = makeStyles()(theme => ({
-            "root": {
-                "textAlign": "center",
-                "marginTop": theme.spacing(3),
-                "marginBottom": theme.spacing(3),
-            },
-        }));
 
         const Head = memo((props: Props) => {
             const {
@@ -422,6 +415,16 @@ const { Page } = (() => {
             );
         });
 
+        const useStyles = makeStyles({
+            "label": `${symToStr({ Template })}${symToStr({ Head })}`,
+        })(theme => ({
+            "root": {
+                "textAlign": "center",
+                "marginTop": theme.spacing(3),
+                "marginBottom": theme.spacing(3),
+            },
+        }));
+
         return { Head };
     })();
 
@@ -434,12 +437,6 @@ const { Page } = (() => {
             displayInfo?: boolean;
             infoNode?: ReactNode;
         } & { kcContext: KcContext } & KcTemplateProps;
-
-        const useStyles = makeStyles()(() => ({
-            "alert": {
-                "alignItems": "center",
-            },
-        }));
 
         const Main = memo((props: Props) => {
             const {
@@ -534,6 +531,14 @@ const { Page } = (() => {
                 </div>
             );
         });
+
+        const useStyles = makeStyles({
+            "label": `${symToStr({ Template })}${symToStr({ Main })}`,
+        })(() => ({
+            "alert": {
+                "alignItems": "center",
+            },
+        }));
 
         return { Main };
     })();

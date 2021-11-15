@@ -37,38 +37,6 @@ export type Props = {
     onDoDisplayUseInServiceDialogValueChange(doDisplayUseInServiceDialog: boolean): void;
 };
 
-const useStyles = makeStyles<Props>()(theme => ({
-    "root": {
-        "padding": theme.spacing(3),
-        "& .MuiTableCell-root": {
-            "padding": 0,
-            "border": "unset",
-        },
-        "& .MuiTableHead-root": {
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        },
-        //So the error on the input of the last row is not cropped.
-        "overflow": "visible",
-    },
-    "tableHead": {
-        "& .MuiTypography-root": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
-        },
-    },
-    "buttonWrapper": {
-        "& > *": {
-            "marginTop": theme.spacing(4),
-            "marginRight": theme.spacing(2),
-        },
-    },
-    "tableContainerRoot": {
-        "overflow": "visible",
-    },
-    "dialog": {
-        "backgroundColor": "red",
-    },
-}));
-
 export const MySecretsEditor = memo((props: Props) => {
     const {
         secretWithMetadata,
@@ -397,6 +365,38 @@ export declare namespace MySecretsEditor {
         "do not display again": undefined;
     };
 }
+
+const useStyles = makeStyles<Props>({ "label": { MySecretsEditor } })(theme => ({
+    "root": {
+        "padding": theme.spacing(3),
+        "& .MuiTableCell-root": {
+            "padding": 0,
+            "border": "unset",
+        },
+        "& .MuiTableHead-root": {
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        },
+        //So the error on the input of the last row is not cropped.
+        "overflow": "visible",
+    },
+    "tableHead": {
+        "& .MuiTypography-root": {
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+        },
+    },
+    "buttonWrapper": {
+        "& > *": {
+            "marginTop": theme.spacing(4),
+            "marginRight": theme.spacing(2),
+        },
+    },
+    "tableContainerRoot": {
+        "overflow": "visible",
+    },
+    "dialog": {
+        "backgroundColor": "red",
+    },
+}));
 
 function stringifyValue(value: Secret.Value) {
     return typeof value === "object" ? JSON.stringify(value) : `${value}`;

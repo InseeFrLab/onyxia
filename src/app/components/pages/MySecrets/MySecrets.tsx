@@ -30,19 +30,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "explorer": {
-        "overflow": "hidden",
-        "flex": 1,
-        "width": "100%",
-    },
-});
-
 export function MySecrets(props: Props) {
     //TODO: Fix how routes are handled, can't navigate back for example.
     const { className, route } = props;
@@ -335,3 +322,16 @@ export declare namespace MySecrets {
         "read our documentation": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { MySecrets } })({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "explorer": {
+        "overflow": "hidden",
+        "flex": 1,
+        "width": "100%",
+    },
+});

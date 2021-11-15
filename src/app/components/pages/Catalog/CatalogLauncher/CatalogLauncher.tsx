@@ -22,19 +22,6 @@ export type Props = {
     scrollableDivRef: RefObject<HTMLDivElement>;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "wrapperForScroll": {
-        "height": "100%",
-        "overflow": "auto",
-    },
-    "wrapperForMawWidth": {
-        "maxWidth": 1200,
-        "& > *": {
-            "marginBottom": theme.spacing(3),
-        },
-    },
-}));
-
 export const CatalogLauncher = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
@@ -305,3 +292,16 @@ export declare namespace CatalogLauncher {
         "replace": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { CatalogLauncher } })(theme => ({
+    "wrapperForScroll": {
+        "height": "100%",
+        "overflow": "auto",
+    },
+    "wrapperForMawWidth": {
+        "maxWidth": 1200,
+        "& > *": {
+            "marginBottom": theme.spacing(3),
+        },
+    },
+}));

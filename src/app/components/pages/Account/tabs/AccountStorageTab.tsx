@@ -18,19 +18,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "divider": {
-        ...theme.spacing.topBottom("margin", 4),
-    },
-    "link": {
-        "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
-    "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
-    },
-}));
-
 export const AccountStorageTab = memo((props: Props) => {
     const { className } = props;
 
@@ -169,3 +156,16 @@ export declare namespace AccountStorageTab {
         "valid until": { when: string };
     };
 }
+
+const useStyles = makeStyles({ "label": { AccountStorageTab } })(theme => ({
+    "divider": {
+        ...theme.spacing.topBottom("margin", 4),
+    },
+    "link": {
+        "marginTop": theme.spacing(2),
+        "display": "inline-block",
+    },
+    "envVar": {
+        "color": theme.colors.useCases.typography.textFocus,
+    },
+}));
