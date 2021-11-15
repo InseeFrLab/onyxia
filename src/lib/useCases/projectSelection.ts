@@ -15,7 +15,7 @@ type ProjectsState = {
     selectedProjectId: string;
 };
 
-export const name = "projects";
+export const name = "projectSelection";
 
 const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
@@ -90,7 +90,7 @@ export const privateThunks = {
 
 export const selectors = (() => {
     const selectedProject = (rootState: RootState): Project => {
-        const { projects, selectedProjectId } = rootState.projects;
+        const { projects, selectedProjectId } = rootState.projectSelection;
 
         const selectedProject = projects.find(({ id }) => id === selectedProjectId);
 

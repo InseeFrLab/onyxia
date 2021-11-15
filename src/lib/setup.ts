@@ -12,7 +12,7 @@ import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageCo
 import * as publicIpUseCase from "./useCases/publicIp";
 import * as userAuthenticationUseCase from "./useCases/userAuthentication";
 import * as deploymentRegionUseCase from "./useCases/deploymentRegion";
-import * as projectsUseCase from "./useCases/projects";
+import * as projectSelectionUseCase from "./useCases/projectSelection";
 import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { ReturnType } from "tsafe/ReturnType";
@@ -317,7 +317,7 @@ export async function createStore(params: CreateStoreParams) {
             [runningServiceUseCase.name]: runningServiceUseCase.reducer,
             [publicIpUseCase.name]: publicIpUseCase.reducer,
             [deploymentRegionUseCase.name]: deploymentRegionUseCase.reducer,
-            [projectsUseCase.name]: projectsUseCase.reducer,
+            [projectSelectionUseCase.name]: projectSelectionUseCase.reducer,
         },
         "middleware": getDefaultMiddleware =>
             getDefaultMiddleware({
@@ -353,8 +353,9 @@ export async function createStore(params: CreateStoreParams) {
         store.getState().deploymentRegion.selectedDeploymentRegionId;
 
     if (oidcClient.isUserLoggedIn) {
-        await store.dispatch(projectsUseCase.privateThunks.initialize());
-        getCurrentlySelectedProjectId = () => store.getState().projects.selectedProjectId;
+        await store.dispatch(projectSelectionUseCase.privateThunks.initialize());
+        getCurrentlySelectedProjectId = () =>
+            store.getState().projectSelection.selectedProjectId;
     }
 
     return store;

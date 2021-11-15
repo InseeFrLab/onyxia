@@ -469,14 +469,16 @@ function useSyncDarkModeWithValueInProfile() {
 }
 
 function useProjectsSlice() {
-    const { projectsThunks, userAuthenticationThunks } = useThunks();
+    const { projectSelectionThunks, userAuthenticationThunks } = useThunks();
     const projectsState = useSelector(state =>
-        !userAuthenticationThunks.getIsUserLoggedIn() ? undefined : state.projects,
+        !userAuthenticationThunks.getIsUserLoggedIn()
+            ? undefined
+            : state.projectSelection,
     );
 
     const onSelectedProjectChange = useConstCallback(
         async (props: { projectId: string }) => {
-            await projectsThunks.changeProject(props);
+            await projectSelectionThunks.changeProject(props);
             window.location.reload();
         },
     );
