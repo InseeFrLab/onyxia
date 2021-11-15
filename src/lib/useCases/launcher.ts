@@ -966,7 +966,7 @@ export const thunks = {
                     "ip": publicIp,
                 },
                 "project": {
-                    "id": getState().projects.selectedProjectId,
+                    "id": getState().projectSelection.selectedProjectId,
                     "password": userConfigs.userServicePassword,
                 },
                 "git": {
