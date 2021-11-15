@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { ThunkAction } from "../setup";
-import { join as pathJoin } from "path";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
@@ -12,6 +11,7 @@ import {
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import type { RootState } from "../setup";
+import { createGetPathFactory } from "./projectConfigs";
 
 /*
  * Values of the user profile that can be changed.
@@ -26,7 +26,6 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
 export type UserConfigs = Id<
     Record<string, string | boolean | number | null>,
     {
-        userServicePassword: string;
         kaggleApiToken: string | null;
         gitName: string;
         gitEmail: string;
@@ -107,24 +106,15 @@ export const thunks = {
 
             dispatch(actions.changeStarted(params));
 
-            const { getConfigKeyPath: getProfileKeyPath } = getConfigKeyPathFactory({
-                username,
-            });
+            const { getPath } = getPathFactory({ "projectId": username });
 
             await secretsManagerClient.put({
-                "path": getProfileKeyPath({ "key": params.key }),
+                "path": getPath({ "key": params.key }),
                 "secret": { "value": params.value },
             });
 
             dispatch(actions.changeCompleted(params));
         },
-    "renewUserServicePassword": (): ThunkAction => dispatch =>
-        dispatch(
-            thunks.changeValue({
-                "key": "userServicePassword",
-                "value": generatePassword(),
-            }),
-        ),
     "resetHelperDialogs": (): ThunkAction => dispatch =>
         dispatch(
             thunks.changeValue({
@@ -154,11 +144,10 @@ export const privateThunks = {
 
             const { username, email } = dispatch(userAuthenticationThunks.getUser());
 
-            const { getConfigKeyPath } = getConfigKeyPathFactory({ username });
+            const { getPath } = getPathFactory({ "projectId": username });
 
             //Default values
             const userConfigs: UserConfigs = {
-                "userServicePassword": generatePassword(),
                 "kaggleApiToken": null,
                 "gitName": username,
                 "gitEmail": email,
@@ -174,11 +163,7 @@ export const privateThunks = {
 
             await Promise.all(
                 objectKeys(userConfigs).map(async key => {
-                    const path = getConfigKeyPath({ key });
-
-                    const secretWithMetadata = await secretsManagerClient
-                        .get({ path })
-                        .catch(() => undefined);
+                    const path = getPath({ key });
 
                     const isLegacyValue = (value: unknown) => {
                         switch (key) {
@@ -188,9 +173,10 @@ export const privateThunks = {
                         return false;
                     };
 
-                    const value = !secretWithMetadata
-                        ? undefined
-                        : secretWithMetadata.secret["value"];
+                    const value = await secretsManagerClient
+                        .get({ path })
+                        .then(({ secret }) => secret["value"])
+                        .catch(() => undefined);
 
                     if (value === undefined || isLegacyValue(value)) {
                         //Store default value.
@@ -210,24 +196,6 @@ export const privateThunks = {
         },
 };
 
-const generatePassword = () =>
-    Array(2)
-        .fill("")
-        .map(() => Math.random().toString(36).slice(-10))
-        .join("");
-
-const getConfigKeyPathFactory = (params: { username: string }) => {
-    const { username } = params;
-
-    const getConfigKeyPath = (params: { key: keyof UserConfigs }) => {
-        const { key } = params;
-
-        return pathJoin(username, ".onyxia", key);
-    };
-
-    return { getConfigKeyPath };
-};
-
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */
     const userConfigs = (rootState: RootState): UserConfigs => {
@@ -242,3 +210,5 @@ export const selectors = (() => {
 
     return { userConfigs };
 })();
+
+const { getPathFactory } = createGetPathFactory<keyof UserConfigs>();

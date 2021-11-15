@@ -4,7 +4,6 @@ import Cards from "./cards";
 import Toolbar from "./toolbar";
 import { Service, Group } from "js/model";
 import { getServices, deleteServices } from "js/api/my-lab";
-import { useSelector } from "app/libApi";
 
 interface Props {
     groupId?: string;
@@ -14,9 +13,7 @@ const Services = ({ groupId }: Props) => {
     const [services, setServices] = useState<Service[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
-    const userPassword = useSelector(
-        state => state.userConfigs.userServicePassword.value,
-    );
+    const userPassword = "";
 
     const loadData = (groupId?: String) => {
         setLoading(true);
