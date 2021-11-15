@@ -1,3 +1,7 @@
+### **0.18.3** (2021-11-15)  
+  
+- Meaningfull class names, better debugging exp    
+  
 ### **0.18.2** (2021-11-13)  
   
 - Replace delete icon by block icon for services    
