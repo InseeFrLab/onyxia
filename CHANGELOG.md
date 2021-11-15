@@ -1,3 +1,7 @@
+### **0.18.2** (2021-11-13)  
+  
+- Replace delete icon by block icon for services    
+  
 ### **0.18.1** (2021-11-13)  
   
 - Do not display shared services that are not owned  
