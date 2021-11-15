@@ -1,3 +1,8 @@
+### **0.18.5** (2021-11-15)  
+  
+- Inject selected project in mustach params  
+- Add missing className label    
+  
 ### **0.18.3** (2021-11-15)  
   
 - Meaningfull class names, better debugging exp    
