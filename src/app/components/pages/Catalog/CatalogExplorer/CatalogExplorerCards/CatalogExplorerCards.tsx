@@ -28,47 +28,6 @@ export type Props<PackageName extends string = string> = {
     scrollableDivRef: RefObject<HTMLDivElement>;
 };
 
-const useStyles = makeStyles<{
-    filteredCardCount: number;
-}>()((theme, { filteredCardCount }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "searchBar": {
-        "marginBottom": theme.spacing(4),
-    },
-    "contextTypo": {
-        "marginBottom": theme.spacing(4),
-    },
-    "cardsWrapper": {
-        "flex": 1,
-        "overflow": "auto",
-    },
-    "cards": {
-        ...(filteredCardCount === 0
-            ? {}
-            : {
-                  "display": "grid",
-                  "gridTemplateColumns": `repeat(${(() => {
-                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
-                          return 4;
-                      }
-                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
-                          return 3;
-                      }
-
-                      return 2;
-                  })()},1fr)`,
-                  "gap": theme.spacing(4),
-              }),
-    },
-    "bottomScrollSpace": {
-        "height": theme.spacing(3),
-    },
-}));
-
 export const CatalogExplorerCards = memo(
     <PackageName extends string = string>(props: Props<PackageName>) => {
         const {
@@ -299,3 +258,44 @@ const { NoMatches } = (() => {
 
     return { NoMatches };
 })();
+
+const useStyles = makeStyles<{
+    filteredCardCount: number;
+}>({ "label": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "searchBar": {
+        "marginBottom": theme.spacing(4),
+    },
+    "contextTypo": {
+        "marginBottom": theme.spacing(4),
+    },
+    "cardsWrapper": {
+        "flex": 1,
+        "overflow": "auto",
+    },
+    "cards": {
+        ...(filteredCardCount === 0
+            ? {}
+            : {
+                  "display": "grid",
+                  "gridTemplateColumns": `repeat(${(() => {
+                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
+                          return 4;
+                      }
+                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
+                          return 3;
+                      }
+
+                      return 2;
+                  })()},1fr)`,
+                  "gap": theme.spacing(4),
+              }),
+    },
+    "bottomScrollSpace": {
+        "height": theme.spacing(3),
+    },
+}));

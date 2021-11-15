@@ -50,33 +50,6 @@ export type Props = {
     isDarker: boolean;
 };
 
-const useStyles = makeStyles<Props & { isInEditingState: boolean }>()(
-    (theme, { isInEditingState, isDarker }) => ({
-        "root": {
-            "backgroundColor": isDarker
-                ? theme.colors.useCases.surfaces.background
-                : "transparent",
-            "& .MuiTextField-root": {
-                "width": "100%",
-            },
-        },
-        "dollarSign": {
-            "color": isInEditingState
-                ? theme.colors.useCases.typography.textDisabled
-                : theme.colors.useCases.typography.textFocus,
-        },
-        "valueAndResolvedValue": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
-            //"wordBreak": "break-all"
-        },
-        "keyAndValueTableCells": {
-            "padding": isInEditingState
-                ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
-                : undefined,
-        },
-    }),
-);
-
 export const MySecretsEditorRow = memo((props: Props) => {
     const { t } = useTranslation("MySecretsEditorRow");
 
@@ -375,6 +348,33 @@ export declare namespace MySecretsEditorRow {
         "value input desc": undefined;
     };
 }
+
+const useStyles = makeStyles<Props & { isInEditingState: boolean }>({
+    "label": { MySecretsEditorRow },
+})((theme, { isInEditingState, isDarker }) => ({
+    "root": {
+        "backgroundColor": isDarker
+            ? theme.colors.useCases.surfaces.background
+            : "transparent",
+        "& .MuiTextField-root": {
+            "width": "100%",
+        },
+    },
+    "dollarSign": {
+        "color": isInEditingState
+            ? theme.colors.useCases.typography.textDisabled
+            : theme.colors.useCases.typography.textFocus,
+    },
+    "valueAndResolvedValue": {
+        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+        //"wordBreak": "break-all"
+    },
+    "keyAndValueTableCells": {
+        "padding": isInEditingState
+            ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
+            : undefined,
+    },
+}));
 
 function toUpperCase(value: string) {
     return value.toUpperCase();

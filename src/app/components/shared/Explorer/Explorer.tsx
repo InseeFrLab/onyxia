@@ -93,29 +93,6 @@ export type ExplorerProps = {
     scrollableDivRef: RefObject<any>;
 };
 
-const useStyles = makeStyles<{ cmdTranslationTop: number }>()(
-    (theme, { cmdTranslationTop }) => ({
-        "root": {
-            "position": "relative",
-            "display": "flex",
-            "flexDirection": "column",
-        },
-        "cmdTranslation": {
-            "position": "absolute",
-            "right": 0,
-            "width": "40%",
-            "top": cmdTranslationTop,
-            "zIndex": 1,
-            "opacity": cmdTranslationTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear",
-        },
-        "breadcrump": {
-            "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4),
-        },
-    }),
-);
-
 export const Explorer = memo((props: ExplorerProps) => {
     const {
         className,
@@ -526,6 +503,29 @@ export declare namespace Explorer {
         "do not display again": undefined;
     };
 }
+
+const useStyles = makeStyles<{ cmdTranslationTop: number }>({ "label": { Explorer } })(
+    (theme, { cmdTranslationTop }) => ({
+        "root": {
+            "position": "relative",
+            "display": "flex",
+            "flexDirection": "column",
+        },
+        "cmdTranslation": {
+            "position": "absolute",
+            "right": 0,
+            "width": "40%",
+            "top": cmdTranslationTop,
+            "zIndex": 1,
+            "opacity": cmdTranslationTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear",
+        },
+        "breadcrump": {
+            "marginTop": theme.spacing(3),
+            "marginBottom": theme.spacing(4),
+        },
+    }),
+);
 
 function useCmdTranslationPositioning() {
     const {

@@ -35,23 +35,6 @@ export type Props = {
     onFormValueChange(params: FormFieldValue): void;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1],
-    },
-    "collapsedPanel": {
-        "maxHeight": 0,
-        "transform": "scaleY(0)",
-    },
-    "expandedPanel": {
-        "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-        "transform": "scaleY(1)",
-        "transformOrigin": "top",
-    },
-}));
-
 export const CatalogLauncherConfigurationCard = memo((props: Props) => {
     const {
         className,
@@ -570,3 +553,22 @@ const { TabContent } = (() => {
 
     return { TabContent };
 })();
+
+const useStyles = makeStyles({ "label": { CatalogLauncherConfigurationCard } })(
+    theme => ({
+        "root": {
+            "borderRadius": 8,
+            "overflow": "hidden",
+            "boxShadow": theme.shadows[1],
+        },
+        "collapsedPanel": {
+            "maxHeight": 0,
+            "transform": "scaleY(0)",
+        },
+        "expandedPanel": {
+            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "transform": "scaleY(1)",
+            "transformOrigin": "top",
+        },
+    }),
+);

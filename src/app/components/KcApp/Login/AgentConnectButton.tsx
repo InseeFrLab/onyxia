@@ -10,7 +10,25 @@ export type Props = {
     url: string;
 };
 
-const useStyles = makeStyles()(theme => ({
+export const AgentConnectButton = memo((props: Props) => {
+    const { className, url } = props;
+
+    const { classes, cx } = useStyles();
+
+    const { isDarkModeEnabled } = useIsDarkModeEnabled();
+
+    const AgentConnectSvg = isDarkModeEnabled
+        ? AgentConnectDarkSvg
+        : AgentConnectLightSvg;
+
+    return (
+        <a className={cx(classes.root, className)} href={url}>
+            <AgentConnectSvg className={classes.svg} />
+        </a>
+    );
+});
+
+const useStyles = makeStyles({ "label": { AgentConnectButton } })(theme => ({
     "root": {
         ...theme.spacing.topBottom("padding", 2),
         "display": "flex",
@@ -36,21 +54,3 @@ const useStyles = makeStyles()(theme => ({
         "height": 48,
     },
 }));
-
-export const AgentConnectButton = memo((props: Props) => {
-    const { className, url } = props;
-
-    const { classes, cx } = useStyles();
-
-    const { isDarkModeEnabled } = useIsDarkModeEnabled();
-
-    const AgentConnectSvg = isDarkModeEnabled
-        ? AgentConnectDarkSvg
-        : AgentConnectLightSvg;
-
-    return (
-        <a className={cx(classes.root, className)} href={url}>
-            <AgentConnectSvg className={classes.svg} />
-        </a>
-    );
-});

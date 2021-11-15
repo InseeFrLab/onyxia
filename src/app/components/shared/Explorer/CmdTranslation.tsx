@@ -26,105 +26,6 @@ export type Props = {
     maxHeight: number;
 };
 
-const useStyles = makeStyles<Props & { headerHeight: number; isExpended: boolean }>()(
-    (theme, { isExpended, maxHeight, headerHeight }) => {
-        const borderRadius = `0 0 0 30px`;
-
-        const textColor = theme.isDarkModeEnabled
-            ? theme.colors.palette.dark.main
-            : theme.colors.palette.limeGreen.main;
-
-        return {
-            "iconButton": {
-                "& svg": {
-                    "color": textColor,
-                    "transition": theme.muiTheme.transitions.create(["transform"], {
-                        "duration": theme.muiTheme.transitions.duration.short,
-                    }),
-                    "transform": isExpended ? "rotate(-180deg)" : "rotate(0)",
-                },
-                "&:hover": {
-                    "& svg": {
-                        "color": theme.isDarkModeEnabled
-                            ? theme.colors.palette.light.light
-                            : theme.colors.palette.dark.greyVariant2,
-                    },
-                },
-                "& .MuiTouchRipple-root": {
-                    "color": textColor,
-                },
-            },
-            "circularLoading": {
-                "color": theme.colors.palette.light.main,
-            },
-            "collapsedPanel": {
-                "maxHeight": 0,
-                "overflow": "hidden",
-                "transform": "scaleY(0)",
-                "transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-            },
-            "expandedPanel": {
-                "maxHeight": maxHeight - headerHeight,
-                "backgroundColor": theme.colors.palette.dark.light,
-                "overflow": "auto",
-                "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-                "& pre": {
-                    "whiteSpace": "pre-wrap",
-                    "wordBreak": "break-all",
-                },
-                "transform": "scaleY(1)",
-                "transformOrigin": "top",
-                borderRadius,
-                "paddingTop": theme.spacing(2),
-            },
-            "header": {
-                "backgroundColor": theme.isDarkModeEnabled
-                    ? theme.colors.palette.limeGreen.main
-                    : theme.colors.palette.dark.main,
-                ...(!isExpended ? {} : { borderRadius }),
-                "borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
-                "display": "flex",
-                "alignItems": "center",
-                //"border": "1px solid white"
-                "& .dollarSign": {
-                    "color": textColor,
-                },
-            },
-            "lastTranslatedCmd": {
-                "flex": 1,
-                "whiteSpace": "nowrap",
-                "overflow": "hidden",
-                "textOverflow": "ellipsis",
-                "fontFamily": "monospace",
-                //"border": "1px solid white",
-                "color": textColor,
-            },
-            "dollarContainer": {
-                "width": 70,
-                //"border": "1px solid white",
-                "textAlign": "end",
-                "paddingRight": 10,
-            },
-            "entryRoot": {
-                "display": "flex",
-                //"border": "1px solid white"
-            },
-            "preWrapper": {
-                "flex": 1,
-                "& pre:nth-of-type(1)": {
-                    "color": theme.colors.palette.limeGreen.main,
-                    "marginTop": 2,
-                },
-                "& pre:nth-of-type(2)": {
-                    "color": theme.colors.palette.light.light,
-                },
-            },
-            "dollarIcon": {
-                "color": theme.colors.palette.limeGreen.main,
-            },
-        };
-    },
-);
 export const CmdTranslation = memo((props: Props) => {
     const { className, translations } = props;
 
@@ -215,4 +116,104 @@ export const CmdTranslation = memo((props: Props) => {
             </div>
         </div>
     );
+});
+
+const useStyles = makeStyles<Props & { headerHeight: number; isExpended: boolean }>({
+    "label": { CmdTranslation },
+})((theme, { isExpended, maxHeight, headerHeight }) => {
+    const borderRadius = `0 0 0 30px`;
+
+    const textColor = theme.isDarkModeEnabled
+        ? theme.colors.palette.dark.main
+        : theme.colors.palette.limeGreen.main;
+
+    return {
+        "iconButton": {
+            "& svg": {
+                "color": textColor,
+                "transition": theme.muiTheme.transitions.create(["transform"], {
+                    "duration": theme.muiTheme.transitions.duration.short,
+                }),
+                "transform": isExpended ? "rotate(-180deg)" : "rotate(0)",
+            },
+            "&:hover": {
+                "& svg": {
+                    "color": theme.isDarkModeEnabled
+                        ? theme.colors.palette.light.light
+                        : theme.colors.palette.dark.greyVariant2,
+                },
+            },
+            "& .MuiTouchRipple-root": {
+                "color": textColor,
+            },
+        },
+        "circularLoading": {
+            "color": theme.colors.palette.light.main,
+        },
+        "collapsedPanel": {
+            "maxHeight": 0,
+            "overflow": "hidden",
+            "transform": "scaleY(0)",
+            "transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        },
+        "expandedPanel": {
+            "maxHeight": maxHeight - headerHeight,
+            "backgroundColor": theme.colors.palette.dark.light,
+            "overflow": "auto",
+            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "& pre": {
+                "whiteSpace": "pre-wrap",
+                "wordBreak": "break-all",
+            },
+            "transform": "scaleY(1)",
+            "transformOrigin": "top",
+            borderRadius,
+            "paddingTop": theme.spacing(2),
+        },
+        "header": {
+            "backgroundColor": theme.isDarkModeEnabled
+                ? theme.colors.palette.limeGreen.main
+                : theme.colors.palette.dark.main,
+            ...(!isExpended ? {} : { borderRadius }),
+            "borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
+            "display": "flex",
+            "alignItems": "center",
+            //"border": "1px solid white"
+            "& .dollarSign": {
+                "color": textColor,
+            },
+        },
+        "lastTranslatedCmd": {
+            "flex": 1,
+            "whiteSpace": "nowrap",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis",
+            "fontFamily": "monospace",
+            //"border": "1px solid white",
+            "color": textColor,
+        },
+        "dollarContainer": {
+            "width": 70,
+            //"border": "1px solid white",
+            "textAlign": "end",
+            "paddingRight": 10,
+        },
+        "entryRoot": {
+            "display": "flex",
+            //"border": "1px solid white"
+        },
+        "preWrapper": {
+            "flex": 1,
+            "& pre:nth-of-type(1)": {
+                "color": theme.colors.palette.limeGreen.main,
+                "marginTop": 2,
+            },
+            "& pre:nth-of-type(2)": {
+                "color": theme.colors.palette.light.light,
+            },
+        },
+        "dollarIcon": {
+            "color": theme.colors.palette.limeGreen.main,
+        },
+    };
 });

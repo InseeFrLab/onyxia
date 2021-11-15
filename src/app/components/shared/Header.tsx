@@ -37,48 +37,6 @@ export declare namespace Props {
     } & Omit<ProjectSelectProps, "className">;
 }
 
-const useStyles = makeStyles<{ logoContainerWidth: number }>()(
-    (theme, { logoContainerWidth }) => ({
-        "root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background,
-            "overflow": "auto",
-            "display": "flex",
-            "alignItems": "center",
-            ...theme.spacing.topBottom("padding", 2),
-        },
-        "logoContainer": {
-            "cursor": "pointer",
-            "width": logoContainerWidth,
-            "textAlign": "center",
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center",
-        },
-        "mainTextContainer": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "cursor": "pointer",
-        },
-        "svg": {
-            "fill": theme.colors.useCases.typography.textFocus,
-            "width": "70%",
-        },
-        "button": {
-            "marginBottom": theme.spacing(1),
-        },
-        "rightEndActionsContainer": {
-            "flex": 1,
-            "display": "flex",
-            "justifyContent": "flex-end",
-            "alignItems": "center",
-        },
-        "projectSelect": {
-            "marginLeft": theme.spacing(2),
-        },
-    }),
-);
-
 export const Header = memo((props: Props) => {
     const { className, logoContainerWidth, onLogoClick } = props;
 
@@ -169,6 +127,48 @@ export declare namespace Header {
         project: undefined;
     };
 }
+
+const useStyles = makeStyles<{ logoContainerWidth: number }>({ "label": { Header } })(
+    (theme, { logoContainerWidth }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "overflow": "auto",
+            "display": "flex",
+            "alignItems": "center",
+            ...theme.spacing.topBottom("padding", 2),
+        },
+        "logoContainer": {
+            "cursor": "pointer",
+            "width": logoContainerWidth,
+            "textAlign": "center",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+        },
+        "mainTextContainer": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "cursor": "pointer",
+        },
+        "svg": {
+            "fill": theme.colors.useCases.typography.textFocus,
+            "width": "70%",
+        },
+        "button": {
+            "marginBottom": theme.spacing(1),
+        },
+        "rightEndActionsContainer": {
+            "flex": 1,
+            "display": "flex",
+            "justifyContent": "flex-end",
+            "alignItems": "center",
+        },
+        "projectSelect": {
+            "marginLeft": theme.spacing(2),
+        },
+    }),
+);
 
 const { ToggleCloudShell } = (() => {
     type Props = {

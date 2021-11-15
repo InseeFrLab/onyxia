@@ -12,34 +12,6 @@ export type Props = {
     tosUrl: string | undefined;
 };
 
-const useStyles = makeStyles<Props>()(theme => ({
-    "root": {
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-        "display": "flex",
-        "alignItems": "center",
-        "& a:hover": {
-            "textDecoration": "underline",
-            "textDecorationColor": theme.colors.useCases.typography.textPrimary,
-        },
-    },
-    "icon": {
-        "fill": theme.colors.useCases.typography.textPrimary,
-    },
-    "contribute": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "sep": {
-        "flex": 1,
-    },
-    "spacing": {
-        "width": theme.spacing(4),
-    },
-    "darkModeSwitch": {
-        "padding": 0,
-    },
-}));
-
 export const Footer = memo((props: Props) => {
     const { contributeUrl, tosUrl, packageJsonVersion, className } = props;
 
@@ -102,3 +74,31 @@ export declare namespace Footer {
         "change language": undefined;
     };
 }
+
+const useStyles = makeStyles<Props>({ "label": { Footer } })(theme => ({
+    "root": {
+        "backgroundColor": theme.colors.useCases.surfaces.background,
+        "display": "flex",
+        "alignItems": "center",
+        "& a:hover": {
+            "textDecoration": "underline",
+            "textDecorationColor": theme.colors.useCases.typography.textPrimary,
+        },
+    },
+    "icon": {
+        "fill": theme.colors.useCases.typography.textPrimary,
+    },
+    "contribute": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "sep": {
+        "flex": 1,
+    },
+    "spacing": {
+        "width": theme.spacing(4),
+    },
+    "darkModeSwitch": {
+        "padding": 0,
+    },
+}));

@@ -6,16 +6,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center",
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-    },
-}));
-
 export const FourOhFour = memo((props: Props) => {
     const { className } = props;
 
@@ -29,6 +19,16 @@ export const FourOhFour = memo((props: Props) => {
         </div>
     );
 });
+
+const useStyles = makeStyles({ "label": { FourOhFour } })(theme => ({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": theme.colors.useCases.surfaces.background,
+    },
+}));
 
 export declare namespace FourOhFour {
     export type I18nScheme = {

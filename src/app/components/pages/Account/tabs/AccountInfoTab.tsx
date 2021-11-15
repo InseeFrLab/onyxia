@@ -16,16 +16,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "divider": {
-        ...theme.spacing.topBottom("margin", 4),
-    },
-    "link": {
-        "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
-}));
-
 export const AccountInfoTab = memo((props: Props) => {
     const { className } = props;
 
@@ -127,3 +117,13 @@ export declare namespace AccountInfoTab {
         "ip address": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { AccountInfoTab } })(theme => ({
+    "divider": {
+        ...theme.spacing.topBottom("margin", 4),
+    },
+    "link": {
+        "marginTop": theme.spacing(2),
+        "display": "inline-block",
+    },
+}));

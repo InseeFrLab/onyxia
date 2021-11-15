@@ -19,50 +19,6 @@ import { AgentConnectButton } from "./AgentConnectButton";
 import { useTranslation } from "app/i18n/useTranslations";
 import type { KcContext } from "../kcContext";
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "& .MuiTextField-root": {
-            "width": "100%",
-            "marginTop": theme.spacing(5),
-        },
-    },
-    "rememberMeForgotPasswordWrapper": {
-        "display": "flex",
-        "marginTop": theme.spacing(4),
-    },
-    "forgotPassword": {
-        "flex": 1,
-        "display": "flex",
-        "justifyContent": "flex-end",
-        "alignItems": "center",
-    },
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "justifyContent": "flex-end",
-    },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2),
-    },
-    "linkToRegisterWrapper": {
-        "marginTop": theme.spacing(5),
-        "textAlign": "center",
-        "& > *": {
-            "display": "inline-block",
-        },
-    },
-    "registerLink": {
-        "paddingLeft": theme.spacing(2),
-    },
-    "divider": {
-        ...theme.spacing.topBottom("margin", 5),
-    },
-    "providers": {
-        "listStyleType": "none",
-        "padding": 0,
-    },
-}));
-
 type KcContext_Login = Extract<KcContext, { pageId: "login.ftl" }>;
 
 export const Login = memo(
@@ -355,3 +311,47 @@ export declare namespace Login {
         "doRegister": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { Login } })(theme => ({
+    "root": {
+        "& .MuiTextField-root": {
+            "width": "100%",
+            "marginTop": theme.spacing(5),
+        },
+    },
+    "rememberMeForgotPasswordWrapper": {
+        "display": "flex",
+        "marginTop": theme.spacing(4),
+    },
+    "forgotPassword": {
+        "flex": 1,
+        "display": "flex",
+        "justifyContent": "flex-end",
+        "alignItems": "center",
+    },
+    "buttonsWrapper": {
+        "marginTop": theme.spacing(4),
+        "display": "flex",
+        "justifyContent": "flex-end",
+    },
+    "buttonSubmit": {
+        "marginLeft": theme.spacing(2),
+    },
+    "linkToRegisterWrapper": {
+        "marginTop": theme.spacing(5),
+        "textAlign": "center",
+        "& > *": {
+            "display": "inline-block",
+        },
+    },
+    "registerLink": {
+        "paddingLeft": theme.spacing(2),
+    },
+    "divider": {
+        ...theme.spacing.topBottom("margin", 5),
+    },
+    "providers": {
+        "listStyleType": "none",
+        "padding": 0,
+    },
+}));

@@ -61,21 +61,6 @@ export type Props = {
     >;
 };
 
-const useStyles = makeStyles<{ isEmpty: boolean }>()((theme, { isEmpty }) => ({
-    "root": {
-        ...(isEmpty
-            ? {}
-            : {
-                  "display": "flex",
-                  "flexWrap": "wrap",
-                  "justifyContent": "flex-start",
-              }),
-    },
-    "item": {
-        "margin": theme.spacing(2),
-    },
-}));
-
 export const ExplorerItems = memo((props: Props) => {
     const {
         className,
@@ -434,3 +419,20 @@ export declare namespace ExplorerItems {
         "empty directory": undefined;
     };
 }
+
+const useStyles = makeStyles<{ isEmpty: boolean }>({ "label": { ExplorerItems } })(
+    (theme, { isEmpty }) => ({
+        "root": {
+            ...(isEmpty
+                ? {}
+                : {
+                      "display": "flex",
+                      "flexWrap": "wrap",
+                      "justifyContent": "flex-start",
+                  }),
+        },
+        "item": {
+            "margin": theme.spacing(2),
+        },
+    }),
+);

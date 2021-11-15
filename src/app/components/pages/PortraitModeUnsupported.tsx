@@ -6,20 +6,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "height": "100vh",
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "wrapper": {
-        "textAlign": "center",
-    },
-    "instructions": {
-        "marginTop": theme.spacing(3),
-    },
-}));
-
 export const PortraitModeUnsupported = memo((props: Props) => {
     const { className } = props;
 
@@ -38,6 +24,20 @@ export const PortraitModeUnsupported = memo((props: Props) => {
         </div>
     );
 });
+
+const useStyles = makeStyles({ "label": { PortraitModeUnsupported } })(theme => ({
+    "root": {
+        "height": "100vh",
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "wrapper": {
+        "textAlign": "center",
+    },
+    "instructions": {
+        "marginTop": theme.spacing(3),
+    },
+}));
 
 export declare namespace PortraitModeUnsupported {
     export type I18nScheme = {

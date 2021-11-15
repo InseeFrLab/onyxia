@@ -96,43 +96,6 @@ export declare namespace Props {
 
 const flashDurationMs = 600;
 
-const useStyles = makeStyles<{ isFlashing: boolean }>()((theme, { isFlashing }) => ({
-    "root": {
-        "marginBottom": theme.spacing(3),
-    },
-    "mainLine": {
-        "display": "flex",
-        "& > div": {
-            "display": "flex",
-            "alignItems": "center",
-        },
-        "marginBottom": theme.spacing(2),
-    },
-    "cellTitle": {
-        "width": 360,
-    },
-    "cellMiddle": {
-        "flex": 1,
-        "overflow": "hidden",
-        "& .MuiTypography-root": {
-            "overflow": "hidden",
-            "whiteSpace": "nowrap",
-            "textOverflow": "ellipsis",
-            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive,
-        },
-        "& .MuiTextField-root": {
-            "width": "100%",
-            "top": 2,
-        },
-    },
-    "cellActions": {
-        "marginRight": theme.spacing(2),
-    },
-    "noText": {
-        "color": theme.colors.useCases.typography.textDisabled,
-    },
-}));
-
 export const AccountField = memo(
     <T extends string>(props: Props<T>): ReturnType<FunctionComponent> => {
         const { t } = useTranslation("AccountField");
@@ -545,3 +508,44 @@ export declare namespace AccountField {
         "reset": undefined;
     };
 }
+
+const useStyles = makeStyles<{ isFlashing: boolean }>({ "label": { AccountField } })(
+    (theme, { isFlashing }) => ({
+        "root": {
+            "marginBottom": theme.spacing(3),
+        },
+        "mainLine": {
+            "display": "flex",
+            "& > div": {
+                "display": "flex",
+                "alignItems": "center",
+            },
+            "marginBottom": theme.spacing(2),
+        },
+        "cellTitle": {
+            "width": 360,
+        },
+        "cellMiddle": {
+            "flex": 1,
+            "overflow": "hidden",
+            "& .MuiTypography-root": {
+                "overflow": "hidden",
+                "whiteSpace": "nowrap",
+                "textOverflow": "ellipsis",
+                "color": !isFlashing
+                    ? undefined
+                    : theme.colors.useCases.buttons.actionActive,
+            },
+            "& .MuiTextField-root": {
+                "width": "100%",
+                "top": 2,
+            },
+        },
+        "cellActions": {
+            "marginRight": theme.spacing(2),
+        },
+        "noText": {
+            "color": theme.colors.useCases.typography.textDisabled,
+        },
+    }),
+);

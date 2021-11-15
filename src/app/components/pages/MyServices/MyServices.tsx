@@ -30,41 +30,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles<{
-    isSavedConfigsExtended: boolean;
-}>()((theme, { isSavedConfigsExtended }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "contextTypo": {
-        ...theme.spacing.topBottom("margin", 4),
-    },
-    "payload": {
-        "overflow": "hidden",
-        "flex": 1,
-        "display": "flex",
-        "& > *": {
-            "height": "100%",
-        },
-    },
-    ...(() => {
-        const ratio = 0.65;
-
-        return {
-            "cards": {
-                "flex": ratio,
-                "marginRight": theme.spacing(5),
-            },
-            "savedConfigs": {
-                "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                "paddingRight": "2%",
-            },
-        };
-    })(),
-}));
-
 export function MyServices(props: Props) {
     const { className, route } = props;
 
@@ -301,3 +266,38 @@ export declare namespace MyServices {
         confirm: undefined;
     };
 }
+
+const useStyles = makeStyles<{
+    isSavedConfigsExtended: boolean;
+}>({ "label": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "contextTypo": {
+        ...theme.spacing.topBottom("margin", 4),
+    },
+    "payload": {
+        "overflow": "hidden",
+        "flex": 1,
+        "display": "flex",
+        "& > *": {
+            "height": "100%",
+        },
+    },
+    ...(() => {
+        const ratio = 0.65;
+
+        return {
+            "cards": {
+                "flex": ratio,
+                "marginRight": theme.spacing(5),
+            },
+            "savedConfigs": {
+                "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                "paddingRight": "2%",
+            },
+        };
+    })(),
+}));

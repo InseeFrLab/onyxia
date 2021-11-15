@@ -22,7 +22,58 @@ export type Props = {
     kcContext: KcContext;
 };
 
-const useStyles = makeStyles()(theme => ({
+export const KcApp = memo((props: Props) => {
+    const { kcContext } = props;
+
+    const { hideRootSplashScreen } = useSplashScreen({
+        "fadeOutDuration": getBrowser() === "firefox" ? 0 : undefined,
+    });
+
+    useEffect(() => {
+        hideRootSplashScreen();
+    }, []);
+
+    const { classes } = useStyles();
+
+    const kcProps = {
+        ...defaultKcProps,
+        "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classes.kcHtmlClass],
+        "kcLoginClass": [...defaultKcProps.kcLoginClass, classes.kcLoginClass],
+        "kcFormCardClass": [...defaultKcProps.kcFormCardClass, classes.kcFormCardClass],
+        "kcButtonPrimaryClass": [
+            ...defaultKcProps.kcButtonPrimaryClass,
+            classes.kcButtonPrimaryClass,
+        ],
+        "kcInputClass": [...defaultKcProps.kcInputClass, classes.kcInputClass],
+    };
+
+    switch (kcContext.pageId) {
+        case "login.ftl":
+            return <Login {...{ kcContext, ...kcProps }} />;
+        case "register.ftl":
+            return <Register {...{ kcContext, ...kcProps }} />;
+        case "terms.ftl":
+            return <Terms {...{ kcContext, ...kcProps }} />;
+        case "info.ftl":
+            return <Info {...{ kcContext, ...kcProps }} />;
+        case "error.ftl":
+            return <Error {...{ kcContext, ...kcProps }} />;
+        case "login-reset-password.ftl":
+            return <LoginResetPassword {...{ kcContext, ...kcProps }} />;
+        case "login-verify-email.ftl":
+            return <LoginVerifyEmail {...{ kcContext, ...kcProps }} />;
+        case "login-otp.ftl":
+            return <LoginOtp {...{ kcContext, ...kcProps }} />;
+        case "login-update-profile.ftl":
+            return <LoginUpdateProfile {...{ kcContext, ...kcProps }} />;
+        case "login-idp-link-confirm.ftl":
+            return <LoginIdpLinkConfirm {...{ kcContext, ...kcProps }} />;
+        case "register-user-profile.ftl":
+            return <RegisterUserProfile {...{ kcContext, ...kcProps }} />;
+    }
+});
+
+const useStyles = makeStyles({ "label": { KcApp } })(theme => ({
     "kcLoginClass": {
         "& #kc-locale": {
             "zIndex": 5,
@@ -80,54 +131,3 @@ const useStyles = makeStyles()(theme => ({
         },
     },
 }));
-
-export const KcApp = memo((props: Props) => {
-    const { kcContext } = props;
-
-    const { hideRootSplashScreen } = useSplashScreen({
-        "fadeOutDuration": getBrowser() === "firefox" ? 0 : undefined,
-    });
-
-    useEffect(() => {
-        hideRootSplashScreen();
-    }, []);
-
-    const { classes } = useStyles();
-
-    const kcProps = {
-        ...defaultKcProps,
-        "kcHtmlClass": [...defaultKcProps.kcHtmlClass, classes.kcHtmlClass],
-        "kcLoginClass": [...defaultKcProps.kcLoginClass, classes.kcLoginClass],
-        "kcFormCardClass": [...defaultKcProps.kcFormCardClass, classes.kcFormCardClass],
-        "kcButtonPrimaryClass": [
-            ...defaultKcProps.kcButtonPrimaryClass,
-            classes.kcButtonPrimaryClass,
-        ],
-        "kcInputClass": [...defaultKcProps.kcInputClass, classes.kcInputClass],
-    };
-
-    switch (kcContext.pageId) {
-        case "login.ftl":
-            return <Login {...{ kcContext, ...kcProps }} />;
-        case "register.ftl":
-            return <Register {...{ kcContext, ...kcProps }} />;
-        case "terms.ftl":
-            return <Terms {...{ kcContext, ...kcProps }} />;
-        case "info.ftl":
-            return <Info {...{ kcContext, ...kcProps }} />;
-        case "error.ftl":
-            return <Error {...{ kcContext, ...kcProps }} />;
-        case "login-reset-password.ftl":
-            return <LoginResetPassword {...{ kcContext, ...kcProps }} />;
-        case "login-verify-email.ftl":
-            return <LoginVerifyEmail {...{ kcContext, ...kcProps }} />;
-        case "login-otp.ftl":
-            return <LoginOtp {...{ kcContext, ...kcProps }} />;
-        case "login-update-profile.ftl":
-            return <LoginUpdateProfile {...{ kcContext, ...kcProps }} />;
-        case "login-idp-link-confirm.ftl":
-            return <LoginIdpLinkConfirm {...{ kcContext, ...kcProps }} />;
-        case "register-user-profile.ftl":
-            return <RegisterUserProfile {...{ kcContext, ...kcProps }} />;
-    }
-});

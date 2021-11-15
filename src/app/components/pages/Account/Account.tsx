@@ -25,18 +25,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto",
-    },
-    "tabs": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1],
-    },
-}));
-
 export function Account(props: Props) {
     const { className, route } = props;
 
@@ -92,3 +80,15 @@ export declare namespace Account {
         "personal tokens tooltip": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { Account } })(theme => ({
+    "root": {
+        "height": "100%",
+        "overflow": "auto",
+    },
+    "tabs": {
+        "borderRadius": 8,
+        "overflow": "hidden",
+        "boxShadow": theme.shadows[1],
+    },
+}));

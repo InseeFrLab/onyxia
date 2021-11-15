@@ -19,52 +19,6 @@ Home.routeGroup = createGroup([routes.home]);
 
 Home.requireUserLoggedIn = () => false;
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto",
-        "backgroundColor": "transparent",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "hero": {
-        "flex": 1,
-        "backgroundImage": `url(${homeIllustrationImgUrl}), url(${
-            theme.isDarkModeEnabled
-                ? onyxiaNeumorphismDarkModeUrl
-                : onyxiaNeumorphismLightModeUrl
-        })`,
-        "backgroundPosition": "171% 38%, 100% 0%",
-        "backgroundRepeat": "no-repeat, no-repeat",
-        "backgroundSize": "76%, 80%",
-    },
-    "heroTextWrapper": {
-        "paddingLeft": theme.spacing(3),
-        "maxWidth": "42%",
-        "& > *": {
-            "marginBottom": theme.spacing(4),
-        },
-    },
-    "heroSubtitle": {
-        "marginBottom": theme.spacing(5),
-    },
-    "cardsWrapper": {
-        "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
-        "display": "flex",
-        ...theme.spacing.topBottom("padding", 4),
-        "& > *": {
-            "flex": 1,
-        },
-    },
-    "middleCard": {
-        ...theme.spacing.rightLeft("margin", 3),
-    },
-    "svg": {
-        "fill": theme.colors.useCases.typography.textFocus,
-        "width": 122,
-    },
-}));
-
 type Props = {
     className?: string;
 };
@@ -155,6 +109,52 @@ export declare namespace Home {
         cardButton3: undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { Home } })(theme => ({
+    "root": {
+        "height": "100%",
+        "overflow": "auto",
+        "backgroundColor": "transparent",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "hero": {
+        "flex": 1,
+        "backgroundImage": `url(${homeIllustrationImgUrl}), url(${
+            theme.isDarkModeEnabled
+                ? onyxiaNeumorphismDarkModeUrl
+                : onyxiaNeumorphismLightModeUrl
+        })`,
+        "backgroundPosition": "171% 38%, 100% 0%",
+        "backgroundRepeat": "no-repeat, no-repeat",
+        "backgroundSize": "76%, 80%",
+    },
+    "heroTextWrapper": {
+        "paddingLeft": theme.spacing(3),
+        "maxWidth": "42%",
+        "& > *": {
+            "marginBottom": theme.spacing(4),
+        },
+    },
+    "heroSubtitle": {
+        "marginBottom": theme.spacing(5),
+    },
+    "cardsWrapper": {
+        "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
+        "display": "flex",
+        ...theme.spacing.topBottom("padding", 4),
+        "& > *": {
+            "flex": 1,
+        },
+    },
+    "middleCard": {
+        ...theme.spacing.rightLeft("margin", 3),
+    },
+    "svg": {
+        "fill": theme.colors.useCases.typography.textFocus,
+        "width": 122,
+    },
+}));
 
 const { Card } = (() => {
     type Props = {

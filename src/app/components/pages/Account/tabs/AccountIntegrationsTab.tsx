@@ -27,19 +27,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "divider": {
-        ...theme.spacing.topBottom("margin", 4),
-    },
-    "link": {
-        "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
-    "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
-    },
-}));
-
 export const AccountIntegrationsTab = memo((props: Props) => {
     const { className } = props;
 
@@ -178,3 +165,16 @@ export declare namespace AccountIntegrationsTab {
         "accessible as env": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { AccountIntegrationsTab } })(theme => ({
+    "divider": {
+        ...theme.spacing.topBottom("margin", 4),
+    },
+    "link": {
+        "marginTop": theme.spacing(2),
+        "display": "inline-block",
+    },
+    "envVar": {
+        "color": theme.colors.useCases.typography.textFocus,
+    },
+}));

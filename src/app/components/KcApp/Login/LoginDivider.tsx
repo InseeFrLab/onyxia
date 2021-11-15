@@ -7,22 +7,6 @@ export type Props = {
     className?: string;
 };
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "display": "flex",
-        "alignItems": "center",
-    },
-    "separator": {
-        "height": 1,
-        "backgroundColor": theme.colors.useCases.typography.textSecondary,
-        "flex": 1,
-    },
-    "text": {
-        ...theme.spacing.rightLeft("margin", 2),
-        "paddingBottom": 2,
-    },
-}));
-
 export const LoginDivider = memo((props: Props) => {
     const { className } = props;
 
@@ -48,3 +32,19 @@ export declare namespace LoginDivider {
         or: undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { LoginDivider } })(theme => ({
+    "root": {
+        "display": "flex",
+        "alignItems": "center",
+    },
+    "separator": {
+        "height": 1,
+        "backgroundColor": theme.colors.useCases.typography.textSecondary,
+        "flex": 1,
+    },
+    "text": {
+        ...theme.spacing.rightLeft("margin", 2),
+        "paddingBottom": 2,
+    },
+}));

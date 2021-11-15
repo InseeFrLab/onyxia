@@ -9,24 +9,6 @@ import type { Link } from "type-route";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 import type { Param0 } from "tsafe";
 
-const useStyles = makeStyles()(theme => ({
-    "root": {
-        "overflow": "hidden",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "header": {
-        ...theme.spacing.topBottom("margin", 2),
-    },
-    "entry": {
-        "marginBottom": theme.spacing(2),
-    },
-    "wrapper": {
-        "flex": 1,
-        "overflow": "auto",
-    },
-}));
-
 const maxConfigCountInShortVariant = 5;
 
 export type Props = {
@@ -108,3 +90,21 @@ export declare namespace MyServicesSavedConfigs {
         "show all": undefined;
     };
 }
+
+const useStyles = makeStyles({ "label": { MyServicesSavedConfigs } })(theme => ({
+    "root": {
+        "overflow": "hidden",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "header": {
+        ...theme.spacing.topBottom("margin", 2),
+    },
+    "entry": {
+        "marginBottom": theme.spacing(2),
+    },
+    "wrapper": {
+        "flex": 1,
+        "overflow": "auto",
+    },
+}));

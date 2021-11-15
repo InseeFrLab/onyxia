@@ -7,25 +7,6 @@ import { makeStyles } from "app/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 import type { KcContext } from "./kcContext";
 
-const useStyles = makeStyles()(theme => ({
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "justifyContent": "flex-end",
-    },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2),
-    },
-    "markdownWrapper": {
-        "& a": {
-            "color": theme.colors.useCases.buttons.actionActive,
-        },
-        "& a:hover": {
-            "textDecoration": "underline",
-        },
-    },
-}));
-
 type KcContext_Terms = Extract<KcContext, { pageId: "terms.ftl" }>;
 
 export const Terms = memo(
@@ -92,3 +73,22 @@ export const Terms = memo(
         );
     },
 );
+
+const useStyles = makeStyles({ "label": { Terms } })(theme => ({
+    "buttonsWrapper": {
+        "marginTop": theme.spacing(4),
+        "display": "flex",
+        "justifyContent": "flex-end",
+    },
+    "buttonSubmit": {
+        "marginLeft": theme.spacing(2),
+    },
+    "markdownWrapper": {
+        "& a": {
+            "color": theme.colors.useCases.buttons.actionActive,
+        },
+        "& a:hover": {
+            "textDecoration": "underline",
+        },
+    },
+}));
