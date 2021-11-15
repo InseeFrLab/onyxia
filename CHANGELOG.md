@@ -1,3 +1,7 @@
+### **0.18.6** (2021-11-15)  
+  
+  
+  
 ### **0.18.5** (2021-11-15)  
   
 - Inject selected project in mustach params  
