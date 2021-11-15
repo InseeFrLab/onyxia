@@ -25,6 +25,7 @@ import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription,
 } from "app/tools/types/JSONSchemaObject";
+import { thunks as projectConfigsThunks } from "./projectConfigs";
 
 export const name = "launcher";
 
@@ -957,17 +958,21 @@ export const thunks = {
             const selectedDeploymentRegion =
                 deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
+            const servicePassword = await dispatch(
+                projectConfigsThunks.getValue({ "key": "servicePassword" }),
+            );
+
             return {
                 "user": {
                     "idep": user.username,
                     "name": `${user.familyName} ${user.firstName}`,
                     "email": user.email,
-                    "password": userConfigs.userServicePassword,
+                    "password": servicePassword,
                     "ip": publicIp,
                 },
                 "project": {
                     "id": getState().projectSelection.selectedProjectId,
-                    "password": userConfigs.userServicePassword,
+                    "password": servicePassword,
                 },
                 "git": {
                     "name": userConfigs.gitName,

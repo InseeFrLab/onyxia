@@ -47,7 +47,7 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
             "idep": parsedJwt.username,
             "name": `${parsedJwt.familyName} ${parsedJwt.firstName}`,
             "email": parsedJwt.email,
-            "password": userConfigs.userServicePassword,
+            "password": "",
             "key": "https://example.com/placeholder.gpg",
             "ip": publicIp,
         },

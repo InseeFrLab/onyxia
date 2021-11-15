@@ -33,7 +33,7 @@ export function useThunksToRegularFunction<
 
     type ThunkToRegularFunction<Thunk extends (params: any) => ThunkAction<any>> = (
         params: Param0<Thunk>,
-    ) => Thunk extends () => ThunkAction<infer R> ? R : Promise<void>;
+    ) => ReturnType<Thunk> extends ThunkAction<infer R> ? R : never;
 
     const dispatch = reactRedux.useDispatch<(appThunk: ThunkAction<any>) => any>();
 

@@ -1,4 +1,4 @@
-import { useEffect, memo } from "react";
+import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
@@ -11,6 +11,7 @@ import { getEnv } from "env";
 import { urlJoin } from "url-join-ts";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles } from "app/theme";
+import { useAsync } from "react-async-hook";
 
 export type Props = {
     className?: string;
@@ -21,7 +22,8 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation("AccountInfoTab");
 
-    const { publicIpThunks, userConfigsThunks, userAuthenticationThunks } = useThunks();
+    const { publicIpThunks, projectConfigsThunks, userAuthenticationThunks } =
+        useThunks();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
@@ -33,13 +35,21 @@ export const AccountInfoTab = memo((props: Props) => {
         publicIpThunks.fetch();
     }, []);
 
-    const userServicePasswordState = useSelector(
-        state => state.userConfigs.userServicePassword,
+    const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
+        n => n + 1,
+        0,
     );
 
-    const onRequestServicePasswordRenewal = useConstCallback(() =>
-        userConfigsThunks.renewUserServicePassword(),
+    const servicePasswordAsync = useAsync(
+        () => projectConfigsThunks.getValue({ "key": "servicePassword" }),
+        [refreshServicePasswordTrigger],
     );
+
+    const onRequestServicePasswordRenewal = useConstCallback(async () => {
+        await projectConfigsThunks.renewServicePassword();
+
+        pullRefreshServicePasswordTrigger();
+    });
 
     const user = userAuthenticationThunks.getUser();
 
@@ -90,9 +100,13 @@ export const AccountInfoTab = memo((props: Props) => {
             />
             <AccountField
                 type="service password"
-                isLocked={userServicePasswordState.isBeingChanged}
-                servicePassword={userServicePasswordState.value}
-                onRequestCopy={onRequestCopyFactory(userServicePasswordState.value)}
+                isLocked={servicePasswordAsync.loading}
+                servicePassword={servicePasswordAsync.result ?? "⏳"}
+                onRequestCopy={
+                    servicePasswordAsync.result === undefined
+                        ? () => {}
+                        : onRequestCopyFactory(servicePasswordAsync.result)
+                }
                 onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
             />
             <AccountField

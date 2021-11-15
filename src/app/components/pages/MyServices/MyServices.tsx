@@ -35,13 +35,12 @@ export function MyServices(props: Props) {
 
     const { t } = useTranslation("MyServices");
 
-    const { runningServiceThunks, restorablePackageConfigThunks } = useThunks();
+    const { runningServiceThunks, restorablePackageConfigThunks, projectConfigsThunks } =
+        useThunks();
 
     const { displayableConfigs } = useSelector(
         selectors.restorablePackageConfig.displayableConfigs,
     );
-
-    const { userServicePassword } = useSelector(selectors.userConfigs);
 
     const { isRunningServicesFetching, runningServices } = useSelector(
         ({ runningService: state }) => ({
@@ -69,7 +68,9 @@ export function MyServices(props: Props) {
                 runningServiceThunks.initializeOrRefreshIfNotAlreadyFetching();
                 return;
             case "password":
-                copyToClipboard(userServicePassword);
+                projectConfigsThunks
+                    .getValue({ "key": "servicePassword" })
+                    .then(copyToClipboard);
                 return;
             case "trash":
                 setIsDialogOpen(true);
