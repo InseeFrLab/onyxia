@@ -10,7 +10,8 @@ import type {
 import { Deferred } from "evt/tools/Deferred";
 import type { Param0, ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
-import * as runExclusive from "run-exclusive";
+import { getNewlyRequestedOrCachedTokenFactory } from "lib/tools/getNewlyRequestedOrCachedToken";
+import { id } from "tsafe/id";
 
 const version = "v1";
 
@@ -36,8 +37,8 @@ export async function createVaultSecretsManagerClient(
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
-    const { getToken } = (() => {
-        const requestNewToken: SecretsManagerClient["getToken"] = async () => {
+    const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
+        "requestNewToken": async () => {
             const now = Date.now();
 
             const {
@@ -49,42 +50,13 @@ export async function createVaultSecretsManagerClient(
                 "jwt": await getAccessToken(),
             });
 
-            return {
+            return id<ReturnType<SecretsManagerClient["getToken"]>>({
                 "token": auth.client_token,
                 "expirationTime": now + auth.lease_duration * 1000,
-            };
-        };
-
-        let cache:
-            | (ReturnType<SecretsManagerClient["getToken"]> & {
-                  ttl: number;
-              })
-            | undefined = undefined;
-
-        const getToken = runExclusive.build<SecretsManagerClient["getToken"]>(
-            async () => {
-                if (
-                    cache !== undefined &&
-                    //It token in cache have more than 90% of it's TTL left
-                    //we use it instead of renewing the token.
-                    cache.expirationTime - Date.now() > 0.9 * cache.ttl
-                ) {
-                    return cache;
-                }
-
-                const token = await requestNewToken();
-
-                cache = {
-                    ...token,
-                    "ttl": token.expirationTime - Date.now(),
-                };
-
-                return cache;
-            },
-        );
-
-        return { getToken };
-    })();
+            });
+        },
+        "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+    });
 
     const { axiosInstance } = (() => {
         const axiosInstance = createAxiosInstance();
@@ -92,7 +64,7 @@ export async function createVaultSecretsManagerClient(
         axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
             ...axiosRequestConfig,
             "headers": {
-                "X-Vault-Token": (await getToken()).token,
+                "X-Vault-Token": (await getNewlyRequestedOrCachedToken()).token,
             },
             "Content-Type": "application/json;charset=utf-8",
             "Accept": "application/json;charset=utf-8",
@@ -149,7 +121,7 @@ export async function createVaultSecretsManagerClient(
 
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
-        getToken,
+        "getToken": getNewlyRequestedOrCachedToken,
     };
 
     dVaultClient.resolve(secretsManagerClient);
