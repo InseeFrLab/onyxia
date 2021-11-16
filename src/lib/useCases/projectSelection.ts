@@ -10,14 +10,6 @@ import {
 } from "../tools/createObjectThatThrowsIfAccessed";
 import type { RootState } from "../setup";
 
-/*
-Here no state because other project user may have changed 
-the values here at any time. Unlike in userConfigs we
-can't assume that the values haven't changed since last fetch.
-We expose a non-reactive API to force the UI dev to take 
-that into account.
-*/
-
 type ProjectsState = {
     projects: Project[];
     selectedProjectId: string;
