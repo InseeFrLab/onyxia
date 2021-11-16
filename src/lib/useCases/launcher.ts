@@ -982,14 +982,14 @@ export const thunks = {
                             const { accessKeyId, secretAccessKey, sessionToken } =
                                 await s3Client.getToken();
 
-                            const { host, port } = parseUrl(s3ClientConfig.url);
+                            const { host, port = 443 } = parseUrl(s3ClientConfig.url);
 
                             return {
                                 "AWS_ACCESS_KEY_ID": accessKeyId,
                                 "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
                                 "AWS_DEFAULT_REGION": "us-east-1" as const,
                                 "AWS_S3_ENDPOINT": host,
-                                "port": port ?? 443,
+                                port,
                                 "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                                 "AWS_SESSION_TOKEN": sessionToken,
                             };
