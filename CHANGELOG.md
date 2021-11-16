@@ -1,3 +1,7 @@
+### **0.19.1** (2021-11-16)  
+  
+- MyServices: Better display for small dialogs    
+  
 ## **0.19.0** (2021-11-16)  
   
 - Implement s3 port, we no longer rely on js/  
