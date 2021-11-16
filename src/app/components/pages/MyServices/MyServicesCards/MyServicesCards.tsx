@@ -133,7 +133,7 @@ export const MyServicesCards = memo((props: Props) => {
             </div>
             <Dialog
                 body={
-                    <div style={{ height: 450, "overflow": "auto" }}>
+                    <div className={classes.dialogBody}>
                         <Markdown>{dialogBody}</Markdown>
                     </div>
                 }
@@ -182,6 +182,10 @@ const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
     },
     "noRunningServices": {
         "height": "100%",
+    },
+    "dialogBody": {
+        "maxHeight": 450,
+        "overflow": "auto",
     },
 }));
 
