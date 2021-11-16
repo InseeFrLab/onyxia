@@ -111,6 +111,7 @@ export type MustacheParams = {
         AWS_DEFAULT_REGION: "us-east-1";
         AWS_S3_ENDPOINT: string;
         AWS_BUCKET_NAME: string;
+        port: number;
     };
     region: {
         defaultIpProtection: boolean | undefined;
