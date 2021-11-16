@@ -1,3 +1,11 @@
+## **0.19.0** (2021-11-16)  
+  
+- Implement s3 port, we no longer rely on js/  
+- fix previous commit (the comment was missplaced)  
+- Explain why non reactive API in projectConfigs  
+- lib: Abstract the logic of fetching token  
+- rename baseUri -> url in vault adapter    
+  
 ### **0.18.7** (2021-11-15)  
   
 - Scoped services password    
