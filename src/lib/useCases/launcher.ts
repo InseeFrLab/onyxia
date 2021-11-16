@@ -993,7 +993,7 @@ export const thunks = {
                     }
 
                     return {
-                        "VAULT_ADDR": secretsManagerClientConfig.baseUri,
+                        "VAULT_ADDR": secretsManagerClientConfig.url,
                         "VAULT_TOKEN": vaultToken,
                         "VAULT_MOUNT": secretsManagerClientConfig.engine,
                         "VAULT_TOP_DIR": secretExplorerUserHomePath,
