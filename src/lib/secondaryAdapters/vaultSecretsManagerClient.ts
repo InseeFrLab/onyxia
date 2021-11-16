@@ -17,7 +17,7 @@ import * as runExclusive from "run-exclusive";
 const version = "v1";
 
 type Params = {
-    baseUri: string;
+    url: string;
     engine: string;
     role: string;
     keycloakParams: Param0<typeof createKeycloakOidcClient>;
@@ -26,7 +26,7 @@ type Params = {
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { baseUri, engine, role, keycloakParams } = params;
+    const { url, engine, role, keycloakParams } = params;
 
     const oidcClient = await createKeycloakOidcClient(keycloakParams);
 
@@ -36,7 +36,7 @@ export async function createVaultSecretsManagerClient(
 
     const { getAccessToken } = oidcClient;
 
-    const createAxiosInstance = () => axios.create({ "baseURL": baseUri });
+    const createAxiosInstance = () => axios.create({ "baseURL": url });
 
     const { getToken } = (() => {
         const requestNewToken: SecretsManagerClient["getToken"] = async () => {

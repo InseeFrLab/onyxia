@@ -116,7 +116,7 @@ assert<
         SecretsManagerClientConfig,
         | {
               implementation: "VAULT";
-              baseUri: string;
+              url: string;
               engine: string;
               role: string;
               keycloakParams: {

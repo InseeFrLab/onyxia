@@ -99,7 +99,7 @@ const createStore_memo = memoize(
                       })
                     : id<SecretsManagerClientConfig.Vault>({
                           "implementation": "VAULT",
-                          "baseUri": env.VAULT_URL,
+                          "url": env.VAULT_URL,
                           "engine": env.VAULT_KV_ENGINE,
                           "role": env.VAULT_ROLE,
                           "keycloakParams": {
