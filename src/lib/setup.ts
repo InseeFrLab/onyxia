@@ -3,6 +3,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
 import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
+import { createMinioS3Client } from "./secondaryAdapters/minioS3Client";
+import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
 import * as secretExplorerUseCase from "./useCases/secretExplorer";
 import * as userConfigsUseCase from "./useCases/userConfigs";
 import * as launcherUseCase from "./useCases/launcher";
@@ -15,6 +17,7 @@ import * as deploymentRegionUseCase from "./useCases/deploymentRegion";
 import * as projectSelectionUseCase from "./useCases/projectSelection";
 import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
+import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
@@ -49,6 +52,7 @@ export type CreateStoreParams = {
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     userApiClientConfig: UserApiClientConfig;
     secretsManagerClientConfig: SecretsManagerClientConfig;
+    s3ClientConfig: S3ClientConfig;
 };
 
 export type UserApiClientConfig = UserApiClientConfig.Jwt | UserApiClientConfig.Mock;
@@ -63,11 +67,11 @@ export declare namespace UserApiClientConfig {
     };
 }
 
-// All these assert<Equals<...>> is just to help visualize what the type
-// actually is. It's hard to tell just at looking at the definition
+// All these assert<Equals<...>> are just here to help visualize what the type
+// actually is. It's hard to tell just by looking at the definition
 // with all these Omit, Pick Param0<typeof ...>.
 // It could have been just a comment but comment lies. Instead here
-// we are forced if we update the types to update the asserts statement
+// we are forced, if we update the types, to update the asserts statement
 // or else we get red squiggly lines.
 assert<
     Equals<
@@ -130,6 +134,37 @@ assert<
               paramsForTranslator: { engine: string };
               artificialDelayMs: number;
               doReset: boolean;
+          }
+    >
+>();
+
+export declare type S3ClientConfig = S3ClientConfig.LocalStorage | S3ClientConfig.Minio;
+export declare namespace S3ClientConfig {
+    export type Minio = {
+        implementation: "MINIO";
+    } & Param0<typeof createMinioS3Client>;
+
+    export type LocalStorage = {
+        implementation: "DUMMY";
+    } & Unifiable<Param0<typeof createDummyS3Client>>;
+
+    type Unifiable<T> = T extends void ? {} : T;
+}
+
+assert<
+    Equals<
+        S3ClientConfig,
+        | {
+              implementation: "MINIO";
+              url: string;
+              keycloakParams: {
+                  url: string;
+                  realm: string;
+                  clientId: string;
+              };
+          }
+        | {
+              implementation: "DUMMY";
           }
     >
 >();
@@ -206,6 +241,7 @@ export type ThunksExtraArgument = {
     userApiClient: UserApiClient;
     oidcClient: OidcClient;
     onyxiaApiClient: OnyxiaApiClient;
+    s3Client: S3Client;
 };
 
 createStore.isFirstInvocation = true;
@@ -300,6 +336,18 @@ export async function createStore(params: CreateStoreParams) {
           })
         : createObjectThatThrowsIfAccessed<UserApiClient>();
 
+    const s3Client = oidcClient.isUserLoggedIn
+        ? await (async () => {
+              const { s3ClientConfig } = params;
+              switch (s3ClientConfig.implementation) {
+                  case "MINIO":
+                      return createMinioS3Client(s3ClientConfig);
+                  case "DUMMY":
+                      return createDummyS3Client();
+              }
+          })()
+        : createObjectThatThrowsIfAccessed<S3Client>();
+
     const store = configureStore({
         "reducer": {
             // Legacy
@@ -328,6 +376,7 @@ export async function createStore(params: CreateStoreParams) {
                         onyxiaApiClient,
                         secretsManagerClient,
                         userApiClient,
+                        s3Client,
                     }),
                 },
             }),
