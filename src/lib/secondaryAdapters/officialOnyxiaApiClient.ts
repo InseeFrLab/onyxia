@@ -385,6 +385,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     projects: {
                         id: string;
                         name: string;
+                        bucket: string;
                     }[];
                 }>("/user/info")
                 .then(({ data }) => data.projects),

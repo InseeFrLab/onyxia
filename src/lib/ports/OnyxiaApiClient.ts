@@ -63,6 +63,7 @@ export type DeploymentRegion = {
 export type Project = {
     id: string;
     name: string;
+    bucket: string;
 };
 
 export type Catalog = {

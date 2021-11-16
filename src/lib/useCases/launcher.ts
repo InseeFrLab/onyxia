@@ -15,17 +15,16 @@ import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { getMinioToken } from "js/minio-client/minio-client";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import { getEnv } from "env";
 import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription,
 } from "app/tools/types/JSONSchemaObject";
 import { thunks as projectConfigsThunks } from "./projectConfigs";
+import { selectors as projectSelectionSelectors } from "./projectSelection";
 
 export const name = "launcher";
 
@@ -897,55 +896,17 @@ export const thunks = {
             ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
-    "getVaultAndS3Tokens":
-        (): ThunkAction<
-            Promise<{
-                vault: {
-                    token: string;
-                    expirationTime: number;
-                };
-                s3: {
-                    accessKeyId: string;
-                    secretAccessKey: string;
-                    sessionToken: string;
-                    expirationTime: number;
-                };
-            }>
-        > =>
-        async (...args) => {
-            const [, getState, { secretsManagerClient }] = args;
-
-            return {
-                "vault": await secretsManagerClient.getToken(),
-                "s3": await (async () => {
-                    await getMinioToken();
-
-                    const s3 = getState().user.s3!;
-
-                    return {
-                        "accessKeyId": s3.AWS_ACCESS_KEY_ID,
-                        "secretAccessKey": s3.AWS_SECRET_ACCESS_KEY,
-                        "sessionToken": s3.AWS_SESSION_TOKEN,
-                        "expirationTime": Infinity,
-                    };
-                })(),
-            };
-        },
-
-    /** This thunk can be used outside of the launcher page,
-     *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getMustacheParams":
         (): ThunkAction<Promise<MustacheParams>> =>
         async (...args) => {
-            const [dispatch, getState, { createStoreParams }] = args;
+            const [
+                dispatch,
+                getState,
+                { createStoreParams, secretsManagerClient, s3Client },
+            ] = args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
-
-            const {
-                vault: { token: vaultToken },
-                s3,
-            } = await dispatch(thunks.getVaultAndS3Tokens());
 
             const user = dispatch(userAuthenticationThunk.getUser());
 
@@ -962,6 +923,8 @@ export const thunks = {
                 projectConfigsThunks.getValue({ "key": "servicePassword" }),
             );
 
+            const project = projectSelectionSelectors.selectedProject(getState());
+
             return {
                 "user": {
                     "idep": user.username,
@@ -971,7 +934,7 @@ export const thunks = {
                     "ip": publicIp,
                 },
                 "project": {
-                    "id": getState().projectSelection.selectedProjectId,
+                    "id": project.id,
                     "password": servicePassword,
                 },
                 "git": {
@@ -980,7 +943,7 @@ export const thunks = {
                     "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
                     "token": userConfigs.githubPersonalAccessToken,
                 },
-                "vault": (() => {
+                "vault": await (async () => {
                     const { secretsManagerClientConfig } = createStoreParams;
 
                     if (secretsManagerClientConfig.implementation !== "VAULT") {
@@ -994,20 +957,42 @@ export const thunks = {
 
                     return {
                         "VAULT_ADDR": secretsManagerClientConfig.url,
-                        "VAULT_TOKEN": vaultToken,
+                        "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": secretsManagerClientConfig.engine,
                         "VAULT_TOP_DIR": secretExplorerUserHomePath,
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken,
-                "s3": {
-                    "AWS_ACCESS_KEY_ID": s3.accessKeyId,
-                    "AWS_BUCKET_NAME": user.username,
-                    "AWS_DEFAULT_REGION": "us-east-1",
-                    "AWS_S3_ENDPOINT": getEnv().MINIO_URL.replace(/^https?:\/\//, ""),
-                    "AWS_SECRET_ACCESS_KEY": s3.secretAccessKey,
-                    "AWS_SESSION_TOKEN": s3.sessionToken,
-                },
+                "s3": await (async () => {
+                    const { s3ClientConfig } = createStoreParams;
+
+                    switch (s3ClientConfig.implementation) {
+                        case "DUMMY":
+                            return {
+                                "AWS_ACCESS_KEY_ID": "",
+                                "AWS_BUCKET_NAME": "",
+                                "AWS_DEFAULT_REGION": "us-east-1" as const,
+                                "AWS_S3_ENDPOINT": "",
+                                "AWS_SECRET_ACCESS_KEY": "",
+                                "AWS_SESSION_TOKEN": "",
+                            };
+                        case "MINIO":
+                            const { accessKeyId, secretAccessKey, sessionToken } =
+                                await s3Client.getToken();
+
+                            return {
+                                "AWS_ACCESS_KEY_ID": accessKeyId,
+                                "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
+                                "AWS_DEFAULT_REGION": "us-east-1" as const,
+                                "AWS_S3_ENDPOINT": s3ClientConfig.url.replace(
+                                    /^https?:\/\//,
+                                    "",
+                                ),
+                                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                                "AWS_SESSION_TOKEN": sessionToken,
+                            };
+                    }
+                })(),
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,

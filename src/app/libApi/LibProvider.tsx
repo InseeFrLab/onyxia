@@ -10,6 +10,7 @@ import type {
     SecretsManagerClientConfig,
     OnyxiaApiClientConfig,
     UserApiClientConfig,
+    S3ClientConfig,
 } from "lib/setup";
 import { getEnv } from "env";
 import { isStorybook } from "app/tools/isStorybook";
@@ -21,7 +22,7 @@ const createStore_memo = memoize(
         const env = getEnv();
 
         if (env.OIDC_URL !== "") {
-            assert(env.OIDC_REALM !== "");
+            assert(env.OIDC_REALM !== "", "You must provide an OIDC realm");
         }
 
         return createStore({
@@ -106,6 +107,20 @@ const createStore_memo = memoize(
                               "url": env.OIDC_VAULT_URL || env.OIDC_URL,
                               "realm": env.OIDC_VAULT_REALM || env.OIDC_REALM,
                               "clientId": env.OIDC_VAULT_CLIENT_ID || env.OIDC_CLIENT_ID,
+                          },
+                      }),
+            "s3ClientConfig":
+                isStorybook || env.MINIO_URL === ""
+                    ? id<S3ClientConfig.LocalStorage>({
+                          "implementation": "DUMMY",
+                      })
+                    : id<S3ClientConfig.Minio>({
+                          "implementation": "MINIO",
+                          "url": env.MINIO_URL,
+                          "keycloakParams": {
+                              "url": env.OIDC_MINIO_URL || env.OIDC_URL,
+                              "realm": env.OIDC_MINIO_REALM || env.OIDC_REALM,
+                              "clientId": env.OIDC_MINIO_CLIENT_ID || env.OIDC_CLIENT_ID,
                           },
                       }),
         });
