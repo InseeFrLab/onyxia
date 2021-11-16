@@ -6,6 +6,9 @@ import { getNewlyRequestedOrCachedTokenFactory } from "lib/tools/getNewlyRequest
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
+import * as Minio from "minio";
+import { parseUrl } from "lib/tools/parseUrl";
+import memoize from "memoizee";
 
 export async function createMinioS3Client(params: {
     url: string;
@@ -69,9 +72,69 @@ export async function createMinioS3Client(params: {
         "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
     });
 
+    const { getMinioClient } = (() => {
+        const getMinioClientForToken = memoize(
+            (tokenObj: ReturnType<S3Client["getToken"]>) => {
+                const { accessKeyId, secretAccessKey, sessionToken } = tokenObj;
+
+                const { host, port = 443 } = parseUrl(url);
+
+                const minioClient = new Minio.Client({
+                    "endPoint": host,
+                    "port": port ?? 443,
+                    "useSSL": port !== 80,
+                    "accessKey": accessKeyId,
+                    "secretKey": secretAccessKey,
+                    sessionToken,
+                });
+
+                return { minioClient };
+            },
+            { "max": 1 },
+        );
+
+        async function getMinioClient() {
+            return getMinioClientForToken(await getNewlyRequestedOrCachedToken());
+        }
+
+        return { getMinioClient };
+    })();
+
     const secretsManagerClient: S3Client = {
         "getToken": getNewlyRequestedOrCachedToken,
+        "getFsApi": ({ bucketName }) => ({
+            "list": async ({ path }) => {
+                const { minioClient } = await getMinioClient();
+
+                const stream = minioClient.listObjects(bucketName, path, false);
+
+                const out: ReturnType<ReturnType<S3Client["getFsApi"]>["list"]> = {
+                    "directories": [],
+                    "files": [],
+                };
+
+                stream.once("end", () => dOut.resolve(out));
+                stream.on("data", bucketItem => {
+                    if (bucketItem.prefix) {
+                        out.directories.push(bucketItem.prefix);
+                    } else {
+                        out.files.push(bucketItem.name);
+                    }
+                });
+
+                const dOut = new Deferred<typeof out>();
+
+                return dOut.pr;
+            },
+        }),
     };
+
+    /*
+    secretsManagerClient
+        .getFsApi({ "bucketName": "jgarrone" })
+        .list({ "path": "" })
+        .then(resp=> console.log(resp));
+    */
 
     dS3Client.resolve(secretsManagerClient);
 
