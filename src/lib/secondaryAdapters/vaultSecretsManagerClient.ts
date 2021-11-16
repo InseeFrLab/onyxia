@@ -10,8 +10,6 @@ import type {
 import { Deferred } from "evt/tools/Deferred";
 import type { Param0, ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
-import { assert } from "tsafe/assert";
-import { is } from "tsafe/is";
 import * as runExclusive from "run-exclusive";
 
 const version = "v1";
@@ -44,12 +42,12 @@ export async function createVaultSecretsManagerClient(
 
             const {
                 data: { auth },
-            } = await createAxiosInstance().post(`/${version}/auth/jwt/login`, {
+            } = await createAxiosInstance().post<{
+                auth: { lease_duration: number; client_token: string };
+            }>(`/${version}/auth/jwt/login`, {
                 role,
                 "jwt": await getAccessToken(),
             });
-
-            assert(is<{ lease_duration: number; client_token: string }>(auth));
 
             return {
                 "token": auth.client_token,
