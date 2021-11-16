@@ -25,6 +25,7 @@ import type {
 } from "app/tools/types/JSONSchemaObject";
 import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
+import { parseUrl } from "lib/tools/parseUrl";
 
 export const name = "launcher";
 
@@ -975,19 +976,20 @@ export const thunks = {
                                 "AWS_S3_ENDPOINT": "",
                                 "AWS_SECRET_ACCESS_KEY": "",
                                 "AWS_SESSION_TOKEN": "",
+                                "port": NaN,
                             };
                         case "MINIO":
                             const { accessKeyId, secretAccessKey, sessionToken } =
                                 await s3Client.getToken();
 
+                            const { host, port } = parseUrl(s3ClientConfig.url);
+
                             return {
                                 "AWS_ACCESS_KEY_ID": accessKeyId,
                                 "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
                                 "AWS_DEFAULT_REGION": "us-east-1" as const,
-                                "AWS_S3_ENDPOINT": s3ClientConfig.url.replace(
-                                    /^https?:\/\//,
-                                    "",
-                                ),
+                                "AWS_S3_ENDPOINT": host,
+                                "port": port ?? 443,
                                 "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                                 "AWS_SESSION_TOKEN": sessionToken,
                             };
