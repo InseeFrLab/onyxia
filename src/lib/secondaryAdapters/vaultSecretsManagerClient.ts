@@ -5,13 +5,13 @@ import type {
     Secret,
     SecretWithMetadata,
     SecretsManagerClient,
-    SecretsManagerTranslator,
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
 import type { Param0, ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { getNewlyRequestedOrCachedTokenFactory } from "lib/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
+import { ApiLogger } from "lib/tools/apiLogger";
 
 const version = "v1";
 
@@ -134,10 +134,10 @@ const dVaultClient = new Deferred<SecretsManagerClient>();
 /** @deprecated */
 export const { pr: prVaultClient } = dVaultClient;
 
-export function getVaultClientTranslator(params: {
+export function getVaultApiLogger(params: {
     clientType: "CLI";
     engine: string;
-}): SecretsManagerTranslator {
+}): ApiLogger<SecretsManagerClient> {
     const { clientType, engine } = params;
 
     switch (clientType) {
