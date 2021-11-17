@@ -27,8 +27,6 @@ const getMutexes = memoize((_: ThunksExtraArgument) => ({
     "navigateMutex": new Mutex(),
 }));
 
-const doLogCommandToTranslator = true;
-
 declare type SecretExplorerState =
     | SecretExplorerState.Failure
     | SecretExplorerState.ShowingDirectory
@@ -904,7 +902,6 @@ export const thunks = {
                                     "keysOrdering": Object.keys(secret),
                                 }),
                             },
-                            doLogCommandToTranslator,
                         };
                     })(),
                 )
