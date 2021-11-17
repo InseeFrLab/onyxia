@@ -6,9 +6,7 @@ import type {
     SecretWithMetadata,
     SecretsManagerClient,
     Secret,
-    SecretsManagerTranslations,
 } from "lib/ports/SecretsManagerClient";
-import { observeSecretsManagerClientWithTranslator } from "lib/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
 import {
     basename as pathBasename,
@@ -20,7 +18,9 @@ import memoize from "memoizee";
 import { crawlFactory } from "lib/tools/crawl";
 import { unwrapWritableDraft } from "lib/tools/unwrapWritableDraft";
 import { Mutex } from "async-mutex";
-import { getVaultClientTranslator } from "../secondaryAdapters/vaultSecretsManagerClient";
+import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
+import { logApi } from "lib/tools/apiLogger";
+import type { ApiLogs } from "lib/tools/apiLogger";
 
 const getMutexes = memoize((_: ThunksExtraArgument) => ({
     "createOrRename": new Mutex(),
@@ -920,7 +920,7 @@ export const thunks = {
             );
         },
     "getSecretsManagerTranslations":
-        (): ThunkAction<{ secretsManagerTranslations: SecretsManagerTranslations }> =>
+        (): ThunkAction<{ secretsManagerTranslations: ApiLogs }> =>
         (...args) => {
             const [, , extraArg] = args;
 
@@ -943,8 +943,13 @@ export const thunks = {
 
 const augmentedClientBySoreInst = new WeakMap<
     ThunksExtraArgument,
-    ReturnType<typeof getSecretsManagerClientExtension> &
-        ReturnType<typeof observeSecretsManagerClientWithTranslator>
+    {
+        secretsManagerClientProxy: SecretsManagerClient;
+        secretsManagerClientExtension: ReturnType<
+            typeof getSecretsManagerClientExtension
+        >["secretsManagerClientExtension"];
+        secretsManagerTranslations: ApiLogs;
+    }
 >();
 
 export const privateThunks = {
@@ -953,24 +958,25 @@ export const privateThunks = {
         async (...args) => {
             const [, , extraArg] = args;
 
-            const { secretsManagerClientProxy, secretsManagerTranslations } =
-                observeSecretsManagerClientWithTranslator({
-                    "secretsManagerClient": extraArg.secretsManagerClient,
-                    "secretsManagerTranslator": getVaultClientTranslator({
-                        "clientType": "CLI",
-                        "engine": (() => {
-                            const { secretsManagerClientConfig } =
-                                extraArg.createStoreParams;
-                            switch (secretsManagerClientConfig.implementation) {
-                                case "VAULT":
-                                    return secretsManagerClientConfig.engine;
-                                case "LOCAL STORAGE":
-                                    return secretsManagerClientConfig.paramsForTranslator
-                                        .engine;
-                            }
-                        })(),
-                    }),
-                });
+            const {
+                apiLogs: secretsManagerTranslations,
+                apiProxy: secretsManagerClientProxy,
+            } = logApi({
+                "api": extraArg.secretsManagerClient,
+                "apiLogger": getVaultApiLogger({
+                    "clientType": "CLI",
+                    "engine": (() => {
+                        const { secretsManagerClientConfig } = extraArg.createStoreParams;
+                        switch (secretsManagerClientConfig.implementation) {
+                            case "VAULT":
+                                return secretsManagerClientConfig.engine;
+                            case "LOCAL STORAGE":
+                                return secretsManagerClientConfig.paramsForTranslator
+                                    .engine;
+                        }
+                    })(),
+                }),
+            });
 
             const { secretsManagerClientExtension } = getSecretsManagerClientExtension({
                 "secretsManagerClient": secretsManagerClientProxy,
