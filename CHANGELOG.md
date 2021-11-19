@@ -1,3 +1,13 @@
+### **0.19.2** (2021-11-19)  
+  
+- #270  
+- fix  
+- Fix sample envs  
+- Fix build  
+- Abstract away cmd translation to apiLogger  
+- Implement list function for minio adapter  
+- Pass s3 port in values    
+  
 ### **0.19.1** (2021-11-16)  
   
 - MyServices: Better display for small dialogs    
