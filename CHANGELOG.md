@@ -1,3 +1,10 @@
+### **0.19.5** (2021-11-19)  
+  
+- Fix monitoring links in services  
+- Fix logic for hiding service that are not ours and not shared  
+- Move JSONSchemaObject type def to lib  
+- Recognize the 'integer' type in values    
+  
 ### **0.19.2** (2021-11-19)  
   
 - #270  
