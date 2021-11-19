@@ -22,7 +22,7 @@ import { exclude } from "tsafe/exclude";
 import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription,
-} from "app/tools/types/JSONSchemaObject";
+} from "lib/tools/JSONSchemaObject";
 import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "lib/tools/parseUrl";
