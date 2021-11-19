@@ -85,12 +85,12 @@ export const AccountInfoTab = memo((props: Props) => {
                         getEnv().OIDC_URL,
                         "realms",
                         getEnv().OIDC_REALM,
-                        "account/password",
+                        "account",
                     )}
                     target="_blank"
                     underline="hover"
                 >
-                    {t("password")}
+                    {t("change account info")}
                 </Link>
             )}
             <Divider className={classes.divider} variant="middle" />
@@ -125,7 +125,7 @@ export declare namespace AccountInfoTab {
         "user id": undefined;
         "full name": undefined;
         "email": undefined;
-        "password": undefined;
+        "change account info": undefined;
         "auth information": undefined;
         "auth information helper": undefined;
         "ip address": undefined;
