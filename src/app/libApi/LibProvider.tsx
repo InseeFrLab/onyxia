@@ -50,6 +50,8 @@ const createStore_memo = memoize(
                               "namespacePrefix": "user-",
                               "defaultIpProtection": undefined,
                               "defaultNetworkPolicy": undefined,
+                              "s3MonitoringUrlPattern": undefined,
+                              "servicesMonitoringUrlPattern": undefined,
                           },
                       ],
                   })

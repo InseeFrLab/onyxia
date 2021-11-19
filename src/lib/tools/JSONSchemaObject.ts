@@ -31,7 +31,7 @@ export namespace JSONSchemaFormFieldDescription {
     };
 
     export type Integer = Common<number> & {
-        type: "number";
+        type: "integer" | "number";
         minimum?: number;
     };
 

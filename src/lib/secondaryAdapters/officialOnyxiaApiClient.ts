@@ -124,6 +124,10 @@ export function createOfficialOnyxiaApiClient(params: {
                                 networkPolicy?: boolean;
                             };
                             namespacePrefix: string;
+                            monitoring?: {
+                                URLPattern?: string;
+                                //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
+                            };
                         };
                         data: {
                             S3: {
@@ -137,6 +141,8 @@ export function createOfficialOnyxiaApiClient(params: {
                 .then(({ data }) =>
                     data.regions.map(region => ({
                         "id": region.id,
+                        "servicesMonitoringUrlPattern":
+                            region.services.monitoring?.URLPattern,
                         "s3MonitoringUrlPattern": region.data.S3.monitoring?.URLPattern,
                         "namespacePrefix": region.services.namespacePrefix,
                         "defaultIpProtection":

@@ -153,7 +153,7 @@ export const thunks = {
                 const selectedDeploymentRegion =
                     deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
-                return selectedDeploymentRegion.s3MonitoringUrlPattern
+                return selectedDeploymentRegion.servicesMonitoringUrlPattern
                     ?.replace(
                         "$NAMESPACE",
                         `${selectedDeploymentRegion.namespacePrefix}${username}`,

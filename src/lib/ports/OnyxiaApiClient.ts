@@ -54,7 +54,8 @@ export type OnyxiaApiClient = {
 
 export type DeploymentRegion = {
     id: string;
-    s3MonitoringUrlPattern?: string;
+    servicesMonitoringUrlPattern: string | undefined;
+    s3MonitoringUrlPattern: string | undefined;
     namespacePrefix: string;
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
