@@ -58,7 +58,9 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                 <MethodName extends MethodNames<Api>>(
                     methodName: MethodName,
                 ): Api[MethodName] => {
-                    const methodProxy = async (inputs: Parameters<Api[MethodName]>) => {
+                    const methodProxy = async (
+                        ...inputs: Parameters<Api[MethodName]>
+                    ) => {
                         const runMethod = () => api[methodName](...inputs);
 
                         const cmdId = getCounter();
@@ -88,9 +90,9 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
 
             return new Proxy(api, {
                 "get": (...args) => {
-                    const [target, propertyKey] = args;
+                    const [, propertyKey] = args;
 
-                    if (typeof target !== "function") {
+                    if (!(propertyKey in apiLogger.methods)) {
                         return Reflect.get(...args);
                     }
 
