@@ -1,27 +1,16 @@
 import { makeStyles } from "app/theme";
 import { useReducer, useRef, useEffect, memo } from "react";
-import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks/useEvt";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton } from "app/theme";
 import { Icon } from "app/theme";
 import { assert } from "tsafe/assert";
+import type { ApiLogs } from "lib/tools/apiLogger";
 
 export type Props = {
     className: string;
-    translations: {
-        evt: NonPostableEvt<{
-            type: "cmd" | "result";
-            cmdId: number;
-            translation: string;
-        }>;
-        history: readonly {
-            cmdId: number;
-            cmd: string;
-            resp: string | undefined;
-        }[];
-    };
+    translations: ApiLogs;
     /** In pixel */
     maxHeight: number;
 };
