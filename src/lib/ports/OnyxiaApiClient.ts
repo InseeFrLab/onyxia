@@ -1,4 +1,4 @@
-import type { JSONSchemaObject } from "app/tools/types/JSONSchemaObject";
+import type { JSONSchemaObject } from "lib/tools/JSONSchemaObject";
 
 export type OnyxiaApiClient = {
     /**

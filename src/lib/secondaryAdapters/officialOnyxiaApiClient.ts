@@ -11,7 +11,7 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in app/libApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import type { JSONSchemaObject } from "app/tools/types/JSONSchemaObject";
+import type { JSONSchemaObject } from "lib/tools/JSONSchemaObject";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
