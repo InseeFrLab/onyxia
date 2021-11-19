@@ -14,23 +14,23 @@ const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
-        "translation":
+        "cmdOrResp":
             "vault write auth/jwt/login role=onyxia-user jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvaG4uZG9lQGluc2VlLmZyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZG9laiIsImdpdGxhYl9ncm91cCI6bnVsbCwibmFtZSI6IiJ9.eAs8RQ_lfvjh_qYZtRYO9qp7VI6TLwWrRLd3Xr3Yt8g",
     },
     {
         "cmdId": 0,
         "type": "result",
-        "translation": `Success! You are now authenticated!`,
+        "cmdOrResp": `Success! You are now authenticated!`,
     },
     {
         "cmdId": 1,
         "type": "cmd",
-        "translation": "vault kv list onyxia-kv/doej",
+        "cmdOrResp": "vault kv list onyxia-kv/doej",
     },
     {
         "cmdId": 1,
         "type": "result",
-        "translation": [
+        "cmdOrResp": [
             "Keys",
             "----",
             ".onyxia/",
@@ -42,12 +42,12 @@ const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
     {
         "cmdId": 2,
         "type": "cmd",
-        "translation": "vault kv get onyxia-kv/doej/.onyxia/userServicePassword",
+        "cmdOrResp": "vault kv get onyxia-kv/doej/.onyxia/userServicePassword",
     },
     {
         "cmdId": 2,
         "type": "result",
-        "translation": [
+        "cmdOrResp": [
             "==== Data ====",
             "Key    Value",
             "---    -----",
@@ -57,42 +57,42 @@ const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
     {
         "cmdId": 3,
         "type": "cmd",
-        "translation": "cmd 3",
+        "cmdOrResp": "cmd 3",
     },
     {
         "cmdId": 4,
         "type": "cmd",
-        "translation": "cmd 4",
+        "cmdOrResp": "cmd 4",
     },
     {
         "cmdId": 3,
         "type": "result",
-        "translation": "result of cmd 3",
+        "cmdOrResp": "result of cmd 3",
     },
     {
         "cmdId": 4,
         "type": "result",
-        "translation": "result of cmd 4",
+        "cmdOrResp": "result of cmd 4",
     },
     {
         "cmdId": 5,
         "type": "cmd",
-        "translation": "cmd 5",
+        "cmdOrResp": "cmd 5",
     },
     {
         "cmdId": 5,
         "type": "result",
-        "translation": "result of cmd 5",
+        "cmdOrResp": "result of cmd 5",
     },
     {
         "cmdId": 6,
         "type": "cmd",
-        "translation": "cmd 6",
+        "cmdOrResp": "cmd 6",
     },
     {
         "cmdId": 6,
         "type": "result",
-        "translation": "result of cmd 6",
+        "cmdOrResp": "result of cmd 6",
     },
 ];
 
@@ -125,20 +125,20 @@ function Component(
             translations.evt.attach(
                 ({ type }) => type === "cmd",
                 ctx,
-                ({ cmdId, translation }) => {
+                ({ cmdId, cmdOrResp }) => {
                     translations.history.push({
                         cmdId,
-                        "cmd": translation,
+                        "cmd": cmdOrResp,
                         "resp": undefined,
                     });
 
                     translations.evt.attachOnce(
                         translation => translation.cmdId === cmdId,
                         ctx,
-                        ({ translation }) =>
+                        ({ cmdOrResp }) =>
                             (translations.history.find(
                                 entry => entry.cmdId === cmdId,
-                            )!.resp = translation),
+                            )!.resp = cmdOrResp),
                     );
                 },
             ),
