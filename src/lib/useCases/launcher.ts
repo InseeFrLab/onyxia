@@ -26,6 +26,7 @@ import type {
 import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "lib/tools/parseUrl";
+import { typeGuard } from "tsafe/typeGuard";
 
 export const name = "launcher";
 
@@ -568,6 +569,7 @@ export const thunks = {
                                                         jsonSchemaFormFieldDescription.type
                                                     ) {
                                                         case "boolean":
+                                                        case "integer":
                                                         case "number":
                                                             return v === ""
                                                                 ? undefined
@@ -594,6 +596,7 @@ export const thunks = {
                                                             return "";
                                                         case "boolean":
                                                             return false;
+                                                        case "integer":
                                                         case "number":
                                                             return 0;
                                                     }
@@ -644,6 +647,7 @@ export const thunks = {
 
                                                     return valuePotentiallyWronglyTyped;
                                                 }
+                                                case "integer":
                                                 case "number": {
                                                     const errorMessage = [
                                                         `${jsonSchemaFormFieldDescription.title}'s default value`,
@@ -768,7 +772,13 @@ export const thunks = {
                                     }
 
                                     if (
-                                        jsonSchemaFormFieldDescription.type === "number"
+                                        typeGuard<JSONSchemaFormFieldDescription.Integer>(
+                                            jsonSchemaFormFieldDescription,
+                                            jsonSchemaFormFieldDescription.type ===
+                                                "integer" ||
+                                                jsonSchemaFormFieldDescription.type ===
+                                                    "number",
+                                        )
                                     ) {
                                         return id<FormField.Integer>({
                                             ...common,
