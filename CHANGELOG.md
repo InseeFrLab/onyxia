@@ -1,3 +1,8 @@
+### **0.19.6** (2021-11-20)  
+  
+- Update package.json  
+- Update router.ts    
+  
 ### **0.19.5** (2021-11-19)  
   
 - Fix monitoring links in services  
