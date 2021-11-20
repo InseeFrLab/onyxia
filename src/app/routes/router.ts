@@ -23,7 +23,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         },
         ({ tabId }) => `/account/${tabId}`,
     ),
-    "home": defineRoute(["/home", "/", "accueil"]),
+    "home": defineRoute(["/home", "/"]),
     "catalogExplorer": defineRoute(
         {
             "catalogId": param.path.optional.string,
