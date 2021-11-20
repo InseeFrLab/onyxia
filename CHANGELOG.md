@@ -1,3 +1,7 @@
+### **0.19.7** (2021-11-20)  
+  
+- Update router.ts    
+  
 ### **0.19.6** (2021-11-20)  
   
 - Update package.json  
