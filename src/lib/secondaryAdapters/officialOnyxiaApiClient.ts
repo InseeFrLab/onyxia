@@ -392,6 +392,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         id: string;
                         name: string;
                         bucket: string;
+                        namespace: string;
                     }[];
                 }>("/user/info")
                 .then(({ data }) => data.projects),
