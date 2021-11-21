@@ -1,3 +1,7 @@
+### **0.19.8** (2021-11-21)  
+  
+- Fix namespace in monitoring links    
+  
 ### **0.19.7** (2021-11-20)  
   
 - Update router.ts    
