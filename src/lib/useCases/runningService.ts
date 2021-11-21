@@ -154,7 +154,7 @@ export const thunks = {
                     deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
                 return selectedDeploymentRegion.servicesMonitoringUrlPattern
-                    ?.replace("$NAMESPACE", `${project.namespace}`)
+                    ?.replace("$NAMESPACE", project.namespace)
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
