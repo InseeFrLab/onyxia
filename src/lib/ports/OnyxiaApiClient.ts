@@ -65,6 +65,7 @@ export type Project = {
     id: string;
     name: string;
     bucket: string;
+    namespace: string;
 };
 
 export type Catalog = {

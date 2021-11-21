@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { ThunkAction } from "../setup";
 import { id } from "tsafe/id";
-import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import { selectors as projectSelectionSelectors } from "./projectSelection";
 export const name = "runningService";
 
 type RunningServicesState = RunningServicesState.NotFetched | RunningServicesState.Ready;
@@ -148,16 +148,13 @@ export const thunks = {
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const { username } = dispatch(userAuthenticationThunks.getUser());
+                const project = projectSelectionSelectors.selectedProject(getState());
 
                 const selectedDeploymentRegion =
                     deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
                 return selectedDeploymentRegion.servicesMonitoringUrlPattern
-                    ?.replace(
-                        "$NAMESPACE",
-                        `${selectedDeploymentRegion.namespacePrefix}${username}`,
-                    )
+                    ?.replace("$NAMESPACE", `${project.namespace}`)
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
