@@ -1,3 +1,8 @@
+### **0.19.9** (2021-11-22)  
+  
+- redirect /accueil to /home  
+- Minor refactor    
+  
 ### **0.19.8** (2021-11-21)  
   
 - Fix namespace in monitoring links    
