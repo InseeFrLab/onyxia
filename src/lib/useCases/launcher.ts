@@ -907,15 +907,58 @@ export const thunks = {
             ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
+    "getS3MustacheParams":
+        (): ThunkAction<Promise<MustacheParams["s3"] & { expirationTime: number }>> =>
+        async (...args) => {
+            const [
+                ,
+                getState,
+                {
+                    createStoreParams: { s3ClientConfig },
+                    s3Client,
+                },
+            ] = args;
+
+            const project = projectSelectionSelectors.selectedProject(getState());
+
+            switch (s3ClientConfig.implementation) {
+                case "DUMMY":
+                    return {
+                        "AWS_ACCESS_KEY_ID": "",
+                        "AWS_BUCKET_NAME": "",
+                        "AWS_DEFAULT_REGION": "us-east-1" as const,
+                        "AWS_S3_ENDPOINT": "",
+                        "AWS_SECRET_ACCESS_KEY": "",
+                        "AWS_SESSION_TOKEN": "",
+                        "port": NaN,
+                        "expirationTime": Infinity,
+                    };
+                case "MINIO":
+                    const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
+                        await s3Client.getToken();
+
+                    const { host, port = 443 } = parseUrl(s3ClientConfig.url);
+
+                    return {
+                        "AWS_ACCESS_KEY_ID": accessKeyId,
+                        "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
+                        "AWS_DEFAULT_REGION": "us-east-1" as const,
+                        "AWS_S3_ENDPOINT": host,
+                        port,
+                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                        "AWS_SESSION_TOKEN": sessionToken,
+                        expirationTime,
+                    };
+            }
+        },
+    /** This thunk can be used outside of the launcher page,
+     *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getMustacheParams":
         (): ThunkAction<Promise<MustacheParams>> =>
         async (...args) => {
-            const [
-                dispatch,
-                getState,
-                { createStoreParams, secretsManagerClient, s3Client },
-            ] = args;
+            const [dispatch, getState, { createStoreParams, secretsManagerClient }] =
+                args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
@@ -974,37 +1017,7 @@ export const thunks = {
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken,
-                "s3": await (async () => {
-                    const { s3ClientConfig } = createStoreParams;
-
-                    switch (s3ClientConfig.implementation) {
-                        case "DUMMY":
-                            return {
-                                "AWS_ACCESS_KEY_ID": "",
-                                "AWS_BUCKET_NAME": "",
-                                "AWS_DEFAULT_REGION": "us-east-1" as const,
-                                "AWS_S3_ENDPOINT": "",
-                                "AWS_SECRET_ACCESS_KEY": "",
-                                "AWS_SESSION_TOKEN": "",
-                                "port": NaN,
-                            };
-                        case "MINIO":
-                            const { accessKeyId, secretAccessKey, sessionToken } =
-                                await s3Client.getToken();
-
-                            const { host, port = 443 } = parseUrl(s3ClientConfig.url);
-
-                            return {
-                                "AWS_ACCESS_KEY_ID": accessKeyId,
-                                "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
-                                "AWS_DEFAULT_REGION": "us-east-1" as const,
-                                "AWS_S3_ENDPOINT": host,
-                                port,
-                                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                                "AWS_SESSION_TOKEN": sessionToken,
-                            };
-                    }
-                })(),
+                "s3": await dispatch(thunks.getS3MustacheParams()),
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,

@@ -1,18 +1,18 @@
-import { useState, useEffect, useMemo, memo } from "react";
+import { useMemo, memo } from "react";
 import { useTranslation } from "app/i18n/useTranslations";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useSelector } from "app/libApi";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "app/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import { makeStyles } from "app/theme";
-import { getMinioToken } from "js/minio-client/minio-client";
 import exportMinio from "js/components/mon-compte/export-credentials-minio";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "app/tools/smartTrim";
 import { useValidUntil } from "app/i18n/useMoment";
+import { useAsync } from "react-async-hook";
+import { useThunks } from "app/libApi";
 
 export type Props = {
     className?: string;
@@ -25,34 +25,26 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { t } = useTranslation("AccountStorageTab");
 
+    const { launcherThunks } = useThunks();
+
+    const { result: s3MustacheParams } = useAsync(launcherThunks.getS3MustacheParams, []);
+
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
     );
 
-    const { s3Credentials } = (function useClosure() {
-        const { s3: s3Credentials } = useSelector(state => state.user);
-
-        const [isFetching, setIsFetching] = useState(false);
-
-        useEffect(() => {
-            if (!isFetching && (!s3Credentials || !s3Credentials.AWS_EXPIRATION)) {
-                setIsFetching(true);
-                getMinioToken().then(() => setIsFetching(false));
-            }
-        }, [s3Credentials, isFetching]);
-
-        return { s3Credentials };
-    })();
-
     const onRequestScriptFactory = useCallbackFactory(
         ([action]: ["download" | "copy"], [scriptLabel]: [string]) => {
-            assert(s3Credentials !== undefined);
+            assert(s3MustacheParams !== undefined);
 
             const { text, fileName } = exportMinio.find(
                 ({ label }) => label === scriptLabel,
             )!;
 
-            const scriptContent = text(s3Credentials);
+            const scriptContent = text({
+                ...s3MustacheParams,
+                "AWS_EXPIRATION": `${s3MustacheParams.expirationTime}`,
+            });
 
             switch (action) {
                 case "copy":
@@ -74,9 +66,8 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { credentialExpiriesWhen } = (function useClosure() {
         const millisecondsLeft = useMemo(
-            () => new Date(s3Credentials?.AWS_EXPIRATION ?? 0).getTime() - Date.now(),
-
-            [s3Credentials?.AWS_EXPIRATION ?? null],
+            () => s3MustacheParams?.expirationTime ?? 0 - Date.now(),
+            [s3MustacheParams?.expirationTime],
         );
 
         const credentialExpiriesWhen = useValidUntil({ millisecondsLeft });
@@ -84,7 +75,7 @@ export const AccountStorageTab = memo((props: Props) => {
         return { credentialExpiriesWhen };
     })();
 
-    if (s3Credentials === undefined) {
+    if (s3MustacheParams === undefined) {
         return null;
     }
 
@@ -119,7 +110,7 @@ export const AccountStorageTab = memo((props: Props) => {
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
-                        "text": s3Credentials[key],
+                        "text": s3MustacheParams[key],
                     })}
                     helperText={
                         <>
@@ -128,7 +119,7 @@ export const AccountStorageTab = memo((props: Props) => {
                             <span className={classes.envVar}>{`$${key}`}</span>
                         </>
                     }
-                    onRequestCopy={onRequestCopyFactory(s3Credentials[key])}
+                    onRequestCopy={onRequestCopyFactory(s3MustacheParams[key])}
                 />
             ))}
             <Divider className={classes.divider} variant="middle" />
