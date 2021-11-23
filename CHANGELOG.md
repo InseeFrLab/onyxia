@@ -1,3 +1,11 @@
+### **0.19.11** (2021-11-23)  
+  
+- Fix cloudshell requesting S3 tokens for nothing  
+- Scopped s3 token  
+- Account: s3 tab, give minimal loading feedback  
+- Update S3Client port and adapter  
+- getNewlyRequestedOrChachedToken with parameters    
+  
 ### **0.19.10** (2021-11-23)  
   
 - Account: Don't use legacy code to get s3 tokens    
