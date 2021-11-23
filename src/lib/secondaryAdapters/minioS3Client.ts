@@ -9,6 +9,8 @@ import { Deferred } from "evt/tools/Deferred";
 import * as Minio from "minio";
 import { parseUrl } from "lib/tools/parseUrl";
 import memoize from "memoizee";
+import type { ApiLogger } from "lib/tools/apiLogger";
+import { join as pathJoin } from "path";
 
 export async function createMinioS3Client(params: {
     url: string;
@@ -102,39 +104,39 @@ export async function createMinioS3Client(params: {
 
     const secretsManagerClient: S3Client = {
         "getToken": getNewlyRequestedOrCachedToken,
-        "getFsApi": ({ bucketName }) => ({
-            "list": async ({ path }) => {
-                const { minioClient } = await getMinioClient();
+        "list": async ({ path }) => {
+            const { minioClient } = await getMinioClient();
 
-                const stream = minioClient.listObjects(bucketName, path, false);
+            const { bucketName, prefix } = (() => {
+                const [bucketName, ...rest] = path.split("/");
 
-                const out: ReturnType<ReturnType<S3Client["getFsApi"]>["list"]> = {
-                    "directories": [],
-                    "files": [],
+                return {
+                    bucketName,
+                    "prefix": rest.join("/"),
                 };
+            })();
 
-                stream.once("end", () => dOut.resolve(out));
-                stream.on("data", bucketItem => {
-                    if (bucketItem.prefix) {
-                        out.directories.push(bucketItem.prefix);
-                    } else {
-                        out.files.push(bucketItem.name);
-                    }
-                });
+            const stream = minioClient.listObjects(bucketName, prefix, false);
 
-                const dOut = new Deferred<typeof out>();
+            const out: ReturnType<S3Client["list"]> = {
+                "directories": [],
+                "files": [],
+            };
 
-                return dOut.pr;
-            },
-        }),
+            stream.once("end", () => dOut.resolve(out));
+            stream.on("data", bucketItem => {
+                if (bucketItem.prefix) {
+                    out.directories.push(bucketItem.prefix);
+                } else {
+                    out.files.push(bucketItem.name);
+                }
+            });
+
+            const dOut = new Deferred<typeof out>();
+
+            return dOut.pr;
+        },
     };
-
-    /*
-    secretsManagerClient
-        .getFsApi({ "bucketName": "jgarrone" })
-        .list({ "path": "" })
-        .then(resp=> console.log(resp));
-    */
 
     dS3Client.resolve(secretsManagerClient);
 
@@ -145,3 +147,27 @@ const dS3Client = new Deferred<S3Client>();
 
 /** @deprecated */
 export const { pr: prS3Client } = dS3Client;
+
+export const s3ApiLogger: ApiLogger<S3Client> = {
+    "initialHistory": [],
+    "methods": {
+        //TODO, this is dummy
+        "list": {
+            "buildCmd": ({ path }) => `mc list ${pathJoin(path)}`,
+            "fmtResult": ({ result: { directories, files } }) =>
+                [
+                    "Keys",
+                    "----",
+                    ...[...directories.map(directory => `${directory}/`), ...files],
+                ].join("\n"),
+        },
+        "getToken": {
+            "buildCmd": () =>
+                [
+                    `# We generate a token`,
+                    `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`,
+                ].join("\n"),
+            "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`,
+        },
+    },
+};
