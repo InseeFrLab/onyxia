@@ -76,7 +76,7 @@ export const AccountStorageTab = memo((props: Props) => {
     })();
 
     if (s3MustacheParams === undefined) {
-        return null;
+        return <span>⏳</span>;
     }
 
     return (
