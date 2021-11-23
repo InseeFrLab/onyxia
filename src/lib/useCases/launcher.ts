@@ -921,6 +921,9 @@ export const thunks = {
 
             const project = projectSelectionSelectors.selectedProject(getState());
 
+            const isFirstProject =
+                getState().projectSelection.projects[0].id === project.id;
+
             switch (s3ClientConfig.implementation) {
                 case "DUMMY":
                     return {
@@ -935,7 +938,9 @@ export const thunks = {
                     };
                 case "MINIO":
                     const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                        await s3Client.getToken({ "bucketName": project.bucket });
+                        await s3Client.getToken({
+                            "bucketName": isFirstProject ? undefined : project.bucket,
+                        });
 
                     const { host, port = 443 } = parseUrl(s3ClientConfig.url);
 
