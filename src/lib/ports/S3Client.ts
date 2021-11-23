@@ -1,10 +1,9 @@
+/** All path are supposed to start with the bucket name */
 export type S3Client = {
-    getFsApi: (params: { bucketName: string }) => {
-        list: (params: { path: string }) => Promise<{
-            directories: string[];
-            files: string[];
-        }>;
-    };
+    list: (params: { path: string }) => Promise<{
+        directories: string[];
+        files: string[];
+    }>;
 
     getToken: () => Promise<{
         accessKeyId: string;
