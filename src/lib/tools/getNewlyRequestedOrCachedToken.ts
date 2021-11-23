@@ -1,6 +1,7 @@
 import * as runExclusive from "run-exclusive";
+import memoize from "memoizee";
 
-export function getNewlyRequestedOrCachedTokenFactory<
+function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
     T extends { expirationTime: number },
 >(params: {
     requestNewToken: () => Promise<T>;
@@ -14,30 +15,56 @@ export function getNewlyRequestedOrCachedTokenFactory<
           })
         | undefined = undefined;
 
-    const getNewlyRequestedOrCachedToken = runExclusive.build<() => Promise<T>>(
-        async () => {
-            if (
-                cache !== undefined &&
-                cache.expirationTime - Date.now() >
-                    (parseFloat(
-                        returnCachedTokenIfStillValidForXPercentOfItsTTL.split("%")[0],
-                    ) /
-                        100) *
-                        cache.ttl
-            ) {
-                return cache;
-            }
-
-            const token = await requestNewToken();
-
-            cache = {
-                ...token,
-                "ttl": token.expirationTime - Date.now(),
-            };
-
+    const getNewlyRequestedOrCachedTokenWithoutParams = runExclusive.build<
+        () => Promise<T>
+    >(async () => {
+        if (
+            cache !== undefined &&
+            cache.expirationTime - Date.now() >
+                (parseFloat(
+                    returnCachedTokenIfStillValidForXPercentOfItsTTL.split("%")[0],
+                ) /
+                    100) *
+                    cache.ttl
+        ) {
             return cache;
-        },
+        }
+
+        const token = await requestNewToken();
+
+        cache = {
+            ...token,
+            "ttl": token.expirationTime - Date.now(),
+        };
+
+        return cache;
+    });
+
+    return { getNewlyRequestedOrCachedTokenWithoutParams };
+}
+
+export function getNewlyRequestedOrCachedTokenFactory<
+    T extends { expirationTime: number },
+    Args extends any[],
+>(params: {
+    requestNewToken: (...args: Args) => Promise<T>;
+    returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
+}) {
+    const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
+
+    const getNewlyRequestedOrCachedTokenFactory_memo = memoize((...args: Args) =>
+        getNewlyRequestedOrCachedTokenWithoutParamsFactory({
+            "requestNewToken": () => requestNewToken(...args),
+            returnCachedTokenIfStillValidForXPercentOfItsTTL,
+        }),
     );
+
+    function getNewlyRequestedOrCachedToken(...args: Args) {
+        const { getNewlyRequestedOrCachedTokenWithoutParams } =
+            getNewlyRequestedOrCachedTokenFactory_memo(...args);
+
+        return getNewlyRequestedOrCachedTokenWithoutParams();
+    }
 
     return { getNewlyRequestedOrCachedToken };
 }
