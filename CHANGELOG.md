@@ -1,3 +1,7 @@
+### **0.19.10** (2021-11-23)  
+  
+- Account: Don't use legacy code to get s3 tokens    
+  
 ### **0.19.9** (2021-11-22)  
   
 - redirect /accueil to /home  
