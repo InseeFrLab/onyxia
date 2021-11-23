@@ -27,7 +27,10 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { launcherThunks } = useThunks();
 
-    const { result: s3MustacheParams } = useAsync(launcherThunks.getS3MustacheParams, []);
+    const { result: s3MustacheParams } = useAsync(
+        launcherThunks.getS3MustacheParamsForProjectBucket,
+        [],
+    );
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),

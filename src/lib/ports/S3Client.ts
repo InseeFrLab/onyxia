@@ -5,7 +5,7 @@ export type S3Client = {
         files: string[];
     }>;
 
-    getToken: () => Promise<{
+    getToken: (params: { bucketName: string | undefined }) => Promise<{
         accessKeyId: string;
         secretAccessKey: string;
         sessionToken: string;
