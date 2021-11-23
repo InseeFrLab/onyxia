@@ -1,3 +1,8 @@
+### **0.19.12** (2021-11-23)  
+  
+- Rename isFirstProject -> isDefaultProject  
+- do not scope S3 token policy for default project    
+  
 ### **0.19.11** (2021-11-23)  
   
 - Fix cloudshell requesting S3 tokens for nothing  
