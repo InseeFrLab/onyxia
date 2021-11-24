@@ -400,19 +400,18 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text3":
                 "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
             "running services": "Running services",
-            "confirm terminate title": "Are you sure?",
-            "confirm terminate subtitle":
-                "Make sure your service are ready to be terminated",
-            "confirm terminate body":
+            "confirm delete title": "Are you sure?",
+            "confirm delete subtitle": "Make sure your service are ready to be deleted",
+            "confirm delete body":
                 "Don't forget to push your code on GitHub or GitLab before terminating your services",
             "cancel": "cancel",
-            "confirm": "Yes, terminate",
+            "confirm": "Yes, delete",
         },
         "MyServicesButtonBar": {
             "refresh": "Refresh",
             "launch": "New service",
             "password": "Copy the services password",
-            "trash": "Terminate all",
+            "trash": "Delete all",
         },
         "MyServicesCard": {
             "service": "Service",
@@ -712,21 +711,21 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text2":
                 "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
             "text3":
-                "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
+                "Il est recommandé de supprimer vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
             "running services": "Services en cours",
-            "confirm terminate title": "Êtes-vous sur?",
-            "confirm terminate subtitle":
+            "confirm delete title": "Êtes-vous sur?",
+            "confirm delete subtitle":
                 "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
-            "confirm terminate body":
+            "confirm delete body":
                 "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
             "cancel": "Annuler",
-            "confirm": "Oui, arrêter",
+            "confirm": "Oui, supprimer",
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
             "launch": "Nouveau service",
             "password": "Copier le mot de passe",
-            "trash": "Arrêter tous",
+            "trash": "Supprimer tous",
         },
         "MyServicesCard": {
             "service": "Service",
