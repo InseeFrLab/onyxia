@@ -10,11 +10,12 @@ export type ButtonId = typeof buttonIds[number];
 
 export type Props = {
     className?: string;
-    onClick(buttonId: ButtonId): void;
+    isThereNonOwnedServicesShown: boolean;
+    onClick: (buttonId: ButtonId) => void;
 };
 
 export const MyServicesButtonBar = memo((props: Props) => {
-    const { className, onClick } = props;
+    const { className, isThereNonOwnedServicesShown, onClick } = props;
 
     const { t } = useTranslation("MyServicesButtonBar");
 
@@ -35,7 +36,18 @@ export const MyServicesButtonBar = memo((props: Props) => {
                     }
                 })(),
                 "isDisabled": false,
-                "label": t(buttonId),
+                "label": t(
+                    (() => {
+                        switch (buttonId) {
+                            case "trash":
+                                return isThereNonOwnedServicesShown
+                                    ? "trash my own"
+                                    : "trash";
+                            default:
+                                return buttonId;
+                        }
+                    })(),
+                ),
             })),
         [t],
     );
@@ -44,5 +56,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
 });
 
 export declare namespace MyServicesButtonBar {
-    export type I18nScheme = Record<ButtonId, undefined>;
+    export type I18nScheme = Record<ButtonId, undefined> & {
+        "trash my own": undefined;
+    };
 }
