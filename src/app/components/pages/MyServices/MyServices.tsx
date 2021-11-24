@@ -234,9 +234,9 @@ export function MyServices(props: Props) {
                 />
             </div>
             <Dialog
-                title={t("confirm terminate title")}
-                subtitle={t("confirm terminate subtitle")}
-                body={t("confirm terminate body")}
+                title={t("confirm delete title")}
+                subtitle={t("confirm delete subtitle")}
+                body={t("confirm delete body")}
                 isOpen={isDialogOpen}
                 onClose={onDialogCloseFactory(false)}
                 buttons={
@@ -260,9 +260,9 @@ export declare namespace MyServices {
         text2: undefined;
         text3: undefined;
         "running services": undefined;
-        "confirm terminate title": undefined;
-        "confirm terminate subtitle": undefined;
-        "confirm terminate body": undefined;
+        "confirm delete title": undefined;
+        "confirm delete subtitle": undefined;
+        "confirm delete body": undefined;
         cancel: undefined;
         confirm: undefined;
     };
