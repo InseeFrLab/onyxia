@@ -11,11 +11,13 @@ export type ButtonId = typeof buttonIds[number];
 export type Props = {
     className?: string;
     isThereNonOwnedServicesShown: boolean;
+    isThereDeletableServices: boolean;
     onClick: (buttonId: ButtonId) => void;
 };
 
 export const MyServicesButtonBar = memo((props: Props) => {
-    const { className, isThereNonOwnedServicesShown, onClick } = props;
+    const { className, isThereNonOwnedServicesShown, isThereDeletableServices, onClick } =
+        props;
 
     const { t } = useTranslation("MyServicesButtonBar");
 
@@ -35,7 +37,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                             return "delete" as const;
                     }
                 })(),
-                "isDisabled": false,
+                "isDisabled": buttonId === "trash" && !isThereDeletableServices,
                 "label": t(
                     (() => {
                         switch (buttonId) {
@@ -49,7 +51,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                     })(),
                 ),
             })),
-        [t],
+        [t, isThereNonOwnedServicesShown, isThereDeletableServices],
     );
 
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
