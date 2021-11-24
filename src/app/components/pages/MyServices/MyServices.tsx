@@ -153,6 +153,7 @@ export function MyServices(props: Props) {
                           postInstallInstructions,
                           isShared,
                           env,
+                          isOwned,
                       }) => ({
                           "serviceId": id,
                           "packageIconUrl": logoUrl,
@@ -166,6 +167,7 @@ export function MyServices(props: Props) {
                           postInstallInstructions,
                           isShared,
                           env,
+                          isOwned,
                       }),
                   ),
         [runningServices, isRunningServicesFetching],
@@ -193,9 +195,11 @@ export function MyServices(props: Props) {
                     "serviceId": serviceIdRequestedToBeDeleted,
                 });
             } else {
-                runningServices.map(({ id }) =>
-                    runningServiceThunks.stopService({ "serviceId": id }),
-                );
+                runningServices
+                    .filter(({ isOwned }) => isOwned)
+                    .map(({ id }) =>
+                        runningServiceThunks.stopService({ "serviceId": id }),
+                    );
             }
         }
 

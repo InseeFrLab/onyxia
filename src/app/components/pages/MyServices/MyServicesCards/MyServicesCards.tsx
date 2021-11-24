@@ -30,6 +30,7 @@ export type Props = {
               isOvertime: boolean;
               postInstallInstructions: string | undefined;
               isShared: boolean;
+              isOwned: boolean;
           }[]
         | undefined;
     catalogExplorerLink: Link;
@@ -118,7 +119,11 @@ export const MyServicesCards = memo((props: Props) => {
                                 "env",
                                 card.serviceId,
                             )}
-                            onRequestDelete={onRequestDeleteFactory(card.serviceId)}
+                            onRequestDelete={
+                                card.isOwned
+                                    ? onRequestDeleteFactory(card.serviceId)
+                                    : undefined
+                            }
                             onRequestShowPostInstallInstructions={
                                 card.postInstallInstructions !== undefined
                                     ? onRequestShowEnvOrPostInstallInstructionFactory(

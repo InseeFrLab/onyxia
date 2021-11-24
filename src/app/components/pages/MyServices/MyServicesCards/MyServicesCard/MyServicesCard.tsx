@@ -14,7 +14,7 @@ export type Props = {
     packageIconUrl?: string;
     friendlyName: string;
     packageName: string;
-    onRequestDelete: () => void;
+    onRequestDelete: (() => void) | undefined;
     onRequestShowPostInstallInstructions: (() => void) | undefined;
     onRequestShowEnv: () => void;
     openUrl: string | undefined;
@@ -90,7 +90,9 @@ export const MyServicesCard = memo((props: Props) => {
                 </div>
                 <div className={classes.belowDividerBottom}>
                     <IconButton iconId="infoOutlined" onClick={onRequestShowEnv} />
-                    <IconButton iconId="block" onClick={onRequestDelete} />
+                    {onRequestDelete !== undefined && (
+                        <IconButton iconId="block" onClick={onRequestDelete} />
+                    )}
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />
                     )}
