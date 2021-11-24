@@ -33,6 +33,7 @@ const props: Props = {
             "bar": "bar value",
             "baz": "baz value",
         },
+        "isOwned": i % 3 === 0,
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     ...logCallbacks(["onRequestDelete"]),
