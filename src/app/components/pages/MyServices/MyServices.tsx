@@ -211,6 +211,11 @@ export function MyServices(props: Props) {
         [runningServices],
     );
 
+    const isThereOwnedSharedServices = useMemo(
+        () => !!runningServices.find(({ isOwned, isShared }) => isOwned && isShared),
+        [runningServices],
+    );
+
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
@@ -244,7 +249,11 @@ export function MyServices(props: Props) {
             <Dialog
                 title={t("confirm delete title")}
                 subtitle={t("confirm delete subtitle")}
-                body={t("confirm delete body")}
+                body={`${
+                    isThereOwnedSharedServices
+                        ? t("confirm delete body shared services")
+                        : ""
+                } ${t("confirm delete body")}`}
                 isOpen={isDialogOpen}
                 onClose={onDialogCloseFactory(false)}
                 buttons={
@@ -271,6 +280,7 @@ export declare namespace MyServices {
         "confirm delete title": undefined;
         "confirm delete subtitle": undefined;
         "confirm delete body": undefined;
+        "confirm delete body shared services": undefined;
         cancel: undefined;
         confirm: undefined;
     };

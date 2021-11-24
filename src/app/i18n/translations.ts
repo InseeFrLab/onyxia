@@ -402,6 +402,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "running services": "Running services",
             "confirm delete title": "Are you sure?",
             "confirm delete subtitle": "Make sure your service are ready to be deleted",
+            "confirm delete body shared services":
+                "Be mindful that some of your services are shared with the other project member.",
             "confirm delete body":
                 "Don't forget to push your code on GitHub or GitLab before terminating your services",
             "cancel": "cancel",
@@ -719,6 +721,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
             "confirm delete body":
                 "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
+            "confirm delete body shared services":
+                "Attention, certains de vos services sont partagés aux autres membres du projet.",
             "cancel": "Annuler",
             "confirm": "Oui, supprimer",
         },
