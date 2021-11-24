@@ -188,6 +188,11 @@ export function MyServices(props: Props) {
         },
     );
 
+    const deletableRunningServices = useMemo(
+        () => runningServices.filter(({ isOwned }) => isOwned),
+        [runningServices],
+    );
+
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
@@ -195,11 +200,9 @@ export function MyServices(props: Props) {
                     "serviceId": serviceIdRequestedToBeDeleted,
                 });
             } else {
-                runningServices
-                    .filter(({ isOwned }) => isOwned)
-                    .map(({ id }) =>
-                        runningServiceThunks.stopService({ "serviceId": id }),
-                    );
+                deletableRunningServices.map(({ id }) =>
+                    runningServiceThunks.stopService({ "serviceId": id }),
+                );
             }
         }
 
@@ -228,6 +231,7 @@ export function MyServices(props: Props) {
             <MyServicesButtonBar
                 onClick={onButtonBarClick}
                 isThereNonOwnedServicesShown={isThereNonOwnedServicesShown}
+                isThereDeletableServices={deletableRunningServices.length !== 0}
             />
             <div className={classes.payload}>
                 {!isSavedConfigsExtended && (
