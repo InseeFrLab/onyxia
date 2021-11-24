@@ -1,3 +1,13 @@
+## **0.20.0** (2021-11-24)  
+  
+- MyServices: Disable delete button if there is nothing to delete  
+- Dialog warning when deleting owned shared services  
+- MyService: rephrase the delete all button when all services arnt owned  
+- MyServices: Restore trash icon instead of block  
+- Rephrase terminate -> delete  
+- MyServices: Users can't terminate services that thei haven't launched  
+- MyServices: Move sorting and filtering in the lib/ dir    
+  
 ### **0.19.12** (2021-11-23)  
   
 - Rename isFirstProject -> isDefaultProject  
