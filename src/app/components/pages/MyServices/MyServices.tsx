@@ -42,12 +42,11 @@ export function MyServices(props: Props) {
         selectors.restorablePackageConfig.displayableConfigs,
     );
 
-    const { isRunningServicesFetching, runningServices } = useSelector(
-        ({ runningService: state }) => ({
-            "isRunningServicesFetching": state.isFetching,
-            "runningServices": state.isFetched ? state.runningServices : [],
-        }),
+    const isRunningServicesFetching = useSelector(
+        state => state.runningService.isFetching,
     );
+
+    const { runningServices } = useSelector(selectors.runningService.runningServices);
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
@@ -141,37 +140,34 @@ export function MyServices(props: Props) {
         (): MyServicesCardsProps["cards"] =>
             isRunningServicesFetching
                 ? undefined
-                : [...runningServices]
-                      .filter(({ isShared, isOwned }) => isOwned || isShared)
-                      .sort((a, b) => b.startedAt - a.startedAt)
-                      .map(
-                          ({
-                              id,
-                              logoUrl,
-                              friendlyName,
-                              packageName,
-                              urls,
-                              startedAt,
-                              monitoringUrl,
-                              isStarting,
-                              postInstallInstructions,
-                              isShared,
-                              env,
-                          }) => ({
-                              "serviceId": id,
-                              "packageIconUrl": logoUrl,
-                              friendlyName,
-                              packageName,
-                              "infoUrl": routes.myService({ "serviceId": id }).href,
-                              "openUrl": urls[0],
-                              monitoringUrl,
-                              "startTime": isStarting ? undefined : startedAt,
-                              "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
-                              postInstallInstructions,
-                              isShared,
-                              env,
-                          }),
-                      ),
+                : runningServices.map(
+                      ({
+                          id,
+                          logoUrl,
+                          friendlyName,
+                          packageName,
+                          urls,
+                          startedAt,
+                          monitoringUrl,
+                          isStarting,
+                          postInstallInstructions,
+                          isShared,
+                          env,
+                      }) => ({
+                          "serviceId": id,
+                          "packageIconUrl": logoUrl,
+                          friendlyName,
+                          packageName,
+                          "infoUrl": routes.myService({ "serviceId": id }).href,
+                          "openUrl": urls[0],
+                          monitoringUrl,
+                          "startTime": isStarting ? undefined : startedAt,
+                          "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
+                          postInstallInstructions,
+                          isShared,
+                          env,
+                      }),
+                  ),
         [runningServices, isRunningServicesFetching],
     );
 
