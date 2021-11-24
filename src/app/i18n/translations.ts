@@ -412,6 +412,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch": "New service",
             "password": "Copy the services password",
             "trash": "Delete all",
+            "trash my own": "Delete all my services",
         },
         "MyServicesCard": {
             "service": "Service",
@@ -726,6 +727,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "launch": "Nouveau service",
             "password": "Copier le mot de passe",
             "trash": "Supprimer tous",
+            "trash my own": "Supprimer tous mes services",
         },
         "MyServicesCard": {
             "service": "Service",

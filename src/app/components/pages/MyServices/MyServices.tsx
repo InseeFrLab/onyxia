@@ -206,6 +206,11 @@ export function MyServices(props: Props) {
         setIsDialogOpen(false);
     });
 
+    const isThereNonOwnedServicesShown = useMemo(
+        () => !!runningServices.find(({ isOwned }) => !isOwned),
+        [runningServices],
+    );
+
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
@@ -215,7 +220,10 @@ export function MyServices(props: Props) {
                 helpContent={t("text3")}
                 helpIcon="sentimentSatisfied"
             />
-            <MyServicesButtonBar onClick={onButtonBarClick} />
+            <MyServicesButtonBar
+                onClick={onButtonBarClick}
+                isThereNonOwnedServicesShown={isThereNonOwnedServicesShown}
+            />
             <div className={classes.payload}>
                 {!isSavedConfigsExtended && (
                     <MyServicesCards
