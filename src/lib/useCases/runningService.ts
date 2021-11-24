@@ -5,6 +5,8 @@ import type { ThunkAction } from "../setup";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
+import type { RootState } from "../setup";
+
 export const name = "runningService";
 
 type RunningServicesState = RunningServicesState.NotFetched | RunningServicesState.Ready;
@@ -20,7 +22,13 @@ namespace RunningServicesState {
 
     export type Ready = Common & {
         isFetched: true;
-        runningServices: RunningService[];
+        /** We force using a selector to retrieve the running services
+         * because we want to sort them and exclude the ones that are not
+         * supposed to be displayed ( !isOwner && !isShared )
+         */
+        "~internal": {
+            runningServices: RunningService[];
+        };
     };
 }
 
@@ -60,7 +68,9 @@ const { reducer, actions } = createSlice({
             return id<RunningServicesState.Ready>({
                 "isFetching": false,
                 "isFetched": true,
-                runningServices,
+                "~internal": {
+                    runningServices,
+                },
             });
         },
         "serviceStarted": (
@@ -76,7 +86,7 @@ const { reducer, actions } = createSlice({
 
             assert(state.isFetched);
 
-            const runningService = state.runningServices.find(
+            const runningService = state["~internal"].runningServices.find(
                 ({ id }) => id === serviceId,
             );
 
@@ -96,8 +106,10 @@ const { reducer, actions } = createSlice({
 
             assert(state.isFetched);
 
-            state.runningServices.splice(
-                state.runningServices.findIndex(({ id }) => id === serviceId),
+            const { runningServices } = state["~internal"];
+
+            runningServices.splice(
+                runningServices.findIndex(({ id }) => id === serviceId),
                 1,
             );
         },
@@ -217,3 +229,17 @@ export const thunks = {
             await onyxiaApiClient.stopService({ serviceId });
         },
 };
+
+export const selectors = (() => {
+    const runningServices = (rootState: RootState): RunningService[] => {
+        const state = rootState.runningService;
+
+        return !state.isFetched
+            ? []
+            : state["~internal"].runningServices
+                  .filter(({ isShared, isOwned }) => isOwned || isShared)
+                  .sort((a, b) => b.startedAt - a.startedAt);
+    };
+
+    return { runningServices };
+})();
