@@ -476,9 +476,24 @@ function useProjectsSlice() {
             : state.projectSelection,
     );
 
+    const route = useRoute();
+
     const onSelectedProjectChange = useConstCallback(
         async (props: { projectId: string }) => {
-            await projectSelectionThunks.changeProject(props);
+            const { projectId } = props;
+
+            await projectSelectionThunks.changeProject({
+                projectId,
+                "doPreventDispatch": true,
+            });
+
+            if (route.name === "mySecrets") {
+                //TODO: Refactor, if we switch project on the secrets
+                //explorer page we want to go back to the project top dir.
+                window.location.href = routes.mySecrets().href;
+                return;
+            }
+
             window.location.reload();
         },
     );

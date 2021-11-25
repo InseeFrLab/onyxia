@@ -2,7 +2,7 @@ import { makeStyles, PageHeader } from "app/theme";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "app/tools/copyToClipboard";
-import { useSelector, selectors, useThunks, pure } from "app/libApi";
+import { useSelector, selectors, useThunks } from "app/libApi";
 import { Explorer as SecretOrFileExplorer } from "app/components/shared/Explorer";
 import { ExplorerProps } from "app/components/shared/Explorer";
 import { MySecretsEditor } from "./MySecretsEditor";
@@ -40,7 +40,8 @@ export function MySecrets(props: Props) {
 
     const Explorer = useWithProps(SecretOrFileExplorer, {
         "useCase": "secret",
-        "getIsValidBasename": pure.secretExplorer.getIsValidBasename,
+        "getIsValidBasename": ({ basename }) =>
+            basename !== "" && !basename.includes(" "),
     });
 
     useEffect(() => {
@@ -51,8 +52,7 @@ export function MySecrets(props: Props) {
         alert(state.errorMessage);
     }, [state]);
 
-    const { secretExplorerThunks, userAuthenticationThunks, userConfigsThunks } =
-        useThunks();
+    const { secretExplorerThunks, userConfigsThunks } = useThunks();
 
     const onNavigate = useConstCallback(
         ({ kind, relativePath }: Parameters<ExplorerProps["onNavigate"]>[0]) => {
@@ -73,9 +73,7 @@ export function MySecrets(props: Props) {
         },
     );
 
-    const userHomePath = pure.secretExplorer.getUserHomePath({
-        "username": userAuthenticationThunks.getUser().username,
-    });
+    const projectHomePath = secretExplorerThunks.getProjectHomePath();
 
     useEffect(() => {
         if (state.currentPath !== "") {
@@ -83,7 +81,7 @@ export function MySecrets(props: Props) {
         }
 
         //We allow route to be null to be able to test in storybook
-        const { secretOrDirectoryPath = userHomePath, isFile = false } =
+        const { secretOrDirectoryPath = projectHomePath, isFile = false } =
             route?.params ?? {};
 
         if (isFile) {
@@ -170,7 +168,7 @@ export function MySecrets(props: Props) {
     const onCopyPath = useConstCallback((params?: { path: string }): void => {
         const { path } = params ?? { "path": state.currentPath };
 
-        copyToClipboard(pathRelative(userHomePath, path));
+        copyToClipboard(pathRelative(projectHomePath, path));
     });
 
     const { secretsManagerTranslations } =
@@ -258,7 +256,7 @@ export function MySecrets(props: Props) {
             />
             <Explorer
                 className={classes.explorer}
-                browsablePath={userHomePath}
+                browsablePath={projectHomePath}
                 currentPath={state.currentPath}
                 isNavigating={state.isNavigationOngoing}
                 translations={secretsManagerTranslations}

@@ -385,17 +385,21 @@ export function createOfficialOnyxiaApiClient(params: {
                     //Deleted one service just running, deleted all the others.
                     assert(data.success);
                 }),
-        "getUserProjects": () =>
-            axiosInstance
-                .get<{
-                    projects: {
-                        id: string;
-                        name: string;
-                        bucket: string;
-                        namespace: string;
-                    }[];
-                }>("/user/info")
-                .then(({ data }) => data.projects),
+        "getUserProjects": memoize(
+            () =>
+                axiosInstance
+                    .get<{
+                        projects: {
+                            id: string;
+                            name: string;
+                            bucket: string;
+                            namespace: string;
+                            vaultTopDir: string;
+                        }[];
+                    }>("/user/info")
+                    .then(({ data }) => data.projects),
+            { "promise": true },
+        ),
     };
 
     return onyxiaApiClient;

@@ -2,6 +2,8 @@ import type { ThunkAction } from "../setup";
 import { Id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
+import { selectors as projectSelectionSelectors } from "./projectSelection";
+import { hiddenDirectoryBasename } from "./userConfigs";
 
 /*
 Here no state because other project user may have changed 
@@ -42,14 +44,12 @@ export const thunks = {
     "changeValue":
         <K extends keyof ProjectConfigs>(params: ChangeValueParams<K>): ThunkAction =>
         async (...args) => {
-            const [, getState, { secretsManagerClient }] = args;
+            const [dispatch, , { secretsManagerClient }] = args;
 
-            const { getPath } = getPathFactory({
-                "projectId": getState().projectSelection.selectedProjectId,
-            });
+            const dirPath = dispatch(privateThunks.getDirPath());
 
             await secretsManagerClient.put({
-                "path": getPath({ "key": params.key }),
+                "path": pathJoin(dirPath, params.key),
                 "secret": { "value": params.value },
             });
         },
@@ -67,14 +67,12 @@ export const thunks = {
         async (...args) => {
             const { key } = params;
 
-            const [dispatch, getState, { secretsManagerClient }] = args;
+            const [dispatch, , { secretsManagerClient }] = args;
 
-            const { getPath } = getPathFactory({
-                "projectId": getState().projectSelection.selectedProjectId,
-            });
+            const dirPath = dispatch(privateThunks.getDirPath());
 
             const value = await secretsManagerClient
-                .get({ "path": getPath({ key }) })
+                .get({ "path": pathJoin(dirPath, key) })
                 .then(({ secret }) => secret["value"] as ProjectConfigs[K])
                 .catch(() => undefined);
 
@@ -95,20 +93,14 @@ export const thunks = {
         },
 };
 
-export function createGetPathFactory<Key extends string>() {
-    function getPathFactory(params: { projectId: string }) {
-        const { projectId } = params;
+const privateThunks = {
+    "getDirPath":
+        (): ThunkAction<string> =>
+        (...args) => {
+            const [, getState] = args;
 
-        const getPath = (params: { key: Key }) => {
-            const { key } = params;
+            const project = projectSelectionSelectors.selectedProject(getState());
 
-            return pathJoin(projectId.replace(/^user-/, ""), ".onyxia", key);
-        };
-
-        return { getPath };
-    }
-
-    return { getPathFactory };
-}
-
-const { getPathFactory } = createGetPathFactory<keyof ProjectConfigs>();
+            return pathJoin("/", project.vaultTopDir, hiddenDirectoryBasename);
+        },
+};

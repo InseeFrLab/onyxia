@@ -4,7 +4,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { pure as secretExplorerPure } from "./secretExplorer";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
@@ -27,6 +26,7 @@ import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "lib/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
+import { thunks as secretExplorerThunks } from "./secretExplorer";
 
 export const name = "launcher";
 
@@ -969,10 +969,6 @@ export const thunks = {
 
             const user = dispatch(userAuthenticationThunk.getUser());
 
-            const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
-                "username": user.username,
-            });
-
             const userConfigs = userConfigsSelectors.userConfigs(getState());
 
             const selectedDeploymentRegion =
@@ -1018,7 +1014,9 @@ export const thunks = {
                         "VAULT_ADDR": secretsManagerClientConfig.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": secretsManagerClientConfig.engine,
-                        "VAULT_TOP_DIR": secretExplorerUserHomePath,
+                        "VAULT_TOP_DIR": dispatch(
+                            secretExplorerThunks.getProjectHomePath(),
+                        ),
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken,

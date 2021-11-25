@@ -54,6 +54,5 @@ export function useThunks() {
 }
 
 export const pure = {
-    [secretExplorerUseCase.name]: secretExplorerUseCase.pure,
     [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.pure,
 };
