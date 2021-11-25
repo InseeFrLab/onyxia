@@ -4,7 +4,6 @@ import { Explorer, ExplorerProps } from "app/components/shared/Explorer/Explorer
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "app/tools/symToStr";
-import { pure } from "lib/useCases/secretExplorer";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
 
@@ -235,7 +234,7 @@ const props: Parameters<typeof getStory>[0] = {
         "another-directory_5",
         "another_directory_7",
     ],
-    "getIsValidBasename": pure.getIsValidBasename,
+    "getIsValidBasename": () => true,
     "filesBeingCreated": [],
     "directoriesBeingCreated": [],
     ...logCallbacks(["onNavigate", "onCopyPath", "onCreateItem", "onEditBasename"]),
