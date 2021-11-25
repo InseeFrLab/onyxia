@@ -946,7 +946,7 @@ export const thunks = {
 
                     return {
                         "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
+                        "AWS_BUCKET_NAME": project.bucket,
                         "AWS_DEFAULT_REGION": "us-east-1" as const,
                         "AWS_S3_ENDPOINT": host,
                         port,
