@@ -386,6 +386,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Cancel",
             "copy url helper text": "Copy url to restore this configuration",
             "save configuration": "Save this configuration",
+            "share the service": "Share the service",
+            "share the service - explain":
+                "Make the service accessible to the group members",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Global configuration",
@@ -701,6 +704,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "copy url helper text":
                 "Copier l'URL permettant de restaurer cette configuration",
             "save configuration": "Enregistrer cette configuration",
+            "share the service": "Partager le service",
+            "share the service - explain":
+                "Rendre accessible le service aux collaborateurs du groupe",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Configurations globales",

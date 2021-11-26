@@ -153,6 +153,7 @@ export const CatalogLauncher = memo((props: Props) => {
     });
 
     const { friendlyName } = useSelector(selectors.launcher.friendlyName);
+    const { isShared } = useSelector(selectors.launcher.isShared);
 
     const state = useSelector(state => state.launcher);
 
@@ -199,6 +200,8 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(restorablePackageConfig !== undefined);
     assert(indexedFormFields !== undefined);
     assert(isLaunchable !== undefined);
+    assert(friendlyName !== undefined);
+    assert(isShared !== undefined);
 
     return (
         <>
@@ -212,8 +215,10 @@ export const CatalogLauncher = memo((props: Props) => {
                         packageIconUrl={state.icon}
                         isBookmarked={isBookmarked}
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
-                        friendlyName={friendlyName!}
+                        friendlyName={friendlyName}
+                        isShared={isShared}
                         onFriendlyNameChange={launcherThunks.changeFriendlyName}
+                        onIsSharedValueChange={launcherThunks.changeIsShared}
                         onRequestLaunch={launcherThunks.launch}
                         onRequestCancel={onRequestCancel}
                         onRequestCopyLaunchUrl={

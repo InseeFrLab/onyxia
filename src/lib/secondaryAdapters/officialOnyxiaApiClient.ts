@@ -2,7 +2,10 @@ import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import {
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath,
+} from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -331,7 +334,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             startedAt,
                             env,
                             "owner": env["onyxia.owner"],
-                            "isShared": env["onyxia.share"] === "true",
+                            "isShared": env[onyxiaIsSharedFormFieldPath] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)
                                 : ({
