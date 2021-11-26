@@ -1,3 +1,7 @@
+## **0.22.0** (2021-11-26)  
+  
+- Launcher: share on main card    
+  
 ## **0.21.0** (2021-11-25)  
   
 - Use vault top dir from project  
