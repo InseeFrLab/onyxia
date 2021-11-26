@@ -152,3 +152,5 @@ export declare namespace RunningService {
 export type Contract = Record<string, unknown>[][];
 
 export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
+
+export const onyxiaIsSharedFormFieldPath = "onyxia.share";

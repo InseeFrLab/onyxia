@@ -8,7 +8,10 @@ import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import {
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath,
+} from "lib/ports/OnyxiaApiClient";
 import type { Contract, MustacheParams } from "lib/ports/OnyxiaApiClient";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
@@ -905,6 +908,15 @@ export const thunks = {
                     "value": friendlyName,
                 }),
             ),
+    "changeIsShared":
+        (params: { isShared: boolean }): ThunkAction<void> =>
+        dispatch =>
+            dispatch(
+                thunks.changeFormFieldValue({
+                    "path": onyxiaIsSharedFormFieldPath.split("."),
+                    "value": params.isShared,
+                }),
+            ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
     "getS3MustacheParamsForProjectBucket":
@@ -1071,6 +1083,20 @@ export const selectors = (() => {
         return friendlyName;
     });
 
+    const isShared = createSelector(formFields, formFields => {
+        if (formFields === undefined) {
+            return undefined;
+        }
+
+        const isShared = formFields.find(({ path }) =>
+            same(path, onyxiaIsSharedFormFieldPath.split(".")),
+        )!.value;
+
+        assert(typeof isShared === "boolean");
+
+        return isShared;
+    });
+
     const config = createSelector(readyLauncher, state => state?.["~internal"].config);
 
     function createIsFieldHidden(params: {
@@ -1082,8 +1108,13 @@ export const selectors = (() => {
         function isFieldHidden(params: { path: string[] }) {
             const { path } = params;
 
-            if (same(onyxiaFriendlyNameFormFieldPath.split("."), path)) {
-                return true;
+            for (const onyxiaSpecialFormFieldPath of [
+                onyxiaFriendlyNameFormFieldPath,
+                onyxiaIsSharedFormFieldPath,
+            ]) {
+                if (same(onyxiaSpecialFormFieldPath.split("."), path)) {
+                    return true;
+                }
             }
 
             const infoAboutWhenFieldsShouldBeHidden =
@@ -1298,6 +1329,7 @@ export const selectors = (() => {
 
     return {
         friendlyName,
+        isShared,
         indexedFormFields,
         isLaunchable,
         restorablePackageConfig,
