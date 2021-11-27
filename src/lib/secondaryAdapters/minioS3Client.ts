@@ -101,6 +101,7 @@ export async function createMinioS3Client(params: {
                 "expirationTime": now + tokenTTL,
                 secretAccessKey,
                 sessionToken,
+                "acquisitionTime": now,
             });
         },
         "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
