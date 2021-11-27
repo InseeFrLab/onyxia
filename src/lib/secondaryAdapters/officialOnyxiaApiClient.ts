@@ -333,7 +333,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             urls,
                             startedAt,
                             env,
-                            "owner": env["onyxia.owner"],
+                            "ownerUsername": env["onyxia.owner"],
                             "isShared": env[onyxiaIsSharedFormFieldPath] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)

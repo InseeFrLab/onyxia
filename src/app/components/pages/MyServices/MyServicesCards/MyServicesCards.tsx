@@ -31,6 +31,8 @@ export type Props = {
               postInstallInstructions: string | undefined;
               isShared: boolean;
               isOwned: boolean;
+              /** undefined when isOwned === true*/
+              ownerUsername: string | undefined;
           }[]
         | undefined;
     catalogExplorerLink: Link;

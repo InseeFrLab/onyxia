@@ -20,6 +20,8 @@ export const VueRegular = getStory({
     "startTime": Date.now(),
     "isOvertime": false,
     "isShared": true,
+    "isOwned": false,
+    "ownerUsername": "jdoe",
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
@@ -36,6 +38,8 @@ export const VueStarting = getStory({
     "startTime": undefined,
     "isOvertime": false,
     "isShared": true,
+    "isOwned": true,
+    "ownerUsername": undefined,
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",

@@ -27,13 +27,22 @@ const props: Props = {
         "isOvertime": false,
         "postInstallInstructions":
             i % 3 === 0 ? `Post install instruction ${i}` : undefined,
-        "isShared": i % 2 === 0,
         "env": {
             "foo": "foo value",
             "bar": "bar value",
             "baz": "baz value",
         },
-        "isOwned": i % 3 === 0,
+        ...(i % 2 === 0
+            ? {
+                  "isOwned": false,
+                  "isShared": true,
+                  "ownerUsername": "jdoe",
+              }
+            : {
+                  "isOwned": true,
+                  "isShared": true,
+                  "ownerUsername": undefined,
+              }),
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     ...logCallbacks(["onRequestDelete"]),

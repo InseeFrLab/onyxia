@@ -19,10 +19,13 @@ export type Props = {
     onRequestShowEnv: () => void;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
-    //Undefined when the service is not yey launched
+    /** undefined when the service is not yey launched */
     startTime: number | undefined;
     isOvertime: boolean;
     isShared: boolean;
+    isOwned: boolean;
+    /** undefined when isOwned === true*/
+    ownerUsername: string | undefined;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -39,6 +42,8 @@ export const MyServicesCard = memo((props: Props) => {
         startTime,
         isOvertime,
         isShared,
+        isOwned,
+        ownerUsername,
     } = props;
 
     const { classes, cx } = useStyles();
@@ -69,7 +74,10 @@ export const MyServicesCard = memo((props: Props) => {
                         <div className={classes.packageNameWrapper}>
                             <Text typo="label 1">{capitalize(packageName)}</Text>
                             {isShared && (
-                                <Tag className={classes.sharedTag} text={t("shared")} />
+                                <Tag
+                                    className={classes.sharedTag}
+                                    text={isOwned ? t("shared by you") : ownerUsername!}
+                                />
                             )}
                         </div>
                     </div>
@@ -126,7 +134,7 @@ export declare namespace MyServicesCard {
         "running since": undefined;
         open: undefined;
         readme: undefined;
-        shared: undefined;
+        "shared by you": undefined;
     };
 }
 
