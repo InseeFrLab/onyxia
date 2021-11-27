@@ -151,9 +151,8 @@ export function MyServices(props: Props) {
                           monitoringUrl,
                           isStarting,
                           postInstallInstructions,
-                          isShared,
                           env,
-                          isOwned,
+                          ...rest
                       }) => ({
                           "serviceId": id,
                           "packageIconUrl": logoUrl,
@@ -165,9 +164,10 @@ export function MyServices(props: Props) {
                           "startTime": isStarting ? undefined : startedAt,
                           "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
                           postInstallInstructions,
-                          isShared,
                           env,
-                          isOwned,
+                          "isShared": rest.isShared,
+                          "isOwned": rest.isOwned,
+                          "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                       }),
                   ),
         [runningServices, isRunningServicesFetching],

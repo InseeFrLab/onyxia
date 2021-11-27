@@ -6,6 +6,7 @@ import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { RootState } from "../setup";
+import { exclude } from "tsafe/exclude";
 
 export const name = "runningService";
 
@@ -32,20 +33,33 @@ namespace RunningServicesState {
     };
 }
 
-export type RunningService = {
-    id: string;
-    packageName: string;
-    friendlyName: string;
-    logoUrl: string | undefined;
-    monitoringUrl: string | undefined;
-    isStarting: boolean;
-    startedAt: number;
-    urls: string[];
-    postInstallInstructions: string | undefined;
-    isShared: boolean;
-    env: Record<string, string>;
-    isOwned: boolean;
-};
+export type RunningService = RunningService.Owned | RunningService.NotOwned;
+
+export declare namespace RunningService {
+    export type Common = {
+        id: string;
+        packageName: string;
+        friendlyName: string;
+        logoUrl: string | undefined;
+        monitoringUrl: string | undefined;
+        isStarting: boolean;
+        startedAt: number;
+        urls: string[];
+        postInstallInstructions: string | undefined;
+        env: Record<string, string>;
+    };
+
+    export type Owned = Common & {
+        isShared: boolean;
+        isOwned: true;
+    };
+
+    export type NotOwned = Common & {
+        isShared: true;
+        isOwned: false;
+        ownerUsername: string;
+    };
+}
 
 const { reducer, actions } = createSlice({
     name,
@@ -174,46 +188,70 @@ export const thunks = {
 
             dispatch(
                 actions.fetchCompleted({
-                    "runningServices": runningServicesRaw.map(
-                        ({
-                            id,
-                            friendlyName,
-                            packageName,
-                            urls,
-                            startedAt,
-                            postInstallInstructions,
-                            isShared,
-                            env,
-                            owner,
-                            ...rest
-                        }) => ({
-                            id,
-                            packageName,
-                            friendlyName,
-                            isShared,
-                            env,
-                            "logoUrl": getLogoUrl({ packageName }),
-                            "monitoringUrl": getMonitoringUrl({
-                                "serviceId": id,
-                            }),
-                            startedAt,
-                            "urls": urls.sort(),
-                            "isStarting": !rest.isStarting
-                                ? false
-                                : (rest.prStarted.then(({ isConfirmedJustStarted }) =>
-                                      dispatch(
-                                          actions.serviceStarted({
-                                              "serviceId": id,
-                                              "doOverwriteStaredAtToNow":
-                                                  isConfirmedJustStarted,
-                                          }),
-                                      ),
-                                  ),
-                                  true),
-                            postInstallInstructions,
-                            "isOwned": owner === username,
-                        }),
-                    ),
+                    "runningServices": runningServicesRaw
+                        .map(
+                            ({
+                                id: serviceId,
+                                friendlyName,
+                                packageName,
+                                urls,
+                                startedAt,
+                                postInstallInstructions,
+                                isShared,
+                                env,
+                                ownerUsername,
+                                ...rest
+                            }) => {
+                                const common: RunningService.Common = {
+                                    "id": serviceId,
+                                    packageName,
+                                    friendlyName,
+                                    "logoUrl": getLogoUrl({ packageName }),
+                                    "monitoringUrl": getMonitoringUrl({
+                                        serviceId,
+                                    }),
+                                    startedAt,
+                                    "urls": urls.sort(),
+                                    "isStarting": !rest.isStarting
+                                        ? false
+                                        : (rest.prStarted.then(
+                                              ({ isConfirmedJustStarted }) =>
+                                                  dispatch(
+                                                      actions.serviceStarted({
+                                                          serviceId,
+                                                          "doOverwriteStaredAtToNow":
+                                                              isConfirmedJustStarted,
+                                                      }),
+                                                  ),
+                                          ),
+                                          true),
+                                    postInstallInstructions,
+                                    env,
+                                };
+
+                                const isOwned = ownerUsername === username;
+
+                                if (!isOwned) {
+                                    if (!isShared) {
+                                        return undefined;
+                                    }
+
+                                    return id<RunningService.NotOwned>({
+                                        ...common,
+                                        isShared,
+                                        isOwned,
+                                        ownerUsername,
+                                    });
+                                }
+
+                                return id<RunningService.Owned>({
+                                    ...common,
+                                    isShared,
+                                    isOwned,
+                                });
+                            },
+                        )
+                        .filter(exclude(undefined)),
                 }),
             );
         },
@@ -236,9 +274,9 @@ export const selectors = (() => {
 
         return !state.isFetched
             ? []
-            : state["~internal"].runningServices
-                  .filter(({ isShared, isOwned }) => isOwned || isShared)
-                  .sort((a, b) => b.startedAt - a.startedAt);
+            : [...state["~internal"].runningServices].sort(
+                  (a, b) => b.startedAt - a.startedAt,
+              );
     };
 
     return { runningServices };
