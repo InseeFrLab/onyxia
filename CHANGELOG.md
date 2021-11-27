@@ -1,3 +1,11 @@
+## **0.23.0** (2021-11-27)  
+  
+- MyServices: Better feedback on what services are shared  
+- Merge pull request #273 from sathieu/image-port-8080  
+- Change the onyxia-web image to listen on both ports 80 and 8080
+
+See #271    
+  
 ## **0.22.0** (2021-11-26)  
   
 - Launcher: share on main card    
