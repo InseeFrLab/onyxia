@@ -35,5 +35,6 @@ export type SecretsManagerClient = {
     getToken: () => Promise<{
         token: string;
         expirationTime: number;
+        acquisitionTime: number;
     }>;
 };
