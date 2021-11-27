@@ -10,5 +10,6 @@ export type S3Client = {
         secretAccessKey: string;
         sessionToken: string;
         expirationTime: number;
+        acquisitionTime: number;
     }>;
 };
