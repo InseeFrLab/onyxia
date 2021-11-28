@@ -11,13 +11,13 @@ export default meta;
 
 export const VueRegular = getStory({
     "isRunning": true,
-    "isOvertime": false,
+    "doesHaveBeenRunningForTooLong": false,
     "startTime": Date.now(),
 });
 
 export const VueOvertime = getStory({
     "isRunning": true,
-    "isOvertime": true,
+    "doesHaveBeenRunningForTooLong": true,
     "startTime": Date.now() - 3600 * 1000 * 25,
 });
 

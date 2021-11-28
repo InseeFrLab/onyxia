@@ -401,7 +401,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text1": "My Services",
             "text2": "Access your running services",
             "text3":
-                "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
+                "Services are supposed to be shut down as soon as you stop using them actively.",
             "running services": "Running services",
             "confirm delete title": "Are you sure?",
             "confirm delete subtitle": "Make sure your service are ready to be deleted",
@@ -425,6 +425,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "open": "open",
             "readme": "readme",
             "shared by you": "Shared by you",
+            "which token expire when": "The {{which}} token expires {{howMuchTime}}.",
+            "which token expired": "The {{which}} token is expired.",
+            "reminder to delete services": "Remember to delete your services.",
+            "this is a shared service": "This service is shared among project's member",
         },
         "MyServicesRunningTime": {
             "launching": "Launching...",
@@ -720,7 +724,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text2":
                 "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
             "text3":
-                "Il est recommandé de supprimer vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
+                "Il est recommandé de supprimer vos services après chaque session de travail.",
             "running services": "Services en cours",
             "confirm delete title": "Êtes-vous sur?",
             "confirm delete subtitle":
@@ -745,6 +749,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "open": "ouvrir",
             "readme": "readme",
             "shared by you": "partagé par vous",
+            "which token expire when": "Le token {{which}} expire {{howMuchTime}}.",
+            "which token expired": "Le token {{which}} est expiré.",
+            "reminder to delete services":
+                "Rappelez-vous de supprimer vos services après utilisation.",
+            "this is a shared service": "Ce service est partagé au sein du projet",
         },
         "MyServicesRunningTime": {
             "launching": "En cours...",

@@ -920,7 +920,11 @@ export const thunks = {
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
     "getS3MustacheParamsForProjectBucket":
-        (): ThunkAction<Promise<MustacheParams["s3"] & { expirationTime: number }>> =>
+        (): ThunkAction<
+            Promise<
+                MustacheParams["s3"] & { expirationTime: number; acquisitionTime: number }
+            >
+        > =>
         async (...args) => {
             const [
                 ,
@@ -947,12 +951,18 @@ export const thunks = {
                         "AWS_SESSION_TOKEN": "",
                         "port": NaN,
                         "expirationTime": Infinity,
+                        "acquisitionTime": Date.now(),
                     };
                 case "MINIO":
-                    const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                        await s3Client.getToken({
-                            "bucketName": isDefaultProject ? undefined : project.bucket,
-                        });
+                    const {
+                        accessKeyId,
+                        secretAccessKey,
+                        sessionToken,
+                        expirationTime,
+                        acquisitionTime,
+                    } = await s3Client.getToken({
+                        "bucketName": isDefaultProject ? undefined : project.bucket,
+                    });
 
                     const { host, port = 443 } = parseUrl(s3ClientConfig.url);
 
@@ -965,6 +975,7 @@ export const thunks = {
                         "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                         "AWS_SESSION_TOKEN": sessionToken,
                         expirationTime,
+                        acquisitionTime,
                     };
             }
         },

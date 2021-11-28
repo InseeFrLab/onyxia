@@ -151,6 +151,8 @@ export function MyServices(props: Props) {
                           monitoringUrl,
                           isStarting,
                           postInstallInstructions,
+                          vaultTokenExpirationTime,
+                          s3TokenExpirationTime,
                           env,
                           ...rest
                       }) => ({
@@ -162,12 +164,13 @@ export function MyServices(props: Props) {
                           "openUrl": urls[0],
                           monitoringUrl,
                           "startTime": isStarting ? undefined : startedAt,
-                          "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
                           postInstallInstructions,
                           env,
                           "isShared": rest.isShared,
                           "isOwned": rest.isOwned,
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
+                          vaultTokenExpirationTime,
+                          s3TokenExpirationTime,
                       }),
                   ),
         [runningServices, isRunningServicesFetching],
