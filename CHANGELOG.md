@@ -1,3 +1,11 @@
+## **0.24.0** (2021-11-28)  
+  
+- MyServices: Warning when tokens are expired  
+- typo  
+- Add missing CSS classes labels  
+- lib: Add aquisition time to vault token  
+- lib: Add aquisition time to s3 token    
+  
 ## **0.23.0** (2021-11-27)  
   
 - MyServices: Better feedback on what services are shared  
