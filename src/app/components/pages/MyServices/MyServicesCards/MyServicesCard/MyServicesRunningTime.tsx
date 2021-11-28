@@ -10,7 +10,7 @@ export type Props = {
     | {
           isRunning: true;
           startTime: number;
-          isOvertime: boolean;
+          doesHaveBeenRunningForTooLong: boolean;
       }
     | {
           isRunning: false;
@@ -21,7 +21,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { className } = props;
 
     const { classes, cx } = useStyles({
-        "isOvertime": !props.isRunning ? false : props.isOvertime,
+        "isOvertime": !props.isRunning ? false : props.doesHaveBeenRunningForTooLong,
     });
 
     const { fromNowText } = useFromNow({
@@ -47,7 +47,9 @@ export declare namespace MyServicesRunningTime {
 const useStyles = makeStyles<{ isOvertime: boolean }>({
     "label": { MyServicesRunningTime },
 })((theme, { isOvertime }) => {
-    const color = isOvertime ? theme.colors.useCases.alertSeverity.error.main : undefined;
+    const color = isOvertime
+        ? theme.colors.useCases.alertSeverity.warning.main
+        : undefined;
 
     return {
         "root": {

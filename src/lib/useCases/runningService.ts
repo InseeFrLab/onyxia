@@ -7,6 +7,7 @@ import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { RootState } from "../setup";
 import { exclude } from "tsafe/exclude";
+import { thunks as launcherThunks } from "./launcher";
 
 export const name = "runningService";
 
@@ -44,6 +45,9 @@ export declare namespace RunningService {
         monitoringUrl: string | undefined;
         isStarting: boolean;
         startedAt: number;
+        /** Undefined if the service don't use the token */
+        vaultTokenExpirationTime: number | undefined;
+        s3TokenExpirationTime: number | undefined;
         urls: string[];
         postInstallInstructions: string | undefined;
         env: Record<string, string>;
@@ -136,7 +140,11 @@ export const thunks = {
     "initializeOrRefreshIfNotAlreadyFetching":
         (): ThunkAction<void> =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient, userApiClient }] = args;
+            const [
+                dispatch,
+                getState,
+                { onyxiaApiClient, userApiClient, secretsManagerClient },
+            ] = args;
 
             {
                 const state = getState().runningService;
@@ -186,6 +194,22 @@ export const thunks = {
 
             const { username } = await userApiClient.getUser();
 
+            const [{ s3TokensTTLms }, { vaultTokenTTLms }] = await Promise.all([
+                (async () => {
+                    const { acquisitionTime, expirationTime } = await dispatch(
+                        launcherThunks.getS3MustacheParamsForProjectBucket(),
+                    );
+
+                    return { "s3TokensTTLms": expirationTime - acquisitionTime };
+                })(),
+                (async () => {
+                    const { acquisitionTime, expirationTime } =
+                        await secretsManagerClient.getToken();
+
+                    return { "vaultTokenTTLms": expirationTime - acquisitionTime };
+                })(),
+            ]);
+
             dispatch(
                 actions.fetchCompleted({
                     "runningServices": runningServicesRaw
@@ -211,6 +235,14 @@ export const thunks = {
                                         serviceId,
                                     }),
                                     startedAt,
+                                    "vaultTokenExpirationTime":
+                                        env["vault.enabled"] !== "true"
+                                            ? undefined
+                                            : startedAt + vaultTokenTTLms,
+                                    "s3TokenExpirationTime":
+                                        env["s3.enabled"] !== "true"
+                                            ? undefined
+                                            : startedAt + s3TokensTTLms,
                                     "urls": urls.sort(),
                                     "isStarting": !rest.isStarting
                                         ? false

@@ -24,7 +24,6 @@ const props: Props = {
         "openUrl": url + "/" + i,
         "monitoringUrl": url,
         "startTime": Date.now(),
-        "isOvertime": false,
         "postInstallInstructions":
             i % 3 === 0 ? `Post install instruction ${i}` : undefined,
         "env": {
@@ -43,6 +42,8 @@ const props: Props = {
                   "isShared": true,
                   "ownerUsername": undefined,
               }),
+        "vaultTokenExpirationTime": Infinity,
+        "s3TokenExpirationTime": Infinity,
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     ...logCallbacks(["onRequestDelete"]),

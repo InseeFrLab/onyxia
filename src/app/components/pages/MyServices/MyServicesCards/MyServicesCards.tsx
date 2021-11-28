@@ -27,12 +27,13 @@ export type Props = {
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
               startTime: number | undefined;
-              isOvertime: boolean;
               postInstallInstructions: string | undefined;
               isShared: boolean;
               isOwned: boolean;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
+              vaultTokenExpirationTime: number | undefined;
+              s3TokenExpirationTime: number | undefined;
           }[]
         | undefined;
     catalogExplorerLink: Link;
