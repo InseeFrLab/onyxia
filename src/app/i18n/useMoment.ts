@@ -81,9 +81,9 @@ export const { useFromNow } = (() => {
                                 switch (lng) {
                                     case "en":
                                         return "just now";
-                                    /* cspell: disable-next-line */
                                     case "fr":
-                                        return "il y a quelque instant";
+                                        /* cspell: disable-next-line */
+                                        return "il y a quelques instants";
                                 }
                             })();
 
