@@ -1,3 +1,7 @@
+### **0.24.1** (2021-11-29)  
+  
+- minio token: use the real expiration time    
+  
 ## **0.24.0** (2021-11-28)  
   
 - MyServices: Warning when tokens are expired  
