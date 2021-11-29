@@ -29,14 +29,15 @@ export async function createMinioS3Client(params: {
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
         "requestNewToken": async (bucketName: string | undefined) => {
             const now = Date.now();
-            const tokenTTL = 7 * 24 * 3600 * 1000;
 
             const { data } = await axios.create({ "baseURL": url }).post<string>(
                 "/?" +
                     Object.entries({
                         "Action": "AssumeRoleWithClientGrants",
                         "Token": await getAccessToken(),
-                        "DurationSeconds": tokenTTL / 1000,
+                        //Desired TTL of the token, depending of the configuration
+                        //and version of minio we could get less than that but never more.
+                        "DurationSeconds": 7 * 24 * 3600,
                         "Version": "2011-06-15",
                         ...(bucketName === undefined
                             ? {}
@@ -91,14 +92,19 @@ export async function createMinioS3Client(params: {
             const sessionToken =
                 credentials.getElementsByTagName("SessionToken")[0].childNodes[0]
                     .nodeValue;
+            const expiration =
+                credentials.getElementsByTagName("Expiration")[0].childNodes[0].nodeValue;
 
             assert(
-                accessKeyId !== null && secretAccessKey !== null && sessionToken !== null,
+                accessKeyId !== null &&
+                    secretAccessKey !== null &&
+                    sessionToken !== null &&
+                    expiration !== null,
             );
 
             return id<ReturnType<S3Client["getToken"]>>({
                 accessKeyId,
-                "expirationTime": now + tokenTTL,
+                "expirationTime": new Date(expiration).getTime(),
                 secretAccessKey,
                 sessionToken,
                 "acquisitionTime": now,
