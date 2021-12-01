@@ -1,3 +1,13 @@
+## **0.25.0** (2021-12-01)  
+  
+- Merge pull request #274 from sathieu/run_as_nonroot
+
+Run as non-root  
+- BREAKING: Run as non-root, and port 8080 only
+
+Fixes: #271
+Signed-off-by: Mathieu Parent <mathieu.parent@insee.fr>    
+  
 ### **0.24.1** (2021-11-29)  
   
 - minio token: use the real expiration time    
