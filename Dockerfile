@@ -34,4 +34,10 @@ RUN npm i -g react-envs@`node -e 'console.log(require("./re.json")["version"])'`
 WORKDIR /usr/share/nginx
 COPY --from=build /app/build ./html
 COPY --from=build /app/.env .
+# Run as non-root
+RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp/nginx.pid;@' /etc/nginx/nginx.conf && \
+    diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
+    chown nginx /usr/share/nginx/html/index.html && \
+    chown -Rc nginx /var/cache/nginx
+USER nginx
 ENTRYPOINT sh -c "npx embed-environnement-variables && nginx -g 'daemon off;'"
