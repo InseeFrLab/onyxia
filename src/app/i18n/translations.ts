@@ -386,6 +386,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "cancel": "Cancel",
             "copy url helper text": "Copy url to restore this configuration",
             "save configuration": "Save this configuration",
+            "share the service": "Share the service",
+            "share the service - explain":
+                "Make the service accessible to the group members",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Global configuration",
@@ -398,28 +401,34 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text1": "My Services",
             "text2": "Access your running services",
             "text3":
-                "Services are supposed to be shut down as soon as you stop using them actively. Services that have been running for too long shows in red.",
+                "Services are supposed to be shut down as soon as you stop using them actively.",
             "running services": "Running services",
-            "confirm terminate title": "Are you sure?",
-            "confirm terminate subtitle":
-                "Make sure your service are ready to be terminated",
-            "confirm terminate body":
+            "confirm delete title": "Are you sure?",
+            "confirm delete subtitle": "Make sure your service are ready to be deleted",
+            "confirm delete body shared services":
+                "Be mindful that some of your services are shared with the other project member.",
+            "confirm delete body":
                 "Don't forget to push your code on GitHub or GitLab before terminating your services",
             "cancel": "cancel",
-            "confirm": "Yes, terminate",
+            "confirm": "Yes, delete",
         },
         "MyServicesButtonBar": {
             "refresh": "Refresh",
             "launch": "New service",
             "password": "Copy the services password",
-            "trash": "Terminate all",
+            "trash": "Delete all",
+            "trash my own": "Delete all my services",
         },
         "MyServicesCard": {
             "service": "Service",
             "running since": "Running since: ",
             "open": "open",
             "readme": "readme",
-            "shared": "Shared",
+            "shared by you": "Shared by you",
+            "which token expire when": "The {{which}} token expires {{howMuchTime}}.",
+            "which token expired": "The {{which}} token is expired.",
+            "reminder to delete services": "Remember to delete your services.",
+            "this is a shared service": "This service is shared among project's member",
         },
         "MyServicesRunningTime": {
             "launching": "Launching...",
@@ -699,6 +708,9 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "copy url helper text":
                 "Copier l'URL permettant de restaurer cette configuration",
             "save configuration": "Enregistrer cette configuration",
+            "share the service": "Partager le service",
+            "share the service - explain":
+                "Rendre accessible le service aux collaborateurs du groupe",
         },
         "CatalogLauncherConfigurationCard": {
             "global config": "Configurations globales",
@@ -712,28 +724,36 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "text2":
                 "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
             "text3":
-                "Il est recommandé d'arrêter vos services après chaque session de travail. Nous affichons en rouge les services en exécution depuis un certain temps.",
+                "Il est recommandé de supprimer vos services après chaque session de travail.",
             "running services": "Services en cours",
-            "confirm terminate title": "Êtes-vous sur?",
-            "confirm terminate subtitle":
+            "confirm delete title": "Êtes-vous sur?",
+            "confirm delete subtitle":
                 "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
-            "confirm terminate body":
+            "confirm delete body":
                 "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
+            "confirm delete body shared services":
+                "Attention, certains de vos services sont partagés aux autres membres du projet.",
             "cancel": "Annuler",
-            "confirm": "Oui, arrêter",
+            "confirm": "Oui, supprimer",
         },
         "MyServicesButtonBar": {
             "refresh": "Rafraîchir",
             "launch": "Nouveau service",
             "password": "Copier le mot de passe",
-            "trash": "Arrêter tous",
+            "trash": "Supprimer tous",
+            "trash my own": "Supprimer tous mes services",
         },
         "MyServicesCard": {
             "service": "Service",
             "running since": "En exécution depuis: ",
             "open": "ouvrir",
             "readme": "readme",
-            "shared": "partagé",
+            "shared by you": "partagé par vous",
+            "which token expire when": "Le token {{which}} expire {{howMuchTime}}.",
+            "which token expired": "Le token {{which}} est expiré.",
+            "reminder to delete services":
+                "Rappelez-vous de supprimer vos services après utilisation.",
+            "this is a shared service": "Ce service est partagé au sein du projet",
         },
         "MyServicesRunningTime": {
             "launching": "En cours...",

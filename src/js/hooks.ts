@@ -1,7 +1,6 @@
 import type { BuildMustacheViewParams } from "js/utils/form-field";
 import { useSelector, selectors } from "app/libApi";
 import { useThunks } from "app/libApi";
-import { pure as secretExplorerPure } from "lib/useCases/secretExplorer";
 import type { Store } from "lib/setup";
 import * as reactRedux from "react-redux";
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
@@ -27,9 +26,7 @@ export function useGetBuildMustacheViewParams() {
                 "firstName": mustacheParams.user.name,
                 "username": mustacheParams.user.idep,
             },
-            "secretExplorerUserHomePath": secretExplorerPure.getUserHomePath({
-                "username": mustacheParams.user.idep,
-            }),
+            "secretExplorerUserHomePath": "...",
             userConfigs,
             "vaultClientConfig": {
                 "baseUri": mustacheParams.vault.VAULT_ADDR,

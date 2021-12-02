@@ -38,11 +38,15 @@ export { reducer };
 
 export const thunks = {
     "changeProject":
-        (params: { projectId: string }): ThunkAction =>
+        (params: {
+            projectId: string;
+            /** Default false, only use if we reload just after */
+            doPreventDispatch?: boolean;
+        }): ThunkAction =>
         async (...args) => {
             const [dispatch] = args;
 
-            const { projectId } = params;
+            const { projectId, doPreventDispatch = false } = params;
 
             await dispatch(
                 userConfigsThunks.changeValue({
@@ -50,6 +54,10 @@ export const thunks = {
                     "value": projectId,
                 }),
             );
+
+            if (doPreventDispatch) {
+                return;
+            }
 
             dispatch(actions.projectChanged({ projectId }));
         },

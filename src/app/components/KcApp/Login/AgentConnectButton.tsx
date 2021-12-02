@@ -28,7 +28,7 @@ export const AgentConnectButton = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "label": { AgentConnectButton } })(theme => ({
+const useStyles = makeStyles({ "name": { AgentConnectButton } })(theme => ({
     "root": {
         ...theme.spacing.topBottom("padding", 2),
         "display": "flex",

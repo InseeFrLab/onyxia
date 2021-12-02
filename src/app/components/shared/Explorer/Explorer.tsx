@@ -504,7 +504,7 @@ export declare namespace Explorer {
     };
 }
 
-const useStyles = makeStyles<{ cmdTranslationTop: number }>({ "label": { Explorer } })(
+const useStyles = makeStyles<{ cmdTranslationTop: number }>({ "name": { Explorer } })(
     (theme, { cmdTranslationTop }) => ({
         "root": {
             "position": "relative",

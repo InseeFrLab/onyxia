@@ -2,7 +2,10 @@ import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import {
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath,
+} from "lib/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -330,8 +333,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             urls,
                             startedAt,
                             env,
-                            "owner": env["onyxia.owner"],
-                            "isShared": env["onyxia.share"] === "true",
+                            "ownerUsername": env["onyxia.owner"],
+                            "isShared": env[onyxiaIsSharedFormFieldPath] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)
                                 : ({
@@ -385,17 +388,21 @@ export function createOfficialOnyxiaApiClient(params: {
                     //Deleted one service just running, deleted all the others.
                     assert(data.success);
                 }),
-        "getUserProjects": () =>
-            axiosInstance
-                .get<{
-                    projects: {
-                        id: string;
-                        name: string;
-                        bucket: string;
-                        namespace: string;
-                    }[];
-                }>("/user/info")
-                .then(({ data }) => data.projects),
+        "getUserProjects": memoize(
+            () =>
+                axiosInstance
+                    .get<{
+                        projects: {
+                            id: string;
+                            name: string;
+                            bucket: string;
+                            namespace: string;
+                            vaultTopDir: string;
+                        }[];
+                    }>("/user/info")
+                    .then(({ data }) => data.projects),
+            { "promise": true },
+        ),
     };
 
     return onyxiaApiClient;

@@ -5,6 +5,10 @@ import type { ThunkAction } from "../setup";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
+import type { RootState } from "../setup";
+import { exclude } from "tsafe/exclude";
+import { thunks as launcherThunks } from "./launcher";
+
 export const name = "runningService";
 
 type RunningServicesState = RunningServicesState.NotFetched | RunningServicesState.Ready;
@@ -20,24 +24,46 @@ namespace RunningServicesState {
 
     export type Ready = Common & {
         isFetched: true;
-        runningServices: RunningService[];
+        /** We force using a selector to retrieve the running services
+         * because we want to sort them and exclude the ones that are not
+         * supposed to be displayed ( !isOwner && !isShared )
+         */
+        "~internal": {
+            runningServices: RunningService[];
+        };
     };
 }
 
-export type RunningService = {
-    id: string;
-    packageName: string;
-    friendlyName: string;
-    logoUrl: string | undefined;
-    monitoringUrl: string | undefined;
-    isStarting: boolean;
-    startedAt: number;
-    urls: string[];
-    postInstallInstructions: string | undefined;
-    isShared: boolean;
-    env: Record<string, string>;
-    isOwned: boolean;
-};
+export type RunningService = RunningService.Owned | RunningService.NotOwned;
+
+export declare namespace RunningService {
+    export type Common = {
+        id: string;
+        packageName: string;
+        friendlyName: string;
+        logoUrl: string | undefined;
+        monitoringUrl: string | undefined;
+        isStarting: boolean;
+        startedAt: number;
+        /** Undefined if the service don't use the token */
+        vaultTokenExpirationTime: number | undefined;
+        s3TokenExpirationTime: number | undefined;
+        urls: string[];
+        postInstallInstructions: string | undefined;
+        env: Record<string, string>;
+    };
+
+    export type Owned = Common & {
+        isShared: boolean;
+        isOwned: true;
+    };
+
+    export type NotOwned = Common & {
+        isShared: true;
+        isOwned: false;
+        ownerUsername: string;
+    };
+}
 
 const { reducer, actions } = createSlice({
     name,
@@ -60,7 +86,9 @@ const { reducer, actions } = createSlice({
             return id<RunningServicesState.Ready>({
                 "isFetching": false,
                 "isFetched": true,
-                runningServices,
+                "~internal": {
+                    runningServices,
+                },
             });
         },
         "serviceStarted": (
@@ -76,7 +104,7 @@ const { reducer, actions } = createSlice({
 
             assert(state.isFetched);
 
-            const runningService = state.runningServices.find(
+            const runningService = state["~internal"].runningServices.find(
                 ({ id }) => id === serviceId,
             );
 
@@ -96,8 +124,10 @@ const { reducer, actions } = createSlice({
 
             assert(state.isFetched);
 
-            state.runningServices.splice(
-                state.runningServices.findIndex(({ id }) => id === serviceId),
+            const { runningServices } = state["~internal"];
+
+            runningServices.splice(
+                runningServices.findIndex(({ id }) => id === serviceId),
                 1,
             );
         },
@@ -110,7 +140,11 @@ export const thunks = {
     "initializeOrRefreshIfNotAlreadyFetching":
         (): ThunkAction<void> =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient, userApiClient }] = args;
+            const [
+                dispatch,
+                getState,
+                { onyxiaApiClient, userApiClient, secretsManagerClient },
+            ] = args;
 
             {
                 const state = getState().runningService;
@@ -160,48 +194,96 @@ export const thunks = {
 
             const { username } = await userApiClient.getUser();
 
+            const [{ s3TokensTTLms }, { vaultTokenTTLms }] = await Promise.all([
+                (async () => {
+                    const { acquisitionTime, expirationTime } = await dispatch(
+                        launcherThunks.getS3MustacheParamsForProjectBucket(),
+                    );
+
+                    return { "s3TokensTTLms": expirationTime - acquisitionTime };
+                })(),
+                (async () => {
+                    const { acquisitionTime, expirationTime } =
+                        await secretsManagerClient.getToken();
+
+                    return { "vaultTokenTTLms": expirationTime - acquisitionTime };
+                })(),
+            ]);
+
             dispatch(
                 actions.fetchCompleted({
-                    "runningServices": runningServicesRaw.map(
-                        ({
-                            id,
-                            friendlyName,
-                            packageName,
-                            urls,
-                            startedAt,
-                            postInstallInstructions,
-                            isShared,
-                            env,
-                            owner,
-                            ...rest
-                        }) => ({
-                            id,
-                            packageName,
-                            friendlyName,
-                            isShared,
-                            env,
-                            "logoUrl": getLogoUrl({ packageName }),
-                            "monitoringUrl": getMonitoringUrl({
-                                "serviceId": id,
-                            }),
-                            startedAt,
-                            "urls": urls.sort(),
-                            "isStarting": !rest.isStarting
-                                ? false
-                                : (rest.prStarted.then(({ isConfirmedJustStarted }) =>
-                                      dispatch(
-                                          actions.serviceStarted({
-                                              "serviceId": id,
-                                              "doOverwriteStaredAtToNow":
-                                                  isConfirmedJustStarted,
-                                          }),
-                                      ),
-                                  ),
-                                  true),
-                            postInstallInstructions,
-                            "isOwned": owner === username,
-                        }),
-                    ),
+                    "runningServices": runningServicesRaw
+                        .map(
+                            ({
+                                id: serviceId,
+                                friendlyName,
+                                packageName,
+                                urls,
+                                startedAt,
+                                postInstallInstructions,
+                                isShared,
+                                env,
+                                ownerUsername,
+                                ...rest
+                            }) => {
+                                const common: RunningService.Common = {
+                                    "id": serviceId,
+                                    packageName,
+                                    friendlyName,
+                                    "logoUrl": getLogoUrl({ packageName }),
+                                    "monitoringUrl": getMonitoringUrl({
+                                        serviceId,
+                                    }),
+                                    startedAt,
+                                    "vaultTokenExpirationTime":
+                                        env["vault.enabled"] !== "true"
+                                            ? undefined
+                                            : startedAt + vaultTokenTTLms,
+                                    "s3TokenExpirationTime":
+                                        env["s3.enabled"] !== "true"
+                                            ? undefined
+                                            : startedAt + s3TokensTTLms,
+                                    "urls": urls.sort(),
+                                    "isStarting": !rest.isStarting
+                                        ? false
+                                        : (rest.prStarted.then(
+                                              ({ isConfirmedJustStarted }) =>
+                                                  dispatch(
+                                                      actions.serviceStarted({
+                                                          serviceId,
+                                                          "doOverwriteStaredAtToNow":
+                                                              isConfirmedJustStarted,
+                                                      }),
+                                                  ),
+                                          ),
+                                          true),
+                                    postInstallInstructions,
+                                    env,
+                                };
+
+                                const isOwned = ownerUsername === username;
+
+                                if (!isOwned) {
+                                    if (!isShared) {
+                                        return undefined;
+                                    }
+
+                                    return id<RunningService.NotOwned>({
+                                        ...common,
+                                        isShared,
+                                        isOwned,
+                                        ownerUsername,
+                                    });
+                                }
+
+                                return id<RunningService.Owned>({
+                                    ...common,
+                                    isShared,
+                                    isOwned,
+                                });
+                            },
+                        )
+                        .filter(exclude(undefined)),
                 }),
             );
         },
@@ -217,3 +299,17 @@ export const thunks = {
             await onyxiaApiClient.stopService({ serviceId });
         },
 };
+
+export const selectors = (() => {
+    const runningServices = (rootState: RootState): RunningService[] => {
+        const state = rootState.runningService;
+
+        return !state.isFetched
+            ? []
+            : [...state["~internal"].runningServices].sort(
+                  (a, b) => b.startedAt - a.startedAt,
+              );
+    };
+
+    return { runningServices };
+})();

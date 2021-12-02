@@ -4,7 +4,6 @@ import { ExplorerItems, Props } from "app/components/shared/Explorer/ExplorerIte
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "app/tools/symToStr";
-import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import { id } from "tsafe/id";
 import { EventEmitter } from "events";
@@ -171,7 +170,7 @@ export default {
 export const Vue1 = getStory({
     "containerWidth": 500,
     "visualRepresentationOfAFile": "secret",
-    "getIsValidBasename": pure.getIsValidBasename,
+    "getIsValidBasename": () => true,
     "files": [
         ...new Array(30).fill("").map((_, i) => `aaa${i}`),
         "this-is-a-file",

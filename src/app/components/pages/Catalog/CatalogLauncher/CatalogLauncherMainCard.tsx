@@ -9,21 +9,28 @@ import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { capitalize } from "tsafe/capitalize";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormHelperText from "@mui/material/FormHelperText";
+import Checkbox from "@mui/material/Checkbox";
 
 export type Props = {
     className?: string;
     packageName: string;
     packageIconUrl?: string;
     isBookmarked: boolean;
-    onIsBookmarkedValueChange(isBookmarked: boolean): void;
+    onIsBookmarkedValueChange: (isBookmarked: boolean) => void;
 
     friendlyName: string;
-    onFriendlyNameChange(friendlyName: string): void;
+    onFriendlyNameChange: (friendlyName: string) => void;
+
+    isShared: boolean;
+    onIsSharedValueChange: (params: { isShared: boolean }) => void;
 
     isLaunchable: boolean;
 
-    onRequestLaunch(): void;
-    onRequestCancel(): void;
+    onRequestLaunch: () => void;
+    onRequestCancel: () => void;
 
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
@@ -36,9 +43,11 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         packageName,
         isBookmarked,
         friendlyName,
+        isShared,
         isLaunchable,
         onIsBookmarkedValueChange,
         onFriendlyNameChange,
+        onIsSharedValueChange,
         onRequestLaunch,
         onRequestCancel,
         onRequestCopyLaunchUrl,
@@ -55,6 +64,11 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     const onValueBeingTypedChange = useConstCallback<
         TextFieldProps["onValueBeingTypedChange"]
     >(({ value }) => onFriendlyNameChange(value));
+
+    const onIsSharedCheckboxChange = useConstCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) =>
+            onIsSharedValueChange({ "isShared": event.target.checked }),
+    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -94,6 +108,23 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
+                    <FormControl className={classes.isSharedWrapper}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    className={classes.isSharedCheckbox}
+                                    color="primary"
+                                    checked={isShared}
+                                    onChange={onIsSharedCheckboxChange}
+                                />
+                            }
+                            label={t("share the service")}
+                        />
+                        <FormHelperText className={classes.isSharedFormHelperText}>
+                            {t("share the service - explain")}
+                        </FormHelperText>
+                    </FormControl>
+
                     <div style={{ "flex": 1 }} />
                     <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
@@ -120,10 +151,12 @@ export declare namespace CatalogLauncherMainCard {
         "friendly name": undefined;
         "copy url helper text": undefined;
         "save configuration": undefined;
+        "share the service": undefined;
+        "share the service - explain": undefined;
     };
 }
 
-const useStyles = makeStyles({ "label": { CatalogLauncherMainCard } })(theme => ({
+const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[7],
@@ -159,6 +192,15 @@ const useStyles = makeStyles({ "label": { CatalogLauncherMainCard } })(theme => 
     "textFieldAndButtonWrapper": {
         "display": "flex",
         "alignItems": "center",
+    },
+    "isSharedWrapper": {
+        "marginLeft": theme.spacing(7),
+    },
+    "isSharedCheckbox": {
+        "padding": theme.spacing(2),
+    },
+    "isSharedFormHelperText": {
+        "marginLeft": 0,
     },
     "bellowDividerLeft": {
         "flex": 1,

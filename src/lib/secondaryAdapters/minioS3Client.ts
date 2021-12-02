@@ -27,17 +27,50 @@ export async function createMinioS3Client(params: {
     const { getAccessToken } = oidcClient;
 
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
-        "requestNewToken": async () => {
+        "requestNewToken": async (bucketName: string | undefined) => {
             const now = Date.now();
-            const tokenTTL = 7 * 24 * 3600 * 1000;
 
             const { data } = await axios.create({ "baseURL": url }).post<string>(
                 "/?" +
                     Object.entries({
                         "Action": "AssumeRoleWithClientGrants",
                         "Token": await getAccessToken(),
-                        "DurationSeconds": tokenTTL / 1000,
+                        //Desired TTL of the token, depending of the configuration
+                        //and version of minio we could get less than that but never more.
+                        "DurationSeconds": 7 * 24 * 3600,
                         "Version": "2011-06-15",
+                        ...(bucketName === undefined
+                            ? {}
+                            : {
+                                  "Policy": JSON.stringify({
+                                      "Version": "2012-10-17",
+                                      "Statement": [
+                                          {
+                                              "Effect": "Allow",
+                                              "Action": ["s3:*"],
+                                              "Resource": [
+                                                  `arn:aws:s3:::${bucketName}`,
+                                                  `arn:aws:s3:::${bucketName}/*`,
+                                              ],
+                                          },
+                                          {
+                                              "Effect": "Allow",
+                                              "Action": ["s3:ListBucket"],
+                                              "Resource": ["arn:aws:s3:::*"],
+                                              "Condition": {
+                                                  "StringLike": {
+                                                      "s3:prefix": "diffusion/*",
+                                                  },
+                                              },
+                                          },
+                                          {
+                                              "Effect": "Allow",
+                                              "Action": ["s3:GetObject"],
+                                              "Resource": ["arn:aws:s3:::*/diffusion/*"],
+                                          },
+                                      ],
+                                  }),
+                              }),
                     })
                         .map(([key, value]) => `${key}=${value}`)
                         .join("&"),
@@ -59,16 +92,22 @@ export async function createMinioS3Client(params: {
             const sessionToken =
                 credentials.getElementsByTagName("SessionToken")[0].childNodes[0]
                     .nodeValue;
+            const expiration =
+                credentials.getElementsByTagName("Expiration")[0].childNodes[0].nodeValue;
 
             assert(
-                accessKeyId !== null && secretAccessKey !== null && sessionToken !== null,
+                accessKeyId !== null &&
+                    secretAccessKey !== null &&
+                    sessionToken !== null &&
+                    expiration !== null,
             );
 
             return id<ReturnType<S3Client["getToken"]>>({
                 accessKeyId,
-                "expirationTime": now + tokenTTL,
+                "expirationTime": new Date(expiration).getTime(),
                 secretAccessKey,
                 sessionToken,
+                "acquisitionTime": now,
             });
         },
         "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
@@ -95,18 +134,19 @@ export async function createMinioS3Client(params: {
             { "max": 1 },
         );
 
-        async function getMinioClient() {
-            return getMinioClientForToken(await getNewlyRequestedOrCachedToken());
+        async function getMinioClient(params: { bucketName: string | undefined }) {
+            const { bucketName } = params;
+            return getMinioClientForToken(
+                await getNewlyRequestedOrCachedToken(bucketName),
+            );
         }
 
         return { getMinioClient };
     })();
 
     const secretsManagerClient: S3Client = {
-        "getToken": getNewlyRequestedOrCachedToken,
+        "getToken": ({ bucketName }) => getNewlyRequestedOrCachedToken(bucketName),
         "list": async ({ path }) => {
-            const { minioClient } = await getMinioClient();
-
             const { bucketName, prefix } = (() => {
                 const [bucketName, ...rest] = path.split("/");
 
@@ -115,6 +155,8 @@ export async function createMinioS3Client(params: {
                     "prefix": rest.join("/"),
                 };
             })();
+
+            const { minioClient } = await getMinioClient({ bucketName });
 
             const stream = minioClient.listObjects(bucketName, prefix, false);
 

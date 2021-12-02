@@ -1,7 +1,6 @@
 import { ExplorerItem, Props } from "app/components/shared/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
-import { pure } from "lib/useCases/secretExplorer";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { id } from "tsafe/id";
@@ -39,7 +38,7 @@ export const defaultView = getStory({
     "isSelected": false,
     "standardizedWidth": "big",
     "isCircularProgressShown": false,
-    "getIsValidBasename": pure.getIsValidBasename,
+    "getIsValidBasename": () => true,
     "evtAction": Evt.from(eventEmitter, "default"),
     ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"]),
 });

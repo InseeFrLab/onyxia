@@ -4,24 +4,34 @@ import { RoundLogo } from "app/components/shared/RoundLogo";
 
 export type Props = {
     className?: string;
-    circleColor: "red" | "green" | "grey";
+    severity: "success" | "error" | "warning" | "pending";
     url: string | undefined;
 };
 
+export const MyServicesRoundLogo = memo((props: Props) => {
+    const { className, url, severity } = props;
+
+    const { classes, cx } = useStyles({ severity });
+
+    return (
+        <div className={cx(className, classes.root)}>
+            <RoundLogo url={url} size="large" />
+        </div>
+    );
+});
+
 const useStyles = makeStyles<{
-    circleColor: Props["circleColor"];
-}>()((theme, { circleColor }) => ({
+    severity: Props["severity"];
+}>({ "name": { MyServicesRoundLogo } })((theme, { severity }) => ({
     "root": {
         "borderColor": (() => {
-            switch (circleColor) {
-                case "green":
-                    return theme.colors.palette.limeGreen.main;
-                case "red":
-                    return theme.colors.useCases.alertSeverity.error.main;
-                case "grey":
+            switch (severity) {
+                case "pending":
                     return theme.colors.palette[
                         theme.isDarkModeEnabled ? "dark" : "light"
                     ].greyVariant2;
+                default:
+                    return theme.colors.useCases.alertSeverity[severity].main;
             }
         })(),
         "borderStyle": "solid",
@@ -32,15 +42,3 @@ const useStyles = makeStyles<{
         "display": "inline-block",
     },
 }));
-
-export const MyServicesRoundLogo = memo((props: Props) => {
-    const { className, url, circleColor } = props;
-
-    const { classes, cx } = useStyles({ circleColor });
-
-    return (
-        <div className={cx(className, classes.root)}>
-            <RoundLogo url={url} size="large" />
-        </div>
-    );
-});

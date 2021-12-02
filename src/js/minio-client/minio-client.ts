@@ -30,7 +30,7 @@ export async function getMinioToken() {
         };
     }
 
-    const token = await (await getS3Client()).getToken();
+    const token = await (await getS3Client()).getToken({ "bucketName": undefined });
 
     const credentials = {
         "accessKey": token.accessKeyId,

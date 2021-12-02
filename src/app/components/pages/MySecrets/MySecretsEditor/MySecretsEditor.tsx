@@ -366,7 +366,7 @@ export declare namespace MySecretsEditor {
     };
 }
 
-const useStyles = makeStyles<Props>({ "label": { MySecretsEditor } })(theme => ({
+const useStyles = makeStyles<Props>({ "name": { MySecretsEditor } })(theme => ({
     "root": {
         "padding": theme.spacing(3),
         "& .MuiTableCell-root": {

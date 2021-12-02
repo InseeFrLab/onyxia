@@ -10,17 +10,22 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueGreen = getStory({
+export const VueSuccess = getStory({
     "url": rstudioLogoUrl,
-    "circleColor": "green",
+    "severity": "success",
 });
 
-export const VueGrey = getStory({
+export const VueWarning = getStory({
     "url": rstudioLogoUrl,
-    "circleColor": "grey",
+    "severity": "warning",
 });
 
-export const VueRed = getStory({
+export const VueError = getStory({
     "url": rstudioLogoUrl,
-    "circleColor": "red",
+    "severity": "error",
+});
+
+export const VuePending = getStory({
+    "url": rstudioLogoUrl,
+    "severity": "pending",
 });

@@ -312,7 +312,7 @@ export declare namespace Login {
     };
 }
 
-const useStyles = makeStyles({ "label": { Login } })(theme => ({
+const useStyles = makeStyles({ "name": { Login } })(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",

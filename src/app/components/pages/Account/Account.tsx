@@ -81,7 +81,7 @@ export declare namespace Account {
     };
 }
 
-const useStyles = makeStyles({ "label": { Account } })(theme => ({
+const useStyles = makeStyles({ "name": { Account } })(theme => ({
     "root": {
         "height": "100%",
         "overflow": "auto",
