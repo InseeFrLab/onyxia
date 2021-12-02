@@ -1,3 +1,7 @@
+### **0.25.1** (2021-12-02)  
+  
+- Update tss-react    
+  
 ## **0.25.0** (2021-12-01)  
   
 - Merge pull request #274 from sathieu/run_as_nonroot
