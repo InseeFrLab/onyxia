@@ -27,9 +27,13 @@ export type Props = {
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
               startTime: number | undefined;
-              isOvertime: boolean;
               postInstallInstructions: string | undefined;
               isShared: boolean;
+              isOwned: boolean;
+              /** undefined when isOwned === true*/
+              ownerUsername: string | undefined;
+              vaultTokenExpirationTime: number | undefined;
+              s3TokenExpirationTime: number | undefined;
           }[]
         | undefined;
     catalogExplorerLink: Link;
@@ -118,7 +122,11 @@ export const MyServicesCards = memo((props: Props) => {
                                 "env",
                                 card.serviceId,
                             )}
-                            onRequestDelete={onRequestDeleteFactory(card.serviceId)}
+                            onRequestDelete={
+                                card.isOwned
+                                    ? onRequestDeleteFactory(card.serviceId)
+                                    : undefined
+                            }
                             onRequestShowPostInstallInstructions={
                                 card.postInstallInstructions !== undefined
                                     ? onRequestShowEnvOrPostInstallInstructionFactory(
@@ -157,7 +165,7 @@ export declare namespace MyServicesCards {
 }
 
 const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
-    "label": { MyServicesCards },
+    "name": { MyServicesCards },
 })((theme, { isThereServicesRunning }) => ({
     "root": {
         "overflow": "hidden",
@@ -222,7 +230,7 @@ const { NoRunningService } = (() => {
     });
 
     const useStyles = makeStyles({
-        "label": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
+        "name": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
     })(theme => ({
         "root": {
             "display": "flex",

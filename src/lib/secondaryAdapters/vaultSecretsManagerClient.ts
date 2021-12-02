@@ -53,6 +53,7 @@ export async function createVaultSecretsManagerClient(
             return id<ReturnType<SecretsManagerClient["getToken"]>>({
                 "token": auth.client_token,
                 "expirationTime": now + auth.lease_duration * 1000,
+                "acquisitionTime": now,
             });
         },
         "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",

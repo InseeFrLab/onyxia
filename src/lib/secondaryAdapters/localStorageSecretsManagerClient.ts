@@ -93,6 +93,7 @@ export function createLocalStorageSecretManagerClient(params: {
             Promise.resolve({
                 "expirationTime": Infinity,
                 "token": "",
+                "acquisitionTime": Date.now(),
             }),
     };
 }

@@ -166,7 +166,7 @@ export declare namespace AccountIntegrationsTab {
     };
 }
 
-const useStyles = makeStyles({ "label": { AccountIntegrationsTab } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountIntegrationsTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4),
     },

@@ -261,7 +261,7 @@ const { NoMatches } = (() => {
 
 const useStyles = makeStyles<{
     filteredCardCount: number;
-}>({ "label": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
+}>({ "name": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
     "root": {
         "height": "100%",
         "display": "flex",

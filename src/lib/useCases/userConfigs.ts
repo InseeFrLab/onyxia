@@ -11,7 +11,7 @@ import {
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import type { RootState } from "../setup";
-import { createGetPathFactory } from "./projectConfigs";
+import { join as pathJoin } from "path";
 
 /*
  * Values of the user profile that can be changed.
@@ -102,14 +102,12 @@ export const thunks = {
                 return;
             }
 
-            const { username } = dispatch(userAuthenticationThunks.getUser());
-
             dispatch(actions.changeStarted(params));
 
-            const { getPath } = getPathFactory({ "projectId": username });
+            const dirPath = await dispatch(privateThunks.getDirPath());
 
             await secretsManagerClient.put({
-                "path": getPath({ "key": params.key }),
+                "path": pathJoin(dirPath, params.key),
                 "secret": { "value": params.value },
             });
 
@@ -144,8 +142,6 @@ export const privateThunks = {
 
             const { username, email } = dispatch(userAuthenticationThunks.getUser());
 
-            const { getPath } = getPathFactory({ "projectId": username });
-
             //Default values
             const userConfigs: UserConfigs = {
                 "kaggleApiToken": null,
@@ -161,9 +157,11 @@ export const privateThunks = {
                 "selectedProjectId": null,
             };
 
+            const dirPath = await dispatch(privateThunks.getDirPath());
+
             await Promise.all(
                 objectKeys(userConfigs).map(async key => {
-                    const path = getPath({ key });
+                    const path = pathJoin(dirPath, key);
 
                     const isLegacyValue = (value: unknown) => {
                         switch (key) {
@@ -194,6 +192,17 @@ export const privateThunks = {
 
             dispatch(actions.initializationCompleted({ userConfigs }));
         },
+    "getDirPath":
+        (): ThunkAction<Promise<string>> =>
+        async (...args) => {
+            const [, , { onyxiaApiClient }] = args;
+
+            //We can't use the slice project selection yet because the slice userConfig
+            //is initialized first.
+            const { vaultTopDir } = (await onyxiaApiClient.getUserProjects())[0];
+
+            return pathJoin("/", vaultTopDir, hiddenDirectoryBasename);
+        },
 };
 
 export const selectors = (() => {
@@ -211,4 +220,4 @@ export const selectors = (() => {
     return { userConfigs };
 })();
 
-const { getPathFactory } = createGetPathFactory<keyof UserConfigs>();
+export const hiddenDirectoryBasename = ".onyxia";

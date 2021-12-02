@@ -1,3 +1,73 @@
+### **0.25.1** (2021-12-02)  
+  
+- Update tss-react    
+  
+## **0.25.0** (2021-12-01)  
+  
+- Merge pull request #274 from sathieu/run_as_nonroot
+
+Run as non-root  
+- BREAKING: Run as non-root, and port 8080 only
+
+Fixes: #271
+Signed-off-by: Mathieu Parent <mathieu.parent@insee.fr>    
+  
+### **0.24.1** (2021-11-29)  
+  
+- minio token: use the real expiration time    
+  
+## **0.24.0** (2021-11-28)  
+  
+- MyServices: Warning when tokens are expired  
+- typo  
+- Add missing CSS classes labels  
+- lib: Add aquisition time to vault token  
+- lib: Add aquisition time to s3 token    
+  
+## **0.23.0** (2021-11-27)  
+  
+- MyServices: Better feedback on what services are shared  
+- Merge pull request #273 from sathieu/image-port-8080  
+- Change the onyxia-web image to listen on both ports 80 and 8080
+
+See #271    
+  
+## **0.22.0** (2021-11-26)  
+  
+- Launcher: share on main card    
+  
+## **0.22.0** (2021-11-26)  
+  
+- Launcher: share on main card    
+  
+## **0.21.0** (2021-11-25)  
+  
+- Use vault top dir from project  
+- Remove hack for bucket name    
+  
+## **0.20.0** (2021-11-24)  
+  
+- MyServices: Disable delete button if there is nothing to delete  
+- Dialog warning when deleting owned shared services  
+- MyService: rephrase the delete all button when all services arnt owned  
+- MyServices: Restore trash icon instead of block  
+- Rephrase terminate -> delete  
+- MyServices: Users can't terminate services that thei haven't launched  
+- MyServices: Move sorting and filtering in the lib/ dir    
+  
+### **0.19.12** (2021-11-23)  
+  
+- Rename isFirstProject -> isDefaultProject  
+- do not scope S3 token policy for default project    
+  
+### **0.19.11** (2021-11-23)  
+  
+- Fix cloudshell requesting S3 tokens for nothing  
+- Scopped s3 token  
+- Account: s3 tab, give minimal loading feedback  
+- Update S3Client port and adapter  
+- getNewlyRequestedOrChachedToken with parameters    
+  
 ### **0.19.10** (2021-11-23)  
   
 - Account: Don't use legacy code to get s3 tokens    

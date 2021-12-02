@@ -509,7 +509,7 @@ export declare namespace AccountField {
     };
 }
 
-const useStyles = makeStyles<{ isFlashing: boolean }>({ "label": { AccountField } })(
+const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField } })(
     (theme, { isFlashing }) => ({
         "root": {
             "marginBottom": theme.spacing(3),

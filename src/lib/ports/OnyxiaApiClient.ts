@@ -21,7 +21,10 @@ export type OnyxiaApiClient = {
         clear: () => void;
     };
 
-    getUserProjects: () => Promise<Project[]>;
+    getUserProjects: {
+        (): Promise<Project[]>;
+        clear: () => void;
+    };
 
     getCatalogs: {
         (): Promise<Catalog[]>;
@@ -66,6 +69,7 @@ export type Project = {
     name: string;
     bucket: string;
     namespace: string;
+    vaultTopDir: string;
 };
 
 export type Catalog = {
@@ -132,7 +136,7 @@ export declare namespace RunningService {
         postInstallInstructions: string | undefined;
         isShared: boolean;
         env: Record<string, string>;
-        owner: string;
+        ownerUsername: string;
     };
 
     export type Started = Common & {
@@ -148,3 +152,5 @@ export declare namespace RunningService {
 export type Contract = Record<string, unknown>[][];
 
 export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
+
+export const onyxiaIsSharedFormFieldPath = "onyxia.share";

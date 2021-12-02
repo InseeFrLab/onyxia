@@ -10,7 +10,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import "./cloud-shell.scss";
 import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
-import { getMinioToken } from "js/minio-client/minio-client";
 import {
     getOptions,
     getValuesObject,
@@ -45,7 +44,6 @@ export const CloudShell = memo(() => {
     );
     const [url, setUrl] = useState<string | undefined>(undefined);
     const { isCloudShellVisible, setIsCloudShellVisible } = useIsCloudShellVisible();
-    const [minioCredentials, setMinioCredentials] = useState<any>();
     const [reloadCloudshell, setReloadCloudShell] = useState(0);
     const dispatch = useDispatch();
 
@@ -105,18 +103,6 @@ export const CloudShell = memo(() => {
         setCloudShellStatus(undefined);
         setUrl(undefined);
     });
-
-    useEffect(() => {
-        if (!minioCredentials) {
-            getMinioToken()
-                .then(credentials => {
-                    setMinioCredentials(credentials);
-                })
-                .catch(() => {
-                    setMinioCredentials({});
-                });
-        }
-    }, [minioCredentials]);
 
     useEffect(() => {
         if (!isCloudShellVisible || cloudShellStatus === "UP") {

@@ -23,7 +23,7 @@ export const RoundLogo = memo((props: RoundLogoProps) => {
 });
 
 const useStyles = makeStyles<{ iconSizeName: IconSizeName }>({
-    "label": { RoundLogo },
+    "name": { RoundLogo },
 })((theme, { iconSizeName }) => ({
     "fallback": {
         "fill": theme.colors.useCases.typography.textPrimary,

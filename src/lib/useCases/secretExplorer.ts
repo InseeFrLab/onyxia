@@ -21,6 +21,7 @@ import { Mutex } from "async-mutex";
 import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
 import { logApi } from "lib/tools/apiLogger";
 import type { ApiLogs } from "lib/tools/apiLogger";
+import { selectors as projectSelectionSelectors } from "./projectSelection";
 
 const getMutexes = memoize((_: ThunksExtraArgument) => ({
     "createOrRename": new Mutex(),
@@ -430,6 +431,15 @@ const { reducer, actions } = createSlice({
 export { reducer };
 
 export const thunks = {
+    "getProjectHomePath":
+        (): ThunkAction<string> =>
+        (...args) => {
+            const [, getState] = args;
+
+            const project = projectSelectionSelectors.selectedProject(getState());
+
+            return pathJoin("/", project.vaultTopDir);
+        },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
@@ -1094,15 +1104,3 @@ function getSecretsManagerClientExtension(props: {
 
     return { secretsManagerClientExtension };
 }
-
-export const pure = {
-    //TODO!!!
-    "getIsValidBasename": (params: { basename: string }): boolean => {
-        const { basename } = params;
-        return basename !== "" && !basename.includes(" ");
-    },
-    "getUserHomePath": (params: { username: string }): string => {
-        const { username } = params;
-        return pathJoin("/", username);
-    },
-};

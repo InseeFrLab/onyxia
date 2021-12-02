@@ -113,7 +113,7 @@ export declare namespace MyServicesSavedConfig {
 }
 
 const useStyles = makeStyles<{ hasLogo: boolean; isShortVariant: boolean }>({
-    "label": { MyServicesSavedConfig },
+    "name": { MyServicesSavedConfig },
 })((theme, { hasLogo, isShortVariant }) => ({
     "root": {
         "borderRadius": 16,

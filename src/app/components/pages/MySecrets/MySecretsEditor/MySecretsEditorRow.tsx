@@ -332,7 +332,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     />
                     <IconButton
                         disabled={isLocked}
-                        iconId="block"
+                        iconId="delete"
                         onClick={onDelete}
                         size="small"
                     />
@@ -350,7 +350,7 @@ export declare namespace MySecretsEditorRow {
 }
 
 const useStyles = makeStyles<Props & { isInEditingState: boolean }>({
-    "label": { MySecretsEditorRow },
+    "name": { MySecretsEditorRow },
 })((theme, { isInEditingState, isDarker }) => ({
     "root": {
         "backgroundColor": isDarker

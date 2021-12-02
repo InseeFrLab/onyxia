@@ -4,12 +4,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { pure as secretExplorerPure } from "./secretExplorer";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
-import { onyxiaFriendlyNameFormFieldPath } from "lib/ports/OnyxiaApiClient";
+import {
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath,
+} from "lib/ports/OnyxiaApiClient";
 import type { Contract, MustacheParams } from "lib/ports/OnyxiaApiClient";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
@@ -27,6 +29,7 @@ import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "lib/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
+import { thunks as secretExplorerThunks } from "./secretExplorer";
 
 export const name = "launcher";
 
@@ -905,10 +908,23 @@ export const thunks = {
                     "value": friendlyName,
                 }),
             ),
+    "changeIsShared":
+        (params: { isShared: boolean }): ThunkAction<void> =>
+        dispatch =>
+            dispatch(
+                thunks.changeFormFieldValue({
+                    "path": onyxiaIsSharedFormFieldPath.split("."),
+                    "value": params.isShared,
+                }),
+            ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
-    "getS3MustacheParams":
-        (): ThunkAction<Promise<MustacheParams["s3"] & { expirationTime: number }>> =>
+    "getS3MustacheParamsForProjectBucket":
+        (): ThunkAction<
+            Promise<
+                MustacheParams["s3"] & { expirationTime: number; acquisitionTime: number }
+            >
+        > =>
         async (...args) => {
             const [
                 ,
@@ -921,6 +937,9 @@ export const thunks = {
 
             const project = projectSelectionSelectors.selectedProject(getState());
 
+            const isDefaultProject =
+                getState().projectSelection.projects[0].id === project.id;
+
             switch (s3ClientConfig.implementation) {
                 case "DUMMY":
                     return {
@@ -932,22 +951,31 @@ export const thunks = {
                         "AWS_SESSION_TOKEN": "",
                         "port": NaN,
                         "expirationTime": Infinity,
+                        "acquisitionTime": Date.now(),
                     };
                 case "MINIO":
-                    const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                        await s3Client.getToken();
+                    const {
+                        accessKeyId,
+                        secretAccessKey,
+                        sessionToken,
+                        expirationTime,
+                        acquisitionTime,
+                    } = await s3Client.getToken({
+                        "bucketName": isDefaultProject ? undefined : project.bucket,
+                    });
 
                     const { host, port = 443 } = parseUrl(s3ClientConfig.url);
 
                     return {
                         "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_BUCKET_NAME": project.bucket.replace(/^user-/, ""),
+                        "AWS_BUCKET_NAME": project.bucket,
                         "AWS_DEFAULT_REGION": "us-east-1" as const,
                         "AWS_S3_ENDPOINT": host,
                         port,
                         "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                         "AWS_SESSION_TOKEN": sessionToken,
                         expirationTime,
+                        acquisitionTime,
                     };
             }
         },
@@ -963,10 +991,6 @@ export const thunks = {
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
             const user = dispatch(userAuthenticationThunk.getUser());
-
-            const secretExplorerUserHomePath = secretExplorerPure.getUserHomePath({
-                "username": user.username,
-            });
 
             const userConfigs = userConfigsSelectors.userConfigs(getState());
 
@@ -1013,11 +1037,13 @@ export const thunks = {
                         "VAULT_ADDR": secretsManagerClientConfig.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": secretsManagerClientConfig.engine,
-                        "VAULT_TOP_DIR": secretExplorerUserHomePath,
+                        "VAULT_TOP_DIR": dispatch(
+                            secretExplorerThunks.getProjectHomePath(),
+                        ),
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken,
-                "s3": await dispatch(thunks.getS3MustacheParams()),
+                "s3": await dispatch(thunks.getS3MustacheParamsForProjectBucket()),
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
@@ -1068,6 +1094,20 @@ export const selectors = (() => {
         return friendlyName;
     });
 
+    const isShared = createSelector(formFields, formFields => {
+        if (formFields === undefined) {
+            return undefined;
+        }
+
+        const isShared = formFields.find(({ path }) =>
+            same(path, onyxiaIsSharedFormFieldPath.split(".")),
+        )!.value;
+
+        assert(typeof isShared === "boolean");
+
+        return isShared;
+    });
+
     const config = createSelector(readyLauncher, state => state?.["~internal"].config);
 
     function createIsFieldHidden(params: {
@@ -1079,8 +1119,13 @@ export const selectors = (() => {
         function isFieldHidden(params: { path: string[] }) {
             const { path } = params;
 
-            if (same(onyxiaFriendlyNameFormFieldPath.split("."), path)) {
-                return true;
+            for (const onyxiaSpecialFormFieldPath of [
+                onyxiaFriendlyNameFormFieldPath,
+                onyxiaIsSharedFormFieldPath,
+            ]) {
+                if (same(onyxiaSpecialFormFieldPath.split("."), path)) {
+                    return true;
+                }
             }
 
             const infoAboutWhenFieldsShouldBeHidden =
@@ -1295,6 +1340,7 @@ export const selectors = (() => {
 
     return {
         friendlyName,
+        isShared,
         indexedFormFields,
         isLaunchable,
         restorablePackageConfig,

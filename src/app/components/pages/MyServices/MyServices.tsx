@@ -42,12 +42,11 @@ export function MyServices(props: Props) {
         selectors.restorablePackageConfig.displayableConfigs,
     );
 
-    const { isRunningServicesFetching, runningServices } = useSelector(
-        ({ runningService: state }) => ({
-            "isRunningServicesFetching": state.isFetching,
-            "runningServices": state.isFetched ? state.runningServices : [],
-        }),
+    const isRunningServicesFetching = useSelector(
+        state => state.runningService.isFetching,
     );
+
+    const { runningServices } = useSelector(selectors.runningService.runningServices);
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
@@ -141,37 +140,39 @@ export function MyServices(props: Props) {
         (): MyServicesCardsProps["cards"] =>
             isRunningServicesFetching
                 ? undefined
-                : [...runningServices]
-                      .filter(({ isShared, isOwned }) => isOwned || isShared)
-                      .sort((a, b) => b.startedAt - a.startedAt)
-                      .map(
-                          ({
-                              id,
-                              logoUrl,
-                              friendlyName,
-                              packageName,
-                              urls,
-                              startedAt,
-                              monitoringUrl,
-                              isStarting,
-                              postInstallInstructions,
-                              isShared,
-                              env,
-                          }) => ({
-                              "serviceId": id,
-                              "packageIconUrl": logoUrl,
-                              friendlyName,
-                              packageName,
-                              "infoUrl": routes.myService({ "serviceId": id }).href,
-                              "openUrl": urls[0],
-                              monitoringUrl,
-                              "startTime": isStarting ? undefined : startedAt,
-                              "isOvertime": Date.now() - startedAt > 7 * 24 * 3600 * 1000,
-                              postInstallInstructions,
-                              isShared,
-                              env,
-                          }),
-                      ),
+                : runningServices.map(
+                      ({
+                          id,
+                          logoUrl,
+                          friendlyName,
+                          packageName,
+                          urls,
+                          startedAt,
+                          monitoringUrl,
+                          isStarting,
+                          postInstallInstructions,
+                          vaultTokenExpirationTime,
+                          s3TokenExpirationTime,
+                          env,
+                          ...rest
+                      }) => ({
+                          "serviceId": id,
+                          "packageIconUrl": logoUrl,
+                          friendlyName,
+                          packageName,
+                          "infoUrl": routes.myService({ "serviceId": id }).href,
+                          "openUrl": urls[0],
+                          monitoringUrl,
+                          "startTime": isStarting ? undefined : startedAt,
+                          postInstallInstructions,
+                          env,
+                          "isShared": rest.isShared,
+                          "isOwned": rest.isOwned,
+                          "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
+                          vaultTokenExpirationTime,
+                          s3TokenExpirationTime,
+                      }),
+                  ),
         [runningServices, isRunningServicesFetching],
     );
 
@@ -190,6 +191,11 @@ export function MyServices(props: Props) {
         },
     );
 
+    const deletableRunningServices = useMemo(
+        () => runningServices.filter(({ isOwned }) => isOwned),
+        [runningServices],
+    );
+
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
@@ -197,7 +203,7 @@ export function MyServices(props: Props) {
                     "serviceId": serviceIdRequestedToBeDeleted,
                 });
             } else {
-                runningServices.map(({ id }) =>
+                deletableRunningServices.map(({ id }) =>
                     runningServiceThunks.stopService({ "serviceId": id }),
                 );
             }
@@ -205,6 +211,16 @@ export function MyServices(props: Props) {
 
         setIsDialogOpen(false);
     });
+
+    const isThereNonOwnedServicesShown = useMemo(
+        () => !!runningServices.find(({ isOwned }) => !isOwned),
+        [runningServices],
+    );
+
+    const isThereOwnedSharedServices = useMemo(
+        () => !!runningServices.find(({ isOwned, isShared }) => isOwned && isShared),
+        [runningServices],
+    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -215,7 +231,11 @@ export function MyServices(props: Props) {
                 helpContent={t("text3")}
                 helpIcon="sentimentSatisfied"
             />
-            <MyServicesButtonBar onClick={onButtonBarClick} />
+            <MyServicesButtonBar
+                onClick={onButtonBarClick}
+                isThereNonOwnedServicesShown={isThereNonOwnedServicesShown}
+                isThereDeletableServices={deletableRunningServices.length !== 0}
+            />
             <div className={classes.payload}>
                 {!isSavedConfigsExtended && (
                     <MyServicesCards
@@ -234,9 +254,13 @@ export function MyServices(props: Props) {
                 />
             </div>
             <Dialog
-                title={t("confirm terminate title")}
-                subtitle={t("confirm terminate subtitle")}
-                body={t("confirm terminate body")}
+                title={t("confirm delete title")}
+                subtitle={t("confirm delete subtitle")}
+                body={`${
+                    isThereOwnedSharedServices
+                        ? t("confirm delete body shared services")
+                        : ""
+                } ${t("confirm delete body")}`}
                 isOpen={isDialogOpen}
                 onClose={onDialogCloseFactory(false)}
                 buttons={
@@ -260,9 +284,10 @@ export declare namespace MyServices {
         text2: undefined;
         text3: undefined;
         "running services": undefined;
-        "confirm terminate title": undefined;
-        "confirm terminate subtitle": undefined;
-        "confirm terminate body": undefined;
+        "confirm delete title": undefined;
+        "confirm delete subtitle": undefined;
+        "confirm delete body": undefined;
+        "confirm delete body shared services": undefined;
         cancel: undefined;
         confirm: undefined;
     };
@@ -270,7 +295,7 @@ export declare namespace MyServices {
 
 const useStyles = makeStyles<{
     isSavedConfigsExtended: boolean;
-}>({ "label": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
+}>({ "name": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
     "root": {
         "height": "100%",
         "display": "flex",

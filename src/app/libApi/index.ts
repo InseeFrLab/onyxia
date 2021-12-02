@@ -21,11 +21,12 @@ export const useSelector: reactRedux.TypedUseSelectorHook<RootState> =
 
 // prettier-ignore
 export const selectors = {
+    [userConfigsUseCase.name]: userConfigsUseCase.selectors.userConfigs,
     [launcherUseCase.name]: wrapSelectorsReturnValue(launcherUseCase.selectors),
     [restorablePackageConfigsUseCase.name]: wrapSelectorsReturnValue(restorablePackageConfigsUseCase.selectors),
     [deploymentRegionUseCase.name]: wrapSelectorsReturnValue(deploymentRegionUseCase.selectors),
     [projectSelectionUseCase.name]: wrapSelectorsReturnValue(projectSelectionUseCase.selectors),
-    [userConfigsUseCase.name]: userConfigsUseCase.selectors.userConfigs,
+    [runningServiceUseCase.name]: wrapSelectorsReturnValue(runningServiceUseCase.selectors),
 };
 
 export function useThunks() {
@@ -53,6 +54,5 @@ export function useThunks() {
 }
 
 export const pure = {
-    [secretExplorerUseCase.name]: secretExplorerUseCase.pure,
     [restorablePackageConfigsUseCase.name]: restorablePackageConfigsUseCase.pure,
 };

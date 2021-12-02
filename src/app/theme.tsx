@@ -33,7 +33,6 @@ import { ReactComponent as OnyxiaLogoSvg } from "app/assets/svg/OnyxiaLogo.svg";
 import { ReactComponent as TrainingsLogoSvg } from "app/assets/svg/Trainings2.svg";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
 import DeleteIcon from "@mui/icons-material/Delete";
-import BlockIcon from "@mui/icons-material/Block";
 import PublicIcon from "@mui/icons-material/Public";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -65,6 +64,7 @@ import EqualizerIcon from "@mui/icons-material/Equalizer";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import PeopleIcon from "@mui/icons-material/People";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/translations";
@@ -113,7 +113,6 @@ export const { makeStyles, useStyles } = createMakeStyles({ useTheme });
 /** @see: <https://next.material-ui.com/components/material-icons/> */
 export const { Icon } = createIcon({
     "delete": DeleteIcon,
-    "block": BlockIcon,
     "edit": EditIcon,
     "add": AddIcon,
     "filterNone": FilterNoneIcon,
@@ -157,6 +156,7 @@ export const { Icon } = createIcon({
     "language": LanguageIcon,
     "training": TrainingsLogoSvg,
     "people": PeopleIcon,
+    "errorOutline": ErrorOutlineIcon,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];

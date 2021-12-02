@@ -4,28 +4,13 @@ import { makeStyles, Icon, Text } from "app/theme";
 import { useFromNow } from "app/i18n/useMoment";
 import { useTranslation } from "app/i18n/useTranslations";
 
-const useStyles = makeStyles<{ isOvertime: boolean }>()((theme, { isOvertime }) => {
-    const color = isOvertime ? theme.colors.useCases.alertSeverity.error.main : undefined;
-
-    return {
-        "root": {
-            color,
-            "display": "flex",
-            "alignItems": "center",
-        },
-        "icon": {
-            color,
-        },
-    };
-});
-
 export type Props = {
     className?: string;
 } & (
     | {
           isRunning: true;
           startTime: number;
-          isOvertime: boolean;
+          doesHaveBeenRunningForTooLong: boolean;
       }
     | {
           isRunning: false;
@@ -36,7 +21,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { className } = props;
 
     const { classes, cx } = useStyles({
-        "isOvertime": !props.isRunning ? false : props.isOvertime,
+        "isOvertime": !props.isRunning ? false : props.doesHaveBeenRunningForTooLong,
     });
 
     const { fromNowText } = useFromNow({
@@ -58,3 +43,22 @@ export declare namespace MyServicesRunningTime {
         "launching": undefined;
     };
 }
+
+const useStyles = makeStyles<{ isOvertime: boolean }>({
+    "name": { MyServicesRunningTime },
+})((theme, { isOvertime }) => {
+    const color = isOvertime
+        ? theme.colors.useCases.alertSeverity.warning.main
+        : undefined;
+
+    return {
+        "root": {
+            color,
+            "display": "flex",
+            "alignItems": "center",
+        },
+        "icon": {
+            color,
+        },
+    };
+});

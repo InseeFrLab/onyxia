@@ -13,6 +13,7 @@ export function createDummyS3Client(): S3Client {
                 "accessKeyId": "",
                 "secretAccessKey": "",
                 "sessionToken": "",
+                "acquisitionTime": Date.now(),
             }),
     };
 }
