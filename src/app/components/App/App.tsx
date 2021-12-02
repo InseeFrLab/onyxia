@@ -23,6 +23,7 @@ import { typeGuard } from "tsafe/typeGuard";
 import type { SupportedLanguage } from "app/i18n/translations";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
+import { Ckan } from "app/components/pages/Ckan";
 //Legacy
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -142,6 +143,11 @@ export const App = memo((props: Props) => {
                     "link": routes.myBuckets().link,
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                 },
+                "myDataCatalog": {
+                    "iconId": "files",
+                    "label": t("myFiles"),
+                    "link": routes.myDataCatalog().link,
+                },
             } as const),
         [t],
     );
@@ -196,6 +202,8 @@ export const App = memo((props: Props) => {
                                 return "myFiles";
                             case "myFiles":
                                 return "myFiles";
+                            case "myDataCatalog":
+                                return "myDataCatalog";
                         }
                     })()}
                 />
@@ -375,6 +383,19 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
 
     {
         const Page = MyServices;
+
+        if (Page.routeGroup.has(route)) {
+            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+                userAuthenticationThunks.login();
+                return null;
+            }
+
+            return <Page route={route} />;
+        }
+    }
+
+    {
+        const Page = Ckan;
 
         if (Page.routeGroup.has(route)) {
             if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
