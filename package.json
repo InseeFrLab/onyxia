@@ -46,7 +46,7 @@
         "@mui/material": "^5.0.4",
         "@emotion/react": "^11.4.1",
         "@emotion/styled": "^11.3.0",
-        "onyxia-ui": "^0.22.2",
+        "onyxia-ui": "^0.23.0",
         "tss-react": "3.0.0-beta.2",
         "@mui/icons-material": "^5.0.4",
         "keycloakify": "^4.2.10",
