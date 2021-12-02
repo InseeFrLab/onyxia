@@ -281,7 +281,7 @@ export declare namespace MyServicesCard {
 
 const useStyles = makeStyles<{
     severity: "error" | "warning" | undefined;
-}>({ "label": { MyServicesCard } })((theme, { severity }) => ({
+}>({ "name": { MyServicesCard } })((theme, { severity }) => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[1],

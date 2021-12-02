@@ -109,7 +109,7 @@ export declare namespace MyServicesSavedConfigOptions {
     };
 }
 
-const useStyles = makeStyles({ "label": { MyServicesSavedConfigOptions } })(theme => ({
+const useStyles = makeStyles({ "name": { MyServicesSavedConfigOptions } })(theme => ({
     "icon": {
         "color": theme.colors.useCases.typography.textPrimary,
     },

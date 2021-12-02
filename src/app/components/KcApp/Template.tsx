@@ -279,7 +279,7 @@ const { Page } = (() => {
     });
 
     const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>({
-        "label": { Page },
+        "name": { Page },
     })((theme, { isPaperBiggerThanContainer }) => ({
         "root": {
             "display": "flex",
@@ -416,7 +416,7 @@ const { Page } = (() => {
         });
 
         const useStyles = makeStyles({
-            "label": `${symToStr({ Template })}${symToStr({ Head })}`,
+            "name": `${symToStr({ Template })}${symToStr({ Head })}`,
         })(theme => ({
             "root": {
                 "textAlign": "center",
@@ -533,7 +533,7 @@ const { Page } = (() => {
         });
 
         const useStyles = makeStyles({
-            "label": `${symToStr({ Template })}${symToStr({ Main })}`,
+            "name": `${symToStr({ Template })}${symToStr({ Main })}`,
         })(() => ({
             "alert": {
                 "alignItems": "center",

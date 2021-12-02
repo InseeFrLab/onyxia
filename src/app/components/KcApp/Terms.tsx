@@ -74,7 +74,7 @@ export const Terms = memo(
     },
 );
 
-const useStyles = makeStyles({ "label": { Terms } })(theme => ({
+const useStyles = makeStyles({ "name": { Terms } })(theme => ({
     "buttonsWrapper": {
         "marginTop": theme.spacing(4),
         "display": "flex",

@@ -22,7 +22,7 @@ export const MyServicesRoundLogo = memo((props: Props) => {
 
 const useStyles = makeStyles<{
     severity: Props["severity"];
-}>({ "label": { MyServicesRoundLogo } })((theme, { severity }) => ({
+}>({ "name": { MyServicesRoundLogo } })((theme, { severity }) => ({
     "root": {
         "borderColor": (() => {
             switch (severity) {

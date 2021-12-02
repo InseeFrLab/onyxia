@@ -215,7 +215,7 @@ export declare namespace ExplorerItem {
     };
 }
 
-const useStyles = makeStyles<Props>({ "label": { ExplorerItem } })(
+const useStyles = makeStyles<Props>({ "name": { ExplorerItem } })(
     (theme, { isSelected, basename }) => ({
         "root": {
             "textAlign": "center",

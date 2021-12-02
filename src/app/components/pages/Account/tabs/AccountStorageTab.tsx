@@ -151,7 +151,7 @@ export declare namespace AccountStorageTab {
     };
 }
 
-const useStyles = makeStyles({ "label": { AccountStorageTab } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountStorageTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4),
     },

@@ -128,7 +128,7 @@ export declare namespace Header {
     };
 }
 
-const useStyles = makeStyles<{ logoContainerWidth: number }>({ "label": { Header } })(
+const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header } })(
     (theme, { logoContainerWidth }) => ({
         "root": {
             "backgroundColor": theme.colors.useCases.surfaces.background,

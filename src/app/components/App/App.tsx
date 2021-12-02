@@ -229,7 +229,7 @@ export declare namespace App {
     >;
 }
 
-const useStyles = makeStyles({ "label": { App } })(theme => {
+const useStyles = makeStyles({ "name": { App } })(theme => {
     const footerHeight = 32;
 
     return {

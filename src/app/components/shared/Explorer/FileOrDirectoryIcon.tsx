@@ -37,7 +37,7 @@ export const FileOrDirectoryIcon = memo((props: Props) => {
     return <SvgComponent className={classes.root} />;
 });
 
-const useStyles = makeStyles<Props>({ "label": { FileOrDirectoryIcon } })(
+const useStyles = makeStyles<Props>({ "name": { FileOrDirectoryIcon } })(
     (theme, { kind, standardizedWidth }) => ({
         "root": {
             "fill": "currentColor",

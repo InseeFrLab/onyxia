@@ -198,7 +198,7 @@ export declare namespace Catalog {
     };
 }
 
-const useStyles = makeStyles({ "label": { Catalog } })({
+const useStyles = makeStyles({ "name": { Catalog } })({
     "root": {
         "height": "100%",
         "display": "flex",

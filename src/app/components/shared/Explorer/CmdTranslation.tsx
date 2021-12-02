@@ -108,7 +108,7 @@ export const CmdTranslation = memo((props: Props) => {
 });
 
 const useStyles = makeStyles<Props & { headerHeight: number; isExpended: boolean }>({
-    "label": { CmdTranslation },
+    "name": { CmdTranslation },
 })((theme, { isExpended, maxHeight, headerHeight }) => {
     const borderRadius = `0 0 0 30px`;
 

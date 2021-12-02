@@ -295,7 +295,7 @@ export declare namespace MyServices {
 
 const useStyles = makeStyles<{
     isSavedConfigsExtended: boolean;
-}>({ "label": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
+}>({ "name": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
     "root": {
         "height": "100%",
         "display": "flex",

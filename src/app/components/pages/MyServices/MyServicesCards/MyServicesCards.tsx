@@ -165,7 +165,7 @@ export declare namespace MyServicesCards {
 }
 
 const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
-    "label": { MyServicesCards },
+    "name": { MyServicesCards },
 })((theme, { isThereServicesRunning }) => ({
     "root": {
         "overflow": "hidden",
@@ -230,7 +230,7 @@ const { NoRunningService } = (() => {
     });
 
     const useStyles = makeStyles({
-        "label": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
+        "name": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
     })(theme => ({
         "root": {
             "display": "flex",

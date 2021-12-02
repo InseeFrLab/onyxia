@@ -75,7 +75,7 @@ export declare namespace Footer {
     };
 }
 
-const useStyles = makeStyles<Props>({ "label": { Footer } })(theme => ({
+const useStyles = makeStyles<Props>({ "name": { Footer } })(theme => ({
     "root": {
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "display": "flex",

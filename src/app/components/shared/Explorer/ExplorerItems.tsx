@@ -420,7 +420,7 @@ export declare namespace ExplorerItems {
     };
 }
 
-const useStyles = makeStyles<{ isEmpty: boolean }>({ "label": { ExplorerItems } })(
+const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } })(
     (theme, { isEmpty }) => ({
         "root": {
             ...(isEmpty

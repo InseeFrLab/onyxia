@@ -25,7 +25,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "label": { PortraitModeUnsupported } })(theme => ({
+const useStyles = makeStyles({ "name": { PortraitModeUnsupported } })(theme => ({
     "root": {
         "height": "100vh",
         "display": "flex",
