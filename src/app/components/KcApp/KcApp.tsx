@@ -73,7 +73,7 @@ export const KcApp = memo((props: Props) => {
     }
 });
 
-const useStyles = makeStyles({ "label": { KcApp } })(theme => ({
+const useStyles = makeStyles({ "name": { KcApp } })(theme => ({
     "kcLoginClass": {
         "& #kc-locale": {
             "zIndex": 5,

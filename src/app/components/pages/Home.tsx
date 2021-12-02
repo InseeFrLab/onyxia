@@ -110,7 +110,7 @@ export declare namespace Home {
     };
 }
 
-const useStyles = makeStyles({ "label": { Home } })(theme => ({
+const useStyles = makeStyles({ "name": { Home } })(theme => ({
     "root": {
         "height": "100%",
         "overflow": "auto",

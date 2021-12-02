@@ -91,7 +91,7 @@ export declare namespace MyServicesSavedConfigs {
     };
 }
 
-const useStyles = makeStyles({ "label": { MyServicesSavedConfigs } })(theme => ({
+const useStyles = makeStyles({ "name": { MyServicesSavedConfigs } })(theme => ({
     "root": {
         "overflow": "hidden",
         "display": "flex",

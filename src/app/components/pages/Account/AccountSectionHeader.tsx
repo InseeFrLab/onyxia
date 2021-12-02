@@ -35,7 +35,7 @@ export const AccountSectionHeader = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "label": { AccountSectionHeader } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountSectionHeader } })(theme => ({
     "root": {
         "marginBottom": theme.spacing(4),
     },

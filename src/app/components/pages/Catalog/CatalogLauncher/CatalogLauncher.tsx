@@ -298,7 +298,7 @@ export declare namespace CatalogLauncher {
     };
 }
 
-const useStyles = makeStyles({ "label": { CatalogLauncher } })(theme => ({
+const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
     "wrapperForScroll": {
         "height": "100%",
         "overflow": "auto",

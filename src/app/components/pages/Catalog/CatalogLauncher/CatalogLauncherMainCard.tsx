@@ -156,7 +156,7 @@ export declare namespace CatalogLauncherMainCard {
     };
 }
 
-const useStyles = makeStyles({ "label": { CatalogLauncherMainCard } })(theme => ({
+const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[7],

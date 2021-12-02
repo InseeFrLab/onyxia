@@ -45,7 +45,7 @@ export declare namespace MyServicesRunningTime {
 }
 
 const useStyles = makeStyles<{ isOvertime: boolean }>({
-    "label": { MyServicesRunningTime },
+    "name": { MyServicesRunningTime },
 })((theme, { isOvertime }) => {
     const color = isOvertime
         ? theme.colors.useCases.alertSeverity.warning.main

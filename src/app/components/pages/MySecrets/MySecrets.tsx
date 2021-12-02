@@ -321,7 +321,7 @@ export declare namespace MySecrets {
     };
 }
 
-const useStyles = makeStyles({ "label": { MySecrets } })({
+const useStyles = makeStyles({ "name": { MySecrets } })({
     "root": {
         "height": "100%",
         "display": "flex",

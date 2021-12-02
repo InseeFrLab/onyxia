@@ -132,7 +132,7 @@ export declare namespace AccountInfoTab {
     };
 }
 
-const useStyles = makeStyles({ "label": { AccountInfoTab } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4),
     },

@@ -33,7 +33,7 @@ export declare namespace LoginDivider {
     };
 }
 
-const useStyles = makeStyles({ "label": { LoginDivider } })(theme => ({
+const useStyles = makeStyles({ "name": { LoginDivider } })(theme => ({
     "root": {
         "display": "flex",
         "alignItems": "center",

@@ -20,7 +20,7 @@ export const FourOhFour = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "label": { FourOhFour } })(theme => ({
+const useStyles = makeStyles({ "name": { FourOhFour } })(theme => ({
     "root": {
         "height": "100%",
         "display": "flex",
