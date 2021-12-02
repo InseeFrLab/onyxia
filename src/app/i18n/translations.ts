@@ -307,6 +307,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myFiles": "My Files",
+            "myDataCatalog": "My Data Catalog",
         },
         "FourOhFour": {
             "not found": "Page not found",
@@ -625,6 +626,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "Mes services",
             "mySecrets": "Mes secrets",
             "myFiles": "Mes fichiers",
+            "myDataCatalog": "Mes catalogue de données",
         },
         "FourOhFour": {
             "not found": "Page non trouvée",

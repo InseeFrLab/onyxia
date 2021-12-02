@@ -11574,10 +11574,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.22.2:
-  version "0.22.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.22.2.tgz#14347cf0bb21d5bf3c02e25ab48c7c920f37215f"
-  integrity sha512-GLa0yUVIiOR0xCNbflfu+tgfo0rt1b4xAtqPQxRThW891poub3CjHzUgE4C5i6CtrBEcDdQbeiBUrB0pYsZF/g==
+onyxia-ui@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.23.0.tgz#2866199b2a2e93a24af70abdc20793cad4e0efdb"
+  integrity sha512-HCXPmdV07C2aBH59epORPsjmxMNG6rULR+DIexA6Bmj2SpHQfoV211DC6svbajnmfOto43iCmPL/dTAgAwU28A==
   dependencies:
     "@mui/icons-material" "^5.0.3"
     color "3.1.3"
@@ -11585,6 +11585,7 @@ onyxia-ui@^0.22.2:
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
     tsafe "^0.8.1"
+    tss-react "3.0.0-beta.2"
 
 open@^7.0.2, open@^7.0.3:
   version "7.4.2"

@@ -65,6 +65,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "app/tools/types/ComponentType";
 import type { SupportedLanguage } from "app/i18n/translations";
@@ -157,6 +158,7 @@ export const { Icon } = createIcon({
     "training": TrainingsLogoSvg,
     "people": PeopleIcon,
     "errorOutline": ErrorOutlineIcon,
+    "MenuBookOutlined": MenuBookOutlinedIcon,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
