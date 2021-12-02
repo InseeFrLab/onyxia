@@ -63,6 +63,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         },
         () => `/my-services`,
     ),
+    "myDataCatalog": defineRoute(["/ckan"]),
     ...(() => {
         const myBuckets = defineRoute("/mes-fichiers");
 
