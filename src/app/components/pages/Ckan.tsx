@@ -10,11 +10,11 @@ Ckan.requireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;
-    className?: string;
 };
 
 export function Ckan(props: Props) {
-    const { route, className } = props;
+    // eslint-disable-next-line
+    const { route } = props;
 
     window.location.href = "https://ckan.clouddatalab.eu";
 
