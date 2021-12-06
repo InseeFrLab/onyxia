@@ -145,6 +145,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                         isLocked={isBeingChanged}
                         onRequestEdit={onRequestEditFactory(key)}
                         onRequestCopy={onRequestCopyFactory(value ?? "")}
+                        isSensitiveInformation={true}
                     />
                 );
             })}
