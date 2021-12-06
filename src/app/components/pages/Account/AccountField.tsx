@@ -40,15 +40,15 @@ export declare namespace Props {
     export type ServicePassword = Common & {
         type: "service password";
         servicePassword: string;
-        onRequestServicePasswordRenewal(): void;
+        onRequestServicePasswordRenewal: () => void;
         isLocked: boolean;
     } & ICopyable;
 
     export type S3Scripts<T extends string> = Common & {
         type: "s3 scripts";
         scriptLabels: T[];
-        onRequestDownloadScript(scriptLabel: T): void;
-        onRequestCopyScript(scriptLabelg: T): void;
+        onRequestDownloadScript: (scriptLabel: T) => void;
+        onRequestCopyScript: (scriptLabel: T) => void;
     };
 
     export type Language = Common & {
@@ -58,7 +58,7 @@ export declare namespace Props {
     export type Toggle = Common & {
         type: "toggle";
         isOn: boolean;
-        onRequestToggle(): void;
+        onRequestToggle: () => void;
         isLocked: boolean;
     } & IGeneric;
 
@@ -72,7 +72,7 @@ export declare namespace Props {
         type: "editable text";
         text: string | undefined;
         onRequestEdit(newText: string): void;
-        onStartEdit(): void;
+        onStartEdit: () => void;
         evtAction: NonPostableEvt<"SUBMIT EDIT">;
         getIsValidValue?: TextFieldProps["getIsValidValue"];
         isLocked: boolean;
@@ -81,16 +81,16 @@ export declare namespace Props {
 
     export type ResetHelperDialogs = Common & {
         type: "reset helper dialogs";
-        onResetHelperDialogsClick(): void;
+        onResetHelperDialogsClick: () => void;
     };
 
-    type IGeneric = Common & {
+    type IGeneric = {
         title: string;
         helperText?: ReactNode;
     };
 
-    type ICopyable = Common & {
-        onRequestCopy(): void;
+    type ICopyable = {
+        onRequestCopy: () => void;
     };
 }
 
