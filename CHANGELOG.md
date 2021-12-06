@@ -1,3 +1,7 @@
+## **0.26.0** (2021-12-06)  
+  
+- Account: Hide sensitive fields    
+  
 ### **0.25.1** (2021-12-02)  
   
 - Update tss-react    
