@@ -22,6 +22,7 @@ import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
 import { Button } from "app/theme";
 import { useLng } from "app/i18n/useLng";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 export type Props<T extends string = string> =
     | Props.ServicePassword
@@ -65,6 +66,7 @@ export declare namespace Props {
     export type Text = Common & {
         type: "text";
         text: string;
+        isSensitiveInformation?: boolean;
     } & ICopyable &
         IGeneric;
 
@@ -76,6 +78,7 @@ export declare namespace Props {
         evtAction: NonPostableEvt<"SUBMIT EDIT">;
         getIsValidValue?: TextFieldProps["getIsValidValue"];
         isLocked: boolean;
+        isSensitiveInformation?: boolean;
     } & ICopyable &
         IGeneric;
 
@@ -122,15 +125,51 @@ export const AccountField = memo(
 
         const { classes, cx } = useStyles({ isFlashing });
 
-        const TextWd = useGuaranteedMemo(
-            () => (props: { children: NonNullable<ReactNode>; className?: string }) =>
-                (
-                    <Text typo="body 1" className={props.className}>
-                        {props.children}
-                    </Text>
-                ),
-            [],
-        );
+        const { TextWd, toggleIsTextHidden, isTextHidden, isSensitiveInformation } =
+            (function useClosure() {
+                const isSensitiveInformation = (() => {
+                    switch (props.type) {
+                        case "text":
+                        case "editable text":
+                            return props.isSensitiveInformation ?? false;
+                        case "service password":
+                            return true;
+                        default:
+                            return false;
+                    }
+                })();
+
+                const [isTextHidden, setIsTextHidden] = useState(isSensitiveInformation);
+
+                useEffectOnValueChange(() => {
+                    setIsTextHidden(isSensitiveInformation);
+                }, [isSensitiveInformation]);
+
+                const toggleIsTextHidden = useConstCallback(() =>
+                    setIsTextHidden(!isTextHidden),
+                );
+
+                const { TextWd } = useGuaranteedMemo(() => {
+                    const TextWd = memo(
+                        (props: { children: string; className?: string }) => (
+                            <Text typo="body 1" className={props.className}>
+                                {isTextHidden
+                                    ? new Array(props.children.length).fill("•")
+                                    : props.children}
+                            </Text>
+                        ),
+                    );
+
+                    return { TextWd };
+                }, [isTextHidden]);
+
+                return {
+                    TextWd,
+                    toggleIsTextHidden,
+                    isTextHidden,
+                    isSensitiveInformation,
+                };
+            })();
 
         const IconButtonCopyToClipboard = useGuaranteedMemo(
             () => (props: { onClick(): void; disabled?: boolean }) =>
@@ -398,6 +437,12 @@ export const AccountField = memo(
                         })()}
                     </div>
                     <div className={classes.cellActions}>
+                        {isSensitiveInformation && (
+                            <IconButton
+                                iconId={isTextHidden ? "visibility" : "visibilityOff"}
+                                onClick={toggleIsTextHidden}
+                            />
+                        )}
                         {(() => {
                             switch (props.type) {
                                 case "s3 scripts":
