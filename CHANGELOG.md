@@ -1,3 +1,7 @@
+### **0.26.2** (2021-12-08)  
+  
+- Fix user profile email regexp parsing    
+  
 ### **0.26.1** (2021-12-07)  
   
   
