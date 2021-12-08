@@ -430,7 +430,7 @@ const { getHardCodedFieldWeight } = (() => {
 function formatEmailPattern(pattern: string) {
     try {
         return pattern
-            .match(/\?\((.+)\)\$$/)![1]
+            .match(/\*\((.+)\)\$$/)![1]
             .split("|")
             .map(part =>
                 part
