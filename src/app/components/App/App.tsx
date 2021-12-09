@@ -271,7 +271,7 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
     };
 });
 
-const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
+const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
 
     const { userAuthenticationThunks } = useThunks();
@@ -395,7 +395,7 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
     }
 
     return <FourOhFour />;
-};
+});
 
 /** On the login pages hosted by keycloak the user can select
  * a language, we want to use this language on the app.
