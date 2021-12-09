@@ -16,7 +16,7 @@ Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher
 
 type PageRoute = Route<typeof Catalog.routeGroup>;
 
-Catalog.requireUserLoggedIn = (route: PageRoute) => {
+Catalog.getDoRequireUserLoggedIn = (route: PageRoute) => {
     switch (route.name) {
         case "catalogExplorer":
             return false;

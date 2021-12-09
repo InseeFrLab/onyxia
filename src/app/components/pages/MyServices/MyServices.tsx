@@ -23,7 +23,7 @@ MyServices.routeGroup = createGroup([routes.myServices]);
 
 type PageRoute = Route<typeof MyServices.routeGroup>;
 
-MyServices.requireUserLoggedIn = () => true;
+MyServices.getDoRequireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;

@@ -12,7 +12,7 @@ import type { DeploymentRegion } from "lib/ports/OnyxiaApiClient";
 
 MyBuckets.routeGroup = createGroup([routes.myBuckets]);
 
-MyBuckets.requireUserLoggedIn = true as const;
+MyBuckets.getDoRequireUserLoggedIn = true as const;
 
 export function MyBuckets() {
     const dispatch = useDispatch();

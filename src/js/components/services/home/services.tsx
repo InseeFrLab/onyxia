@@ -11,7 +11,7 @@ type Props = {
 
 //SharedServices.routeGroup = createGroup([routes.sharedServices]);
 
-SharedServices.requireUserLoggedIn = false;
+SharedServices.getDoRequireUserLoggedIn = false;
 
 export function SharedServices({ serviceSelectionne }: Props) {
     return serviceSelectionne ? (

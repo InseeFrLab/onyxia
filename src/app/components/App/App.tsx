@@ -287,7 +287,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
             return undefined;
         }
 
-        if (Page.requireUserLoggedIn && !isUserLoggedIn) {
+        if (Page.getDoRequireUserLoggedIn && !isUserLoggedIn) {
             userAuthenticationThunks.login();
             return null;
         }
@@ -329,7 +329,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Catalog;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn(route) && !isUserLoggedIn) {
+            if (Page.getDoRequireUserLoggedIn(route) && !isUserLoggedIn) {
                 userAuthenticationThunks.login();
                 return null;
             }
@@ -342,7 +342,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Home;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
                 userAuthenticationThunks.login();
                 return null;
             }
@@ -355,7 +355,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         const Page = MySecrets;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
                 userAuthenticationThunks.login();
                 return null;
             }
@@ -368,7 +368,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         const Page = Account;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
                 userAuthenticationThunks.login();
                 return null;
             }
@@ -381,7 +381,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         const Page = MyServices;
 
         if (Page.routeGroup.has(route)) {
-            if (Page.requireUserLoggedIn() && !isUserLoggedIn) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
                 userAuthenticationThunks.login();
                 return null;
             }

@@ -14,7 +14,7 @@ import { useDispatch } from "js/hooks";
 
 NavigationFile.routeGroup = createGroup([routes.myFiles]);
 
-NavigationFile.requireUserLoggedIn = true;
+NavigationFile.getDoRequireUserLoggedIn = true;
 
 export function NavigationFile(props: {
     route: Route<typeof NavigationFile.routeGroup>;

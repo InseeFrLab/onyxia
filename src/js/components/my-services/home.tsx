@@ -8,7 +8,7 @@ import { routes } from "app/routes/router";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
-MyServices.requireUserLoggedIn = true;
+MyServices.getDoRequireUserLoggedIn = true;
 
 export function MyServices() {
     //TODO: Make sure groupId exists in URL params.

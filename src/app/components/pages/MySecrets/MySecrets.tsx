@@ -23,7 +23,7 @@ MySecrets.routeGroup = createGroup([routes.mySecrets]);
 
 type PageRoute = Route<typeof MySecrets.routeGroup>;
 
-MySecrets.requireUserLoggedIn = () => true;
+MySecrets.getDoRequireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;
