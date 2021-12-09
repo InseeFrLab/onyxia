@@ -1,6 +1,7 @@
 import type { Scheme, I18nSchemes, Translations } from "./translations";
 import * as reactI18next from "react-i18next";
 import { id } from "tsafe/id";
+import { symToStr } from "tsafe/symToStr";
 
 type NoParamsKeys<S extends Scheme> = NonNullable<
     {
@@ -13,6 +14,14 @@ export type TFunction<S extends Scheme> = {
     <T extends Exclude<keyof S, NoParamsKeys<S>>>(key: T, params: S[T]): string;
 };
 
-export const useTranslation = id<{
+const useReactI18nextTranslation = id<{
     <K extends keyof Translations>(ns: K): { t: TFunction<I18nSchemes[K]> };
 }>(reactI18next.useTranslation);
+
+export function useTranslation<K extends keyof Translations>(
+    nsOrNsAsKey: K | Record<K, unknown>,
+): { t: TFunction<I18nSchemes[K]> } {
+    const ns = typeof nsOrNsAsKey === "string" ? nsOrNsAsKey : symToStr(nsOrNsAsKey);
+
+    return useReactI18nextTranslation(ns);
+}
