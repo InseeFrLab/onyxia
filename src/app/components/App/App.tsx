@@ -321,6 +321,10 @@ const PageSelector = (props: { route: ReturnType<typeof useRoute> }) => {
         assert(false, "Not all cases have been dealt with in the above switch");
     }, [route]);
 
+    /*
+    Here is one of the few places in the codebase where we tolerate code duplication.
+    We sacrifice dryness for the sake of type safety and flexibility.
+    */
     {
         const Page = Catalog;
 
