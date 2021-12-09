@@ -12,7 +12,7 @@ export const LoginDivider = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    const { t } = useTranslation("LoginDivider");
+    const { t } = useTranslation({ LoginDivider });
 
     const separator = <div role="separator" className={classes.separator} />;
 

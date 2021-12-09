@@ -164,7 +164,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const ButtonBar = useWithProps(PolymorphExplorerButtonBar, { wordForFile });
 
-    const { t } = useTranslation("Explorer");
+    const { t } = useTranslation({ Explorer });
 
     const [selectedItemKind, setSelectedItemKind] = useState<
         "file" | "directory" | "none"

@@ -28,7 +28,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
         "dateTime": props.isRunning ? props.startTime : 0,
     });
 
-    const { t } = useTranslation("MyServicesRunningTime");
+    const { t } = useTranslation({ MyServicesRunningTime });
 
     return (
         <Text typo="label 1" className={cx(classes.root, className)}>

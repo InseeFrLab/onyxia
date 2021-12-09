@@ -49,7 +49,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
     const { secret } = secretWithMetadata;
 
-    const { t } = useTranslation("MySecretsEditor");
+    const { t } = useTranslation({ MySecretsEditor });
 
     const getEvtAction = useMemo(
         () => memoize((_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()),

@@ -185,7 +185,7 @@ const { Header } = (() => {
 
         const onClick = useConstCallback(() => onIsCollapsedValueChange?.());
 
-        const { t } = useTranslation("CatalogLauncherConfigurationCard");
+        const { t } = useTranslation({ CatalogLauncherConfigurationCard });
 
         return (
             <div className={cx(classes.root, className)} onClick={onClick}>
@@ -292,7 +292,7 @@ const { TabContent } = (() => {
             ) => onFormValueChange({ path, value }),
         );
 
-        const { t } = useTranslation("CatalogLauncherConfigurationCard");
+        const { t } = useTranslation({ CatalogLauncherConfigurationCard });
 
         const getIsValidValueFactory = useCallbackFactory(
             (

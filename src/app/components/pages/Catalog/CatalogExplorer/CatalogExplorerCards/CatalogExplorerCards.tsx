@@ -47,7 +47,7 @@ export const CatalogExplorerCards = memo(
 
         const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
 
-        const { t } = useTranslation("CatalogExplorerCards");
+        const { t } = useTranslation({ CatalogExplorerCards });
 
         useEffect(() => {
             //NOTE: We use setTimeout only because of Safari
@@ -180,7 +180,7 @@ const { CardShowMore } = (() => {
     const CardShowMore = memo((props: Props) => {
         const { leftToShowCount, onClick } = props;
 
-        const { t } = useTranslation("CatalogExplorerCards");
+        const { t } = useTranslation({ CatalogExplorerCards });
 
         const { classes } = useStyles();
 
@@ -233,7 +233,7 @@ const { NoMatches } = (() => {
 
         const { classes } = useStyles();
 
-        const { t } = useTranslation("CatalogExplorerCards");
+        const { t } = useTranslation({ CatalogExplorerCards });
 
         return (
             <div className={classes.root}>

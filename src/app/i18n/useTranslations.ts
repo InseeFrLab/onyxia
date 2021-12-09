@@ -19,9 +19,7 @@ const useReactI18nextTranslation = id<{
 }>(reactI18next.useTranslation);
 
 export function useTranslation<K extends keyof Translations>(
-    nsOrNsAsKey: K | Record<K, unknown>,
+    nsOrNsAsKey: Record<K, unknown>,
 ): { t: TFunction<I18nSchemes[K]> } {
-    const ns = typeof nsOrNsAsKey === "string" ? nsOrNsAsKey : symToStr(nsOrNsAsKey);
-
-    return useReactI18nextTranslation(ns);
+    return useReactI18nextTranslation(symToStr(nsOrNsAsKey));
 }

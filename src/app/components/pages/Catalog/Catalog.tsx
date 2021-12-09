@@ -33,7 +33,7 @@ export type Props = {
 export function Catalog(props: Props) {
     const { className, route } = props;
 
-    const { t } = useTranslation("Catalog");
+    const { t } = useTranslation({ Catalog });
 
     const { classes, cx } = useStyles();
 

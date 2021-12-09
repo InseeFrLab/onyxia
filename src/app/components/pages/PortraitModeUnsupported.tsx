@@ -9,7 +9,7 @@ export type Props = {
 export const PortraitModeUnsupported = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("PortraitModeUnsupported");
+    const { t } = useTranslation({ PortraitModeUnsupported });
 
     const { classes, cx } = useStyles();
 

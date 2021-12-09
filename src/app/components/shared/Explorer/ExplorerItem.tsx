@@ -70,7 +70,7 @@ export const ExplorerItem = memo((props: Props) => {
         visualRepresentationOfAFile,
     });
 
-    const { t } = useTranslation("ExplorerItem");
+    const { t } = useTranslation({ ExplorerItem });
 
     const { classes, cx } = useStyles(props);
 

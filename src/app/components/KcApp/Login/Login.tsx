@@ -134,7 +134,7 @@ export const Login = memo(
             return { "isValidValue": true };
         });
 
-        const { t } = useTranslation("Login");
+        const { t } = useTranslation({ Login });
 
         return (
             <Template

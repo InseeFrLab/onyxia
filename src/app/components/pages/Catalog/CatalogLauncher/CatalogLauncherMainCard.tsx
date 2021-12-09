@@ -55,7 +55,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    const { t } = useTranslation("CatalogLauncherMainCard");
+    const { t } = useTranslation({ CatalogLauncherMainCard });
 
     const onBookmarkIconButtonClick = useConstCallback(() =>
         onIsBookmarkedValueChange(!isBookmarked),

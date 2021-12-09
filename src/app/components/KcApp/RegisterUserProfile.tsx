@@ -37,7 +37,7 @@ export const RegisterUserProfile = memo(
             [cx, css],
         );
 
-        const { t } = useTranslation("RegisterUserProfile");
+        const { t } = useTranslation({ RegisterUserProfile });
 
         const redirectToLogin = useConstCallback(
             () => (window.location.href = url.loginUrl),

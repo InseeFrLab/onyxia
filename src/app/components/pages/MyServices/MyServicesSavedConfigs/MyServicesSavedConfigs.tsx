@@ -46,7 +46,7 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
         ) => callback({ launchLinkHref, action }),
     );
 
-    const { t } = useTranslation("MyServicesSavedConfigs");
+    const { t } = useTranslation({ MyServicesSavedConfigs });
 
     return (
         <div className={cx(classes.root, className)}>

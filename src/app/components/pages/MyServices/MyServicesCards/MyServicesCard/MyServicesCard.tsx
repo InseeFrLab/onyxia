@@ -60,7 +60,7 @@ export const MyServicesCard = memo((props: Props) => {
         s3TokenExpirationTime,
     } = props;
 
-    const { t } = useTranslation("MyServicesCard");
+    const { t } = useTranslation({ MyServicesCard });
 
     const tokensStatus = useMemo(() => {
         const getTokenStatus = (expirationTime: number) =>

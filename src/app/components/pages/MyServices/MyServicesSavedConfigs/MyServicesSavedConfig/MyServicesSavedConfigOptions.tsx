@@ -38,7 +38,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
         },
     );
 
-    const { t } = useTranslation("MyServicesSavedConfigOptions");
+    const { t } = useTranslation({ MyServicesSavedConfigOptions });
 
     return (
         <>

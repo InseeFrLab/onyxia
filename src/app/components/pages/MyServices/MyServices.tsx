@@ -33,7 +33,7 @@ export type Props = {
 export function MyServices(props: Props) {
     const { className, route } = props;
 
-    const { t } = useTranslation("MyServices");
+    const { t } = useTranslation({ MyServices });
 
     const { runningServiceThunks, restorablePackageConfigThunks, projectConfigsThunks } =
         useThunks();

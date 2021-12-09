@@ -51,7 +51,7 @@ export type Props = {
 };
 
 export const MySecretsEditorRow = memo((props: Props) => {
-    const { t } = useTranslation("MySecretsEditorRow");
+    const { t } = useTranslation({ MySecretsEditorRow });
 
     const {
         isLocked,

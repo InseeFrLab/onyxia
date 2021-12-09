@@ -26,7 +26,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    const { t } = useTranslation("CatalogExplorerCard");
+    const { t } = useTranslation({ CatalogExplorerCard });
 
     return (
         <div className={cx(classes.root, className)}>
