@@ -1,3 +1,8 @@
+### **0.26.4** (2021-12-09)  
+  
+- Respect naming conventions requiresUserLoggedIn -> getDoRequireUserLoggedIn  
+- memoize PageSelector, important since pages are not using memo()    
+  
 ### **0.26.3** (2021-12-08)  
   
   
