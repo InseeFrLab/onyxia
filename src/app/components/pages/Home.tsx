@@ -32,7 +32,7 @@ export function Home(props: Props) {
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
-    const { t } = useTranslation("Home");
+    const { t } = useTranslation({ Home });
 
     const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);

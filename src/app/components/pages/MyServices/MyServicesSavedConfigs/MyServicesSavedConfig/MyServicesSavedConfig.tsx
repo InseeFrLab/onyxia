@@ -39,7 +39,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
 
     const onLinkClick = useConstCallback(() => callback("copy link"));
 
-    const { t } = useTranslation("MyServicesSavedConfig");
+    const { t } = useTranslation({ MyServicesSavedConfig });
 
     const [isDeletionScheduled, scheduleDeletion] = useReducer(() => true, false);
 

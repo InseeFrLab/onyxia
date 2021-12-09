@@ -13,7 +13,7 @@ export type Props = {
 export const AccountUserInterfaceTab = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("AccountUserInterfaceTab");
+    const { t } = useTranslation({ AccountUserInterfaceTab });
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 

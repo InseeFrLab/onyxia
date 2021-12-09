@@ -9,7 +9,7 @@ export type Props = {
 export const FourOhFour = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("FourOhFour");
+    const { t } = useTranslation({ FourOhFour });
 
     const { classes, cx } = useStyles();
 

@@ -47,7 +47,7 @@ export const MyServicesCards = memo((props: Props) => {
         "isThereServicesRunning": (cards ?? []).length !== 0,
     });
 
-    const { t } = useTranslation("MyServicesCards");
+    const { t } = useTranslation({ MyServicesCards });
 
     const onRequestDeleteFactory = useCallbackFactory(([serviceId]: [string]) =>
         onRequestDelete({ serviceId }),
@@ -208,7 +208,7 @@ const { NoRunningService } = (() => {
 
         const { classes, cx } = useStyles();
 
-        const { t } = useTranslation("MyServicesCards");
+        const { t } = useTranslation({ MyServicesCards });
 
         return (
             <div className={cx(classes.root, className)}>

@@ -20,7 +20,7 @@ export type Props = {
 export const AccountInfoTab = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("AccountInfoTab");
+    const { t } = useTranslation({ AccountInfoTab });
 
     const { publicIpThunks, projectConfigsThunks, userAuthenticationThunks } =
         useThunks();

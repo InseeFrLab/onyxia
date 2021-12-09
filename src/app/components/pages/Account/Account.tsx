@@ -28,7 +28,7 @@ export type Props = {
 export function Account(props: Props) {
     const { className, route } = props;
 
-    const { t } = useTranslation("Account");
+    const { t } = useTranslation({ Account });
 
     const tabs = useMemo(() => accountTabIds.map(id => ({ id, "title": t(id) })), [t]);
 

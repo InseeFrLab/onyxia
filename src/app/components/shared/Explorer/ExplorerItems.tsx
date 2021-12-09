@@ -348,7 +348,7 @@ export const ExplorerItems = memo((props: Props) => {
         },
     );
 
-    const { t } = useTranslation("ExplorerItems");
+    const { t } = useTranslation({ ExplorerItems });
 
     return (
         <div

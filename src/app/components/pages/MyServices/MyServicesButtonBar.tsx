@@ -19,7 +19,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
     const { className, isThereNonOwnedServicesShown, isThereDeletableServices, onClick } =
         props;
 
-    const { t } = useTranslation("MyServicesButtonBar");
+    const { t } = useTranslation({ MyServicesButtonBar });
 
     const buttons = useMemo(
         (): ButtonBarProps<ButtonId, IconId>["buttons"] =>

@@ -23,7 +23,7 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { classes } = useStyles();
 
-    const { t } = useTranslation("AccountStorageTab");
+    const { t } = useTranslation({ AccountStorageTab });
 
     const { launcherThunks } = useThunks();
 

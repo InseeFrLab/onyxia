@@ -35,7 +35,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
         isViewingFile,
     } = props;
 
-    const { t } = useTranslation("ExplorerButtonBar");
+    const { t } = useTranslation({ ExplorerButtonBar });
 
     const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
         callback(buttonId),

@@ -42,7 +42,7 @@ export type Props = {
 export const App = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("App");
+    const { t } = useTranslation({ App });
 
     useSyncDarkModeWithValueInProfile();
 

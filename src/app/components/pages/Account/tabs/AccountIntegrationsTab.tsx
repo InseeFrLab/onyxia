@@ -30,7 +30,7 @@ export type Props = {
 export const AccountIntegrationsTab = memo((props: Props) => {
     const { className } = props;
 
-    const { t } = useTranslation("AccountIntegrationsTab");
+    const { t } = useTranslation({ AccountIntegrationsTab });
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),

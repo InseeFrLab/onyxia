@@ -191,7 +191,7 @@ export const CatalogLauncher = memo((props: Props) => {
     const { indexedFormFields } = useSelector(selectors.launcher.indexedFormFields);
     const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
 
-    const { t } = useTranslation("CatalogLauncher");
+    const { t } = useTranslation({ CatalogLauncher });
 
     if (state.stateDescription !== "ready") {
         return null;

@@ -17,7 +17,7 @@ export const Footer = memo((props: Props) => {
 
     const { classes, cx } = useStyles(props);
 
-    const { t } = useTranslation("Footer");
+    const { t } = useTranslation({ Footer });
 
     const { lng, setLng } = useLng();
 

@@ -101,7 +101,7 @@ const flashDurationMs = 600;
 
 export const AccountField = memo(
     <T extends string>(props: Props<T>): ReturnType<FunctionComponent> => {
-        const { t } = useTranslation("AccountField");
+        const { t } = useTranslation({ AccountField });
 
         const { className } = props;
 

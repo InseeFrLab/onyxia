@@ -40,7 +40,7 @@ export declare namespace Props {
 export const Header = memo((props: Props) => {
     const { className, logoContainerWidth, onLogoClick } = props;
 
-    const { t } = useTranslation("Header");
+    const { t } = useTranslation({ Header });
 
     const { classes, cx, css, theme } = useStyles({ logoContainerWidth });
 
@@ -215,7 +215,7 @@ type ProjectSelectProps = {
 const ProjectSelect = memo((props: ProjectSelectProps) => {
     const { className, projects, onSelectedProjectChange, selectedProjectId } = props;
 
-    const { t } = useTranslation("Header");
+    const { t } = useTranslation({ Header });
 
     const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
         onSelectedProjectChange({

@@ -34,7 +34,7 @@ export function MySecrets(props: Props) {
     //TODO: Fix how routes are handled, can't navigate back for example.
     const { className, route } = props;
 
-    const { t } = useTranslation("MySecrets");
+    const { t } = useTranslation({ MySecrets });
 
     const state = useSelector(state => state.secretExplorer);
 
