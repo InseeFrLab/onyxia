@@ -18,7 +18,7 @@ Account.routeGroup = createGroup([routes.account]);
 
 type PageRoute = Route<typeof Account.routeGroup>;
 
-Account.requireUserLoggedIn = () => true;
+Account.getDoRequireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;

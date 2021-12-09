@@ -17,7 +17,7 @@ import homeIllustrationImgUrl from "app/assets/img/homeIllustration.png";
 
 Home.routeGroup = createGroup([routes.home]);
 
-Home.requireUserLoggedIn = () => false;
+Home.getDoRequireUserLoggedIn = () => false;
 
 type Props = {
     className?: string;

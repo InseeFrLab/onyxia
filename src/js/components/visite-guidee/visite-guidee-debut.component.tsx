@@ -67,7 +67,7 @@ const VisiteConnected: any = connect(undefined, {
 
 //VisiteGuideeDebut.routeGroup = createGroup([routes.tour]);
 
-VisiteGuideeDebut.requireUserLoggedIn = true;
+VisiteGuideeDebut.getDoRequireUserLoggedIn = true;
 
 export function VisiteGuideeDebut() {
     return <VisiteConnected />;

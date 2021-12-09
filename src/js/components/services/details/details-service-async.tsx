@@ -7,7 +7,7 @@ const OngletContent = lazy(() => import("./details-service"));
 
 ServiceDetails.routeGroup = createGroup([routes.account]);
 
-ServiceDetails.requireUserLoggedIn = true;
+ServiceDetails.getDoRequireUserLoggedIn = true;
 
 export function ServiceDetails() {
     return (

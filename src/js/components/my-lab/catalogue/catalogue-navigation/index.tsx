@@ -30,7 +30,7 @@ export default Aiguilleur;
 
 //Catalogue.routeGroup = createGroup([routes.catalog]);
 
-Catalogue.requireUserLoggedIn = false;
+Catalogue.getDoRequireUserLoggedIn = false;
 
 export function Catalogue(props: Omit<Parameters<typeof Aiguilleur>[0], "location">) {
     return <Aiguilleur {...props} location={useLocation()} />;

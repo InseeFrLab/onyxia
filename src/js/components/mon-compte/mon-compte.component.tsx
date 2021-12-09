@@ -32,7 +32,7 @@ import { useAsync } from "react-async-hook";
 
 MonCompte.routeGroup = createGroup([routes.account]);
 
-MonCompte.requireUserLoggedIn = true;
+MonCompte.getDoRequireUserLoggedIn = true;
 
 export function MonCompte() {
     //@ts-ignore

@@ -9,7 +9,7 @@ import { routes } from "app/routes/router";
 
 MyService.routeGroup = createGroup([routes.myService]);
 
-MyService.requireUserLoggedIn = true;
+MyService.getDoRequireUserLoggedIn = true;
 
 export type Props = {
     route: Route<typeof MyService.routeGroup>;

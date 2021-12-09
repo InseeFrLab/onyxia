@@ -7,7 +7,7 @@ const TrainingsTmp = lazy(() => import("./component"));
 
 //Trainings.routeGroup = createGroup([routes.trainings]);
 
-Trainings.requireUserLoggedIn = false;
+Trainings.getDoRequireUserLoggedIn = false;
 
 export function Trainings() {
     return (
