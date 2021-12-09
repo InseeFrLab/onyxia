@@ -115,7 +115,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 const envVarName = (() => {
                     switch (key) {
                         case "githubPersonalAccessToken":
-                            return "$GITHUB_TOKEN";
+                            return "$GIT_PERSONAL_ACCESS_TOKEN";
                         case "kaggleApiToken":
                             return "$KAGGLE_TOKEN";
                     }
