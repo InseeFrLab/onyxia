@@ -1,3 +1,9 @@
+### **0.26.5** (2021-12-09)  
+  
+- The actual ENV is GIT_PERSONAL_ACCESS_TOKEN not GITHUB_TOKEN  
+- i18n: Pass translation namespace as a Key  
+- i18n: Allow to pass ns as key    
+  
 ### **0.26.4** (2021-12-09)  
   
 - Respect naming conventions requiresUserLoggedIn -> getDoRequireUserLoggedIn  
