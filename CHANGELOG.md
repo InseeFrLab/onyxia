@@ -1,3 +1,7 @@
+### **0.26.6** (2021-12-12)  
+  
+  
+  
 ### **0.26.5** (2021-12-09)  
   
 - The actual ENV is GIT_PERSONAL_ACCESS_TOKEN not GITHUB_TOKEN  
