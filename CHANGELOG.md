@@ -1,3 +1,7 @@
+### **0.26.7** (2021-12-12)  
+  
+- Update keycloakify, fix error in logs    
+  
 ### **0.26.6** (2021-12-12)  
   
   
