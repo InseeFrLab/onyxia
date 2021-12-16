@@ -51,7 +51,7 @@ minio$list_buckets()`,
         fileName: "credentials.py",
         text: (c: S3) => `
 import s3fs
-fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'http://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
+fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'https://'+'${c.AWS_S3_ENDPOINT}'},key ='${c.AWS_ACCESS_KEY_ID}', secret = '${c.AWS_SECRET_ACCESS_KEY}', token = '${c.AWS_SESSION_TOKEN}')`,
     },
     {
         id: "python_boto3",
