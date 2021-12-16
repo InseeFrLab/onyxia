@@ -47,7 +47,7 @@ export type CreateStoreParams = {
      * but we want to be able to provide a good default for state.userConfigs.isDarkModeEnabled
      * when it's the first time the user logs in and the value hasn't been stored yet in vault.
      * */
-    getIsDarkModeEnabledValueForProfileInitialization(): boolean;
+    getIsDarkModeEnabledValueForProfileInitialization: () => boolean;
     oidcClientConfig: OidcClientConfig;
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     userApiClientConfig: UserApiClientConfig;
