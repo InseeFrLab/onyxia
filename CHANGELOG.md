@@ -1,3 +1,11 @@
+### **0.26.9** (2021-12-17)  
+  
+- Update keycloakify  
+- Merge pull request #276 from labenech/main
+
+Update s3fs to use https endpoint instead of http  
+- Update s3fs to use hhtps endpoint instead of http    
+  
 ### **0.26.8** (2021-12-13)  
   
   
