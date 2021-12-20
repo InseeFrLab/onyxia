@@ -23,7 +23,9 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
     const { userConfigsThunks } = useThunks();
 
-    const { isBetaModeEnabled } = useSelector(selectors.userConfigs);
+    const {
+        userConfigs: { isBetaModeEnabled },
+    } = useSelector(selectors.userConfigs.userConfigs);
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() =>
         userConfigsThunks.changeValue({

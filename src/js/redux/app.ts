@@ -14,7 +14,7 @@ export type State = {
 
 export const name = "app";
 
-export const thunk = {
+export const thunks = {
     "logout":
         (): ThunkAction<Promise<never>> =>
         async (...args) => {

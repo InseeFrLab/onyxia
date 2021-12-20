@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Provider as ReactReduxProvider } from "react-redux";
 import { useAsync } from "react-async-hook";
-import { createStore } from "lib/setup";
+import { createStore } from "lib";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
 import memoize from "memoizee";
 import { id } from "tsafe/id";

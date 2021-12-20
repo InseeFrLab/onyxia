@@ -190,7 +190,9 @@ export function MySecrets(props: Props) {
         }
     }, [state.currentPath === ""]);
 
-    const { doDisplayMySecretsUseInServiceDialog } = useSelector(selectors.userConfigs);
+    const {
+        userConfigs: { doDisplayMySecretsUseInServiceDialog },
+    } = useSelector(selectors.userConfigs.userConfigs);
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
         userConfigsThunks.changeValue({

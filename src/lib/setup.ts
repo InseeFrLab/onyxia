@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { Action, ThunkAction as GenericThunkAction } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
@@ -5,16 +6,18 @@ import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecret
 import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
 import { createMinioS3Client } from "./secondaryAdapters/minioS3Client";
 import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
-import * as secretExplorerUseCase from "./useCases/secretExplorer";
-import * as userConfigsUseCase from "./useCases/userConfigs";
-import * as launcherUseCase from "./useCases/launcher";
 import * as catalogExplorerUseCase from "./useCases/catalogExplorer";
-import * as runningServiceUseCase from "./useCases/runningService";
-import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageConfigs";
-import * as publicIpUseCase from "./useCases/publicIp";
-import * as userAuthenticationUseCase from "./useCases/userAuthentication";
 import * as deploymentRegionUseCase from "./useCases/deploymentRegion";
+import * as launcherUseCase from "./useCases/launcher";
+import * as projectConfigUseCase from "./useCases/projectConfigs";
 import * as projectSelectionUseCase from "./useCases/projectSelection";
+import * as publicIpUseCase from "./useCases/publicIp";
+import * as restorablePackageConfigsUseCase from "./useCases/restorablePackageConfigs";
+import * as runningServiceUseCase from "./useCases/runningService";
+import * as secretExplorerUseCase from "./useCases/secretExplorer";
+import * as userAuthenticationUseCase from "./useCases/userAuthentication";
+import * as userConfigsUseCase from "./useCases/userConfigs";
+
 import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { S3Client } from "./ports/S3Client";
@@ -34,6 +37,7 @@ import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { KcLanguageTag } from "keycloakify";
+import { usecasesToReducer } from "clean-redux";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -236,6 +240,24 @@ assert<
     >
 >();
 
+export const useCases = [
+    myFiles,
+    myLab,
+    app,
+    user,
+    catalogExplorerUseCase,
+    deploymentRegionUseCase,
+    launcherUseCase,
+    projectConfigUseCase,
+    projectSelectionUseCase,
+    publicIpUseCase,
+    restorablePackageConfigsUseCase,
+    runningServiceUseCase,
+    secretExplorerUseCase,
+    userAuthenticationUseCase,
+    userConfigsUseCase,
+];
+
 export type ThunksExtraArgument = {
     createStoreParams: CreateStoreParams;
     secretsManagerClient: SecretsManagerClient;
@@ -350,24 +372,7 @@ export async function createStore(params: CreateStoreParams) {
         : createObjectThatThrowsIfAccessed<S3Client>();
 
     const store = configureStore({
-        "reducer": {
-            // Legacy
-            [myFiles.name]: myFiles.reducer,
-            [myLab.name]: myLab.reducer,
-            [app.name]: app.reducer,
-            [user.name]: user.reducer,
-
-            [secretExplorerUseCase.name]: secretExplorerUseCase.reducer,
-            [userConfigsUseCase.name]: userConfigsUseCase.reducer,
-            [catalogExplorerUseCase.name]: catalogExplorerUseCase.reducer,
-            [launcherUseCase.name]: launcherUseCase.reducer,
-            [restorablePackageConfigsUseCase.name]:
-                restorablePackageConfigsUseCase.reducer,
-            [runningServiceUseCase.name]: runningServiceUseCase.reducer,
-            [publicIpUseCase.name]: publicIpUseCase.reducer,
-            [deploymentRegionUseCase.name]: deploymentRegionUseCase.reducer,
-            [projectSelectionUseCase.name]: projectSelectionUseCase.reducer,
-        },
+        "reducer": usecasesToReducer(useCases),
         "middleware": getDefaultMiddleware =>
             getDefaultMiddleware({
                 "thunk": {
@@ -414,6 +419,8 @@ export async function createStore(params: CreateStoreParams) {
 export type Store = ReturnType<typeof createStore>;
 
 export type RootState = ReturnType<Store["getState"]>;
+
+export type Dispatch = Store["dispatch"];
 
 export type ThunkAction<ReturnType = Promise<void>> = GenericThunkAction<
     ReturnType,

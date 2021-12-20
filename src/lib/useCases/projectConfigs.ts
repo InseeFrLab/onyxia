@@ -35,6 +35,8 @@ function getDefault<K extends keyof ProjectConfigs>(key: K): ProjectConfigs[K] {
 
 export const name = "projectConfigs";
 
+export const reducer = null;
+
 export type ChangeValueParams<K extends keyof ProjectConfigs = keyof ProjectConfigs> = {
     key: K;
     value: ProjectConfigs[K];
