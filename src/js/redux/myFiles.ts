@@ -257,4 +257,6 @@ export const actions = {
     ...asyncThunks,
 };
 
+export const thunks = {};
+
 export const reducer = slice.reducer;

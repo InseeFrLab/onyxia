@@ -16,6 +16,7 @@ keycloakify/
 evt/
 react-envs/
 tsafe/
+clean-redux/
 
 you must have cloned all the projects and run:
 yarn && yarn build 
@@ -56,6 +57,7 @@ const inHouseModuleNames = (() => {
               "evt",
               "tsafe",
               "react-envs",
+              "clean-redux",
           ];
 })();
 

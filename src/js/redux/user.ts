@@ -70,6 +70,8 @@ const slice = createSlice({
     },
 });
 
+export const thunks = {};
+
 export const { reducer } = slice;
 
 export const actions = id<Omit<typeof slice.actions, "setUserInfo">>(slice.actions);

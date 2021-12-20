@@ -6,6 +6,8 @@ const userByStoreInst = new WeakMap<ThunksExtraArgument, User>();
 
 export const name = "userAuthentication";
 
+export const reducer = null;
+
 export const thunks = {
     "getUser":
         (): ThunkAction<User> =>

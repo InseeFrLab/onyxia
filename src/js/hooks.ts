@@ -9,7 +9,7 @@ export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
 export function useGetBuildMustacheViewParams() {
     const { launcherThunks } = useThunks();
 
-    const userConfigs = useSelector(selectors.userConfigs);
+    const { userConfigs } = useSelector(selectors.userConfigs.userConfigs);
 
     async function getBuildMustacheViewParams(): Promise<BuildMustacheViewParams> {
         const mustacheParams = await launcherThunks.getMustacheParams();
