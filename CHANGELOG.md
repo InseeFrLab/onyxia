@@ -1,3 +1,8 @@
+### **0.26.10** (2021-12-20)  
+  
+- Greatly improve architecture, use clean-redux  
+- Use tsafe for Reflect()    
+  
 ### **0.26.9** (2021-12-17)  
   
 - Update keycloakify  
