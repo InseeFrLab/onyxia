@@ -1,5 +1,5 @@
 import { symToStr } from "app/tools/symToStr";
-import { Reflect } from "app/tools/Reflect";
+import { Reflect } from "tsafe/Reflect";
 import { id } from "tsafe/id";
 import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
 import { Explorer } from "app/components/shared/Explorer";
