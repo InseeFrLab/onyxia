@@ -52,11 +52,13 @@ export function getNewlyRequestedOrCachedTokenFactory<
 }) {
     const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
 
-    const getNewlyRequestedOrCachedTokenFactory_memo = memoize((...args: Args) =>
-        getNewlyRequestedOrCachedTokenWithoutParamsFactory({
-            "requestNewToken": () => requestNewToken(...args),
-            returnCachedTokenIfStillValidForXPercentOfItsTTL,
-        }),
+    const getNewlyRequestedOrCachedTokenFactory_memo = memoize(
+        (...args: Args) =>
+            getNewlyRequestedOrCachedTokenWithoutParamsFactory({
+                "requestNewToken": () => requestNewToken(...args),
+                returnCachedTokenIfStillValidForXPercentOfItsTTL,
+            }),
+        { "length": requestNewToken.length },
     );
 
     function getNewlyRequestedOrCachedToken(...args: Args) {
