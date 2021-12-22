@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.head_commit.author.name != 'actions'
     outputs:
-      cra_envs_version: ${{ steps.step1.outputs.out2 }}
+      cra_envs_version: ${{ steps.step1.outputs.out }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -35,7 +35,7 @@ jobs:
         path: build
     - id: step1
       run: |
-        echo ::set-output name=out2::$(
+        echo ::set-output name=out::$(
           node -e 'console.log(require("./node_modules/cra-envs/package.json")["version"])'
         )
 
