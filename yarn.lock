@@ -5321,11 +5321,12 @@ clean-css@^4.2.3:
   dependencies:
     source-map "~0.6.0"
 
-clean-redux@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-0.2.4.tgz#1e33c20a41df38b1e61f920f7e61be9fcff83f44"
-  integrity sha512-5296P0FBY9DqJ6MHZ9GjGTzowECgUr698X72q601GbUfL3pf+xHCTw7zZk42j5R3WSUA1wcjP7a9exgLt1Tkgw==
+clean-redux@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-0.3.1.tgz#d1544508a15b514b4df636f647e98a112bd16ed1"
+  integrity sha512-oUpw3zkHOxQYYhOMCNDSGAEUYKOoqS3SGX3CI7se038h39T2NkC9hqKvMSQx3+JKxRgbV5j8BItzj6dHFs+p6Q==
   dependencies:
+    evt "2.0.0-beta.38"
     minimal-polyfills "^2.2.1"
     tsafe "^0.9.0"
 
@@ -5805,6 +5806,16 @@ cpy@^8.1.2:
     p-all "^2.1.0"
     p-filter "^2.1.0"
     p-map "^3.0.0"
+
+cra-envs@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.0.0.tgz#569f3623aa31e46210df1b75c0453cc5cfc09c93"
+  integrity sha512-e0EK77dcUSgHY1llh0UIw+jzKQqXLVRQhwJV6Gkgu/o3i2kXp8mmApEyYgQWlhUjnb/ZqsmmbA+O7E9OQQVVEQ==
+  dependencies:
+    cheerio "^1.0.0-rc.5"
+    dotenv "^8.2.0"
+    minimal-polyfills "^2.1.6"
+    path "^0.12.7"
 
 create-ecdh@^4.0.0:
   version "4.0.4"
@@ -13299,16 +13310,6 @@ react-element-to-jsx-string@^14.3.4:
     "@base2/pretty-print-object" "1.0.1"
     is-plain-object "5.0.0"
     react-is "17.0.2"
-
-react-envs@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/react-envs/-/react-envs-0.2.0.tgz#446d690c902c1dfcb1827cbfb20753bd44639d04"
-  integrity sha512-RNV2dCzEw6ZBU7txSynx3ZuokqseOVAlipsCNVXNVYa0EsufCjxJlwo7O7vJtR6+YXohTt/sjroMFHGKI3Lp7Q==
-  dependencies:
-    cheerio "^1.0.0-rc.5"
-    dotenv "^8.2.0"
-    minimal-polyfills "^2.1.6"
-    path "^0.12.7"
 
 react-error-overlay@^6.0.9:
   version "6.0.10"
