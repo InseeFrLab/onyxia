@@ -12,7 +12,7 @@ import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useValidUntil } from "ui/i18n/useMoment";
 import { useAsync } from "react-async-hook";
-import { useThunks } from "ui/coreApi";
+import { useThunks, useSelector } from "ui/coreApi";
 
 export type Props = {
     className?: string;
@@ -27,9 +27,13 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { launcherThunks } = useThunks();
 
+    const selectedProjectId = useSelector(
+        state => state.projectSelection.selectedProjectId,
+    );
+
     const { result: s3MustacheParams } = useAsync(
-        launcherThunks.getS3MustacheParamsForProjectBucket,
-        [],
+        () => launcherThunks.getS3MustacheParamsForProjectBucket(),
+        [selectedProjectId],
     );
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
