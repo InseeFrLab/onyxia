@@ -14,7 +14,7 @@ powerhooks/
 onyxia-ui/
 keycloakify/
 evt/
-react-envs/
+cra-envs/
 tsafe/
 clean-redux/
 
@@ -56,7 +56,7 @@ const inHouseModuleNames = (() => {
               "keycloakify",
               "evt",
               "tsafe",
-              "react-envs",
+              "cra-envs",
               "clean-redux",
           ];
 })();

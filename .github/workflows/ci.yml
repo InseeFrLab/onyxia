@@ -105,7 +105,7 @@ jobs:
           fi
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
           echo ::set-output name=docker_tags::$OUT
-      - run: echo "{\"version\":\"$VER\"}" > re.json
+      - run: echo "{\"version\":\"$VER\"}" > cra-envs_package.json
         env: 
           VER: ${{ needs.build.outputs.react_envs_version }}
       - uses: actions/download-artifact@v2
