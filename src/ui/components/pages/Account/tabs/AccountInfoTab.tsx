@@ -31,6 +31,10 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
 
+    const selectedProjectId = useSelector(
+        state => state.projectSelection.selectedProjectId,
+    );
+
     useEffect(() => {
         publicIpThunks.fetch();
     }, []);
@@ -42,7 +46,7 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const servicePasswordAsync = useAsync(
         () => projectConfigsThunks.getValue({ "key": "servicePassword" }),
-        [refreshServicePasswordTrigger],
+        [refreshServicePasswordTrigger, selectedProjectId],
     );
 
     const onRequestServicePasswordRenewal = useConstCallback(async () => {
