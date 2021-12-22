@@ -12,7 +12,7 @@ import {
 import { createPrivateRouteComponent } from './authentication';
 import { createRouteComponent, createRouterContext } from './router-context';
 import { invalidIdep } from 'js/utils/idep';
-import { Home } from "app/components/pages/Home";
+import { Home } from "ui/components/pages/Home;
 import MyService from 'js/components/my-service';
 import MyServices from 'js/components/my-services';
 import Services, { ServiceDetails } from 'js/components/services';
@@ -36,11 +36,11 @@ import RegionBanner from 'js/components/regionsBanner';
 import Cluster from 'js/components/cluster';
 import { ToastContainer } from 'react-toastify';
 import { getValidatedEnv } from "js/validatedEnv";
-import { useAppConstants } from "app/libApi";
-import { MySecrets } from "app/components/pages/MySecrets/MySecrets";
-import { Alert } from "app/components/designSystem/Alert";
+import { useAppConstants } from "ui/coreApi";
+import { MySecrets } from "ui/components/pages/MySecrets/MySecrets;
+import { Alert } from "ui/components/designSystem/Alert";
 import ReactMarkdown from 'react-markdown'
-import { css } from "app/theme/useStyles";
+import { css } from "ui/theme"/useStyles";
 import { LegacyThemeProvider } from "./LegacyThemeProvider";
 
 JavascriptTimeAgo.locale(fr);

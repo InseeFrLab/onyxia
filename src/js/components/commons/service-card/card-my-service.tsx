@@ -16,7 +16,7 @@ import { getServiceAvatar, getTitle, getSubtitle } from "./card-utils";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Service, ServiceStatus } from "js/model";
 import "./card.scss";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 
 interface Props {
     service: Service;

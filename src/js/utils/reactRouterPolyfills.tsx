@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import { useRoute } from "app/routes/router";
+import { useRoute } from "ui/routes";
 
 function typeRouteRouteToDomLocation(route: { href: string }): Location {
     return new Proxy(

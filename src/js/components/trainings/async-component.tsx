@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import Loader from "js/components/commons/loader";
 //import { createGroup } from "type-route";
-//import { routes } from "app/routes/router";
+//import { routes } from "ui/routes/router";
 
 const TrainingsTmp = lazy(() => import("./component"));
 

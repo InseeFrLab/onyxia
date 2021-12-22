@@ -5,7 +5,7 @@ import { actions as appActions } from "js/redux/app";
 import { ONYXIA_FAVICON } from "js/components/commons/favicon";
 import { assert } from "tsafe/assert";
 import type { UnpackPromise } from "tsafe";
-import { prOidcClient } from "lib/setup";
+import { prOidcClient } from "core/setup";
 
 const createPrivateRoute = (RouterContext: any) => (props: any) =>
     <PrivateRoute {...props} routerContext={RouterContext} />;

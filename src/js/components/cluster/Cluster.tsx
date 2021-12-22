@@ -6,7 +6,7 @@ import ExportCredentialsField from "../mon-compte/export-credentials-component";
 import D from "js/i18n";
 import exportKub from "./exportCredentialsKub";
 import { getValidatedEnv } from "js/validatedEnv";
-import { useThunks } from "app/libApi";
+import { useThunks } from "ui/coreApi";
 
 const env = getValidatedEnv();
 

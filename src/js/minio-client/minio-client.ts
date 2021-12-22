@@ -1,11 +1,11 @@
 import * as Minio from "minio";
 import memoize from "memoizee";
 import { getValidatedEnv } from "js/validatedEnv";
-//import { prKeycloakClient } from "lib/setup";
+//import { prKeycloakClient } from "core/setup";
 
 /** We avoid importing app right away to prevent require cycles */
 const getS3Client = memoize(
-    () => import("lib/secondaryAdapters/minioS3Client").then(ns => ns.prS3Client),
+    () => import("core/secondaryAdapters/minioS3Client").then(ns => ns.prS3Client),
     {
         "promise": true,
     },
@@ -13,7 +13,7 @@ const getS3Client = memoize(
 
 export async function getMinioToken() {
     const { actions } = await import("js/redux/legacyActions");
-    const store = await import("lib/setup").then(({ prStore }) => prStore);
+    const store = await import("core/setup").then(({ prStore }) => prStore);
 
     const { s3 } = store.getState().user;
 

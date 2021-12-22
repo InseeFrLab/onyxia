@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { ThunkAction } from "lib/setup";
+import type { ThunkAction } from "core/setup";
 
 export type State = {
     redirectUri: string | null;
@@ -38,7 +38,7 @@ const slice = createSlice({
     "reducers": {
         /*
 		{
-				type: 'onyxia/app/startWaiting'
+				type: 'onyxia/ui/startWaiting'
 		}
 		*/
         "startWaiting": state => {
@@ -46,7 +46,7 @@ const slice = createSlice({
         },
         /*
 		{
-			type: 'onyxia/app/stopWaiting'
+			type: 'onyxia/ui/stopWaiting'
 		}
 		*/
         "stopWaiting": state => {

@@ -8,8 +8,8 @@ import {
 	getOptions,
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
-import { prStore } from "lib/setup";
-import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
+import { prStore } from "core/setup";
+import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "tsafe/assert";

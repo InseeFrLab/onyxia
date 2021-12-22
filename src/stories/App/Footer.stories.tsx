@@ -1,4 +1,4 @@
-import { Footer } from "app/components/App/Footer";
+import { Footer } from "ui/components/App/Footer";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
 

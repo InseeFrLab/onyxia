@@ -23,12 +23,12 @@ import { is } from "tsafe/is";
 import type { ReturnType } from "tsafe/ReturnType";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { actions } from "js/redux/legacyActions";
-//import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "app/libApi";
+//import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "ui/coreApi";
 //import { useMustacheParams } from "js/hooks";
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { prOidcClient } from "lib/setup";
-import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
-import { routes } from "app/routes/router";
+import { prOidcClient } from "core/setup";
+import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { routes } from "ui/routes";
 
 type Service = {
     category: "group" | "service";

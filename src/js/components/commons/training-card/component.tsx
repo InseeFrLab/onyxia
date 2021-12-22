@@ -10,7 +10,7 @@ import {
     Icon,
 } from "@mui/material";
 import "./training-card.scss";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 
 interface Props {
     training: Training;

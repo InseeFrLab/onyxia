@@ -4,7 +4,7 @@ import Services from "./services";
 import "js/components/app.scss";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
