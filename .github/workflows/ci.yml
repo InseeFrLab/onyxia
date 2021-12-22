@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.head_commit.author.name != 'actions'
     outputs:
-      react_envs_version: ${{ steps.step1.outputs.out2 }}
+      cra_envs_version: ${{ steps.step1.outputs.out2 }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -107,7 +107,7 @@ jobs:
           echo ::set-output name=docker_tags::$OUT
       - run: echo "{\"version\":\"$VER\"}" > cra-envs_package.json
         env: 
-          VER: ${{ needs.build.outputs.react_envs_version }}
+          VER: ${{ needs.build.outputs.cra_envs_version }}
       - uses: actions/download-artifact@v2
         with:
           name: build
