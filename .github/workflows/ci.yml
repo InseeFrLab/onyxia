@@ -36,7 +36,7 @@ jobs:
     - id: step1
       run: |
         echo ::set-output name=out2::$(
-          node -e 'console.log(require("./node_modules/react-envs/package.json")["version"])'
+          node -e 'console.log(require("./node_modules/cra-envs/package.json")["version"])'
         )
 
   deploy_storybook:
