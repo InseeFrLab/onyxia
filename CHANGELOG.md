@@ -1,3 +1,11 @@
+### **0.26.12** (2021-12-22)  
+  
+- Fix ci pipeline  
+- Update react-envs that have been renamed to cra-envs  
+- rename lib->core, app->ui  
+- Update ci.yml  
+- Fix storybook build    
+  
 ### **0.26.10** (2021-12-20)  
   
 - Greatly improve architecture, use clean-redux  
