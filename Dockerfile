@@ -19,18 +19,18 @@ ADD build.tar .
 COPY .env .
 COPY nginx.conf .
 # We assume there is a cra-envs_package.json file contaning '{ "version": "X.Y.Z" }' 
-# 'X.Y.Z' beeing the version react-envs in use in the project. See how it's optained:
+# 'X.Y.Z' beeing the version cra-envs in use in the project. See how it's optained:
 # https://github.com/InseeFrLab/onyxia-web/blob/2576dc99f53d3ddda8dfd3a23f1bcbbdfdd8820b/.github/workflows/ci.yml#L34-L38
 # https://github.com/InseeFrLab/onyxia-web/blob/2576dc99f53d3ddda8dfd3a23f1bcbbdfdd8820b/.github/workflows/ci.yml#L15-L16
 # https://github.com/InseeFrLab/onyxia-web/blob/2576dc99f53d3ddda8dfd3a23f1bcbbdfdd8820b/.github/workflows/ci.yml#L106-L108
-COPY cra-envs_package.json node_modules/react-envs/package.json 
+COPY cra-envs_package.json node_modules/cra-envs/package.json 
 
 # production environment
 FROM nginx:stable-alpine
 RUN apk add --update nodejs npm
 COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf    
-COPY --from=build /app/node_modules/react-envs/package.json ./cra-envs_package.json
-RUN npm i -g react-envs@`node -e 'console.log(require("./cra-envs_package.json")["version"])'`
+COPY --from=build /app/node_modules/cra-envs/package.json ./cra-envs_package.json
+RUN npm i -g cra-envs@`node -e 'console.log(require("./cra-envs_package.json")["version"])'`
 WORKDIR /usr/share/nginx
 COPY --from=build /app/build ./html
 COPY --from=build /app/.env .
