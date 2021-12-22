@@ -14,20 +14,20 @@ import "./mon-compte.scss";
 import exportMinio from "./export-credentials-minio";
 import D from "js/i18n";
 import S3Field from "./s3";
-//import { thunks } from "lib/setup";
+//import { thunks } from "core/setup";
 /*
 import {
     useDispatch,
     useSelector,
     useIsBetaModeEnabled,
     useAppConstants,
-} from "app/libApi";
+} from "ui/coreApi";
 */
 import type { Props as CopyableFieldProps } from "../commons/copyable-field";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
-import { routes } from "app/routes/router";
-//import { getPublicIp } from "lib/tools/getPublicIp";
+import { routes } from "ui/routes";
+//import { getPublicIp } from "core/tools/getPublicIp";
 import { useAsync } from "react-async-hook";
 
 MonCompte.routeGroup = createGroup([routes.account]);

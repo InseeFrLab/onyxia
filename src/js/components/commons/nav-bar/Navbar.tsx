@@ -12,9 +12,9 @@ import { LoginModal } from "js/components/authentication";
 import "./style.scss";
 import { getScreenTypeFromWidth } from "js/model/ScreenType";
 import type { ScreenType } from "js/model/ScreenType";
-//import { thunks } from "lib/setup";
+//import { thunks } from "core/setup";
 //import { actions } from "js/redux/legacyActions";
-//import { useSelector, useDispatch, useAppConstants } from "app/libApi";
+//import { useSelector, useDispatch, useAppConstants } from "ui/coreApi";
 import { useWindowInnerSize } from "onyxia-ui";
 
 export const Navbar: React.FC<{}> = () => {

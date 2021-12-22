@@ -15,10 +15,10 @@ import {
     getValuesObject,
 } from "js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
-import { useStyles } from "app/theme";
-import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
+import { useStyles } from "ui/theme";
+import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useThunks } from "app/libApi";
+import { useThunks } from "ui/coreApi";
 
 export const { useIsCloudShellVisible } = createUseGlobalState(
     "isCloudShellVisible",

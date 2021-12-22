@@ -5,7 +5,7 @@ import VisiteGuide from "./visite-guidee.component";
 import { Next, LinkTo, Arrow } from "./vignette-commons";
 import D from "js/i18n";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 //import { createGroup } from "type-route";
 const { startVisite } = actions;
 

@@ -1,4 +1,4 @@
-import { ExplorerButtonBar } from "app/components/shared/Explorer/ExplorerButtonBar";
+import { ExplorerButtonBar } from "ui/components/shared/Explorer/ExplorerButtonBar";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 

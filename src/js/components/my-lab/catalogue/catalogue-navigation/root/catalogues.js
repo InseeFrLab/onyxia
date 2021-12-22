@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Catalogue from '../catalogue.component';
 import { restApiPaths } from 'js/restApiPaths';
-import { useIsBetaModeEnabled } from "app/libApi";
-import { prAxiosInstance } from "lib/secondaryAdapters/officialOnyxiaApiClient";
+import { useIsBetaModeEnabled } from "ui/coreApi";
+import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
 
 const Catalogues = () => {
 	const [catalogs, setCatalogs] = useState([]);

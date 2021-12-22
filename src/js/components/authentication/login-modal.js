@@ -10,7 +10,7 @@ import {
 import D from 'js/i18n';
 import './login.scss';
 import 'js/components/onyxia-modal.scss';
-import { prOidcClient } from "lib/setup";
+import { prOidcClient } from "core/setup";
 import { assert } from "tsafe/assert";
 
 class LogMe extends React.Component {

@@ -4,8 +4,8 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
-import type { ThunkAction } from "lib/setup";
-import { thunks as userAuthenticationThunks } from "lib/useCases/userAuthentication";
+import type { ThunkAction } from "core/setup";
+import { thunks as userAuthenticationThunks } from "core/usecases/userAuthentication";
 
 export type State = {
     currentObjects: (Blob & { name: string })[];

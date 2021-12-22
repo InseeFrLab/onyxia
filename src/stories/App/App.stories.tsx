@@ -1,4 +1,4 @@
-import { App } from "app/components/App";
+import { App } from "ui/components/App";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
 
