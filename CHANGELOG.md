@@ -1,3 +1,8 @@
+### **0.26.14** (2021-12-22)  
+  
+- Prevent reloading app when project is changed  
+- Fix bug in how tokens are cached    
+  
 ### **0.26.13** (2021-12-22)  
   
 - Update dokerfile  
