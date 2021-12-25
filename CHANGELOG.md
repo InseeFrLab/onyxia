@@ -1,3 +1,7 @@
+### **0.26.15** (2021-12-25)  
+  
+- Setup evtAction middleware from clean-redux    
+  
 ### **0.26.14** (2021-12-22)  
   
 - Prevent reloading app when project is changed  
