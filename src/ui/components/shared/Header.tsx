@@ -85,15 +85,15 @@ export const Header = memo((props: Props) => {
                             href="https://www.sspcloud.fr/documentation"
                             doOpenNewTabIfHref={true}
                         >
-                            {t("trainings and tutorials")}
+                            {t("trainings")}
                         </ButtonBarButton>
                         <ButtonBarButton
                             className={classes.button}
                             startIcon="language"
-                            href="https://sspcloud.fr"
+                            href="https://docs.sspcloud.fr/"
                             doOpenNewTabIfHref={true}
                         >
-                            {t("community space")}
+                            {t("documentation")}
                         </ButtonBarButton>
                         {props.isUserLoggedIn && (
                             <ToggleCloudShell
@@ -122,9 +122,9 @@ export declare namespace Header {
     export type I18nScheme = {
         logout: undefined;
         login: undefined;
-        "community space": undefined;
-        "trainings and tutorials": undefined;
         project: undefined;
+        trainings: undefined;
+        documentation: undefined;
     };
 }
 

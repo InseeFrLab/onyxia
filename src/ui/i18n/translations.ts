@@ -295,8 +295,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Login",
             "logout": "Logout",
-            "community space": "Community Space",
-            "trainings and tutorials": "Trainings and tutorials",
+            "trainings": "Trainings",
+            "documentation": "Documentation",
             "project": "Project",
         },
         "App": {
@@ -613,8 +613,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         "Header": {
             "login": "Connexion",
             "logout": "Déconnexion",
-            "community space": "Espace communautaire",
-            "trainings and tutorials": "Formations et tutoriels",
+            "trainings": "Formations",
+            "documentation": "Documentation",
             "project": "Projet",
         },
         "App": {
