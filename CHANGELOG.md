@@ -1,3 +1,7 @@
+### **0.26.16** (2021-12-25)  
+  
+- https://github.com/InseeFrLab/onyxia-ui/issues/9    
+  
 ### **0.26.15** (2021-12-25)  
   
 - Setup evtAction middleware from clean-redux    
