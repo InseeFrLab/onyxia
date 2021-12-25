@@ -347,7 +347,7 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
     return { scaffoldingIndexedFormFieldsToFinal };
 })();
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
@@ -431,8 +431,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 const privateThunks = {
     "launchOrPreviewContract":

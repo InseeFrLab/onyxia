@@ -21,7 +21,7 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
@@ -36,8 +36,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 export const thunks = {
     "changeDeploymentRegion":

@@ -65,7 +65,7 @@ export declare namespace RunningService {
     };
 }
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": id<RunningServicesState>(
         id<RunningServicesState.NotFetched>({
@@ -133,8 +133,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 export const thunks = {
     "initializeOrRefreshIfNotAlreadyFetching":

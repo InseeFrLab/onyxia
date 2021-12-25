@@ -3,7 +3,7 @@ import { Typography, Paper, Tooltip, Fab, Icon } from "@mui/material";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "./myBuckets.scss";
 import { useSelector, selectors } from "ui/coreApi";
-import { actions as myFilesActions } from "js/redux/myFiles";
+import { asyncThunks as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { useDispatch } from "js/hooks";
 import { createGroup } from "type-route";

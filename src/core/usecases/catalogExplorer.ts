@@ -42,7 +42,7 @@ namespace CatalogExplorerState {
     };
 }
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": id<CatalogExplorerState>(
         id<CatalogExplorerState.NotFetched>({
@@ -90,8 +90,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 export const thunks = {
     "fetchCatalogs":

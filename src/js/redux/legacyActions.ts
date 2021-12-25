@@ -4,7 +4,7 @@ import * as user from "./user";
 import * as app from "./app";
 
 export const actions = {
-    ...myFiles.actions,
+    ...myFiles.asyncThunks,
     ...myLab.actions,
     ...app.actions,
     ...user.actions,

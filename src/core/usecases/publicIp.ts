@@ -8,7 +8,7 @@ export const name = "publicIp";
 
 type PublicIpState = string | null;
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": id<PublicIpState>(null),
     "reducers": {
@@ -16,8 +16,6 @@ const { reducer, actions } = createSlice({
         "publicIpMightHaveChanged": () => null,
     },
 });
-
-export { reducer };
 
 const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>();
 

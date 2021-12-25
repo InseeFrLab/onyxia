@@ -5321,12 +5321,12 @@ clean-css@^4.2.3:
   dependencies:
     source-map "~0.6.0"
 
-clean-redux@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-0.3.1.tgz#d1544508a15b514b4df636f647e98a112bd16ed1"
-  integrity sha512-oUpw3zkHOxQYYhOMCNDSGAEUYKOoqS3SGX3CI7se038h39T2NkC9hqKvMSQx3+JKxRgbV5j8BItzj6dHFs+p6Q==
+clean-redux@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-0.3.4.tgz#f3087c49a0d7b3f8df67d21db15c9bf18367c83b"
+  integrity sha512-rbN5AlMHMVhVqhKvz+NaNN5hJNR0Qmyq+wksuasmByp0zslXsr/mNynRH7Jp/GTDiKozSUXdRhA1gFPaBEFdpg==
   dependencies:
-    evt "2.0.0-beta.38"
+    evt "2.0.0-beta.39"
     minimal-polyfills "^2.2.1"
     tsafe "^0.9.0"
 
@@ -7231,6 +7231,15 @@ evt@2.0.0-beta.38:
   version "2.0.0-beta.38"
   resolved "https://registry.yarnpkg.com/evt/-/evt-2.0.0-beta.38.tgz#9886a08889cddba1984a236efd6d352f9d6a6539"
   integrity sha512-b35iBAVlDHVHOqgWzjSBJZu3C0GRZ/2cIHfNFuMSWwLT/WJO2n/4x7hg6BpaNJlSRywBAtf8KcU1GUyVfEhVIA==
+  dependencies:
+    minimal-polyfills "^2.2.1"
+    run-exclusive "^2.2.14"
+    tsafe "^0.4.1"
+
+evt@2.0.0-beta.39:
+  version "2.0.0-beta.39"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.0.0-beta.39.tgz#3c859a83b35940f7eecfb5f148f03b7cbf3fee51"
+  integrity sha512-XxJkaHrFWBrzjTbnr5LJYXkGkADsAXReZfq2lFu3Kf1iCEw5/5ibrdXu3bQdWW6xkZ8qwAHT3STU9zYcCl09BA==
   dependencies:
     minimal-polyfills "^2.2.1"
     run-exclusive "^2.2.14"
