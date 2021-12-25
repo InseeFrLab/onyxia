@@ -50,7 +50,7 @@
         "async-mutex": "^0.2.6",
         "axios": "^0.21.1",
         "classnames": "^2.2.6",
-        "clean-redux": "^0.3.1",
+        "clean-redux": "^0.3.4",
         "clipboard-polyfill": "^2.8.6",
         "clsx": "^1.1.1",
         "color": "3.1.3",

@@ -94,7 +94,7 @@ type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
 export const name = "secretExplorer";
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": id<SecretExplorerState>(
         id<SecretExplorerState.ShowingDirectory>({
@@ -427,8 +427,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 export const thunks = {
     "getProjectHomePath":

@@ -49,7 +49,7 @@ export type UserConfigsState = {
 
 export const name = "userConfigs";
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage":
@@ -82,8 +82,6 @@ const { reducer, actions } = createSlice({
         },
     },
 });
-
-export { reducer };
 
 export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> = {
     key: K;

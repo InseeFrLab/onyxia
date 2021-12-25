@@ -37,7 +37,7 @@ import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { KcLanguageTag } from "keycloakify";
-import { usecasesToReducer } from "clean-redux";
+import { usecasesToReducer, createMiddlewareEvtActionFactory } from "clean-redux";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -258,6 +258,8 @@ export const usecases = [
     userConfigsUseCase,
 ];
 
+const { createMiddlewareEvtAction } = createMiddlewareEvtActionFactory(usecases);
+
 export type ThunksExtraArgument = {
     createStoreParams: CreateStoreParams;
     secretsManagerClient: SecretsManagerClient;
@@ -265,6 +267,7 @@ export type ThunksExtraArgument = {
     oidcClient: OidcClient;
     onyxiaApiClient: OnyxiaApiClient;
     s3Client: S3Client;
+    evtAction: ReturnType<typeof createMiddlewareEvtAction>["evtAction"];
 };
 
 createStore.isFirstInvocation = true;
@@ -371,21 +374,27 @@ export async function createStore(params: CreateStoreParams) {
           })()
         : createObjectThatThrowsIfAccessed<S3Client>();
 
+    const { evtAction, middlewareEvtAction } = createMiddlewareEvtAction();
+
     const store = configureStore({
         "reducer": usecasesToReducer(usecases),
         "middleware": getDefaultMiddleware =>
-            getDefaultMiddleware({
-                "thunk": {
-                    "extraArgument": id<ThunksExtraArgument>({
-                        "createStoreParams": params,
-                        oidcClient,
-                        onyxiaApiClient,
-                        secretsManagerClient,
-                        userApiClient,
-                        s3Client,
-                    }),
-                },
-            }),
+            [
+                ...getDefaultMiddleware({
+                    "thunk": {
+                        "extraArgument": id<ThunksExtraArgument>({
+                            "createStoreParams": params,
+                            oidcClient,
+                            onyxiaApiClient,
+                            secretsManagerClient,
+                            userApiClient,
+                            s3Client,
+                            evtAction,
+                        }),
+                    },
+                }),
+                middlewareEvtAction,
+            ] as const,
     });
 
     dStoreInstance.resolve(store);
