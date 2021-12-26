@@ -42,8 +42,8 @@ export function MyServices(props: Props) {
         selectors.restorablePackageConfig.displayableConfigs,
     );
 
-    const isRunningServicesFetching = useSelector(
-        state => state.runningService.isFetching,
+    const isRunningServicesUpdating = useSelector(
+        state => state.runningService.isUpdating,
     );
 
     const { runningServices } = useSelector(selectors.runningService.runningServices);
@@ -51,12 +51,12 @@ export function MyServices(props: Props) {
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (isRunningServicesFetching) {
+        if (isRunningServicesUpdating) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [isRunningServicesFetching]);
+    }, [isRunningServicesUpdating]);
 
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
         switch (buttonId) {
@@ -64,7 +64,7 @@ export function MyServices(props: Props) {
                 routes.catalogExplorer().push();
                 return;
             case "refresh":
-                runningServiceThunks.initializeOrRefreshIfNotAlreadyFetching();
+                runningServiceThunks.update();
                 return;
             case "password":
                 projectConfigsThunks
@@ -79,7 +79,11 @@ export function MyServices(props: Props) {
 
     useEffect(() => {
         restorablePackageConfigThunks.fetchIconsIfNotAlreadyDone();
-        runningServiceThunks.initializeOrRefreshIfNotAlreadyFetching();
+    }, []);
+
+    useEffect(() => {
+        runningServiceThunks.setIsUserWatching(true);
+        return () => runningServiceThunks.setIsUserWatching(false);
     }, []);
 
     const { isSavedConfigsExtended } = route.params;
@@ -138,7 +142,7 @@ export function MyServices(props: Props) {
 
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] =>
-            isRunningServicesFetching
+            isRunningServicesUpdating
                 ? undefined
                 : runningServices.map(
                       ({
@@ -173,7 +177,7 @@ export function MyServices(props: Props) {
                           s3TokenExpirationTime,
                       }),
                   ),
-        [runningServices, isRunningServicesFetching],
+        [runningServices, isRunningServicesUpdating],
     );
 
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
