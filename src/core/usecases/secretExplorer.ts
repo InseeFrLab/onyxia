@@ -488,7 +488,8 @@ export const thunks = {
                           "errorMessage": listResult.message,
                       })
                     : actions.navigationTowardDirectorySuccess({
-                          ...listResult,
+                          "directories": listResult.directories,
+                          "secrets": listResult.files,
                           "currentPath": directoryPath,
                       }),
             );
@@ -1002,12 +1003,12 @@ function getSecretsManagerClientExtension(props: {
 
     const { crawl } = crawlFactory({
         "list": async ({ directoryPath }) => {
-            const { directories, secrets } = await secretsManagerClient.list({
+            const { directories, files } = await secretsManagerClient.list({
                 "path": directoryPath,
             });
 
             return {
-                "fileBasenames": secrets,
+                "fileBasenames": files,
                 "directoryBasenames": directories,
             };
         },

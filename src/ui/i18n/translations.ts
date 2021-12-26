@@ -1,10 +1,10 @@
 import { symToStr } from "tsafe/symToStr";
 import { Reflect } from "tsafe/Reflect";
 import { id } from "tsafe/id";
-import { ExplorerButtonBar } from "ui/components/shared/Explorer/ExplorerButtonBar";
-import { Explorer } from "ui/components/shared/Explorer";
-import { ExplorerItems } from "ui/components/shared/Explorer/ExplorerItems";
-import { ExplorerItem } from "ui/components/shared/Explorer/ExplorerItem";
+import { ExplorerButtonBar } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar";
+import { Explorer } from "ui/components/pages/MyFilesMySecrets/Explorer";
+import { ExplorerItems } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems";
+import { ExplorerItem } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem";
 import { MySecrets } from "ui/components/pages/MySecrets";
 import { MySecretsEditor } from "ui/components/pages/MySecrets/MySecretsEditor";
 import { MySecretsEditorRow } from "ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
@@ -36,6 +36,7 @@ import { MyServicesSavedConfig } from "ui/components/pages/MyServices/MyServices
 import { MyServicesSavedConfigs } from "ui/components/pages/MyServices/MyServicesSavedConfigs";
 import { MyServicesCards } from "ui/components/pages/MyServices/MyServicesCards";
 import { LoginDivider } from "ui/components/KcApp/Login/LoginDivider";
+import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets/MyFilesMySecrets";
 import { Login } from "ui/components/KcApp/Login";
 import type { KcLanguageTag } from "keycloakify";
 import { assert } from "tsafe/assert";
@@ -57,6 +58,7 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ MyFilesMySecrets })]: Reflect<MyFilesMySecrets.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ App })]: Reflect<App.I18nScheme>(),
     [symToStr({ PortraitModeUnsupported })]: Reflect<PortraitModeUnsupported.I18nScheme>(),
@@ -236,15 +238,28 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "to learn more": "To learn more about secrets management,",
             "read our documentation": "read our documentation.",
         },
+        "MyFilesMySecrets": {
+            "page title - my files": "My Files",
+            "page title - my secrets": "My Secrets",
+            "what this page is used for - my files":
+                "Here you can browse your S3 Buckets.",
+            "what this page is used for - my secrets":
+                "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+            "learn more - my files": "To learn more about file management,",
+            "to learn more - my secrets": "To learn more about secrets management,",
+            "read our documentation": "read our documentation.",
+        },
         "ExplorerItem": {
             "description": "description",
         },
         "ExplorerButtonBar": {
             ...common.en,
+            "create secret": "Create secret",
+            "upload file": "Upload file",
             "copy path": "Use in a service",
             "create directory": "Create directory",
-            "create what": "Create {{what}}",
             "refresh": "refresh",
+            "create what": "Create {{what}}",
         },
         "Explorer": {
             ...common.en,
@@ -549,7 +564,20 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             ...common.fr,
             "page title": "Mes secrets",
             "what this page is used for": `Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.`,
-            "to learn more": "Pour en savoir plus sur l’utilisation de secrets,",
+            "to learn more": "Pour en savoir plus sur l'utilisation de secrets,",
+            "read our documentation": "lisez notre documentation.",
+        },
+        "MyFilesMySecrets": {
+            "page title - my files": "Mes fichiers",
+            "page title - my secrets": "My Secrets",
+            "what this page is used for - my files":
+                "Stocker ici vos fichiers de donnée.",
+            "what this page is used for - my secrets":
+                "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
+            "learn more - my files":
+                "Pour en savoir plus sur l'utilisation du stockage S3,",
+            "to learn more - my secrets":
+                "Pour en savoir plus sur l'utilisation de secrets,",
             "read our documentation": "lisez notre documentation.",
         },
         "ExplorerItem": {
@@ -557,10 +585,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
         },
         "ExplorerButtonBar": {
             ...common.fr,
+            "create secret": "Nouveau secret",
+            "upload file": "Téléverser un fichier",
             "copy path": "Utiliser dans le service",
             "create directory": "Nouveau dossier",
-            "create what": "Nouveau {{what}}",
             "refresh": "rafraîchir",
+            "create what": "Nouveau {{what}}",
         },
         "Explorer": {
             ...common.fr,

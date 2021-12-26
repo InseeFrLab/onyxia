@@ -85,13 +85,13 @@ export async function createVaultSecretsManagerClient(
                 data: { keys: string[] };
             }>(ctxPathJoin("metadata", path), { "params": { "list": "true" } });
 
-            let [directories, secrets] = axiosResponse.data.data.keys.reduce(
+            const [directories, files] = axiosResponse.data.data.keys.reduce(
                 ...partition<string>(key => key.endsWith("/")),
             );
 
             return {
                 "directories": directories.map(path => path.split("/")[0]),
-                secrets,
+                files,
             };
         },
         "get": async params => {
@@ -149,13 +149,13 @@ export function getVaultApiLogger(params: {
                     "list": {
                         "buildCmd": (...[{ path }]) =>
                             `vault kv list ${pathJoin(engine, path)}`,
-                        "fmtResult": ({ result: { directories, secrets } }) =>
+                        "fmtResult": ({ result: { directories, files } }) =>
                             [
                                 "Keys",
                                 "----",
                                 ...[
                                     ...directories.map(directory => `${directory}/`),
-                                    ...secrets,
+                                    ...files,
                                 ],
                             ].join("\n"),
                     },
