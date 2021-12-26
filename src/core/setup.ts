@@ -422,6 +422,8 @@ export async function createStore(params: CreateStoreParams) {
             store.getState().projectSelection.selectedProjectId;
     }
 
+    store.dispatch(runningServiceUseCase.privateThunks.initialize());
+
     return store;
 }
 

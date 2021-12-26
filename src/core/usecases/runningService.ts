@@ -11,28 +11,15 @@ import { thunks as launcherThunks } from "./launcher";
 
 export const name = "runningService";
 
-type RunningServicesState = RunningServicesState.NotFetched | RunningServicesState.Ready;
-
-namespace RunningServicesState {
-    type Common = {
-        isFetching: boolean;
+type RunningServicesState = {
+    isUserWatching: boolean;
+    isUpdating: boolean;
+    "~internal": {
+        /**NOTE: Access using selectors
+         * undefined when not initially fetched */
+        runningServices: undefined | RunningService[];
     };
-
-    export type NotFetched = Common & {
-        isFetched: false;
-    };
-
-    export type Ready = Common & {
-        isFetched: true;
-        /** We force using a selector to retrieve the running services
-         * because we want to sort them and exclude the ones that are not
-         * supposed to be displayed ( !isOwner && !isShared )
-         */
-        "~internal": {
-            runningServices: RunningService[];
-        };
-    };
-}
+};
 
 export type RunningService = RunningService.Owned | RunningService.NotOwned;
 
@@ -67,25 +54,34 @@ export declare namespace RunningService {
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<RunningServicesState>(
-        id<RunningServicesState.NotFetched>({
-            "isFetched": false,
-            "isFetching": false,
-        }),
-    ),
-    "reducers": {
-        "fetchStarted": state => {
-            state.isFetching = true;
+    "initialState": id<RunningServicesState>({
+        "isUserWatching": false,
+        "isUpdating": false,
+        "~internal": {
+            "runningServices": undefined,
         },
-        "fetchCompleted": (
-            _,
+    }),
+    "reducers": {
+        "isUserWatchingChanged": (
+            state,
+            { payload }: PayloadAction<{ isUserWatching: boolean }>,
+        ) => {
+            const { isUserWatching } = payload;
+
+            state.isUserWatching = isUserWatching;
+        },
+        "updateStarted": state => {
+            state.isUpdating = true;
+        },
+        "updateCompleted": (
+            state,
             { payload }: PayloadAction<{ runningServices: RunningService[] }>,
         ) => {
             const { runningServices } = payload;
 
-            return id<RunningServicesState.Ready>({
-                "isFetching": false,
-                "isFetched": true,
+            return id<RunningServicesState>({
+                "isUpdating": false,
+                "isUserWatching": state.isUserWatching,
                 "~internal": {
                     runningServices,
                 },
@@ -101,12 +97,11 @@ export const { reducer, actions } = createSlice({
             }>,
         ) => {
             const { serviceId, doOverwriteStaredAtToNow } = payload;
+            const { runningServices } = state["~internal"];
 
-            assert(state.isFetched);
+            assert(runningServices !== undefined);
 
-            const runningService = state["~internal"].runningServices.find(
-                ({ id }) => id === serviceId,
-            );
+            const runningService = runningServices.find(({ id }) => id === serviceId);
 
             if (runningService === undefined) {
                 return;
@@ -122,9 +117,8 @@ export const { reducer, actions } = createSlice({
         "serviceStopped": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
             const { serviceId } = payload;
 
-            assert(state.isFetched);
-
             const { runningServices } = state["~internal"];
+            assert(runningServices !== undefined);
 
             runningServices.splice(
                 runningServices.findIndex(({ id }) => id === serviceId),
@@ -135,7 +129,14 @@ export const { reducer, actions } = createSlice({
 });
 
 export const thunks = {
-    "initializeOrRefreshIfNotAlreadyFetching":
+    "setIsUserWatching":
+        (isUserWatching: boolean): ThunkAction<void> =>
+        async (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.isUserWatchingChanged({ isUserWatching }));
+        },
+    "update":
         (): ThunkAction<void> =>
         async (...args) => {
             const [
@@ -147,12 +148,12 @@ export const thunks = {
             {
                 const state = getState().runningService;
 
-                if (state.isFetching) {
+                if (state.isUpdating) {
                     return;
                 }
             }
 
-            dispatch(actions.fetchStarted());
+            dispatch(actions.updateStarted());
 
             const runningServicesRaw = await onyxiaApiClient.getRunningServices();
 
@@ -209,7 +210,7 @@ export const thunks = {
             ]);
 
             dispatch(
-                actions.fetchCompleted({
+                actions.updateCompleted({
                     "runningServices": runningServicesRaw
                         .map(
                             ({
@@ -298,15 +299,47 @@ export const thunks = {
         },
 };
 
+export const privateThunks = {
+    "initialize":
+        (): ThunkAction<void> =>
+        async (...args) => {
+            const [dispatch, getState, { evtAction }] = args;
+
+            evtAction.attach(
+                event =>
+                    event.sliceName === "runningService" &&
+                    event.actionName === "isUserWatchingChanged" &&
+                    event.payload.isUserWatching,
+                () => dispatch(thunks.update()),
+            );
+
+            evtAction.attach(
+                event =>
+                    event.sliceName === "projectSelection" &&
+                    event.actionName === "projectChanged" &&
+                    getState().runningService.isUserWatching,
+                async () => {
+                    if (getState().runningService.isUpdating) {
+                        await evtAction.waitFor(
+                            event =>
+                                event.sliceName === "runningService" &&
+                                event.actionName === "updateCompleted",
+                        );
+                    }
+
+                    dispatch(thunks.update());
+                },
+            );
+        },
+};
+
 export const selectors = (() => {
     const runningServices = (rootState: RootState): RunningService[] => {
-        const state = rootState.runningService;
+        const { runningServices } = rootState.runningService["~internal"];
 
-        return !state.isFetched
+        return runningServices === undefined
             ? []
-            : [...state["~internal"].runningServices].sort(
-                  (a, b) => b.startedAt - a.startedAt,
-              );
+            : [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
     };
 
     return { runningServices };

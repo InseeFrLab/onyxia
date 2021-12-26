@@ -486,9 +486,12 @@ function useProjectsSlice() {
         async (props: { projectId: string }) => {
             const { projectId } = props;
 
+            //TODO: Eventually we shouldn't have to reload any pages
+            //when project is changed.
             const reload = (() => {
                 switch (route.name) {
                     case "account":
+                    case "myServices":
                         return undefined;
                     case "mySecrets":
                         return () => (window.location.href = routes.mySecrets().href);
