@@ -1,3 +1,7 @@
+### **0.26.17** (2021-12-26)  
+  
+- Feature project hot swiping on myServices page    
+  
 ### **0.26.16** (2021-12-25)  
   
 - https://github.com/InseeFrLab/onyxia-ui/issues/9    
