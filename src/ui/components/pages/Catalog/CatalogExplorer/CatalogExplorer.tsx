@@ -6,7 +6,7 @@ import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards"
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useSplashScreen } from "onyxia-ui";
 import { useSelector, useThunks } from "ui/coreApi";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import type { Route } from "type-route";
 
 export type Props = {

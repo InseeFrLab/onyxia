@@ -3,7 +3,7 @@ import { createGroup } from "type-route";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useLng } from "ui/i18n/useLng";
 import { makeStyles, PageHeader } from "ui/theme";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";

@@ -2,7 +2,7 @@
 import { useEffect, useState, memo } from "react";
 import type { RefObject } from "react";
 import { makeStyles, Button } from "ui/theme";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
