@@ -3,7 +3,7 @@ import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "ui/i18n/useTranslations";

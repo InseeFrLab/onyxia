@@ -1,6 +1,6 @@
 import * as reactDom from "react-dom";
 import { I18nProvider } from "./i18n/I18nProvider";
-import { RouteProvider } from "./routes/router";
+import { RouteProvider } from "./routes";
 import { LibProvider } from "ui/coreApi/LibProvider";
 import { ThemeProvider, getThemeProviderProps } from "./theme";
 import { App } from "ui/components/App";

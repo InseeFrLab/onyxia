@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo, memo } from "react";
 import { Button } from "ui/theme";
 import { createGroup } from "type-route";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { useThunks } from "ui/coreApi";

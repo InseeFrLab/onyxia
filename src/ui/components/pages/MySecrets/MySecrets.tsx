@@ -11,7 +11,7 @@ import { useTranslation } from "ui/i18n/useTranslations";
 import { useWithProps } from "powerhooks/useWithProps";
 import { relative as pathRelative } from "path";
 import Link from "@mui/material/Link";
-import { routes } from "ui/routes/router";
+import { routes } from "ui/routes";
 import { createGroup } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
 import type { Route } from "type-route";
