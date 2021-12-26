@@ -5,7 +5,7 @@ import { useLng } from "./useLng";
 import { assert } from "tsafe/assert";
 import type { SupportedLanguage } from "./translations";
 
-export const { useFormattedDate } = (() => {
+export const { getFormattedDate } = (() => {
     const getFormatByLng = (isSameYear: boolean) => ({
         /* spell-checker: disable */
         "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
@@ -13,22 +13,26 @@ export const { useFormattedDate } = (() => {
         /* spell-checker: enable */
     });
 
-    function useFormattedDate(params: { date: Date }): string {
-        const { date } = params;
+    function getFormattedDate(params: { time: number; lng: SupportedLanguage }): string {
+        const { time, lng } = params;
 
-        const { lng } = useLng();
+        const date = new Date(time);
 
         const isSameYear = date.getFullYear() === new Date().getFullYear();
 
-        return useMemo(
-            () => moment(date).locale(lng).format(getFormatByLng(isSameYear)[lng]),
-
-            [date, lng],
-        );
+        return moment(date).locale(lng).format(getFormatByLng(isSameYear)[lng]);
     }
 
-    return { useFormattedDate };
+    return { getFormattedDate };
 })();
+
+export function useFormattedDate(params: { time: number }): string {
+    const { time } = params;
+
+    const { lng } = useLng();
+
+    return useMemo(() => getFormattedDate({ time, lng }), [time, lng]);
+}
 
 export function useValidUntil(params: { millisecondsLeft: number }): string {
     const { millisecondsLeft } = params;

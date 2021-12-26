@@ -8,6 +8,7 @@ import { createMinioS3Client } from "./secondaryAdapters/minioS3Client";
 import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
 import * as catalogExplorerUseCase from "./usecases/catalogExplorer";
 import * as deploymentRegionUseCase from "./usecases/deploymentRegion";
+import * as explorersUseCase from "./usecases/explorers";
 import * as launcherUseCase from "./usecases/launcher";
 import * as projectConfigUseCase from "./usecases/projectConfigs";
 import * as projectSelectionUseCase from "./usecases/projectSelection";
@@ -247,6 +248,7 @@ export const usecases = [
     user,
     catalogExplorerUseCase,
     deploymentRegionUseCase,
+    explorersUseCase,
     launcherUseCase,
     projectConfigUseCase,
     projectSelectionUseCase,

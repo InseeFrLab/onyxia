@@ -50,6 +50,28 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             ),
         };
     })(),
+    "myServices": defineRoute(
+        {
+            "isSavedConfigsExtended": param.query.optional.boolean.default(false),
+        },
+        () => `/my-services`,
+    ),
+    ...(() => {
+        const buildExplorerRoute = (prefix: string) =>
+            defineRoute(
+                {
+                    "path": param.path.trailing.optional.string,
+                    "openFile": param.query.optional.string,
+                },
+                ({ path }) => `/${prefix}/${path}`,
+            );
+
+        return {
+            "mySecretsDev": buildExplorerRoute("my-secrets-dev"),
+            "myFilesDev": buildExplorerRoute("my-files-dev"),
+        };
+    })(),
+    //TODO: legacy
     "mySecrets": defineRoute(
         {
             "secretOrDirectoryPath": param.path.trailing.optional.string,
@@ -57,12 +79,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         },
         ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`,
     ),
-    "myServices": defineRoute(
-        {
-            "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-        },
-        () => `/my-services`,
-    ),
+    //TODO: legacy
     ...(() => {
         const myBuckets = defineRoute("/mes-fichiers");
 

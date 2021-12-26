@@ -23,6 +23,7 @@ import { typeGuard } from "tsafe/typeGuard";
 import type { SupportedLanguage } from "ui/i18n/translations";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
+import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
 //Legacy
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -142,6 +143,23 @@ export const App = memo((props: Props) => {
                     "link": routes.myBuckets().link,
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                 },
+                /*
+                "mySecretsDev": {
+                    "iconId": "secrets",
+                    "label": t("mySecrets") + " dev",
+                    "link": routes.mySecretsDev().link,
+                    "availability": secretExplorerThunks.getIsEnabled()
+                        ? "available"
+                        : "greyed",
+                },
+                "myFilesDev": {
+                    "iconId": "files",
+                    "label": t("myFiles") + " dev",
+                    "link": routes.myFilesDev().link,
+                    //TODO: Do not use env but a method from core/
+                    "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
+                },
+                */
             } as const),
         [t],
     );
@@ -379,6 +397,19 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
     {
         const Page = MyServices;
+
+        if (Page.routeGroup.has(route)) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
+                userAuthenticationThunks.login();
+                return null;
+            }
+
+            return <Page route={route} />;
+        }
+    }
+
+    {
+        const Page = MyFilesMySecrets;
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {

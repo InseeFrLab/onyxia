@@ -36,7 +36,7 @@ export function createLocalStorageSecretManagerClient(params: {
 
             assert(!(path in record), `${path} is a secret not a directory`);
 
-            let [directories, secrets] = Object.keys(record)
+            let [directories, files] = Object.keys(record)
                 .map(key => pathRelative(path, key))
                 .filter(path => !path.startsWith(".."))
                 .reduce(...partition<string>(path => path.split("/").length > 1));
@@ -49,7 +49,7 @@ export function createLocalStorageSecretManagerClient(params: {
 
             return {
                 "directories": directories.map(path => path.split("/")[0]),
-                secrets,
+                files,
             };
         },
         "get": async params => {
