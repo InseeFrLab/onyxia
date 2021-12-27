@@ -24,13 +24,29 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     const { userConfigsThunks } = useThunks();
 
     const {
-        userConfigs: { isBetaModeEnabled },
+        userConfigs: { isBetaModeEnabled, isDevModeEnabled },
     } = useSelector(selectors.userConfigs.userConfigs);
 
-    const onRequestToggleIsBetaModeEnabled = useConstCallback(() =>
+    const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
+        const isBetaModeEnabledNew = !isBetaModeEnabled;
+
         userConfigsThunks.changeValue({
             "key": "isBetaModeEnabled",
-            "value": !isBetaModeEnabled,
+            "value": isBetaModeEnabledNew,
+        });
+
+        if (!isBetaModeEnabledNew) {
+            userConfigsThunks.changeValue({
+                "key": "isDevModeEnabled",
+                "value": false,
+            });
+        }
+    });
+
+    const onRequestToggleIsDevModeEnabled = useConstCallback(() =>
+        userConfigsThunks.changeValue({
+            "key": "isDevModeEnabled",
+            "value": !isDevModeEnabled,
         }),
     );
 
@@ -53,6 +69,16 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 isOn={isBetaModeEnabled}
                 onRequestToggle={onRequestToggleIsBetaModeEnabled}
             />
+            {isBetaModeEnabled && (
+                <AccountField
+                    type="toggle"
+                    title={t("enable dev mode")}
+                    helperText={t("dev mode helper")}
+                    isLocked={false}
+                    isOn={isDevModeEnabled}
+                    onRequestToggle={onRequestToggleIsDevModeEnabled}
+                />
+            )}
             <AccountField
                 type="reset helper dialogs"
                 onResetHelperDialogsClick={userConfigsThunks.resetHelperDialogs}
@@ -69,5 +95,7 @@ export declare namespace AccountUserInterfaceTab {
         "enable beta": undefined;
         "dark mode helper": undefined;
         "beta mode helper": undefined;
+        "enable dev mode": undefined;
+        "dev mode helper": undefined;
     };
 }

@@ -966,7 +966,7 @@ export const privateThunks = {
 
             const {
                 apiLogs: secretsManagerTranslations,
-                apiProxy: secretsManagerClientProxy,
+                loggedApi: secretsManagerClientProxy,
             } = logApi({
                 "api": extraArg.secretsManagerClient,
                 "apiLogger": getVaultApiLogger({

@@ -17,6 +17,7 @@ import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
 import { getPathDepth } from "ui/tools/getPathDepth";
+import { assert } from "tsafe/assert";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecretsDev]);
 
@@ -110,13 +111,16 @@ export function MyFilesMySecrets(props: Props) {
     const onRefresh = useConstCallback(() => explorersThunks.refresh({ explorerType }));
 
     const onEditBasename = useConstCallback(
-        ({ kind, basename, newBasename }: Param0<ExplorerProps["onEditBasename"]>) =>
+        ({ kind, basename, newBasename }: Param0<ExplorerProps["onEditBasename"]>) => {
+            assert(explorerType === "secrets", "Can't rename in S3");
+
             explorersThunks.rename({
                 explorerType,
                 "renamingWhat": kind,
                 basename,
                 newBasename,
-            }),
+            });
+        },
     );
 
     const onNewItem = useConstCallback(
