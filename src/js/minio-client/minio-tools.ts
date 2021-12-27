@@ -4,12 +4,9 @@ import getMinioApi from "./minio-api";
 export const presignedGetObject = async ({ bucketName, objectName }: any) => {
     const client = await getMinioClient();
     const api = getMinioApi(client);
-    return (
-        api
-            .presignedGetObject({ bucketName, objectName })
-            // @ts-ignore
-            .then(url => `${url}&X-Amz-Security-Token=${client.sessionToken}`)
-    );
+    return api
+        .presignedGetObject({ bucketName, objectName })
+        .then(url => `${url}&X-Amz-Security-Token=${(client as any).sessionToken}`);
 };
 
 export const getUserBuckets = async (idep: any) => {

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Typography, Paper, Tooltip, Fab, Icon } from "@mui/material";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
+import "../app.scss";
 import "./myBuckets.scss";
 import { useSelector, selectors } from "ui/coreApi";
 import { asyncThunks as myFilesActions } from "js/redux/myFiles";
