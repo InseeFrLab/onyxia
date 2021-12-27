@@ -103,7 +103,7 @@
         "url-join-ts": "^1.0.5"
     },
     "scripts": {
-        "start": "TSC_COMPILE_ON_ERROR=false npx react-app-rewired start",
+        "start": "react-app-rewired start",
         "build": "react-app-rewired build yarn",
         "keycloak": "yarn build && build-keycloak-theme",
         "eject": "react-scripts eject",

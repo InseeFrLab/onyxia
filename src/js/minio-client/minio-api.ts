@@ -1,5 +1,6 @@
-//@ts-ignore
+/// <reference path="filereader-stream.d.ts" />
 import fileReaderStream from "filereader-stream";
+
 import { Client, PostPolicy } from "minio";
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -8,8 +9,7 @@ export default (client: Client) => ({
         client.statObject(bucketName, fileName),
     isBucketExist: (bucketName: any) => client.bucketExists(bucketName),
     removeBucket: (bucketName: any) => client.removeBucket(bucketName),
-    // @ts-ignore
-    createBucket: bucket => client.makeBucket(bucket),
+    createBucket: (bucket: any) => client.makeBucket(bucket, "us-east-1"),
     listBuckets: () => client.listBuckets(),
     listObjects: (name: any, prefix = "", rec = true) =>
         client.listObjects(name, prefix, rec),
