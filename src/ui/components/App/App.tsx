@@ -85,9 +85,14 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const { userAuthenticationThunks, secretExplorerThunks } = useThunks();
+    const { userAuthenticationThunks, secretExplorerThunks, explorersThunks } =
+        useThunks();
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+
+    const isDevModeEnabled = useSelector(state =>
+        isUserLoggedIn ? state.userConfigs.isDevModeEnabled.value : false,
+    );
 
     const onHeaderAuthClick = useConstCallback(() =>
         isUserLoggedIn
@@ -142,25 +147,36 @@ export const App = memo((props: Props) => {
                     "link": routes.myBuckets().link,
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                 },
-                /*
-                "mySecretsDev": {
-                    "iconId": "secrets",
-                    "label": t("mySecrets") + " dev",
-                    "link": routes.mySecretsDev().link,
-                    "availability": secretExplorerThunks.getIsEnabled()
-                        ? "available"
-                        : "greyed",
-                },
-                "myFilesDev": {
-                    "iconId": "files",
-                    "label": t("myFiles") + " dev",
-                    "link": routes.myFilesDev().link,
-                    //TODO: Do not use env but a method from core/
-                    "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
-                },
-                */
+                ...(() => {
+                    if (!isDevModeEnabled) {
+                        return {} as never;
+                    }
+
+                    return {
+                        "mySecretsDev": {
+                            "iconId": "secrets",
+                            "label": t("mySecrets") + " dev",
+                            "link": routes.mySecretsDev().link,
+                            "availability": explorersThunks.getIsEnabled({
+                                "explorerType": "secrets",
+                            })
+                                ? "available"
+                                : "greyed",
+                        },
+                        "myFilesDev": {
+                            "iconId": "files",
+                            "label": t("myFiles") + " dev",
+                            "link": routes.myFilesDev().link,
+                            "availability": explorersThunks.getIsEnabled({
+                                "explorerType": "s3",
+                            })
+                                ? "available"
+                                : "greyed",
+                        },
+                    } as const;
+                })(),
             } as const),
-        [t],
+        [t, isDevModeEnabled],
     );
 
     return (

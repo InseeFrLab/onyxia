@@ -39,7 +39,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
     api: Api;
     apiLogger: ApiLogger<Api>;
 }): {
-    apiProxy: Api;
+    loggedApi: Api;
     apiLogs: ApiLogs;
 } {
     const { api, apiLogger } = params2;
@@ -53,7 +53,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
     const evt = Evt.create<UnpackEvt<ApiLogs["evt"]>>();
 
     return {
-        "apiProxy": (() => {
+        "loggedApi": (() => {
             const createMethodProxy = memoize(
                 <MethodName extends MethodNames<Api>>(
                     methodName: MethodName,

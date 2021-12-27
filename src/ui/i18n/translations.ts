@@ -207,6 +207,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "dark mode helper": "Low light interface theme with dark colored background.",
             "enable beta": "Enable beta-test mode",
             "beta mode helper": "For advanced platform configurations and features.",
+            "enable dev mode": "Enable developer mode",
+            "dev mode helper": "Enable features that are currently being developed",
         },
         "AccountField": {
             "copy tooltip": "Copy in clipboard",
@@ -532,10 +534,12 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "title": "Configurer le mode d'interface",
             "enable dark mode": "Activer le mode sombre",
             "dark mode helper":
-                "Thème de l’interface à faible luminosité avec un fond de couleur sombre.",
+                "Thème de l'interface à faible luminosité avec un fond de couleur sombre.",
             "enable beta": "Activer le mode béta-testeur",
             "beta mode helper":
                 "Pour des configurations et fonctionnalités avancées de la plateforme.",
+            "enable dev mode": "Activer le mode développeur",
+            "dev mode helper": "Activer les fonctionnalités en cours de développement",
         },
         "AccountField": {
             "copy tooltip": "Copier dans le press papier",

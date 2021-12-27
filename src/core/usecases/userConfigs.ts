@@ -31,6 +31,7 @@ export type UserConfigs = Id<
         gitEmail: string;
         gitCredentialCacheDuration: number;
         isBetaModeEnabled: boolean;
+        isDevModeEnabled: boolean;
         isDarkModeEnabled: boolean;
         deploymentRegionId: string | null;
         githubPersonalAccessToken: string | null;
@@ -147,6 +148,7 @@ export const privateThunks = {
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
+                "isDevModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
                 "deploymentRegionId": null,
                 "githubPersonalAccessToken": null,

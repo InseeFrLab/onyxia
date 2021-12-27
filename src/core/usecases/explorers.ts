@@ -287,24 +287,15 @@ export const thunks = {
 
             dispatch(actions.navigationStarted({ explorerType }));
 
-            const sliceContext = getSliceContext(extraArg);
+            const sliceContext = getSliceContexts(extraArg)[explorerType];
 
-            const mutexes = sliceContext.mutexes[explorerType];
+            const { mutexes } = sliceContext;
 
             (await mutexes.createOrRename.acquire())();
 
             const releaseNavigationMutex = await mutexes.navigateMutex.acquire();
 
-            const listResult = await sliceContext[
-                (() => {
-                    switch (explorerType) {
-                        case "secrets":
-                            return "loggedSecretsManagerClient";
-                        case "s3":
-                            return "loggedS3Client";
-                    }
-                })()
-            ].list({ path });
+            const listResult = await sliceContext.loggedApi.list({ path });
 
             releaseNavigationMutex();
 
@@ -340,7 +331,7 @@ export const thunks = {
      */
     "rename":
         (params: {
-            explorerType: "s3" | "secrets";
+            explorerType: "secrets";
             renamingWhat: "file" | "directory";
             basename: string;
             newBasename: string;
@@ -363,12 +354,11 @@ export const thunks = {
                 }),
             );
 
-            const sliceContext = getSliceContext(extraArg);
+            const sliceContext = getSliceContexts(extraArg)[explorerType];
 
-            const prReleaseMutex =
-                sliceContext.mutexes[explorerType].createOrRename.acquire();
+            const prReleaseMutex = sliceContext.mutexes.createOrRename.acquire();
 
-            await sliceContext.loggedSecretsManagerClientExt[
+            await sliceContext.loggedExtendedApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -417,10 +407,10 @@ export const thunks = {
                 }),
             );
 
-            const sliceContext = getSliceContext(extraArg);
+            const sliceContexts = getSliceContexts(extraArg);
 
             const prReleaseMutex =
-                sliceContext.mutexes[params.explorerType].createOrRename.acquire();
+                sliceContexts[params.explorerType].mutexes.createOrRename.acquire();
 
             const path = pathJoin(state.path, basename);
 
@@ -431,7 +421,7 @@ export const thunks = {
                             alert("TODO");
                             break;
                         case "secrets":
-                            await sliceContext.loggedSecretsManagerClient.put({
+                            await sliceContexts[params.explorerType].loggedApi.put({
                                 path,
                                 "secret": {},
                             });
@@ -445,9 +435,9 @@ export const thunks = {
                             alert("TODO");
                             break;
                         case "secrets":
-                            await sliceContext.loggedSecretsManagerClientExt.createDirectory(
-                                { path },
-                            );
+                            await sliceContexts[
+                                params.explorerType
+                            ].loggedExtendedApi.createDirectory({ path });
                             break;
                     }
 
@@ -498,20 +488,23 @@ export const thunks = {
                 }),
             );
 
-            const { loggedSecretsManagerClient, loggedSecretsManagerClientExt } =
-                getSliceContext(extraArg);
+            const sliceContexts = getSliceContexts(extraArg);
 
             switch (explorerType) {
                 case "s3":
                     alert("TODO");
                     break;
                 case "secrets":
+                    const sliceContext = sliceContexts[explorerType];
+
                     switch (deleteWhat) {
                         case "file":
-                            await loggedSecretsManagerClient.delete({ path });
+                            await sliceContext.loggedApi.delete({ path });
                             break;
                         case "directory":
-                            await loggedSecretsManagerClientExt.deleteDirectory({ path });
+                            await sliceContext.loggedExtendedApi.deleteDirectory({
+                                path,
+                            });
                             break;
                     }
                     break;
@@ -524,18 +517,7 @@ export const thunks = {
 
             const [, , extraArg] = args;
 
-            const sliceContext = getSliceContext(extraArg);
-
-            return sliceContext[
-                (() => {
-                    switch (explorerType) {
-                        case "secrets":
-                            return "secretsManagerClientLogs";
-                        case "s3":
-                            return "s3ClientLogs";
-                    }
-                })()
-            ];
+            return getSliceContexts(extraArg)[explorerType].apiLogs;
         },
     "getIsEnabled":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<boolean> =>
@@ -556,37 +538,55 @@ export const thunks = {
         },
 };
 
-type SliceContext = {
-    loggedSecretsManagerClient: SecretsManagerClient;
-    loggedSecretsManagerClientExt: ReturnType<typeof createSecretsManagerClientExtension>;
-    secretsManagerClientLogs: ApiLogs;
-    loggedS3Client: S3Client;
-    s3ClientLogs: ApiLogs;
-    mutexes: Record<
-        "s3" | "secrets",
-        {
-            createOrRename: Mutex;
-            navigateMutex: Mutex;
-        }
-    >;
+type SliceContexts = {
+    s3: SliceContexts.S3;
+    secrets: SliceContexts.Secrets;
 };
 
-const { getSliceContext } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
+namespace SliceContexts {
+    export type Common<loggedApi> = {
+        loggedApi: loggedApi;
+        apiLogs: ApiLogs;
+        mutexes: {
+            createOrRename: Mutex;
+            navigateMutex: Mutex;
+        };
+    };
 
-    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
+    export type S3 = Common<S3Client>;
+
+    export type Secrets = Common<SecretsManagerClient> & {
+        loggedExtendedApi: ReturnType<typeof createSecretsManagerClientExtension>;
+    };
+}
+
+const { getSliceContexts } = (() => {
+    const weakMap = new WeakMap<ThunksExtraArgument, SliceContexts>();
+
+    function getSliceContexts(extraArg: ThunksExtraArgument): SliceContexts {
         let sliceContext = weakMap.get(extraArg);
 
         if (sliceContext !== undefined) {
             return sliceContext;
         }
 
+        const getMutexes = () => ({
+            "mutexes": {
+                "createOrRename": new Mutex(),
+                "navigateMutex": new Mutex(),
+            },
+        });
+
         sliceContext = {
-            ...(() => {
-                const {
-                    apiLogs: secretsManagerClientLogs,
-                    apiProxy: loggedSecretsManagerClient,
-                } = logApi({
+            "s3": {
+                ...logApi({
+                    "api": extraArg.s3Client,
+                    "apiLogger": s3ApiLogger,
+                }),
+                ...getMutexes(),
+            },
+            "secrets": (() => {
+                const { apiLogs, loggedApi } = logApi({
                     "api": extraArg.secretsManagerClient,
                     "apiLogger": getVaultApiLogger({
                         "clientType": "CLI",
@@ -604,35 +604,13 @@ const { getSliceContext } = (() => {
                     }),
                 });
 
-                const loggedSecretsManagerClientExt = createSecretsManagerClientExtension(
-                    {
-                        "secretsManagerClient": loggedSecretsManagerClient,
-                    },
-                );
-
                 return {
-                    secretsManagerClientLogs,
-                    loggedSecretsManagerClient,
-                    loggedSecretsManagerClientExt,
-                };
-            })(),
-            ...(() => {
-                const { apiLogs: s3ClientLogs, apiProxy: loggedS3Client } = logApi({
-                    "api": extraArg.s3Client,
-                    "apiLogger": s3ApiLogger,
-                });
-
-                return { s3ClientLogs, loggedS3Client };
-            })(),
-            "mutexes": (() => {
-                const getMutexes = () => ({
-                    "createOrRename": new Mutex(),
-                    "navigateMutex": new Mutex(),
-                });
-
-                return {
-                    "s3": getMutexes(),
-                    "secrets": getMutexes(),
+                    loggedApi,
+                    apiLogs,
+                    ...getMutexes(),
+                    "loggedExtendedApi": createSecretsManagerClientExtension({
+                        "secretsManagerClient": loggedApi,
+                    }),
                 };
             })(),
         };
@@ -642,7 +620,7 @@ const { getSliceContext } = (() => {
         return sliceContext;
     }
 
-    return { getSliceContext };
+    return { getSliceContexts };
 })();
 
 function createSecretsManagerClientExtension(props: {
