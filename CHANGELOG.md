@@ -1,3 +1,9 @@
+### **0.26.19** (2021-12-27)  
+  
+- update homegrown dependencies  
+- Avoid using ts-ignore as cra applies it globally, remove a lot of legacy files  
+- fix minor type error    
+  
 ### **0.26.18** (2021-12-26)  
   
 - Rename router into routes  
