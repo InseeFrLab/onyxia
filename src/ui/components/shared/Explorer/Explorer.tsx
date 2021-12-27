@@ -309,7 +309,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const { formattedDate } = (function useClosure() {
         let formattedDate: string | undefined = useFormattedDate({
-            "date": fileDate ?? new Date(0),
+            "time": fileDate?.getTime() ?? 0,
         });
 
         if (fileDate === undefined) {
