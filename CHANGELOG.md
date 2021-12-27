@@ -1,3 +1,8 @@
+### **0.26.18** (2021-12-26)  
+  
+- Rename router into routes  
+- Setup the new versions of mySecrets and myFiles, disabled by default    
+  
 ### **0.26.17** (2021-12-26)  
   
 - Feature project hot swiping on myServices page    
