@@ -1,3 +1,7 @@
+### **0.26.21** (2021-12-28)  
+  
+- Update keycloak    
+  
 ### **0.26.20** (2021-12-27)  
   
 - Enable new explorers in developper mode    
