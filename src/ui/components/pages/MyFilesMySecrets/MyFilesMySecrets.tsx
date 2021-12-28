@@ -2,11 +2,11 @@ import { makeStyles, PageHeader } from "ui/theme";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useSelector, selectors, useThunks } from "ui/coreApi";
+import { useSelector, useThunks } from "ui/coreApi";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n/useTranslations";
-import { relative as pathRelative } from "path";
+//import { relative as pathRelative } from "path";
 import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
@@ -16,7 +16,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
-import { getPathDepth } from "ui/tools/getPathDepth";
+//import { getPathDepth } from "ui/tools/getPathDepth";
 import { assert } from "tsafe/assert";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecretsDev]);
@@ -47,42 +47,16 @@ export function MyFilesMySecrets(props: Props) {
 
     const state = useSelector(state => state.explorers[explorerType]);
 
-    const {
-        selectedProject: { bucket, vaultTopDir },
-    } = useSelector(selectors.projectSelection.selectedProject);
-
     const { explorersThunks } = useThunks();
 
-    const topDirPath = useMemo(() => {
-        switch (explorerType) {
-            case "s3":
-                return bucket;
-            case "secrets":
-                return vaultTopDir;
-        }
-    }, [explorerType, bucket, vaultTopDir]);
+    useEffect(() => {
+        explorersThunks.notifyThatUserIsWatching({
+            explorerType,
+            "onNavigate": ({ path }) => routes[route.name]({ path }).replace(),
+        });
 
-    {
-        const isRouteUndefined = route.params.path === undefined;
-        const path = (!state.isInitialized ? undefined : state.path) ?? topDirPath;
-
-        useEffect(() => {
-            if (route.params.path === undefined) {
-                routes[
-                    (() => {
-                        switch (explorerType) {
-                            case "s3":
-                                return "myFilesDev";
-                            case "secrets":
-                                return "mySecretsDev";
-                        }
-                    })()
-                ]({
-                    "path": path ?? topDirPath,
-                }).replace();
-            }
-        }, [isRouteUndefined, explorerType, topDirPath, path]);
-    }
+        return () => explorersThunks.notifyThatUserIsNoLongerWatching({ explorerType });
+    }, [explorerType, route.name]);
 
     useEffect(() => {
         if (route.params.path === undefined) {
@@ -93,19 +67,10 @@ export function MyFilesMySecrets(props: Props) {
             explorerType,
             "path": route.params.path,
         });
-    }, [route.params.path, bucket, explorerType]);
+    }, [route.params.path, explorerType]);
 
     const onNavigate = useConstCallback(({ path }: Param0<ExplorerProps["onNavigate"]>) =>
-        routes[
-            (() => {
-                switch (explorerType) {
-                    case "s3":
-                        return "myFilesDev";
-                    case "secrets":
-                        return "mySecretsDev";
-                }
-            })()
-        ]({ path }).push(),
+        routes[route.name]({ path }).push(),
     );
 
     const onRefresh = useConstCallback(() => explorersThunks.refresh({ explorerType }));
@@ -179,7 +144,8 @@ export function MyFilesMySecrets(props: Props) {
             (() => {
                 switch (explorerType) {
                     case "secrets":
-                        return pathRelative(vaultTopDir, path);
+                        //return pathRelative(vaultTopDir, path);
+                        return path;
                     case "s3":
                         return path;
                 }
@@ -197,12 +163,12 @@ export function MyFilesMySecrets(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (!state.isInitialized) {
+        if (state.path === undefined) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [state.isInitialized]);
+    }, [state.path === undefined]);
 
     const [evtButtonBarAction] = useState(() =>
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
@@ -254,7 +220,7 @@ export function MyFilesMySecrets(props: Props) {
         [explorerType, t],
     );
 
-    if (!state.isInitialized) {
+    if (state.path === undefined) {
         return null;
     }
 
@@ -314,7 +280,8 @@ export function MyFilesMySecrets(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onNewItem={onNewItem}
                 onCopyPath={onCopyPath}
-                pathMinDepth={getPathDepth(topDirPath)}
+                //pathMinDepth={getPathDepth(topDirPath)}
+                pathMinDepth={0}
                 scrollableDivRef={scrollableDivRef}
                 isFileOpen={false}
                 onOpenFile={({ basename }) => console.log("onOpenFile", { basename })}

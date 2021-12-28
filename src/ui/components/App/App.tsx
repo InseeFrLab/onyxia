@@ -536,8 +536,11 @@ function useProjectsSlice() {
             //when project is changed.
             const reload = (() => {
                 switch (route.name) {
+                    case "home":
                     case "account":
                     case "myServices":
+                    case "myFilesDev":
+                    case "mySecretsDev":
                         return undefined;
                     case "mySecrets":
                         return () => (window.location.href = routes.mySecrets().href);

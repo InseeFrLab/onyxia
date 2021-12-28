@@ -48,7 +48,7 @@
         "@mui/icons-material": "^5.0.4",
         "@mui/material": "^5.2.5",
         "@reduxjs/toolkit": "^1.4.0",
-        "async-mutex": "^0.2.6",
+        "async-mutex": "^0.3.2",
         "axios": "^0.21.1",
         "classnames": "^2.2.6",
         "clean-redux": "^0.3.4",
