@@ -12,6 +12,7 @@ import { LoginResetPassword } from "keycloakify/lib/components/LoginResetPasswor
 import { LoginVerifyEmail } from "keycloakify/lib/components/LoginVerifyEmail";
 import { LoginOtp } from "keycloakify/lib/components/LoginOtp";
 import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConfirm";
+import { LoginUpdatePassword } from "keycloakify/lib/components/LoginUpdatePassword";
 import { LoginUpdateProfile } from "./LoginUpdateProfile";
 import { RegisterUserProfile } from "./RegisterUserProfile";
 import { Register } from "keycloakify/lib/components/Register";
@@ -70,6 +71,8 @@ export const KcApp = memo((props: Props) => {
             return <LoginIdpLinkConfirm {...{ kcContext, ...kcProps }} />;
         case "register-user-profile.ftl":
             return <RegisterUserProfile {...{ kcContext, ...kcProps }} />;
+        case "login-update-password.ftl":
+            return <LoginUpdatePassword {...{ kcContext, ...kcProps }} />;
     }
 });
 
