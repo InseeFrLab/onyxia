@@ -1,3 +1,7 @@
+### **0.26.20** (2021-12-27)  
+  
+- Enable new explorers in developper mode    
+  
 ### **0.26.19** (2021-12-27)  
   
 - update homegrown dependencies  
