@@ -1,3 +1,7 @@
+### **0.26.22** (2021-12-29)  
+  
+- Implement event canceling in explorer    
+  
 ### **0.26.21** (2021-12-28)  
   
 - Update keycloak    
