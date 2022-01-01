@@ -15,6 +15,7 @@ import { LoginIdpLinkConfirm } from "keycloakify/lib/components/LoginIdpLinkConf
 import { LoginUpdatePassword } from "keycloakify/lib/components/LoginUpdatePassword";
 import { LoginUpdateProfile } from "./LoginUpdateProfile";
 import { RegisterUserProfile } from "./RegisterUserProfile";
+import { LoginPageExpired } from "keycloakify/lib/components/LoginPageExpired";
 import { Register } from "keycloakify/lib/components/Register";
 import { getBrowser } from "ui/tools/getBrowser";
 import type { KcContext } from "./kcContext";
@@ -73,6 +74,8 @@ export const KcApp = memo((props: Props) => {
             return <RegisterUserProfile {...{ kcContext, ...kcProps }} />;
         case "login-update-password.ftl":
             return <LoginUpdatePassword {...{ kcContext, ...kcProps }} />;
+        case "login-page-expired.ftl":
+            return <LoginPageExpired {...{ kcContext, ...kcProps }} />;
     }
 });
 
