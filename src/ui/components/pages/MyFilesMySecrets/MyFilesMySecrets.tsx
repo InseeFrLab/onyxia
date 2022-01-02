@@ -45,8 +45,7 @@ export function MyFilesMySecrets(props: Props) {
         }
     }, [route.name]);
 
-    const state = useSelector(selectors.explorers.currentWorkingDirectory)
-        .currentWorkingDirectory[explorerType];
+    const cwdVue = useSelector(selectors.explorers.cwdIconsVue).cwdIconsVue[explorerType];
 
     const x = useSelector(state => state.explorers);
 
@@ -168,12 +167,12 @@ export function MyFilesMySecrets(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (state === undefined) {
+        if (cwdVue === undefined) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [state === undefined]);
+    }, [cwdVue === undefined]);
 
     const [evtButtonBarAction] = useState(() =>
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
@@ -225,7 +224,7 @@ export function MyFilesMySecrets(props: Props) {
         [explorerType, t],
     );
 
-    if (state === undefined) {
+    if (cwdVue === undefined) {
         return null;
     }
 
@@ -269,16 +268,16 @@ export function MyFilesMySecrets(props: Props) {
                 className={classes.explorer}
                 explorerType={explorerType}
                 doShowHidden={false}
-                path={state.directoryPath}
-                isNavigating={state.isNavigationOngoing}
+                path={cwdVue.directoryPath}
+                isNavigating={cwdVue.isNavigationOngoing}
                 apiLogs={apiLogs}
                 evtAction={evtButtonBarAction}
-                files={state.files}
-                directories={state.directories}
-                directoriesBeingCreated={state.directoriesBeingCreated}
-                directoriesBeingRenamed={state.directoriesBeingRenamed}
-                filesBeingCreated={state.filesBeingCreated}
-                filesBeingRenamed={state.filesBeingRenamed}
+                files={cwdVue.files}
+                directories={cwdVue.directories}
+                directoriesBeingCreated={cwdVue.directoriesBeingCreated}
+                directoriesBeingRenamed={cwdVue.directoriesBeingRenamed}
+                filesBeingCreated={cwdVue.filesBeingCreated}
+                filesBeingRenamed={cwdVue.filesBeingRenamed}
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onEditBasename={onEditBasename}
