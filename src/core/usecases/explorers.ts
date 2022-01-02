@@ -21,6 +21,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { RootState } from "../setup";
+import memoize from "memoizee";
 
 export type ExplorersState = Record<
     "s3" | "secrets",
@@ -131,36 +132,12 @@ export const { reducer, actions } = createSlice({
 
             assert(contextualState.directoryPath !== undefined);
 
-            contextualState.ongoingOperations.push({
-                "operation": payload.operation,
-                "basename":
-                    payload.operation === "rename"
-                        ? payload.newBasename
-                        : payload.basename,
-                "directoryPath": contextualState.directoryPath,
-                kind,
-            });
-
-            const { directoriesItems } = contextualState;
-
             switch (payload.operation) {
                 case "rename":
-                    {
-                        const item = directoriesItems.find(
-                            item => item.kind === kind && item.basename === basename,
-                        );
-                        assert(item !== undefined);
-                        item.basename = payload.newBasename;
-                    }
-                    break;
-                case "create":
-                    directoriesItems.push({
-                        kind,
-                        basename,
-                    });
-                    break;
                 case "delete":
                     {
+                        const { directoriesItems } = contextualState;
+
                         const index = directoriesItems.findIndex(
                             item => item.kind === kind && item.basename === basename,
                         );
@@ -171,6 +148,16 @@ export const { reducer, actions } = createSlice({
                     }
                     break;
             }
+
+            contextualState.ongoingOperations.push({
+                "operation": payload.operation,
+                "basename":
+                    payload.operation === "rename"
+                        ? payload.newBasename
+                        : payload.basename,
+                "directoryPath": contextualState.directoryPath,
+                kind,
+            });
         },
         "operationCompleted": (
             state,
@@ -191,18 +178,31 @@ export const { reducer, actions } = createSlice({
 
             const { ongoingOperations } = contextualState;
 
-            const index = ongoingOperations.findIndex(
+            const ongoingOperation = ongoingOperations.find(
                 o =>
                     o.kind === kind &&
                     o.basename === basename &&
                     pathRelative(o.directoryPath, directoryPath) === "",
             );
 
-            assert(index >= 0);
+            assert(ongoingOperation !== undefined);
 
-            ongoingOperations.splice(index, 1);
+            ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
+
+            if (pathRelative(contextualState.directoryPath, directoryPath) !== "") {
+                return;
+            }
+
+            switch (ongoingOperation.operation) {
+                case "create":
+                case "rename":
+                    contextualState.directoriesItems.push({
+                        "basename": ongoingOperation.basename,
+                        kind,
+                    });
+                    break;
+            }
         },
-
         "isUserWatchingChanged": (
             state,
             {
@@ -903,7 +903,7 @@ export const selectors = (() => {
 
     type ExplorerType = typeof explorerTypes[number];
 
-    type CurrentWorkingDirectory = {
+    type CwdIconsVue = {
         directoryPath: string;
         isNavigationOngoing: boolean;
         directories: string[];
@@ -914,9 +914,9 @@ export const selectors = (() => {
         filesBeingRenamed: string[];
     };
 
-    const currentWorkingDirectory = (
+    const cwdIconsVue = (
         rootState: RootState,
-    ): Record<ExplorerType, CurrentWorkingDirectory | undefined> => {
+    ): Record<ExplorerType, CwdIconsVue | undefined> => {
         const state = rootState.explorers;
 
         return Object.fromEntries(
@@ -932,7 +932,7 @@ export const selectors = (() => {
 
                 return [
                     explorerType,
-                    ((): CurrentWorkingDirectory | undefined => {
+                    ((): CwdIconsVue | undefined => {
                         if (directoryPath === undefined) {
                             return undefined;
                         }
@@ -941,41 +941,43 @@ export const selectors = (() => {
                             directoryPath,
                             isNavigationOngoing,
                             ...(() => {
+                                const selectOngoing = memoize(
+                                    (
+                                        kind: "directory" | "file",
+                                        operation: "create" | "rename",
+                                    ) =>
+                                        ongoingOperations
+                                            .filter(
+                                                o =>
+                                                    o.directoryPath === directoryPath &&
+                                                    o.kind === kind &&
+                                                    o.operation === operation,
+                                            )
+                                            .map(({ basename }) => basename),
+                                );
+
                                 const select = (kind: "directory" | "file") =>
-                                    directoriesItems
-                                        .filter(item => item.kind === kind)
-                                        .map(({ basename }) => basename);
+                                    [
+                                        ...directoriesItems
+                                            .filter(item => item.kind === kind)
+                                            .map(({ basename }) => basename),
+                                        ...selectOngoing(kind, "create"),
+                                        ...selectOngoing(kind, "rename"),
+                                    ].sort((a, b) => a.localeCompare(b));
 
                                 return {
                                     "directories": select("directory"),
                                     "files": select("file"),
-                                };
-                            })(),
-                            ...(() => {
-                                const select = (
-                                    kind: "directory" | "file",
-                                    operation: "create" | "rename",
-                                ) =>
-                                    ongoingOperations
-                                        .filter(
-                                            o =>
-                                                o.directoryPath === directoryPath &&
-                                                o.kind === kind &&
-                                                o.operation === operation,
-                                        )
-                                        .map(({ basename }) => basename);
-
-                                return {
-                                    "directoriesBeingCreated": select(
+                                    "directoriesBeingCreated": selectOngoing(
                                         "directory",
                                         "create",
                                     ),
-                                    "directoriesBeingRenamed": select(
+                                    "directoriesBeingRenamed": selectOngoing(
                                         "directory",
                                         "rename",
                                     ),
-                                    "filesBeingCreated": select("file", "create"),
-                                    "filesBeingRenamed": select("file", "rename"),
+                                    "filesBeingCreated": selectOngoing("file", "create"),
+                                    "filesBeingRenamed": selectOngoing("file", "rename"),
                                 };
                             })(),
                         };
@@ -985,5 +987,5 @@ export const selectors = (() => {
         ) as any;
     };
 
-    return { currentWorkingDirectory };
+    return { cwdIconsVue };
 })();
