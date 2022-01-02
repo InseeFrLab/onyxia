@@ -2,7 +2,7 @@ import { makeStyles, PageHeader } from "ui/theme";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useSelector, useThunks } from "ui/coreApi";
+import { useSelector, useThunks, selectors } from "ui/coreApi";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n/useTranslations";
@@ -45,7 +45,12 @@ export function MyFilesMySecrets(props: Props) {
         }
     }, [route.name]);
 
-    const state = useSelector(state => state.explorers[explorerType]);
+    const state = useSelector(selectors.explorers.currentWorkingDirectory)
+        .currentWorkingDirectory[explorerType];
+
+    const x = useSelector(state => state.explorers);
+
+    console.log(JSON.stringify(x[explorerType], null, 2));
 
     const { explorersThunks } = useThunks();
 
@@ -65,7 +70,7 @@ export function MyFilesMySecrets(props: Props) {
 
         explorersThunks.navigate({
             explorerType,
-            "path": route.params.path,
+            "directoryPath": route.params.path,
         });
     }, [route.params.path, explorerType]);
 
@@ -163,12 +168,12 @@ export function MyFilesMySecrets(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (state.path === undefined) {
+        if (state === undefined) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [state.path === undefined]);
+    }, [state === undefined]);
 
     const [evtButtonBarAction] = useState(() =>
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
@@ -220,7 +225,7 @@ export function MyFilesMySecrets(props: Props) {
         [explorerType, t],
     );
 
-    if (state.path === undefined) {
+    if (state === undefined) {
         return null;
     }
 
@@ -264,7 +269,7 @@ export function MyFilesMySecrets(props: Props) {
                 className={classes.explorer}
                 explorerType={explorerType}
                 doShowHidden={false}
-                path={state.path}
+                path={state.directoryPath}
                 isNavigating={state.isNavigationOngoing}
                 apiLogs={apiLogs}
                 evtAction={evtButtonBarAction}
