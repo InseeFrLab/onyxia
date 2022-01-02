@@ -105,8 +105,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         pathMinDepth,
     } = props;
 
-    console.log("===>", pathMinDepth, path);
-
     const [
         files,
         directories,
