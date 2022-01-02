@@ -1,3 +1,4 @@
+import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -7,7 +8,6 @@ import {
     join as pathJoin,
     dirname as pathDirname,
     relative as pathRelative,
-    normalize as pathNormalize,
     basename as pathBasename,
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
@@ -19,18 +19,24 @@ import { crawlFactory } from "core/tools/crawl";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
+import type { Ctx } from "evt";
+import type { RootState } from "../setup";
 
 export type ExplorersState = Record<
     "s3" | "secrets",
     {
-        path: string | undefined;
-        directories: string[];
-        files: string[];
+        directoryPath: string | undefined;
+        directoriesItems: {
+            kind: "file" | "directory";
+            basename: string;
+        }[];
         isNavigationOngoing: boolean;
-        directoriesBeingCreated: string[];
-        directoriesBeingRenamed: string[];
-        filesBeingCreated: string[];
-        filesBeingRenamed: string[];
+        ongoingOperations: {
+            directoryPath: string;
+            basename: string;
+            kind: "file" | "directory";
+            operation: "create" | "rename" | "delete";
+        }[];
         "~internal": {
             isUserWatching: boolean;
         };
@@ -44,14 +50,10 @@ export const { reducer, actions } = createSlice({
     "initialState": id<ExplorersState>(
         (() => {
             const contextualState = {
-                "path": undefined,
-                "directories": [],
-                "files": [],
+                "directoryPath": undefined,
+                "directoriesItems": [],
                 "isNavigationOngoing": false,
-                "directoriesBeingCreated": [],
-                "directoriesBeingRenamed": [],
-                "filesBeingCreated": [],
-                "filesBeingRenamed": [],
+                "ongoingOperations": [],
                 "~internal": {
                     "isUserWatching": false,
                 },
@@ -80,24 +82,20 @@ export const { reducer, actions } = createSlice({
                 payload,
             }: PayloadAction<{
                 explorerType: "s3" | "secrets";
-                directories: string[];
-                files: string[];
-                path: string;
+                directoryPath: string;
+                directoriesItems: {
+                    kind: "file" | "directory";
+                    basename: string;
+                }[];
             }>,
         ) => {
-            const { explorerType, directories, files, path } = payload;
+            const { explorerType, directoryPath, directoriesItems } = payload;
 
-            state[explorerType] = {
-                path,
-                directories,
-                files,
-                "directoriesBeingCreated": [],
-                "directoriesBeingRenamed": [],
-                "filesBeingCreated": [],
-                "filesBeingRenamed": [],
-                "isNavigationOngoing": false,
-                "~internal": state[explorerType]["~internal"],
-            };
+            const contextualState = state[explorerType];
+
+            contextualState.directoryPath = directoryPath;
+            contextualState.directoriesItems = directoriesItems;
+            contextualState.isNavigationOngoing = false;
         },
         "navigationCanceled": (
             state,
@@ -107,151 +105,104 @@ export const { reducer, actions } = createSlice({
 
             state[explorerType].isNavigationOngoing = false;
         },
-        "renameStarted": (
+        "operationStarted": (
             state,
             {
                 payload,
-            }: PayloadAction<{
-                explorerType: "s3" | "secrets";
-                renamingWhat: "file" | "directory";
-                basename: string;
-                newBasename: string;
-            }>,
+            }: PayloadAction<
+                {
+                    explorerType: "s3" | "secrets";
+                    kind: "file" | "directory";
+                    basename: string;
+                } & (
+                    | {
+                          operation: "create" | "delete";
+                      }
+                    | {
+                          operation: "rename";
+                          newBasename: string;
+                      }
+                )
+            >,
         ) => {
-            const { explorerType, renamingWhat, basename, newBasename } = payload;
+            const { explorerType, kind, basename } = payload;
 
             const contextualState = state[explorerType];
 
-            const relevantArray =
-                contextualState[
-                    (() => {
-                        switch (renamingWhat) {
-                            case "file":
-                                return "files";
-                            case "directory":
-                                return "directories";
-                        }
-                    })()
-                ];
+            assert(contextualState.directoryPath !== undefined);
 
-            relevantArray[relevantArray.indexOf(basename)] = newBasename;
+            contextualState.ongoingOperations.push({
+                "operation": payload.operation,
+                "basename":
+                    payload.operation === "rename"
+                        ? payload.newBasename
+                        : payload.basename,
+                "directoryPath": contextualState.directoryPath,
+                kind,
+            });
 
-            contextualState[
-                (() => {
-                    switch (renamingWhat) {
-                        case "file":
-                            return "filesBeingRenamed";
-                        case "directory":
-                            return "directoriesBeingRenamed";
+            const { directoriesItems } = contextualState;
+
+            switch (payload.operation) {
+                case "rename":
+                    {
+                        const item = directoriesItems.find(
+                            item => item.kind === kind && item.basename === basename,
+                        );
+                        assert(item !== undefined);
+                        item.basename = payload.newBasename;
                     }
-                })()
-            ].push(newBasename);
-        },
-        "renameOrCreateCompleted": (
-            state,
-            {
-                payload,
-            }: PayloadAction<{
-                explorerType: "s3" | "secrets";
-                basename: string;
-                actionOnWhat: "file" | "directory";
-                action: "rename" | "create";
-            }>,
-        ) => {
-            const { explorerType, basename, actionOnWhat, action } = payload;
+                    break;
+                case "create":
+                    directoriesItems.push({
+                        kind,
+                        basename,
+                    });
+                    break;
+                case "delete":
+                    {
+                        const index = directoriesItems.findIndex(
+                            item => item.kind === kind && item.basename === basename,
+                        );
 
-            const contextualState = state[explorerType];
+                        assert(index >= 0);
 
-            const relevantArray =
-                contextualState[
-                    (() => {
-                        switch (actionOnWhat) {
-                            case "file":
-                                switch (action) {
-                                    case "create":
-                                        return "filesBeingCreated";
-                                    case "rename":
-                                        return "filesBeingRenamed";
-                                }
-                                break;
-                            case "directory":
-                                switch (action) {
-                                    case "create":
-                                        return "directoriesBeingCreated";
-                                    case "rename":
-                                        return "directoriesBeingRenamed";
-                                }
-                                break;
-                        }
-                    })()
-                ];
-
-            relevantArray.splice(relevantArray.indexOf(basename), 1);
-        },
-        "createStarted": (
-            state,
-            {
-                payload,
-            }: PayloadAction<{
-                explorerType: "s3" | "secrets";
-                basename: string;
-                createWhat: "file" | "directory";
-            }>,
-        ) => {
-            const { explorerType, basename, createWhat } = payload;
-
-            const contextualState = state[explorerType];
-
-            contextualState[
-                (() => {
-                    switch (createWhat) {
-                        case "file":
-                            return "files";
-                        case "directory":
-                            return "directories";
+                        contextualState.directoriesItems.splice(index, 1);
                     }
-                })()
-            ].push(basename);
-
-            contextualState[
-                (() => {
-                    switch (createWhat) {
-                        case "file":
-                            return "filesBeingCreated";
-                        case "directory":
-                            return "directoriesBeingCreated";
-                    }
-                })()
-            ].push(basename);
+                    break;
+            }
         },
-        "deleteStarted": (
+        "operationCompleted": (
             state,
             {
                 payload,
             }: PayloadAction<{
                 explorerType: "s3" | "secrets";
-                deleteWhat: "file" | "directory";
+                kind: "file" | "directory";
                 basename: string;
+                directoryPath: string;
             }>,
         ) => {
-            const { explorerType, deleteWhat, basename } = payload;
+            const { explorerType, kind, basename, directoryPath } = payload;
 
             const contextualState = state[explorerType];
 
-            const relevantArray =
-                contextualState[
-                    (() => {
-                        switch (deleteWhat) {
-                            case "file":
-                                return "files";
-                            case "directory":
-                                return "directories";
-                        }
-                    })()
-                ];
+            assert(contextualState.directoryPath !== undefined);
 
-            relevantArray.splice(relevantArray.indexOf(basename), 1);
+            const { ongoingOperations } = contextualState;
+
+            const index = ongoingOperations.findIndex(
+                o =>
+                    o.kind === kind &&
+                    o.basename === basename &&
+                    pathRelative(o.directoryPath, directoryPath) === "",
+            );
+
+            assert(index >= 0);
+
+            ongoingOperations.splice(index, 1);
         },
+
         "isUserWatchingChanged": (
             state,
             {
@@ -324,10 +275,10 @@ const privateThunks = {
                         event.actionName === "isUserWatchingChanged" &&
                         event.payload.explorerType === explorerType &&
                         (() => {
-                            const { path, isNavigationOngoing } =
+                            const { directoryPath, isNavigationOngoing } =
                                 getState().explorers[explorerType];
 
-                            return path === undefined && !isNavigationOngoing;
+                            return directoryPath === undefined && !isNavigationOngoing;
                         })(),
                 ),
             ]).attach(
@@ -347,6 +298,61 @@ const privateThunks = {
                             }
                         })(),
                     }),
+            );
+        },
+};
+
+export const interUsecasesThunks = {
+    "getLoggedSecretsApis":
+        (): ThunkAction<
+            Pick<SliceContexts["secrets"], "loggedApi" | "loggedExtendedApi" | "apiLogs">
+        > =>
+        (...args) => {
+            const [, , extraArgs] = args;
+
+            return getSliceContexts(extraArgs)["secrets"];
+        },
+    "waitForNoOngoingOperation":
+        (params: {
+            explorerType: "s3" | "secrets";
+            kind: "file" | "directory";
+            basename: string;
+            directoryPath: string;
+            ctx?: Ctx;
+        }): ThunkAction =>
+        async (...args) => {
+            const [, getState, { evtAction }] = args;
+
+            const {
+                explorerType,
+                kind,
+                basename,
+                directoryPath,
+                ctx = Evt.newCtx(),
+            } = params;
+
+            const { ongoingOperations } = getState().explorers[explorerType];
+
+            const ongoingOperation = ongoingOperations.find(
+                o =>
+                    o.kind === kind &&
+                    o.basename === basename &&
+                    o.directoryPath === directoryPath,
+            );
+
+            if (ongoingOperation === undefined) {
+                return;
+            }
+
+            await evtAction.waitFor(
+                event =>
+                    event.sliceName === "explorers" &&
+                    event.actionName === "operationCompleted" &&
+                    event.payload.explorerType === explorerType &&
+                    event.payload.kind === kind &&
+                    event.payload.basename === basename &&
+                    pathRelative(event.payload.directoryPath, directoryPath) === "",
+                ctx,
             );
         },
 };
@@ -393,11 +399,12 @@ export const thunks = {
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
-        (params: { explorerType: "s3" | "secrets"; path: string }): ThunkAction =>
+        (params: {
+            explorerType: "s3" | "secrets";
+            directoryPath: string;
+        }): ThunkAction =>
         async (...args) => {
-            const { explorerType } = params;
-
-            const path = pathNormalize(params.path.replace(/\/$/, ""));
+            const { explorerType, directoryPath } = params;
 
             const [dispatch, getState, extraArg] = args;
 
@@ -411,8 +418,6 @@ export const thunks = {
 
             const ctx = Evt.newCtx();
 
-            const { evtAction } = extraArg;
-
             extraArg.evtAction.attach(
                 event =>
                     event.sliceName === "explorers" &&
@@ -422,41 +427,19 @@ export const thunks = {
                 () => ctx.done(),
             );
 
-            scope: {
-                const {
-                    directoriesBeingCreated,
-                    directoriesBeingRenamed,
-                    path: currentPath,
-                } = getState().explorers[explorerType];
-
-                if (currentPath === undefined) {
-                    break scope;
-                }
-
-                const isPathReady =
-                    [...directoriesBeingCreated, ...directoriesBeingRenamed]
-                        .map(basename => pathJoin(currentPath, basename))
-                        .find(notReadyPath => pathRelative(notReadyPath, path) === "") ===
-                    undefined;
-
-                if (isPathReady) {
-                    break scope;
-                }
-
-                await evtAction.waitFor(
-                    event =>
-                        event.sliceName === "explorers" &&
-                        event.actionName === "renameOrCreateCompleted" &&
-                        event.payload.explorerType === explorerType &&
-                        event.payload.actionOnWhat === "directory" &&
-                        event.payload.basename === pathBasename(path),
+            await dispatch(
+                interUsecasesThunks.waitForNoOngoingOperation({
+                    explorerType,
+                    "kind": "directory",
+                    "directoryPath": pathJoin(directoryPath, ".."),
+                    "basename": pathBasename(directoryPath),
                     ctx,
-                );
-            }
+                }),
+            );
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedApi.list({ path }),
+                loggedApi.list({ "path": directoryPath }),
             ).waitFor();
 
             ctx.done();
@@ -464,9 +447,14 @@ export const thunks = {
             dispatch(
                 actions.navigationCompleted({
                     explorerType,
-                    directories,
-                    files,
-                    path,
+                    directoryPath,
+                    "directoriesItems": [
+                        ...directories.map(basename => ({
+                            basename,
+                            "kind": "directory" as const,
+                        })),
+                        ...files.map(basename => ({ basename, "kind": "file" as const })),
+                    ],
                 }),
             );
         },
@@ -487,22 +475,14 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const { path } = getState().explorers[explorerType];
+            const { directoryPath } = getState().explorers[explorerType];
 
-            if (path === undefined) {
+            if (directoryPath === undefined) {
                 return;
             }
 
-            await dispatch(thunks.navigate({ explorerType, path }));
+            await dispatch(thunks.navigate({ explorerType, directoryPath }));
         },
-    /**
-     * Assert:
-     * The file or directory we are renaming is present in the directory
-     * currently listed.
-     * It's ok to navigate before it's completed.
-     * The file or directory we are about to rename is not  being
-     * renamed or created.
-     */
     "rename":
         (params: {
             explorerType: "secrets";
@@ -517,22 +497,33 @@ export const thunks = {
 
             const contextualState = getState().explorers[explorerType];
 
-            const { path } = contextualState;
+            const { directoryPath } = contextualState;
 
-            assert(path !== undefined);
+            assert(directoryPath !== undefined);
+
+            await dispatch(
+                interUsecasesThunks.waitForNoOngoingOperation({
+                    explorerType,
+                    "kind": renamingWhat,
+                    directoryPath,
+                    basename,
+                }),
+            );
 
             dispatch(
-                actions.renameStarted({
+                actions.operationStarted({
                     explorerType,
-                    renamingWhat,
+                    "kind": renamingWhat,
                     basename,
+                    "operation": "rename",
                     newBasename,
                 }),
             );
 
-            const sliceContext = getSliceContexts(extraArg)[explorerType];
+            console.log("artificial delay");
+            await new Promise(resolve => setTimeout(resolve, 3000));
 
-            const pr = sliceContext.loggedExtendedApi[
+            await getSliceContexts(extraArg)[explorerType].loggedExtendedApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -542,29 +533,16 @@ export const thunks = {
                     }
                 })()
             ]({
-                "path": pathJoin(path, basename),
+                "path": pathJoin(directoryPath, basename),
                 newBasename,
             });
 
-            const ctx = Evt.newCtx();
-
-            extraArg.evtAction.attach(
-                event =>
-                    event.sliceName === "explorers" &&
-                    event.actionName === "navigationCanceled" &&
-                    event.payload.explorerType === explorerType,
-                ctx,
-                () => ctx.done(),
-            );
-
-            await Evt.from(ctx, pr).waitFor();
-
             dispatch(
-                actions.renameOrCreateCompleted({
+                actions.operationCompleted({
                     explorerType,
-                    "actionOnWhat": renamingWhat,
-                    "action": "rename",
+                    "kind": renamingWhat,
                     "basename": newBasename,
+                    directoryPath,
                 }),
             );
         },
@@ -572,77 +550,72 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams): ThunkAction =>
         async (...args) => {
-            const { basename } = params;
-
             const [dispatch, getState, extraArg] = args;
 
             const contextualState = getState().explorers[params.explorerType];
 
-            assert(contextualState.path !== undefined);
+            const { directoryPath } = contextualState;
+
+            assert(directoryPath !== undefined);
+
+            await dispatch(
+                interUsecasesThunks.waitForNoOngoingOperation({
+                    "explorerType": params.explorerType,
+                    "kind": params.createWhat,
+                    directoryPath,
+                    "basename": params.basename,
+                }),
+            );
 
             dispatch(
-                actions.createStarted({
-                    basename,
-                    "createWhat": params.createWhat,
+                actions.operationStarted({
                     "explorerType": params.explorerType,
+                    "kind": params.createWhat,
+                    "basename": params.basename,
+                    "operation": "create",
                 }),
             );
 
             const sliceContexts = getSliceContexts(extraArg);
 
-            const path = pathJoin(contextualState.path, basename);
+            const path = pathJoin(directoryPath, params.basename);
 
-            const pr = (async () => {
-                switch (params.createWhat) {
-                    case "file":
-                        switch (params.explorerType) {
-                            case "s3":
-                                alert("TODO");
-                                break;
-                            case "secrets":
-                                await sliceContexts[params.explorerType].loggedApi.put({
-                                    path,
-                                    "secret": {},
-                                });
-                                break;
-                        }
+            switch (params.createWhat) {
+                case "file":
+                    switch (params.explorerType) {
+                        case "s3":
+                            alert("TODO");
+                            break;
+                        case "secrets":
+                            await sliceContexts[params.explorerType].loggedApi.put({
+                                path,
+                                "secret": {},
+                            });
+                            break;
+                    }
 
-                        break;
-                    case "directory":
-                        switch (params.explorerType) {
-                            case "s3":
-                                alert("TODO");
-                                break;
-                            case "secrets":
-                                await sliceContexts[
-                                    params.explorerType
-                                ].loggedExtendedApi.createDirectory({ path });
-                                break;
-                        }
+                    break;
+                case "directory":
+                    switch (params.explorerType) {
+                        case "s3":
+                            alert("TODO");
+                            break;
+                        case "secrets":
+                            await sliceContexts[
+                                params.explorerType
+                            ].loggedExtendedApi.createDirectory({ path });
+                            break;
+                    }
 
-                        break;
-                }
-            })();
-
-            const ctx = Evt.newCtx();
-
-            extraArg.evtAction.attach(
-                event =>
-                    event.sliceName === "explorers" &&
-                    event.actionName === "navigationCanceled" &&
-                    event.payload.explorerType === params.explorerType,
-                ctx,
-                () => ctx.done(),
-            );
-
-            await Evt.from(ctx, pr).waitFor();
+                    break;
+            }
 
             dispatch(
-                actions.renameOrCreateCompleted({
+                actions.operationCompleted({
                     "explorerType": params.explorerType,
+                    "kind": params.createWhat,
                     "basename": params.basename,
-                    "action": "create",
-                    "actionOnWhat": params.createWhat,
+                    directoryPath,
                 }),
             );
         },
@@ -651,8 +624,6 @@ export const thunks = {
      * Assert:
      * The file or directory we are deleting is present in the directory
      * currently listed.
-     * The file or directory we are about to delete is not being
-     * created or renamed.
      */
     "delete":
         (params: {
@@ -667,19 +638,31 @@ export const thunks = {
 
             const contextualState = getState().explorers[params.explorerType];
 
-            assert(contextualState.path !== undefined);
+            const { directoryPath } = contextualState;
 
-            const path = pathJoin(contextualState.path, basename);
+            assert(directoryPath !== undefined);
+
+            await dispatch(
+                interUsecasesThunks.waitForNoOngoingOperation({
+                    explorerType,
+                    "kind": deleteWhat,
+                    directoryPath,
+                    basename,
+                }),
+            );
 
             dispatch(
-                actions.deleteStarted({
-                    explorerType,
-                    basename,
-                    deleteWhat,
+                actions.operationStarted({
+                    "explorerType": params.explorerType,
+                    "kind": params.deleteWhat,
+                    "basename": params.basename,
+                    "operation": "delete",
                 }),
             );
 
             const sliceContexts = getSliceContexts(extraArg);
+
+            const path = pathJoin(directoryPath, basename);
 
             switch (explorerType) {
                 case "s3":
@@ -687,19 +670,25 @@ export const thunks = {
                     break;
                 case "secrets":
                     const sliceContext = sliceContexts[explorerType];
-
-                    switch (deleteWhat) {
-                        case "file":
-                            await sliceContext.loggedApi.delete({ path });
-                            break;
-                        case "directory":
-                            await sliceContext.loggedExtendedApi.deleteDirectory({
-                                path,
-                            });
-                            break;
-                    }
+                    await (() => {
+                        switch (deleteWhat) {
+                            case "file":
+                                return sliceContext.loggedApi.delete;
+                            case "directory":
+                                return sliceContext.loggedExtendedApi.deleteDirectory;
+                        }
+                    })()({ path });
                     break;
             }
+
+            dispatch(
+                actions.operationCompleted({
+                    explorerType,
+                    "kind": deleteWhat,
+                    basename,
+                    directoryPath,
+                }),
+            );
         },
     "getApiLogs":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<ApiLogs> =>
@@ -908,3 +897,93 @@ function createSecretsManagerClientExtension(props: {
         },
     };
 }
+
+export const selectors = (() => {
+    const explorerTypes = ["s3", "secrets"] as const;
+
+    type ExplorerType = typeof explorerTypes[number];
+
+    type CurrentWorkingDirectory = {
+        directoryPath: string;
+        isNavigationOngoing: boolean;
+        directories: string[];
+        files: string[];
+        directoriesBeingCreated: string[];
+        directoriesBeingRenamed: string[];
+        filesBeingCreated: string[];
+        filesBeingRenamed: string[];
+    };
+
+    const currentWorkingDirectory = (
+        rootState: RootState,
+    ): Record<ExplorerType, CurrentWorkingDirectory | undefined> => {
+        const state = rootState.explorers;
+
+        return Object.fromEntries(
+            explorerTypes.map(explorerType => {
+                const contextualState = state[explorerType];
+
+                const {
+                    directoryPath,
+                    isNavigationOngoing,
+                    directoriesItems,
+                    ongoingOperations,
+                } = contextualState;
+
+                return [
+                    explorerType,
+                    ((): CurrentWorkingDirectory | undefined => {
+                        if (directoryPath === undefined) {
+                            return undefined;
+                        }
+
+                        return {
+                            directoryPath,
+                            isNavigationOngoing,
+                            ...(() => {
+                                const select = (kind: "directory" | "file") =>
+                                    directoriesItems
+                                        .filter(item => item.kind === kind)
+                                        .map(({ basename }) => basename);
+
+                                return {
+                                    "directories": select("directory"),
+                                    "files": select("file"),
+                                };
+                            })(),
+                            ...(() => {
+                                const select = (
+                                    kind: "directory" | "file",
+                                    operation: "create" | "rename",
+                                ) =>
+                                    ongoingOperations
+                                        .filter(
+                                            o =>
+                                                o.directoryPath === directoryPath &&
+                                                o.kind === kind &&
+                                                o.operation === operation,
+                                        )
+                                        .map(({ basename }) => basename);
+
+                                return {
+                                    "directoriesBeingCreated": select(
+                                        "directory",
+                                        "create",
+                                    ),
+                                    "directoriesBeingRenamed": select(
+                                        "directory",
+                                        "rename",
+                                    ),
+                                    "filesBeingCreated": select("file", "create"),
+                                    "filesBeingRenamed": select("file", "rename"),
+                                };
+                            })(),
+                        };
+                    })(),
+                ] as const;
+            }),
+        ) as any;
+    };
+
+    return { currentWorkingDirectory };
+})();
