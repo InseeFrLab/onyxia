@@ -198,6 +198,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                         evtAction={evtInputAction}
                         onSubmit={onInputSubmit}
                         getIsValidValue={getIsValidValue}
+                        inputProps_spellCheck={false}
                     />
                 </form>
             )}
