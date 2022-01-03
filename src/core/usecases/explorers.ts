@@ -22,22 +22,31 @@ import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { RootState } from "../setup";
 import memoize from "memoizee";
+import type { WritableDraft } from "immer/dist/types/types-external";
 
 export type ExplorersState = Record<
     "s3" | "secrets",
     {
         directoryPath: string | undefined;
-        directoriesItems: {
+        directoryItems: {
             kind: "file" | "directory";
             basename: string;
         }[];
         isNavigationOngoing: boolean;
-        ongoingOperations: {
+        ongoingOperations: ({
             directoryPath: string;
             basename: string;
             kind: "file" | "directory";
             operation: "create" | "rename" | "delete";
-        }[];
+        } & (
+            | {
+                  operation: "create" | "delete";
+              }
+            | {
+                  operation: "rename";
+                  previousBasename: string;
+              }
+        ))[];
         "~internal": {
             isUserWatching: boolean;
         };
@@ -52,7 +61,7 @@ export const { reducer, actions } = createSlice({
         (() => {
             const contextualState = {
                 "directoryPath": undefined,
-                "directoriesItems": [],
+                "directoryItems": [],
                 "isNavigationOngoing": false,
                 "ongoingOperations": [],
                 "~internal": {
@@ -84,19 +93,40 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 explorerType: "s3" | "secrets";
                 directoryPath: string;
-                directoriesItems: {
+                directoryItems: {
                     kind: "file" | "directory";
                     basename: string;
                 }[];
             }>,
         ) => {
-            const { explorerType, directoryPath, directoriesItems } = payload;
+            const { explorerType, directoryPath, directoryItems } = payload;
 
             const contextualState = state[explorerType];
 
             contextualState.directoryPath = directoryPath;
-            contextualState.directoriesItems = directoriesItems;
+            contextualState.directoryItems = directoryItems;
             contextualState.isNavigationOngoing = false;
+
+            //Properly restore state when navigating back to
+            //a directory with ongoing operations.
+            contextualState.ongoingOperations
+                .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
+                .forEach(o => {
+                    switch (o.operation) {
+                        case "rename":
+                            removeIfPresent(contextualState.directoryItems, {
+                                "kind": o.kind,
+                                "basename": o.previousBasename,
+                            });
+                            break;
+                        case "delete":
+                            removeIfPresent(contextualState.directoryItems, {
+                                "kind": o.kind,
+                                "basename": o.basename,
+                            });
+                            break;
+                    }
+                });
         },
         "navigationCanceled": (
             state,
@@ -135,28 +165,29 @@ export const { reducer, actions } = createSlice({
             switch (payload.operation) {
                 case "rename":
                 case "delete":
-                    {
-                        const { directoriesItems } = contextualState;
-
-                        const index = directoriesItems.findIndex(
-                            item => item.kind === kind && item.basename === basename,
-                        );
-
-                        assert(index >= 0);
-
-                        contextualState.directoriesItems.splice(index, 1);
-                    }
+                    removeIfPresent(contextualState.directoryItems, { kind, basename });
                     break;
             }
 
             contextualState.ongoingOperations.push({
-                "operation": payload.operation,
-                "basename":
-                    payload.operation === "rename"
-                        ? payload.newBasename
-                        : payload.basename,
                 "directoryPath": contextualState.directoryPath,
                 kind,
+                ...(() => {
+                    switch (payload.operation) {
+                        case "rename":
+                            return {
+                                "operation": payload.operation,
+                                "basename": payload.newBasename,
+                                "previousBasename": basename,
+                            };
+                        case "delete":
+                        case "create":
+                            return {
+                                "operation": payload.operation,
+                                basename,
+                            };
+                    }
+                })(),
             });
         },
         "operationCompleted": (
@@ -196,7 +227,7 @@ export const { reducer, actions } = createSlice({
             switch (ongoingOperation.operation) {
                 case "create":
                 case "rename":
-                    contextualState.directoriesItems.push({
+                    contextualState.directoryItems.push({
                         "basename": ongoingOperation.basename,
                         kind,
                     });
@@ -350,7 +381,10 @@ export const interUsecasesThunks = {
                     event.actionName === "operationCompleted" &&
                     event.payload.explorerType === explorerType &&
                     event.payload.kind === kind &&
-                    event.payload.basename === basename &&
+                    (event.payload.basename === basename ||
+                        (ongoingOperation.operation === "rename" &&
+                            event.payload.basename ===
+                                ongoingOperation.previousBasename)) &&
                     pathRelative(event.payload.directoryPath, directoryPath) === "",
                 ctx,
             );
@@ -448,7 +482,7 @@ export const thunks = {
                 actions.navigationCompleted({
                     explorerType,
                     directoryPath,
-                    "directoriesItems": [
+                    "directoryItems": [
                         ...directories.map(basename => ({
                             basename,
                             "kind": "directory" as const,
@@ -519,9 +553,6 @@ export const thunks = {
                     newBasename,
                 }),
             );
-
-            console.log("artificial delay");
-            await new Promise(resolve => setTimeout(resolve, 3000));
 
             await getSliceContexts(extraArg)[explorerType].loggedExtendedApi[
                 (() => {
@@ -898,6 +929,22 @@ function createSecretsManagerClientExtension(props: {
     };
 }
 
+function removeIfPresent(
+    directoryItems: WritableDraft<{
+        kind: "file" | "directory";
+        basename: string;
+    }>[],
+    item: { kind: "file" | "directory"; basename: string },
+): void {
+    const index = directoryItems.findIndex(
+        item_i => item_i.kind === item.kind && item_i.basename === item.basename,
+    );
+
+    assert(index >= 0);
+
+    directoryItems.splice(index, 1);
+}
+
 export const selectors = (() => {
     const explorerTypes = ["s3", "secrets"] as const;
 
@@ -926,7 +973,7 @@ export const selectors = (() => {
                 const {
                     directoryPath,
                     isNavigationOngoing,
-                    directoriesItems,
+                    directoryItems,
                     ongoingOperations,
                 } = contextualState;
 
@@ -958,7 +1005,7 @@ export const selectors = (() => {
 
                                 const select = (kind: "directory" | "file") =>
                                     [
-                                        ...directoriesItems
+                                        ...directoryItems
                                             .filter(item => item.kind === kind)
                                             .map(({ basename }) => basename),
                                         ...selectOngoing(kind, "create"),

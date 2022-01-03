@@ -47,10 +47,6 @@ export function MyFilesMySecrets(props: Props) {
 
     const cwdVue = useSelector(selectors.explorers.cwdIconsVue).cwdIconsVue[explorerType];
 
-    const x = useSelector(state => state.explorers);
-
-    console.log(JSON.stringify(x[explorerType], null, 2));
-
     const { explorersThunks } = useThunks();
 
     useEffect(() => {
