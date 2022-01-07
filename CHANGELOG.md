@@ -1,3 +1,10 @@
+### **0.26.24** (2022-01-03)  
+  
+- Explorers: ongoing operations are independent from cwd  
+- Fix some bugs in the explorers  
+- General explorer refactor  
+- No spellcheck for filename    
+  
 ### **0.26.23** (2022-01-01)  
   
 - Disable storybook build until we can remove scss  
