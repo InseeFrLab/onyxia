@@ -48,10 +48,8 @@ export type UserConfigsState = {
     };
 };
 
-export const name = "userConfigs";
-
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "userConfigs",
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage":
             "The userConfigState should have been initialized during the store initialization",

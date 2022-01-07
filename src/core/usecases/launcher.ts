@@ -31,8 +31,6 @@ import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
 
-export const name = "launcher";
-
 export type FormField =
     | FormField.Boolean
     | FormField.Integer
@@ -347,8 +345,8 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
     return { scaffoldingIndexedFormFieldsToFinal };
 })();
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "launcher",
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",

@@ -15,8 +15,6 @@ import type { RootState } from "../setup";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApiClient";
 import { is } from "tsafe/is";
 
-export const name = "restorablePackageConfig";
-
 type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
     packageIcons:
@@ -44,8 +42,8 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "restorablePackageConfig",
     "initialState": createObjectThatThrowsIfAccessed<RestorablePackageConfigsState>({
         "debugMessage": [
             "The restorablePackageConfigState should have been",

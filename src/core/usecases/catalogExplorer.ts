@@ -5,8 +5,6 @@ import type { Catalog } from "../ports/OnyxiaApiClient";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 
-export const name = "catalogExplorer";
-
 type CatalogExplorerState =
     | CatalogExplorerState.NotFetched
     | CatalogExplorerState.NotSelected
@@ -42,8 +40,8 @@ namespace CatalogExplorerState {
     };
 }
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "catalogExplorer",
     "initialState": id<CatalogExplorerState>(
         id<CatalogExplorerState.NotFetched>({
             "stateDescription": "not fetched",

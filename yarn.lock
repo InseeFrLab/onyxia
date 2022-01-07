@@ -5321,12 +5321,12 @@ clean-css@^4.2.3:
   dependencies:
     source-map "~0.6.0"
 
-clean-redux@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-0.3.4.tgz#f3087c49a0d7b3f8df67d21db15c9bf18367c83b"
-  integrity sha512-rbN5AlMHMVhVqhKvz+NaNN5hJNR0Qmyq+wksuasmByp0zslXsr/mNynRH7Jp/GTDiKozSUXdRhA1gFPaBEFdpg==
+clean-redux@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/clean-redux/-/clean-redux-1.0.0.tgz#ef64701a8fe91baa14f66b48bb6eb265dc4adac6"
+  integrity sha512-2Tse+PZevFW8skCe14ja3pKrxPAuHlkIwxEZTTOs+sgW6fDKkEqMkSvbhIk257r8/WDm1p2hgpvQINV9Hd5RpQ==
   dependencies:
-    evt "2.0.0-beta.39"
+    evt "*"
     minimal-polyfills "^2.2.1"
     tsafe "^0.9.0"
 
@@ -7227,7 +7227,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-evt@2.0.0-beta.39:
+evt@*, evt@2.0.0-beta.39:
   version "2.0.0-beta.39"
   resolved "https://registry.yarnpkg.com/evt/-/evt-2.0.0-beta.39.tgz#3c859a83b35940f7eecfb5f148f03b7cbf3fee51"
   integrity sha512-XxJkaHrFWBrzjTbnr5LJYXkGkADsAXReZfq2lFu3Kf1iCEw5/5ibrdXu3bQdWW6xkZ8qwAHT3STU9zYcCl09BA==
