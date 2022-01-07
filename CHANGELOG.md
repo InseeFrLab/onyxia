@@ -1,3 +1,7 @@
+### **0.26.25** (2022-01-07)  
+  
+- Update clean-redux    
+  
 ### **0.26.24** (2022-01-03)  
   
 - Explorers: ongoing operations are independent from cwd  
