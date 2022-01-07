@@ -9,8 +9,6 @@ import type { RootState } from "../setup";
 import { exclude } from "tsafe/exclude";
 import { thunks as launcherThunks } from "./launcher";
 
-export const name = "runningService";
-
 type RunningServicesState = {
     isUserWatching: boolean;
     isUpdating: boolean;
@@ -52,8 +50,8 @@ export declare namespace RunningService {
     };
 }
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "runningService",
     "initialState": id<RunningServicesState>({
         "isUserWatching": false,
         "isUpdating": false,

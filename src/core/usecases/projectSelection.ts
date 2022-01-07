@@ -15,14 +15,12 @@ type ProjectsState = {
     selectedProjectId: string;
 };
 
-export const name = "projectSelection";
-
 const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "projectSelection",
     "initialState": createObjectThatThrowsIfAccessed<ProjectsState>(),
     "reducers": {
         "initialize": (_, { payload }: PayloadAction<ProjectsState>) => payload,

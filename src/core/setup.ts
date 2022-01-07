@@ -38,7 +38,8 @@ import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { KcLanguageTag } from "keycloakify";
-import { usecasesToReducer, createMiddlewareEvtActionFactory } from "clean-redux";
+import { usecasesToReducer } from "clean-redux";
+import { createMiddlewareEvtActionFactory } from "clean-redux/middlewareEvtAction";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";

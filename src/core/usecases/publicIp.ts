@@ -4,12 +4,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
 
-export const name = "publicIp";
-
 type PublicIpState = string | null;
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "publicIp",
     "initialState": id<PublicIpState>(null),
     "reducers": {
         "fetched": (_, { payload }: PayloadAction<string>) => payload,

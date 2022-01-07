@@ -53,10 +53,8 @@ export type ExplorersState = Record<
     }
 >;
 
-export const name = "explorers";
-
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "explorers",
     "initialState": id<ExplorersState>(
         (() => {
             const contextualState = {

@@ -15,14 +15,12 @@ type DeploymentRegionState = {
     selectedDeploymentRegionId: string;
 };
 
-export const name = "deploymentRegion";
-
 const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "deploymentRegion",
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
         "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,

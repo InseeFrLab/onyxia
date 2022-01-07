@@ -92,10 +92,8 @@ export type EditSecretParams = {
 const extraKey = ".onyxia";
 type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
-export const name = "secretExplorer";
-
-export const { reducer, actions } = createSlice({
-    name,
+export const { name, reducer, actions } = createSlice({
+    "name": "secretExplorer",
     "initialState": id<SecretExplorerState>(
         id<SecretExplorerState.ShowingDirectory>({
             "state": "SHOWING DIRECTORY",
