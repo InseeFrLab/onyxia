@@ -129,7 +129,8 @@
             "import/no-anonymous-default-export": "off",
             "react-hooks/rules-of-hooks": "warn",
             "react-hooks/exhaustive-deps": "off",
-            "no-labels": "off"
+            "no-labels": "off",
+            "prefer-const": "off"
         }
     },
     "husky": {
