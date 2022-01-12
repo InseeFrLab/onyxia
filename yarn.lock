@@ -2888,27 +2888,6 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/store@6.4.4":
-  version "6.4.4"
-  resolved "https://registry.yarnpkg.com/@storybook/store/-/store-6.4.4.tgz#462a314dccee90014ba4c27a386cccae7427b2d7"
-  integrity sha512-rIsDxHLAyTfy4nqpZljCZkunNwfwc1f2rBivzxMYg7blXwsRWRqWPnXDArhgSoaCykNdQlksNmUNHNhhAHGBRQ==
-  dependencies:
-    "@storybook/addons" "6.4.4"
-    "@storybook/client-logger" "6.4.4"
-    "@storybook/core-events" "6.4.4"
-    "@storybook/csf" "0.0.2--canary.87bc651.0"
-    core-js "^3.8.2"
-    fast-deep-equal "^3.1.3"
-    global "^4.4.0"
-    lodash "^4.17.20"
-    memoizerific "^1.11.3"
-    regenerator-runtime "^0.13.7"
-    slash "^3.0.0"
-    stable "^0.1.8"
-    synchronous-promise "^2.0.15"
-    ts-dedent "^2.0.0"
-    util-deprecate "^1.0.2"
-
 "@storybook/theming@6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-6.0.0.tgz#abba1b13691dbcf7ed915e2c091981f2e5007c2b"
@@ -4018,11 +3997,6 @@ ansi-regex@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-2.1.1.tgz#c3b33ab5ee360d86e0e628f0468ae7ef27d654df"
   integrity sha1-w7M6te42DYbg5ijwRorn7yfWVN8=
-
-ansi-regex@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-3.0.0.tgz#ed0317c322064f79466c02966bddb605ab37d998"
-  integrity sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=
 
 ansi-regex@^4.1.0:
   version "4.1.0"
@@ -11607,7 +11581,6 @@ onyxia-ui@^0.23.3:
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
     tsafe "^0.8.1"
-    tss-react "3.0.0-beta.2"
 
 open@^7.0.2, open@^7.0.3:
   version "7.4.2"
@@ -15072,13 +15045,6 @@ strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   dependencies:
     ansi-regex "^2.0.0"
 
-"strip-ansi@^3.0.1 || ^4.0.0", strip-ansi@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
-  integrity sha1-qEeQIusaw2iocTibY1JixQXuNo8=
-  dependencies:
-    ansi-regex "^3.0.0"
-
 strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
@@ -15662,6 +15628,14 @@ tslib@~2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
   integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
+
+tss-react@3.0.0-beta.2:
+  version "3.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-3.0.0-beta.2.tgz#76832dc6ef93d1fa1af24b5d0b335714ea39df62"
+  integrity sha512-r34YGUp7j0Lpnapzx473nKisib4An/bu/rYLDpUOBr4U13dUz6jtZjzSF5YkqU4I2Oh61txDUH3FwNcHZlXKVQ==
+  dependencies:
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
 
 tss-react@^3.2.4:
   version "3.2.4"
