@@ -241,8 +241,6 @@ export const App = memo((props: Props) => {
                                 return "myFiles";
                             case "myFiles":
                                 return "myFiles";
-                            case "myDataCatalog":
-                                return "myDataCatalog";
                         }
                     })()}
                 />
