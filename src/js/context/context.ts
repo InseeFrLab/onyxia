@@ -1,5 +1,5 @@
-import { prStore } from "lib/setup";
-import type { RootState } from "lib/setup";
+import { prStore } from "core/setup";
+import type { RootState } from "core/setup";
 
 let user: RootState["user"] = {
     "SSH": {

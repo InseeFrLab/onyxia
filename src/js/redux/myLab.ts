@@ -13,7 +13,7 @@ import memoize from "memoizee";
 /** We avoid importing app right away to prevent require cycles */
 const getAxiosInstance = memoize(
     () =>
-        import("lib/secondaryAdapters/officialOnyxiaApiClient").then(
+        import("core/secondaryAdapters/officialOnyxiaApiClient").then(
             ns => ns.prAxiosInstance,
         ),
     {
@@ -279,5 +279,7 @@ export const actions = {
     ),
     ...asyncThunks,
 };
+
+export const thunks = {};
 
 export const reducer = slice.reducer;

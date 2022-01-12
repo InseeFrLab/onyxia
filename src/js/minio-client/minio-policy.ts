@@ -64,8 +64,7 @@ export const publicListBucketPolicy = ({ resource, files }: any) => {
         Principal: S3Principal.any,
         Action: S3Actions.ListBucket,
     })(resource);
-    // @ts-ignore
-    policy.Condition = { StringEquals: { "s3:prefix": files } };
+    (policy as any).Condition = { StringEquals: { "s3:prefix": files } };
     return policy;
 };
 

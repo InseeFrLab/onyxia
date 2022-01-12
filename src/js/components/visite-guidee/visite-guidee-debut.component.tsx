@@ -5,7 +5,7 @@ import VisiteGuide from "./visite-guidee.component";
 import { Next, LinkTo, Arrow } from "./vignette-commons";
 import D from "js/i18n";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 //import { createGroup } from "type-route";
 const { startVisite } = actions;
 
@@ -67,7 +67,7 @@ const VisiteConnected: any = connect(undefined, {
 
 //VisiteGuideeDebut.routeGroup = createGroup([routes.tour]);
 
-VisiteGuideeDebut.requireUserLoggedIn = true;
+VisiteGuideeDebut.getDoRequireUserLoggedIn = true;
 
 export function VisiteGuideeDebut() {
     return <VisiteConnected />;

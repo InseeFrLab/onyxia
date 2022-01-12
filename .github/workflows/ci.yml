@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.head_commit.author.name != 'actions'
     outputs:
-      react_envs_version: ${{ steps.step1.outputs.out2 }}
+      cra_envs_version: ${{ steps.step1.outputs.out }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -38,9 +38,40 @@ jobs:
         path: build
     - id: step1
       run: |
-        echo ::set-output name=out2::$(
-          node -e 'console.log(require("./node_modules/react-envs/package.json")["version"])'
+        echo ::set-output name=out::$(
+          node -e 'console.log(require("./node_modules/cra-envs/package.json")["version"])'
         )
+
+#  deploy_storybook:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: actions/setup-node@v2.1.3
+#      with:
+#        node-version: '16'
+#    - uses: bahmutov/npm-install@v1
+#    - run: yarn build-storybook -o ./build_storybook
+#    - run: echo "storybook.onyxia.dev" > build_storybook/CNAME
+#    - run: git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${{github.repository}}.git
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - run: npx -y -p gh-pages@3.1.0 gh-pages -d ./build_storybook -u "github-actions-bot <actions@github.com>"
+
+
+  check_if_version_upgraded:
+    name: Check if version upgrade
+    runs-on: ubuntu-latest
+    needs: build
+    outputs:
+      from_version: ${{ steps.step1.outputs.from_version }}
+      to_version: ${{ steps.step1.outputs.to_version }}
+      is_upgraded_version: ${{ steps.step1.outputs.is_upgraded_version }}
+    steps:
+    - uses: garronej/ts-ci@v1.1.3
+      id: step1
+      with: 
+        action_name: is_package_json_version_upgraded
 
   docker:
     needs: 
@@ -48,9 +79,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo "{\"version\":\"$VER\"}" > re.json
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Computing Docker image tags
+        id: step1
         env: 
-          VER: ${{ needs.build.outputs.react_envs_version }}
+          IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
+          TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
+        run: |
+          OUT=$GITHUB_REPOSITORY:$(
+          [ "$GITHUB_EVENT_NAME" == "pull_request" ] &&
+            echo "$GITHUB_HEAD_REF" ||
+            echo "${GITHUB_REF#refs/*/}"
+          )
+          if [ "$IS_UPGRADED_VERSION" = "true" ]; then
+            OUT=$OUT,$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
+          fi
+          OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
+          echo ::set-output name=docker_tags::$OUT
+      - run: echo "{\"version\":\"$VER\"}" > cra-envs_package.json
+        env: 
+          VER: ${{ needs.build.outputs.cra_envs_version }}
       - uses: actions/download-artifact@v2
         with:
           name: build
@@ -64,22 +117,26 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Login to Amazon ECR
-        if: github.event_name != 'pull_request'
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push the image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: onyxia-web
-          IMAGE_TAG: latest
-        run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          echo "Pushing image to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+  update_changelog:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'push' &&
+      needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true'
+    needs:
+      - docker
+    steps:
+    - uses: garronej/ts-ci@v1.1.3
+      with:
+        action_name: update_changelog
+        branch: ${{ github.ref }}
 
 
+  poke_gitops:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+    - uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
+        event-type: update_onyxia_web
+        repository: InseeFrLab/paris-sspcloud

@@ -1,4 +1,4 @@
-import { ExplorerItem, Props } from "app/components/shared/Explorer/ExplorerItem";
+import { ExplorerItem, Props } from "ui/components/shared/Explorer/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { Evt } from "evt";

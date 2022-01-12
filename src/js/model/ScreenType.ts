@@ -1,4 +1,4 @@
-//TODO: See if used somewhere but remove in favor of app/hooks/useScreenType
+//TODO: See if used somewhere but remove in favor of ui/hooks/useScreenType
 
 export type ScreenType = "SMALL" | "MEDIUM" | "LARGE";
 

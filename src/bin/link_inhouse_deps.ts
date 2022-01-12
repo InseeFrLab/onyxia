@@ -14,8 +14,9 @@ powerhooks/
 onyxia-ui/
 keycloakify/
 evt/
-react-envs/
+cra-envs/
 tsafe/
+clean-redux/
 
 you must have cloned all the projects and run:
 yarn && yarn build 
@@ -55,7 +56,8 @@ const inHouseModuleNames = (() => {
               "keycloakify",
               "evt",
               "tsafe",
-              "react-envs",
+              "cra-envs",
+              "clean-redux",
           ];
 })();
 

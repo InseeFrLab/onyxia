@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import { LinkTo } from './../vignette-commons';
 import { BecherIcon } from 'js/components/commons/icons';
 import D from 'js/i18n';
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 
  
 export default {

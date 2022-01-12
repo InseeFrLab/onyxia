@@ -4,8 +4,8 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import * as minio from "js/minio-client/minio-tools";
 import { PUSHER } from "js/components/notifications";
-import type { ThunkAction } from "lib/setup";
-import { thunks as userAuthenticationThunks } from "lib/useCases/userAuthentication";
+import type { ThunkAction } from "core/setup";
+import { thunks as userAuthenticationThunks } from "core/usecases/userAuthentication";
 
 export type State = {
     currentObjects: (Blob & { name: string })[];
@@ -30,7 +30,7 @@ export declare namespace State {
 
 export const name = "myFiles";
 
-const asyncThunks = {
+export const asyncThunks = {
     ...(() => {
         const typePrefix = "loadBucketContent";
 
@@ -53,7 +53,7 @@ const asyncThunks = {
                             typeof rec === "boolean",
                     );
 
-                    dispatch(syncActions.emptyCurrentBucket());
+                    dispatch(actions.emptyCurrentBucket());
 
                     // eslint-disable-next-line
                     walkGetUserBucketPolicy: {
@@ -67,7 +67,7 @@ const asyncThunks = {
                         }
 
                         dispatch(
-                            syncActions.setBucketPolicy({
+                            actions.setBucketPolicy({
                                 "bucket": bucketName,
                                 "policy": JSON.parse(policy),
                             }),
@@ -83,10 +83,10 @@ const asyncThunks = {
                     stream.on("data", object =>
                         dispatch(
                             "prefix" in object
-                                ? syncActions.addDirectoryToCurrentBucket({
+                                ? actions.addDirectoryToCurrentBucket({
                                       "directory": object as any,
                                   }) //TODO
-                                : syncActions.addObjectToCurrentBucket({
+                                : actions.addObjectToCurrentBucket({
                                       object,
                                   }),
                         ),
@@ -177,7 +177,7 @@ const asyncThunks = {
             const { username, groups } = dispatch(userAuthenticationThunks.getUser());
 
             dispatch(
-                syncActions.loadUserBuckets({
+                actions.loadUserBuckets({
                     "buckets": [username, ...groups.map(g => `projet-${g}`)].map(
                         (id, i) => ({
                             id,
@@ -251,10 +251,8 @@ const slice = createSlice({
     },
 });
 
-const { actions: syncActions } = slice;
+export const { actions } = slice;
 
-export const actions = {
-    ...asyncThunks,
-};
+export const thunks = {};
 
 export const reducer = slice.reducer;
