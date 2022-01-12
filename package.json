@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "0.25.1",
+    "version": "0.26.25",
     "license": "MIT",
     "devDependencies": {
         "@storybook/addon-actions": "^6.1.11",
@@ -39,26 +39,24 @@
         "minimal-polyfills": "^2.2.1",
         "prettier": "^2.3.0",
         "react-app-rewired": "^2.1.8",
-        "typescript": "4.2.2"
+        "typescript": "4.2.2",
+        "ts-node": "^10.2.1"
     },
     "dependencies": {
-        "tsafe": "^0.8.1",
-        "@mui/material": "^5.0.4",
         "@emotion/react": "^11.4.1",
         "@emotion/styled": "^11.3.0",
-        "onyxia-ui": "^0.23.0",
-        "tss-react": "3.0.0-beta.2",
         "@mui/icons-material": "^5.0.4",
-        "keycloakify": "^4.2.10",
+        "@mui/material": "^5.2.5",
         "@reduxjs/toolkit": "^1.4.0",
-        "async-mutex": "^0.2.6",
+        "async-mutex": "^0.3.2",
         "axios": "^0.21.1",
         "classnames": "^2.2.6",
+        "clean-redux": "^1.0.0",
         "clipboard-polyfill": "^2.8.6",
         "clsx": "^1.1.1",
         "color": "3.1.3",
         "dayjs": "^1.8.26",
-        "evt": "2.0.0-beta.38",
+        "evt": "2.0.0-beta.39",
         "file-saver": "^2.0.2",
         "filereader-stream": "^2.0.0",
         "fontsource-roboto": "^3.0.3",
@@ -68,21 +66,23 @@
         "jwt-decode": "^2.2.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^15.0.2",
+        "keycloakify": "^4.4.0",
         "leaflet": "^1.6.0",
         "memoizee": "^0.4.14",
         "minio": "7.0.16",
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
+        "onyxia-ui": "^0.23.3",
         "path": "^0.12.7",
-        "powerhooks": "^0.11.1",
+        "powerhooks": "^0.11.2",
         "public-ip": "^4.0.3",
         "query-params": "0.0.1",
         "re-resizable": "^6.3.2",
         "react": "^17.0.2",
         "react-async-hook": "^3.6.1",
         "react-dom": "^17.0.2",
-        "react-envs": "^0.2.0",
+        "cra-envs": "^1.0.0",
         "react-git-info": "^2.0.0",
         "react-i18next": "^11.8.3",
         "react-leaflet": "^2.7.0",
@@ -96,7 +96,8 @@
         "resize-observer-polyfill": "^1.5.1",
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
-        "ts-node": "^10.2.1",
+        "tsafe": "^0.9.0",
+        "tss-react": "^3.2.4",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5"
@@ -115,7 +116,8 @@
         "link_inhouse_deps": "ts-node --skip-project src/bin/link_inhouse_deps.ts"
     },
     "resolutions": {
-        "babel-loader": "8.1.0"
+        "babel-loader": "8.1.0",
+        "evt": "2.0.0-beta.39"
     },
     "eslintConfig": {
         "extends": [
@@ -127,7 +129,8 @@
             "import/no-anonymous-default-export": "off",
             "react-hooks/rules-of-hooks": "warn",
             "react-hooks/exhaustive-deps": "off",
-            "no-labels": "off"
+            "no-labels": "off",
+            "prefer-const": "off"
         }
     },
     "husky": {

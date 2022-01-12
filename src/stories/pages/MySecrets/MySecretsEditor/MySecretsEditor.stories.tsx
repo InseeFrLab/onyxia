@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { MySecretsEditor } from "app/components/pages/MySecrets/MySecretsEditor";
-import type { Props } from "app/components/pages/MySecrets/MySecretsEditor";
+import { MySecretsEditor } from "ui/components/pages/MySecrets/MySecretsEditor";
+import type { Props } from "ui/components/pages/MySecrets/MySecretsEditor";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
-import { symToStr } from "app/tools/symToStr";
+import { symToStr } from "tsafe/symToStr";
 
 const artificialDelay = 3000;
 

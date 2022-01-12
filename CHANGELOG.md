@@ -1,3 +1,125 @@
+### **0.26.25** (2022-01-07)  
+  
+- Update clean-redux    
+  
+### **0.26.24** (2022-01-03)  
+  
+- Explorers: ongoing operations are independent from cwd  
+- Fix some bugs in the explorers  
+- General explorer refactor  
+- No spellcheck for filename    
+  
+### **0.26.23** (2022-01-01)  
+  
+- Disable storybook build until we can remove scss  
+- Add login page expired theme    
+  
+### **0.26.22** (2021-12-29)  
+  
+- Implement event canceling in explorer    
+  
+### **0.26.21** (2021-12-28)  
+  
+- Update keycloak    
+  
+### **0.26.20** (2021-12-27)  
+  
+- Enable new explorers in developper mode    
+  
+### **0.26.19** (2021-12-27)  
+  
+- update homegrown dependencies  
+- Avoid using ts-ignore as cra applies it globally, remove a lot of legacy files  
+- fix minor type error    
+  
+### **0.26.18** (2021-12-26)  
+  
+- Rename router into routes  
+- Setup the new versions of mySecrets and myFiles, disabled by default    
+  
+### **0.26.17** (2021-12-26)  
+  
+- Feature project hot swiping on myServices page    
+  
+### **0.26.16** (2021-12-25)  
+  
+- https://github.com/InseeFrLab/onyxia-ui/issues/9    
+  
+### **0.26.15** (2021-12-25)  
+  
+- Setup evtAction middleware from clean-redux    
+  
+### **0.26.14** (2021-12-22)  
+  
+- Prevent reloading app when project is changed  
+- Fix bug in how tokens are cached    
+  
+### **0.26.13** (2021-12-22)  
+  
+- Update dokerfile  
+- Tyr to fix storybook build  
+- Use ts_ci instean of github_action_toolkit    
+  
+### **0.26.12** (2021-12-22)  
+  
+- Fix ci pipeline  
+- Update react-envs that have been renamed to cra-envs  
+- rename lib->core, app->ui  
+- Update ci.yml  
+- Fix storybook build    
+  
+### **0.26.10** (2021-12-20)  
+  
+- Greatly improve architecture, use clean-redux  
+- Use tsafe for Reflect()    
+  
+### **0.26.9** (2021-12-17)  
+  
+- Update keycloakify  
+- Merge pull request #276 from labenech/main
+
+Update s3fs to use https endpoint instead of http  
+- Update s3fs to use hhtps endpoint instead of http    
+  
+### **0.26.8** (2021-12-13)  
+  
+  
+  
+### **0.26.7** (2021-12-12)  
+  
+- Update keycloakify, fix error in logs    
+  
+### **0.26.6** (2021-12-12)  
+  
+  
+  
+### **0.26.5** (2021-12-09)  
+  
+- The actual ENV is GIT_PERSONAL_ACCESS_TOKEN not GITHUB_TOKEN  
+- i18n: Pass translation namespace as a Key  
+- i18n: Allow to pass ns as key    
+  
+### **0.26.4** (2021-12-09)  
+  
+- Respect naming conventions requiresUserLoggedIn -> getDoRequireUserLoggedIn  
+- memoize PageSelector, important since pages are not using memo()    
+  
+### **0.26.3** (2021-12-08)  
+  
+  
+  
+### **0.26.2** (2021-12-08)  
+  
+- Fix user profile email regexp parsing    
+  
+### **0.26.1** (2021-12-07)  
+  
+  
+  
+## **0.26.0** (2021-12-06)  
+  
+- Account: Hide sensitive fields    
+  
 ### **0.25.1** (2021-12-02)  
   
 - Update tss-react    

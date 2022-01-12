@@ -14,7 +14,7 @@ import "./my-file.scss";
 import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
-import { routes } from "app/routes/router";
+import { routes } from "ui/routes";
 
 export const MyFile: React.FC<{
     file: Blob & { name: string };

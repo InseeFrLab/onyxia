@@ -1,18 +1,19 @@
 import { useEffect } from "react";
 import { Typography, Paper, Tooltip, Fab, Icon } from "@mui/material";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
+import "../app.scss";
 import "./myBuckets.scss";
-import { useSelector, selectors } from "app/libApi";
-import { actions as myFilesActions } from "js/redux/myFiles";
+import { useSelector, selectors } from "ui/coreApi";
+import { asyncThunks as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { useDispatch } from "js/hooks";
 import { createGroup } from "type-route";
-import { routes } from "app/routes/router";
-import type { DeploymentRegion } from "lib/ports/OnyxiaApiClient";
+import { routes } from "ui/routes";
+import type { DeploymentRegion } from "core/ports/OnyxiaApiClient";
 
 MyBuckets.routeGroup = createGroup([routes.myBuckets]);
 
-MyBuckets.requireUserLoggedIn = true as const;
+MyBuckets.getDoRequireUserLoggedIn = true as const;
 
 export function MyBuckets() {
     const dispatch = useDispatch();

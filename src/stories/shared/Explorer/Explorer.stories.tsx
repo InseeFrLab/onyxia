@@ -1,9 +1,9 @@
 import { css } from "tss-react/@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { Explorer, ExplorerProps } from "app/components/shared/Explorer/Explorer";
+import { Explorer, ExplorerProps } from "ui/components/shared/Explorer/Explorer";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
-import { symToStr } from "app/tools/symToStr";
+import { symToStr } from "tsafe/symToStr";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
 

@@ -1,9 +1,9 @@
 import { css } from "tss-react/@emotion/css";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "../sectionName";
-import { MySecrets } from "app/components/pages/MySecrets";
-import type { Props } from "app/components/pages/MySecrets";
-import { symToStr } from "app/tools/symToStr";
+import { MySecrets } from "ui/components/pages/MySecrets";
+import type { Props } from "ui/components/pages/MySecrets";
+import { symToStr } from "tsafe/symToStr";
 
 type StoryProps = {
     width: number;

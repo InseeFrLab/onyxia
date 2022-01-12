@@ -1,7 +1,7 @@
 import type { BuildMustacheViewParams } from "js/utils/form-field";
-import { useSelector, selectors } from "app/libApi";
-import { useThunks } from "app/libApi";
-import type { Store } from "lib/setup";
+import { useSelector, selectors } from "ui/coreApi";
+import { useThunks } from "ui/coreApi";
+import type { Store } from "core/setup";
 import * as reactRedux from "react-redux";
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
@@ -9,7 +9,7 @@ export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
 export function useGetBuildMustacheViewParams() {
     const { launcherThunks } = useThunks();
 
-    const userConfigs = useSelector(selectors.userConfigs);
+    const { userConfigs } = useSelector(selectors.userConfigs.userConfigs);
 
     async function getBuildMustacheViewParams(): Promise<BuildMustacheViewParams> {
         const mustacheParams = await launcherThunks.getMustacheParams();

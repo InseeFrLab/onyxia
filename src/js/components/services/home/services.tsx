@@ -3,7 +3,7 @@ import Content from "./content";
 import DetailsService from "../details";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 //import { createGroup } from "type-route";
-//import { routes } from "app/routes/router";
+//import { routes } from "ui/routes/router";
 
 type Props = {
     serviceSelectionne: boolean;
@@ -11,7 +11,7 @@ type Props = {
 
 //SharedServices.routeGroup = createGroup([routes.sharedServices]);
 
-SharedServices.requireUserLoggedIn = false;
+SharedServices.getDoRequireUserLoggedIn = false;
 
 export function SharedServices({ serviceSelectionne }: Props) {
     return serviceSelectionne ? (
