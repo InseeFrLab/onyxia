@@ -4,6 +4,7 @@ import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { hiddenDirectoryBasename } from "./userConfigs";
+import { generateRandomString } from "core/tools/generateRandomString";
 
 /*
 Here no state because other project user may have changed 
@@ -23,11 +24,7 @@ export type ProjectConfigs = Id<
 function getDefault<K extends keyof ProjectConfigs>(key: K): ProjectConfigs[K] {
     switch (key) {
         case "servicePassword":
-            return Array(2)
-                .fill("")
-                .map(() => Math.random().toString(36).slice(-10))
-                .join("")
-                .replace(/\./g, "");
+            return generateRandomString();
     }
 
     assert(false);

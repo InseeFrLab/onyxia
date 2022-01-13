@@ -122,6 +122,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     regions: {
                         id: string;
                         services: {
+                            expose: { domain: string };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
                                 networkPolicy?: boolean;
@@ -152,6 +153,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             region.services.defaultConfiguration?.ipprotection,
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
+                        "kubernetesClusterDomain": region.services.expose.domain,
                     })),
                 ),
         ),

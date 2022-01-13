@@ -233,6 +233,7 @@ assert<
                   namespacePrefix: string;
                   defaultIpProtection: boolean | undefined;
                   defaultNetworkPolicy: boolean | undefined;
+                  kubernetesClusterDomain: string;
               }[];
           }
         | {

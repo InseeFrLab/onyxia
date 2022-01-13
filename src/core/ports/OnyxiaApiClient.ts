@@ -62,6 +62,7 @@ export type DeploymentRegion = {
     namespacePrefix: string;
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
+    kubernetesClusterDomain: string;
 };
 
 export type Project = {
@@ -123,6 +124,10 @@ export type MustacheParams = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
     };
+    k8: {
+        domain: string;
+    };
+    random: () => string;
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
