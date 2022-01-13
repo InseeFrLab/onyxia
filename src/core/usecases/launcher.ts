@@ -30,6 +30,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
+import { generateRandomString } from "core/tools/generateRandomString";
 
 export type FormField =
     | FormField.Boolean
@@ -1044,6 +1045,10 @@ export const thunks = {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
                 },
+                "k8": {
+                    "domain": selectedDeploymentRegion.kubernetesClusterDomain,
+                },
+                "random": () => generateRandomString(),
             };
         },
 };
