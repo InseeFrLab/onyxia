@@ -1,3 +1,8 @@
+## **0.27.00** (2022-01-13)  
+  
+- Kubernetes cluster domain and random in mustach params  
+- Disable prefer-const eslint rule for use with useMergedClasses    
+  
 ### **0.26.25** (2022-01-07)  
   
 - Update clean-redux    
