@@ -21,6 +21,11 @@ const dAxiosInstance = new Deferred<AxiosInstance>();
 
 export const { pr: prAxiosInstance } = dAxiosInstance;
 
+export const getRandomSubdomain = memoize(
+    () => `${Math.floor(Math.random() * 1000000)}`,
+    { "max": 1 },
+);
+
 export function createOfficialOnyxiaApiClient(params: {
     url: string;
     /** returns undefined before region initially fetched */
@@ -206,9 +211,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun }) => {
-                    const serviceId = `${packageName}-${Math.floor(
-                        Math.random() * 1000000,
-                    )}`;
+                    const serviceId = `${packageName}-${getRandomSubdomain()}`;
 
                     const { data: contract } = await axiosInstance.put<
                         Record<string, unknown>[][]

@@ -126,8 +126,8 @@ export type MustacheParams = {
     };
     k8: {
         domain: string;
+        randomSubdomain: string;
     };
-    random: () => string;
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
