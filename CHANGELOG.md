@@ -1,3 +1,8 @@
+## **0.28.0** (2022-01-14)  
+  
+- Reuse the kub subdomain in service id  
+- Kubernetes cluster domain and random in mustach params    
+  
 ### **0.26.25** (2022-01-07)  
   
 - Update clean-redux    
