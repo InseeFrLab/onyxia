@@ -168,7 +168,7 @@ export async function createMinioS3Client(params: {
             stream.once("end", () => dOut.resolve(out));
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
-                    out.directories.push(bucketItem.prefix);
+                    out.directories.push(bucketItem.prefix.replace(/\/+$/, ""));
                 } else {
                     out.files.push(bucketItem.name);
                 }
