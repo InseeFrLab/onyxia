@@ -15,16 +15,12 @@ import { symToStr } from "tsafe/symToStr";
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
+import { getRandomK8sSubdomain } from "../ports/OnyxiaApiClient";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
 
 export const { pr: prAxiosInstance } = dAxiosInstance;
-
-export const getRandomSubdomain = memoize(
-    () => `${Math.floor(Math.random() * 1000000)}`,
-    { "max": 1 },
-);
 
 export function createOfficialOnyxiaApiClient(params: {
     url: string;
@@ -211,7 +207,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun }) => {
-                    const serviceId = `${packageName}-${getRandomSubdomain()}`;
+                    const serviceId = `${packageName}-${getRandomK8sSubdomain()}`;
 
                     const { data: contract } = await axiosInstance.put<
                         Record<string, unknown>[][]
