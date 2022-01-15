@@ -438,15 +438,13 @@ export const thunks = {
         async (...args) => {
             const { explorerType, directoryPath } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, , extraArg] = args;
 
             dispatch(actions.navigationStarted({ explorerType }));
 
             const { loggedApi } = getSliceContexts(extraArg)[explorerType];
 
-            if (getState().explorers[explorerType].isNavigationOngoing) {
-                dispatch(actions.navigationCanceled({ explorerType }));
-            }
+            dispatch(thunks.cancelNavigation({ explorerType }));
 
             const ctx = Evt.newCtx();
 
@@ -490,6 +488,7 @@ export const thunks = {
                 }),
             );
         },
+    //Not used by the UI so far but we want to later
     "cancelNavigation":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<void> =>
         (...args) => {
