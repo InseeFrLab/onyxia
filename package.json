@@ -97,7 +97,7 @@
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
         "tsafe": "^0.9.0",
-        "tss-react": "^3.2.4",
+        "tss-react": "^3.3.2",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5"
