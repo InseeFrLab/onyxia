@@ -124,7 +124,7 @@ export type MustacheParams = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
     };
-    k8: {
+    k8s: {
         domain: string;
         randomSubdomain: string;
     };

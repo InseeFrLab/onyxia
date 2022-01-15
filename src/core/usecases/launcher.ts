@@ -1045,7 +1045,7 @@ export const thunks = {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
                 },
-                "k8": {
+                "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "randomSubdomain": (() => {
                         getRandomSubdomain.clear();
