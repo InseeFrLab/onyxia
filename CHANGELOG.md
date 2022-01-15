@@ -1,3 +1,8 @@
+## **0.29.0** (2022-01-15)  
+  
+- Refactor getRandomSubdomain  
+- The correct abbr for kubernetes is k8s not k8    
+  
 ## **0.28.0** (2022-01-14)  
   
 - Reuse the kub subdomain in service id  
