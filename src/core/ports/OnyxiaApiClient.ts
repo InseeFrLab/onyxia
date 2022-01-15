@@ -1,4 +1,5 @@
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
+import memoize from "memoizee";
 
 export type OnyxiaApiClient = {
     /**
@@ -159,3 +160,7 @@ export type Contract = Record<string, unknown>[][];
 export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
 
 export const onyxiaIsSharedFormFieldPath = "onyxia.share";
+
+export const getRandomK8sSubdomain = memoize(
+    () => `${Math.floor(Math.random() * 1000000)}`,
+);
