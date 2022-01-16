@@ -1,3 +1,14 @@
+## **0.30.0** (2022-01-16)  
+  
+- Implement full sync between url and exporer state
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- Restore path when returning to explorer
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- https://github.com/typehero/type-route/issues/89  
+- Fix / at the end of directories in new explorer    
+  
 ## **0.29.0** (2022-01-15)  
   
 - Refactor getRandomSubdomain  
