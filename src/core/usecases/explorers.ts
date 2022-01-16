@@ -238,7 +238,19 @@ export const { name, reducer, actions } = createSlice({
             state,
             {
                 payload,
-            }: PayloadAction<{ explorerType: "s3" | "secrets"; isUserWatching: boolean }>,
+            }: PayloadAction<
+                {
+                    explorerType: "s3" | "secrets";
+                } & (
+                    | {
+                          isUserWatching: false;
+                      }
+                    | {
+                          isUserWatching: true;
+                          directNavigationDirectoryPath: string | undefined;
+                      }
+                )
+            >,
         ) => {
             const { explorerType, isUserWatching } = payload;
 
@@ -291,55 +303,60 @@ const privateThunks = {
 
             Evt.merge([
                 evtAction
-                    .pipe(
-                        event =>
-                            event.sliceName === "projectSelection" &&
-                            event.actionName === "projectChanged",
+                    .pipe(event =>
+                        event.sliceName === "projectSelection" &&
+                        event.actionName === "projectChanged" &&
+                        getState().explorers[explorerType]["~internal"].isUserWatching
+                            ? [undefined]
+                            : null,
                     )
                     .attach(
                         () => getState().explorers[explorerType].isNavigationOngoing,
                         () => dispatch(actions.navigationCanceled({ explorerType })),
                     ),
-                evtAction.pipe(
-                    event =>
-                        event.sliceName === "explorers" &&
-                        event.actionName === "isUserWatchingChanged" &&
-                        event.payload.explorerType === explorerType,
+                evtAction.pipe(event =>
+                    event.sliceName === "explorers" &&
+                    event.actionName === "isUserWatchingChanged" &&
+                    event.payload.explorerType === explorerType &&
+                    event.payload.isUserWatching
+                        ? [event.payload.directNavigationDirectoryPath]
+                        : null,
                 ),
-            ]).attach(
-                () => getState().explorers[explorerType]["~internal"].isUserWatching,
-                () =>
-                    getSliceContexts(extraArg)[explorerType].onNavigate?.({
-                        "directoryPath": (() => {
-                            const defaultDirectoryPath =
-                                "/" +
-                                (() => {
-                                    const project =
-                                        projectSelectionSelectors.selectedProject(
-                                            getState(),
-                                        );
+            ]).attach(directNavigationDirectoryPath =>
+                getSliceContexts(extraArg)[explorerType].onNavigate?.({
+                    "directoryPath": (() => {
+                        if (directNavigationDirectoryPath !== undefined) {
+                            return directNavigationDirectoryPath;
+                        }
 
-                                    switch (explorerType) {
-                                        case "s3":
-                                            return project.bucket;
-                                        case "secrets":
-                                            return project.vaultTopDir;
-                                    }
-                                })();
+                        const defaultDirectoryPath =
+                            "/" +
+                            (() => {
+                                const project = projectSelectionSelectors.selectedProject(
+                                    getState(),
+                                );
 
-                            const currentDirectoryPath =
-                                getState().explorers[explorerType].directoryPath;
+                                switch (explorerType) {
+                                    case "s3":
+                                        return project.bucket;
+                                    case "secrets":
+                                        return project.vaultTopDir;
+                                }
+                            })();
 
-                            if (
-                                currentDirectoryPath !== undefined &&
-                                currentDirectoryPath.startsWith(defaultDirectoryPath)
-                            ) {
-                                return currentDirectoryPath;
-                            }
+                        const currentDirectoryPath =
+                            getState().explorers[explorerType].directoryPath;
 
-                            return defaultDirectoryPath;
-                        })(),
-                    }),
+                        if (
+                            currentDirectoryPath !== undefined &&
+                            currentDirectoryPath.startsWith(defaultDirectoryPath)
+                        ) {
+                            return currentDirectoryPath;
+                        }
+
+                        return defaultDirectoryPath;
+                    })(),
+                }),
             );
         },
     /**
@@ -481,10 +498,11 @@ export const thunks = {
     "notifyThatUserIsWatching":
         (params: {
             explorerType: "s3" | "secrets";
+            directNavigationDirectoryPath: string | undefined;
             onNavigate: (params: { directoryPath: string }) => void;
         }): ThunkAction<void> =>
         (...args) => {
-            const { explorerType, onNavigate } = params;
+            const { explorerType, directNavigationDirectoryPath, onNavigate } = params;
             const [dispatch, , extraArg] = args;
 
             const sliceContext = getSliceContexts(extraArg)[explorerType];
@@ -498,7 +516,11 @@ export const thunks = {
             sliceContext.onNavigate = onNavigate;
 
             dispatch(
-                actions.isUserWatchingChanged({ explorerType, "isUserWatching": true }),
+                actions.isUserWatchingChanged({
+                    explorerType,
+                    "isUserWatching": true,
+                    directNavigationDirectoryPath,
+                }),
             );
         },
     "notifyThatUserIsNoLongerWatching":
