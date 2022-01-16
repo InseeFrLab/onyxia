@@ -52,6 +52,7 @@ export function MyFilesMySecrets(props: Props) {
     useEffect(() => {
         explorersThunks.notifyThatUserIsWatching({
             explorerType,
+            "directNavigationDirectoryPath": route.params.path,
             "onNavigate": ({ directoryPath }) =>
                 routes[route.name]({ "path": directoryPath }).replace(),
         });
