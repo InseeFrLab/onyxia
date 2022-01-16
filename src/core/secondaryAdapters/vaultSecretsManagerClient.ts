@@ -78,9 +78,7 @@ export async function createVaultSecretsManagerClient(
         pathJoin(version, engine, ...args);
 
     const secretsManagerClient: SecretsManagerClient = {
-        "list": async params => {
-            const { path } = params;
-
+        "list": async ({ path }) => {
             const axiosResponse = await axiosInstance.get<{
                 data: { keys: string[] };
             }>(ctxPathJoin("metadata", path), { "params": { "list": "true" } });
@@ -94,9 +92,7 @@ export async function createVaultSecretsManagerClient(
                 files,
             };
         },
-        "get": async params => {
-            const { path } = params;
-
+        "get": async ({ path }) => {
             const axiosResponse = await axiosInstance.get<{
                 data: {
                     data: SecretWithMetadata["secret"];
@@ -110,16 +106,12 @@ export async function createVaultSecretsManagerClient(
 
             return { secret, metadata };
         },
-        "put": async params => {
-            const { path, secret } = params;
-
+        "put": async ({ path, secret }) => {
             await axiosInstance.put<{ data: Secret }>(ctxPathJoin("data", path), {
                 "data": secret,
             });
         },
-        "delete": async params => {
-            const { path } = params;
-
+        "delete": async ({ path }) => {
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
         "getToken": getNewlyRequestedOrCachedToken,
