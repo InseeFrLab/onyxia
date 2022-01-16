@@ -304,33 +304,117 @@ const privateThunks = {
                     event =>
                         event.sliceName === "explorers" &&
                         event.actionName === "isUserWatchingChanged" &&
-                        event.payload.explorerType === explorerType &&
-                        (() => {
-                            const { directoryPath, isNavigationOngoing } =
-                                getState().explorers[explorerType];
-
-                            return directoryPath === undefined && !isNavigationOngoing;
-                        })(),
+                        event.payload.explorerType === explorerType,
                 ),
             ]).attach(
                 () => getState().explorers[explorerType]["~internal"].isUserWatching,
                 () =>
                     getSliceContexts(extraArg)[explorerType].onNavigate?.({
-                        "path":
-                            "/" +
-                            (() => {
-                                const project = projectSelectionSelectors.selectedProject(
-                                    getState(),
-                                );
+                        "directoryPath": (() => {
+                            const defaultDirectoryPath =
+                                "/" +
+                                (() => {
+                                    const project =
+                                        projectSelectionSelectors.selectedProject(
+                                            getState(),
+                                        );
 
-                                switch (explorerType) {
-                                    case "s3":
-                                        return project.bucket;
-                                    case "secrets":
-                                        return project.vaultTopDir;
-                                }
-                            })(),
+                                    switch (explorerType) {
+                                        case "s3":
+                                            return project.bucket;
+                                        case "secrets":
+                                            return project.vaultTopDir;
+                                    }
+                                })();
+
+                            const currentDirectoryPath =
+                                getState().explorers[explorerType].directoryPath;
+
+                            if (
+                                currentDirectoryPath !== undefined &&
+                                currentDirectoryPath.startsWith(defaultDirectoryPath)
+                            ) {
+                                return currentDirectoryPath;
+                            }
+
+                            return defaultDirectoryPath;
+                        })(),
                     }),
+            );
+        },
+    /**
+     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
+     */
+    "navigate":
+        (params: {
+            explorerType: "s3" | "secrets";
+            directoryPath: string;
+            forceReload: boolean;
+        }): ThunkAction =>
+        async (...args) => {
+            const { explorerType, directoryPath, forceReload } = params;
+
+            const [dispatch, getState, extraArg] = args;
+
+            //Avoid navigating to the current directory.
+            if (!forceReload) {
+                const currentDirectoryPath =
+                    getState().explorers[explorerType].directoryPath;
+
+                if (
+                    currentDirectoryPath !== undefined &&
+                    pathRelative(currentDirectoryPath, directoryPath) === ""
+                ) {
+                    return;
+                }
+            }
+
+            dispatch(actions.navigationStarted({ explorerType }));
+
+            const { loggedApi } = getSliceContexts(extraArg)[explorerType];
+
+            dispatch(thunks.cancelNavigation({ explorerType }));
+
+            const ctx = Evt.newCtx();
+
+            extraArg.evtAction.attach(
+                event =>
+                    event.sliceName === "explorers" &&
+                    event.actionName === "navigationCanceled" &&
+                    event.payload.explorerType === explorerType,
+                ctx,
+                () => ctx.done(),
+            );
+
+            await dispatch(
+                interUsecasesThunks.waitForNoOngoingOperation({
+                    explorerType,
+                    "kind": "directory",
+                    "directoryPath": pathJoin(directoryPath, ".."),
+                    "basename": pathBasename(directoryPath),
+                    ctx,
+                }),
+            );
+
+            const { directories, files } = await Evt.from(
+                ctx,
+                loggedApi.list({ "path": directoryPath }),
+            ).waitFor();
+
+            ctx.done();
+
+            dispatch(
+                actions.navigationCompleted({
+                    explorerType,
+                    directoryPath,
+                    "directoryItems": [
+                        ...directories.map(basename => ({
+                            basename,
+                            "kind": "directory" as const,
+                        })),
+                        ...files.map(basename => ({ basename, "kind": "file" as const })),
+                    ],
+                }),
             );
         },
 };
@@ -397,7 +481,7 @@ export const thunks = {
     "notifyThatUserIsWatching":
         (params: {
             explorerType: "s3" | "secrets";
-            onNavigate: (params: { path: string }) => void;
+            onNavigate: (params: { directoryPath: string }) => void;
         }): ThunkAction<void> =>
         (...args) => {
             const { explorerType, onNavigate } = params;
@@ -442,53 +526,13 @@ export const thunks = {
         async (...args) => {
             const { explorerType, directoryPath } = params;
 
-            const [dispatch, , extraArg] = args;
+            const [dispatch] = args;
 
-            dispatch(actions.navigationStarted({ explorerType }));
-
-            const { loggedApi } = getSliceContexts(extraArg)[explorerType];
-
-            dispatch(thunks.cancelNavigation({ explorerType }));
-
-            const ctx = Evt.newCtx();
-
-            extraArg.evtAction.attach(
-                event =>
-                    event.sliceName === "explorers" &&
-                    event.actionName === "navigationCanceled" &&
-                    event.payload.explorerType === explorerType,
-                ctx,
-                () => ctx.done(),
-            );
-
-            await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
-                    explorerType,
-                    "kind": "directory",
-                    "directoryPath": pathJoin(directoryPath, ".."),
-                    "basename": pathBasename(directoryPath),
-                    ctx,
-                }),
-            );
-
-            const { directories, files } = await Evt.from(
-                ctx,
-                loggedApi.list({ "path": directoryPath }),
-            ).waitFor();
-
-            ctx.done();
-
-            dispatch(
-                actions.navigationCompleted({
+            return dispatch(
+                privateThunks.navigate({
                     explorerType,
                     directoryPath,
-                    "directoryItems": [
-                        ...directories.map(basename => ({
-                            basename,
-                            "kind": "directory" as const,
-                        })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const })),
-                    ],
+                    "forceReload": false,
                 }),
             );
         },
@@ -516,7 +560,13 @@ export const thunks = {
                 return;
             }
 
-            await dispatch(thunks.navigate({ explorerType, directoryPath }));
+            await dispatch(
+                privateThunks.navigate({
+                    explorerType,
+                    directoryPath,
+                    "forceReload": true,
+                }),
+            );
         },
     "rename":
         (params: {
@@ -759,7 +809,7 @@ namespace SliceContexts {
     export type Common<loggedApi> = {
         loggedApi: loggedApi;
         apiLogs: ApiLogs;
-        onNavigate?: (params: { path: string }) => void;
+        onNavigate?: (params: { directoryPath: string }) => void;
         isLazilyInitialized: boolean;
     };
 
