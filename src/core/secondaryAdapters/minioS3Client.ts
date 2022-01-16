@@ -148,7 +148,7 @@ export async function createMinioS3Client(params: {
         "getToken": ({ bucketName }) => getNewlyRequestedOrCachedToken(bucketName),
         "list": async ({ path }) => {
             const { bucketName, prefix } = (() => {
-                const [bucketName, ...rest] = path.split("/");
+                const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
 
                 return {
                     bucketName,

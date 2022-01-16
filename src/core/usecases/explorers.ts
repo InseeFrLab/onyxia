@@ -24,6 +24,8 @@ import type { RootState } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 
+//All explorer path are expected to be absolute (start with /)
+
 export type ExplorersState = Record<
     "s3" | "secrets",
     {
@@ -314,18 +316,20 @@ const privateThunks = {
                 () => getState().explorers[explorerType]["~internal"].isUserWatching,
                 () =>
                     getSliceContexts(extraArg)[explorerType].onNavigate?.({
-                        "path": (() => {
-                            const project = projectSelectionSelectors.selectedProject(
-                                getState(),
-                            );
+                        "path":
+                            "/" +
+                            (() => {
+                                const project = projectSelectionSelectors.selectedProject(
+                                    getState(),
+                                );
 
-                            switch (explorerType) {
-                                case "s3":
-                                    return project.bucket;
-                                case "secrets":
-                                    return project.vaultTopDir;
-                            }
-                        })(),
+                                switch (explorerType) {
+                                    case "s3":
+                                        return project.bucket;
+                                    case "secrets":
+                                        return project.vaultTopDir;
+                                }
+                            })(),
                     }),
             );
         },
