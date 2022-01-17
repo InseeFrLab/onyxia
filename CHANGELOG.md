@@ -1,3 +1,10 @@
+## **0.31.0** (2022-01-17)  
+  
+- Fix previous build
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- k8s.initScript url in deployment region    
+  
 ## **0.30.0** (2022-01-16)  
   
 - Implement full sync between url and exporer state
