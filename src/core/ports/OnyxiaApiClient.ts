@@ -64,6 +64,7 @@ export type DeploymentRegion = {
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
+    initScriptUrl: string;
 };
 
 export type Project = {
@@ -128,6 +129,7 @@ export type MustacheParams = {
     k8s: {
         domain: string;
         randomSubdomain: string;
+        initScriptUrl: string;
     };
 };
 

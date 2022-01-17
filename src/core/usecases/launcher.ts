@@ -1049,6 +1049,7 @@ export const thunks = {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
+                    "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
             };
         },

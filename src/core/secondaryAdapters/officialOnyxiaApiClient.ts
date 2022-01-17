@@ -133,6 +133,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 URLPattern?: string;
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
+                            initScript: string;
                         };
                         data: {
                             S3: {
@@ -155,6 +156,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
                         "kubernetesClusterDomain": region.services.expose.domain,
+                        "initScriptUrl": region.services.initScript,
                     })),
                 ),
         ),
