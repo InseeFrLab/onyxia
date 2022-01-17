@@ -1,3 +1,10 @@
+## **0.32.0** (2022-01-17)  
+  
+- Merge pull request #279 from sathieu/patch-1
+
+Fix container has runAsNonRoot and image has non-numeric user (nginx), cannot verify user is non-root  
+- Fix container has runAsNonRoot and image has non-numeric user (nginx), cannot verify user is non-root    
+  
 ## **0.31.0** (2022-01-17)  
   
 - Fix previous build
