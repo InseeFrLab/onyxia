@@ -234,6 +234,7 @@ assert<
                   defaultIpProtection: boolean | undefined;
                   defaultNetworkPolicy: boolean | undefined;
                   kubernetesClusterDomain: string;
+                  initScriptUrl: string;
               }[];
           }
         | {
