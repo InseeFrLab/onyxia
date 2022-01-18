@@ -1,3 +1,7 @@
+### **0.32.1** (2022-01-18)  
+  
+- Dockerfile build step no not require node    
+  
 ## **0.32.0** (2022-01-17)  
   
 - Merge pull request #279 from sathieu/patch-1
