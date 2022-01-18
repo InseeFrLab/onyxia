@@ -1,3 +1,7 @@
+### **0.32.2** (2022-01-18)  
+  
+- Make s3 token request compat with AWS S3    
+  
 ### **0.32.1** (2022-01-18)  
   
 - Dockerfile build step no not require node    
