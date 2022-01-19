@@ -157,8 +157,6 @@ if (sidebarLinks["links"]) {
         extraTranslationsEN[link["name"]] = link["nameEN"];
         extraTranslationsFR[link["name"]] = link["nameFR"];
     }
-    console.log(extraTranslationsEN);
-    console.log(extraTranslationsFR);
 }
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
