@@ -40,6 +40,7 @@ import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets/MyFilesMy
 import { Login } from "ui/components/KcApp/Login";
 import type { KcLanguageTag } from "keycloakify";
 import { assert } from "tsafe/assert";
+import { getEnv } from "env";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -146,6 +147,19 @@ const common = id<
         /* spell-checker: enable */
     },
 });
+
+const sidebarLinks = JSON.parse(getEnv().SIDEBAR_LINKS);
+var extraTranslationsEN: { [k: string]: any } = {};
+var extraTranslationsFR: { [k: string]: any } = {};
+
+if (sidebarLinks["links"]) {
+    for (var link of sidebarLinks["links"]) {
+        extraTranslationsEN[link["name"]] = link["nameEN"];
+        extraTranslationsFR[link["name"]] = link["nameFR"];
+    }
+    console.log(extraTranslationsEN);
+    console.log(extraTranslationsFR);
+}
 
 export const resources = id<Record<SupportedLanguage, Translations>>({
     "en": {
@@ -324,7 +338,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "My Services",
             "mySecrets": "My Secrets",
             "myFiles": "My Files",
-            "myDataCatalog": "My Data Catalog",
+            ...extraTranslationsEN,
         },
         "FourOhFour": {
             "not found": "Page not found",
@@ -660,7 +674,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "myServices": "Mes services",
             "mySecrets": "Mes secrets",
             "myFiles": "Mes fichiers",
-            "myDataCatalog": "Mes catalogue de données",
+            ...extraTranslationsFR,
         },
         "FourOhFour": {
             "not found": "Page non trouvée",

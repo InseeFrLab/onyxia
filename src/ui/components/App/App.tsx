@@ -108,6 +108,8 @@ export const App = memo((props: Props) => {
 
     const projectsSlice = useProjectsSlice();
 
+    const sidebarLinks = JSON.parse(getEnv().SIDEBAR_LINKS);
+
     const leftBarItems = useMemo(
         () =>
             ({
@@ -147,18 +149,27 @@ export const App = memo((props: Props) => {
                     "link": routes.myBuckets().link,
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                 },
-                "myDataCatalog": {
-                    "iconId": "MenuBookOutlined",
-                    "label": t("myDataCatalog"),
-                    "link": {
-                        "href":
-                            "https://" +
-                            getEnv().DATA_CATALOG_URL +
-                            "." +
-                            getEnv().DOMAIN_URL,
-                        "target": "_blank",
-                    },
-                },
+                ...(() => {
+                    if (!sidebarLinks["links"]) {
+                        return {} as never;
+                    }
+
+                    var extraLinks: { [k: string]: any } = {};
+
+                    for (var link of sidebarLinks["links"]) {
+                        extraLinks[link["name"]] = {
+                            "iconId": link["iconId"],
+                            "label": t(link["name"]),
+                            "link": {
+                                "href":
+                                    "https://" + link["url"] + "." + getEnv().DOMAIN_URL,
+                                "target": "_blank",
+                            },
+                        };
+                    }
+                    console.log(extraLinks);
+                    return extraLinks;
+                })(),
                 ...(() => {
                     if (!isDevModeEnabled) {
                         return {} as never;
@@ -269,8 +280,7 @@ export declare namespace App {
         | "catalog"
         | "myServices"
         | "mySecrets"
-        | "myFiles"
-        | "myDataCatalog",
+        | "myFiles",
         undefined
     >;
 }
