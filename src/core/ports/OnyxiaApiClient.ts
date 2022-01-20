@@ -1,4 +1,5 @@
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
+import memoize from "memoizee";
 
 export type OnyxiaApiClient = {
     /**
@@ -62,6 +63,8 @@ export type DeploymentRegion = {
     namespacePrefix: string;
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
+    kubernetesClusterDomain: string;
+    initScriptUrl: string;
 };
 
 export type Project = {
@@ -123,6 +126,11 @@ export type MustacheParams = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
     };
+    k8s: {
+        domain: string;
+        randomSubdomain: string;
+        initScriptUrl: string;
+    };
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
@@ -154,3 +162,7 @@ export type Contract = Record<string, unknown>[][];
 export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
 
 export const onyxiaIsSharedFormFieldPath = "onyxia.share";
+
+export const getRandomK8sSubdomain = memoize(
+    () => `${Math.floor(Math.random() * 1000000)}`,
+);
