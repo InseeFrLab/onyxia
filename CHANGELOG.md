@@ -1,3 +1,7 @@
+### **0.32.3** (2022-01-20)  
+  
+- Update Keycloakify, compat with 16.1.0    
+  
 ### **0.32.2** (2022-01-18)  
   
 - Make s3 token request compat with AWS S3    
