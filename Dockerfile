@@ -4,11 +4,11 @@
 # 2) We use cra-envs.
 #    Doc: https://github.com/garronej/cra-envs
 #
-# The docker image is note ment to be built manually but in the CI pipeline: 
+# The docker image is not ment to be built manually but in the CI pipeline: 
 # https://github.com/InseeFrLab/onyxia-web/blob/4fdf0e1c185bc4369a8975c0265d6829d3bb91f7/.github/workflows/ci.yml#L120-L124
 
 # build environment
-FROM node:14.16.0-alpine as build
+FROM alpine as build
 WORKDIR /app
 # We assume there is is a build.tar file in the CWD, see how it's optained:
 # https://github.com/InseeFrLab/onyxia-web/blob/2576dc99f53d3ddda8dfd3a23f1bcbbdfdd8820b/.github/workflows/ci.yml#L24
@@ -39,5 +39,6 @@ RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp
     diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
     chown nginx /usr/share/nginx/html/index.html && \
     chown -Rc nginx /var/cache/nginx
-USER nginx
+# Equivalent to 'USER nginx', see: https://github.com/InseeFrLab/onyxia-web/pull/279
+USER 101
 ENTRYPOINT sh -c "npx embed-environnement-variables && nginx -g 'daemon off;'"

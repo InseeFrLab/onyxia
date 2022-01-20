@@ -5,6 +5,7 @@ import { id } from "tsafe/id";
 import type { AccountTabId } from "ui/components/pages/Account/accountTabIds";
 import { accountTabIds } from "ui/components/pages/Account/accountTabIds";
 import { routerOpts, formFieldsDefineRouteParam } from "./formFieldsQueryParameters";
+import { paramPathTrailingOptional } from "ui/tools/typeRouteParamPathTrailingOptional";
 
 export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     "account": defineRoute(
@@ -60,7 +61,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         const buildExplorerRoute = (prefix: string) =>
             defineRoute(
                 {
-                    "path": param.path.trailing.optional.string,
+                    "path": paramPathTrailingOptional,
                     "openFile": param.query.optional.string,
                 },
                 ({ path }) => `/${prefix}/${path}`,

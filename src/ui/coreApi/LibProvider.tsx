@@ -52,6 +52,9 @@ const createStore_memo = memoize(
                               "defaultNetworkPolicy": undefined,
                               "s3MonitoringUrlPattern": undefined,
                               "servicesMonitoringUrlPattern": undefined,
+                              "kubernetesClusterDomain": "kub.sspcloud.fr",
+                              "initScriptUrl":
+                                  "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                           },
                       ],
                   })

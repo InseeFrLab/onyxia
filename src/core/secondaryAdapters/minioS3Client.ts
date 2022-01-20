@@ -33,8 +33,8 @@ export async function createMinioS3Client(params: {
             const { data } = await axios.create({ "baseURL": url }).post<string>(
                 "/?" +
                     Object.entries({
-                        "Action": "AssumeRoleWithClientGrants",
-                        "Token": await getAccessToken(),
+                        "Action": "AssumeRoleWithWebIdentity",
+                        "WebIdentityToken": await getAccessToken(),
                         //Desired TTL of the token, depending of the configuration
                         //and version of minio we could get less than that but never more.
                         "DurationSeconds": 7 * 24 * 3600,
@@ -79,7 +79,7 @@ export async function createMinioS3Client(params: {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(data, "text/xml");
             const root = xmlDoc.getElementsByTagName(
-                "AssumeRoleWithClientGrantsResponse",
+                "AssumeRoleWithWebIdentityResponse",
             )[0];
 
             const credentials = root.getElementsByTagName("Credentials")[0];
@@ -100,6 +100,7 @@ export async function createMinioS3Client(params: {
                     secretAccessKey !== null &&
                     sessionToken !== null &&
                     expiration !== null,
+                "Error parsing minio response",
             );
 
             return id<ReturnType<S3Client["getToken"]>>({
@@ -148,7 +149,7 @@ export async function createMinioS3Client(params: {
         "getToken": ({ bucketName }) => getNewlyRequestedOrCachedToken(bucketName),
         "list": async ({ path }) => {
             const { bucketName, prefix } = (() => {
-                const [bucketName, ...rest] = path.split("/");
+                const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
 
                 return {
                     bucketName,
@@ -168,7 +169,7 @@ export async function createMinioS3Client(params: {
             stream.once("end", () => dOut.resolve(out));
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
-                    out.directories.push(bucketItem.prefix);
+                    out.directories.push(bucketItem.prefix.replace(/\/+$/, ""));
                 } else {
                     out.files.push(bucketItem.name);
                 }

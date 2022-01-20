@@ -1,3 +1,50 @@
+### **0.32.3** (2022-01-20)  
+  
+- Update Keycloakify, compat with 16.1.0    
+  
+### **0.32.2** (2022-01-18)  
+  
+- Make s3 token request compat with AWS S3    
+  
+### **0.32.1** (2022-01-18)  
+  
+- Dockerfile build step no not require node    
+  
+## **0.32.0** (2022-01-17)  
+  
+- Merge pull request #279 from sathieu/patch-1
+
+Fix container has runAsNonRoot and image has non-numeric user (nginx), cannot verify user is non-root  
+- Fix container has runAsNonRoot and image has non-numeric user (nginx), cannot verify user is non-root    
+  
+## **0.31.0** (2022-01-17)  
+  
+- Fix previous build
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- k8s.initScript url in deployment region    
+  
+## **0.30.0** (2022-01-16)  
+  
+- Implement full sync between url and exporer state
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- Restore path when returning to explorer
+
+Signed-off-by: garronej <joseph.garrone.gj@gmail.com>  
+- https://github.com/typehero/type-route/issues/89  
+- Fix / at the end of directories in new explorer    
+  
+## **0.29.0** (2022-01-15)  
+  
+- Refactor getRandomSubdomain  
+- The correct abbr for kubernetes is k8s not k8    
+  
+## **0.28.0** (2022-01-14)  
+  
+- Reuse the kub subdomain in service id  
+- Kubernetes cluster domain and random in mustach params    
+  
 ### **0.26.25** (2022-01-07)  
   
 - Update clean-redux    

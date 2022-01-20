@@ -30,6 +30,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
+import { getRandomK8sSubdomain } from "../ports/OnyxiaApiClient";
 
 export type FormField =
     | FormField.Boolean
@@ -1043,6 +1044,12 @@ export const thunks = {
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
+                },
+                "k8s": {
+                    "domain": selectedDeploymentRegion.kubernetesClusterDomain,
+                    "randomSubdomain":
+                        (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
+                    "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
             };
         },

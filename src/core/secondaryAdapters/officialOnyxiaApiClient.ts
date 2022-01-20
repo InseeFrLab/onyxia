@@ -15,6 +15,7 @@ import { symToStr } from "tsafe/symToStr";
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
+import { getRandomK8sSubdomain } from "../ports/OnyxiaApiClient";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -122,6 +123,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     regions: {
                         id: string;
                         services: {
+                            expose: { domain: string };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
                                 networkPolicy?: boolean;
@@ -131,6 +133,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 URLPattern?: string;
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
+                            initScript: string;
                         };
                         data: {
                             S3: {
@@ -152,6 +155,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             region.services.defaultConfiguration?.ipprotection,
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
+                        "kubernetesClusterDomain": region.services.expose.domain,
+                        "initScriptUrl": region.services.initScript,
                     })),
                 ),
         ),
@@ -204,9 +209,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun }) => {
-                    const serviceId = `${packageName}-${Math.floor(
-                        Math.random() * 1000000,
-                    )}`;
+                    const serviceId = `${packageName}-${getRandomK8sSubdomain()}`;
 
                     const { data: contract } = await axiosInstance.put<
                         Record<string, unknown>[][]
