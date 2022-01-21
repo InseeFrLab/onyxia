@@ -65,26 +65,10 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import * as MultiIcon from "@mui/icons-material";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "ui/tools/types/ComponentType";
 import type { SupportedLanguage } from "ui/i18n/translations";
 import { THEME_ID } from "ui/envCarriedOverToKc";
-import { getEnv } from "env";
-
-const sidebarLinks = JSON.parse(getEnv().SIDEBAR_LINKS);
-var extraIcons: { [k: string]: any } = {};
-if (sidebarLinks["links"]) {
-    for (var link of sidebarLinks["links"]) {
-        // eslint-disable-next-line
-        var a = Object.entries(MultiIcon).find(([key, value]) => {
-            if (key === String(link["iconId"])) return value;
-        });
-        if (a) {
-            extraIcons[link["iconId"]] = a[1];
-        }
-    }
-}
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -173,7 +157,6 @@ export const { Icon } = createIcon({
     "training": TrainingsLogoSvg,
     "people": PeopleIcon,
     "errorOutline": ErrorOutlineIcon,
-    ...extraIcons,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
