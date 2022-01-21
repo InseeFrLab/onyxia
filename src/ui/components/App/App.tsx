@@ -1,3 +1,4 @@
+import "minimal-polyfills/Object.fromEntries";
 import { useMemo, useEffect, memo } from "react";
 import { Header } from "ui/components/shared/Header";
 import { LeftBar } from "ui/theme";
@@ -19,7 +20,7 @@ import { FourOhFour } from "ui/components/pages/FourOhFour";
 import { Catalog } from "ui/components/pages/Catalog";
 import { MyServices } from "ui/components/pages/MyServices";
 import { typeGuard } from "tsafe/typeGuard";
-import type { SupportedLanguage } from "ui/i18n/translations";
+import type { SupportedLanguage, fallbackLanguage } from "ui/i18n/translations";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
@@ -32,6 +33,10 @@ import {
 } from "js/components/cloud-shell/cloud-shell";
 //TODO: Move in a slice, we shouldn't access env directly here.
 import { getEnv } from "env";
+import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
+import { symToStr } from "tsafe/symToStr";
+import type { Item } from "onyxia-ui/LeftBar";
+import memoize from "memoizee";
 
 export const logoContainerWidthInPercent = 4;
 
@@ -108,7 +113,7 @@ export const App = memo((props: Props) => {
 
     const projectsSlice = useProjectsSlice();
 
-    const sidebarLinks = JSON.parse(getEnv().SIDEBAR_LINKS);
+    const { lng } = useLng();
 
     const leftBarItems = useMemo(
         () =>
@@ -148,27 +153,31 @@ export const App = memo((props: Props) => {
                     "label": t("myFiles"),
                     "link": routes.myBuckets().link,
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
+                    "hasDividerBelow": true,
                 },
                 ...(() => {
-                    if (!sidebarLinks["links"]) {
-                        return {} as never;
-                    }
+                    const { extraLeftBarItems } = getExtraLeftBarItemsFromEnv();
 
-                    var extraLinks: { [k: string]: any } = {};
+                    const { resolveLocalizedString } = createResolveLocalizedString({
+                        "currentLanguage": lng,
+                        "fallbackLanguage": id<typeof fallbackLanguage>("en"),
+                    });
 
-                    for (var link of sidebarLinks["links"]) {
-                        extraLinks[link["name"]] = {
-                            "iconId": link["iconId"],
-                            "label": t(link["name"]),
-                            "link": {
-                                "href":
-                                    "https://" + link["url"] + "." + getEnv().DOMAIN_URL,
-                                "target": "_blank",
-                            },
-                        };
-                    }
-                    console.log(extraLinks);
-                    return extraLinks;
+                    return extraLeftBarItems === undefined
+                        ? {}
+                        : Object.fromEntries(
+                              extraLeftBarItems.map(({ iconId, label, url }, i) => [
+                                  `extraItem${i}`,
+                                  id<Item>({
+                                      "iconId": iconId as any,
+                                      "label": resolveLocalizedString(label),
+                                      "link": {
+                                          "href": url,
+                                          "target": "_blank",
+                                      },
+                                  }),
+                              ]),
+                          );
                 })(),
                 ...(() => {
                     if (!isDevModeEnabled) {
@@ -199,7 +208,7 @@ export const App = memo((props: Props) => {
                     } as const;
                 })(),
             } as const),
-        [t, isDevModeEnabled],
+        [t, lng, isDevModeEnabled],
     );
 
     return (
@@ -589,3 +598,45 @@ function useProjectsSlice() {
 
     return { projects, selectedProjectId, onSelectedProjectChange };
 }
+
+type ExtraLeftBarItem = {
+    iconId: string;
+    label: string | Partial<Record<SupportedLanguage, string>>;
+    url: string;
+};
+
+const getExtraLeftBarItemsFromEnv = memoize(
+    (): { extraLeftBarItems: ExtraLeftBarItem[] | undefined } => {
+        const { EXTRA_LEFTBAR_ITEMS } = getEnv();
+
+        if (EXTRA_LEFTBAR_ITEMS === "") {
+            return { "extraLeftBarItems": undefined };
+        }
+
+        const errorMessage = `${symToStr({ EXTRA_LEFTBAR_ITEMS })} is malformed`;
+
+        let extraLeftBarItems: ExtraLeftBarItem[];
+
+        try {
+            extraLeftBarItems = JSON.parse(EXTRA_LEFTBAR_ITEMS);
+        } catch {
+            throw new Error(errorMessage);
+        }
+
+        assert(
+            extraLeftBarItems instanceof Array &&
+                extraLeftBarItems.find(
+                    extraLeftBarItem =>
+                        !(
+                            extraLeftBarItem instanceof Object &&
+                            typeof extraLeftBarItem.url === "string" &&
+                            (typeof extraLeftBarItem.label === "string" ||
+                                extraLeftBarItem.label instanceof Object)
+                        ),
+                ) === undefined,
+            errorMessage,
+        );
+
+        return { extraLeftBarItems };
+    },
+);
