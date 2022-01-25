@@ -2,7 +2,7 @@ import {
     usecasesToSelectors,
     usecasesToAutoDispatchThunks,
     usecasesToPureFunctions,
-} from "clean-redux";
+} from "redux-clean-architecture";
 import { createStore, usecases } from "./setup";
 export type { Dispatch, RootState } from "./setup";
 
