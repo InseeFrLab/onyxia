@@ -57,7 +57,7 @@ const inHouseModuleNames = (() => {
               "evt",
               "tsafe",
               "cra-envs",
-              "clean-redux",
+              "redux-clean-architecture",
           ];
 })();
 

@@ -51,7 +51,7 @@
         "async-mutex": "^0.3.2",
         "axios": "^0.21.1",
         "classnames": "^2.2.6",
-        "clean-redux": "^1.0.0",
+        "redux-clean-architecture": "^1.0.2",
         "clipboard-polyfill": "^2.8.6",
         "clsx": "^1.1.1",
         "color": "3.1.3",
