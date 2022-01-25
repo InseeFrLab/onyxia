@@ -1,3 +1,8 @@
+### **0.33.1** (2022-01-25)  
+  
+- Better setup for Kc pages  
+- Update clean-redux, renamed redux-clean-architecture    
+  
 ## **0.33.0** (2022-01-21)  
   
 - Merge pull request #281 from InseeFrLab/dynamic_links_in_left_bar
