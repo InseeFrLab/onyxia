@@ -1,3 +1,14 @@
+## **0.33.0** (2022-01-21)  
+  
+- Merge pull request #281 from InseeFrLab/dynamic_links_in_left_bar
+
+Dynamic links in left bar  
+- Update ./vscodesettings.json  
+- Extra links in LeftBar from env  
+- Restoring INSEE files  
+- Rebuilded yarn.lock, deleted extra env var  
+- Merged remote    
+  
 ### **0.32.3** (2022-01-20)  
   
 - Update Keycloakify, compat with 16.1.0    
