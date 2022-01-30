@@ -1,3 +1,7 @@
+## **0.34.0** (2022-01-30)  
+  
+- Support render as TextArea    
+  
 ### **0.33.1** (2022-01-25)  
   
 - Better setup for Kc pages  
