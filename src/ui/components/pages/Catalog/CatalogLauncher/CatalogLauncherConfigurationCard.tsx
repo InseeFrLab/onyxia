@@ -438,6 +438,9 @@ const { TabContent } = (() => {
                                         case "text":
                                             return (
                                                 <TextField
+                                                    doRenderAsTextArea={
+                                                        formField.doRenderAsTextArea
+                                                    }
                                                     className={classes.textField}
                                                     label={label}
                                                     defaultValue={formField.value}

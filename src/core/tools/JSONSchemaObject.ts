@@ -40,6 +40,7 @@ export namespace JSONSchemaFormFieldDescription {
         export type Text = Common<string> & {
             type: "string";
             pattern?: string;
+            render?: "textArea";
         };
 
         export type Enum<T extends string = string> = Common<T> & {
