@@ -364,7 +364,7 @@ const { TabContent } = (() => {
                 }),
         );
 
-        const { classes, cx } = useStyles();
+        const { classes, cx, css } = useStyles();
 
         return (
             <>
@@ -376,7 +376,15 @@ const { TabContent } = (() => {
                 <div className={cx(classes.root, className)}>
                     {[
                         ...formFields.map((formField, i) => (
-                            <div key={i}>
+                            <div
+                                key={i}
+                                className={css(
+                                    formField.type === "text" &&
+                                        formField.doRenderAsTextArea && {
+                                            "gridColumn": "span 3",
+                                        },
+                                )}
+                            >
                                 {(() => {
                                     const label = capitalize(formField.title);
                                     const helperText =
