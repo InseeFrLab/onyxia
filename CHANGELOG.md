@@ -1,3 +1,7 @@
+### **0.34.1** (2022-01-30)  
+  
+- TextArea renders on three collums    
+  
 ## **0.34.0** (2022-01-30)  
   
 - Support render as TextArea    
