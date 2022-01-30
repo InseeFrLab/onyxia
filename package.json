@@ -73,7 +73,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
-        "onyxia-ui": "^0.23.3",
+        "onyxia-ui": "^0.24.0",
         "path": "^0.12.7",
         "powerhooks": "^0.11.2",
         "public-ip": "^4.0.3",

@@ -68,6 +68,7 @@ export declare namespace FormField {
         pattern: string | undefined;
         value: string;
         defaultValue: string;
+        doRenderAsTextArea: boolean;
     };
 
     export type Slider = Slider.Simple | Slider.Range;
@@ -684,15 +685,24 @@ export const thunks = {
                                         return value as any;
                                     };
 
+                                    //TODO: The JSON schema should be tested in entry of the system.
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
-                                            jsonSchemaFormFieldDescription.render ===
-                                                "slider",
+                                            ["slider", "textArea"].find(
+                                                render =>
+                                                    render ===
+                                                    jsonSchemaFormFieldDescription.render,
+                                            ) !== undefined,
                                             `${common.path.join("/")} has render: "${
                                                 jsonSchemaFormFieldDescription.render
                                             }" and it's not supported`,
                                         );
+                                    }
 
+                                    if (
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        jsonSchemaFormFieldDescription.render === "slider"
+                                    ) {
                                         const value = getDefaultValue(
                                             jsonSchemaFormFieldDescription,
                                         );
@@ -812,6 +822,9 @@ export const thunks = {
                                         value,
                                         "type": "text",
                                         "defaultValue": value,
+                                        "doRenderAsTextArea":
+                                            jsonSchemaFormFieldDescription.render ===
+                                            "textArea",
                                     });
                                 })(),
                             );

@@ -21,6 +21,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "pattern": undefined,
             "value": "0.1",
             "defaultValue": "0.1",
+            "doRenderAsTextArea": false,
         },
         {
             "type": "text",
@@ -31,6 +32,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "pattern": undefined,
             "value": "512Mi",
             "defaultValue": "512Mi",
+            "doRenderAsTextArea": false,
         },
         {
             "type": "text",
@@ -41,6 +43,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
             "pattern": undefined,
             "value": "512Mi",
             "defaultValue": "512Mi",
+            "doRenderAsTextArea": false,
         },
         {
             "type": "boolean",
