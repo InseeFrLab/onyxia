@@ -37,7 +37,6 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             "catalogId": param.path.string,
             "packageName": param.path.string,
             "autoLaunch": param.query.optional.boolean.default(false),
-            "autoOpen": param.query.optional.boolean.default(false),
             ...formFieldsDefineRouteParam,
         },
         ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`,
@@ -55,7 +54,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     "myServices": defineRoute(
         {
             "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-            "autoOpenServiceId": param.query.optional.string,
+            "autoLaunchServiceId": param.query.optional.string,
         },
         () => `/my-services`,
     ),

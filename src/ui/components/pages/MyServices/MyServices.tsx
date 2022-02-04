@@ -188,13 +188,13 @@ export function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoOpenServiceId } = route.params;
+        const { autoLaunchServiceId } = route.params;
 
-        if (autoOpenServiceId === undefined || cards === undefined) {
+        if (autoLaunchServiceId === undefined || cards === undefined) {
             return;
         }
 
-        const card = cards.find(({ serviceId }) => serviceId === autoOpenServiceId);
+        const card = cards.find(({ serviceId }) => serviceId === autoLaunchServiceId);
 
         if (card === undefined) {
             return;
@@ -207,7 +207,7 @@ export function MyServices(props: Props) {
         routes
             .myServices({
                 ...route.params,
-                "autoOpenServiceId": undefined,
+                "autoLaunchServiceId": undefined,
             })
             .replace();
 
@@ -215,7 +215,7 @@ export function MyServices(props: Props) {
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
             "serviceId": card.serviceId,
         });
-    }, [route.params.autoOpenServiceId, cards]);
+    }, [route.params.autoLaunchServiceId, cards]);
 
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
