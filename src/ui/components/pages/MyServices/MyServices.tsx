@@ -265,6 +265,10 @@ export function MyServices(props: Props) {
         [runningServices],
     );
 
+    const getServicePassword = useConstCallback(() =>
+        projectConfigsThunks.getValue({ "key": "servicePassword" }),
+    );
+
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
@@ -287,6 +291,7 @@ export function MyServices(props: Props) {
                         onRequestDelete={onRequestDelete}
                         catalogExplorerLink={catalogExplorerLink}
                         evtAction={evtMyServiceCardsAction}
+                        getServicePassword={getServicePassword}
                     />
                 )}
                 <MyServicesSavedConfigs
