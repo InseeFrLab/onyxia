@@ -57,6 +57,8 @@ export const CatalogLauncher = memo((props: Props) => {
                 catalogId,
                 packageName,
                 formFieldsValueDifferentFromDefault,
+                "autoLaunch": route.params.autoLaunch,
+                "autoOpen": route.params.autoOpen,
             })
             .replace();
     }, [restorablePackageConfig ?? Object]);
@@ -177,7 +179,13 @@ export const CatalogLauncher = memo((props: Props) => {
                         break;
                     case "launched":
                         hideSplashScreen();
-                        routes.myServices().push();
+                        routes
+                            .myServices({
+                                "autoOpenK8Subdomain": route.params.autoOpen
+                                    ? state.k8sSubdomain
+                                    : undefined,
+                            })
+                            .push();
                         break;
                 }
                 break;
