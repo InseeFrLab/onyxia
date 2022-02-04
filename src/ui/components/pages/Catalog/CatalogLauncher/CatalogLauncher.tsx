@@ -58,7 +58,6 @@ export const CatalogLauncher = memo((props: Props) => {
                 packageName,
                 formFieldsValueDifferentFromDefault,
                 "autoLaunch": route.params.autoLaunch,
-                "autoOpen": route.params.autoOpen,
             })
             .replace();
     }, [restorablePackageConfig ?? Object]);
@@ -181,7 +180,7 @@ export const CatalogLauncher = memo((props: Props) => {
                         hideSplashScreen();
                         routes
                             .myServices({
-                                "autoOpenServiceId": route.params.autoOpen
+                                "autoLaunchServiceId": route.params.autoLaunch
                                     ? state.serviceId
                                     : undefined,
                             })
