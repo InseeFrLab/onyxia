@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, useMemo, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { makeStyles, Text } from "ui/theme";
 import { smartTrim } from "ui/tools/smartTrim";
@@ -15,6 +15,7 @@ import { Markdown } from "ui/tools/Markdown";
 import { symToStr } from "tsafe/symToStr";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
 
 export type Props = {
     className?: string;
@@ -44,10 +45,18 @@ export type Props = {
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
     }>;
+    getServicePassword: () => Promise<string>;
 };
 
 export const MyServicesCards = memo((props: Props) => {
-    const { className, onRequestDelete, cards, catalogExplorerLink, evtAction } = props;
+    const {
+        className,
+        onRequestDelete,
+        cards,
+        catalogExplorerLink,
+        evtAction,
+        getServicePassword,
+    } = props;
 
     const { classes, cx } = useStyles({
         "isThereServicesRunning": (cards ?? []).length !== 0,
@@ -59,50 +68,32 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId }),
     );
 
-    const [dialogBody, setDialogBody] = useState<string>("");
+    const [dialogDesc, setDialogDesc] = useState<
+        | { dialogShowingWhat: "env"; serviceId: string }
+        | {
+              dialogShowingWhat: "postInstallInstructions";
+              serviceId: string;
+              servicePassword: string;
+          }
+        | undefined
+    >(undefined);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const onDialogClose = useConstCallback(() => setDialogDesc(undefined));
 
     const onRequestShowEnvOrPostInstallInstructionFactory = useCallbackFactory(
-        ([showWhat, serviceId]: ["env" | "postInstallInstructions", string]) => {
-            assert(cards !== undefined);
-
-            const { postInstallInstructions, env } = cards.find(
-                card => card.serviceId === serviceId,
-            )!;
-            setDialogBody(
-                (() => {
-                    switch (showWhat) {
-                        case "postInstallInstructions":
-                            assert(postInstallInstructions !== undefined);
-
-                            return postInstallInstructions;
-                        case "env":
-                            console.log(JSON.stringify(env, null, 2));
-                            return [
-                                Object.entries(env)
-                                    .filter(([, value]) => value !== "")
-                                    .sort(([a], [b]) => a.localeCompare(b))
-                                    .map(
-                                        ([key, value]) =>
-                                            `**${key}**: \`${smartTrim({
-                                                "text": value,
-                                                "minCharAtTheEnd": 4,
-                                                "maxLength": 40,
-                                            })}\`  `,
-                                    )
-                                    .join("\n"),
-                                "  \n",
-                                `**${t("need to copy")}**`,
-                                t("everything have been printed to the console"),
-                                "*Windows/Linux*: `Shift + CTRL + J`",
-                                "*Mac*: `⌥ + ⌘ + J`",
-                            ].join("  \n");
-                    }
-                })(),
-            );
-
-            setIsDialogOpen(true);
+        async ([showWhat, serviceId]: ["env" | "postInstallInstructions", string]) => {
+            switch (showWhat) {
+                case "env":
+                    setDialogDesc({ "dialogShowingWhat": showWhat, serviceId });
+                    break;
+                case "postInstallInstructions":
+                    setDialogDesc({
+                        "dialogShowingWhat": showWhat,
+                        serviceId,
+                        "servicePassword": await getServicePassword(),
+                    });
+                    break;
+            }
         },
     );
 
@@ -122,7 +113,88 @@ export const MyServicesCards = memo((props: Props) => {
         [evtAction],
     );
 
-    const onDialogClose = useConstCallback(() => setIsDialogOpen(false));
+    const { dialogBody, dialogButton: dialogButtons } = useMemo(() => {
+        if (dialogDesc === undefined) {
+            return {};
+        }
+
+        assert(cards !== undefined);
+
+        const { postInstallInstructions, env, openUrl } = cards.find(
+            card => card.serviceId === dialogDesc.serviceId,
+        )!;
+
+        const dialogBody = (() => {
+            switch (dialogDesc.dialogShowingWhat) {
+                case "postInstallInstructions":
+                    assert(postInstallInstructions !== undefined);
+                    return postInstallInstructions;
+                case "env":
+                    console.log(JSON.stringify(env, null, 2));
+                    return [
+                        Object.entries(env)
+                            .filter(([, value]) => value !== "")
+                            .sort(([a], [b]) => a.localeCompare(b))
+                            .map(
+                                ([key, value]) =>
+                                    `**${key}**: \`${smartTrim({
+                                        "text": value,
+                                        "minCharAtTheEnd": 4,
+                                        "maxLength": 40,
+                                    })}\`  `,
+                            )
+                            .join("\n"),
+                        "  \n",
+                        `**${t("need to copy")}**`,
+                        t("everything have been printed to the console"),
+                        "*Windows/Linux*: `Shift + CTRL + J`",
+                        "*Mac*: `⌥ + ⌘ + J`",
+                    ].join("  \n");
+            }
+        })();
+
+        const dialogButton = (() => {
+            switch (dialogDesc.dialogShowingWhat) {
+                case "postInstallInstructions":
+                    const copyServicePasswordToClipboard = (() => {
+                        assert(postInstallInstructions !== undefined);
+                        return postInstallInstructions.indexOf(
+                            dialogDesc.servicePassword,
+                        ) !== undefined
+                            ? () => copyToClipboard(dialogDesc.servicePassword)
+                            : undefined;
+                    })();
+
+                    return (
+                        <>
+                            <Button variant="secondary" onClick={onDialogClose}>
+                                Cancel
+                            </Button>
+                            {openUrl && (
+                                <Button
+                                    variant="primary"
+                                    href={openUrl}
+                                    doOpenNewTabIfHref={true}
+                                    onClick={copyServicePasswordToClipboard}
+                                >
+                                    {copyServicePasswordToClipboard === undefined
+                                        ? "Open"
+                                        : "Copy password and open"}
+                                </Button>
+                            )}
+                        </>
+                    );
+                case "env":
+                    return (
+                        <Button variant="secondary" onClick={onDialogClose}>
+                            {t("ok")}
+                        </Button>
+                    );
+            }
+        })();
+
+        return { dialogBody, dialogButton };
+    }, [dialogDesc, t, cards]);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -163,13 +235,15 @@ export const MyServicesCards = memo((props: Props) => {
             </div>
             <Dialog
                 body={
-                    <div className={classes.dialogBody}>
-                        <Markdown>{dialogBody}</Markdown>
-                    </div>
+                    dialogBody && (
+                        <div className={classes.dialogBody}>
+                            <Markdown>{dialogBody}</Markdown>
+                        </div>
+                    )
                 }
-                isOpen={isDialogOpen}
+                isOpen={dialogDesc !== undefined}
                 onClose={onDialogClose}
-                buttons={<Button onClick={onDialogClose}>{t("ok")}</Button>}
+                buttons={dialogButtons ?? null}
             />
         </div>
     );
