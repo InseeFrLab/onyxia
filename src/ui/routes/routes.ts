@@ -55,7 +55,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
     "myServices": defineRoute(
         {
             "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-            "autoOpenK8Subdomain": param.query.optional.string,
+            "autoOpenServiceId": param.query.optional.string,
         },
         () => `/my-services`,
     ),

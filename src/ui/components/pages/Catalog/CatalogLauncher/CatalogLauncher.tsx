@@ -181,8 +181,8 @@ export const CatalogLauncher = memo((props: Props) => {
                         hideSplashScreen();
                         routes
                             .myServices({
-                                "autoOpenK8Subdomain": route.params.autoOpen
-                                    ? state.k8sSubdomain
+                                "autoOpenServiceId": route.params.autoOpen
+                                    ? state.serviceId
                                     : undefined,
                             })
                             .push();

@@ -188,15 +188,13 @@ export function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoOpenK8Subdomain } = route.params;
+        const { autoOpenServiceId } = route.params;
 
-        if (autoOpenK8Subdomain === undefined || cards === undefined) {
+        if (autoOpenServiceId === undefined || cards === undefined) {
             return;
         }
 
-        const card = cards.find(
-            card => card.openUrl?.indexOf(autoOpenK8Subdomain) !== undefined,
-        );
+        const card = cards.find(({ serviceId }) => serviceId === autoOpenServiceId);
 
         if (card === undefined) {
             return;
@@ -209,7 +207,7 @@ export function MyServices(props: Props) {
         routes
             .myServices({
                 ...route.params,
-                "autoOpenK8Subdomain": undefined,
+                "autoOpenServiceId": undefined,
             })
             .replace();
 
@@ -217,7 +215,7 @@ export function MyServices(props: Props) {
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
             "serviceId": card.serviceId,
         });
-    }, [route.params.autoOpenK8Subdomain, cards]);
+    }, [route.params.autoOpenServiceId, cards]);
 
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
