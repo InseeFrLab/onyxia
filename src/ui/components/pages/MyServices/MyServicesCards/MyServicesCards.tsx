@@ -160,7 +160,7 @@ export const MyServicesCards = memo((props: Props) => {
                         assert(postInstallInstructions !== undefined);
                         return postInstallInstructions.indexOf(
                             dialogDesc.servicePassword,
-                        ) !== undefined
+                        ) >= 0
                             ? () => copyToClipboard(dialogDesc.servicePassword)
                             : undefined;
                     })();
