@@ -30,7 +30,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
-import { getRandomK8sSubdomain } from "../ports/OnyxiaApiClient";
+import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 
 export type FormField =
     | FormField.Boolean
@@ -142,8 +142,7 @@ export declare namespace LauncherState {
           }
         | {
               launchState: "launched";
-              //NOTE: Used for auto launch
-              k8sSubdomain: string;
+              serviceId: string;
           }
     );
 }
@@ -433,15 +432,12 @@ export const { name, reducer, actions } = createSlice({
             assert(state.stateDescription === "ready");
             state.launchState = "launching";
         },
-        "launchCompleted": (
-            state,
-            { payload }: PayloadAction<{ k8sSubdomain: string }>,
-        ) => {
-            const { k8sSubdomain } = payload;
+        "launchCompleted": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
+            const { serviceId } = payload;
             assert(state.stateDescription === "ready");
             state.launchState = "launched";
             assert(state.launchState === "launched");
-            state.k8sSubdomain = k8sSubdomain;
+            state.serviceId = serviceId;
         },
     },
 });
@@ -472,9 +468,12 @@ const privateThunks = {
             });
 
             if (!isForContractPreview) {
-                dispatch(
-                    actions.launchCompleted({ "k8sSubdomain": getRandomK8sSubdomain() }),
-                );
+                const { serviceId } = getServiceId({
+                    "packageName": state.packageName,
+                    "randomK8sSubdomain": getRandomK8sSubdomain(),
+                });
+
+                dispatch(actions.launchCompleted({ serviceId }));
             }
 
             return { contract };
