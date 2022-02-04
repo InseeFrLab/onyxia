@@ -13,6 +13,8 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { Button } from "ui/theme";
 import { Markdown } from "ui/tools/Markdown";
 import { symToStr } from "tsafe/symToStr";
+import { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     className?: string;
@@ -38,10 +40,14 @@ export type Props = {
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
+    evtAction: NonPostableEvt<{
+        action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
+        serviceId: string;
+    }>;
 };
 
 export const MyServicesCards = memo((props: Props) => {
-    const { className, onRequestDelete, cards, catalogExplorerLink } = props;
+    const { className, onRequestDelete, cards, catalogExplorerLink, evtAction } = props;
 
     const { classes, cx } = useStyles({
         "isThereServicesRunning": (cards ?? []).length !== 0,
@@ -98,6 +104,22 @@ export const MyServicesCards = memo((props: Props) => {
 
             setIsDialogOpen(true);
         },
+    );
+
+    useEvt(
+        ctx =>
+            evtAction.pipe(ctx).$attach(
+                event =>
+                    event.action === "TRIGGER SHOW POST INSTALL INSTRUCTIONS"
+                        ? [event]
+                        : null,
+                ({ serviceId }) =>
+                    onRequestShowEnvOrPostInstallInstructionFactory(
+                        "postInstallInstructions",
+                        serviceId,
+                    )(),
+            ),
+        [evtAction],
     );
 
     const onDialogClose = useConstCallback(() => setIsDialogOpen(false));

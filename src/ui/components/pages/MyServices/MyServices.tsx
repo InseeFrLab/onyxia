@@ -18,6 +18,9 @@ import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Button } from "ui/theme";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
@@ -180,6 +183,42 @@ export function MyServices(props: Props) {
         [runningServices, isRunningServicesUpdating],
     );
 
+    const evtMyServiceCardsAction = useConst(() =>
+        Evt.create<UnpackEvt<MyServicesCardsProps["evtAction"]>>(),
+    );
+
+    useEffect(() => {
+        const { autoOpenK8Subdomain } = route.params;
+
+        if (autoOpenK8Subdomain === undefined || cards === undefined) {
+            return;
+        }
+
+        const card = cards.find(
+            card => card.openUrl?.indexOf(autoOpenK8Subdomain) !== undefined,
+        );
+
+        if (card === undefined) {
+            return;
+        }
+
+        if (card.startTime === undefined) {
+            return;
+        }
+
+        routes
+            .myServices({
+                ...route.params,
+                "autoOpenK8Subdomain": undefined,
+            })
+            .replace();
+
+        evtMyServiceCardsAction.post({
+            "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
+            "serviceId": card.serviceId,
+        });
+    }, [route.params.autoOpenK8Subdomain, cards]);
+
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
     const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
@@ -247,6 +286,7 @@ export function MyServices(props: Props) {
                         cards={cards}
                         onRequestDelete={onRequestDelete}
                         catalogExplorerLink={catalogExplorerLink}
+                        evtAction={evtMyServiceCardsAction}
                     />
                 )}
                 <MyServicesSavedConfigs

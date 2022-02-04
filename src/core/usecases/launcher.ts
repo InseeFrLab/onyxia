@@ -136,8 +136,16 @@ export declare namespace LauncherState {
             dependencies?: string[];
             config: JSONSchemaObject;
         };
-        launchState: "not launching" | "launching" | "launched";
-    };
+    } & (
+        | {
+              launchState: "not launching" | "launching";
+          }
+        | {
+              launchState: "launched";
+              //NOTE: Used for auto launch
+              k8sSubdomain: string;
+          }
+    );
 }
 
 export type IndexedFormFields = IndexedFormFields.Final;
@@ -425,9 +433,15 @@ export const { name, reducer, actions } = createSlice({
             assert(state.stateDescription === "ready");
             state.launchState = "launching";
         },
-        "launchCompleted": state => {
+        "launchCompleted": (
+            state,
+            { payload }: PayloadAction<{ k8sSubdomain: string }>,
+        ) => {
+            const { k8sSubdomain } = payload;
             assert(state.stateDescription === "ready");
             state.launchState = "launched";
+            assert(state.launchState === "launched");
+            state.k8sSubdomain = k8sSubdomain;
         },
     },
 });
@@ -458,7 +472,9 @@ const privateThunks = {
             });
 
             if (!isForContractPreview) {
-                dispatch(actions.launchCompleted());
+                dispatch(
+                    actions.launchCompleted({ "k8sSubdomain": getRandomK8sSubdomain() }),
+                );
             }
 
             return { contract };

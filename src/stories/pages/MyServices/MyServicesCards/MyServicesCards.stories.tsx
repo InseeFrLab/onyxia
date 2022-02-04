@@ -3,6 +3,7 @@ import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
 import { css } from "tss-react/@emotion/css";
+import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -46,6 +47,7 @@ const props: Props = {
         "s3TokenExpirationTime": Infinity,
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
+    "evtAction": new Evt(),
     ...logCallbacks(["onRequestDelete"]),
 };
 
