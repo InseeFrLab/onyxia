@@ -1,3 +1,7 @@
+## **0.36.0** (2022-02-05)  
+  
+- Add loading icon in the readme    
+  
 ## **0.35.0** (2022-02-05)  
   
 - Always open the readme after launching a service  
