@@ -17,6 +17,7 @@ import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import * as clipboard from "clipboard-polyfill/text";
 import { useDomRect } from "powerhooks/useDomRect";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type Props = {
     className?: string;
@@ -121,7 +122,7 @@ export const MyServicesCards = memo((props: Props) => {
 
         assert(cards !== undefined);
 
-        const { postInstallInstructions, env, openUrl } = cards.find(
+        const { postInstallInstructions, env, openUrl, startTime } = cards.find(
             card => card.serviceId === dialogDesc.serviceId,
         )!;
 
@@ -159,20 +160,29 @@ export const MyServicesCards = memo((props: Props) => {
                     return (
                         <>
                             <Button variant="secondary" onClick={onDialogClose}>
-                                Cancel
+                                {t("return")}
                             </Button>
-                            {openUrl && (
-                                <CopyOpenButton
-                                    openUrl={openUrl}
-                                    servicePassword={
-                                        postInstallInstructions !== undefined &&
-                                        postInstallInstructions.indexOf(
-                                            dialogDesc.servicePassword,
-                                        ) >= 0
-                                            ? dialogDesc.servicePassword
-                                            : undefined
-                                    }
+
+                            {startTime === undefined ? (
+                                <CircularProgress
+                                    className={classes.circularProgress}
+                                    color="textPrimary"
+                                    size={20}
                                 />
+                            ) : (
+                                openUrl && (
+                                    <CopyOpenButton
+                                        openUrl={openUrl}
+                                        servicePassword={
+                                            postInstallInstructions !== undefined &&
+                                            postInstallInstructions.indexOf(
+                                                dialogDesc.servicePassword,
+                                            ) >= 0
+                                                ? dialogDesc.servicePassword
+                                                : undefined
+                                        }
+                                    />
+                                )
                             )}
                         </>
                     );
@@ -251,6 +261,7 @@ export declare namespace MyServicesCards {
         "everything have been printed to the console": undefined;
         "first copy the password": undefined;
         "open the service": undefined;
+        "return": undefined;
     };
 }
 
@@ -284,6 +295,9 @@ const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
     "dialogBody": {
         "maxHeight": 450,
         "overflow": "auto",
+    },
+    "circularProgress": {
+        ...theme.spacing.rightLeft("margin", 3),
     },
 }));
 
