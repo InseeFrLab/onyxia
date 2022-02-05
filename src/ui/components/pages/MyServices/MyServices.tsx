@@ -96,7 +96,7 @@ export function MyServices(props: Props) {
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
             .myServices({
-                "isSavedConfigsExtended": !isSavedConfigsExtended,
+                "isSavedConfigsExtended": !isSavedConfigsExtended ? true : undefined,
             })
             .push(),
     );
@@ -207,6 +207,9 @@ export function MyServices(props: Props) {
         routes
             .myServices({
                 ...route.params,
+                "isSavedConfigsExtended": route.params.isSavedConfigsExtended
+                    ? true
+                    : undefined,
                 "autoLaunchServiceId": undefined,
             })
             .replace();
