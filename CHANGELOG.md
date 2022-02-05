@@ -1,3 +1,16 @@
+## **0.35.0** (2022-02-05)  
+  
+- Always open the readme after launching a service  
+- Unclutter the url on the my services page  
+- Translate the modal buttons  
+- Button keep same size when text changes  
+- Fix clipboard issues #277  
+- Fix bug in detection if service password is present in postinstall notes  
+- Revert to only one parameter: autoLaunch (delete autoOpen)  
+- autoOpenK8sSubdomain -> autoOpenServiceId  
+- Modify get post install info modal, add a button to copy and launch  
+- Auto open post install instruction url param    
+  
 ### **0.34.1** (2022-01-30)  
   
 - TextArea renders on three collums    
