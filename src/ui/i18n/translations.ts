@@ -471,6 +471,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "need to copy": "Need to copy untruncated values?",
             "everything have been printed to the console":
                 "Everything have been printed to the console",
+            "first copy the password": "First, copy the service...",
+            "open the service": "Open the service 🚀",
         },
         "LoginDivider": {
             "or": "or",
@@ -814,6 +816,8 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "need to copy": "Besoin de copier les valeurs non tronquées?",
             "everything have been printed to the console":
                 "Tout a été loggé dans la console",
+            "first copy the password": "Commencez par copier le mot de passe...",
+            "open the service": "Ouvrir le service 🚀",
         },
         "LoginDivider": {
             "or": "ou",
