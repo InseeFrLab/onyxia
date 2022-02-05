@@ -1,4 +1,4 @@
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, useReducer, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { makeStyles, Text } from "ui/theme";
 import { smartTrim } from "ui/tools/smartTrim";
@@ -15,7 +15,7 @@ import { Markdown } from "ui/tools/Markdown";
 import { symToStr } from "tsafe/symToStr";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
+import * as clipboard from "clipboard-polyfill/text";
 
 export type Props = {
     className?: string;
@@ -127,8 +127,7 @@ export const MyServicesCards = memo((props: Props) => {
         const dialogBody = (() => {
             switch (dialogDesc.dialogShowingWhat) {
                 case "postInstallInstructions":
-                    assert(postInstallInstructions !== undefined);
-                    return postInstallInstructions;
+                    return postInstallInstructions ?? "Your service is ready";
                 case "env":
                     console.log(JSON.stringify(env, null, 2));
                     return [
@@ -156,31 +155,23 @@ export const MyServicesCards = memo((props: Props) => {
         const dialogButton = (() => {
             switch (dialogDesc.dialogShowingWhat) {
                 case "postInstallInstructions":
-                    const copyServicePasswordToClipboard = (() => {
-                        assert(postInstallInstructions !== undefined);
-                        return postInstallInstructions.indexOf(
-                            dialogDesc.servicePassword,
-                        ) >= 0
-                            ? () => copyToClipboard(dialogDesc.servicePassword)
-                            : undefined;
-                    })();
-
                     return (
                         <>
                             <Button variant="secondary" onClick={onDialogClose}>
                                 Cancel
                             </Button>
                             {openUrl && (
-                                <Button
-                                    variant="primary"
-                                    href={openUrl}
-                                    doOpenNewTabIfHref={true}
-                                    onClick={copyServicePasswordToClipboard}
-                                >
-                                    {copyServicePasswordToClipboard === undefined
-                                        ? "Open"
-                                        : "Copy password and open"}
-                                </Button>
+                                <CopyOpenButton
+                                    openUrl={openUrl}
+                                    servicePassword={
+                                        postInstallInstructions !== undefined &&
+                                        postInstallInstructions.indexOf(
+                                            dialogDesc.servicePassword,
+                                        ) >= 0
+                                            ? dialogDesc.servicePassword
+                                            : undefined
+                                    }
+                                />
                             )}
                         </>
                     );
@@ -355,4 +346,38 @@ const { NoRunningService } = (() => {
     }));
 
     return { NoRunningService };
+})();
+
+const { CopyOpenButton } = (() => {
+    type Props = {
+        openUrl: string;
+        servicePassword: string | undefined;
+    };
+
+    const CopyOpenButton = memo((props: Props) => {
+        const { openUrl, servicePassword } = props;
+
+        const [isReadyToOpen, setReadyToOpen] = useReducer(
+            () => true,
+            servicePassword === undefined ? true : false,
+        );
+
+        const copyPasswordToClipBoard = useConstCallback(() => {
+            clipboard.writeText(servicePassword!);
+            setReadyToOpen();
+        });
+
+        return (
+            <Button
+                variant="primary"
+                href={isReadyToOpen ? openUrl : undefined}
+                doOpenNewTabIfHref={true}
+                onClick={isReadyToOpen ? undefined : copyPasswordToClipBoard}
+            >
+                {isReadyToOpen ? "Open the service🚀" : "📋 First copy the password..."}
+            </Button>
+        );
+    });
+
+    return { CopyOpenButton };
 })();
