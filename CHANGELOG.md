@@ -1,3 +1,7 @@
+### **0.37.1** (2022-02-05)  
+  
+- Adjust usecase header title    
+  
 ## **0.37.0** (2022-02-05)  
   
 - Rename env variable from HEADER_TITLE to HEADER_ORGANIZATION, add a way to customize the text 'Datalab' in the header  
