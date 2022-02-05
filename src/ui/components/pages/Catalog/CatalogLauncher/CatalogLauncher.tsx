@@ -179,11 +179,7 @@ export const CatalogLauncher = memo((props: Props) => {
                     case "launched":
                         hideSplashScreen();
                         routes
-                            .myServices({
-                                "autoLaunchServiceId": route.params.autoLaunch
-                                    ? state.serviceId
-                                    : undefined,
-                            })
+                            .myServices({ "autoLaunchServiceId": state.serviceId })
                             .push();
                         break;
                 }
