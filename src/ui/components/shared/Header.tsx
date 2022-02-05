@@ -146,10 +146,10 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
             "justifyContent": "center",
         },
         "mainTextContainer": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center",
             "cursor": "pointer",
+            "& > *": {
+                "display": "inline",
+            },
         },
         "svg": {
             "fill": theme.colors.useCases.typography.textFocus,
