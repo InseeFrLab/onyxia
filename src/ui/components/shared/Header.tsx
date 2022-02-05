@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "ui/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
-import { HEADER_TITLE } from "ui/envCarriedOverToKc";
+import { HEADER_ORGANIZATION, HEADER_USECASE_DESCRIPTION } from "ui/envCarriedOverToKc";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -55,21 +55,21 @@ export const Header = memo((props: Props) => {
                         Onyxia -
                     </Text>
                 )}
-                {HEADER_TITLE && (
+                {HEADER_ORGANIZATION && (
                     <Text
                         typo="section heading"
                         className={css({ ...theme.spacing.rightLeft("margin", 2) })}
                     >
-                        {HEADER_TITLE}
+                        {HEADER_ORGANIZATION}
                     </Text>
                 )}
-                {theme.windowInnerWidth > 450 && (
+                {theme.windowInnerWidth > 450 && HEADER_USECASE_DESCRIPTION && (
                     <Text
                         typo="section heading"
                         className={css({ "fontWeight": 500 })}
                         color="focus"
                     >
-                        Datalab
+                        {HEADER_USECASE_DESCRIPTION}
                     </Text>
                 )}
             </div>
