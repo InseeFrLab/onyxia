@@ -31,12 +31,10 @@ import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
-//TODO: Move in a slice, we shouldn't access env directly here.
 import { getEnv } from "env";
 import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
-import { symToStr } from "tsafe/symToStr";
 import type { Item } from "onyxia-ui/LeftBar";
-import memoize from "memoizee";
+import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 
 export const logoContainerWidthInPercent = 4;
 
@@ -118,11 +116,15 @@ export const App = memo((props: Props) => {
     const leftBarItems = useMemo(
         () =>
             ({
-                "home": {
-                    "iconId": "home",
-                    "label": t("home"),
-                    "link": routes.home().link,
-                },
+                ...(getIsHomePageDisabled()
+                    ? {}
+                    : {
+                          "home": {
+                              "iconId": "home",
+                              "label": t("home"),
+                              "link": routes.home().link,
+                          } as const,
+                      }),
                 "account": {
                     "iconId": "account",
                     "label": t("account"),
@@ -152,6 +154,8 @@ export const App = memo((props: Props) => {
                     "iconId": "files",
                     "label": t("myFiles"),
                     "link": routes.myBuckets().link,
+                    //TODO: This usage of getEnv should be removed as soon as we have the new explorer
+                    //we should get the info "is file enabled" from the core.
                     "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
                     "hasDividerBelow": true,
                 },
@@ -598,45 +602,3 @@ function useProjectsSlice() {
 
     return { projects, selectedProjectId, onSelectedProjectChange };
 }
-
-type ExtraLeftBarItem = {
-    iconId: string;
-    label: string | Partial<Record<SupportedLanguage, string>>;
-    url: string;
-};
-
-const getExtraLeftBarItemsFromEnv = memoize(
-    (): { extraLeftBarItems: ExtraLeftBarItem[] | undefined } => {
-        const { EXTRA_LEFTBAR_ITEMS } = getEnv();
-
-        if (EXTRA_LEFTBAR_ITEMS === "") {
-            return { "extraLeftBarItems": undefined };
-        }
-
-        const errorMessage = `${symToStr({ EXTRA_LEFTBAR_ITEMS })} is malformed`;
-
-        let extraLeftBarItems: ExtraLeftBarItem[];
-
-        try {
-            extraLeftBarItems = JSON.parse(EXTRA_LEFTBAR_ITEMS);
-        } catch {
-            throw new Error(errorMessage);
-        }
-
-        assert(
-            extraLeftBarItems instanceof Array &&
-                extraLeftBarItems.find(
-                    extraLeftBarItem =>
-                        !(
-                            extraLeftBarItem instanceof Object &&
-                            typeof extraLeftBarItem.url === "string" &&
-                            (typeof extraLeftBarItem.label === "string" ||
-                                extraLeftBarItem.label instanceof Object)
-                        ),
-                ) === undefined,
-            errorMessage,
-        );
-
-        return { extraLeftBarItems };
-    },
-);
