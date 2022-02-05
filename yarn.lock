@@ -5356,10 +5356,10 @@ cli-truncate@2.1.0, cli-truncate@^2.1.0:
     slice-ansi "^3.0.0"
     string-width "^4.2.0"
 
-clipboard-polyfill@^2.8.6:
-  version "2.8.6"
-  resolved "https://registry.yarnpkg.com/clipboard-polyfill/-/clipboard-polyfill-2.8.6.tgz#19d27283f11f2933bb18737263b98b8c95b5a0f7"
-  integrity sha512-kz/1ov+PXsBpGnW9XJH3dLWdYj12FpXqO89Dngm/GRPoI36E/tnYs6N0YPTEhxM9WHAlFiN5eoyIVuv5nzKXvg==
+clipboard-polyfill@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/clipboard-polyfill/-/clipboard-polyfill-3.0.3.tgz#159ea0768e20edc7ffda404bd13c54c73de4ff40"
+  integrity sha512-hts0o01ZkwjA1qHA5gFePzAj/780W7v+eyN3GdaCRyDnapzcPsKRV5aodv77gcr40NDIcyNjNmc+HvfKV+jD0g==
 
 cliui@^5.0.0:
   version "5.0.0"
@@ -11566,10 +11566,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.24.0.tgz#83c04b330b82d981b177aec22fb50e4d766e338e"
-  integrity sha512-wfT4uAWs2lw2qNnfky/TGalDbEPHbBhCyGTO3Oyw5HkRYcqeySjkSrcobFB5EG0OcU/Tr6zSJcPlURgPm93mDQ==
+onyxia-ui@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.25.0.tgz#de409909e9938cfa9c2b441c739d32513a3a0534"
+  integrity sha512-xSC61mSs3ntLr5Xwmtcgh6aZ1hBJBZR3bnUCnT/pi+n7Inz46YiTUt+dMp8etBm7dIeJ3svEsejvFIxEjKcbVQ==
   dependencies:
     "@mui/icons-material" "^5.0.3"
     color "3.1.3"

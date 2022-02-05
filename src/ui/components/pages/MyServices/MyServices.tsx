@@ -10,7 +10,7 @@ import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConf
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useThunks, useSelector, selectors } from "ui/coreApi";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
+import * as clipboard from "clipboard-polyfill/text";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
@@ -72,7 +72,7 @@ export function MyServices(props: Props) {
             case "password":
                 projectConfigsThunks
                     .getValue({ "key": "servicePassword" })
-                    .then(copyToClipboard);
+                    .then(clipboard.writeText);
                 return;
             case "trash":
                 setIsDialogOpen(true);
@@ -106,7 +106,7 @@ export function MyServices(props: Props) {
     >(({ launchLinkHref, action }) => {
         switch (action) {
             case "copy link":
-                copyToClipboard(window.location.origin + launchLinkHref);
+                clipboard.writeText(`${window.location.origin}${launchLinkHref}`);
                 return;
             case "delete":
                 restorablePackageConfigThunks.deleteRestorablePackageConfig({
