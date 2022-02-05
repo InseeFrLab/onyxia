@@ -54,13 +54,23 @@ const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
 
 export { THEME_ID };
 
-const { HEADER_TITLE, injectHEADER_TITLEInSearchParams } = getTransferableEnv({
-    "name": "HEADER_TITLE" as const,
-    "getSerializedValueFromEnv": () => getEnv().HEADER_TITLE,
-    "validateAndParseOrGetDefault": (valueStr): string => valueStr,
-});
+const { HEADER_ORGANIZATION, injectHEADER_ORGANIZATIONInSearchParams } =
+    getTransferableEnv({
+        "name": "HEADER_ORGANIZATION" as const,
+        "getSerializedValueFromEnv": () => getEnv().HEADER_ORGANIZATION,
+        "validateAndParseOrGetDefault": (valueStr): string => valueStr,
+    });
 
-export { HEADER_TITLE };
+export { HEADER_ORGANIZATION };
+
+const { HEADER_USECASE_DESCRIPTION, injectHEADER_USECASE_DESCRIPTIONInSearchParams } =
+    getTransferableEnv({
+        "name": "HEADER_USECASE_DESCRIPTION" as const,
+        "getSerializedValueFromEnv": () => getEnv().HEADER_USECASE_DESCRIPTION,
+        "validateAndParseOrGetDefault": (valueStr): string => valueStr,
+    });
+
+export { HEADER_USECASE_DESCRIPTION };
 
 const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransferableEnv(
     {
@@ -124,9 +134,14 @@ export { THERMS_OF_SERVICES };
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
 
-    newUrl = injectTHEME_IDInSearchParams(newUrl);
-    newUrl = injectHEADER_TITLEInSearchParams(newUrl);
-    newUrl = injectTHERMS_OF_SERVICESInSearchParams(newUrl);
+    for (const inject of [
+        injectTHEME_IDInSearchParams,
+        injectHEADER_ORGANIZATIONInSearchParams,
+        injectHEADER_USECASE_DESCRIPTIONInSearchParams,
+        injectTHERMS_OF_SERVICESInSearchParams,
+    ]) {
+        newUrl = inject(newUrl);
+    }
 
     return newUrl;
 }
