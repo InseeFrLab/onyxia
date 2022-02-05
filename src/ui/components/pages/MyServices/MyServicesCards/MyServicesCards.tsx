@@ -1,4 +1,4 @@
-import { useState, useMemo, useReducer, memo } from "react";
+import { useState, useMemo, useReducer, useRef, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { makeStyles, Text } from "ui/theme";
 import { smartTrim } from "ui/tools/smartTrim";
@@ -16,6 +16,7 @@ import { symToStr } from "tsafe/symToStr";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import * as clipboard from "clipboard-polyfill/text";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     className?: string;
@@ -350,12 +351,13 @@ const { NoRunningService } = (() => {
 
 const { CopyOpenButton } = (() => {
     type Props = {
+        className?: string;
         openUrl: string;
         servicePassword: string | undefined;
     };
 
     const CopyOpenButton = memo((props: Props) => {
-        const { openUrl, servicePassword } = props;
+        const { openUrl, servicePassword, className } = props;
 
         const [isReadyToOpen, setReadyToOpen] = useReducer(
             () => true,
@@ -367,17 +369,82 @@ const { CopyOpenButton } = (() => {
             setReadyToOpen();
         });
 
+        const { ref1, ref2, largerButtonWidth } = (function useClosure() {
+            const {
+                ref: ref1,
+                domRect: { width: width1 },
+            } = useDomRect();
+            const {
+                ref: ref2,
+                domRect: { width: width2 },
+            } = useDomRect();
+
+            const refWidth = useRef<number>(0);
+
+            const currWidth = width1 === 0 || width2 === 0 ? 0 : Math.max(width1, width2);
+
+            if (currWidth > refWidth.current) {
+                refWidth.current = currWidth;
+            }
+
+            return {
+                ref1,
+                ref2,
+                "largerButtonWidth": refWidth.current,
+            };
+        })();
+
+        const { classes, cx } = useStyles({ largerButtonWidth });
+
+        const buttonProps = useMemo(
+            () =>
+                ({
+                    "variant": "primary",
+                    "href": isReadyToOpen ? openUrl : undefined,
+                    "doOpenNewTabIfHref": true,
+                    "onClick": isReadyToOpen ? undefined : copyPasswordToClipBoard,
+                } as const),
+            [isReadyToOpen],
+        );
+
         return (
-            <Button
-                variant="primary"
-                href={isReadyToOpen ? openUrl : undefined}
-                doOpenNewTabIfHref={true}
-                onClick={isReadyToOpen ? undefined : copyPasswordToClipBoard}
-            >
-                {isReadyToOpen ? "Open the service🚀" : "📋 First copy the password..."}
-            </Button>
+            <div className={cx(classes.root, className)}>
+                <Button
+                    ref={ref1}
+                    className={cx(classes.button, {
+                        [classes.collapsed]: !isReadyToOpen,
+                    })}
+                    {...buttonProps}
+                >
+                    Open the service🚀
+                </Button>
+                <Button
+                    ref={ref2}
+                    className={cx(classes.button, { [classes.collapsed]: isReadyToOpen })}
+                    {...buttonProps}
+                >
+                    📋 First copy the password...
+                </Button>
+            </div>
         );
     });
+
+    const useStyles = makeStyles<{ largerButtonWidth: number }>({
+        "name": { CopyOpenButton },
+    })((...[, { largerButtonWidth }]) => ({
+        "root": {
+            "position": "relative",
+            "opacity": largerButtonWidth === 0 ? 0 : 1,
+            "transition": `opacity ease-in-out 250ms`,
+        },
+        "button": {
+            "minWidth": largerButtonWidth,
+        },
+        "collapsed": {
+            "position": "fixed",
+            "top": 3000,
+        },
+    }));
 
     return { CopyOpenButton };
 })();
