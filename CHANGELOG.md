@@ -1,3 +1,8 @@
+## **0.37.0** (2022-02-05)  
+  
+- Rename env variable from HEADER_TITLE to HEADER_ORGANIZATION, add a way to customize the text 'Datalab' in the header  
+- Add video in readme    
+  
 ## **0.36.0** (2022-02-05)  
   
 - Add loading icon in the readme    
