@@ -249,6 +249,8 @@ export declare namespace MyServicesCards {
         ok: undefined;
         "need to copy": undefined;
         "everything have been printed to the console": undefined;
+        "first copy the password": undefined;
+        "open the service": undefined;
     };
 }
 
@@ -407,8 +409,18 @@ const { CopyOpenButton } = (() => {
             [isReadyToOpen],
         );
 
+        const { t } = useTranslation({ MyServicesCards });
+
         return (
             <div className={cx(classes.root, className)}>
+                <Button
+                    startIcon="key"
+                    ref={ref2}
+                    className={cx(classes.button, { [classes.collapsed]: isReadyToOpen })}
+                    {...buttonProps}
+                >
+                    {t("first copy the password")}
+                </Button>
                 <Button
                     ref={ref1}
                     className={cx(classes.button, {
@@ -416,14 +428,7 @@ const { CopyOpenButton } = (() => {
                     })}
                     {...buttonProps}
                 >
-                    Open the service🚀
-                </Button>
-                <Button
-                    ref={ref2}
-                    className={cx(classes.button, { [classes.collapsed]: isReadyToOpen })}
-                    {...buttonProps}
-                >
-                    📋 First copy the password...
+                    {t("open the service")}
                 </Button>
             </div>
         );
