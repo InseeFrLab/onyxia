@@ -200,10 +200,6 @@ export function MyServices(props: Props) {
             return;
         }
 
-        if (card.startTime === undefined) {
-            return;
-        }
-
         routes
             .myServices({
                 ...route.params,

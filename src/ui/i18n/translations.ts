@@ -473,6 +473,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Everything have been printed to the console",
             "first copy the password": "First, copy the service...",
             "open the service": "Open the service 🚀",
+            "return": "Return",
         },
         "LoginDivider": {
             "or": "or",
@@ -818,6 +819,7 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
                 "Tout a été loggé dans la console",
             "first copy the password": "Commencez par copier le mot de passe...",
             "open the service": "Ouvrir le service 🚀",
+            "return": "Retour",
         },
         "LoginDivider": {
             "or": "ou",
