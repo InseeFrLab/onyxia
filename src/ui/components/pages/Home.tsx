@@ -14,6 +14,8 @@ import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import homeIllustrationImgUrl from "ui/assets/img/homeIllustration.png";
+import { getIsHomePageDisabled } from "ui/env";
+import { useConst } from "powerhooks/useConst";
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -25,6 +27,12 @@ type Props = {
 
 export function Home(props: Props) {
     const { className } = props;
+
+    useConst(() => {
+        if (getIsHomePageDisabled()) {
+            routes.catalogExplorer().replace();
+        }
+    });
 
     const { classes, cx } = useStyles();
 
