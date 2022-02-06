@@ -6,26 +6,28 @@ import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 
-export type ExtraLeftBarItem = {
+export type AdminProvidedLink = {
     iconId: string;
     label: string | Partial<Record<SupportedLanguage, string>>;
     url: string;
 };
 
-export const getExtraLeftBarItemsFromEnv = memoize(
-    (): { extraLeftBarItems: ExtraLeftBarItem[] | undefined } => {
-        const { EXTRA_LEFTBAR_ITEMS } = getEnv();
+const getAdminProvidedLinksFromEnv = memoize(
+    (
+        envName: "EXTRA_LEFTBAR_ITEMS" | "HEADER_LINKS",
+    ): AdminProvidedLink[] | undefined => {
+        const envValue = getEnv()[envName];
 
-        if (EXTRA_LEFTBAR_ITEMS === "") {
-            return { "extraLeftBarItems": undefined };
+        if (envValue === "") {
+            return undefined;
         }
 
-        const errorMessage = `${symToStr({ EXTRA_LEFTBAR_ITEMS })} is malformed`;
+        const errorMessage = `${envName} is malformed`;
 
-        let extraLeftBarItems: ExtraLeftBarItem[];
+        let extraLeftBarItems: AdminProvidedLink[];
 
         try {
-            extraLeftBarItems = JSON.parse(EXTRA_LEFTBAR_ITEMS);
+            extraLeftBarItems = JSON.parse(envValue);
         } catch {
             throw new Error(errorMessage);
         }
@@ -44,9 +46,13 @@ export const getExtraLeftBarItemsFromEnv = memoize(
             errorMessage,
         );
 
-        return { extraLeftBarItems };
+        return extraLeftBarItems;
     },
 );
+
+export const getExtraLeftBarItemsFromEnv = () =>
+    getAdminProvidedLinksFromEnv("EXTRA_LEFTBAR_ITEMS");
+export const getHeaderLinksFromEnv = () => getAdminProvidedLinksFromEnv("HEADER_LINKS");
 
 export const getIsHomePageDisabled = memoize((): boolean => {
     const { DISABLE_HOME_PAGE } = getEnv();

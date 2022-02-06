@@ -164,7 +164,7 @@ export const App = memo((props: Props) => {
                           } as const,
                       }),
                 ...(() => {
-                    const { extraLeftBarItems } = getExtraLeftBarItemsFromEnv();
+                    const extraLeftBarItems = getExtraLeftBarItemsFromEnv();
 
                     const { resolveLocalizedString } = createResolveLocalizedString({
                         "currentLanguage": lng,

@@ -31,6 +31,8 @@ import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { ReactComponent as TrainingsLogoSvg } from "ui/assets/svg/Trainings2.svg";
+import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
+import GradingIcon from "@mui/icons-material/Grading";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PublicIcon from "@mui/icons-material/Public";
@@ -157,6 +159,8 @@ export const { Icon } = createIcon({
     "training": TrainingsLogoSvg,
     "people": PeopleIcon,
     "errorOutline": ErrorOutlineIcon,
+    "assuredWorkload": AssuredWorkloadIcon,
+    "grading": GradingIcon,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
