@@ -30,15 +30,26 @@ export const CatalogExplorer = memo((props: Props) => {
             case "not fetched":
                 if (!catalogExplorerState.isFetching) {
                     showSplashScreen({ "enableTransparency": true });
-                    catalogExplorerThunks.fetchCatalogs();
+
+                    const { catalogId } = route.params;
+
+                    catalogExplorerThunks.fetchCatalogs(
+                        catalogId === undefined
+                            ? {
+                                  "isCatalogIdInUrl": false,
+                                  "onAutoSelectCatalogId": ({ selectedCatalogId }) =>
+                                      routes
+                                          .catalogExplorer({
+                                              "catalogId": selectedCatalogId,
+                                          })
+                                          .replace(),
+                              }
+                            : {
+                                  "isCatalogIdInUrl": true,
+                                  catalogId,
+                              },
+                    );
                 }
-                break;
-            case "not selected":
-                catalogExplorerThunks.selectCatalog({
-                    "catalogId":
-                        route.params.catalogId ??
-                        catalogExplorerState.availableCatalogsId[0],
-                });
                 break;
             case "ready":
                 hideSplashScreen();
@@ -58,6 +69,22 @@ export const CatalogExplorer = memo((props: Props) => {
             ? undefined
             : catalogExplorerState.selectedCatalogId,
     ]);
+
+    /**
+     * TODO: For the moment we provide no UI for switching from one catalog to another
+     * thus this hook is, in effect, useless.
+     * To switch from a catalog to another, simply update the route, this hook will
+     * propagate to the core.
+     */
+    useEffect(() => {
+        const { catalogId } = route.params;
+
+        if (catalogId === undefined) {
+            return;
+        }
+
+        catalogExplorerThunks.changeSelectedCatalogId({ catalogId });
+    }, [route.params.catalogId]);
 
     const onRequestLaunch = useConstCallback<
         CatalogExplorerCardsProps["onRequestLaunch"]
