@@ -15,7 +15,7 @@ import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
-import { LibProvider } from "ui/coreApi/LibProvider";
+import { CoreProvider } from "ui/coreApi/CoreProvider";
 import { I18nProvider } from "ui/i18n/I18nProvider";
 import type { SupportedLanguage } from "ui/i18n/translations";
 import { RouteProvider } from "ui/routes";
@@ -73,7 +73,7 @@ export function getStoryFactory<Props>(params: {
 
     const StoreProviderOrFragment: React.ComponentType = !doUseLib
         ? ({ children }) => <>{children}</>
-        : ({ children }) => <LibProvider>{children}</LibProvider>;
+        : ({ children }) => <CoreProvider>{children}</CoreProvider>;
 
     const Template: Story<
         Props & {

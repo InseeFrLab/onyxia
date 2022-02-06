@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { IconButton, Button, ButtonBarButton } from "ui/theme";
+import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "ui/theme";
@@ -110,11 +110,13 @@ export const Header = memo((props: Props) => {
                                 </ButtonBarButton>
                             ));
                         })()}
-                        {props.isUserLoggedIn && (
+
+                        {/*TODO: Debug CloudShell
+                        props.isUserLoggedIn && (
                             <ToggleCloudShell
                                 useIsCloudShellVisible={props.useIsCloudShellVisible}
                             />
-                        )}
+                        )*/}
                         <Button
                             onClick={
                                 props.isUserLoggedIn
@@ -185,6 +187,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
     }),
 );
 
+/*
 const { ToggleCloudShell } = (() => {
     type Props = {
         useIsCloudShellVisible: typeof useIsCloudShellVisible;
@@ -214,6 +217,7 @@ const { ToggleCloudShell } = (() => {
 
     return { ToggleCloudShell };
 })();
+*/
 
 const labelId = "project-select-id";
 
