@@ -1,3 +1,24 @@
+### **0.38.1** (2022-02-06)  
+  
+- add debug information if HIGHLIGHTED_PACKAGES isn't correct  
+- Verry small adjustment to correct an overflow issue with marian font  
+- Use EJS to preload the right font  
+- Auto background of the right color  
+- Remove meta url, we can't know statically  
+- Make the social media card image adapt to the theme  
+- Remove broken and useless manifest file  
+- Remove legacy immage assets  
+- Remove legacy page content  
+- Remove public/samples  
+- Remove legacy js file in public  
+- Remove legacy assets  
+- Custom description in meta card everywhere  
+- Make it possible to customize the description in the social card  
+- Disabled features are not grayed but absent from leftBar  
+- Remove legacy icons import  
+- Automatically adapt the title based on envs  
+- Improve comments    
+  
 ## **0.38.0** (2022-02-06)  
   
 - Remove extra <title>  
