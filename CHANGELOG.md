@@ -1,3 +1,9 @@
+## **0.40.0** (2022-02-06)  
+  
+- Rename LibProvide -> CoreProvider  
+- Use JSON for providing the therms url  
+- Fix bug in catalog explorer search bar    
+  
 ## **0.39.0** (2022-02-06)  
   
 - Make the header links configurable    
