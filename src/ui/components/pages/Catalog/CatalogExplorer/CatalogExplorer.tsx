@@ -5,9 +5,10 @@ import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useSplashScreen } from "onyxia-ui";
-import { useSelector, useThunks } from "ui/coreApi";
+import { useSelector, useThunks, selectors } from "ui/coreApi";
 import { routes } from "ui/routes";
 import type { Route } from "type-route";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
@@ -52,9 +53,9 @@ export const CatalogExplorer = memo((props: Props) => {
         }
     }, [
         catalogExplorerState.stateDescription,
-        route.params.catalogId ?? "",
+        route.params.catalogId,
         catalogExplorerState.stateDescription !== "ready"
-            ? ""
+            ? undefined
             : catalogExplorerState.selectedCatalogId,
     ]);
 
@@ -69,27 +70,44 @@ export const CatalogExplorer = memo((props: Props) => {
             .push(),
     );
 
-    const setSearch = useConstCallback<CatalogExplorerCardsProps["setSearch"]>(search =>
-        routes
-            .catalogExplorer({
-                "catalogId": route.params.catalogId!,
-                search,
-            })
-            .replace(),
+    const onSearchChange = useConstCallback<CatalogExplorerCardsProps["onSearchChange"]>(
+        search =>
+            routes
+                .catalogExplorer({
+                    "catalogId": route.params.catalogId!,
+                    "search": search || undefined,
+                })
+                .replace(),
     );
+
+    useEffect(() => {
+        catalogExplorerThunks.setSearch({ "search": route.params.search });
+    }, [route.params.search]);
+
+    const onRequestRevealPackagesNotShown = useConstCallback(() =>
+        catalogExplorerThunks.revealAllPackages(),
+    );
+
+    const { filteredPackages } = useSelector(selectors.catalogExplorer.filteredPackages);
 
     if (catalogExplorerState.stateDescription !== "ready") {
         return null;
     }
 
+    assert(filteredPackages !== undefined);
+
+    const { packages, notShownCount } = filteredPackages;
+
     return (
         <CatalogExplorerCards
             search={route.params.search}
-            setSearch={setSearch}
+            onSearchChange={onSearchChange}
             className={className}
-            packages={catalogExplorerState.packages}
+            packages={packages}
             onRequestLaunch={onRequestLaunch}
             scrollableDivRef={scrollableDivRef}
+            onRequestRevealPackagesNotShown={onRequestRevealPackagesNotShown}
+            notShownPackageCount={notShownCount}
         />
     );
 });

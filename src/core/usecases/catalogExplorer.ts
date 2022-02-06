@@ -4,6 +4,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { Catalog } from "../ports/OnyxiaApiClient";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
+import type { ThunksExtraArgument, RootState } from "../setup";
+import { waitForDebounceFactory } from "core/tools/waitForDebounce";
+import memoize from "memoizee";
 
 type CatalogExplorerState =
     | CatalogExplorerState.NotFetched
@@ -30,13 +33,9 @@ namespace CatalogExplorerState {
     export type Ready = Common & {
         stateDescription: "ready";
         selectedCatalogId: string;
-        locationUrl: string;
-        packages: {
-            packageName: string;
-            packageDescription: string;
-            packageIconUrl?: string;
-            packageHomeUrl?: string;
-        }[];
+        doShowOnlyHighlighted: boolean;
+        search: string;
+        highlightedPackages: string[];
     };
 }
 
@@ -57,34 +56,51 @@ export const { name, reducer, actions } = createSlice({
             _,
             { payload }: PayloadAction<NonNullable<CatalogExplorerState.NotSelected>>,
         ) => payload,
-        "catalogSelected": (state, { payload }: PayloadAction<{ catalogId: string }>) => {
-            const { catalogId } = payload;
+        "catalogSelected": (
+            state,
+            {
+                payload,
+            }: PayloadAction<{ catalogId: string; highlightedPackages: string[] }>,
+        ) => {
+            const { catalogId, highlightedPackages } = payload;
 
             assert(state.stateDescription !== "not fetched");
-
-            const apiRequestResultResultForCatalog = state[
-                "~internal"
-            ].apiRequestResult.find(({ id }) => id === catalogId)!;
 
             return id<CatalogExplorerState.Ready>({
                 "stateDescription": "ready",
                 "availableCatalogsId": state.availableCatalogsId,
                 "selectedCatalogId": catalogId,
-                "locationUrl": apiRequestResultResultForCatalog.location,
                 "~internal": state["~internal"],
-                "packages": apiRequestResultResultForCatalog.catalog.packages
-                    .map(o => ({
-                        "packageDescription": o.description,
-                        "packageHomeUrl": o.home,
-                        "packageName": o.name,
-                        "packageIconUrl": o.icon,
-                    }))
-                    .sort(
-                        (a, b) =>
-                            getHardCodedPackageWeight(b.packageName) -
-                            getHardCodedPackageWeight(a.packageName),
-                    ),
+                highlightedPackages,
+                "doShowOnlyHighlighted":
+                    getAreConditionMetForOnlyShowingHighlightedPackaged({
+                        "highlightedPackagesLength": highlightedPackages.length,
+                        "totalPackageCount": state["~internal"].apiRequestResult.length,
+                    }),
+                "search": "",
             });
+        },
+        "setSearch": (state, { payload }: PayloadAction<{ search: string }>) => {
+            const { search } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            state.search = search;
+
+            if (
+                search === "" &&
+                getAreConditionMetForOnlyShowingHighlightedPackaged({
+                    "highlightedPackagesLength": state.highlightedPackages.length,
+                    "totalPackageCount": state["~internal"].apiRequestResult.length,
+                })
+            ) {
+                state.doShowOnlyHighlighted = true;
+            }
+        },
+        "setDoShowOnlyHighlightedToFalse": state => {
+            assert(state.stateDescription === "ready");
+
+            state.doShowOnlyHighlighted = false;
         },
     },
 });
@@ -113,23 +129,123 @@ export const thunks = {
         },
     "selectCatalog":
         (params: { catalogId: string }): ThunkAction<void> =>
-        async dispatch =>
-            dispatch(actions.catalogSelected(params)),
+        async (...args) => {
+            const { catalogId } = params;
+            const [
+                dispatch,
+                ,
+                {
+                    createStoreParams: { highlightedPackages },
+                },
+            ] = args;
+            dispatch(actions.catalogSelected({ catalogId, highlightedPackages }));
+        },
+    "setSearch":
+        (params: { search: string }): ThunkAction =>
+        async (...args) => {
+            const { search } = params;
+            const [dispatch, , extra] = args;
+
+            const { waitForSearchDebounce } = getSliceContext(extra);
+
+            await waitForSearchDebounce();
+
+            dispatch(actions.setSearch({ search }));
+        },
+    "revealAllPackages": (): ThunkAction<void> => async dispatch =>
+        dispatch(actions.setDoShowOnlyHighlightedToFalse()),
 };
 
-const { getHardCodedPackageWeight } = (() => {
-    //TODO: Address this
-    const mainServices = ["rstudio", "jupyter", "ubuntu", "postgres", "code"];
+const getSliceContext = memoize((_: ThunksExtraArgument) => {
+    const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
+    return {
+        "waitForSearchDebounce": waitForDebounce,
+    };
+});
 
-    function getHardCodedPackageWeight(packageName: string) {
-        for (let i = 0; i < mainServices.length; i++) {
-            if (packageName.toLowerCase().includes(mainServices[i])) {
-                return mainServices.length - i;
+export const selectors = (() => {
+    function getPackageWeightFactory(params: { highlightedPackages: string[] }) {
+        const { highlightedPackages } = params;
+
+        function getPackageWeight(packageName: string) {
+            for (let i = 0; i < highlightedPackages.length; i++) {
+                if (packageName.toLowerCase().includes(highlightedPackages[i])) {
+                    return highlightedPackages.length - i;
+                }
             }
+
+            return 0;
         }
 
-        return 0;
+        return { getPackageWeight };
     }
 
-    return { getHardCodedPackageWeight };
+    const filteredPackages = (rootState: RootState) => {
+        const state = rootState.catalogExplorer;
+
+        if (state.stateDescription !== "ready") {
+            return undefined;
+        }
+
+        const { highlightedPackages, selectedCatalogId, doShowOnlyHighlighted, search } =
+            state;
+
+        const apiRequestResultResultForCatalog = state["~internal"].apiRequestResult.find(
+            ({ id }) => id === selectedCatalogId,
+        )!.catalog.packages;
+
+        const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
+
+        const packages = apiRequestResultResultForCatalog
+            .map(o => ({
+                "packageDescription": o.description,
+                "packageHomeUrl": o.home,
+                "packageName": o.name,
+                "packageIconUrl": o.icon,
+            }))
+            .sort(
+                (a, b) =>
+                    getPackageWeight(b.packageName) - getPackageWeight(a.packageName),
+            )
+            .slice(0, doShowOnlyHighlighted ? highlightedPackages.length : undefined)
+            .filter(({ packageName, packageDescription }) =>
+                [packageName, packageDescription]
+                    .map(str => str.toLowerCase().includes(search.toLowerCase()))
+                    .includes(true),
+            );
+
+        return {
+            packages,
+            "notShownCount":
+                search !== ""
+                    ? 0
+                    : apiRequestResultResultForCatalog.length - packages.length,
+        };
+    };
+
+    const locationUrl = (rootState: RootState): string | undefined => {
+        const state = rootState.catalogExplorer;
+
+        if (state.stateDescription !== "ready") {
+            return undefined;
+        }
+
+        const { selectedCatalogId } = state;
+
+        const apiRequestResultResultForCatalog = state["~internal"].apiRequestResult.find(
+            ({ id }) => id === selectedCatalogId,
+        )!;
+
+        return apiRequestResultResultForCatalog.location;
+    };
+
+    return { filteredPackages, locationUrl };
 })();
+
+function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
+    highlightedPackagesLength: number;
+    totalPackageCount: number;
+}) {
+    const { highlightedPackagesLength, totalPackageCount } = params;
+    return highlightedPackagesLength !== 0 && totalPackageCount > 5;
+}
