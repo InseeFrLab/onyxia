@@ -35,7 +35,7 @@ export function Catalog(props: Props) {
 
     const { t } = useTranslation({ Catalog });
 
-    const { classes, cx } = useStyles();
+    const { classes, cx, css } = useStyles();
 
     const sourcesUrls = useSelector(state => {
         const { catalogExplorer, launcher } = state;
@@ -109,6 +109,9 @@ export function Catalog(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
+                classes={{
+                    "title": css({ "paddingBottom": 3 }),
+                }}
                 mainIcon="catalog"
                 title={t("header text1")}
                 helpTitle={t("header text2")}
