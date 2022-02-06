@@ -227,7 +227,12 @@ export const selectors = (() => {
                 (a, b) =>
                     getPackageWeight(b.packageName) - getPackageWeight(a.packageName),
             )
-            .slice(0, doShowOnlyHighlighted ? highlightedPackages.length : undefined)
+            .slice(
+                0,
+                doShowOnlyHighlighted && search === ""
+                    ? highlightedPackages.length
+                    : undefined,
+            )
             .filter(({ packageName, packageDescription }) =>
                 [packageName, packageDescription]
                     .map(str => str.toLowerCase().includes(search.toLowerCase()))
