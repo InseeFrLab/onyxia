@@ -142,23 +142,27 @@ export const App = memo((props: Props) => {
                     "link": routes.myServices().link,
                     "hasDividerBelow": true,
                 },
-                "mySecrets": {
-                    "iconId": "secrets",
-                    "label": t("mySecrets"),
-                    "link": routes.mySecrets().link,
-                    "availability": secretExplorerThunks.getIsEnabled()
-                        ? "available"
-                        : "greyed",
-                },
-                "myFiles": {
-                    "iconId": "files",
-                    "label": t("myFiles"),
-                    "link": routes.myBuckets().link,
-                    //TODO: This usage of getEnv should be removed as soon as we have the new explorer
-                    //we should get the info "is file enabled" from the core.
-                    "availability": getEnv().MINIO_URL !== "" ? "available" : "greyed",
-                    "hasDividerBelow": true,
-                },
+                ...(!secretExplorerThunks.getIsEnabled()
+                    ? {}
+                    : {
+                          "mySecrets": {
+                              "iconId": "secrets",
+                              "label": t("mySecrets"),
+                              "link": routes.mySecrets().link,
+                          } as const,
+                      }),
+                ...(getEnv().MINIO_URL === ""
+                    ? {}
+                    : {
+                          "myFiles": {
+                              "iconId": "files",
+                              "label": t("myFiles"),
+                              "link": routes.myBuckets().link,
+                              //TODO: This usage of getEnv should be removed as soon as we have the new explorer
+                              //we should get the info "is file enabled" from the core.
+                              "hasDividerBelow": true,
+                          } as const,
+                      }),
                 ...(() => {
                     const { extraLeftBarItems } = getExtraLeftBarItemsFromEnv();
 
