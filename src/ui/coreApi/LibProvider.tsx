@@ -58,7 +58,7 @@ const createStore_memo = memoize(
                 throw new Error(
                     `${symToStr({
                         HIGHLIGHTED_PACKAGES,
-                    })}, please refer to the comments in the .env file at the root of the project.`,
+                    })}, is not a valid value: \`${HIGHLIGHTED_PACKAGES}\` please refer to the comments in the .env file at the root of the project.`,
                 );
             }
 
