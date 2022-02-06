@@ -83,21 +83,10 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
                 return undefined;
             }
 
-            const match = valueStr.match(/^map\[([^\]]+)\]$/);
-
-            if (match === null) {
-                return valueStr;
-            }
-
             let tosUrlByLng: Partial<Record<KcLanguageTag, string>>;
 
             try {
-                tosUrlByLng = Object.fromEntries(
-                    match[1]
-                        .split(" ")
-                        .map(part => part.split(":"))
-                        .map(([language, ...rest]) => [language, rest.join(":")]),
-                );
+                tosUrlByLng = JSON.parse(valueStr);
             } catch {
                 throw new Error("Terms of services malformed");
             }
