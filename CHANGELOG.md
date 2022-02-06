@@ -1,3 +1,9 @@
+## **0.38.0** (2022-02-06)  
+  
+- Remove extra <title>  
+- Get the higlighted packages from ENV  
+- Enable to disable homepage    
+  
 ### **0.37.1** (2022-02-05)  
   
 - Adjust usecase header title    
