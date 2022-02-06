@@ -1,3 +1,8 @@
+### **0.38.2** (2022-02-06)  
+  
+- Prepare for being able to switch catalog  
+- Do not attempt to hot swap region    
+  
 ### **0.38.1** (2022-02-06)  
   
 - add debug information if HIGHLIGHTED_PACKAGES isn't correct  
