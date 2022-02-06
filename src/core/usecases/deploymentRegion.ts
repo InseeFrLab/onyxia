@@ -24,24 +24,20 @@ export const { name, reducer, actions } = createSlice({
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
         "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,
-        "deploymentRegionChanged": (
-            state,
-            { payload }: PayloadAction<{ deploymentRegionId: string }>,
-        ) => {
-            const { deploymentRegionId } = payload;
-
-            state.selectedDeploymentRegionId = deploymentRegionId;
-        },
     },
 });
 
 export const thunks = {
+    /** NOTE: We don't try to hot swap, if the region is changed, we reload the app */
     "changeDeploymentRegion":
-        (params: { deploymentRegionId: string }): ThunkAction =>
+        (params: {
+            deploymentRegionId: string;
+            reload: () => never;
+        }): ThunkAction<Promise<never>> =>
         async (...args) => {
-            const [dispatch, , { oidcClient }] = args;
+            const { deploymentRegionId, reload } = params;
 
-            const { deploymentRegionId } = params;
+            const [dispatch, , { oidcClient }] = args;
 
             if (oidcClient.isUserLoggedIn) {
                 await dispatch(
@@ -54,7 +50,9 @@ export const thunks = {
                 localStorage.setItem(localStorageKey, deploymentRegionId);
             }
 
-            dispatch(actions.deploymentRegionChanged({ deploymentRegionId }));
+            reload();
+
+            assert(false);
         },
 };
 
