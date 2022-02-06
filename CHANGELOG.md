@@ -1,3 +1,7 @@
+### **0.38.3** (2022-02-06)  
+  
+- Make favicon adapte to theme    
+  
 ### **0.38.2** (2022-02-06)  
   
 - Prepare for being able to switch catalog  
