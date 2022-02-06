@@ -1,3 +1,7 @@
+### **0.40.3** (2022-02-06)  
+  
+- Prevent search while not fetched    
+  
 ### **0.40.2** (2022-02-06)  
   
 - Support strings as TOS    
