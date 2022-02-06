@@ -15,15 +15,55 @@ import type {
 import { getEnv } from "env";
 import { isStorybook } from "ui/tools/isStorybook";
 import { assert } from "tsafe/assert";
+import { symToStr } from "tsafe/symToStr";
 
 //NOTE: Create store can only be called once
 const createStore_memo = memoize(
     () => {
         const env = getEnv();
 
-        if (env.OIDC_URL !== "") {
-            assert(env.OIDC_REALM !== "", "You must provide an OIDC realm");
+        {
+            const { OIDC_URL } = env;
+
+            if (env.OIDC_URL !== "") {
+                const { OIDC_REALM } = env;
+                assert(
+                    OIDC_REALM !== "",
+                    `If ${symToStr({ OIDC_URL })} is specified ${symToStr({
+                        OIDC_REALM,
+                    })} should be specified too.`,
+                );
+            }
         }
+
+        const { highlightedPackages } = (() => {
+            const { HIGHLIGHTED_PACKAGES } = env;
+
+            let highlightedPackages: string[];
+
+            if (HIGHLIGHTED_PACKAGES === "") {
+                highlightedPackages = [];
+                return { highlightedPackages };
+            }
+
+            try {
+                highlightedPackages = JSON.parse(HIGHLIGHTED_PACKAGES);
+
+                assert(
+                    highlightedPackages.find(
+                        packageName => typeof packageName !== "string",
+                    ) === undefined,
+                );
+            } catch {
+                throw new Error(
+                    `${symToStr({
+                        HIGHLIGHTED_PACKAGES,
+                    })}, please refer to the comments in the .env file at the root of the project.`,
+                );
+            }
+
+            return { highlightedPackages };
+        })();
 
         return createStore({
             "getIsDarkModeEnabledValueForProfileInitialization":
@@ -128,6 +168,7 @@ const createStore_memo = memoize(
                               "clientId": env.OIDC_MINIO_CLIENT_ID || env.OIDC_CLIENT_ID,
                           },
                       }),
+            highlightedPackages,
         });
     },
     { "promise": true },

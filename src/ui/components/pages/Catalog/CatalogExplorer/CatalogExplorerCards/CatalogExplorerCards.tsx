@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, memo } from "react";
+import { useState, memo } from "react";
 import type { RefObject } from "react";
 import { makeStyles } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -16,60 +16,43 @@ import { Evt } from "evt";
 
 export type Props<PackageName extends string = string> = {
     className?: string;
-    search: string;
-    setSearch(search: string): void;
     packages: {
         packageName: PackageName;
         packageIconUrl?: string;
         packageDescription: string;
         packageHomeUrl?: string;
     }[];
-    onRequestLaunch(packageName: PackageName): void;
+    search: string;
+    onSearchChange: (search: string) => void;
+    onRequestLaunch: (packageName: PackageName) => void;
+    onRequestRevealPackagesNotShown: () => void;
     scrollableDivRef: RefObject<HTMLDivElement>;
+    notShownPackageCount: number;
 };
 
 export const CatalogExplorerCards = memo(
     <PackageName extends string = string>(props: Props<PackageName>) => {
         const {
             className,
-            packages: cardsContent,
-            onRequestLaunch,
+            packages,
             search,
-            setSearch,
+            onSearchChange,
+            onRequestLaunch,
+            onRequestRevealPackagesNotShown,
             scrollableDivRef,
+            notShownPackageCount,
         } = props;
 
         const onRequestLaunchFactory = useCallbackFactory(
             ([packageName]: [PackageName]) => onRequestLaunch(packageName),
         );
 
-        const [isRevealed, setIsRevealed] = useState(false);
-
-        const onShowMoreClick = useConstCallback(() => setIsRevealed(true));
+        const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
 
         const { t } = useTranslation({ CatalogExplorerCards });
 
-        useEffect(() => {
-            //NOTE: We use setTimeout only because of Safari
-            const timer = setTimeout(() => setIsRevealed(search !== ""), 0);
-
-            return () => clearTimeout(timer);
-        }, [search]);
-
-        const filteredCards = useMemo(
-            () =>
-                cardsContent
-                    .slice(0, isRevealed ? cardsContent.length : 5)
-                    .filter(({ packageName, packageDescription }) =>
-                        [packageName, packageDescription]
-                            .map(str => str.toLowerCase().includes(search.toLowerCase()))
-                            .includes(true),
-                    ),
-            [cardsContent, isRevealed, search],
-        );
-
         const { classes, cx } = useStyles({
-            "filteredCardCount": filteredCards.length,
+            "filteredCardCount": packages.length,
         });
 
         const [evtSearchBarAction] = useState(() =>
@@ -86,26 +69,26 @@ export const CatalogExplorerCards = memo(
                     className={classes.searchBar}
                     search={search}
                     evtAction={evtSearchBarAction}
-                    onSearchChange={setSearch}
+                    onSearchChange={onSearchChange}
                     placeholder={t("search")}
                 />
                 <div ref={scrollableDivRef} className={classes.cardsWrapper}>
-                    {filteredCards.length === 0 ? undefined : (
+                    {packages.length === 0 ? undefined : (
                         <Text typo="section heading" className={classes.contextTypo}>
                             {t(
                                 search !== ""
                                     ? "search results"
-                                    : isRevealed
+                                    : notShownPackageCount === 0
                                     ? "all services"
                                     : "main services",
                             )}
                         </Text>
                     )}
                     <div className={classes.cards}>
-                        {filteredCards.length === 0 ? (
+                        {packages.length === 0 ? (
                             <NoMatches search={search} onGoBackClick={onGoBackClick} />
                         ) : (
-                            filteredCards.map(
+                            packages.map(
                                 ({
                                     packageName,
                                     packageIconUrl,
@@ -125,22 +108,12 @@ export const CatalogExplorerCards = memo(
                                 ),
                             )
                         )}
-                        {!isRevealed &&
-                            (() => {
-                                const leftToShowCount = Math.max(
-                                    cardsContent.length - 5,
-                                    0,
-                                );
-
-                                return (
-                                    leftToShowCount !== 0 && (
-                                        <CardShowMore
-                                            leftToShowCount={cardsContent.length - 5}
-                                            onClick={onShowMoreClick}
-                                        />
-                                    )
-                                );
-                            })()}
+                        {notShownPackageCount !== 0 && (
+                            <CardShowMore
+                                leftToShowCount={notShownPackageCount}
+                                onClick={onShowMoreClick}
+                            />
+                        )}
                     </div>
                     <div className={classes.bottomScrollSpace} />
                 </div>

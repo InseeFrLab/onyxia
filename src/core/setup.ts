@@ -59,6 +59,7 @@ export type CreateStoreParams = {
     userApiClientConfig: UserApiClientConfig;
     secretsManagerClientConfig: SecretsManagerClientConfig;
     s3ClientConfig: S3ClientConfig;
+    highlightedPackages: string[];
 };
 
 export type UserApiClientConfig = UserApiClientConfig.Jwt | UserApiClientConfig.Mock;

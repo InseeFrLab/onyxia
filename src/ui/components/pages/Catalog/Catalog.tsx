@@ -8,7 +8,7 @@ import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
-import { useSelector } from "ui/coreApi";
+import { useSelector, selectors } from "ui/coreApi";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 
@@ -37,8 +37,10 @@ export function Catalog(props: Props) {
 
     const { classes, cx } = useStyles();
 
-    const sourcesUrls = useSelector(({ catalogExplorer, launcher }) =>
-        launcher.stateDescription === "ready"
+    const sourcesUrls = useSelector(state => {
+        const { catalogExplorer, launcher } = state;
+
+        return launcher.stateDescription === "ready"
             ? ({
                   "type": "package",
                   "sources": launcher.sources,
@@ -48,10 +50,11 @@ export function Catalog(props: Props) {
             ? undefined
             : ({
                   "type": "catalog",
-                  "locationUrl": catalogExplorer.locationUrl,
+                  "locationUrl":
+                      selectors.catalogExplorer.locationUrl(state).locationUrl!,
                   "catalogId": catalogExplorer.selectedCatalogId,
-              } as const),
-    );
+              } as const);
+    });
 
     const { lng } = useLng();
 

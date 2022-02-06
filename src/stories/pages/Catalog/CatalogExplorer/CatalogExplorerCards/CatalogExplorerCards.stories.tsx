@@ -43,11 +43,11 @@ export const VueDefault = getStory({
     packages,
     "scrollableDivRef": { "current": null },
     "search": "",
+    "notShownPackageCount": 0,
     /* spell-checker: enable */
     ...logCallbacks([
+        "onSearchChange",
         "onRequestLaunch",
-        "onRequestLearnMore",
-        "onClearSearch",
-        "setSearch",
+        "onRequestRevealPackagesNotShown",
     ]),
 });
