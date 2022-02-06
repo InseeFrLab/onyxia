@@ -1,3 +1,7 @@
+### **0.40.1** (2022-02-06)  
+  
+- Restore loading all fonts, we can't rely on envs on keycloak pages    
+  
 ## **0.40.0** (2022-02-06)  
   
 - Rename LibProvide -> CoreProvider  
