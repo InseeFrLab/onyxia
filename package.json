@@ -73,7 +73,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
-        "onyxia-ui": "^0.25.0",
+        "onyxia-ui": "^0.26.1",
         "path": "^0.12.7",
         "powerhooks": "^0.11.2",
         "public-ip": "^4.0.3",
@@ -97,7 +97,7 @@
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
         "tsafe": "^0.9.0",
-        "tss-react": "^3.3.2",
+        "tss-react": "^3.4.1",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5"
