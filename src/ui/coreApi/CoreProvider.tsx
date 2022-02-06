@@ -178,7 +178,7 @@ type Props = {
     children: ReactNode;
 };
 
-export function LibProvider(props: Props) {
+export function CoreProvider(props: Props) {
     const { children } = props;
 
     const asyncCreateStore = useAsync(() => createStore_memo(), []);
