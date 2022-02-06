@@ -1,3 +1,7 @@
+## **0.39.0** (2022-02-06)  
+  
+- Make the header links configurable    
+  
 ### **0.38.3** (2022-02-06)  
   
 - Make favicon adapte to theme    
