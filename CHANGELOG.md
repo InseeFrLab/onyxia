@@ -1,3 +1,7 @@
+### **0.40.4** (2022-02-06)  
+  
+- Update copyright date    
+  
 ### **0.40.3** (2022-02-06)  
   
 - Prevent search while not fetched    
