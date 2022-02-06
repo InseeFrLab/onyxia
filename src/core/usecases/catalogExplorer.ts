@@ -152,11 +152,15 @@ export const thunks = {
         (params: { search: string }): ThunkAction =>
         async (...args) => {
             const { search } = params;
-            const [dispatch, , extra] = args;
+            const [dispatch, getState, extra] = args;
 
             const { waitForSearchDebounce } = getSliceContext(extra);
 
             await waitForSearchDebounce();
+
+            if (getState().catalogExplorer.stateDescription !== "ready") {
+                return;
+            }
 
             dispatch(actions.setSearch({ search }));
         },
@@ -166,9 +170,9 @@ export const thunks = {
         (params: { catalogId: string }): ThunkAction<void> =>
         (...args) => {
             const { catalogId } = params;
-            const [dispatch, getStates] = args;
+            const [dispatch, getState] = args;
 
-            if (getStates().catalogExplorer.stateDescription === "not fetched") {
+            if (getState().catalogExplorer.stateDescription !== "ready") {
                 return;
             }
 
