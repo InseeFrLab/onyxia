@@ -83,6 +83,14 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
                 return undefined;
             }
 
+            {
+                const match = valueStr.match(/^ *{/);
+
+                if (match === null) {
+                    return valueStr;
+                }
+            }
+
             let tosUrlByLng: Partial<Record<KcLanguageTag, string>>;
 
             try {
