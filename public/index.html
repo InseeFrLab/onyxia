@@ -159,8 +159,13 @@
 			})());
 
 			document.documentElement.style.backgroundColor =
-				//getColor("light"|"dark").useCases.surfaces.background in src/app/theme/colors.ts
-				isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+				(function(){
+					switch("%REACT_APP_THEME_ID%"){
+						case "onyxia": return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+						case "france": return isDarkModeEnabled ? "#2A2A2A" : "#F1F0EB";
+						case "ultraviolet": return isDarkModeEnabled ? "#2D1C3A" : "#F7F5F4";
+					}
+				})();
 
 		})();
 	</script>
