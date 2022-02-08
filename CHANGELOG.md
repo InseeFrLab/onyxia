@@ -1,3 +1,7 @@
+### **0.40.7** (2022-02-08)  
+  
+- Fix font for Keycloak + variadic theme    
+  
 ### **0.40.6** (2022-02-08)  
   
 - Update cra-envs    
