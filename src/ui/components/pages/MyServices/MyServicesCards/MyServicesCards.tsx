@@ -181,6 +181,7 @@ export const MyServicesCards = memo((props: Props) => {
                                                 ? dialogDesc.servicePassword
                                                 : undefined
                                         }
+                                        onDialogClose={onDialogClose}
                                     />
                                 )
                             )}
@@ -370,10 +371,11 @@ const { CopyOpenButton } = (() => {
         className?: string;
         openUrl: string;
         servicePassword: string | undefined;
+        onDialogClose: () => void;
     };
 
     const CopyOpenButton = memo((props: Props) => {
-        const { openUrl, servicePassword, className } = props;
+        const { openUrl, servicePassword, onDialogClose, className } = props;
 
         const [isReadyToOpen, setReadyToOpen] = useReducer(
             () => true,
@@ -418,7 +420,7 @@ const { CopyOpenButton } = (() => {
                     "variant": "primary",
                     "href": isReadyToOpen ? openUrl : undefined,
                     "doOpenNewTabIfHref": true,
-                    "onClick": isReadyToOpen ? undefined : copyPasswordToClipBoard,
+                    "onClick": isReadyToOpen ? onDialogClose : copyPasswordToClipBoard,
                 } as const),
             [isReadyToOpen],
         );
