@@ -17,6 +17,7 @@ WORKDIR /app
 # We use ADD instead of COPY because build/ is in .dockerignore
 ADD build.tar .
 COPY .env .
+COPY public/index.html ./public_index.html
 COPY nginx.conf .
 # We assume there is a cra-envs_package.json file contaning '{ "version": "X.Y.Z" }' 
 # 'X.Y.Z' beeing the version cra-envs in use in the project. See how it's optained:
@@ -34,8 +35,7 @@ RUN npm i -g cra-envs@`node -e 'console.log(require("./cra-envs_package.json")["
 WORKDIR /usr/share/nginx
 COPY --from=build /app/build ./html
 COPY --from=build /app/.env .
-COPY --from=build /app/package.json .
-COPY --from=build /app/public/index.html ./public/index.html
+COPY --from=build /app/public_index.html ./public/index.html
 # Run as non-root
 RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp/nginx.pid;@' /etc/nginx/nginx.conf && \
     diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
