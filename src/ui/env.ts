@@ -68,3 +68,18 @@ export const getIsHomePageDisabled = memoize((): boolean => {
 
     return DISABLE_HOME_PAGE === "true";
 });
+
+export const getDoHideOnyxia = memoize((): boolean => {
+    const { HEADER_HIDE_ONYXIA } = getEnv();
+
+    const possibleValues = ["true", "false"];
+
+    assert(
+        possibleValues.indexOf(HEADER_HIDE_ONYXIA) >= 0,
+        `${symToStr({ HEADER_HIDE_ONYXIA })} should either be ${possibleValues.join(
+            " or ",
+        )}`,
+    );
+
+    return HEADER_HIDE_ONYXIA === "true";
+});
