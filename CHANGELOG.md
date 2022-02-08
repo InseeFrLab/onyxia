@@ -1,3 +1,8 @@
+### **0.40.10** (2022-02-08)  
+  
+- Try to make favicon adapt to the theme  
+- Update sample local env for sill    
+  
 ### **0.40.9** (2022-02-08)  
   
 - Feature the possibility to hide Onyxia    
