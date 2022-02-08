@@ -3,6 +3,7 @@
 
 <head>
 
+	<% if (process.env.REACT_APP_THEME_ID === "france") { %>
 	<!-- We only preload the default font -->
 	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2" as="font" crossorigin="anonymous">
 	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2" as="font" crossorigin="anonymous">
@@ -59,7 +60,7 @@
 		  font-style: italic;
 		}
 	</style>
-
+	<% } else { %>
 	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font"
 		crossorigin="anonymous">
 	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font"
@@ -83,7 +84,7 @@
 			font-display: swap;
 			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
 		}
-
+	
 		/* latin */
 		@font-face {
 			font-family: 'Work Sans';
@@ -92,7 +93,7 @@
 			font-display: swap;
 			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
 		}
-
+	
 		/* latin */
 		@font-face {
 			font-family: 'Work Sans';
@@ -101,7 +102,7 @@
 			font-display: swap;
 			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
 		}
-
+	
 		/* latin */
 		@font-face {
 			font-family: 'Work Sans';
@@ -112,6 +113,7 @@
 			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
 		}
 	</style>
+	<% } %>
 
 
 	<script>
