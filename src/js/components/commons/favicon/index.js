@@ -1,14 +1,18 @@
+import React from "react";
 import { connect } from 'react-redux';
 
+/*
 export const ONYXIA_FAVICON = {
 	wait: '/onyxia.wait.png',
 	ok: '/onyxia.ok.png',
 	onyxia: '/onyxia.png',
 };
+*/
 
 class Favicon extends React.Component {
 	state = { faviconUrl: null };
 	static getDerivedStateFromProps(props, state) {
+		/*
 		if (props.faviconUrl !== state.faviconUrl) {
 			const dom = document.getElementById('favicon');
 			switch (props.faviconUrl) {
@@ -22,6 +26,7 @@ class Favicon extends React.Component {
 
 			return { faviconUrl: props.faviconUrl };
 		}
+		*/
 
 		return state;
 	}
