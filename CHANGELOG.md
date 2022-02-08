@@ -1,3 +1,7 @@
+### **0.40.11** (2022-02-08)  
+  
+- Remove legacy favicon    
+  
 ### **0.40.10** (2022-02-08)  
   
 - Try to make favicon adapt to the theme  
