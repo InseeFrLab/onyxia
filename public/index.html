@@ -12,6 +12,65 @@
 	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2" as="font" crossorigin="anonymous">
 	<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2" as="font" crossorigin="anonymous">
 	<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/Marianne/font.css">-->
+	<% } else { %>
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2" as="font"
+		crossorigin="anonymous">
+	<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/WorkSans/font.css">-->
+	<% } %>
+
+	<!-- 
+		We need to put it plain in the html because of Keycloakify, in case we decide to remove --external-assets 
+		SEE: https://github.com/InseeFrLab/keycloakify#font-face-importing-fonts-from-thesrc-dir 
+		We also put it outside the EJS 'if' because it won't be run on Keycloak. This way we will have the fonts
+		they just aren't going to be preloaded according to the (right) theme.
+		(@font-face) are downloaded lazily. If they are not used, they are not downloaded so it has no impact 
+		to put it here.
+	-->
+	<style>
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: normal;
+			/*400*/
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
+		}
+	
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: 500;
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
+		}
+	
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: 600;
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
+		}
+	
+		/* latin */
+		@font-face {
+			font-family: 'Work Sans';
+			font-style: normal;
+			font-weight: bold;
+			/*700*/
+			font-display: swap;
+			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
+		}
+	</style>
 	<style>
 		@font-face {
 		  font-family: Marianne;
@@ -60,60 +119,6 @@
 		  font-style: italic;
 		}
 	</style>
-	<% } else { %>
-	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font"
-		crossorigin="anonymous">
-	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font"
-		crossorigin="anonymous">
-	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2" as="font"
-		crossorigin="anonymous">
-	<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2" as="font"
-		crossorigin="anonymous">
-	<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/WorkSans/font.css">-->
-	<!-- 
-		We need to put it plain in the html because of Keycloakify, in case we decide to remove --external-assets 
-		SEE: https://github.com/InseeFrLab/keycloakify#font-face-importing-fonts-from-thesrc-dir 
-	-->
-	<style>
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: normal;
-			/*400*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
-		}
-	
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 500;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
-		}
-	
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 600;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
-		}
-	
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: bold;
-			/*700*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
-		}
-	</style>
-	<% } %>
 
 
 	<script>
