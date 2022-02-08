@@ -1,3 +1,7 @@
+### **0.40.9** (2022-02-08)  
+  
+- Feature the possibility to hide Onyxia    
+  
 ### **0.40.8** (2022-02-08)  
   
 - Modals close itself after click on launch    
