@@ -15,6 +15,7 @@ import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
 import { useLng } from "ui/i18n/useLng";
 import { id } from "tsafe/id";
 import type { fallbackLanguage } from "ui/i18n/translations";
+import { getDoHideOnyxia } from "ui/env";
 
 export type Props = Props.LoginPages | Props.UserNotLoggedIn | Props.UserLoggedIn;
 export declare namespace Props {
@@ -51,13 +52,15 @@ export const Header = memo((props: Props) => {
 
     const { lng } = useLng();
 
+    const doShowOnyxia = props.useCase === "core app" && !getDoHideOnyxia();
+
     return (
         <header className={cx(classes.root, className)}>
             <div onClick={onLogoClick} className={classes.logoContainer}>
                 <OnyxiaLogoSvg className={classes.svg} />
             </div>
             <div onClick={onLogoClick} className={classes.mainTextContainer}>
-                {props.useCase === "core app" && (
+                {doShowOnyxia && (
                     <Text typo="section heading" className={css({ "fontWeight": 600 })}>
                         Onyxia -
                     </Text>
@@ -65,7 +68,9 @@ export const Header = memo((props: Props) => {
                 {HEADER_ORGANIZATION && (
                     <Text
                         typo="section heading"
-                        className={css({ ...theme.spacing.rightLeft("margin", 2) })}
+                        className={cx(css({ ...theme.spacing.rightLeft("margin", 2) }), {
+                            [css({ "marginLeft": 0 })]: !doShowOnyxia,
+                        })}
                     >
                         {HEADER_ORGANIZATION}
                     </Text>
