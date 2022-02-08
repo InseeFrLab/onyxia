@@ -1,3 +1,9 @@
+### **0.40.5** (2022-02-08)  
+  
+- Fix previous commit  
+- Add sample values for the SILL  
+- Enable EJS to run in public/index.html    
+  
 ### **0.40.4** (2022-02-06)  
   
 - Update copyright date    
