@@ -87,7 +87,6 @@ const createStore_memo = memoize(
                       "availableDeploymentRegions": [
                           {
                               "id": "dummy region",
-                              "namespacePrefix": "user-",
                               "defaultIpProtection": undefined,
                               "defaultNetworkPolicy": undefined,
                               "s3MonitoringUrlPattern": undefined,
