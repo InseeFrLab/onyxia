@@ -231,7 +231,6 @@ assert<
                   id: string;
                   servicesMonitoringUrlPattern: string | undefined;
                   s3MonitoringUrlPattern: string | undefined;
-                  namespacePrefix: string;
                   defaultIpProtection: boolean | undefined;
                   defaultNetworkPolicy: boolean | undefined;
                   kubernetesClusterDomain: string;
