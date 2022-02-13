@@ -23,6 +23,7 @@ import type { Ctx } from "evt";
 import type { RootState } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
+import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -808,7 +809,7 @@ export const thunks = {
         (...args) => {
             const { explorerType } = params;
 
-            const [, , { createStoreParams }] = args;
+            const [, getSate, { createStoreParams }] = args;
 
             switch (explorerType) {
                 case "secrets":
@@ -817,7 +818,10 @@ export const thunks = {
                         "LOCAL STORAGE"
                     );
                 case "s3":
-                    return createStoreParams.s3ClientConfig.implementation !== "DUMMY";
+                    return (
+                        deploymentRegionSelectors.selectedDeploymentRegion(getSate())
+                            .s3 !== undefined
+                    );
             }
         },
 };

@@ -2,13 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { getValidatedEnv } from "js/validatedEnv";
+import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
 
 export type S3 = {
     AWS_ACCESS_KEY_ID: string;
     AWS_SECRET_ACCESS_KEY: string;
     AWS_SESSION_TOKEN: string;
-    AWS_DEFAULT_REGION: "us-east-1";
+    AWS_DEFAULT_REGION: string;
     AWS_S3_ENDPOINT: string;
     AWS_EXPIRATION: string;
 };
@@ -64,7 +64,7 @@ const slice = createSlice({
                 "AWS_EXPIRATION": expiration,
                 "AWS_SESSION_TOKEN": sessionToken,
                 "AWS_DEFAULT_REGION": "us-east-1",
-                "AWS_S3_ENDPOINT": getValidatedEnv().MINIO.END_POINT,
+                "AWS_S3_ENDPOINT": getS3Url().split("//")[1].split(":")[0],
             };
         },
     },

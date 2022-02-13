@@ -31,6 +31,7 @@ import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import { getCreateMinioS3ClientParams } from "../secondaryAdapters/minioS3Client";
 
 export type FormField =
     | FormField.Boolean
@@ -955,54 +956,65 @@ export const thunks = {
                 ,
                 getState,
                 {
-                    createStoreParams: { s3ClientConfig },
                     s3Client,
+                    createStoreParams: { oidcClientConfig },
                 },
             ] = args;
+
+            const { s3: regionS3 } = deploymentRegionSelectors.selectedDeploymentRegion(
+                getState(),
+            );
 
             const project = projectSelectionSelectors.selectedProject(getState());
 
             const isDefaultProject =
                 getState().projectSelection.projects[0].id === project.id;
 
-            switch (s3ClientConfig.implementation) {
-                case "DUMMY":
-                    return {
-                        "AWS_ACCESS_KEY_ID": "",
-                        "AWS_BUCKET_NAME": "",
-                        "AWS_DEFAULT_REGION": "us-east-1" as const,
-                        "AWS_S3_ENDPOINT": "",
-                        "AWS_SECRET_ACCESS_KEY": "",
-                        "AWS_SESSION_TOKEN": "",
-                        "port": NaN,
-                        "expirationTime": Infinity,
-                        "acquisitionTime": Date.now(),
-                    };
-                case "MINIO":
-                    const {
-                        accessKeyId,
-                        secretAccessKey,
-                        sessionToken,
-                        expirationTime,
-                        acquisitionTime,
-                    } = await s3Client.getToken({
-                        "bucketName": isDefaultProject ? undefined : project.bucket,
-                    });
-
-                    const { host, port = 443 } = parseUrl(s3ClientConfig.url);
-
-                    return {
-                        "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_BUCKET_NAME": project.bucket,
-                        "AWS_DEFAULT_REGION": "us-east-1" as const,
-                        "AWS_S3_ENDPOINT": host,
-                        port,
-                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                        "AWS_SESSION_TOKEN": sessionToken,
-                        expirationTime,
-                        acquisitionTime,
-                    };
+            if (regionS3 === undefined) {
+                return {
+                    "AWS_ACCESS_KEY_ID": "",
+                    "AWS_BUCKET_NAME": "",
+                    "AWS_DEFAULT_REGION": "us-east-1" as const,
+                    "AWS_S3_ENDPOINT": "",
+                    "AWS_SECRET_ACCESS_KEY": "",
+                    "AWS_SESSION_TOKEN": "",
+                    "port": NaN,
+                    "expirationTime": Infinity,
+                    "acquisitionTime": Date.now(),
+                };
             }
+
+            const {
+                accessKeyId,
+                secretAccessKey,
+                sessionToken,
+                expirationTime,
+                acquisitionTime,
+            } = await s3Client.getToken({
+                "bucketName": isDefaultProject ? undefined : project.bucket,
+            });
+
+            const { region, url } = getCreateMinioS3ClientParams({
+                regionS3,
+                "fallbackKeycloakParams":
+                    oidcClientConfig.implementation === "KEYCLOAK"
+                        ? oidcClientConfig
+                        : undefined,
+            });
+
+            const { host, port = 443 } = parseUrl(url);
+
+            return {
+                "AWS_ACCESS_KEY_ID": accessKeyId,
+                "AWS_BUCKET_NAME": project.bucket,
+                "AWS_DEFAULT_REGION": region,
+                "AWS_S3_ENDPOINT": host,
+                port,
+                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                "AWS_SESSION_TOKEN": sessionToken,
+                expirationTime,
+                acquisitionTime,
+            };
         },
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */

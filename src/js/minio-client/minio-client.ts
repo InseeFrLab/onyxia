@@ -1,6 +1,6 @@
 import * as Minio from "minio";
 import memoize from "memoizee";
-import { getValidatedEnv } from "js/validatedEnv";
+import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
 //import { prKeycloakClient } from "core/setup";
 
 /** We avoid importing app right away to prevent require cycles */
@@ -17,11 +17,7 @@ export async function getMinioToken() {
 
     const { s3 } = store.getState().user;
 
-    if (
-        s3 &&
-        Date.parse(s3.AWS_EXPIRATION) - Date.now() >=
-            getValidatedEnv().MINIO.MINIMUM_DURATION
-    ) {
+    if (s3 && Date.parse(s3.AWS_EXPIRATION) - Date.now() >= 36000000) {
         return {
             "accessKey": s3.AWS_ACCESS_KEY_ID,
             "secretAccessKey": s3.AWS_SECRET_ACCESS_KEY,
@@ -49,9 +45,22 @@ export const getMinioClient = memoize(
     async () => {
         const credentials = await getMinioToken();
 
+        const url = getS3Url();
+
+        const END_POINT = url.split("//")[1].split(":")[0];
+        const PORT = (() => {
+            const str = url.split(":")[1];
+
+            return str === undefined
+                ? url.split("://")[1].toLowerCase() === "https"
+                    ? 443
+                    : 80
+                : parseInt(str);
+        })();
+
         return new Minio.Client({
-            "endPoint": getValidatedEnv().MINIO.END_POINT,
-            "port": getValidatedEnv().MINIO.PORT,
+            "endPoint": END_POINT,
+            "port": PORT,
             "useSSL": true,
             "accessKey": credentials.accessKey,
             "secretKey": credentials.secretAccessKey,

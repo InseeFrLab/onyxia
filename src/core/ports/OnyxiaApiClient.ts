@@ -59,12 +59,40 @@ export type OnyxiaApiClient = {
 export type DeploymentRegion = {
     id: string;
     servicesMonitoringUrlPattern: string | undefined;
-    s3MonitoringUrlPattern: string | undefined;
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
     initScriptUrl: string;
+    s3: DeploymentRegion.S3 | undefined;
 };
+export namespace DeploymentRegion {
+    export type S3 = S3.Minio | S3.Amazon;
+    export namespace S3 {
+        export type Common = {
+            monitoringUrlPattern: string | undefined;
+            keycloakParams:
+                | {
+                      url: string;
+                      clientId: string | undefined;
+                      realm: string | undefined;
+                  }
+                | undefined;
+        };
+
+        export type Minio = Common & {
+            type: "minio";
+            url: string; //"https://minio.sspcloud.fr",
+            region: string | undefined; // default "us-east-1"
+        };
+
+        export type Amazon = Common & {
+            type: "amazon";
+            region: string; //"us-east-1"
+            roleARN: string; //"arn:aws:iam::873875581780:role/test";
+            roleSessionName: string; //"onyxia";
+        };
+    }
+}
 
 export type Project = {
     id: string;
@@ -116,7 +144,7 @@ export type MustacheParams = {
         AWS_ACCESS_KEY_ID: string;
         AWS_SECRET_ACCESS_KEY: string;
         AWS_SESSION_TOKEN: string;
-        AWS_DEFAULT_REGION: "us-east-1";
+        AWS_DEFAULT_REGION: string;
         AWS_S3_ENDPOINT: string;
         AWS_BUCKET_NAME: string;
         port: number;

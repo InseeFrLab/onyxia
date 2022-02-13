@@ -34,6 +34,7 @@ export const getValidatedEnv = memoizee(() => ({
         */
         "TYPE": "none",
     },
+    /*
     "MINIO": {
         "BASE_URI": getEnv().MINIO_URL,
         "END_POINT": getEnv().MINIO_URL.split("//")[1].split(":")[0],
@@ -48,6 +49,7 @@ export const getValidatedEnv = memoizee(() => ({
         })(),
         "MINIMUM_DURATION": 36000000,
     },
+    */
     "FOOTER": {
         "ONYXIA": {
             "GIT": "",

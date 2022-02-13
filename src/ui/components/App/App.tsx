@@ -31,7 +31,6 @@ import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
-import { getEnv } from "env";
 import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
@@ -151,7 +150,7 @@ export const App = memo((props: Props) => {
                               "link": routes.mySecrets().link,
                           } as const,
                       }),
-                ...(getEnv().MINIO_URL === ""
+                ...(!explorersThunks.getIsEnabled({ "explorerType": "s3" })
                     ? {}
                     : {
                           "myFiles": {

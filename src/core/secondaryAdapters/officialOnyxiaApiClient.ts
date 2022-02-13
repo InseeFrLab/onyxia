@@ -1,4 +1,4 @@
-import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
+import type { OnyxiaApiClient, DeploymentRegion } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
@@ -134,12 +134,29 @@ export function createOfficialOnyxiaApiClient(params: {
                             };
                             initScript: string;
                         };
-                        data: {
-                            S3: {
+                        data?: {
+                            S3?: {
                                 monitoring?: {
                                     URLPattern: string;
                                 };
-                            };
+                                oidc?: {
+                                    url: string;
+                                    clientId?: string;
+                                    realm?: string;
+                                };
+                            } & (
+                                | {
+                                      type: "minio";
+                                      URL: string;
+                                      region?: string;
+                                  }
+                                | {
+                                      type: "amazon";
+                                      region: string;
+                                      roleARN: string;
+                                      roleSessionName: string;
+                                  }
+                            );
                         };
                     }[];
                 }>("/public/configuration")
@@ -148,13 +165,54 @@ export function createOfficialOnyxiaApiClient(params: {
                         "id": region.id,
                         "servicesMonitoringUrlPattern":
                             region.services.monitoring?.URLPattern,
-                        "s3MonitoringUrlPattern": region.data.S3.monitoring?.URLPattern,
                         "defaultIpProtection":
                             region.services.defaultConfiguration?.ipprotection,
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
                         "kubernetesClusterDomain": region.services.expose.domain,
                         "initScriptUrl": region.services.initScript,
+                        "s3": (() => {
+                            const { S3 } = region.data ?? {};
+
+                            if (S3 === undefined) {
+                                return undefined;
+                            }
+
+                            const common: DeploymentRegion.S3.Common = {
+                                "monitoringUrlPattern": S3.monitoring?.URLPattern,
+                                "keycloakParams":
+                                    S3.oidc === undefined
+                                        ? undefined
+                                        : {
+                                              "url": S3.oidc.url,
+                                              "clientId": S3.oidc.clientId,
+                                              "realm": S3.oidc.realm,
+                                          },
+                            };
+
+                            return (() => {
+                                switch (S3.type) {
+                                    case undefined: //TODO: Remove once API updated
+                                    case "minio":
+                                        _s3url = S3.URL;
+                                        return id<DeploymentRegion.S3.Minio>({
+                                            "type": "minio",
+                                            "url": S3.URL,
+                                            "region": S3.region,
+                                            ...common,
+                                        });
+                                    case "amazon":
+                                        _s3url = "https://s3.amazonaws.com";
+                                        return id<DeploymentRegion.S3.Amazon>({
+                                            "type": "amazon",
+                                            "region": S3.region,
+                                            "roleARN": S3.roleARN,
+                                            "roleSessionName": S3.roleSessionName,
+                                            ...common,
+                                        });
+                                }
+                            })();
+                        })(),
                     })),
                 ),
         ),
@@ -410,4 +468,12 @@ export function createOfficialOnyxiaApiClient(params: {
     };
 
     return onyxiaApiClient;
+}
+
+let _s3url: string | undefined = undefined;
+
+/** @deprecated: hack for legacy */
+export function getS3Url() {
+    assert(_s3url !== undefined);
+    return _s3url;
 }
