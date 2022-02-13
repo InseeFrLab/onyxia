@@ -5,7 +5,7 @@ import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
 
 /** We avoid importing app right away to prevent require cycles */
 const getS3Client = memoize(
-    () => import("core/secondaryAdapters/minioS3Client").then(ns => ns.prS3Client),
+    () => import("core/secondaryAdapters/s3Client").then(ns => ns.prS3Client),
     {
         "promise": true,
     },
