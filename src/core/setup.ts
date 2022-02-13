@@ -410,8 +410,6 @@ export async function createStore(params: CreateStoreParams) {
                 return createDummyS3Client();
             }
 
-            assert(regionS3.type === "minio");
-
             return createS3Client(
                 getCreateS3ClientParams({
                     regionS3,
