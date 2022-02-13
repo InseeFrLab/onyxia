@@ -79,7 +79,7 @@ export function getCreateS3ClientParams(params: {
 }
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, keycloakParams } = params;
+    const { url, region, keycloakParams, amazon } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
@@ -135,6 +135,12 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                           },
                                       ],
                                   }),
+                              }),
+                        ...(amazon === undefined
+                            ? {}
+                            : {
+                                  "RoleSessionName": amazon.roleSessionName,
+                                  "RoleArn": amazon.roleARN,
                               }),
                     })
                         .map(([key, value]) => `${key}=${value}`)
