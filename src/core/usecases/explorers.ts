@@ -14,7 +14,7 @@ import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
 import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
-import { s3ApiLogger } from "../secondaryAdapters/minioS3Client";
+import { s3ApiLogger } from "../secondaryAdapters/s3Client";
 import { crawlFactory } from "core/tools/crawl";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";

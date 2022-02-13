@@ -4,10 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
 import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
-import {
-    createMinioS3Client,
-    getCreateMinioS3ClientParams,
-} from "./secondaryAdapters/minioS3Client";
+import { createS3Client, getCreateS3ClientParams } from "./secondaryAdapters/s3Client";
 import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
 import * as catalogExplorerUseCase from "./usecases/catalogExplorer";
 import * as deploymentRegionUseCase from "./usecases/deploymentRegion";
@@ -415,8 +412,8 @@ export async function createStore(params: CreateStoreParams) {
 
             assert(regionS3.type === "minio");
 
-            return createMinioS3Client(
-                getCreateMinioS3ClientParams({
+            return createS3Client(
+                getCreateS3ClientParams({
                     regionS3,
                     "fallbackKeycloakParams":
                         oidcClientConfig.implementation === "KEYCLOAK"

@@ -29,7 +29,7 @@ export type Params = {
         | undefined;
 };
 
-export function getCreateMinioS3ClientParams(params: {
+export function getCreateS3ClientParams(params: {
     regionS3: DeploymentRegion.S3;
     fallbackKeycloakParams:
         | {
@@ -78,7 +78,7 @@ export function getCreateMinioS3ClientParams(params: {
     })();
 }
 
-export async function createMinioS3Client(params: Params): Promise<S3Client> {
+export async function createS3Client(params: Params): Promise<S3Client> {
     const { url, keycloakParams } = params;
 
     const oidcClient = await createKeycloakOidcClient(keycloakParams);

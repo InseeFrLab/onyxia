@@ -31,7 +31,7 @@ import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { thunks as secretExplorerThunks } from "./secretExplorer";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import { getCreateMinioS3ClientParams } from "../secondaryAdapters/minioS3Client";
+import { getCreateS3ClientParams } from "../secondaryAdapters/s3Client";
 
 export type FormField =
     | FormField.Boolean
@@ -994,7 +994,7 @@ export const thunks = {
                 "bucketName": isDefaultProject ? undefined : project.bucket,
             });
 
-            const { region, url } = getCreateMinioS3ClientParams({
+            const { region, url } = getCreateS3ClientParams({
                 regionS3,
                 "fallbackKeycloakParams":
                     oidcClientConfig.implementation === "KEYCLOAK"
