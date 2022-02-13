@@ -1,3 +1,7 @@
+### **0.41.1** (2022-02-13)  
+  
+- Rename minioS3Client -> s3Client (we will support Amazon)    
+  
 ## **0.41.0** (2022-02-13)  
   
 - Read s3 configs form region instead of UI envs  
