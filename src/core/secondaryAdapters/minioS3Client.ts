@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Param0, ReturnType } from "tsafe";
+import type { ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { S3Client } from "../ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
@@ -11,11 +11,74 @@ import { parseUrl } from "core/tools/parseUrl";
 import memoize from "memoizee";
 import type { ApiLogger } from "core/tools/apiLogger";
 import { join as pathJoin } from "path";
+import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 
-export async function createMinioS3Client(params: {
+export type Params = {
     url: string;
-    keycloakParams: Param0<typeof createKeycloakOidcClient>;
-}): Promise<S3Client> {
+    region: string;
+    keycloakParams: {
+        url: string;
+        clientId: string;
+        realm: string;
+    };
+    amazon:
+        | {
+              roleARN: string;
+              roleSessionName: string;
+          }
+        | undefined;
+};
+
+export function getCreateMinioS3ClientParams(params: {
+    regionS3: DeploymentRegion.S3;
+    fallbackKeycloakParams:
+        | {
+              url: string;
+              clientId: string;
+              realm: string;
+          }
+        | undefined;
+}): Params {
+    const { regionS3, fallbackKeycloakParams } = params;
+
+    const keycloakParams = (() => {
+        const url = regionS3.keycloakParams?.url ?? fallbackKeycloakParams?.url;
+        const clientId =
+            regionS3.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
+        const realm = regionS3.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
+
+        assert(
+            url !== undefined && clientId !== undefined && realm !== undefined,
+            "There is no default keycloak config and no specific config for s3",
+        );
+
+        return { url, clientId, realm };
+    })();
+
+    return (() => {
+        switch (regionS3.type) {
+            case "minio":
+                return {
+                    "url": regionS3.url,
+                    "region": regionS3.region ?? "us-east-1",
+                    keycloakParams,
+                    "amazon": undefined,
+                };
+            case "amazon":
+                return {
+                    "url": "https://s3.amazonaws.com",
+                    "region": regionS3.region,
+                    keycloakParams,
+                    "amazon": {
+                        "roleARN": regionS3.roleARN,
+                        "roleSessionName": regionS3.roleSessionName,
+                    },
+                };
+        }
+    })();
+}
+
+export async function createMinioS3Client(params: Params): Promise<S3Client> {
     const { url, keycloakParams } = params;
 
     const oidcClient = await createKeycloakOidcClient(keycloakParams);

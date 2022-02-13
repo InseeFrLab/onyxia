@@ -9,12 +9,12 @@ import Details from "./details.component";
 import * as minioTools from "js/minio-client/minio-tools";
 import * as minioPolicy from "js/minio-client/minio-policy";
 import { MyPolicy } from "../my-policy.component";
-import { getValidatedEnv } from "js/validatedEnv";
 import "./my-file.scss";
 import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "ui/routes";
+import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
 
 export const MyFile: React.FC<{
     file: Blob & { name: string };
@@ -35,9 +35,8 @@ export const MyFile: React.FC<{
     );
     //
     const minioPath = minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`);
-    const minioDownloadUrl = `${
-        getValidatedEnv().MINIO.BASE_URI
-    }/${bucketName}/${fileName}`;
+
+    const minioDownloadUrl = `${getS3Url()}/${bucketName}/${fileName}`;
 
     // comportements
     const generatePresignedUrl = useCallback(

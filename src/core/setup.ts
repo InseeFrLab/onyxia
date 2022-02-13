@@ -4,7 +4,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
 import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
 import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
-import { createMinioS3Client } from "./secondaryAdapters/minioS3Client";
+import {
+    createMinioS3Client,
+    getCreateMinioS3ClientParams,
+} from "./secondaryAdapters/minioS3Client";
 import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
 import * as catalogExplorerUseCase from "./usecases/catalogExplorer";
 import * as deploymentRegionUseCase from "./usecases/deploymentRegion";
@@ -36,7 +39,6 @@ import { createMockOnyxiaApiClient } from "./secondaryAdapters/mockOnyxiaApiClie
 import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxiaApiClient";
 import type { Param0, Equals } from "tsafe";
 import { assert } from "tsafe/assert";
-import { id } from "tsafe/id";
 import type { KcLanguageTag } from "keycloakify";
 import { usecasesToReducer } from "redux-clean-architecture";
 import { createMiddlewareEvtActionFactory } from "redux-clean-architecture/middlewareEvtAction";
@@ -58,7 +60,6 @@ export type CreateStoreParams = {
     onyxiaApiClientConfig: OnyxiaApiClientConfig;
     userApiClientConfig: UserApiClientConfig;
     secretsManagerClientConfig: SecretsManagerClientConfig;
-    s3ClientConfig: S3ClientConfig;
     highlightedPackages: string[];
 };
 
@@ -145,37 +146,6 @@ assert<
     >
 >();
 
-export declare type S3ClientConfig = S3ClientConfig.LocalStorage | S3ClientConfig.Minio;
-export declare namespace S3ClientConfig {
-    export type Minio = {
-        implementation: "MINIO";
-    } & Param0<typeof createMinioS3Client>;
-
-    export type LocalStorage = {
-        implementation: "DUMMY";
-    } & Unifiable<Param0<typeof createDummyS3Client>>;
-
-    type Unifiable<T> = T extends void ? {} : T;
-}
-
-assert<
-    Equals<
-        S3ClientConfig,
-        | {
-              implementation: "MINIO";
-              url: string;
-              keycloakParams: {
-                  url: string;
-                  realm: string;
-                  clientId: string;
-              };
-          }
-        | {
-              implementation: "DUMMY";
-          }
-    >
->();
-
 export declare type OidcClientConfig = OidcClientConfig.Phony | OidcClientConfig.Keycloak;
 export declare namespace OidcClientConfig {
     export type Phony = {
@@ -229,12 +199,35 @@ assert<
               implementation: "MOCK";
               availableDeploymentRegions: {
                   id: string;
-                  servicesMonitoringUrlPattern: string | undefined;
-                  s3MonitoringUrlPattern: string | undefined;
                   defaultIpProtection: boolean | undefined;
+                  servicesMonitoringUrlPattern: string | undefined;
                   defaultNetworkPolicy: boolean | undefined;
                   kubernetesClusterDomain: string;
                   initScriptUrl: string;
+                  s3:
+                      | ({
+                            monitoringUrlPattern: string | undefined;
+                            keycloakParams:
+                                | {
+                                      url: string;
+                                      clientId: string | undefined;
+                                      realm: string | undefined;
+                                  }
+                                | undefined;
+                        } & (
+                            | {
+                                  type: "minio";
+                                  url: string; //"https://minio.sspcloud.fr",
+                                  region: string | undefined; // default "us-east-1"
+                              }
+                            | {
+                                  type: "amazon";
+                                  region: string; //"us-east-1"
+                                  roleARN: string; //"arn:aws:iam::873875581780:role/test";
+                                  roleSessionName: string; //"onyxia";
+                              }
+                        ))
+                      | undefined;
               }[];
           }
         | {
@@ -367,36 +360,26 @@ export async function createStore(params: CreateStoreParams) {
           })
         : createObjectThatThrowsIfAccessed<UserApiClient>();
 
-    const s3Client = oidcClient.isUserLoggedIn
-        ? await (async () => {
-              const { s3ClientConfig } = params;
-              switch (s3ClientConfig.implementation) {
-                  case "MINIO":
-                      return createMinioS3Client(s3ClientConfig);
-                  case "DUMMY":
-                      return createDummyS3Client();
-              }
-          })()
-        : createObjectThatThrowsIfAccessed<S3Client>();
-
     const { evtAction, middlewareEvtAction } = createMiddlewareEvtAction();
+
+    const extraArgument: ThunksExtraArgument = {
+        "createStoreParams": params,
+        oidcClient,
+        onyxiaApiClient,
+        secretsManagerClient,
+        userApiClient,
+        "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
+            "debugMessage": "s3 client is not yet initialized",
+        }),
+        evtAction,
+    };
 
     const store = configureStore({
         "reducer": usecasesToReducer(usecases),
         "middleware": getDefaultMiddleware =>
             [
                 ...getDefaultMiddleware({
-                    "thunk": {
-                        "extraArgument": id<ThunksExtraArgument>({
-                            "createStoreParams": params,
-                            oidcClient,
-                            onyxiaApiClient,
-                            secretsManagerClient,
-                            userApiClient,
-                            s3Client,
-                            evtAction,
-                        }),
-                    },
+                    "thunk": { extraArgument },
                 }),
                 middlewareEvtAction,
             ] as const,
@@ -420,6 +403,29 @@ export async function createStore(params: CreateStoreParams) {
     await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
     getCurrentlySelectedDeployRegionId = () =>
         store.getState().deploymentRegion.selectedDeploymentRegionId;
+
+    if (oidcClient.isUserLoggedIn) {
+        const { s3: regionS3 } =
+            deploymentRegionUseCase.selectors.selectedDeploymentRegion(store.getState());
+
+        extraArgument.s3Client = await (async () => {
+            if (regionS3 === undefined) {
+                return createDummyS3Client();
+            }
+
+            assert(regionS3.type === "minio");
+
+            return createMinioS3Client(
+                getCreateMinioS3ClientParams({
+                    regionS3,
+                    "fallbackKeycloakParams":
+                        oidcClientConfig.implementation === "KEYCLOAK"
+                            ? oidcClientConfig
+                            : undefined,
+                }),
+            );
+        })();
+    }
 
     if (oidcClient.isUserLoggedIn) {
         await store.dispatch(projectSelectionUseCase.privateThunks.initialize());

@@ -76,7 +76,7 @@ const Bucket = ({
     description: string;
     region: DeploymentRegion;
 }) => {
-    const monitoringUrl = region.s3MonitoringUrlPattern?.replace("$BUCKET_ID", id);
+    const monitoringUrl = region.s3?.monitoringUrlPattern?.replace("$BUCKET_ID", id);
 
     return (
         <>
