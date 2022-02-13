@@ -1,3 +1,8 @@
+## **0.42.0** (2022-02-13)  
+  
+- Support AWS  
+- Lazily create buckets when doesn't exist    
+  
 ### **0.41.1** (2022-02-13)  
   
 - Rename minioS3Client -> s3Client (we will support Amazon)    
