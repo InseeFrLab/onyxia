@@ -139,11 +139,12 @@ export function createOfficialOnyxiaApiClient(params: {
                                 monitoring?: {
                                     URLPattern: string;
                                 };
-                                oidc?: {
-                                    url: string;
+                                keycloakParams?: {
+                                    URL: string;
                                     clientId?: string;
                                     realm?: string;
                                 };
+                                defaultDurationSeconds?: number;
                             } & (
                                 | {
                                       type: "minio";
@@ -180,13 +181,14 @@ export function createOfficialOnyxiaApiClient(params: {
 
                             const common: DeploymentRegion.S3.Common = {
                                 "monitoringUrlPattern": S3.monitoring?.URLPattern,
+                                "defaultDurationSeconds": S3.defaultDurationSeconds,
                                 "keycloakParams":
-                                    S3.oidc === undefined
+                                    S3.keycloakParams === undefined
                                         ? undefined
                                         : {
-                                              "url": S3.oidc.url,
-                                              "clientId": S3.oidc.clientId,
-                                              "realm": S3.oidc.realm,
+                                              "url": S3.keycloakParams.URL,
+                                              "clientId": S3.keycloakParams.clientId,
+                                              "realm": S3.keycloakParams.realm,
                                           },
                             };
 

@@ -203,6 +203,7 @@ assert<
                   initScriptUrl: string;
                   s3:
                       | ({
+                            defaultDurationSeconds: number | undefined;
                             monitoringUrlPattern: string | undefined;
                             keycloakParams:
                                 | {
