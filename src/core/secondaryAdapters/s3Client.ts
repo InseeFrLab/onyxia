@@ -79,7 +79,9 @@ export function getCreateS3ClientParams(params: {
 }
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, keycloakParams } = params;
+    const { url, region, keycloakParams } = params;
+
+    const { host, port = 443 } = parseUrl(params.url);
 
     const oidcClient = await createKeycloakOidcClient(keycloakParams);
 
@@ -90,7 +92,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     const { getAccessToken } = oidcClient;
 
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
-        "requestNewToken": async (bucketName: string | undefined) => {
+        "requestNewToken": async (restrictToBucketName: string | undefined) => {
             const now = Date.now();
 
             const { data } = await axios.create({ "baseURL": url }).post<string>(
@@ -102,7 +104,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         //and version of minio we could get less than that but never more.
                         "DurationSeconds": 7 * 24 * 3600,
                         "Version": "2011-06-15",
-                        ...(bucketName === undefined
+                        ...(restrictToBucketName === undefined
                             ? {}
                             : {
                                   "Policy": JSON.stringify({
@@ -112,8 +114,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                               "Effect": "Allow",
                                               "Action": ["s3:*"],
                                               "Resource": [
-                                                  `arn:aws:s3:::${bucketName}`,
-                                                  `arn:aws:s3:::${bucketName}/*`,
+                                                  `arn:aws:s3:::${restrictToBucketName}`,
+                                                  `arn:aws:s3:::${restrictToBucketName}/*`,
                                               ],
                                           },
                                           {
@@ -178,38 +180,70 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     });
 
     const { getMinioClient } = (() => {
-        const getMinioClientForToken = memoize(
-            (tokenObj: ReturnType<S3Client["getToken"]>) => {
-                const { accessKeyId, secretAccessKey, sessionToken } = tokenObj;
+        const minioClientByTokenObj = new WeakMap<
+            ReturnType<S3Client["getToken"]>,
+            Minio.Client
+        >();
 
-                const { host, port = 443 } = parseUrl(url);
+        async function getMinioClient(params: {
+            restrictToBucketName: string | undefined;
+        }) {
+            const { restrictToBucketName } = params;
 
-                const minioClient = new Minio.Client({
+            const tokenObj = await getNewlyRequestedOrCachedToken(restrictToBucketName);
+
+            let minioClient = minioClientByTokenObj.get(tokenObj);
+
+            if (minioClient === undefined) {
+                minioClient = new Minio.Client({
                     "endPoint": host,
-                    "port": port ?? 443,
+                    "port": port,
                     "useSSL": port !== 80,
-                    "accessKey": accessKeyId,
-                    "secretKey": secretAccessKey,
-                    sessionToken,
+                    "accessKey": tokenObj.accessKeyId,
+                    "secretKey": tokenObj.secretAccessKey,
+                    "sessionToken": tokenObj.sessionToken,
                 });
 
-                return { minioClient };
-            },
-            { "max": 1 },
-        );
+                minioClientByTokenObj.set(tokenObj, minioClient);
+            }
 
-        async function getMinioClient(params: { bucketName: string | undefined }) {
-            const { bucketName } = params;
-            return getMinioClientForToken(
-                await getNewlyRequestedOrCachedToken(bucketName),
-            );
+            return { minioClient };
         }
 
         return { getMinioClient };
     })();
 
-    const secretsManagerClient: S3Client = {
-        "getToken": ({ bucketName }) => getNewlyRequestedOrCachedToken(bucketName),
+    const s3Client: S3Client = {
+        "getToken": async ({ restrictToBucketName }) =>
+            getNewlyRequestedOrCachedToken(restrictToBucketName),
+        "createBucketIfNotExist": memoize(
+            async bucketName => {
+                const { minioClient } = await getMinioClient({
+                    "restrictToBucketName": bucketName,
+                });
+
+                const bucketNames = await new Promise<string[]>((resolve, reject) =>
+                    minioClient.listBuckets((error, result) => {
+                        if (error !== null) {
+                            reject(error);
+                            return;
+                        }
+                        resolve(result.map(({ name }) => name));
+                    }),
+                );
+
+                if (bucketNames.indexOf(bucketName) >= 0) {
+                    return;
+                }
+
+                await new Promise<void>((resolve, reject) =>
+                    minioClient.makeBucket(bucketName, region, error =>
+                        error !== null ? reject(error) : resolve(),
+                    ),
+                );
+            },
+            { "promise": true },
+        ),
         "list": async ({ path }) => {
             const { bucketName, prefix } = (() => {
                 const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
@@ -220,7 +254,11 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 };
             })();
 
-            const { minioClient } = await getMinioClient({ bucketName });
+            await s3Client.createBucketIfNotExist(bucketName);
+
+            const { minioClient } = await getMinioClient({
+                "restrictToBucketName": bucketName,
+            });
 
             const stream = minioClient.listObjects(bucketName, prefix, false);
 
@@ -244,9 +282,9 @@ export async function createS3Client(params: Params): Promise<S3Client> {
         },
     };
 
-    dS3Client.resolve(secretsManagerClient);
+    dS3Client.resolve(s3Client);
 
-    return secretsManagerClient;
+    return s3Client;
 }
 
 const dS3Client = new Deferred<S3Client>();
@@ -268,12 +306,17 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
                 ].join("\n"),
         },
         "getToken": {
-            "buildCmd": () =>
+            "buildCmd": ({ restrictToBucketName }) =>
                 [
-                    `# We generate a token`,
+                    `# We generate a token restricted to the bucket ${restrictToBucketName}`,
                     `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`,
                 ].join("\n"),
             "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`,
+        },
+        "createBucketIfNotExist": {
+            "buildCmd": bucketName =>
+                `# We create the token ${bucketName} if it doesn't exist.`,
+            "fmtResult": () => `# Done`,
         },
     },
 };

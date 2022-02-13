@@ -991,8 +991,10 @@ export const thunks = {
                 expirationTime,
                 acquisitionTime,
             } = await s3Client.getToken({
-                "bucketName": isDefaultProject ? undefined : project.bucket,
+                "restrictToBucketName": isDefaultProject ? undefined : project.bucket,
             });
+
+            s3Client.createBucketIfNotExist(project.bucket);
 
             const { region, url } = getCreateS3ClientParams({
                 regionS3,

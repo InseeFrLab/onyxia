@@ -15,5 +15,6 @@ export function createDummyS3Client(): S3Client {
                 "sessionToken": "",
                 "acquisitionTime": Date.now(),
             }),
+        "createBucketIfNotExist": () => Promise.resolve(),
     };
 }
