@@ -1,3 +1,8 @@
+## **0.41.0** (2022-02-13)  
+  
+- Read s3 configs form region instead of UI envs  
+- Remove namespacePrefix from region    
+  
 ### **0.40.11** (2022-02-08)  
   
 - Remove legacy favicon    
