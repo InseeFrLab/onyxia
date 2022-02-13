@@ -69,6 +69,7 @@ export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
     export namespace S3 {
         export type Common = {
+            defaultDurationSeconds: number | undefined;
             monitoringUrlPattern: string | undefined;
             keycloakParams:
                 | {

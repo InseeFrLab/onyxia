@@ -21,6 +21,7 @@ export type Params = {
         clientId: string;
         realm: string;
     };
+    durationSeconds: number;
     amazon:
         | {
               roleARN: string;
@@ -29,57 +30,10 @@ export type Params = {
         | undefined;
 };
 
-export function getCreateS3ClientParams(params: {
-    regionS3: DeploymentRegion.S3;
-    fallbackKeycloakParams:
-        | {
-              url: string;
-              clientId: string;
-              realm: string;
-          }
-        | undefined;
-}): Params {
-    const { regionS3, fallbackKeycloakParams } = params;
-
-    const keycloakParams = (() => {
-        const url = regionS3.keycloakParams?.url ?? fallbackKeycloakParams?.url;
-        const clientId =
-            regionS3.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
-        const realm = regionS3.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
-
-        assert(
-            url !== undefined && clientId !== undefined && realm !== undefined,
-            "There is no default keycloak config and no specific config for s3",
-        );
-
-        return { url, clientId, realm };
-    })();
-
-    return (() => {
-        switch (regionS3.type) {
-            case "minio":
-                return {
-                    "url": regionS3.url,
-                    "region": regionS3.region ?? "us-east-1",
-                    keycloakParams,
-                    "amazon": undefined,
-                };
-            case "amazon":
-                return {
-                    "url": "https://s3.amazonaws.com",
-                    "region": regionS3.region,
-                    keycloakParams,
-                    "amazon": {
-                        "roleARN": regionS3.roleARN,
-                        "roleSessionName": regionS3.roleSessionName,
-                    },
-                };
-        }
-    })();
-}
-
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, keycloakParams, amazon } = params;
+    const { url, region, keycloakParams, amazon, durationSeconds } = params;
+
+    console.log(keycloakParams);
 
     const { host, port = 443 } = parseUrl(params.url);
 
@@ -95,57 +49,68 @@ export async function createS3Client(params: Params): Promise<S3Client> {
         "requestNewToken": async (restrictToBucketName: string | undefined) => {
             const now = Date.now();
 
-            const { data } = await axios.create({ "baseURL": url }).post<string>(
-                "/?" +
-                    Object.entries({
-                        "Action": "AssumeRoleWithWebIdentity",
-                        "WebIdentityToken": await getAccessToken(),
-                        //Desired TTL of the token, depending of the configuration
-                        //and version of minio we could get less than that but never more.
-                        "DurationSeconds": 7 * 24 * 3600,
-                        "Version": "2011-06-15",
-                        ...(restrictToBucketName === undefined
-                            ? {}
-                            : {
-                                  "Policy": JSON.stringify({
-                                      "Version": "2012-10-17",
-                                      "Statement": [
-                                          {
-                                              "Effect": "Allow",
-                                              "Action": ["s3:*"],
-                                              "Resource": [
-                                                  `arn:aws:s3:::${restrictToBucketName}`,
-                                                  `arn:aws:s3:::${restrictToBucketName}/*`,
-                                              ],
-                                          },
-                                          {
-                                              "Effect": "Allow",
-                                              "Action": ["s3:ListBucket"],
-                                              "Resource": ["arn:aws:s3:::*"],
-                                              "Condition": {
-                                                  "StringLike": {
-                                                      "s3:prefix": "diffusion/*",
+            const { data } = await axios
+                .create({
+                    "baseURL": amazon !== undefined ? "https://sts.amazonaws.com" : url,
+                    "headers": {
+                        "Accept": "*/*",
+                    },
+                })
+                .post<string>(
+                    "/?" +
+                        Object.entries({
+                            "Action": "AssumeRoleWithWebIdentity",
+                            "WebIdentityToken": await getAccessToken(),
+                            //Desired TTL of the token, depending of the configuration
+                            //and version of minio we could get less than that but never more.
+                            "DurationSeconds": durationSeconds,
+                            "Version": "2011-06-15",
+                            ...(restrictToBucketName === undefined
+                                ? {}
+                                : {
+                                      "Policy": encodeURI(
+                                          JSON.stringify({
+                                              "Version": "2012-10-17",
+                                              "Statement": [
+                                                  {
+                                                      "Effect": "Allow",
+                                                      "Action": ["s3:*"],
+                                                      "Resource": [
+                                                          `arn:aws:s3:::${restrictToBucketName}`,
+                                                          `arn:aws:s3:::${restrictToBucketName}/*`,
+                                                      ],
                                                   },
-                                              },
-                                          },
-                                          {
-                                              "Effect": "Allow",
-                                              "Action": ["s3:GetObject"],
-                                              "Resource": ["arn:aws:s3:::*/diffusion/*"],
-                                          },
-                                      ],
+                                                  {
+                                                      "Effect": "Allow",
+                                                      "Action": ["s3:ListBucket"],
+                                                      "Resource": ["arn:aws:s3:::*"],
+                                                      "Condition": {
+                                                          "StringLike": {
+                                                              "s3:prefix": "diffusion/*",
+                                                          },
+                                                      },
+                                                  },
+                                                  {
+                                                      "Effect": "Allow",
+                                                      "Action": ["s3:GetObject"],
+                                                      "Resource": [
+                                                          "arn:aws:s3:::*/diffusion/*",
+                                                      ],
+                                                  },
+                                              ],
+                                          }),
+                                      ),
                                   }),
-                              }),
-                        ...(amazon === undefined
-                            ? {}
-                            : {
-                                  "RoleSessionName": amazon.roleSessionName,
-                                  "RoleArn": amazon.roleARN,
-                              }),
-                    })
-                        .map(([key, value]) => `${key}=${value}`)
-                        .join("&"),
-            );
+                            ...(amazon === undefined
+                                ? {}
+                                : {
+                                      "RoleSessionName": amazon.roleSessionName,
+                                      "RoleArn": amazon.roleARN,
+                                  }),
+                        })
+                            .map(([key, value]) => `${key}=${value}`)
+                            .join("&"),
+                );
 
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(data, "text/xml");
@@ -326,3 +291,54 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
         },
     },
 };
+
+export function getCreateS3ClientParams(params: {
+    regionS3: DeploymentRegion.S3;
+    fallbackKeycloakParams:
+        | {
+              url: string;
+              clientId: string;
+              realm: string;
+          }
+        | undefined;
+}): Params {
+    const { regionS3, fallbackKeycloakParams } = params;
+
+    const keycloakParams = (() => {
+        const url = regionS3.keycloakParams?.url ?? fallbackKeycloakParams?.url;
+        const clientId =
+            regionS3.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
+        const realm = regionS3.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
+
+        assert(
+            url !== undefined && clientId !== undefined && realm !== undefined,
+            "There is no default keycloak config and no specific config for s3",
+        );
+
+        return { url, clientId, realm };
+    })();
+
+    return (() => {
+        switch (regionS3.type) {
+            case "minio":
+                return {
+                    "url": regionS3.url,
+                    "region": regionS3.region ?? "us-east-1",
+                    keycloakParams,
+                    "amazon": undefined,
+                    "durationSeconds": regionS3.defaultDurationSeconds ?? 7 * 24 * 3600,
+                };
+            case "amazon":
+                return {
+                    "url": "https://s3.amazonaws.com",
+                    "region": regionS3.region,
+                    keycloakParams,
+                    "amazon": {
+                        "roleARN": regionS3.roleARN,
+                        "roleSessionName": regionS3.roleSessionName,
+                    },
+                    "durationSeconds": regionS3.defaultDurationSeconds ?? 12 * 3600,
+                };
+        }
+    })();
+}
