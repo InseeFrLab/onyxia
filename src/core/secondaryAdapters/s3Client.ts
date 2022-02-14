@@ -193,17 +193,17 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                     "restrictToBucketName": bucketName,
                 });
 
-                const bucketNames = await new Promise<string[]>((resolve, reject) =>
-                    minioClient.listBuckets((error, result) => {
+                const doExist = await new Promise<boolean>((resolve, reject) =>
+                    minioClient.bucketExists(bucketName, (error, doExist) => {
                         if (error !== null) {
                             reject(error);
                             return;
                         }
-                        resolve(result.map(({ name }) => name));
+                        resolve(doExist);
                     }),
                 );
 
-                if (bucketNames.indexOf(bucketName) >= 0) {
+                if (doExist) {
                     return;
                 }
 
