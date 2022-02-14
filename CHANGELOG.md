@@ -1,3 +1,7 @@
+### **0.42.2** (2022-02-14)  
+  
+- Use bucketExists instead of listBuckets    
+  
 ### **0.42.1** (2022-02-14)  
   
 - Read s3 token duration from region    
