@@ -1,3 +1,7 @@
+### **0.42.1** (2022-02-14)  
+  
+- Read s3 token duration from region    
+  
 ## **0.42.0** (2022-02-13)  
   
 - Support AWS  
