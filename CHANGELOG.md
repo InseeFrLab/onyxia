@@ -1,3 +1,8 @@
+### **0.42.3** (2022-02-14)  
+  
+- Bump version (changeleog ignore)  
+- Provide region in the Minio.Client constructor    
+  
 ### **0.42.2** (2022-02-14)  
   
 - Use bucketExists instead of listBuckets    
