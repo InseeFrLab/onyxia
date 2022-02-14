@@ -173,6 +173,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                     "accessKey": tokenObj.accessKeyId,
                     "secretKey": tokenObj.secretAccessKey,
                     "sessionToken": tokenObj.sessionToken,
+                    region,
                 });
 
                 minioClientByTokenObj.set(tokenObj, minioClient);
