@@ -1,3 +1,7 @@
+### **0.43.1** (2022-02-16)  
+  
+- only test if bucket exist with minio    
+  
 ## **0.43.0** (2022-02-16)  
   
 - Use proxy method to creat AWS bucket to bypass CORS  
