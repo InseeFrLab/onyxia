@@ -1,3 +1,11 @@
+## **0.43.0** (2022-02-16)  
+  
+- Use proxy method to creat AWS bucket to bypass CORS  
+- Merge pull request #286 from InseeFrLab/marchufschmitt-patch-1
+
+Add a HEADER_USECASE_DESCRIPTION env  
+- Add a tab USECASE_DESCRIPTION env    
+  
 ### **0.42.3** (2022-02-14)  
   
 - Bump version (changeleog ignore)  
