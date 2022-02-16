@@ -475,7 +475,7 @@ export function createOfficialOnyxiaApiClient(params: {
             bucketName,
         }) =>
             axiosInstance
-                .put<void>("/s3", {
+                .post<void>("/s3", {
                     awsRegion,
                     accessKey,
                     secretKey,
