@@ -30,8 +30,19 @@ export type Params = {
         | undefined;
 };
 
-export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, keycloakParams, amazon, durationSeconds } = params;
+export async function createS3Client(
+    params: Params & {
+        createAwsBucket: (params: {
+            awsRegion: string;
+            accessKey: string;
+            secretKey: string;
+            sessionToken: string;
+            bucketName: string;
+        }) => Promise<void>;
+    },
+): Promise<S3Client> {
+    const { url, region, keycloakParams, amazon, durationSeconds, createAwsBucket } =
+        params;
 
     console.log(keycloakParams);
 
@@ -153,7 +164,10 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     const { getMinioClient } = (() => {
         const minioClientByTokenObj = new WeakMap<
             ReturnType<S3Client["getToken"]>,
-            Minio.Client
+            {
+                minioClient: Minio.Client;
+                createAwsBucket: (params: { bucketName: string }) => Promise<void>;
+            }
         >();
 
         async function getMinioClient(params: {
@@ -163,23 +177,33 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
             const tokenObj = await getNewlyRequestedOrCachedToken(restrictToBucketName);
 
-            let minioClient = minioClientByTokenObj.get(tokenObj);
+            let wrap = minioClientByTokenObj.get(tokenObj);
 
-            if (minioClient === undefined) {
-                minioClient = new Minio.Client({
-                    "endPoint": host,
-                    "port": port,
-                    "useSSL": port !== 80,
-                    "accessKey": tokenObj.accessKeyId,
-                    "secretKey": tokenObj.secretAccessKey,
-                    "sessionToken": tokenObj.sessionToken,
-                    region,
-                });
+            if (wrap === undefined) {
+                wrap = {
+                    "minioClient": new Minio.Client({
+                        "endPoint": host,
+                        "port": port,
+                        "useSSL": port !== 80,
+                        "accessKey": tokenObj.accessKeyId,
+                        "secretKey": tokenObj.secretAccessKey,
+                        "sessionToken": tokenObj.sessionToken,
+                        region,
+                    }),
+                    "createAwsBucket": ({ bucketName }) =>
+                        createAwsBucket({
+                            "accessKey": tokenObj.accessKeyId,
+                            "secretKey": tokenObj.secretAccessKey,
+                            "sessionToken": tokenObj.sessionToken,
+                            "awsRegion": region,
+                            bucketName,
+                        }),
+                };
 
-                minioClientByTokenObj.set(tokenObj, minioClient);
+                minioClientByTokenObj.set(tokenObj, wrap);
             }
 
-            return { minioClient };
+            return wrap;
         }
 
         return { getMinioClient };
@@ -190,7 +214,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             getNewlyRequestedOrCachedToken(restrictToBucketName),
         "createBucketIfNotExist": memoize(
             async bucketName => {
-                const { minioClient } = await getMinioClient({
+                const { minioClient, createAwsBucket } = await getMinioClient({
                     "restrictToBucketName": bucketName,
                 });
 
@@ -208,11 +232,15 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                     return;
                 }
 
-                await new Promise<void>((resolve, reject) =>
-                    minioClient.makeBucket(bucketName, region, error =>
-                        error !== null ? reject(error) : resolve(),
-                    ),
-                );
+                if (amazon !== undefined) {
+                    await createAwsBucket({ bucketName });
+                } else {
+                    await new Promise<void>((resolve, reject) =>
+                        minioClient.makeBucket(bucketName, region, error =>
+                            error !== null ? reject(error) : resolve(),
+                        ),
+                    );
+                }
             },
             { "promise": true },
         ),

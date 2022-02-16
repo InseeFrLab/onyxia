@@ -411,15 +411,16 @@ export async function createStore(params: CreateStoreParams) {
                 return createDummyS3Client();
             }
 
-            return createS3Client(
-                getCreateS3ClientParams({
+            return createS3Client({
+                ...getCreateS3ClientParams({
                     regionS3,
                     "fallbackKeycloakParams":
                         oidcClientConfig.implementation === "KEYCLOAK"
                             ? oidcClientConfig
                             : undefined,
                 }),
-            );
+                "createAwsBucket": onyxiaApiClient.createAwsBucket,
+            });
         })();
     }
 

@@ -54,6 +54,14 @@ export type OnyxiaApiClient = {
     getRunningServices: () => Promise<RunningService[]>;
 
     stopService: (params: { serviceId: string }) => Promise<void>;
+
+    createAwsBucket: (params: {
+        awsRegion: string;
+        accessKey: string;
+        secretKey: string;
+        sessionToken: string;
+        bucketName: string;
+    }) => Promise<void>;
 };
 
 export type DeploymentRegion = {

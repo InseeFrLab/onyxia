@@ -44,6 +44,7 @@ export function createMockOnyxiaApiClient(params: {
         "launchPackage": () => Promise.resolve().then(() => ({ "contract": [] })),
         "getRunningServices": () => Promise.resolve([]),
         "stopService": () => Promise.resolve(),
+        "createAwsBucket": () => Promise.resolve(),
     };
 }
 

@@ -467,6 +467,22 @@ export function createOfficialOnyxiaApiClient(params: {
                     .then(({ data }) => data.projects),
             { "promise": true },
         ),
+        "createAwsBucket": ({
+            awsRegion,
+            accessKey,
+            secretKey,
+            sessionToken,
+            bucketName,
+        }) =>
+            axiosInstance
+                .put<void>("/s3", {
+                    awsRegion,
+                    accessKey,
+                    secretKey,
+                    sessionToken,
+                    bucketName,
+                })
+                .then(() => undefined),
     };
 
     return onyxiaApiClient;
