@@ -218,18 +218,20 @@ export async function createS3Client(
                     "restrictToBucketName": bucketName,
                 });
 
-                const doExist = await new Promise<boolean>((resolve, reject) =>
-                    minioClient.bucketExists(bucketName, (error, doExist) => {
-                        if (error !== null) {
-                            reject(error);
-                            return;
-                        }
-                        resolve(doExist);
-                    }),
-                );
+                if (amazon === undefined) {
+                    const doExist = await new Promise<boolean>((resolve, reject) =>
+                        minioClient.bucketExists(bucketName, (error, doExist) => {
+                            if (error !== null) {
+                                reject(error);
+                                return;
+                            }
+                            resolve(doExist);
+                        }),
+                    );
 
-                if (doExist) {
-                    return;
+                    if (doExist) {
+                        return;
+                    }
                 }
 
                 if (amazon !== undefined) {
