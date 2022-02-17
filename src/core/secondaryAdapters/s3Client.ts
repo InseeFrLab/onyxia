@@ -230,7 +230,13 @@ export async function createS3Client(
                             resolve(doExist);
                         }),
                     );
-                } catch {
+                } catch (error) {
+                    if (amazon === undefined) {
+                        throw error;
+                    }
+
+                    console.log("CORS error was expected here");
+
                     doExist = false;
                 }
 
