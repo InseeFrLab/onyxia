@@ -1,3 +1,7 @@
+### **0.43.3** (2022-02-17)  
+  
+- Warn about expected cors error    
+  
 ### **0.43.2** (2022-02-17)  
   
 - createAwsBucket is a post method    
