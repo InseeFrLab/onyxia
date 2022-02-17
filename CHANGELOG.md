@@ -1,3 +1,7 @@
+### **0.43.4** (2022-02-17)  
+  
+- use application/x-www-form-urlencoded for createAwsBucket post request    
+  
 ### **0.43.3** (2022-02-17)  
   
 - Warn about expected cors error    
