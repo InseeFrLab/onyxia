@@ -477,17 +477,15 @@ export function createOfficialOnyxiaApiClient(params: {
             axiosInstance
                 .post<void>(
                     "/s3",
-                    encodeURI(
-                        Object.entries({
-                            awsRegion,
-                            accessKey,
-                            secretKey,
-                            sessionToken,
-                            bucketName,
-                        })
-                            .map(([key, value]) => `${key}=${value}`)
-                            .join("&"),
-                    ),
+                    Object.entries({
+                        awsRegion,
+                        accessKey,
+                        secretKey,
+                        sessionToken,
+                        bucketName,
+                    })
+                        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                        .join("&"),
                 )
                 .then(() => undefined),
     };
