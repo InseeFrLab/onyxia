@@ -1,3 +1,7 @@
+### **0.43.7** (2022-02-19)  
+  
+- Re arange the meta tags    
+  
 ### **0.43.6** (2022-02-19)  
   
 - Update cra-envs  
