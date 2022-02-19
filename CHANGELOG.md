@@ -1,3 +1,7 @@
+### **0.43.5** (2022-02-17)  
+  
+- Fix createAwsBucket request    
+  
 ### **0.43.4** (2022-02-17)  
   
 - use application/x-www-form-urlencoded for createAwsBucket post request    
