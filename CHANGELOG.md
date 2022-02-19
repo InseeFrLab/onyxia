@@ -1,3 +1,8 @@
+### **0.43.6** (2022-02-19)  
+  
+- Update cra-envs  
+- Update tsafe    
+  
 ### **0.43.5** (2022-02-17)  
   
 - Fix createAwsBucket request    
