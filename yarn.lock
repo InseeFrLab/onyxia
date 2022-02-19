@@ -5803,10 +5803,10 @@ cpy@^8.1.2:
     p-filter "^2.1.0"
     p-map "^3.0.0"
 
-cra-envs@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.2.1.tgz#602b12d7361ff285394ad396752136f55328b008"
-  integrity sha512-gjCFu0FbYeGC3Kpm0U3exGag+NrToJXRHlewAh8db+tPzd49LnC1A13rLvm50NW+E24pYqKLJIIAHoYCxk6X/g==
+cra-envs@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.2.4.tgz#d742105754cbf7a58b63114086588248c298822d"
+  integrity sha512-XvHZgTi3I5ghViFHe3bIYWlhxlKpfThdyweZrC66f4qJHbc/obXmGQSt1byZLvFQP/tqx/IZXfggrVfNtTNG4g==
   dependencies:
     cheerio "^1.0.0-rc.5"
     dotenv "^8.2.0"
