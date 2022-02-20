@@ -165,7 +165,10 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onBreadcrumpNavigate = useConstCallback(
         ({ upCount }: Param0<BreadcrumpProps["onNavigate"]>) => {
             onNavigate({
-                "directoryPath": pathJoin(...new Array(upCount).fill("..")),
+                "directoryPath": pathJoin(
+                    directoryPath,
+                    ...new Array(upCount - (props.isFileOpen ? 1 : 0)).fill(".."),
+                ),
             });
         },
     );
