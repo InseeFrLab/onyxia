@@ -77,6 +77,7 @@ export type ExplorerProps = {
 } & (
     | {
           isFileOpen: true;
+          openFileBasename: string;
           openFileTime: number;
           openFileNode: ReactNode;
           onCloseFile: () => void;
@@ -192,16 +193,20 @@ export const Explorer = memo((props: ExplorerProps) => {
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
             evtBreadcrumpAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
-                "basename": basename === "." ? undefined : basename,
+                basename,
             });
 
             onCopyPath({ "path": pathJoin(directoryPath, basename) });
         },
     );
 
-    const onGoBack = useConstCallback(() =>
-        onNavigate({ "directoryPath": pathJoin(directoryPath, "..") }),
-    );
+    const onGoBack = useConstCallback(() => {
+        if (props.isFileOpen) {
+            props.onCloseFile();
+        } else {
+            onNavigate({ "directoryPath": pathJoin(directoryPath, "..") });
+        }
+    });
 
     const { evtItemsAction } = useConst(() => ({
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
@@ -224,11 +229,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "copy path":
                 if (props.isFileOpen) {
-                    itemsOnCopyPath({ "basename": "." });
-                    break;
-                }
+                    evtBreadcrumpAction.post({ "action": "DISPLAY COPY FEEDBACK" });
 
-                evtItemsAction.post("COPY SELECTED ITEM PATH");
+                    onCopyPath({
+                        "path": pathJoin(directoryPath, props.openFileBasename),
+                    });
+                } else {
+                    evtItemsAction.post("COPY SELECTED ITEM PATH");
+                }
                 break;
             case "create directory":
                 onNewItem({
@@ -369,24 +377,35 @@ export const Explorer = memo((props: ExplorerProps) => {
                     apiLogs={apiLogs}
                     maxHeight={cmdTranslationMaxHeight}
                 />
-                {directoryPath.split("/").length === pathMinDepth ? null : (
-                    <DirectoryHeader
-                        title={pathBasename(directoryPath)}
-                        onGoBack={onGoBack}
-                        subtitle={formattedDate}
-                        image={
-                            <FileOrDirectoryIcon
-                                explorerType={explorerType}
-                                standardizedWidth="big"
-                                kind={props.isFileOpen ? "file" : "directory"}
-                            />
-                        }
-                    />
-                )}
+                {(() => {
+                    const title = props.isFileOpen
+                        ? props.openFileBasename
+                        : directoryPath.split("/").length === pathMinDepth
+                        ? undefined
+                        : pathBasename(directoryPath);
+
+                    return title === undefined ? null : (
+                        <DirectoryHeader
+                            title={title}
+                            onGoBack={onGoBack}
+                            subtitle={formattedDate}
+                            image={
+                                <FileOrDirectoryIcon
+                                    explorerType={explorerType}
+                                    standardizedWidth="big"
+                                    kind={props.isFileOpen ? "file" : "directory"}
+                                />
+                            }
+                        />
+                    );
+                })()}
                 <Breadcrump
                     className={classes.breadcrump}
                     minDepth={pathMinDepth}
-                    path={directoryPath.split("/")}
+                    path={[
+                        ...directoryPath.split("/"),
+                        ...(props.isFileOpen ? [props.openFileBasename] : []),
+                    ]}
                     isNavigationDisabled={isNavigating}
                     onNavigate={onBreadcrumpNavigate}
                     evtAction={evtBreadcrumpAction}

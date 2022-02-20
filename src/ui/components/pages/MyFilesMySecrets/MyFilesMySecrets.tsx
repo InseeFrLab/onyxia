@@ -317,6 +317,7 @@ export function MyFilesMySecrets(props: Props) {
                               "isFileOpen": true as const,
                               "openFileTime": Date.now(),
                               "openFileNode": <h1>TODO: view of {openFile}</h1>,
+                              "openFileBasename": openFile,
                               onCloseFile,
                           };
                 })()}
