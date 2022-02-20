@@ -18,6 +18,7 @@ import * as runningServiceUseCase from "./usecases/runningService";
 import * as secretExplorerUseCase from "./usecases/secretExplorer";
 import * as userAuthenticationUseCase from "./usecases/userAuthentication";
 import * as userConfigsUseCase from "./usecases/userConfigs";
+import * as secretsEditorUseCase from "./usecases/secretsEditor";
 
 import type { UserApiClient, User } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
@@ -252,6 +253,7 @@ export const usecases = [
     secretExplorerUseCase,
     userAuthenticationUseCase,
     userConfigsUseCase,
+    secretsEditorUseCase,
 ];
 
 const { createMiddlewareEvtAction } = createMiddlewareEvtActionFactory(usecases);
