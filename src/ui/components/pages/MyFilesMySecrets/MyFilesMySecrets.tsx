@@ -222,6 +222,25 @@ export function MyFilesMySecrets(props: Props) {
         [explorerType, t],
     );
 
+    const onOpenFile = useConstCallback<
+        Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
+    >(({ basename }) =>
+        routes.mySecretsDev({ ...route.params, "openFile": basename }).replace(),
+    );
+
+    const onCloseFile = useConstCallback<
+        Extract<ExplorerProps, { isFileOpen: true }>["onCloseFile"]
+    >(() =>
+        routes
+            .mySecretsDev(
+                (() => {
+                    const { openFile, ...rest } = route.params;
+                    return rest;
+                })(),
+            )
+            .replace(),
+    );
+
     if (cwdVue === undefined) {
         return null;
     }
@@ -285,8 +304,21 @@ export function MyFilesMySecrets(props: Props) {
                 //pathMinDepth={getPathDepth(topDirPath)}
                 pathMinDepth={0}
                 scrollableDivRef={scrollableDivRef}
-                isFileOpen={false}
-                onOpenFile={({ basename }) => console.log("onOpenFile", { basename })}
+                {...(() => {
+                    const { openFile } = route.params;
+
+                    return openFile === undefined
+                        ? {
+                              "isFileOpen": false as const,
+                              onOpenFile,
+                          }
+                        : {
+                              "isFileOpen": true as const,
+                              "openFileTime": Date.now(),
+                              "openFileNode": <h1>TODO: view of {openFile}</h1>,
+                              onCloseFile,
+                          };
+                })()}
             />
         </div>
     );

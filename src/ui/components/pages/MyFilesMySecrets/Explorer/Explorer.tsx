@@ -35,6 +35,7 @@ import type { ApiLogs } from "core/tools/apiLogger";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
 import { useLng } from "ui/i18n/useLng";
+import { Card } from "onyxia-ui/Card";
 
 export type ExplorerProps = {
     /**
@@ -398,26 +399,30 @@ export const Explorer = memo((props: ExplorerProps) => {
                         }),
                     )}
                 >
-                    <ExplorerItems
-                        explorerType={explorerType}
-                        isNavigating={isNavigating}
-                        files={files}
-                        directories={directories}
-                        directoriesBeingCreated={directoriesBeingCreated}
-                        directoriesBeingRenamed={directoriesBeingRenamed}
-                        filesBeingCreated={filesBeingCreated}
-                        filesBeingRenamed={filesBeingRenamed}
-                        onNavigate={onItemsNavigate}
-                        onOpenFile={onItemsOpenFile}
-                        onEditBasename={onEditBasename}
-                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                        onIsSelectedItemInEditingStateValueChange={
-                            onIsSelectedItemInEditingStateValueChange
-                        }
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
-                        evtAction={evtItemsAction}
-                    />
+                    {props.isFileOpen ? (
+                        <Card>{props.openFileNode}</Card>
+                    ) : (
+                        <ExplorerItems
+                            explorerType={explorerType}
+                            isNavigating={isNavigating}
+                            files={files}
+                            directories={directories}
+                            directoriesBeingCreated={directoriesBeingCreated}
+                            directoriesBeingRenamed={directoriesBeingRenamed}
+                            filesBeingCreated={filesBeingCreated}
+                            filesBeingRenamed={filesBeingRenamed}
+                            onNavigate={onItemsNavigate}
+                            onOpenFile={onItemsOpenFile}
+                            onEditBasename={onEditBasename}
+                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                            onIsSelectedItemInEditingStateValueChange={
+                                onIsSelectedItemInEditingStateValueChange
+                            }
+                            onCopyPath={itemsOnCopyPath}
+                            onDeleteItem={itemsOnDeleteItem}
+                            evtAction={evtItemsAction}
+                        />
+                    )}
                 </div>
             </div>
             <Dialog
