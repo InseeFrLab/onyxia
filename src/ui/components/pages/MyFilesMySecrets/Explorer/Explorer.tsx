@@ -46,7 +46,7 @@ export type ExplorerProps = {
     explorerType: "s3" | "secrets";
     doShowHidden: boolean;
 
-    path: string;
+    directoryPath: string;
     isNavigating: boolean;
     apiLogs: ApiLogs;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
@@ -56,7 +56,7 @@ export type ExplorerProps = {
     directoriesBeingRenamed: string[];
     filesBeingCreated: string[];
     filesBeingRenamed: string[];
-    onNavigate: (params: { path: string }) => void;
+    onNavigate: (params: { directoryPath: string }) => void;
     onRefresh: () => void;
     onEditBasename: (params: {
         kind: "file" | "directory";
@@ -92,7 +92,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         className,
         explorerType,
         doShowHidden,
-        path,
+        directoryPath,
         isNavigating,
         apiLogs,
         evtAction,
@@ -164,7 +164,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onBreadcrumpNavigate = useConstCallback(
         ({ upCount }: Param0<BreadcrumpProps["onNavigate"]>) => {
             onNavigate({
-                "path": pathJoin(...new Array(upCount).fill("..")),
+                "directoryPath": pathJoin(...new Array(upCount).fill("..")),
             });
         },
     );
@@ -172,7 +172,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onItemsNavigate = useConstCallback(
         ({ basename }: Param0<ItemsProps["onNavigate"]>) =>
             onNavigate({
-                "path": pathJoin(path, basename),
+                "directoryPath": pathJoin(directoryPath, basename),
             }),
     );
 
@@ -195,11 +195,13 @@ export const Explorer = memo((props: ExplorerProps) => {
                 "basename": basename === "." ? undefined : basename,
             });
 
-            onCopyPath({ "path": pathJoin(path, basename) });
+            onCopyPath({ "path": pathJoin(directoryPath, basename) });
         },
     );
 
-    const onGoBack = useConstCallback(() => onNavigate({ "path": pathJoin(path, "..") }));
+    const onGoBack = useConstCallback(() =>
+        onNavigate({ "directoryPath": pathJoin(directoryPath, "..") }),
+    );
 
     const { evtItemsAction } = useConst(() => ({
         "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
@@ -367,9 +369,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                     apiLogs={apiLogs}
                     maxHeight={cmdTranslationMaxHeight}
                 />
-                {path.split("/").length === pathMinDepth ? null : (
+                {directoryPath.split("/").length === pathMinDepth ? null : (
                     <DirectoryHeader
-                        title={pathBasename(path)}
+                        title={pathBasename(directoryPath)}
                         onGoBack={onGoBack}
                         subtitle={formattedDate}
                         image={
@@ -384,7 +386,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 <Breadcrump
                     className={classes.breadcrump}
                     minDepth={pathMinDepth}
-                    path={path.split("/")}
+                    path={directoryPath.split("/")}
                     isNavigationDisabled={isNavigating}
                     onNavigate={onBreadcrumpNavigate}
                     evtAction={evtBreadcrumpAction}

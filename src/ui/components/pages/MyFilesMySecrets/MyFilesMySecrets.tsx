@@ -71,8 +71,9 @@ export function MyFilesMySecrets(props: Props) {
         });
     }, [route.params.path, explorerType]);
 
-    const onNavigate = useConstCallback(({ path }: Param0<ExplorerProps["onNavigate"]>) =>
-        routes[route.name]({ path }).push(),
+    const onNavigate = useConstCallback(
+        ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
+            routes[route.name]({ "path": directoryPath }).push(),
     );
 
     const onRefresh = useConstCallback(() => explorersThunks.refresh({ explorerType }));
@@ -285,7 +286,7 @@ export function MyFilesMySecrets(props: Props) {
                 className={classes.explorer}
                 explorerType={explorerType}
                 doShowHidden={false}
-                path={cwdVue.directoryPath}
+                directoryPath={cwdVue.directoryPath}
                 isNavigating={cwdVue.isNavigationOngoing}
                 apiLogs={apiLogs}
                 evtAction={evtButtonBarAction}
