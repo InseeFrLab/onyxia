@@ -254,19 +254,18 @@ export const thunks = {
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
 
-                const state = getState().secretExplorer;
+                const state = getState().secretsEditor;
 
-                assert(state.state === "SHOWING SECRET");
+                assert(state !== null);
 
-                const {
-                    secretWithMetadata: { secret },
-                    hiddenKeys,
-                } = state;
+                const { secretWithMetadata, hiddenKeys } = state;
+
+                assert(secretWithMetadata !== undefined);
 
                 return {
-                    "path": state.currentPath,
+                    "path": pathJoin(state.directoryPath, state.basename),
                     hiddenKeys,
-                    secret,
+                    "secret": secretWithMetadata.secret,
                 };
             };
 
