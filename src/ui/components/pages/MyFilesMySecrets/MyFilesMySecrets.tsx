@@ -58,7 +58,10 @@ export function MyFilesMySecrets(props: Props) {
                 "path": directoryPath,
                 ...(explorerType !== "secrets" || !doRestoreOpenedFile
                     ? {}
-                    : { "openFile": secretEditorState?.basename }),
+                    : {
+                          "openFile":
+                              route.params.openFile ?? secretEditorState?.basename,
+                      }),
             }).replace(),
         );
 
