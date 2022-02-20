@@ -141,17 +141,7 @@ export function MyFilesMySecrets(props: Props) {
     );
 
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(
-            (() => {
-                switch (explorerType) {
-                    case "secrets":
-                        //return pathRelative(vaultTopDir, path);
-                        return path;
-                    case "s3":
-                        return path;
-                }
-            })(),
-        ),
+        copyToClipboard(path.split("/").slice(2).join("/")),
     );
 
     const apiLogs = useMemo(
