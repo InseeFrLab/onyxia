@@ -54,7 +54,7 @@ export function MyFilesMySecrets(props: Props) {
             explorerType,
             "directNavigationDirectoryPath": route.params.path,
             "onNavigate": ({ directoryPath }) =>
-                routes[route.name]({ "path": directoryPath }).replace(),
+                routes[route.name]({ ...route.params, "path": directoryPath }).replace(),
         });
 
         return () => explorersThunks.notifyThatUserIsNoLongerWatching({ explorerType });
