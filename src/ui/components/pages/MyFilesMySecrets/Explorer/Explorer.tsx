@@ -383,7 +383,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 {(() => {
                     const title = props.isFileOpen
                         ? props.openFileBasename
-                        : directoryPath.split("/").length === pathMinDepth
+                        : directoryPath.split("/").length - 1 === pathMinDepth
                         ? undefined
                         : pathBasename(directoryPath);
 
