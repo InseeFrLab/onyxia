@@ -6,7 +6,6 @@ import { useSelector, useThunks, selectors } from "ui/coreApi";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n/useTranslations";
-//import { relative as pathRelative } from "path";
 import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
@@ -16,7 +15,6 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
-//import { getPathDepth } from "ui/tools/getPathDepth";
 import { assert } from "tsafe/assert";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecretsDev]);
@@ -302,8 +300,7 @@ export function MyFilesMySecrets(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onNewItem={onNewItem}
                 onCopyPath={onCopyPath}
-                //pathMinDepth={getPathDepth(topDirPath)}
-                pathMinDepth={0}
+                pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 {...(() => {
                     const { openFile } = route.params;
