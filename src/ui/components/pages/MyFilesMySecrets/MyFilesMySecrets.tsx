@@ -16,6 +16,7 @@ import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
+import { MySecretsEditor, Props as MySecretsEditorProps } from "./MySecretsEditor";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecretsDev]);
 
@@ -47,7 +48,7 @@ export function MyFilesMySecrets(props: Props) {
 
     const secretEditorState = useSelector(state => state.secretsEditor);
 
-    const { explorersThunks, secretsEditorThunks } = useThunks();
+    const { explorersThunks, secretsEditorThunks, userConfigsThunks } = useThunks();
 
     {
         const onNavigate = useConstCallback<
@@ -258,6 +259,25 @@ export function MyFilesMySecrets(props: Props) {
         ).replace(),
     );
 
+    const onMySecretEditorCopyPath = useConstCallback(() =>
+        evtButtonBarAction.post("TRIGGER COPY PATH"),
+    );
+
+    const onEdit = useConstCallback<MySecretsEditorProps["onEdit"]>(params =>
+        secretsEditorThunks.editCurrentlyShownSecret(params),
+    );
+
+    const {
+        userConfigs: { doDisplayMySecretsUseInServiceDialog },
+    } = useSelector(selectors.userConfigs.userConfigs);
+
+    const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
+        userConfigsThunks.changeValue({
+            "key": "doDisplayMySecretsUseInServiceDialog",
+            value,
+        }),
+    );
+
     if (cwdVue === undefined) {
         return null;
     }
@@ -340,9 +360,25 @@ export function MyFilesMySecrets(props: Props) {
                                 "openFileTime": new Date(
                                     secretEditorState.secretWithMetadata.metadata.created_time,
                                 ).getTime(),
-                                "openFileNode": <h1>TODO: Mount the view</h1>,
+
                                 "openFileBasename": secretEditorState.basename,
                                 onCloseFile,
+                                "openFileNode": (
+                                    <MySecretsEditor
+                                        onCopyPath={onMySecretEditorCopyPath}
+                                        isBeingUpdated={secretEditorState.isBeingUpdated}
+                                        secretWithMetadata={
+                                            secretEditorState.secretWithMetadata
+                                        }
+                                        onEdit={onEdit}
+                                        doDisplayUseInServiceDialog={
+                                            doDisplayMySecretsUseInServiceDialog
+                                        }
+                                        onDoDisplayUseInServiceDialogValueChange={
+                                            onDoDisplayUseInServiceDialogValueChange
+                                        }
+                                    />
+                                ),
                             };
                         }
                     }
