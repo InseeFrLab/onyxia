@@ -280,8 +280,6 @@ export function MyFilesMySecrets(props: Props) {
 
     if (
         cwdVue === undefined ||
-        //NOTE: This test is just so we dont have flickering when we come back to an opened file
-        //it works without it.
         (secretEditorState !== null && secretEditorState.secretWithMetadata === undefined)
     ) {
         return null;
@@ -353,12 +351,15 @@ export function MyFilesMySecrets(props: Props) {
                                 onOpenFile,
                             };
                         case "secrets": {
-                            if (secretEditorState?.secretWithMetadata === undefined) {
+                            if (secretEditorState === null) {
                                 return {
                                     "isFileOpen": false as const,
                                     onOpenFile,
                                 };
                             }
+
+                            //NOTE: It can't be the case, the component would have returned null.
+                            assert(secretEditorState.secretWithMetadata !== undefined);
 
                             return {
                                 "isFileOpen": true as const,
