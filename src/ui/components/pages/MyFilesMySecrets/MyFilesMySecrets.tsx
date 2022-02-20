@@ -52,11 +52,10 @@ export function MyFilesMySecrets(props: Props) {
     {
         const onNavigate = useConstCallback<
             Param0<typeof explorersThunks["notifyThatUserIsWatching"]>["onNavigate"]
-        >(({ directoryPath }) =>
+        >(({ directoryPath, doRestoreOpenedFile }) =>
             routes[route.name]({
-                ...route.params,
                 "path": directoryPath,
-                ...(explorerType !== "secrets"
+                ...(explorerType !== "secrets" || !doRestoreOpenedFile
                     ? {}
                     : { "openFile": secretEditorState?.basename }),
             }).replace(),
