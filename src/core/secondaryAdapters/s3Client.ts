@@ -44,8 +44,6 @@ export async function createS3Client(
     const { url, region, keycloakParams, amazon, durationSeconds, createAwsBucket } =
         params;
 
-    console.log(keycloakParams);
-
     const { host, port = 443 } = parseUrl(params.url);
 
     const oidcClient = await createKeycloakOidcClient(keycloakParams);
