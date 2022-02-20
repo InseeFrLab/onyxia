@@ -278,7 +278,12 @@ export function MyFilesMySecrets(props: Props) {
         }),
     );
 
-    if (cwdVue === undefined) {
+    if (
+        cwdVue === undefined ||
+        //NOTE: This test is just so we dont have flickering when we come back to an opened file
+        //it works without it.
+        (secretEditorState !== null && secretEditorState.secretWithMetadata === undefined)
+    ) {
         return null;
     }
 
