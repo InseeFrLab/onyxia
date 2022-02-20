@@ -24,6 +24,7 @@ import type { RootState } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import type { Param0 } from "tsafe";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -308,7 +309,12 @@ const privateThunks = {
                         event.sliceName === "projectSelection" &&
                         event.actionName === "projectChanged" &&
                         getState().explorers[explorerType]["~internal"].isUserWatching
-                            ? [undefined]
+                            ? [
+                                  {
+                                      "directNavigationDirectoryPath": undefined,
+                                      "isProjectChanged": true,
+                                  },
+                              ]
                             : null,
                     )
                     .attach(
@@ -320,11 +326,18 @@ const privateThunks = {
                     event.actionName === "isUserWatchingChanged" &&
                     event.payload.explorerType === explorerType &&
                     event.payload.isUserWatching
-                        ? [event.payload.directNavigationDirectoryPath]
+                        ? [
+                              {
+                                  "directNavigationDirectoryPath":
+                                      event.payload.directNavigationDirectoryPath,
+                                  "isProjectChanged": false,
+                              },
+                          ]
                         : null,
                 ),
-            ]).attach(directNavigationDirectoryPath =>
+            ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
                 getSliceContexts(extraArg)[explorerType].onNavigate?.({
+                    "doRestoreOpenedFile": !isProjectChanged,
                     "directoryPath": (() => {
                         if (directNavigationDirectoryPath !== undefined) {
                             return directNavigationDirectoryPath;
@@ -500,7 +513,10 @@ export const thunks = {
         (params: {
             explorerType: "s3" | "secrets";
             directNavigationDirectoryPath: string | undefined;
-            onNavigate: (params: { directoryPath: string }) => void;
+            onNavigate: (params: {
+                directoryPath: string;
+                doRestoreOpenedFile: boolean;
+            }) => void;
         }): ThunkAction<void> =>
         (...args) => {
             const { explorerType, directNavigationDirectoryPath, onNavigate } = params;
@@ -835,7 +851,7 @@ namespace SliceContexts {
     export type Common<loggedApi> = {
         loggedApi: loggedApi;
         apiLogs: ApiLogs;
-        onNavigate?: (params: { directoryPath: string }) => void;
+        onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
         isLazilyInitialized: boolean;
     };
 
