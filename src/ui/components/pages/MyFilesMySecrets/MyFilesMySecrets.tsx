@@ -45,18 +45,49 @@ export function MyFilesMySecrets(props: Props) {
 
     const cwdVue = useSelector(selectors.explorers.cwdIconsVue).cwdIconsVue[explorerType];
 
-    const { explorersThunks } = useThunks();
+    const secretEditorState = useSelector(state => state.secretsEditor);
+
+    const { explorersThunks, secretsEditorThunks } = useThunks();
+
+    {
+        const onNavigate = useConstCallback<
+            Param0<typeof explorersThunks["notifyThatUserIsWatching"]>["onNavigate"]
+        >(({ directoryPath }) =>
+            routes[route.name]({
+                ...route.params,
+                "path": directoryPath,
+                ...(explorerType !== "secrets"
+                    ? {}
+                    : { "openFile": secretEditorState?.basename }),
+            }).replace(),
+        );
+
+        useEffect(() => {
+            explorersThunks.notifyThatUserIsWatching({
+                explorerType,
+                "directNavigationDirectoryPath": route.params.path,
+                onNavigate,
+            });
+
+            return () =>
+                explorersThunks.notifyThatUserIsNoLongerWatching({ explorerType });
+        }, [explorerType, route.name]);
+    }
 
     useEffect(() => {
-        explorersThunks.notifyThatUserIsWatching({
-            explorerType,
-            "directNavigationDirectoryPath": route.params.path,
-            "onNavigate": ({ directoryPath }) =>
-                routes[route.name]({ ...route.params, "path": directoryPath }).replace(),
-        });
+        if (explorerType !== "secrets" || route.params.path === undefined) {
+            return;
+        }
 
-        return () => explorersThunks.notifyThatUserIsNoLongerWatching({ explorerType });
-    }, [explorerType, route.name]);
+        if (route.params.openFile === undefined) {
+            secretsEditorThunks.closeSecret();
+        } else {
+            secretsEditorThunks.openSecret({
+                "directoryPath": route.params.path,
+                "basename": route.params.openFile,
+            });
+        }
+    }, [explorerType, route.params.path, route.params.openFile]);
 
     useEffect(() => {
         if (route.params.path === undefined) {
@@ -213,21 +244,19 @@ export function MyFilesMySecrets(props: Props) {
 
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
-    >(({ basename }) =>
-        routes.mySecretsDev({ ...route.params, "openFile": basename }).replace(),
-    );
+    >(({ basename }) => {
+        routes[route.name]({ ...route.params, "openFile": basename }).replace();
+    });
 
     const onCloseFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: true }>["onCloseFile"]
     >(() =>
-        routes
-            .mySecretsDev(
-                (() => {
-                    const { openFile, ...rest } = route.params;
-                    return rest;
-                })(),
-            )
-            .replace(),
+        routes[route.name](
+            (() => {
+                const { openFile, ...rest } = route.params;
+                return rest;
+            })(),
+        ).replace(),
     );
 
     if (cwdVue === undefined) {
@@ -293,20 +322,31 @@ export function MyFilesMySecrets(props: Props) {
                 pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 {...(() => {
-                    const { openFile } = route.params;
+                    switch (explorerType) {
+                        case "s3":
+                            return {
+                                "isFileOpen": false as const,
+                                onOpenFile,
+                            };
+                        case "secrets": {
+                            if (secretEditorState?.secretWithMetadata === undefined) {
+                                return {
+                                    "isFileOpen": false as const,
+                                    onOpenFile,
+                                };
+                            }
 
-                    return openFile === undefined
-                        ? {
-                              "isFileOpen": false as const,
-                              onOpenFile,
-                          }
-                        : {
-                              "isFileOpen": true as const,
-                              "openFileTime": Date.now(),
-                              "openFileNode": <h1>TODO: view of {openFile}</h1>,
-                              "openFileBasename": openFile,
-                              onCloseFile,
-                          };
+                            return {
+                                "isFileOpen": true as const,
+                                "openFileTime": new Date(
+                                    secretEditorState.secretWithMetadata.metadata.created_time,
+                                ).getTime(),
+                                "openFileNode": <h1>TODO: Mount the view</h1>,
+                                "openFileBasename": secretEditorState.basename,
+                                onCloseFile,
+                            };
+                        }
+                    }
                 })()}
             />
         </div>

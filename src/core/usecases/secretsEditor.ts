@@ -1,29 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction, ThunksExtraArgument } from "../setup";
-import type {
-    SecretWithMetadata,
-    SecretsManagerClient,
-    Secret,
-} from "core/ports/SecretsManagerClient";
+import type { ThunkAction } from "../setup";
+import type { SecretWithMetadata } from "core/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
-import {
-    basename as pathBasename,
-    join as pathJoin,
-    dirname as pathDirname,
-    relative as pathRelative,
-} from "path";
-import { crawlFactory } from "core/tools/crawl";
+import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
-import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
-import { logApi } from "core/tools/apiLogger";
-import type { ApiLogs } from "core/tools/apiLogger";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 
 export type SecretsEditorState = {
-    dirPath: string;
+    directoryPath: string;
     basename: string;
     /** undefined when is being opened */
     secretWithMetadata: SecretWithMetadata | undefined;
@@ -69,14 +55,14 @@ export const { name, reducer, actions } = createSlice({
             {
                 payload,
             }: PayloadAction<{
-                dirPath: string;
+                directoryPath: string;
                 basename: string;
             }>,
         ) => {
-            const { basename, dirPath } = payload;
+            const { basename, directoryPath } = payload;
 
             return id<SecretsEditorState>({
-                dirPath,
+                directoryPath,
                 basename,
                 "secretWithMetadata": undefined,
                 "hiddenKeys": [],
@@ -190,6 +176,7 @@ export const { name, reducer, actions } = createSlice({
 
             state.isBeingUpdated = false;
         },
+        "closeSecret": () => null,
     },
 });
 
@@ -198,32 +185,20 @@ export const thunks = {
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
      */
     "openSecret":
-        (params: { dirPath: string; basename: string }): ThunkAction =>
+        (params: { directoryPath: string; basename: string }): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch] = args;
 
-            const { dirPath, basename } = params;
+            const { directoryPath, basename } = params;
 
             //TODO: Update state to say that we are opening a file.
-            dispatch(actions.openStarted({ dirPath, basename }));
+            dispatch(actions.openStarted({ directoryPath, basename }));
 
-            //const path = pathJoin(dirPath, basename);
+            const path = pathJoin(directoryPath, basename);
 
-            //const { loggedApi } = dispatch(explorersThunks.getLoggedSecretsApis());
+            const { loggedApi } = dispatch(explorersThunks.getLoggedSecretsApis());
 
-            const secretWithMetadata = await secretsManagerClientProxy
-                .get({ "path": secretPath })
-                .catch((error: Error) => error);
-
-            if (secretWithMetadata instanceof Error) {
-                dispatch(
-                    actions.errorOcurred({
-                        "errorMessage": secretWithMetadata.message,
-                    }),
-                );
-
-                return;
-            }
+            const secretWithMetadata = await loggedApi.get({ path });
 
             const { secret } = secretWithMetadata;
 
@@ -259,24 +234,22 @@ export const thunks = {
             keysOrdering.forEach(key => (orderedSecret[key] = secret[key]));
 
             dispatch(
-                actions.navigationTowardSecretSuccess({
+                actions.openCompleted({
                     "secretWithMetadata": {
                         "metadata": secretWithMetadata.metadata,
                         "secret": orderedSecret,
                     },
-                    "currentPath": secretPath,
                     hiddenKeys,
                 }),
             );
         },
-
+    "closeSecret": (): ThunkAction<void> => dispatch => dispatch(actions.closeSecret()),
     "editCurrentlyShownSecret":
         (params: EditSecretParams): ThunkAction =>
         async (...args) => {
-            const [dispatch, , extraArg] = args;
+            const [dispatch] = args;
 
-            const { secretsManagerClientProxy } =
-                augmentedClientBySoreInst.get(extraArg)!;
+            const { loggedApi } = dispatch(explorersThunks.getLoggedSecretsApis());
 
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
@@ -337,33 +310,24 @@ export const thunks = {
 
             dispatch(actions.editSecretStarted(params));
 
-            const error = await secretsManagerClientProxy
-                .put(
-                    (() => {
-                        const { path, secret, hiddenKeys } =
-                            getSecretCurrentPathAndHiddenKeys();
+            await loggedApi.put(
+                (() => {
+                    const { path, secret, hiddenKeys } =
+                        getSecretCurrentPathAndHiddenKeys();
 
-                        return {
-                            path,
-                            "secret": {
-                                ...secret,
-                                [extraKey]: id<ExtraValue>({
-                                    hiddenKeys,
-                                    "keysOrdering": Object.keys(secret),
-                                }),
-                            },
-                        };
-                    })(),
-                )
-                .then(
-                    () => undefined,
-                    (error: Error) => error,
-                );
-
-            dispatch(
-                error !== undefined
-                    ? actions.errorOcurred({ "errorMessage": error.message })
-                    : actions.editSecretCompleted(),
+                    return {
+                        path,
+                        "secret": {
+                            ...secret,
+                            [extraKey]: id<ExtraValue>({
+                                hiddenKeys,
+                                "keysOrdering": Object.keys(secret),
+                            }),
+                        },
+                    };
+                })(),
             );
+
+            dispatch(actions.editSecretCompleted());
         },
 };
