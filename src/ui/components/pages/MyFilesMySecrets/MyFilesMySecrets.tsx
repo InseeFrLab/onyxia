@@ -378,6 +378,7 @@ export function MyFilesMySecrets(props: Props) {
                             const { secretWithMetadata } = secretEditorState;
 
                             if (secretWithMetadata === undefined) {
+                                console.log("boom");
                                 return {
                                     "isFileOpen": true as const,
                                     "openFileTime": undefined,
