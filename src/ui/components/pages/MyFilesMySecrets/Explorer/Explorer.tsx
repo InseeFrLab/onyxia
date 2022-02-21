@@ -78,7 +78,11 @@ export type ExplorerProps = {
     | {
           isFileOpen: true;
           openFileBasename: string;
-          openFileTime: number;
+          /** Undefined when file is loading
+           * TODO: Add a new state when file is opening, onClose and onRefresh should
+           * not be clickable.
+           */
+          openFileTime: number | undefined;
           openFileNode: ReactNode;
           onCloseFile: () => void;
           onRefreshOpenFile: () => void;
@@ -304,9 +308,12 @@ export const Explorer = memo((props: ExplorerProps) => {
     const { formattedDate } = (function useClosure() {
         const { lng } = useLng();
 
-        const formattedDate = !props.isFileOpen
-            ? undefined
-            : getFormattedDate({ "time": props.openFileTime, lng });
+        const formattedDate = !props.isFileOpen ? undefined : props.openFileTime ===
+          undefined ? (
+            <>&nbsp;</>
+        ) : (
+            getFormattedDate({ "time": props.openFileTime, lng })
+        );
 
         return { formattedDate };
     })();
@@ -425,7 +432,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                     )}
                 >
                     {props.isFileOpen ? (
-                        <Card>{props.openFileNode}</Card>
+                        props.openFileNode === null ? null : (
+                            <Card>{props.openFileNode}</Card>
+                        )
                     ) : (
                         <ExplorerItems
                             explorerType={explorerType}

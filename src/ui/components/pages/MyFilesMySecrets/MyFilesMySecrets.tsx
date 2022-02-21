@@ -298,10 +298,7 @@ export function MyFilesMySecrets(props: Props) {
         }),
     );
 
-    if (
-        cwdVue === undefined ||
-        (secretEditorState !== null && secretEditorState.secretWithMetadata === undefined)
-    ) {
+    if (cwdVue === undefined) {
         return null;
     }
 
@@ -378,13 +375,23 @@ export function MyFilesMySecrets(props: Props) {
                                 };
                             }
 
-                            //NOTE: It can't be the case, the component would have returned null.
-                            assert(secretEditorState.secretWithMetadata !== undefined);
+                            const { secretWithMetadata } = secretEditorState;
+
+                            if (secretWithMetadata === undefined) {
+                                return {
+                                    "isFileOpen": true as const,
+                                    "openFileTime": undefined,
+                                    "openFileBasename": secretEditorState.basename,
+                                    "onCloseFile": () => {},
+                                    "onRefreshOpenFile": () => {},
+                                    "openFileNode": null,
+                                };
+                            }
 
                             return {
                                 "isFileOpen": true as const,
                                 "openFileTime": new Date(
-                                    secretEditorState.secretWithMetadata.metadata.created_time,
+                                    secretWithMetadata.metadata.created_time,
                                 ).getTime(),
                                 "openFileBasename": secretEditorState.basename,
                                 onCloseFile,
@@ -393,9 +400,7 @@ export function MyFilesMySecrets(props: Props) {
                                     <MySecretsEditor
                                         onCopyPath={onMySecretEditorCopyPath}
                                         isBeingUpdated={secretEditorState.isBeingUpdated}
-                                        secretWithMetadata={
-                                            secretEditorState.secretWithMetadata
-                                        }
+                                        secretWithMetadata={secretWithMetadata}
                                         onEdit={onEdit}
                                         doDisplayUseInServiceDialog={
                                             doDisplayMySecretsUseInServiceDialog
