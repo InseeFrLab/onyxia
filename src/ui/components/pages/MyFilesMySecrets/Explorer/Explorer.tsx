@@ -81,6 +81,7 @@ export type ExplorerProps = {
           openFileTime: number;
           openFileNode: ReactNode;
           onCloseFile: () => void;
+          onRefreshOpenFile: () => void;
       }
     | {
           isFileOpen: false;
@@ -219,7 +220,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         switch (buttonId) {
             case "refresh":
                 if (props.isFileOpen) {
-                    alert("TODO");
+                    props.onRefreshOpenFile();
                 } else {
                     onRefresh();
                 }

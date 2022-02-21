@@ -262,6 +262,23 @@ export function MyFilesMySecrets(props: Props) {
         ).replace(),
     );
 
+    const onRefreshOpenFile = useConstCallback<
+        Extract<ExplorerProps, { isFileOpen: true }>["onRefreshOpenFile"]
+    >(() => {
+        switch (explorerType) {
+            case "s3":
+                alert("TODO");
+                return;
+            case "secrets":
+                assert(secretEditorState !== null);
+                assert(secretEditorState.secretWithMetadata !== undefined);
+
+                const { basename, directoryPath } = secretEditorState;
+
+                secretsEditorThunks.openSecret({ directoryPath, basename });
+        }
+    });
+
     const onMySecretEditorCopyPath = useConstCallback(() =>
         evtButtonBarAction.post("TRIGGER COPY PATH"),
     );
@@ -369,9 +386,9 @@ export function MyFilesMySecrets(props: Props) {
                                 "openFileTime": new Date(
                                     secretEditorState.secretWithMetadata.metadata.created_time,
                                 ).getTime(),
-
                                 "openFileBasename": secretEditorState.basename,
                                 onCloseFile,
+                                onRefreshOpenFile,
                                 "openFileNode": (
                                     <MySecretsEditor
                                         onCopyPath={onMySecretEditorCopyPath}
