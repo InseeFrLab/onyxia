@@ -5,9 +5,8 @@ import { ExplorerButtonBar } from "ui/components/pages/MyFilesMySecrets/Explorer
 import { Explorer } from "ui/components/pages/MyFilesMySecrets/Explorer";
 import { ExplorerItems } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems";
 import { ExplorerItem } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem";
-import { MySecrets } from "ui/components/pages/MySecrets";
-import { MySecretsEditor } from "ui/components/pages/MySecrets/MySecretsEditor";
-import { MySecretsEditorRow } from "ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow";
+import { MySecretsEditor } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor";
+import { MySecretsEditorRow } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow";
 import { Header } from "ui/components/shared/Header";
 import { App } from "ui/components/App/App";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
@@ -51,7 +50,6 @@ type ToTranslations<S extends Scheme> = {
 
 // prettier-ignore
 const reflectedI18nSchemes = {
-    [symToStr({ MySecrets })]: Reflect<MySecrets.I18nScheme>(),
     [symToStr({ ExplorerButtonBar })]: Reflect<ExplorerButtonBar.I18nScheme>(),
     [symToStr({ Explorer })]: Reflect<Explorer.I18nScheme>(),
     [symToStr({ ExplorerItem })]: Reflect<ExplorerItem.I18nScheme>(),
@@ -232,13 +230,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "form not filled properly yet":
                 "Please make sure the form is properly filled out",
             "must respect the pattern": "Must respect the pattern",
-        },
-        "MySecrets": {
-            ...common.en,
-            "page title": "My Secrets",
-            "what this page is used for": `Here can be defined variables that will be accessible in you services under the form of environnement variable.`,
-            "to learn more": "To learn more about secrets management,",
-            "read our documentation": "read our documentation.",
         },
         "MyFilesMySecrets": {
             "page title - my files": "My Files",
@@ -566,13 +557,6 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "form not filled properly yet":
                 "Veuillez vérifier que vous avez bien rempli le formulaire",
             "must respect the pattern": "Dois respecter le format",
-        },
-        "MySecrets": {
-            ...common.fr,
-            "page title": "Mes secrets",
-            "what this page is used for": `Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.`,
-            "to learn more": "Pour en savoir plus sur l'utilisation de secrets,",
-            "read our documentation": "lisez notre documentation.",
         },
         "MyFilesMySecrets": {
             "page title - my files": "Mes fichiers",

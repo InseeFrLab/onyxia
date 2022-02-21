@@ -29,9 +29,9 @@ import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { thunks as secretExplorerThunks } from "./secretExplorer";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import { getCreateS3ClientParams } from "../secondaryAdapters/s3Client";
+import { interUsecasesThunks as explorersThunks } from "./explorers";
 
 export type FormField =
     | FormField.Boolean
@@ -1077,7 +1077,9 @@ export const thunks = {
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": secretsManagerClientConfig.engine,
                         "VAULT_TOP_DIR": dispatch(
-                            secretExplorerThunks.getProjectHomePath(),
+                            explorersThunks.getProjectHomePath({
+                                "explorerType": "secrets",
+                            }),
                         ),
                     };
                 })(),

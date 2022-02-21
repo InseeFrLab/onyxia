@@ -15,7 +15,6 @@ import * as projectSelectionUseCase from "./usecases/projectSelection";
 import * as publicIpUseCase from "./usecases/publicIp";
 import * as restorablePackageConfigsUseCase from "./usecases/restorablePackageConfigs";
 import * as runningServiceUseCase from "./usecases/runningService";
-import * as secretExplorerUseCase from "./usecases/secretExplorer";
 import * as userAuthenticationUseCase from "./usecases/userAuthentication";
 import * as userConfigsUseCase from "./usecases/userConfigs";
 import * as secretsEditorUseCase from "./usecases/secretsEditor";
@@ -250,7 +249,6 @@ export const usecases = [
     publicIpUseCase,
     restorablePackageConfigsUseCase,
     runningServiceUseCase,
-    secretExplorerUseCase,
     userAuthenticationUseCase,
     userConfigsUseCase,
     secretsEditorUseCase,
@@ -386,10 +384,6 @@ export async function createStore(params: CreateStoreParams) {
     });
 
     dStoreInstance.resolve(store);
-
-    if (oidcClient.isUserLoggedIn) {
-        store.dispatch(secretExplorerUseCase.privateThunks.initialize());
-    }
 
     await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
     if (oidcClient.isUserLoggedIn) {

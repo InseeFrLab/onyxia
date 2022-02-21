@@ -9,7 +9,6 @@ import { makeStyles } from "ui/theme";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useSelector, useThunks } from "ui/coreApi";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { MySecrets } from "ui/components/pages/MySecrets";
 import { useRoute, routes } from "ui/routes";
 import { Home } from "ui/components/pages/Home";
 import { assert } from "tsafe/assert";
@@ -87,8 +86,7 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const { userAuthenticationThunks, secretExplorerThunks, explorersThunks } =
-        useThunks();
+    const { userAuthenticationThunks, explorersThunks } = useThunks();
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
@@ -112,6 +110,7 @@ export const App = memo((props: Props) => {
 
     const { lng } = useLng();
 
+    //TODO: The LefBar types assertion is broken, see what is up.
     const leftBarItems = useMemo(
         () =>
             ({
@@ -141,8 +140,8 @@ export const App = memo((props: Props) => {
                     "link": routes.myServices().link,
                     "hasDividerBelow": true,
                 },
-                ...(!secretExplorerThunks.getIsEnabled()
-                    ? {}
+                ...(!explorersThunks.getIsEnabled({ "explorerType": "secrets" })
+                    ? ({} as never)
                     : {
                           "mySecrets": {
                               "iconId": "secrets",
@@ -151,7 +150,7 @@ export const App = memo((props: Props) => {
                           } as const,
                       }),
                 ...(!explorersThunks.getIsEnabled({ "explorerType": "s3" })
-                    ? {}
+                    ? ({} as never)
                     : {
                           "myFiles": {
                               "iconId": "files",
@@ -192,16 +191,6 @@ export const App = memo((props: Props) => {
                     }
 
                     return {
-                        "mySecretsDev": {
-                            "iconId": "secrets",
-                            "label": t("mySecrets") + " dev",
-                            "link": routes.mySecretsDev().link,
-                            "availability": explorersThunks.getIsEnabled({
-                                "explorerType": "secrets",
-                            })
-                                ? "available"
-                                : "greyed",
-                        },
                         "myFilesDev": {
                             "iconId": "files",
                             "label": t("myFiles") + " dev",
@@ -424,19 +413,6 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
     }
 
     {
-        const Page = MySecrets;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
         const Page = Account;
 
         if (Page.routeGroup.has(route)) {
@@ -579,10 +555,8 @@ function useProjectsSlice() {
                     case "account":
                     case "myServices":
                     case "myFilesDev":
-                    case "mySecretsDev":
-                        return undefined;
                     case "mySecrets":
-                        return () => (window.location.href = routes.mySecrets().href);
+                        return undefined;
                     default:
                         return () => window.location.reload();
                 }

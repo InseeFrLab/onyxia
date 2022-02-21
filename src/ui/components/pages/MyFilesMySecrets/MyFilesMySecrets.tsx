@@ -18,7 +18,7 @@ import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor, Props as MySecretsEditorProps } from "./MySecretsEditor";
 
-MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecretsDev]);
+MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
 type PageRoute = Route<typeof MyFilesMySecrets.routeGroup>;
 
@@ -39,7 +39,7 @@ export function MyFilesMySecrets(props: Props) {
         switch (route.name) {
             case "myFilesDev":
                 return "s3";
-            case "mySecretsDev":
+            case "mySecrets":
                 return "secrets";
         }
     }, [route.name]);
@@ -378,7 +378,6 @@ export function MyFilesMySecrets(props: Props) {
                             const { secretWithMetadata } = secretEditorState;
 
                             if (secretWithMetadata === undefined) {
-                                console.log("boom");
                                 return {
                                     "isFileOpen": true as const,
                                     "openFileTime": undefined,
