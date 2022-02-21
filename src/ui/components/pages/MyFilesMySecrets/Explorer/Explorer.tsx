@@ -303,6 +303,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const { classes, cx, css, theme } = useStyles({
         ...props,
         apiLogBarTop,
+        "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null,
     });
 
     const { formattedDate } = (function useClosure() {
@@ -432,9 +433,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                     )}
                 >
                     {props.isFileOpen ? (
-                        props.openFileNode === null ? null : (
-                            <Card>{props.openFileNode}</Card>
-                        )
+                        <Card className={classes.openFile}>{props.openFileNode}</Card>
                     ) : (
                         <ExplorerItems
                             explorerType={explorerType}
@@ -525,28 +524,36 @@ export declare namespace Explorer {
     };
 }
 
-const useStyles = makeStyles<{ apiLogBarTop: number }>({ "name": { Explorer } })(
-    (theme, { apiLogBarTop }) => ({
-        "root": {
-            "position": "relative",
-            "display": "flex",
-            "flexDirection": "column",
-        },
-        "apiLogBar": {
-            "position": "absolute",
-            "right": 0,
-            "width": "40%",
-            "top": apiLogBarTop,
-            "zIndex": 1,
-            "opacity": apiLogBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear",
-        },
-        "breadcrump": {
-            "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4),
-        },
-    }),
-);
+const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean }>({
+    "name": { Explorer },
+})((theme, { apiLogBarTop, isOpenFileNodeNull }) => ({
+    "root": {
+        "position": "relative",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "apiLogBar": {
+        "position": "absolute",
+        "right": 0,
+        "width": "40%",
+        "top": apiLogBarTop,
+        "zIndex": 1,
+        "opacity": apiLogBarTop === 0 ? 0 : 1,
+        "transition": "opacity 750ms linear",
+    },
+    "openFile": (() => {
+        const opacity = isOpenFileNodeNull ? 0 : 1;
+
+        return {
+            opacity,
+            "transition": opacity === 0 ? undefined : "opacity 500ms linear",
+        };
+    })(),
+    "breadcrump": {
+        "marginTop": theme.spacing(3),
+        "marginBottom": theme.spacing(4),
+    },
+}));
 
 function useApiLogsBarPositioning() {
     const {
