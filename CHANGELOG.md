@@ -1,3 +1,28 @@
+## **0.44.0** (2022-02-21)  
+  
+- Add video of the new explorer  
+- Remove legacy secret explorer  
+- Opacity transition for displaying file  
+- Consistent naming convention for ApiLogBar  
+- Do not refresh portion of the ui that dosen't need to  
+- Feature refresh opened secret  
+- Fix secret editor  
+- Fix restore openend file from url  
+- Unconsequential refactor  
+- Prevent flickering when coming back to an opened file  
+- Restore the secret editor  
+- Hot swiping of project when file is opened  
+- Connect secret editor  
+- Do not display directory header on level 0  
+- Copy the correct portion of the path when 'use in service'  
+- Hardcode path depth to 1  
+- Fix breadcrumb navigation  
+- Remove console.log  
+- Enable restore opened file from url  
+- Fix bugs when opening file in the explorer  
+- Rename path -> directoryPath to reduce confusion  
+- Implement mechanism for opening file in new explorer    
+  
 ### **0.43.7** (2022-02-19)  
   
 - Re arange the meta tags    
