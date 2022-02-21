@@ -297,12 +297,12 @@ export const Explorer = memo((props: ExplorerProps) => {
         [evtAction],
     );
 
-    const { rootRef, buttonBarRef, cmdTranslationTop, cmdTranslationMaxHeight } =
+    const { rootRef, buttonBarRef, apiLogBarTop, apiLogBarMaxHeight } =
         useApiLogsBarPositioning();
 
     const { classes, cx, css, theme } = useStyles({
         ...props,
-        cmdTranslationTop,
+        apiLogBarTop,
     });
 
     const { formattedDate } = (function useClosure() {
@@ -384,9 +384,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                     />
                 </div>
                 <ApiLogsBar
-                    className={classes.cmdTranslation}
+                    className={classes.apiLogBar}
                     apiLogs={apiLogs}
-                    maxHeight={cmdTranslationMaxHeight}
+                    maxHeight={apiLogBarMaxHeight}
                 />
                 {(() => {
                     const title = props.isFileOpen
@@ -525,20 +525,20 @@ export declare namespace Explorer {
     };
 }
 
-const useStyles = makeStyles<{ cmdTranslationTop: number }>({ "name": { Explorer } })(
-    (theme, { cmdTranslationTop }) => ({
+const useStyles = makeStyles<{ apiLogBarTop: number }>({ "name": { Explorer } })(
+    (theme, { apiLogBarTop }) => ({
         "root": {
             "position": "relative",
             "display": "flex",
             "flexDirection": "column",
         },
-        "cmdTranslation": {
+        "apiLogBar": {
             "position": "absolute",
             "right": 0,
             "width": "40%",
-            "top": cmdTranslationTop,
+            "top": apiLogBarTop,
             "zIndex": 1,
-            "opacity": cmdTranslationTop === 0 ? 0 : 1,
+            "opacity": apiLogBarTop === 0 ? 0 : 1,
             "transition": "opacity 750ms linear",
         },
         "breadcrump": {
@@ -560,20 +560,20 @@ function useApiLogsBarPositioning() {
         ref: buttonBarRef,
     } = useDomRect();
 
-    const [cmdTranslationTop, setCmdTranslationTop] = useState<number>(0);
+    const [apiLogBarTop, setApiLogBarTop] = useState<number>(0);
 
-    const [cmdTranslationMaxHeight, setCmdTranslationMaxHeight] = useState<number>(0);
+    const [apiLogBarMaxHeight, setApiLogBarMaxHeight] = useState<number>(0);
 
     useEffect(() => {
-        setCmdTranslationTop(buttonBarHeight);
+        setApiLogBarTop(buttonBarHeight);
 
-        setCmdTranslationMaxHeight(rootBottom - buttonBarBottom - 30);
+        setApiLogBarMaxHeight(rootBottom - buttonBarBottom - 30);
     }, [buttonBarHeight, buttonBarBottom, rootBottom]);
 
     return {
         rootRef,
         buttonBarRef,
-        cmdTranslationTop,
-        cmdTranslationMaxHeight,
+        apiLogBarTop,
+        apiLogBarMaxHeight,
     };
 }
