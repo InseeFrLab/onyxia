@@ -343,20 +343,9 @@ const privateThunks = {
                             return directNavigationDirectoryPath;
                         }
 
-                        const defaultDirectoryPath =
-                            "/" +
-                            (() => {
-                                const project = projectSelectionSelectors.selectedProject(
-                                    getState(),
-                                );
-
-                                switch (explorerType) {
-                                    case "s3":
-                                        return project.bucket;
-                                    case "secrets":
-                                        return project.vaultTopDir;
-                                }
-                            })();
+                        const defaultDirectoryPath = dispatch(
+                            interUsecasesThunks.getProjectHomePath({ explorerType }),
+                        );
 
                         const currentDirectoryPath =
                             getState().explorers[explorerType].directoryPath;
@@ -504,6 +493,27 @@ export const interUsecasesThunks = {
                                 ongoingOperation.previousBasename)) &&
                     pathRelative(event.payload.directoryPath, directoryPath) === "",
                 ctx,
+            );
+        },
+    "getProjectHomePath":
+        (params: { explorerType: "s3" | "secrets" }): ThunkAction<string> =>
+        (...args) => {
+            const { explorerType } = params;
+
+            const [, getState] = args;
+
+            return (
+                "/" +
+                (() => {
+                    const project = projectSelectionSelectors.selectedProject(getState());
+
+                    switch (explorerType) {
+                        case "s3":
+                            return project.bucket;
+                        case "secrets":
+                            return project.vaultTopDir;
+                    }
+                })()
             );
         },
 };

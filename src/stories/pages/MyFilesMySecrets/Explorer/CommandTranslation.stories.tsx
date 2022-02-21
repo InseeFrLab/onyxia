@@ -2,15 +2,15 @@ import { css } from "tss-react/@emotion/css";
 import { useState, useEffect, useReducer } from "react";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
-import { CmdTranslation } from "ui/components/shared/Explorer/CmdTranslation";
-import type { Props } from "ui/components/shared/Explorer/CmdTranslation";
+import { ApiLogsBar } from "ui/components/pages/MyFilesMySecrets/Explorer/ApiLogsBar";
+import type { ApiLogsBarProps } from "ui/components/pages/MyFilesMySecrets/Explorer/ApiLogsBar";
 import { symToStr } from "tsafe/symToStr";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { id } from "tsafe/id";
 import { useEvt } from "evt/hooks/useEvt";
 
-const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
+const translationsEvents: UnpackEvt<ApiLogsBarProps["apiLogs"]["evt"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
@@ -97,7 +97,7 @@ const translationsEvents: UnpackEvt<Props["translations"]["evt"][]> = [
 ];
 
 function Component(
-    props: Omit<Props, "className" | "translations"> & {
+    props: Omit<ApiLogsBarProps, "className" | "apiLogs"> & {
         width: number;
         maxHeight: number;
         /** Toggle to fire a translation event */
@@ -115,30 +115,29 @@ function Component(
         incrementIndex();
     }, [tick]);
 
-    const [translations] = useState(() => ({
-        "evt": Evt.create<UnpackEvt<Props["translations"]["evt"]>>(),
-        "history": id<Props["translations"]["history"][number][]>([]),
+    const [apiLogs] = useState(() => ({
+        "evt": Evt.create<UnpackEvt<ApiLogsBarProps["apiLogs"]["evt"]>>(),
+        "history": id<ApiLogsBarProps["apiLogs"]["history"][number][]>([]),
     }));
 
     useEvt(
         ctx =>
-            translations.evt.attach(
+            apiLogs.evt.attach(
                 ({ type }) => type === "cmd",
                 ctx,
                 ({ cmdId, cmdOrResp }) => {
-                    translations.history.push({
+                    apiLogs.history.push({
                         cmdId,
                         "cmd": cmdOrResp,
                         "resp": undefined,
                     });
 
-                    translations.evt.attachOnce(
+                    apiLogs.evt.attachOnce(
                         translation => translation.cmdId === cmdId,
                         ctx,
                         ({ cmdOrResp }) =>
-                            (translations.history.find(
-                                entry => entry.cmdId === cmdId,
-                            )!.resp = cmdOrResp),
+                            (apiLogs.history.find(entry => entry.cmdId === cmdId)!.resp =
+                                cmdOrResp),
                     );
                 },
             ),
@@ -146,16 +145,16 @@ function Component(
     );
 
     useEffect(() => {
-        translations.evt.postAsyncOnceHandled(translationsEvents[index]);
+        apiLogs.evt.postAsyncOnceHandled(translationsEvents[index]);
     }, [index]);
 
     return (
-        <CmdTranslation
+        <ApiLogsBar
             className={css({
                 "border": "1px solid black",
                 width,
             })}
-            translations={translations}
+            apiLogs={apiLogs}
             maxHeight={maxHeight}
         />
     );
@@ -163,7 +162,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ CmdTranslation })]: Component },
+    "wrappedComponent": { [symToStr({ ApiLogsBar })]: Component },
 });
 
 export default {

@@ -1,8 +1,8 @@
 import { css } from "tss-react/@emotion/css";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "../sectionName";
-import { MySecrets } from "ui/components/pages/MySecrets";
-import type { Props } from "ui/components/pages/MySecrets";
+import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
+import type { Props } from "ui/components/pages/MyFilesMySecrets";
 import { symToStr } from "tsafe/symToStr";
 
 type StoryProps = {
@@ -16,7 +16,7 @@ function Component(
     const { width, height } = props;
 
     return (
-        <MySecrets
+        <MyFilesMySecrets
             route={null as any}
             className={css({
                 width,
@@ -29,7 +29,7 @@ function Component(
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "doUseLib": true,
-    "wrappedComponent": { [symToStr({ MySecrets })]: Component },
+    "wrappedComponent": { [symToStr({ MyFilesMySecrets })]: Component },
 });
 
 export default {

@@ -20,5 +20,8 @@
         "noFallthroughCasesInSwitch": true,
         "downlevelIteration": true
     },
-    "include": ["src"]
+    "include": [
+        "src",
+        "src/stories/pages/MyFilesMySecrets/Explorer/.Explorer.stories.tsx.disabled"
+    ]
 }

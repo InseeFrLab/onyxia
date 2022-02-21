@@ -69,18 +69,10 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             );
 
         return {
-            "mySecretsDev": buildExplorerRoute("my-secrets-dev"),
+            "mySecrets": buildExplorerRoute("my-secrets"),
             "myFilesDev": buildExplorerRoute("my-files-dev"),
         };
     })(),
-    //TODO: legacy
-    "mySecrets": defineRoute(
-        {
-            "secretOrDirectoryPath": param.path.trailing.optional.string,
-            "isFile": param.query.optional.boolean,
-        },
-        ({ secretOrDirectoryPath }) => `/my-secrets/${secretOrDirectoryPath}`,
-    ),
     //TODO: legacy
     ...(() => {
         const myBuckets = defineRoute("/mes-fichiers");
