@@ -35,6 +35,21 @@ const createStore_memo = memoize(
             }
         }
 
+        {
+            const { VAULT_URL } = env;
+
+            if (VAULT_URL !== "") {
+                const { OIDC_URL } = env;
+
+                assert(
+                    OIDC_URL !== "",
+                    `To use ${symToStr({ VAULT_URL })} you must provide ${symToStr({
+                        OIDC_URL,
+                    })}`,
+                );
+            }
+        }
+
         const { highlightedPackages } = (() => {
             const { HIGHLIGHTED_PACKAGES } = env;
 
