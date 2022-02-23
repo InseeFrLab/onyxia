@@ -970,7 +970,7 @@ export const thunks = {
             const isDefaultProject =
                 getState().projectSelection.projects[0].id === project.id;
 
-            if (regionS3 === undefined) {
+            if (regionS3.type === "disabled") {
                 return {
                     "AWS_ACCESS_KEY_ID": "",
                     "AWS_BUCKET_NAME": "",

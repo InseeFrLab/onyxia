@@ -202,16 +202,14 @@ assert<
                   kubernetesClusterDomain: string;
                   initScriptUrl: string;
                   s3:
-                      | ({
-                            defaultDurationSeconds: number | undefined;
-                            monitoringUrlPattern: string | undefined;
-                            keycloakParams:
-                                | {
-                                      url: string;
-                                      clientId: string | undefined;
-                                      realm: string | undefined;
-                                  }
-                                | undefined;
+                      | {
+                            defaultDurationSeconds?: number;
+                            monitoringUrlPattern?: string;
+                            keycloakParams?: {
+                                url: string;
+                                clientId: string | undefined;
+                                realm: string | undefined;
+                            };
                         } & (
                             | {
                                   type: "minio";
@@ -224,8 +222,10 @@ assert<
                                   roleARN: string; //"arn:aws:iam::873875581780:role/test";
                                   roleSessionName: string; //"onyxia";
                               }
-                        ))
-                      | undefined;
+                            | {
+                                  type: "disabled";
+                              }
+                        );
               }[];
           }
         | {
@@ -403,23 +403,7 @@ export async function createStore(params: CreateStoreParams) {
             deploymentRegionUseCase.selectors.selectedDeploymentRegion(store.getState());
 
         extraArgument.s3Client = await (async () => {
-            if (regionS3 === undefined) {
-                return createDummyS3Client();
-            }
-            if (
-                regionS3.keycloakParams === undefined &&
-                oidcClientConfig.implementation === "PHONY"
-            ) {
-                console.warn(
-                    [
-                        "We need oidc to connect to S3 but we didn't get any OIDC params",
-                        "neither from the onyxia-api (alongside regions[].data.S3) nor from the ",
-                        "onyxia-web environnement variable (OIDC_URL)",
-                        "If you want to disable S3, the API region should not include",
-                        "a data.S3 field.",
-                    ].join(" "),
-                );
-                //TODO: This should be an error
+            if (regionS3.type === "disabled") {
                 return createDummyS3Client();
             }
 

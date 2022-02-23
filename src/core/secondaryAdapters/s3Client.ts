@@ -332,7 +332,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
 };
 
 export function getCreateS3ClientParams(params: {
-    regionS3: DeploymentRegion.S3;
+    regionS3: Exclude<DeploymentRegion.S3, DeploymentRegion.S3.Disabled>;
     fallbackKeycloakParams:
         | {
               url: string;

@@ -157,6 +157,9 @@ export function createOfficialOnyxiaApiClient(params: {
                                       roleARN: string;
                                       roleSessionName: string;
                                   }
+                                | {
+                                      type: undefined;
+                                  }
                             );
                         };
                     }[];
@@ -175,15 +178,11 @@ export function createOfficialOnyxiaApiClient(params: {
                         "s3": (() => {
                             const { S3 } = region.data ?? {};
 
-                            if (S3 === undefined) {
-                                return undefined;
-                            }
-
                             const common: DeploymentRegion.S3.Common = {
-                                "monitoringUrlPattern": S3.monitoring?.URLPattern,
-                                "defaultDurationSeconds": S3.defaultDurationSeconds,
+                                "monitoringUrlPattern": S3?.monitoring?.URLPattern,
+                                "defaultDurationSeconds": S3?.defaultDurationSeconds,
                                 "keycloakParams":
-                                    S3.keycloakParams === undefined
+                                    S3?.keycloakParams === undefined
                                         ? undefined
                                         : {
                                               "url": S3.keycloakParams.URL,
@@ -193,8 +192,12 @@ export function createOfficialOnyxiaApiClient(params: {
                             };
 
                             return (() => {
-                                switch (S3.type) {
-                                    case undefined: //TODO: Remove once API updated
+                                switch (S3?.type) {
+                                    case undefined:
+                                        return id<DeploymentRegion.S3.Disabled>({
+                                            "type": "disabled",
+                                            ...common,
+                                        });
                                     case "minio":
                                         _s3url = S3.URL;
                                         return id<DeploymentRegion.S3.Minio>({
