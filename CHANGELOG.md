@@ -1,3 +1,8 @@
+### **0.44.1** (2022-02-23)  
+  
+- Gives warning when regions says s3 is enable without providing keycloak config and we don't have keycloak config to fallback to in the onyxia-web envs  
+- Give startup error if vault is defined but not oidc url    
+  
 ## **0.44.0** (2022-02-21)  
   
 - Add video of the new explorer  
