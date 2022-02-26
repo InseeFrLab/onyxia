@@ -1,3 +1,8 @@
+### **0.44.3** (2022-02-26)  
+  
+- Fix s3 navigation  
+- Update ci.yml    
+  
 ### **0.44.2** (2022-02-23)  
   
 - Fix starting without s3    
