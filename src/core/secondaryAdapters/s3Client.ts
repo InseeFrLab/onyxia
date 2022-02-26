@@ -260,7 +260,9 @@ export async function createS3Client(
 
                 return {
                     bucketName,
-                    "prefix": rest.join("/"),
+                    "prefix": [rest.join("/")].map(s =>
+                        s.endsWith("/") ? s : `${s}/`,
+                    )[0],
                 };
             })();
 
@@ -280,9 +282,11 @@ export async function createS3Client(
             stream.once("end", () => dOut.resolve(out));
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
-                    out.directories.push(bucketItem.prefix.replace(/\/+$/, ""));
+                    out.directories.push(
+                        bucketItem.prefix.replace(/\/+$/, "").replace(prefix, ""),
+                    );
                 } else {
-                    out.files.push(bucketItem.name);
+                    out.files.push(bucketItem.name.replace(prefix, ""));
                 }
             });
 
