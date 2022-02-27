@@ -90,12 +90,13 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     className={classes.editIcon}
                     ref={editButtonRef}
                     {...editLink}
+                    doOpenNewTabIfHref={false}
                     variant="secondary"
                 >
                     {t("edit")}
                 </Button>
             </div>
-            <Button {...launchLink} variant="secondary">
+            <Button {...launchLink} doOpenNewTabIfHref={false} variant="secondary">
                 {t("launch")}
             </Button>
             {isShortVariant && (
