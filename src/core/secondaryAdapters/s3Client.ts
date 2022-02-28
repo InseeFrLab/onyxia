@@ -375,7 +375,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
         },
         "uploadFile": {
             "buildCmd": ({ path }) => `# We upload a file to ${path}`,
-            "fmtResult": () => ``,
+            "fmtResult": () => `# File uploaded`,
         },
     },
 };
