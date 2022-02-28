@@ -251,7 +251,11 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                 case "down":
                     const keyProp = getKeyProp({ kind, basename });
 
-                    if (target === "text" && selectedItemKeyProp === keyProp) {
+                    if (
+                        explorerType !== "s3" &&
+                        target === "text" &&
+                        selectedItemKeyProp === keyProp
+                    ) {
                         await Evt.from(window, "mouseup").waitFor();
 
                         getEvtItemAction(keyProp).post("ENTER EDITING STATE");
