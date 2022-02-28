@@ -64,7 +64,7 @@ export type ExplorerProps = {
         newBasename: string;
     }) => void;
     onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
-    //NOTE: It can be a request to upload a file or crating a new secret
+    //NOTE: It can be a request to upload a file or creating a new secret
     onNewItem: (params: {
         kind: "file" | "directory";
         suggestedBasename: string;

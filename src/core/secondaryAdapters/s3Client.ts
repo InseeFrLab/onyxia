@@ -12,6 +12,7 @@ import memoize from "memoizee";
 import type { ApiLogger } from "core/tools/apiLogger";
 import { join as pathJoin } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
+import fileReaderStream from "filereader-stream";
 
 export type Params = {
     url: string;
@@ -207,6 +208,17 @@ export async function createS3Client(
         return { getMinioClient };
     })();
 
+    function bucketNameAndPrefixFromPath(params: { path: string }) {
+        const { path } = params;
+
+        const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
+
+        return {
+            bucketName,
+            "prefix": [rest.join("/")].map(s => (s.endsWith("/") ? s : `${s}/`))[0],
+        };
+    }
+
     const s3Client: S3Client = {
         "getToken": async ({ restrictToBucketName }) =>
             getNewlyRequestedOrCachedToken(restrictToBucketName),
@@ -255,16 +267,7 @@ export async function createS3Client(
             { "promise": true },
         ),
         "list": async ({ path }) => {
-            const { bucketName, prefix } = (() => {
-                const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
-
-                return {
-                    bucketName,
-                    "prefix": [rest.join("/")].map(s =>
-                        s.endsWith("/") ? s : `${s}/`,
-                    )[0],
-                };
-            })();
+            const { bucketName, prefix } = bucketNameAndPrefixFromPath({ path });
 
             await s3Client.createBucketIfNotExist(bucketName);
 
@@ -291,6 +294,44 @@ export async function createS3Client(
             });
 
             const dOut = new Deferred<typeof out>();
+
+            return dOut.pr;
+        },
+        "uploadFile": async ({ file, path, evtUploadPercent }) => {
+            const stream = fileReaderStream(file);
+
+            {
+                let chunkLengthSum = 0;
+
+                stream.on("data", (chunk: any) => {
+                    chunkLengthSum += chunk.length;
+
+                    const uploadPercent = ~~((chunkLengthSum / file.size) * 100);
+
+                    if (uploadPercent === 100) {
+                        return;
+                    }
+
+                    evtUploadPercent?.post({ uploadPercent });
+                });
+            }
+
+            const { bucketName, prefix } = bucketNameAndPrefixFromPath({ path });
+
+            const { minioClient } = await getMinioClient({
+                "restrictToBucketName": bucketName,
+            });
+
+            const dOut = new Deferred<void>();
+
+            minioClient.putObject(bucketName, prefix, stream, file.size, {}, err => {
+                if (!!err) {
+                    throw err;
+                }
+                evtUploadPercent?.post({ "uploadPercent": 100 });
+
+                dOut.resolve();
+            });
 
             return dOut.pr;
         },
@@ -331,6 +372,10 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
             "buildCmd": bucketName =>
                 `# We create the token ${bucketName} if it doesn't exist.`,
             "fmtResult": () => `# Done`,
+        },
+        "uploadFile": {
+            "buildCmd": ({ path }) => `# We upload a file to ${path}`,
+            "fmtResult": () => ``,
         },
     },
 };

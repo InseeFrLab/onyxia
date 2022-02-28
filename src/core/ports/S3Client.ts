@@ -1,4 +1,4 @@
-/** All path are supposed to start with the bucket name */
+/** All path are supposed to start with /<bucket_name> */
 export type S3Client = {
     getToken: (params: { restrictToBucketName: string | undefined }) => Promise<{
         accessKeyId: string;
@@ -16,4 +16,11 @@ export type S3Client = {
         directories: string[];
         files: string[];
     }>;
+
+    /** Completed when 100% uploaded */
+    uploadFile: (params: {
+        file: Blob;
+        path: string;
+        evtUploadPercent?: { post: (data: { uploadPercent: number }) => void };
+    }) => Promise<void>;
 };
