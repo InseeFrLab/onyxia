@@ -729,7 +729,14 @@ export const thunks = {
                 case "directory":
                     switch (params.explorerType) {
                         case "s3":
-                            alert("TODO");
+                            await sliceContexts[params.explorerType].loggedApi.uploadFile(
+                                {
+                                    "file": new Blob(["Test,Text"], {
+                                        "type": "text/csv",
+                                    }),
+                                    "path": pathJoin(path, ".keep"),
+                                },
+                            );
                             break;
                         case "secrets":
                             await sliceContexts[

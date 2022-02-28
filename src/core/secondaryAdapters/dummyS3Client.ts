@@ -16,5 +16,6 @@ export function createDummyS3Client(): S3Client {
                 "acquisitionTime": Date.now(),
             }),
         "createBucketIfNotExist": () => Promise.resolve(),
+        "uploadFile": () => Promise.resolve(),
     };
 }
