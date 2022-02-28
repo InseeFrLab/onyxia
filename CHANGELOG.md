@@ -1,3 +1,8 @@
+## **0.45.0** (2022-02-28)  
+  
+- Feature creating directory s3  
+- Fix bug opening in new tab    
+  
 ### **0.44.3** (2022-02-26)  
   
 - Fix s3 navigation  
