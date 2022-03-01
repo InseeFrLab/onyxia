@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Typography, Paper, Tooltip, Fab, Icon } from "@mui/material";
+import { Typography, Paper, Tooltip, Fab } from "@mui/material";
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "../app.scss";
 import "./myBuckets.scss";
@@ -93,7 +94,7 @@ const Bucket = ({
                             classes={{ root: "bouton" }}
                             onClick={() => window.open(monitoringUrl)}
                         >
-                            <Icon>equalizer</Icon>
+                            <EqualizerIcon>equalizer</EqualizerIcon>
                         </Fab>
                     </Tooltip>
                 )}
