@@ -1,3 +1,10 @@
+### **0.45.1** (2022-03-01)  
+  
+- Merge pull request #290 from alexisdondon/fab_icons
+
+adding icon on folder ui  
+- adding icon on folder ui    
+  
 ## **0.45.0** (2022-02-28)  
   
 - Feature creating directory s3  
