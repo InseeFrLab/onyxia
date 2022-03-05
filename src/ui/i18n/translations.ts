@@ -261,6 +261,11 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             "deletion dialog title": "Delete a {{deleteWhat}} ?",
             "deletion dialog body": `You are about to delete {{deleteWhat}}. 
             This action can't be reverted.`,
+            "already a directory with this name":
+                "There is already a directory with this name",
+            "can't be empty": "Can't be empty",
+            "create": "create",
+            "new directory": "New directory",
         },
         "ExplorerItems": {
             "empty directory": "This directory is empty",
@@ -592,6 +597,10 @@ export const resources = id<Record<SupportedLanguage, Translations>>({
             Vous êtes sur le point de supprimer un {{deleteWhat}}. 
             Cette action entraînera la perte potentielle des données liées à ce {{deleteWhat}}.
             `,
+            "already a directory with this name": "Il y a déjà un dossier avec ce nom",
+            "can't be empty": "Ne peut être vide",
+            "create": "Crée",
+            "new directory": "Nouveau dossier",
         },
         "ExplorerItems": {
             "empty directory": "Ce répertoire est vide",
