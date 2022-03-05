@@ -1,3 +1,10 @@
+## **0.46.0** (2022-03-05)  
+  
+- Bump version (changlog ignore)  
+- Create s3 directory dialog production ready  
+- Feat directory creation modal  
+- Update URL for Trainings page    
+  
 ### **0.45.1** (2022-03-01)  
   
 - Merge pull request #290 from alexisdondon/fab_icons
