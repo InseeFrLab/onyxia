@@ -1,4 +1,8 @@
-import { Paper, Icon, Fab } from "@mui/material";
+import { Paper, Fab } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PeopleIcon from "@mui/icons-material/People";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import LockIcon from "@mui/icons-material/Lock";
 
 const Toolbar = ({
     isInPublicDirectory,
@@ -16,7 +20,7 @@ const Toolbar = ({
                 title="supprimer les fichiers sélectionnés"
                 onClick={deleteFiles}
             >
-                <Icon fontSize="small">delete</Icon>
+                <DeleteIcon fontSize="small">delete</DeleteIcon>
             </Fab>
         ) : null}
         <Fab
@@ -25,7 +29,7 @@ const Toolbar = ({
             title="Créer un lien d'upload partenaire"
             onClick={createUploadLink}
         >
-            <Icon fontSize="small">people</Icon>
+            <PeopleIcon fontSize="small">people</PeopleIcon>
         </Fab>
         {isInPublicDirectory ? null : (
             <Fab
@@ -38,7 +42,11 @@ const Toolbar = ({
                 color={isPublicDirectory ? "secondary" : "primary"}
                 onClick={() => (isPublicDirectory ? lockDirectory() : unlockDirectory())}
             >
-                <Icon fontSize="small">{isPublicDirectory ? "lock" : "lock_open"}</Icon>
+                {isPublicDirectory ? (
+                    <LockIcon fontSize="small">lock</LockIcon>
+                ) : (
+                    <LockOpenIcon fontSize="small">lock_open</LockOpenIcon>
+                )}
             </Fab>
         )}
     </Paper>
