@@ -16,7 +16,7 @@ keycloakify/
 evt/
 cra-envs/
 tsafe/
-clean-redux/
+redux-clean-architecture/
 
 you must have cloned all the projects and run:
 yarn && yarn build 
