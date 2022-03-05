@@ -678,10 +678,14 @@ const { CreateS3DirectoryDialog } = (() => {
             },
         );
 
+        const [{ resolve }, setResolve] = useState<{ resolve: (() => void) | null }>({
+            "resolve": null,
+        });
+
         const onValueBeingTypedChange = useConstCallback<
             TextFieldProps["onValueBeingTypedChange"]
         >(({ value, isValidValue }) =>
-            onResolveFunctionChanged({
+            setResolve({
                 "resolve": isValidValue
                     ? () => {
                           resolveBasename(value);
@@ -690,6 +694,10 @@ const { CreateS3DirectoryDialog } = (() => {
                     : null,
             }),
         );
+
+        useEffect(() => {
+            onResolveFunctionChanged({ resolve });
+        }, [resolve]);
 
         const suggestedBasename = useMemo(
             () =>
@@ -705,6 +713,22 @@ const { CreateS3DirectoryDialog } = (() => {
             [directories, t],
         );
 
+        const evtAction = useConst(() =>
+            Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+        );
+
+        const onEnterKeyDown = useConstCallback<TextFieldProps["onEnterKeyDown"]>(
+            ({ preventDefaultAndStopPropagation }) => {
+                preventDefaultAndStopPropagation();
+                evtAction.post("TRIGGER SUBMIT");
+            },
+        );
+
+        const onSubmit = useConstCallback<TextFieldProps["onSubmit"]>(() => {
+            assert(resolve !== null);
+            resolve();
+        });
+
         return (
             <TextField
                 inputProps_autoFocus={true}
@@ -714,6 +738,9 @@ const { CreateS3DirectoryDialog } = (() => {
                 getIsValidValue={getIsValidValue}
                 onValueBeingTypedChange={onValueBeingTypedChange}
                 doOnlyValidateInputAfterFistFocusLost={false}
+                evtAction={evtAction}
+                onEnterKeyDown={onEnterKeyDown}
+                onSubmit={onSubmit}
             />
         );
     });
