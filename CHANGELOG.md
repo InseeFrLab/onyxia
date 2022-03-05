@@ -1,3 +1,7 @@
+### **0.46.1** (2022-03-05)  
+  
+- Improve the UX of the creating s3 directories    
+  
 ## **0.46.0** (2022-03-05)  
   
 - Bump version (changlog ignore)  
