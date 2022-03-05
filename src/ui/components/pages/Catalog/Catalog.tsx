@@ -10,7 +10,7 @@ import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
 import { useSelector, selectors } from "ui/coreApi";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
-import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper";
+import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
