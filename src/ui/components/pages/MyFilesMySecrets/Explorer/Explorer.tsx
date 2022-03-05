@@ -250,15 +250,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "create directory":
                 setCreateS3DirectoryDialogState({
-                    "suggestedBasename": generateUniqDefaultName({
-                        "names": directories,
-                        "buildName": buildNameFactory({
-                            "defaultName": t("untitled what", {
-                                "what": t("directory"),
-                            }),
-                            "separator": "_",
-                        }),
-                    }),
+                    directories,
                     "resolveBasename": basename => {
                         onNewItem({
                             "kind": "directory",
@@ -338,13 +330,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         | undefined
     >(undefined);
 
-    const [createS3DirectoryDialogState, setCreateS3DirectoryDialogState] = useState<
-        | {
-              suggestedBasename: string;
-              resolveBasename: (basename: string) => void;
-          }
-        | undefined
-    >(undefined);
+    const [createS3DirectoryDialogState, setCreateS3DirectoryDialogState] =
+        useState<CreateS3DirectoryDialogProps["state"]>(undefined);
 
     const onCreateS3DirectoryDialogClose = useConstCallback(() =>
         setCreateS3DirectoryDialogState(undefined),
@@ -544,6 +531,10 @@ export declare namespace Explorer {
         "deletion dialog title": { deleteWhat: string };
         "deletion dialog body": { deleteWhat: string };
         "do not display again": undefined;
+        "already a directory with this name": undefined;
+        "can't be empty": undefined;
+        "create": undefined;
+        "new directory": undefined;
     };
 }
 
@@ -608,34 +599,76 @@ function useApiLogsBarPositioning() {
     };
 }
 
+type CreateS3DirectoryDialogProps = {
+    state:
+        | {
+              directories: string[];
+              resolveBasename: (basename: string) => void;
+          }
+        | undefined;
+    onClose: () => void;
+};
+
 const { CreateS3DirectoryDialog } = (() => {
-    type Props = {
-        state:
-            | {
-                  suggestedBasename: string;
-                  resolveBasename: (basename: string) => void;
-              }
-            | undefined;
-        onClose: () => void;
-    };
+    const CreateS3DirectoryDialog = memo((props: CreateS3DirectoryDialogProps) => {
+        const { state, onClose } = props;
+
+        const evtResolve = useConst(() =>
+            Evt.create<UnpackEvt<ButtonsProps["evtResolve"]>>(null),
+        );
+
+        const onResolveFunctionChanged = useConstCallback<
+            BodyProps["onResolveFunctionChanged"]
+        >(({ resolve }) => (evtResolve.state = resolve));
+
+        const { t } = useTranslation({ Explorer });
+
+        return (
+            <Dialog
+                title={t("new directory")}
+                body={
+                    state && (
+                        <Body
+                            onClose={onClose}
+                            onResolveFunctionChanged={onResolveFunctionChanged}
+                            {...state}
+                        />
+                    )
+                }
+                isOpen={state !== undefined}
+                onClose={onClose}
+                buttons={<Buttons evtResolve={evtResolve} onClose={onClose} />}
+            />
+        );
+    });
 
     type BodyProps = {
-        suggestedBasename: string;
+        directories: string[];
+        onClose: CreateS3DirectoryDialogProps["onClose"];
         resolveBasename: (basename: string) => void;
         onResolveFunctionChanged: (params: { resolve: (() => void) | null }) => void;
     };
 
     const Body = memo((props: BodyProps) => {
-        const { suggestedBasename, resolveBasename, onResolveFunctionChanged } = props;
+        const { directories, onClose, resolveBasename, onResolveFunctionChanged } = props;
 
         const { classes } = useStyles();
+
+        const { t } = useTranslation({ Explorer });
 
         const getIsValidValue = useConstCallback<TextFieldProps["getIsValidValue"]>(
             text => {
                 if (text === "") {
                     return {
                         "isValidValue": false,
-                        "message": "Can't be empty",
+                        "message": t("can't be empty"),
+                    };
+                }
+
+                if (directories.includes(text)) {
+                    return {
+                        "isValidValue": false,
+                        "message": t("already a directory with this name"),
                     };
                 }
 
@@ -649,8 +682,27 @@ const { CreateS3DirectoryDialog } = (() => {
             TextFieldProps["onValueBeingTypedChange"]
         >(({ value, isValidValue }) =>
             onResolveFunctionChanged({
-                "resolve": isValidValue ? () => resolveBasename(value) : null,
+                "resolve": isValidValue
+                    ? () => {
+                          resolveBasename(value);
+                          onClose();
+                      }
+                    : null,
             }),
+        );
+
+        const suggestedBasename = useMemo(
+            () =>
+                generateUniqDefaultName({
+                    "names": directories,
+                    "buildName": buildNameFactory({
+                        "defaultName": t("untitled what", {
+                            "what": t("directory"),
+                        }),
+                        "separator": "_",
+                    }),
+                }),
+            [directories, t],
         );
 
         return (
@@ -667,7 +719,7 @@ const { CreateS3DirectoryDialog } = (() => {
     });
 
     type ButtonsProps = {
-        onClose: Props["onClose"];
+        onClose: CreateS3DirectoryDialogProps["onClose"];
         evtResolve: StatefulReadonlyEvt<(() => void) | null>;
     };
 
@@ -687,39 +739,9 @@ const { CreateS3DirectoryDialog } = (() => {
                     onClick={evtResolve.state ?? undefined}
                     disabled={evtResolve.state === null}
                 >
-                    Create
+                    {t("create")}
                 </Button>
             </>
-        );
-    });
-
-    const CreateS3DirectoryDialog = memo((props: Props) => {
-        const { state, onClose } = props;
-
-        const evtResolve = useConst(() =>
-            Evt.create<UnpackEvt<ButtonsProps["evtResolve"]>>(null),
-        );
-
-        const onResolveFunctionChanged = useConstCallback<
-            BodyProps["onResolveFunctionChanged"]
-        >(({ resolve }) => (evtResolve.state = resolve));
-
-        return (
-            <Dialog
-                title="New directory ..."
-                body={
-                    <Body
-                        onResolveFunctionChanged={onResolveFunctionChanged}
-                        {...(state ?? {
-                            "suggestedBasename": "",
-                            "resolveBasename": () => {},
-                        })}
-                    />
-                }
-                isOpen={state !== undefined}
-                onClose={onClose}
-                buttons={<Buttons evtResolve={evtResolve} onClose={onClose} />}
-            />
         );
     });
 
