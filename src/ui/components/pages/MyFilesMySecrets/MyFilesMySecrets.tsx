@@ -178,8 +178,8 @@ export function MyFilesMySecrets(props: Props) {
         copyToClipboard(path.split("/").slice(2).join("/")),
     );
 
-    const apiLogs = useMemo(
-        () => explorersThunks.getApiLogs({ explorerType }),
+    const fsApiLogs = useMemo(
+        () => explorersThunks.getFsApiLogs({ explorerType }),
         [explorerType],
     );
 
@@ -344,7 +344,7 @@ export function MyFilesMySecrets(props: Props) {
                 doShowHidden={false}
                 directoryPath={cwdVue.directoryPath}
                 isNavigating={cwdVue.isNavigationOngoing}
-                apiLogs={apiLogs}
+                apiLogs={fsApiLogs}
                 evtAction={evtButtonBarAction}
                 files={cwdVue.files}
                 directories={cwdVue.directories}

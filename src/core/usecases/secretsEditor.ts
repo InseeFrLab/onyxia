@@ -196,9 +196,9 @@ export const thunks = {
 
             const path = pathJoin(directoryPath, basename);
 
-            const { loggedApi } = dispatch(explorersThunks.getLoggedSecretsApis());
+            const { loggedFsApi } = dispatch(explorersThunks.getLoggedSecretsApis());
 
-            const secretWithMetadata = await loggedApi.get({ path });
+            const secretWithMetadata = await loggedFsApi.get({ path });
 
             const { secret } = secretWithMetadata;
 
@@ -249,7 +249,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch] = args;
 
-            const { loggedApi } = dispatch(explorersThunks.getLoggedSecretsApis());
+            const { loggedFsApi } = dispatch(explorersThunks.getLoggedSecretsApis());
 
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
@@ -309,7 +309,7 @@ export const thunks = {
 
             dispatch(actions.editSecretStarted(params));
 
-            await loggedApi.put(
+            await loggedFsApi.put(
                 (() => {
                     const { path, secret, hiddenKeys } =
                         getSecretCurrentPathAndHiddenKeys();
