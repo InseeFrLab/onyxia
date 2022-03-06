@@ -6,7 +6,6 @@ import type { ThunkAction, ThunksExtraArgument } from "../setup";
 import type { SecretsManagerClient, Secret } from "core/ports/SecretsManagerClient";
 import {
     join as pathJoin,
-    dirname as pathDirname,
     relative as pathRelative,
     basename as pathBasename,
 } from "path";
@@ -15,7 +14,6 @@ import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
 import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
 import { s3ApiLogger } from "../secondaryAdapters/s3Client";
-import { crawlFactory } from "core/tools/crawl";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
@@ -25,6 +23,9 @@ import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import type { Param0 } from "tsafe";
+import { createExtendedFsApi } from "core/tools/extendedFsApi";
+import type { ExtendedFsApi } from "core/tools/extendedFsApi";
+import { createObjectThatThrowsIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -391,7 +392,7 @@ const privateThunks = {
 
             dispatch(actions.navigationStarted({ explorerType }));
 
-            const { loggedApi } = getSliceContexts(extraArg)[explorerType];
+            const { loggedFsApi } = getSliceContexts(extraArg)[explorerType];
 
             dispatch(thunks.cancelNavigation({ explorerType }));
 
@@ -418,7 +419,7 @@ const privateThunks = {
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedApi.list({ "path": directoryPath }),
+                loggedFsApi.list({ "path": directoryPath }),
             ).waitFor();
 
             ctx.done();
@@ -442,7 +443,10 @@ const privateThunks = {
 export const interUsecasesThunks = {
     "getLoggedSecretsApis":
         (): ThunkAction<
-            Pick<SliceContexts["secrets"], "loggedApi" | "loggedExtendedApi" | "apiLogs">
+            Pick<
+                SliceContexts["secrets"],
+                "loggedFsApi" | "loggedExtendedFsApi" | "fsApiLogs"
+            >
         > =>
         (...args) => {
             const [, , extraArgs] = args;
@@ -654,7 +658,7 @@ export const thunks = {
                 }),
             );
 
-            await getSliceContexts(extraArg)[explorerType].loggedExtendedApi[
+            await getSliceContexts(extraArg)[explorerType].loggedExtendedFsApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -718,33 +722,17 @@ export const thunks = {
                             alert("TODO");
                             break;
                         case "secrets":
-                            await sliceContexts[params.explorerType].loggedApi.put({
+                            await sliceContexts[params.explorerType].loggedFsApi.put({
                                 path,
                                 "secret": {},
                             });
                             break;
                     }
-
                     break;
                 case "directory":
-                    switch (params.explorerType) {
-                        case "s3":
-                            await sliceContexts[params.explorerType].loggedApi.uploadFile(
-                                {
-                                    "file": new Blob(["Test,Text"], {
-                                        "type": "text/csv",
-                                    }),
-                                    "path": pathJoin(path, ".keep"),
-                                },
-                            );
-                            break;
-                        case "secrets":
-                            await sliceContexts[
-                                params.explorerType
-                            ].loggedExtendedApi.createDirectory({ path });
-                            break;
-                    }
-
+                    await sliceContexts[
+                        params.explorerType
+                    ].loggedExtendedFsApi.createDirectory({ path });
                     break;
             }
 
@@ -802,34 +790,26 @@ export const thunks = {
 
             const path = pathJoin(directoryPath, basename);
 
-            switch (explorerType) {
-                case "s3":
-                    {
-                        //We want to do something here
-                        const sliceContext = sliceContexts[explorerType];
-
-                        await (() => {
-                            switch (deleteWhat) {
-                                case "file":
-                                    return sliceContext.loggedApi.deleteFile;
-                                case "directory":
-                                    return () => console.log("TODO xxx");
-                            }
-                        })()({ path });
-                    }
+            switch (deleteWhat) {
+                case "directory":
+                    await sliceContexts[explorerType].loggedExtendedFsApi.deleteDirectory(
+                        { path },
+                    );
                     break;
-                case "secrets":
-                    {
-                        const sliceContext = sliceContexts[explorerType];
-                        await (() => {
-                            switch (deleteWhat) {
-                                case "file":
-                                    return sliceContext.loggedApi.delete;
-                                case "directory":
-                                    return sliceContext.loggedExtendedApi.deleteDirectory;
-                            }
-                        })()({ path });
+                case "file":
+                    switch (explorerType) {
+                        case "s3":
+                            await sliceContexts[explorerType].loggedFsApi.deleteFile({
+                                path,
+                            });
+                            break;
+                        case "secrets":
+                            await sliceContexts[explorerType].loggedFsApi.delete({
+                                path,
+                            });
+                            break;
                     }
+
                     break;
             }
 
@@ -842,14 +822,14 @@ export const thunks = {
                 }),
             );
         },
-    "getApiLogs":
+    "getFsApiLogs":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<ApiLogs> =>
         (...args) => {
             const { explorerType } = params;
 
             const [, , extraArg] = args;
 
-            return getSliceContexts(extraArg)[explorerType].apiLogs;
+            return getSliceContexts(extraArg)[explorerType].fsApiLogs;
         },
     "getIsEnabled":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<boolean> =>
@@ -874,22 +854,17 @@ export const thunks = {
 };
 
 type SliceContexts = {
-    s3: SliceContexts.S3;
-    secrets: SliceContexts.Secrets;
+    s3: SliceContexts.Common<S3Client>;
+    secrets: SliceContexts.Common<SecretsManagerClient>;
 };
 
 namespace SliceContexts {
-    export type Common<loggedApi> = {
-        loggedApi: loggedApi;
-        apiLogs: ApiLogs;
+    export type Common<FsApi extends S3Client | SecretsManagerClient> = {
+        loggedFsApi: FsApi;
+        fsApiLogs: ApiLogs;
         onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
         isLazilyInitialized: boolean;
-    };
-
-    export type S3 = Common<S3Client>;
-
-    export type Secrets = Common<SecretsManagerClient> & {
-        loggedExtendedApi: ReturnType<typeof createSecretsManagerClientExtension>;
+        loggedExtendedFsApi: ExtendedFsApi;
     };
 }
 
@@ -906,15 +881,36 @@ const { getSliceContexts } = (() => {
         const isLazilyInitialized = false;
 
         sliceContext = {
-            "s3": {
-                ...logApi({
+            "s3": (() => {
+                const { apiLogs: fsApiLogs, loggedApi: loggedFsApi } = logApi({
                     "api": extraArg.s3Client,
                     "apiLogger": s3ApiLogger,
-                }),
-                isLazilyInitialized,
-            },
+                });
+
+                return {
+                    loggedFsApi,
+                    fsApiLogs,
+                    isLazilyInitialized,
+                    "loggedExtendedFsApi": createExtendedFsApi({
+                        "baseFsApi": {
+                            "list": loggedFsApi.list,
+                            "deleteFile": loggedFsApi.deleteFile,
+                            "downloadFile": createObjectThatThrowsIfAccessed({
+                                "debugMessage":
+                                    "We are not supposed to have do download file here. Moving file is too expensive in S3",
+                            }),
+                            "uploadFile": loggedFsApi.uploadFile,
+                        },
+                        "keepFile": new Blob(
+                            ["This file tells that a directory exists"],
+                            { "type": "text/plain" },
+                        ),
+                        "keepFileBasename": ".keep",
+                    }),
+                };
+            })(),
             "secrets": (() => {
-                const { apiLogs, loggedApi } = logApi({
+                const { apiLogs: fsApiLogs, loggedApi: loggedFsApi } = logApi({
                     "api": extraArg.secretsManagerClient,
                     "apiLogger": getVaultApiLogger({
                         "clientType": "CLI",
@@ -933,12 +929,26 @@ const { getSliceContexts } = (() => {
                 });
 
                 return {
-                    loggedApi,
-                    apiLogs,
-                    "loggedExtendedApi": createSecretsManagerClientExtension({
-                        "secretsManagerClient": loggedApi,
-                    }),
+                    loggedFsApi,
+                    fsApiLogs,
                     isLazilyInitialized,
+                    "loggedExtendedFsApi": createExtendedFsApi({
+                        "baseFsApi": {
+                            "list": loggedFsApi.list,
+                            "deleteFile": loggedFsApi.delete,
+                            "downloadFile": async ({ path }) =>
+                                (await loggedFsApi.get({ path })).secret,
+                            "uploadFile": ({ path, file }) =>
+                                loggedFsApi.put({ path, "secret": file }),
+                        },
+                        "keepFile": id<Secret>({
+                            "info": [
+                                "This is a dummy secret so that this directory is kept even if there",
+                                "is no other secrets in it",
+                            ].join(" "),
+                        }),
+                        "keepFileBasename": ".keep",
+                    }),
                 };
             })(),
         };
@@ -950,108 +960,6 @@ const { getSliceContexts } = (() => {
 
     return { getSliceContexts };
 })();
-
-function createSecretsManagerClientExtension(props: {
-    secretsManagerClient: SecretsManagerClient;
-}) {
-    const { secretsManagerClient } = props;
-
-    const { crawl } = crawlFactory({
-        "list": async ({ directoryPath }) => {
-            const { directories, files } = await secretsManagerClient.list({
-                "path": directoryPath,
-            });
-
-            return {
-                "fileBasenames": files,
-                "directoryBasenames": directories,
-            };
-        },
-    });
-
-    async function mvFile(params: { srcPath: string; dstPath: string; secret?: Secret }) {
-        const { srcPath, dstPath } = params;
-
-        if (pathRelative(srcPath, dstPath) === "") {
-            return;
-        }
-
-        const {
-            secret = (
-                await secretsManagerClient.get({
-                    "path": srcPath,
-                })
-            ).secret,
-        } = params;
-
-        await secretsManagerClient.delete({
-            "path": srcPath,
-        });
-
-        await secretsManagerClient.put({
-            "path": dstPath,
-            secret,
-        });
-    }
-
-    return {
-        "renameFile": async (params: {
-            path: string;
-            newBasename: string;
-            secret?: Secret;
-        }) => {
-            const { path, newBasename, secret } = params;
-
-            await mvFile({
-                "srcPath": path,
-                "dstPath": pathJoin(pathDirname(path), newBasename),
-                secret,
-            });
-        },
-        "renameDirectory": async (params: { path: string; newBasename: string }) => {
-            const { path, newBasename } = params;
-
-            const { filePaths } = await crawl({ "directoryPath": path });
-
-            await Promise.all(
-                filePaths.map(filePath =>
-                    mvFile({
-                        "srcPath": pathJoin(path, filePath),
-                        "dstPath": pathJoin(pathDirname(path), newBasename, filePath),
-                    }),
-                ),
-            );
-        },
-        "createDirectory": async (params: { path: string }) => {
-            const { path } = params;
-
-            await secretsManagerClient.put({
-                "path": pathJoin(path, ".keep"),
-                "secret": {
-                    "info": [
-                        "This is a dummy secret so that this directory is kept even if there",
-                        "is no other secrets in it",
-                    ].join(" "),
-                },
-            });
-        },
-        "deleteDirectory": async (params: { path: string }) => {
-            const { path } = params;
-
-            const { filePaths } = await crawl({ "directoryPath": path });
-
-            await Promise.all(
-                filePaths
-                    .map(filePathRelative => pathJoin(path, filePathRelative))
-                    .map(filePath =>
-                        secretsManagerClient.delete({
-                            "path": filePath,
-                        }),
-                    ),
-            );
-        },
-    };
-}
 
 function removeIfPresent(
     directoryItems: WritableDraft<{
