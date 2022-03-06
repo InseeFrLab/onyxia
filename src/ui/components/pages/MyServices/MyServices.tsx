@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useReducer } from "react";
 import { makeStyles, PageHeader } from "ui/theme";
 
 import { useTranslation } from "ui/i18n/useTranslations";
@@ -21,6 +21,7 @@ import { Button } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
+import { assert } from "tsafe/assert";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
@@ -61,6 +62,25 @@ export function MyServices(props: Props) {
         }
     }, [isRunningServicesUpdating]);
 
+    const [password, setPassword] = useState<string | undefined>(undefined);
+
+    const [refreshPasswordTrigger, pullRefreshPasswordTrigger] = useReducer(
+        count => count + 1,
+        0,
+    );
+
+    useEffect(() => {
+        projectConfigsThunks
+            .getValue({ "key": "servicePassword" })
+            .then(upToDatePassword => {
+                setPassword(upToDatePassword);
+
+                if (password !== undefined && password !== upToDatePassword) {
+                    alert("Outdated password copied. Please click the button again");
+                }
+            });
+    }, [password, refreshPasswordTrigger]);
+
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
@@ -70,9 +90,12 @@ export function MyServices(props: Props) {
                 runningServiceThunks.update();
                 return;
             case "password":
-                projectConfigsThunks
-                    .getValue({ "key": "servicePassword" })
-                    .then(clipboard.writeText);
+                assert(password !== undefined);
+
+                clipboard.writeText(password);
+
+                pullRefreshPasswordTrigger();
+
                 return;
             case "trash":
                 setIsDialogOpen(true);
