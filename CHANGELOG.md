@@ -1,3 +1,7 @@
+### **0.46.2** (2022-03-06)  
+  
+- Fix bug with copy password    
+  
 ### **0.46.1** (2022-03-05)  
   
 - Improve the UX of the creating s3 directories    
