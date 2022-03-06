@@ -1,3 +1,8 @@
+## **0.47.0** (2022-03-06)  
+  
+- Feat: S3 explorer, remove file and directories  
+- Feature deleting s3 file in explorer    
+  
 ### **0.46.2** (2022-03-06)  
   
 - Fix bug with copy password    
