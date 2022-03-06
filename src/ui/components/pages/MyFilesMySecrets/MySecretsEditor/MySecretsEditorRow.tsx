@@ -76,19 +76,17 @@ export const MySecretsEditorRow = memo((props: Props) => {
     }, [isInEditingState, onStartEdit]);
 
     useEvt(
-        ctx => {
-            evtAction.attach(
-                action => action === "ENTER EDITING STATE",
-                ctx,
-                () => setIsInEditingState(true),
-            );
-            evtAction.attach(
-                action => action === "SUBMIT EDIT" && isInEditingState,
-                ctx,
-                () => onSubmitButtonClick(),
-            );
-        },
-
+        ctx =>
+            evtAction
+                .pipe(ctx)
+                .attach(
+                    action => action === "ENTER EDITING STATE",
+                    () => setIsInEditingState(true),
+                )
+                .attach(
+                    action => action === "SUBMIT EDIT" && isInEditingState,
+                    () => onSubmitButtonClick(),
+                ),
         [evtAction, isInEditingState],
     );
 
@@ -108,30 +106,31 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 
     useEvt(
-        ctx =>
+        (ctx, registerSideEffect) =>
             evtEdited.attach(
                 ({ editedKey, editedStrValue }) =>
                     editedKey !== undefined && editedStrValue !== undefined,
                 ctx,
-                ({ editedKey, editedStrValue }) => {
-                    evtEdited.state = {};
+                ({ editedKey, editedStrValue }) =>
+                    registerSideEffect(() => {
+                        evtEdited.state = {};
 
-                    setIsInEditingState(false);
+                        setIsInEditingState(false);
 
-                    if (editedKey === key) {
-                        editedKey = undefined;
-                    }
+                        if (editedKey === key) {
+                            editedKey = undefined;
+                        }
 
-                    if (editedStrValue === strValue) {
-                        editedStrValue = undefined;
-                    }
+                        if (editedStrValue === strValue) {
+                            editedStrValue = undefined;
+                        }
 
-                    if (editedKey === undefined && editedStrValue === undefined) {
-                        return;
-                    }
+                        if (editedKey === undefined && editedStrValue === undefined) {
+                            return;
+                        }
 
-                    onEdit({ editedKey, editedStrValue });
-                },
+                        onEdit({ editedKey, editedStrValue });
+                    }),
             ),
         [evtEdited, onEdit, key, strValue],
     );
