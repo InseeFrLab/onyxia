@@ -804,18 +804,32 @@ export const thunks = {
 
             switch (explorerType) {
                 case "s3":
-                    alert("TODO");
+                    {
+                        //We want to do something here
+                        const sliceContext = sliceContexts[explorerType];
+
+                        await (() => {
+                            switch (deleteWhat) {
+                                case "file":
+                                    return sliceContext.loggedApi.deleteFile;
+                                case "directory":
+                                    return () => console.log("TODO xxx");
+                            }
+                        })()({ path });
+                    }
                     break;
                 case "secrets":
-                    const sliceContext = sliceContexts[explorerType];
-                    await (() => {
-                        switch (deleteWhat) {
-                            case "file":
-                                return sliceContext.loggedApi.delete;
-                            case "directory":
-                                return sliceContext.loggedExtendedApi.deleteDirectory;
-                        }
-                    })()({ path });
+                    {
+                        const sliceContext = sliceContexts[explorerType];
+                        await (() => {
+                            switch (deleteWhat) {
+                                case "file":
+                                    return sliceContext.loggedApi.delete;
+                                case "directory":
+                                    return sliceContext.loggedExtendedApi.deleteDirectory;
+                            }
+                        })()({ path });
+                    }
                     break;
             }
 

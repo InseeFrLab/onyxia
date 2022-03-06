@@ -23,4 +23,6 @@ export type S3Client = {
         path: string;
         evtUploadPercent?: { post: (data: { uploadPercent: number }) => void };
     }) => Promise<void>;
+
+    deleteFile: (params: { path: string }) => Promise<void>;
 };

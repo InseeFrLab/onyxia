@@ -17,5 +17,6 @@ export function createDummyS3Client(): S3Client {
             }),
         "createBucketIfNotExist": () => Promise.resolve(),
         "uploadFile": () => Promise.resolve(),
+        "deleteFile": () => Promise.resolve(),
     };
 }

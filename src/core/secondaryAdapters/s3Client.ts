@@ -208,14 +208,14 @@ export async function createS3Client(
         return { getMinioClient };
     })();
 
-    function bucketNameAndPrefixFromPath(params: { path: string }) {
+    function bucketNameAndObjectNameFromPath(params: { path: string }) {
         const { path } = params;
 
         const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
 
         return {
             bucketName,
-            "prefix": [rest.join("/")].map(s => (s.endsWith("/") ? s : `${s}/`))[0],
+            "objectName": rest.join("/"),
         };
     }
 
@@ -267,7 +267,16 @@ export async function createS3Client(
             { "promise": true },
         ),
         "list": async ({ path }) => {
-            const { bucketName, prefix } = bucketNameAndPrefixFromPath({ path });
+            const { bucketName, prefix } = (() => {
+                const { bucketName, objectName } = bucketNameAndObjectNameFromPath({
+                    path,
+                });
+
+                return {
+                    bucketName,
+                    "prefix": [objectName].map(s => (s.endsWith("/") ? s : `${s}/`))[0],
+                };
+            })();
 
             await s3Client.createBucketIfNotExist(bucketName);
 
@@ -316,7 +325,7 @@ export async function createS3Client(
                 });
             }
 
-            const { bucketName, prefix } = bucketNameAndPrefixFromPath({ path });
+            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
 
             const { minioClient } = await getMinioClient({
                 "restrictToBucketName": bucketName,
@@ -324,7 +333,7 @@ export async function createS3Client(
 
             const dOut = new Deferred<void>();
 
-            minioClient.putObject(bucketName, prefix, stream, file.size, {}, err => {
+            minioClient.putObject(bucketName, objectName, stream, file.size, {}, err => {
                 if (!!err) {
                     throw err;
                 }
@@ -334,6 +343,25 @@ export async function createS3Client(
             });
 
             return dOut.pr;
+        },
+        "deleteFile": async ({ path }) => {
+            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
+
+            await s3Client.createBucketIfNotExist(bucketName);
+
+            const { minioClient } = await getMinioClient({
+                "restrictToBucketName": bucketName,
+            });
+
+            await new Promise((resolve, reject) =>
+                minioClient.removeObject(bucketName, objectName, err => {
+                    if (!!err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(true);
+                }),
+            );
         },
     };
 
@@ -376,6 +404,10 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
         "uploadFile": {
             "buildCmd": ({ path }) => `# We upload a file to ${path}`,
             "fmtResult": () => `# File uploaded`,
+        },
+        "deleteFile": {
+            "buildCmd": ({ path }) => `# We delete a file at ${path}`,
+            "fmtResult": () => `# File deleted`,
         },
     },
 };
