@@ -66,16 +66,13 @@
         "jwt-decode": "^2.2.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^15.0.2",
-        "keycloakify": "^4.5.2",
         "leaflet": "^1.6.0",
         "memoizee": "^0.4.14",
         "minio": "7.0.16",
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
-        "onyxia-ui": "^0.28.0",
         "path": "^0.12.7",
-        "powerhooks": "^0.13.0",
         "public-ip": "^4.0.3",
         "query-params": "0.0.1",
         "re-resizable": "^6.3.2",
@@ -97,10 +94,19 @@
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
         "tsafe": "^0.9.1",
-        "tss-react": "^3.4.1",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
-        "url-join-ts": "^1.0.5"
+        "url-join-ts": "^1.0.5",
+        "keycloakify": "^4.6.0",
+        "onyxia-ui": "^0.30.0",
+        "powerhooks": "^0.14.0",
+        "tss-react": "^3.5.2"
+    },
+    "resolutions": {
+        "babel-loader": "8.1.0",
+        "evt": "2.0.0-beta.39",
+        "powerhooks": "0.14.0",
+        "tss-react": "3.5.2"
     },
     "scripts": {
         "start": "react-app-rewired start",
@@ -114,10 +120,6 @@
         "format": "npm run _format -- --write",
         "format:check": "npm run _format -- --list-different",
         "link_inhouse_deps": "ts-node --skip-project src/bin/link_inhouse_deps.ts"
-    },
-    "resolutions": {
-        "babel-loader": "8.1.0",
-        "evt": "2.0.0-beta.39"
     },
     "eslintConfig": {
         "extends": [
