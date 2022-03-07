@@ -1,3 +1,9 @@
+### **0.47.1** (2022-03-07)  
+  
+- Update dependencies  
+- Start a new component to upload files  
+- refactor useEvt    
+  
 ## **0.47.0** (2022-03-06)  
   
 - Feat: S3 explorer, remove file and directories  
