@@ -1,3 +1,8 @@
+### **0.47.2** (2022-03-11)  
+  
+- Fix bug with button in login  
+- Fix typo in training button    
+  
 ### **0.47.1** (2022-03-07)  
   
 - Update dependencies  
