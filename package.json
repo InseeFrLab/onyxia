@@ -98,7 +98,7 @@
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5",
         "keycloakify": "^4.6.0",
-        "onyxia-ui": "^0.30.3",
+        "onyxia-ui": "^0.30.4",
         "powerhooks": "^0.14.0",
         "tss-react": "^3.5.2"
     },
