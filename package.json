@@ -119,7 +119,8 @@
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "npm run _format -- --write",
         "format:check": "npm run _format -- --list-different",
-        "link_inhouse_deps": "ts-node --skip-project src/bin/link_inhouse_deps.ts"
+        "link_inhouse_deps": "ts-node --skip-project src/bin/link_inhouse_deps.ts",
+        "emails_domain_accept_list_helper": "ts-node --skip-project src/bin/emails_domain_accept_list_helper.ts"
     },
     "eslintConfig": {
         "extends": [
