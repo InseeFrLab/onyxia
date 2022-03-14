@@ -12,9 +12,3 @@ export declare namespace OidcClient {
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
     };
 }
-
-export type OidcTokens = Readonly<{
-    accessToken: string;
-    idToken: string;
-    refreshToken: string;
-}>;
