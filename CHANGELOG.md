@@ -1,3 +1,7 @@
+### **0.48.2** (2022-03-14)  
+  
+- Fix legacy account without locale on JWT    
+  
 ### **0.48.1** (2022-03-14)  
   
 - Tooling for updating email accept list    
