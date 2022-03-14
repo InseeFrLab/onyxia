@@ -1,3 +1,8 @@
+## **0.48.0** (2022-03-14)  
+  
+- update yarn.lock  
+- Big refactor    
+  
 ### **0.47.3** (2022-03-11)  
   
 - Update onyxia-ui    
