@@ -19,7 +19,8 @@ export function createJwtUserApiClient(params: {
         "getUser": async () => {
             const {
                 groups: groupsStr,
-                locale,
+                //NOTE: Default to patch legacy account that have no locale
+                locale = "fr",
                 email,
                 familyName,
                 firstName,
