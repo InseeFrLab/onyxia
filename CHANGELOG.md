@@ -6,7 +6,12 @@
   
 - update yarn.lock  
 - Big refactor    
-  
+
+**Breaking changes**:  
+- The `OIDC` therm in environements variables has been replaced by `KEYCLOAK`, example: `OIDC_URL` becomes `KEYCLOAK_URL`.  
+- We have inverted `OIDC` (now `KEYCLOAK`) and `VAULT`, example `OIDC_VAULT_URL` becomes `VAULT_KEYCLOAK_URL`.  
+See the `.env` file for more info.
+
 ### **0.47.3** (2022-03-11)  
   
 - Update onyxia-ui    
