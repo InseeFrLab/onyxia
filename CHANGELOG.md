@@ -1,3 +1,7 @@
+### **0.48.1** (2022-03-14)  
+  
+- Tooling for updating email accept list    
+  
 ## **0.48.0** (2022-03-14)  
   
 - update yarn.lock  
