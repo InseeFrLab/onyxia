@@ -1,35 +1,79 @@
-import * as jwtSimple from "jwt-simple";
 import type { UserApiClient, User } from "../ports/UserApiClient";
+import { createDecodeJwtNoVerify } from "core/tools/decodeJwt/adapter/noVerify";
+import { symToStr } from "tsafe/symToStr";
 import { assert } from "tsafe/assert";
+import { id } from "tsafe/id";
+import { kcLanguageTags } from "keycloakify/lib/i18n/KcLanguageTag";
+import { typeGuard } from "tsafe/typeGuard";
+import type { KcLanguageTag } from "keycloakify";
 
 export function createJwtUserApiClient(params: {
-    oidcClaims: Record<keyof User, string>;
+    jwtClaims: Record<keyof User, string>;
     getOidcAccessToken: () => Promise<string>;
 }): UserApiClient {
-    const { oidcClaims, getOidcAccessToken } = params;
+    const { jwtClaims, getOidcAccessToken } = params;
+
+    const { decodeJwt } = createDecodeJwtNoVerify({ jwtClaims });
 
     return {
         "getUser": async () => {
-            const parsedJwt: Record<string, any> = jwtSimple.decode(
-                await getOidcAccessToken(),
-                "",
-                true,
+            const {
+                groups: groupsStr,
+                locale,
+                email,
+                familyName,
+                firstName,
+                username,
+            } = await decodeJwt({
+                "jwtToken": await getOidcAccessToken(),
+            });
+
+            const m = (reason: string) =>
+                `The JWT token do not have the expected format: ${reason}`;
+
+            let groups: string[] | undefined = undefined;
+
+            assert(groupsStr !== undefined, m(`${symToStr({ groups })} missing`));
+
+            try {
+                groups = JSON.parse(groupsStr);
+            } catch {
+                assert(false, `${symToStr({ groups })} is not supposed to be a string`);
+            }
+
+            assert(
+                groups instanceof Array &&
+                    groups.find(group => typeof group !== "string") === undefined,
+                m(`${symToStr({ groups })} is supposed to be an array of string`),
             );
 
-            return {
-                "email": parsedJwt[oidcClaims.email] ?? "no-email-in-jwt@example.com",
-                "familyName": parsedJwt[oidcClaims.familyName] ?? "FAMILY NAME",
-                "firstName": parsedJwt[oidcClaims.firstName] ?? "FIRST NAME",
-                "username": (() => {
-                    const username = parsedJwt[oidcClaims.username];
+            assert(locale !== undefined, m(`${symToStr({ locale })} missing`));
+            assert(
+                typeGuard<KcLanguageTag>(
+                    locale,
+                    id<readonly string[]>(kcLanguageTags).indexOf(locale) >= 0,
+                ),
+                m(`${symToStr({ locale })} must be one of: ${kcLanguageTags.join(", ")}`),
+            );
 
-                    assert(!!username, `Could not read ${oidcClaims.username} in JWT`);
+            for (const [propertyName, propertyValue] of [
+                [symToStr({ email }), email],
+                [symToStr({ familyName }), familyName],
+                [symToStr({ firstName }), firstName],
+                [symToStr({ username }), username],
+            ] as const) {
+                assert(propertyValue !== undefined, m(`${propertyName} missing`));
+                assert(
+                    typeof propertyValue === "string",
+                    m(`${propertyName} is supposed to be a string`),
+                );
+                assert(
+                    propertyValue !== "",
+                    m(`${propertyName} is supposed to be a non empty string`),
+                );
+            }
 
-                    return username;
-                })(),
-                "groups": parsedJwt[oidcClaims.groups] || [],
-                "local": parsedJwt[oidcClaims.local] ?? "en",
-            };
+            return { groups, locale, email, familyName, firstName, username };
         },
     };
 }

@@ -3,17 +3,14 @@ import keycloak_js from "keycloak-js";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { createKeycloakAdapter } from "keycloakify";
-//TODO: Rewriting the url before redirecting should be the responsibility of
-//the UI. The function that update the url should be a pram of the adapter creator.
-import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 
 export async function createKeycloakOidcClient(params: {
     url: string;
     realm: string;
     clientId: string;
+    transformUrlBeforeRedirectToLogin: ((url: string) => string) | undefined;
 }): Promise<OidcClient> {
-    const { url, realm, clientId } = params;
+    const { url, realm, clientId, transformUrlBeforeRedirectToLogin } = params;
 
     const keycloakInstance = keycloak_js({ url, realm, clientId });
 
@@ -24,14 +21,8 @@ export async function createKeycloakOidcClient(params: {
             "responseMode": "query",
             "checkLoginIframe": false,
             "adapter": createKeycloakAdapter({
-                "transformUrlBeforeRedirect": url => {
-                    let newUrl = url;
-
-                    newUrl = injectGlobalStatesInSearchParams(newUrl);
-                    newUrl = injectTransferableEnvsInSearchParams(newUrl);
-
-                    return newUrl;
-                },
+                "transformUrlBeforeRedirect": url =>
+                    transformUrlBeforeRedirectToLogin?.(url) ?? url,
                 keycloakInstance,
             }),
         })

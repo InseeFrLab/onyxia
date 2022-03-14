@@ -840,10 +840,7 @@ export const thunks = {
 
             switch (explorerType) {
                 case "secrets":
-                    return (
-                        createStoreParams.secretsManagerClientConfig.implementation !==
-                        "LOCAL STORAGE"
-                    );
+                    return createStoreParams.vaultParams !== undefined;
                 case "s3":
                     return (
                         deploymentRegionSelectors.selectedDeploymentRegion(getSate())
@@ -914,17 +911,8 @@ const { getSliceContexts } = (() => {
                     "api": extraArg.secretsManagerClient,
                     "apiLogger": getVaultApiLogger({
                         "clientType": "CLI",
-                        "engine": (() => {
-                            const { secretsManagerClientConfig } =
-                                extraArg.createStoreParams;
-                            switch (secretsManagerClientConfig.implementation) {
-                                case "VAULT":
-                                    return secretsManagerClientConfig.engine;
-                                case "LOCAL STORAGE":
-                                    return secretsManagerClientConfig.paramsForTranslator
-                                        .engine;
-                            }
-                        })(),
+                        "engine":
+                            extraArg.createStoreParams.vaultParams?.engine ?? "onyxia-kv",
                     }),
                 });
 

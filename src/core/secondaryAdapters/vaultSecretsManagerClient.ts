@@ -7,7 +7,7 @@ import type {
     SecretsManagerClient,
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
-import type { Param0, ReturnType } from "tsafe";
+import type { ReturnType } from "tsafe";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
@@ -19,7 +19,11 @@ type Params = {
     url: string;
     engine: string;
     role: string;
-    keycloakParams: Param0<typeof createKeycloakOidcClient>;
+    keycloakParams: {
+        url: string;
+        realm: string;
+        clientId: string;
+    };
 };
 
 export async function createVaultSecretsManagerClient(
@@ -27,7 +31,10 @@ export async function createVaultSecretsManagerClient(
 ): Promise<SecretsManagerClient> {
     const { url, engine, role, keycloakParams } = params;
 
-    const oidcClient = await createKeycloakOidcClient(keycloakParams);
+    const oidcClient = await createKeycloakOidcClient({
+        ...keycloakParams,
+        "transformUrlBeforeRedirectToLogin": undefined,
+    });
 
     if (!oidcClient.isUserLoggedIn) {
         return oidcClient.login();
