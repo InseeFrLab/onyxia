@@ -1,3 +1,8 @@
+### **0.48.3** (2022-03-14)  
+  
+- Use arrow function notation in types  
+- Remove legacy type    
+  
 ### **0.48.2** (2022-03-14)  
   
 - Fix legacy account without locale on JWT    
