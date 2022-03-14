@@ -3,22 +3,23 @@ import type { OidcClient } from "../ports/OidcClient";
 import { id } from "tsafe/id";
 import * as jwtSimple from "jwt-simple";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
-import type { createJwtUserApiClient } from "./jwtUserApiClient";
-import type { Param0 } from "tsafe";
 import { objectKeys } from "tsafe/objectKeys";
 import type { User } from "../ports/UserApiClient";
 
-export async function createPhonyOidcClient(params: {
-    isUserLoggedIn: boolean;
+export function createPhonyOidcClient(params: {
+    jwtClaims: Record<keyof User, string>;
+    isUserInitiallyLoggedIn: boolean;
     user: User;
-}): Promise<OidcClient> {
+}): OidcClient {
     const isUserLoggedIn = (() => {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
             "name": urlParamName,
         });
 
-        return result.wasPresent ? result.value === "true" : params.isUserLoggedIn;
+        return result.wasPresent
+            ? result.value === "true"
+            : params.isUserInitiallyLoggedIn;
     })();
 
     if (!isUserLoggedIn) {
@@ -41,14 +42,11 @@ export async function createPhonyOidcClient(params: {
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
         "getAccessToken": (() => {
-            const { user } = params;
+            const { jwtClaims, user } = params;
 
             const accessToken = jwtSimple.encode(
                 Object.fromEntries(
-                    objectKeys(phonyClientOidcClaims).map(key => [
-                        phonyClientOidcClaims[key],
-                        user[key],
-                    ]),
+                    objectKeys(jwtClaims).map(key => [jwtClaims[key], user[key]]),
                 ),
                 "xxx",
             );
@@ -70,13 +68,3 @@ export async function createPhonyOidcClient(params: {
 }
 
 const urlParamName = "isUserAuthenticated";
-
-export const phonyClientOidcClaims: Param0<typeof createJwtUserApiClient>["oidcClaims"] =
-    {
-        "email": "a",
-        "familyName": "b",
-        "firstName": "c",
-        "username": "d",
-        "groups": "e",
-        "local": "f",
-    };

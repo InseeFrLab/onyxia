@@ -5,6 +5,9 @@ import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
+import type { CreateStoreParams } from "core/setup";
+import { getBrowserLng } from "ui/i18n/useLng";
+import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -83,3 +86,123 @@ export const getDoHideOnyxia = memoize((): boolean => {
 
     return HEADER_HIDE_ONYXIA === "true";
 });
+
+export const getCreateStoreParams = memoize(
+    (params: {
+        transformUrlBeforeRedirectToLogin: (url: string) => string;
+    }): CreateStoreParams => {
+        const { transformUrlBeforeRedirectToLogin } = params;
+
+        const {
+            ONYXIA_API_URL,
+            JWT_EMAIL_CLAIM,
+            JWT_FAMILY_NAME_CLAIM,
+            JWT_FIRST_NAME_CLAIM,
+            JWT_LOCALE_CLAIM,
+            JWT_USERNAME_CLAIM,
+            JWT_GROUPS_CLAIM,
+            KEYCLOAK_URL,
+            KEYCLOAK_REALM,
+            KEYCLOAK_CLIENT_ID,
+            VAULT_URL,
+            VAULT_KV_ENGINE,
+            VAULT_ROLE,
+            VAULT_KEYCLOAK_URL,
+            VAULT_KEYCLOAK_REALM,
+            VAULT_KEYCLOAK_CLIENT_ID,
+            HIGHLIGHTED_PACKAGES,
+        } = getEnv();
+
+        if (KEYCLOAK_URL !== "") {
+            assert(
+                KEYCLOAK_REALM !== "",
+                `If ${symToStr({ KEYCLOAK_URL })} is specified ${symToStr({
+                    KEYCLOAK_REALM,
+                })} should be specified too.`,
+            );
+        }
+
+        //TODO: Perform more checks on envs
+
+        const { highlightedPackages } = (() => {
+            let highlightedPackages: string[];
+
+            if (HIGHLIGHTED_PACKAGES === "") {
+                highlightedPackages = [];
+                return { highlightedPackages };
+            }
+
+            try {
+                highlightedPackages = JSON.parse(HIGHLIGHTED_PACKAGES);
+
+                assert(
+                    highlightedPackages.find(
+                        packageName => typeof packageName !== "string",
+                    ) === undefined,
+                );
+            } catch {
+                throw new Error(
+                    `${symToStr({
+                        HIGHLIGHTED_PACKAGES,
+                    })}, is not a valid value: \`${HIGHLIGHTED_PACKAGES}\` please refer to the comments in the .env file at the root of the project.`,
+                );
+            }
+
+            return { highlightedPackages };
+        })();
+
+        return {
+            "onyxiaApiUrl": ONYXIA_API_URL || undefined,
+            "userAuthenticationParams":
+                KEYCLOAK_URL === ""
+                    ? {
+                          "method": "mock",
+                          "isUserInitiallyLoggedIn": false,
+                          "user": {
+                              "email": "john.doe@example.com",
+                              "familyName": "Doe",
+                              "firstName": "John",
+                              "username": "jdoe",
+                              "groups": [],
+                              "locale": getBrowserLng(),
+                          },
+                      }
+                    : {
+                          "method": "keycloak",
+                          "keycloakParams": {
+                              "url": KEYCLOAK_URL,
+                              "realm": KEYCLOAK_REALM,
+                              "clientId": KEYCLOAK_CLIENT_ID,
+                              "jwtClaims": {
+                                  "email": JWT_EMAIL_CLAIM,
+                                  "familyName": JWT_FAMILY_NAME_CLAIM,
+                                  "firstName": JWT_FIRST_NAME_CLAIM,
+                                  "username": JWT_USERNAME_CLAIM,
+                                  "groups": JWT_GROUPS_CLAIM,
+                                  "locale": JWT_LOCALE_CLAIM,
+                              },
+                          },
+                          transformUrlBeforeRedirectToLogin,
+                      },
+            "vaultParams":
+                VAULT_URL === ""
+                    ? undefined
+                    : {
+                          "url": VAULT_URL,
+                          "role": VAULT_ROLE,
+                          "engine": VAULT_KV_ENGINE,
+                          "keycloakParams":
+                              VAULT_KEYCLOAK_CLIENT_ID === ""
+                                  ? undefined
+                                  : {
+                                        "url": VAULT_KEYCLOAK_URL || undefined,
+                                        "realm": VAULT_KEYCLOAK_REALM || undefined,
+                                        "clientId": VAULT_KEYCLOAK_CLIENT_ID,
+                                    },
+                      },
+            highlightedPackages,
+            "getIsDarkModeEnabledValueForProfileInitialization":
+                getIsDarkModeEnabledOsDefault,
+        };
+    },
+);

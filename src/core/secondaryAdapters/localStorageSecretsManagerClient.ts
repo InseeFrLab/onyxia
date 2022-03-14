@@ -5,20 +5,9 @@ import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManage
 import { assert } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
 
-function formatPath(path: string): string {
-    return pathJoin("/", path).replace(/\/$/, "");
-}
+createLocalStorageSecretManagerClient.artificialDelayMs = 0;
 
-export function createLocalStorageSecretManagerClient(params: {
-    artificialDelayMs: number;
-    doReset: boolean;
-}): SecretsManagerClient {
-    const { artificialDelayMs, doReset } = params;
-
-    if (doReset) {
-        localStorage.removeItem(storageKey);
-    }
-
+export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
     const record: { [path: string]: SecretWithMetadata } = (() => {
         const serializedRecord = localStorage.getItem(storageKey);
 
@@ -28,7 +17,10 @@ export function createLocalStorageSecretManagerClient(params: {
     const updateLocalStorage = () =>
         localStorage.setItem(storageKey, JSON.stringify(record));
 
-    const sleep = () => new Promise(resolve => setTimeout(resolve, artificialDelayMs));
+    const sleep = () =>
+        new Promise(resolve =>
+            setTimeout(resolve, createLocalStorageSecretManagerClient.artificialDelayMs),
+        );
 
     return {
         "list": async params => {
@@ -98,4 +90,12 @@ export function createLocalStorageSecretManagerClient(params: {
     };
 }
 
+function formatPath(path: string): string {
+    return pathJoin("/", path).replace(/\/$/, "");
+}
+
 const storageKey = symToStr({ createLocalStorageSecretManagerClient });
+
+export function clearLocalStorage() {
+    localStorage.removeItem(storageKey);
+}

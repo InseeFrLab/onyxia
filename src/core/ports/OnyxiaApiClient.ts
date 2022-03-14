@@ -71,18 +71,18 @@ export type DeploymentRegion = {
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
     initScriptUrl: string;
-    s3: DeploymentRegion.S3;
+    s3: DeploymentRegion.S3 | undefined;
 };
 export namespace DeploymentRegion {
-    export type S3 = S3.Minio | S3.Amazon | S3.Disabled;
+    export type S3 = S3.Minio | S3.Amazon;
     export namespace S3 {
         export type Common = {
             defaultDurationSeconds?: number;
             monitoringUrlPattern?: string;
             keycloakParams?: {
-                url: string;
-                clientId: string | undefined;
-                realm: string | undefined;
+                url?: string;
+                realm?: string;
+                clientId: string;
             };
         };
 
@@ -97,10 +97,6 @@ export namespace DeploymentRegion {
             region: string; //"us-east-1"
             roleARN: string; //"arn:aws:iam::873875581780:role/test";
             roleSessionName: string; //"onyxia";
-        };
-
-        export type Disabled = Common & {
-            type: "disabled";
         };
     }
 }

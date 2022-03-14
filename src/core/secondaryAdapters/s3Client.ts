@@ -24,30 +24,31 @@ export type Params = {
     };
     durationSeconds: number;
     amazon:
+        | undefined
         | {
               roleARN: string;
               roleSessionName: string;
-          }
-        | undefined;
+          };
+
+    createAwsBucket: (params: {
+        awsRegion: string;
+        accessKey: string;
+        secretKey: string;
+        sessionToken: string;
+        bucketName: string;
+    }) => Promise<void>;
 };
 
-export async function createS3Client(
-    params: Params & {
-        createAwsBucket: (params: {
-            awsRegion: string;
-            accessKey: string;
-            secretKey: string;
-            sessionToken: string;
-            bucketName: string;
-        }) => Promise<void>;
-    },
-): Promise<S3Client> {
+export async function createS3Client(params: Params): Promise<S3Client> {
     const { url, region, keycloakParams, amazon, durationSeconds, createAwsBucket } =
         params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
-    const oidcClient = await createKeycloakOidcClient(keycloakParams);
+    const oidcClient = await createKeycloakOidcClient({
+        ...keycloakParams,
+        "transformUrlBeforeRedirectToLogin": undefined,
+    });
 
     if (!oidcClient.isUserLoggedIn) {
         return oidcClient.login();
@@ -413,7 +414,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
 };
 
 export function getCreateS3ClientParams(params: {
-    regionS3: Exclude<DeploymentRegion.S3, DeploymentRegion.S3.Disabled>;
+    s3Params: DeploymentRegion.S3;
     fallbackKeycloakParams:
         | {
               url: string;
@@ -421,43 +422,43 @@ export function getCreateS3ClientParams(params: {
               realm: string;
           }
         | undefined;
-}): Params {
-    const { regionS3, fallbackKeycloakParams } = params;
+}): Omit<Params, "createAwsBucket"> {
+    const { s3Params, fallbackKeycloakParams } = params;
 
     const keycloakParams = (() => {
-        const url = regionS3.keycloakParams?.url ?? fallbackKeycloakParams?.url;
+        const url = s3Params.keycloakParams?.url ?? fallbackKeycloakParams?.url;
         const clientId =
-            regionS3.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
-        const realm = regionS3.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
+            s3Params.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
+        const realm = s3Params.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
 
         assert(
             url !== undefined && clientId !== undefined && realm !== undefined,
-            "There is no default keycloak config and no specific config for s3",
+            "There is no specific keycloak config in the region for s3 and no keycloak config to fallback to",
         );
 
         return { url, clientId, realm };
     })();
 
     return (() => {
-        switch (regionS3.type) {
+        switch (s3Params.type) {
             case "minio":
                 return {
-                    "url": regionS3.url,
-                    "region": regionS3.region ?? "us-east-1",
+                    "url": s3Params.url,
+                    "region": s3Params.region ?? "us-east-1",
                     keycloakParams,
                     "amazon": undefined,
-                    "durationSeconds": regionS3.defaultDurationSeconds ?? 7 * 24 * 3600,
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600,
                 };
             case "amazon":
                 return {
                     "url": "https://s3.amazonaws.com",
-                    "region": regionS3.region,
+                    "region": s3Params.region,
                     keycloakParams,
                     "amazon": {
-                        "roleARN": regionS3.roleARN,
-                        "roleSessionName": regionS3.roleSessionName,
+                        "roleARN": s3Params.roleARN,
+                        "roleSessionName": s3Params.roleSessionName,
                     },
-                    "durationSeconds": regionS3.defaultDurationSeconds ?? 12 * 3600,
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600,
                 };
         }
     })();

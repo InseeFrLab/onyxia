@@ -1,8 +1,7 @@
 import { assert } from "tsafe/assert";
 import type { User } from "../ports/UserApiClient";
 import type { ThunkAction, ThunksExtraArgument } from "../setup";
-
-const userByStoreInst = new WeakMap<ThunksExtraArgument, User>();
+import { urlJoin } from "url-join-ts";
 
 export const name = "userAuthentication";
 
@@ -14,9 +13,11 @@ export const thunks = {
         (...args) => {
             const [, , extraArg] = args;
 
-            assert(extraArg.oidcClient.isUserLoggedIn);
+            const { user } = getSliceContexts(extraArg);
 
-            return userByStoreInst.get(extraArg)!;
+            assert(user !== undefined, "Can't use getUser when not authenticated");
+
+            return user;
         },
     "getIsUserLoggedIn":
         (): ThunkAction<boolean> =>
@@ -45,18 +46,63 @@ export const thunks = {
 
             return oidcClient.logout({ redirectTo });
         },
+    "getKeycloakAccountConfigurationUrl":
+        (): ThunkAction<string | undefined> =>
+        (...args) => {
+            const [, , extraArgs] = args;
+
+            return getSliceContexts(extraArgs).keycloakAccountConfigurationUrl;
+        },
 };
 
 export const privateThunks = {
     "initialize":
         (): ThunkAction =>
-        async (...args) => {
-            const [, , extraArg] = args;
+        async (...[, , extraArg]) =>
+            setSliceContext(extraArg, {
+                "user": !extraArg.oidcClient.isUserLoggedIn
+                    ? undefined
+                    : await extraArg.userApiClient.getUser(),
 
-            if (!extraArg.oidcClient.isUserLoggedIn) {
-                return;
-            }
+                "keycloakAccountConfigurationUrl": (() => {
+                    const { userAuthenticationParams } = extraArg.createStoreParams;
 
-            userByStoreInst.set(extraArg, await extraArg.userApiClient.getUser());
-        },
+                    return userAuthenticationParams.method !== "keycloak"
+                        ? undefined
+                        : urlJoin(
+                              userAuthenticationParams.keycloakParams.url,
+                              "realms",
+                              userAuthenticationParams.keycloakParams.realm,
+                              "account",
+                          );
+                })(),
+            }),
 };
+
+type SliceContext = {
+    /** undefined when not authenticated */
+    user: User | undefined;
+    /** Undefined it authentication is not keycloak */
+    keycloakAccountConfigurationUrl: string | undefined;
+};
+
+const { getSliceContexts, setSliceContext } = (() => {
+    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
+
+    function getSliceContexts(extraArg: ThunksExtraArgument): SliceContext {
+        const sliceContext = weakMap.get(extraArg);
+
+        assert(sliceContext !== undefined, "Slice context not initialized");
+
+        return sliceContext;
+    }
+
+    function setSliceContext(
+        extraArg: ThunksExtraArgument,
+        sliceContext: SliceContext,
+    ): void {
+        weakMap.set(extraArg, sliceContext);
+    }
+
+    return { getSliceContexts, setSliceContext };
+})();

@@ -7,8 +7,6 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import { getEnv } from "env";
-import { urlJoin } from "url-join-ts";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles } from "ui/theme";
 import { useAsync } from "react-async-hook";
@@ -59,6 +57,9 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const fullName = `${user.firstName} ${user.familyName}`;
 
+    const keycloakAccountConfigurationUrl =
+        userAuthenticationThunks.getKeycloakAccountConfigurationUrl();
+
     const { classes } = useStyles();
 
     return (
@@ -82,15 +83,10 @@ export const AccountInfoTab = memo((props: Props) => {
                 text={user.email}
                 onRequestCopy={onRequestCopyFactory(user.email)}
             />
-            {getEnv().OIDC_URL !== "" && (
+            {keycloakAccountConfigurationUrl !== undefined && (
                 <Link
                     className={classes.link}
-                    href={urlJoin(
-                        getEnv().OIDC_URL,
-                        "realms",
-                        getEnv().OIDC_REALM,
-                        "account",
-                    )}
+                    href={keycloakAccountConfigurationUrl}
                     target="_blank"
                     underline="hover"
                 >

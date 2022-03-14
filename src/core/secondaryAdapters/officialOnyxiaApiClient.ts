@@ -24,18 +24,24 @@ export const { pr: prAxiosInstance } = dAxiosInstance;
 
 export function createOfficialOnyxiaApiClient(params: {
     url: string;
-    /** returns undefined before region initially fetched */
-    getCurrentlySelectedDeployRegionId: () => string | undefined;
     /** undefined if user not logged in */
     getOidcAccessToken: (() => Promise<string>) | undefined;
-    /** undefined if user not logged in, return undefined before projects initially fetched */
-    getCurrentlySelectedProjectId: (() => string | undefined) | undefined;
+    //NOTE: We can't know at initialization what region and project is selected.
+    //we first have to query the API to know what region and projects are available
+    //for the user.
+    //We can't do that internally in the adapter as it's not it's its responsibility
+    //to decide what region or project should be selected.
+    //As consequence, instead of providing simple function that return the currently
+    //selected project and region we take a reference of a function (in the like of ReactRefs )
+    //that can be updated later on by the caller of the function.
+    refGetCurrentlySelectedDeployRegionId: { current: (() => string) | undefined };
+    refGetCurrentlySelectedProjectId: { current: (() => string) | undefined };
 }): OnyxiaApiClient {
     const {
         url,
-        getCurrentlySelectedDeployRegionId,
         getOidcAccessToken,
-        getCurrentlySelectedProjectId,
+        refGetCurrentlySelectedDeployRegionId,
+        refGetCurrentlySelectedProjectId,
     } = params;
 
     const { axiosInstance } = (() => {
@@ -84,27 +90,23 @@ export function createOfficialOnyxiaApiClient(params: {
             );
         }
 
-        axiosInstance.interceptors.request.use(config => {
-            const currentlySelectedDeployRegionId = getCurrentlySelectedDeployRegionId();
-            const currentlySelectedProjectId = getCurrentlySelectedProjectId?.();
-
-            return {
-                ...config,
-                "headers": {
-                    ...config?.headers,
-                    ...(currentlySelectedDeployRegionId === undefined
-                        ? {}
-                        : {
-                              "ONYXIA-REGION": currentlySelectedDeployRegionId,
-                          }),
-                    ...(currentlySelectedDeployRegionId === undefined
-                        ? {}
-                        : {
-                              "ONYXIA-PROJECT": currentlySelectedProjectId,
-                          }),
-                },
-            };
-        });
+        axiosInstance.interceptors.request.use(config => ({
+            ...config,
+            "headers": {
+                ...config?.headers,
+                ...(refGetCurrentlySelectedDeployRegionId.current === undefined
+                    ? {}
+                    : {
+                          "ONYXIA-REGION":
+                              refGetCurrentlySelectedDeployRegionId.current(),
+                      }),
+                ...(refGetCurrentlySelectedProjectId.current === undefined
+                    ? {}
+                    : {
+                          "ONYXIA-PROJECT": refGetCurrentlySelectedProjectId.current(),
+                      }),
+            },
+        }));
 
         return { axiosInstance };
     })();
@@ -140,9 +142,9 @@ export function createOfficialOnyxiaApiClient(params: {
                                     URLPattern: string;
                                 };
                                 keycloakParams?: {
-                                    URL: string;
-                                    clientId?: string;
+                                    URL?: string;
                                     realm?: string;
+                                    clientId: string;
                                 };
                                 defaultDurationSeconds?: number;
                             } & (
@@ -156,9 +158,6 @@ export function createOfficialOnyxiaApiClient(params: {
                                       region: string;
                                       roleARN: string;
                                       roleSessionName: string;
-                                  }
-                                | {
-                                      type: undefined;
                                   }
                             );
                         };
@@ -178,26 +177,25 @@ export function createOfficialOnyxiaApiClient(params: {
                         "s3": (() => {
                             const { S3 } = region.data ?? {};
 
+                            if (S3 === undefined) {
+                                return undefined;
+                            }
+
                             const common: DeploymentRegion.S3.Common = {
-                                "monitoringUrlPattern": S3?.monitoring?.URLPattern,
-                                "defaultDurationSeconds": S3?.defaultDurationSeconds,
+                                "monitoringUrlPattern": S3.monitoring?.URLPattern,
+                                "defaultDurationSeconds": S3.defaultDurationSeconds,
                                 "keycloakParams":
-                                    S3?.keycloakParams === undefined
+                                    S3.keycloakParams === undefined
                                         ? undefined
                                         : {
                                               "url": S3.keycloakParams.URL,
-                                              "clientId": S3.keycloakParams.clientId,
                                               "realm": S3.keycloakParams.realm,
+                                              "clientId": S3.keycloakParams.clientId,
                                           },
                             };
 
                             return (() => {
-                                switch (S3?.type) {
-                                    case undefined:
-                                        return id<DeploymentRegion.S3.Disabled>({
-                                            "type": "disabled",
-                                            ...common,
-                                        });
+                                switch (S3.type) {
                                     case "minio":
                                         _s3url = S3.URL;
                                         return id<DeploymentRegion.S3.Minio>({

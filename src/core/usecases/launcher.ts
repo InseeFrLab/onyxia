@@ -952,16 +952,9 @@ export const thunks = {
             >
         > =>
         async (...args) => {
-            const [
-                ,
-                getState,
-                {
-                    s3Client,
-                    createStoreParams: { oidcClientConfig },
-                },
-            ] = args;
+            const [, getState, { s3Client, createStoreParams }] = args;
 
-            const { s3: regionS3 } = deploymentRegionSelectors.selectedDeploymentRegion(
+            const { s3: s3Params } = deploymentRegionSelectors.selectedDeploymentRegion(
                 getState(),
             );
 
@@ -970,7 +963,7 @@ export const thunks = {
             const isDefaultProject =
                 getState().projectSelection.projects[0].id === project.id;
 
-            if (regionS3.type === "disabled") {
+            if (s3Params === undefined) {
                 return {
                     "AWS_ACCESS_KEY_ID": "",
                     "AWS_BUCKET_NAME": "",
@@ -997,11 +990,11 @@ export const thunks = {
             s3Client.createBucketIfNotExist(project.bucket);
 
             const { region, url } = getCreateS3ClientParams({
-                regionS3,
+                s3Params,
                 "fallbackKeycloakParams":
-                    oidcClientConfig.implementation === "KEYCLOAK"
-                        ? oidcClientConfig
-                        : undefined,
+                    createStoreParams.userAuthenticationParams.method !== "keycloak"
+                        ? undefined
+                        : createStoreParams.userAuthenticationParams.keycloakParams,
             });
 
             const { host, port = 443 } = parseUrl(url);
@@ -1061,9 +1054,11 @@ export const thunks = {
                     "token": userConfigs.githubPersonalAccessToken,
                 },
                 "vault": await (async () => {
-                    const { secretsManagerClientConfig } = createStoreParams;
+                    const vaultParams = !("vaultParams" in createStoreParams)
+                        ? undefined
+                        : createStoreParams.vaultParams;
 
-                    if (secretsManagerClientConfig.implementation !== "VAULT") {
+                    if (vaultParams === undefined) {
                         return {
                             "VAULT_ADDR": "",
                             "VAULT_TOKEN": "",
@@ -1073,9 +1068,9 @@ export const thunks = {
                     }
 
                     return {
-                        "VAULT_ADDR": secretsManagerClientConfig.url,
+                        "VAULT_ADDR": vaultParams.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
-                        "VAULT_MOUNT": secretsManagerClientConfig.engine,
+                        "VAULT_MOUNT": vaultParams.engine,
                         "VAULT_TOP_DIR": dispatch(
                             explorersThunks.getProjectHomePath({
                                 "explorerType": "secrets",
