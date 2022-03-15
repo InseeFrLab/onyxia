@@ -1,3 +1,7 @@
+### **0.48.4** (2022-03-15)  
+  
+- Allow missing groups in the JWT (soon we won't need to read it)    
+  
 ### **0.48.3** (2022-03-14)  
   
 - Use arrow function notation in types  
