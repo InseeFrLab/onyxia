@@ -18,7 +18,8 @@ export function createJwtUserApiClient(params: {
     return {
         "getUser": async () => {
             const {
-                groups: groupsStr,
+                //TODO: Remove groupe when we remove the js/ directory
+                groups: groupsStr = "[]",
                 //NOTE: Default to patch legacy account that have no locale
                 locale = "fr",
                 email,
