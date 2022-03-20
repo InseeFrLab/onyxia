@@ -1,3 +1,8 @@
+### **0.48.5** (2022-03-20)  
+  
+- Refresh OIDC Access token 25 second before it expires if user activity detected  
+- Dispatch update to dev.insee.io    
+  
 ### **0.48.4** (2022-03-15)  
   
 - Allow missing groups in the JWT (soon we won't need to read it)    
