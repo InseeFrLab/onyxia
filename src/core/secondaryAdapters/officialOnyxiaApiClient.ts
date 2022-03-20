@@ -25,7 +25,7 @@ export const { pr: prAxiosInstance } = dAxiosInstance;
 export function createOfficialOnyxiaApiClient(params: {
     url: string;
     /** undefined if user not logged in */
-    getOidcAccessToken: (() => Promise<string>) | undefined;
+    getOidcAccessToken: (() => string) | undefined;
     //NOTE: We can't know at initialization what region and project is selected.
     //we first have to query the API to know what region and projects are available
     //for the user.
@@ -49,11 +49,11 @@ export function createOfficialOnyxiaApiClient(params: {
 
         if (getOidcAccessToken !== undefined) {
             axiosInstance.interceptors.request.use(
-                async config => ({
+                config => ({
                     ...(config as any),
                     "headers": {
                         ...config.headers,
-                        "Authorization": `Bearer ${await getOidcAccessToken()}`,
+                        "Authorization": `Bearer ${getOidcAccessToken()}`,
                     },
                     "Content-Type": "application/json;charset=utf-8",
                     "Accept": "application/json;charset=utf-8",

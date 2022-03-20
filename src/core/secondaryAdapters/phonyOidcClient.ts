@@ -41,7 +41,7 @@ export function createPhonyOidcClient(params: {
 
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        "getAccessToken": (() => {
+        ...(() => {
             const { jwtClaims, user } = params;
 
             const accessToken = jwtSimple.encode(
@@ -51,7 +51,7 @@ export function createPhonyOidcClient(params: {
                 "xxx",
             );
 
-            return () => Promise.resolve(accessToken);
+            return { accessToken };
         })(),
         "logout": () => {
             const { newUrl } = addParamToUrl({
