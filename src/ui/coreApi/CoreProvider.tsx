@@ -6,6 +6,7 @@ import { getCreateStoreParams } from "ui/env";
 import type { ReturnType } from "tsafe/ReturnType";
 import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
+import { Evt } from "evt";
 
 type Props = {
     children: ReactNode;
@@ -25,6 +26,10 @@ export function CoreProvider(props: Props) {
                     [url]
                         .map(injectTransferableEnvsInSearchParams)
                         .map(injectGlobalStatesInSearchParams)[0],
+                "evtUserActivity": Evt.merge([
+                    Evt.from(document, "mousemove"),
+                    Evt.from(document, "keydown"),
+                ]).pipe(() => [undefined as void]),
             }),
         ).then(setStore);
     }, []);

@@ -9,7 +9,7 @@ import type { KcLanguageTag } from "keycloakify";
 
 export function createJwtUserApiClient(params: {
     jwtClaims: Record<keyof User, string>;
-    getOidcAccessToken: () => Promise<string>;
+    getOidcAccessToken: () => string;
 }): UserApiClient {
     const { jwtClaims, getOidcAccessToken } = params;
 
@@ -27,7 +27,7 @@ export function createJwtUserApiClient(params: {
                 firstName,
                 username,
             } = await decodeJwt({
-                "jwtToken": await getOidcAccessToken(),
+                "jwtToken": getOidcAccessToken(),
             });
 
             const m = (reason: string) =>

@@ -12,6 +12,7 @@ import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
 import { ApiLogger } from "core/tools/apiLogger";
+import type { NonPostableEvt } from "evt";
 
 const version = "v1";
 
@@ -24,23 +25,23 @@ type Params = {
         realm: string;
         clientId: string;
     };
+    evtUserActivity: NonPostableEvt<void>;
 };
 
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, keycloakParams } = params;
+    const { url, engine, role, keycloakParams, evtUserActivity } = params;
 
     const oidcClient = await createKeycloakOidcClient({
         ...keycloakParams,
         "transformUrlBeforeRedirectToLogin": undefined,
+        evtUserActivity,
     });
 
     if (!oidcClient.isUserLoggedIn) {
         return oidcClient.login();
     }
-
-    const { getAccessToken } = oidcClient;
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
@@ -54,7 +55,7 @@ export async function createVaultSecretsManagerClient(
                 auth: { lease_duration: number; client_token: string };
             }>(`/${version}/auth/jwt/login`, {
                 role,
-                "jwt": await getAccessToken(),
+                "jwt": oidcClient.accessToken,
             });
 
             return id<ReturnType<SecretsManagerClient["getToken"]>>({

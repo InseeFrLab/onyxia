@@ -36,6 +36,7 @@ import { usecasesToReducer } from "redux-clean-architecture";
 import { createMiddlewareEvtActionFactory } from "redux-clean-architecture/middlewareEvtAction";
 import type { User } from "./ports/UserApiClient";
 import type { Param0 } from "tsafe";
+import type { NonPostableEvt } from "evt";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -86,6 +87,7 @@ export type CreateStoreParams = {
                     };
           };
     highlightedPackages: string[];
+    evtUserActivity: NonPostableEvt<void>;
     //NOTE: The s3 params are provided by the region.
 };
 
@@ -132,6 +134,8 @@ export async function createStore(params: CreateStoreParams) {
 
     createStore.isFirstInvocation = false;
 
+    const { evtUserActivity } = params;
+
     const { oidcClient, jwtClaims } = await (async () => {
         const { userAuthenticationParams } = params;
 
@@ -147,6 +151,7 @@ export async function createStore(params: CreateStoreParams) {
                     realm,
                     url,
                     transformUrlBeforeRedirectToLogin,
+                    evtUserActivity,
                 });
 
                 return { oidcClient, jwtClaims };
@@ -183,7 +188,7 @@ export async function createStore(params: CreateStoreParams) {
           })
         : createJwtUserApiClient({
               jwtClaims,
-              "getOidcAccessToken": oidcClient.getAccessToken,
+              "getOidcAccessToken": () => oidcClient.accessToken,
           });
 
     let refGetCurrentlySelectedDeployRegionId:
@@ -203,7 +208,7 @@ export async function createStore(params: CreateStoreParams) {
                   "url": params.onyxiaApiUrl ?? "/api",
                   "getOidcAccessToken": !oidcClient.isUserLoggedIn
                       ? undefined
-                      : oidcClient.getAccessToken,
+                      : () => oidcClient.accessToken,
                   "refGetCurrentlySelectedDeployRegionId":
                       (refGetCurrentlySelectedDeployRegionId = {
                           "current": undefined,
@@ -250,6 +255,7 @@ export async function createStore(params: CreateStoreParams) {
 
                           return { url, clientId, realm };
                       })(),
+                      evtUserActivity,
                   };
               })(),
           );
@@ -313,6 +319,7 @@ export async function createStore(params: CreateStoreParams) {
                                   : params.userAuthenticationParams.keycloakParams,
                       }),
                       "createAwsBucket": onyxiaApiClient.createAwsBucket,
+                      evtUserActivity,
                   });
     }
 

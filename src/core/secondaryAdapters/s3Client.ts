@@ -13,6 +13,7 @@ import type { ApiLogger } from "core/tools/apiLogger";
 import { join as pathJoin } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
+import type { NonPostableEvt } from "evt";
 
 export type Params = {
     url: string;
@@ -22,6 +23,7 @@ export type Params = {
         clientId: string;
         realm: string;
     };
+    evtUserActivity: NonPostableEvt<void>;
     durationSeconds: number;
     amazon:
         | undefined
@@ -40,21 +42,27 @@ export type Params = {
 };
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, keycloakParams, amazon, durationSeconds, createAwsBucket } =
-        params;
+    const {
+        url,
+        region,
+        keycloakParams,
+        amazon,
+        durationSeconds,
+        createAwsBucket,
+        evtUserActivity,
+    } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
     const oidcClient = await createKeycloakOidcClient({
         ...keycloakParams,
         "transformUrlBeforeRedirectToLogin": undefined,
+        evtUserActivity,
     });
 
     if (!oidcClient.isUserLoggedIn) {
         return oidcClient.login();
     }
-
-    const { getAccessToken } = oidcClient;
 
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
         "requestNewToken": async (restrictToBucketName: string | undefined) => {
@@ -71,7 +79,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                     "/?" +
                         Object.entries({
                             "Action": "AssumeRoleWithWebIdentity",
-                            "WebIdentityToken": await getAccessToken(),
+                            "WebIdentityToken": oidcClient.accessToken,
                             //Desired TTL of the token, depending of the configuration
                             //and version of minio we could get less than that but never more.
                             "DurationSeconds": durationSeconds,
@@ -422,7 +430,7 @@ export function getCreateS3ClientParams(params: {
               realm: string;
           }
         | undefined;
-}): Omit<Params, "createAwsBucket"> {
+}): Omit<Params, "createAwsBucket" | "evtUserActivity"> {
     const { s3Params, fallbackKeycloakParams } = params;
 
     const keycloakParams = (() => {

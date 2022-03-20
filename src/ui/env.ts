@@ -8,6 +8,7 @@ import { assert } from "tsafe/assert";
 import type { CreateStoreParams } from "core/setup";
 import { getBrowserLng } from "ui/i18n/useLng";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
+import type { NonPostableEvt } from "evt";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -90,8 +91,9 @@ export const getDoHideOnyxia = memoize((): boolean => {
 export const getCreateStoreParams = memoize(
     (params: {
         transformUrlBeforeRedirectToLogin: (url: string) => string;
+        evtUserActivity: NonPostableEvt<void>;
     }): CreateStoreParams => {
-        const { transformUrlBeforeRedirectToLogin } = params;
+        const { transformUrlBeforeRedirectToLogin, evtUserActivity } = params;
 
         const {
             ONYXIA_API_URL,
@@ -203,6 +205,7 @@ export const getCreateStoreParams = memoize(
             highlightedPackages,
             "getIsDarkModeEnabledValueForProfileInitialization":
                 getIsDarkModeEnabledOsDefault,
+            evtUserActivity,
         };
     },
 );
