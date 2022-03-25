@@ -1,12 +1,10 @@
-import type { KcLanguageTag } from "keycloakify";
-
 export type User = {
     email: string;
-    familyName: string; //Obama
-    firstName: string; //Barack
-    username: string; //obarack, the idep
-    groups: string[];
-    locale: KcLanguageTag;
+    familyName: string;
+    firstName: string;
+    username: string;
+    groups?: string[];
+    locale?: string;
 };
 
 export type UserApiClient = {

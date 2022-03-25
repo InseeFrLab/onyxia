@@ -481,11 +481,12 @@ function useApplyLanguageSelectedAtLogin() {
         if (
             !typeGuard<SupportedLanguage>(
                 locale,
-                locale in
-                    id<Record<SupportedLanguage, null>>({
-                        "en": null,
-                        "fr": null,
-                    }),
+                locale === undefined ||
+                    locale in
+                        id<Record<SupportedLanguage, null>>({
+                            "en": null,
+                            "fr": null,
+                        }),
             )
         ) {
             return;
