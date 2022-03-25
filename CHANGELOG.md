@@ -1,3 +1,7 @@
+### **0.48.6** (2022-03-25)  
+  
+- Better management of JWT token    
+  
 ### **0.48.5** (2022-03-20)  
   
 - Refresh OIDC Access token 25 second before it expires if user activity detected  
