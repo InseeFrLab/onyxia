@@ -100,7 +100,8 @@
         "keycloakify": "^4.6.0",
         "onyxia-ui": "^0.30.4",
         "powerhooks": "^0.14.0",
-        "tss-react": "^3.5.2"
+        "tss-react": "^3.5.2",
+        "zod": "^3.14.2"
     },
     "resolutions": {
         "babel-loader": "8.1.0",

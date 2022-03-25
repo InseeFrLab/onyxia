@@ -178,7 +178,7 @@ export const asyncThunks = {
 
             dispatch(
                 actions.loadUserBuckets({
-                    "buckets": [username, ...groups.map(g => `projet-${g}`)].map(
+                    "buckets": [username, ...(groups ?? []).map(g => `projet-${g}`)].map(
                         (id, i) => ({
                             id,
                             "description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
