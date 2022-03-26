@@ -56,7 +56,16 @@ export type ExplorersState = Record<
             isUserWatching: boolean;
         };
     }
->;
+> & {
+    "~internal": {
+        s3FilesBeingUploaded: {
+            directoryPath: string;
+            basename: string;
+            size: number;
+            uploadPercent: number;
+        }[];
+    };
+};
 
 export const { name, reducer, actions } = createSlice({
     "name": "explorers",
@@ -75,10 +84,61 @@ export const { name, reducer, actions } = createSlice({
             return {
                 "s3": contextualState,
                 "secrets": contextualState,
+                "~internal": {
+                    "s3FilesBeingUploaded": [],
+                },
             };
         })(),
     ),
     "reducers": {
+        "fileUploadStarted": (
+            state,
+            {
+                payload,
+            }: PayloadAction<{
+                directoryPath: string;
+                basename: string;
+                size: number;
+            }>,
+        ) => {
+            const { directoryPath, basename, size } = payload;
+
+            state["~internal"].s3FilesBeingUploaded.push({
+                directoryPath,
+                basename,
+                size,
+                "uploadPercent": 0,
+            });
+        },
+        "uploadProgressUpdated": (
+            state,
+            {
+                payload,
+            }: PayloadAction<{
+                directoryPath: string;
+                basename: string;
+                uploadPercent: number;
+            }>,
+        ) => {
+            const { basename, directoryPath, uploadPercent } = payload;
+            const { s3FilesBeingUploaded } = state["~internal"];
+
+            const s3FileBeingUploaded = s3FilesBeingUploaded.find(
+                s3FileBeingUploaded =>
+                    s3FileBeingUploaded.directoryPath === directoryPath &&
+                    s3FileBeingUploaded.basename === basename,
+            );
+            assert(s3FileBeingUploaded !== undefined);
+            s3FileBeingUploaded.uploadPercent = uploadPercent;
+
+            if (
+                !!s3FilesBeingUploaded.find(({ uploadPercent }) => uploadPercent !== 100)
+            ) {
+                return;
+            }
+
+            state["~internal"].s3FilesBeingUploaded = [];
+        },
         "navigationStarted": (
             state,
             { payload }: PayloadAction<{ explorerType: "s3" | "secrets" }>,
@@ -285,7 +345,7 @@ export declare namespace ExplorersCreateParams {
 
         export type S3 = _FileCommon & {
             explorerType: "s3";
-            data: unknown;
+            blob: Blob;
         };
 
         export type Secrets = _FileCommon & {
@@ -719,7 +779,31 @@ export const thunks = {
                 case "file":
                     switch (params.explorerType) {
                         case "s3":
-                            alert("TODO");
+                            console.log(
+                                "todo: here we need to wait that the upload start",
+                            );
+
+                            dispatch(
+                                actions.fileUploadStarted({
+                                    "basename": params.basename,
+                                    directoryPath,
+                                    "size": params.blob.size,
+                                }),
+                            );
+
+                            sliceContexts[params.explorerType].loggedFsApi.uploadFile({
+                                path,
+                                "blob": params.blob,
+                                "onUploadProgress": ({ uploadPercent }) =>
+                                    dispatch(
+                                        actions.uploadProgressUpdated({
+                                            "basename": params.basename,
+                                            directoryPath,
+                                            uploadPercent,
+                                        }),
+                                    ),
+                            });
+
                             break;
                         case "secrets":
                             await sliceContexts[params.explorerType].loggedFsApi.put({
@@ -896,7 +980,12 @@ const { getSliceContexts } = (() => {
                                 "debugMessage":
                                     "We are not supposed to have do download file here. Moving file is too expensive in S3",
                             }),
-                            "uploadFile": loggedFsApi.uploadFile,
+                            "uploadFile": ({ file, path }) =>
+                                loggedFsApi.uploadFile({
+                                    path,
+                                    "blob": file,
+                                    "onUploadProgress": () => {},
+                                }),
                         },
                         "keepFile": new Blob(
                             ["This file tells that a directory exists"],
@@ -1054,5 +1143,39 @@ export const selectors = (() => {
         ) as any;
     };
 
-    return { cwdIconsVue };
+    type UploadProgress = {
+        s3FilesBeingUploaded: ExplorersState["~internal"]["s3FilesBeingUploaded"];
+        overallProgress: {
+            completedFileCount: number;
+            remainingFileCount: number;
+            totalFileCount: number;
+            uploadPercent: number;
+        };
+    };
+
+    const uploadProgress = (rootState: RootState): UploadProgress => {
+        const { s3FilesBeingUploaded } = rootState.explorers["~internal"];
+
+        const completedFileCount = s3FilesBeingUploaded.map(
+            ({ uploadPercent }) => uploadPercent === 100,
+        ).length;
+
+        return {
+            s3FilesBeingUploaded,
+            "overallProgress": {
+                completedFileCount,
+                "remainingFileCount": s3FilesBeingUploaded.length - completedFileCount,
+                "totalFileCount": s3FilesBeingUploaded.length,
+                "uploadPercent":
+                    s3FilesBeingUploaded
+                        .map(({ size, uploadPercent }) => size * uploadPercent)
+                        .reduce((prev, curr) => prev + curr, 0) /
+                    s3FilesBeingUploaded
+                        .map(({ size }) => size)
+                        .reduce((prev, curr) => prev + curr, 0),
+            },
+        };
+    };
+
+    return { cwdIconsVue, uploadProgress };
 })();

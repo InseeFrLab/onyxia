@@ -17,6 +17,9 @@ import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor, Props as MySecretsEditorProps } from "./MySecretsEditor";
+import { InputFile } from "ui/tools/InputFile";
+import type { InputFileProps } from "ui/tools/InputFile";
+import { useConst } from "powerhooks/useConst";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
@@ -30,7 +33,6 @@ export type Props = {
 };
 
 export function MyFilesMySecrets(props: Props) {
-    //TODO: Fix how routes are handled, can't navigate back for example.
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFilesMySecrets });
@@ -143,21 +145,7 @@ export function MyFilesMySecrets(props: Props) {
                             });
                             break;
                         case "s3":
-                            (async () => {
-                                alert("TODO: ui for uploading a file");
-
-                                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                                const basename = "my_file.txt";
-                                const data = "010001010111010111";
-
-                                explorersThunks.create({
-                                    "explorerType": "s3",
-                                    "createWhat": "file",
-                                    basename,
-                                    data,
-                                });
-                            })();
+                            evtInputFileActionAction.post("TRIGGER");
                             break;
                     }
                     break;
@@ -298,12 +286,36 @@ export function MyFilesMySecrets(props: Props) {
         }),
     );
 
+    const evtInputFileActionAction = useConst(() =>
+        Evt.create<UnpackEvt<InputFileProps["evtAction"]>>(),
+    );
+
+    const onFileSelected = useConstCallback<InputFileProps["onFileSelected"]>(
+        ({ files }) =>
+            files.map(file =>
+                explorersThunks.create({
+                    "explorerType": "s3",
+                    "createWhat": "file",
+                    "basename": file.name,
+                    "blob": file,
+                }),
+            ),
+    );
+
+    const { uploadProgress } = useSelector(selectors.explorers.uploadProgress);
+
+    console.log(JSON.stringify(uploadProgress, null, 2));
+
     if (cwdVue === undefined) {
         return null;
     }
 
     return (
         <div className={cx(classes.root, className)}>
+            <InputFile
+                evtAction={evtInputFileActionAction}
+                onFileSelected={onFileSelected}
+            />
             <PageHeader
                 mainIcon={(() => {
                     switch (explorerType) {

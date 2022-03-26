@@ -1,17 +1,18 @@
 import { useRef, memo } from "react";
+import type { ChangeEventHandler } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
-//import { useConstCallback } from "powerhooks/useConstCallback";
+import { useConstCallback } from "powerhooks/useConstCallback";
 
 //Look in my-files.component.tsx
 export type InputFileProps = {
     evtAction: NonPostableEvt<"TRIGGER">;
-    onFileSelected: () => void;
+    onFileSelected: (params: { files: File[] }) => void;
 };
 
 export const InputFile = memo((props: InputFileProps) => {
-    const { evtAction } = props;
+    const { evtAction, onFileSelected } = props;
 
     const ref = useRef<HTMLInputElement>(null);
 
@@ -30,16 +31,13 @@ export const InputFile = memo((props: InputFileProps) => {
         [evtAction],
     );
 
-    /*
-	handleChangeFile = (e: { target: { value: string; files: FileList | null } }) => {
-		assert(e.target.files !== null);
+    const onChange = useConstCallback<ChangeEventHandler<HTMLInputElement>>(
+        ({ target: { files } }) => {
+            assert(files !== null);
 
-		this.setState({
-			"files": Object.values(e.target.files),
-			"filePath": e.target.value,
-		});
-	};
-	*/
+            onFileSelected({ "files": Object.values(files) });
+        },
+    );
 
     return (
         <input
@@ -48,7 +46,7 @@ export const InputFile = memo((props: InputFileProps) => {
             multiple={true}
             style={{ "display": "none" }}
             ref={ref}
-            onChange={() => {}}
+            onChange={onChange}
         />
     );
 });
