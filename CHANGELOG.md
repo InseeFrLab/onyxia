@@ -1,3 +1,7 @@
+### **0.48.7** (2022-03-26)  
+  
+- Feat: Upload file s3    
+  
 ### **0.48.6** (2022-03-25)  
   
 - Better management of JWT token    
