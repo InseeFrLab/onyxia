@@ -315,8 +315,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
             return dOut.pr;
         },
-        "uploadFile": async ({ file, path, evtUploadPercent }) => {
-            const stream = fileReaderStream(file);
+        "uploadFile": async ({ blob, path, onUploadProgress }) => {
+            const stream = fileReaderStream(blob);
 
             {
                 let chunkLengthSum = 0;
@@ -324,13 +324,13 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 stream.on("data", (chunk: any) => {
                     chunkLengthSum += chunk.length;
 
-                    const uploadPercent = ~~((chunkLengthSum / file.size) * 100);
+                    const uploadPercent = ~~((chunkLengthSum / blob.size) * 100);
 
                     if (uploadPercent === 100) {
                         return;
                     }
 
-                    evtUploadPercent?.post({ uploadPercent });
+                    onUploadProgress?.({ uploadPercent });
                 });
             }
 
@@ -342,11 +342,11 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
             const dOut = new Deferred<void>();
 
-            minioClient.putObject(bucketName, objectName, stream, file.size, {}, err => {
+            minioClient.putObject(bucketName, objectName, stream, blob.size, {}, err => {
                 if (!!err) {
                     throw err;
                 }
-                evtUploadPercent?.post({ "uploadPercent": 100 });
+                onUploadProgress?.({ "uploadPercent": 100 });
 
                 dOut.resolve();
             });

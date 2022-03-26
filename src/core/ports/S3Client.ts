@@ -19,9 +19,9 @@ export type S3Client = {
 
     /** Completed when 100% uploaded */
     uploadFile: (params: {
-        file: Blob;
+        blob: Blob;
         path: string;
-        evtUploadPercent?: { post: (data: { uploadPercent: number }) => void };
+        onUploadProgress: (params: { uploadPercent: number }) => void;
     }) => Promise<void>;
 
     deleteFile: (params: { path: string }) => Promise<void>;
