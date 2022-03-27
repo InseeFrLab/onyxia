@@ -409,8 +409,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                             subtitle={formattedDate}
                             image={
                                 <FileOrDirectoryIcon
+                                    className={classes.fileOrDirectoryIcon}
                                     explorerType={explorerType}
-                                    standardizedWidth="big"
                                     kind={props.isFileOpen ? "file" : "directory"}
                                 />
                             }
@@ -566,6 +566,10 @@ const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean
     "breadcrump": {
         "marginTop": theme.spacing(3),
         "marginBottom": theme.spacing(4),
+    },
+    "fileOrDirectoryIcon": {
+        "height": "unset",
+        "width": "100%",
     },
 }));
 

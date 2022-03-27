@@ -1,4 +1,7 @@
-import { ExplorerItem, Props } from "ui/components/shared/Explorer/ExplorerItem";
+import {
+    ExplorerItem,
+    ExplorerItemProps,
+} from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { Evt } from "evt";
@@ -24,7 +27,10 @@ export default {
                 {
                     "title": "Enter editing state",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>("ENTER EDITING STATE"),
+                    "payload":
+                        id<UnpackEvt<ExplorerItemProps["evtAction"]>>(
+                            "ENTER EDITING STATE",
+                        ),
                 },
             ],
         }),
@@ -32,7 +38,7 @@ export default {
 };
 
 export const defaultView = getStory({
-    "visualRepresentationOfAFile": "secret",
+    "explorerType": "secrets",
     "kind": "file",
     "basename": "aVeryLongNameThatShouldBreak.txt",
     "isSelected": false,

@@ -5,19 +5,18 @@ import { ReactComponent as FileSvg } from "ui/assets/svg/ExplorerFile.svg";
 import { ReactComponent as DirectorySvg } from "ui/assets/svg/Directory.svg";
 
 export type Props = {
-    explorerType: "s3" | "secrets";
+    className?: string;
 
-    /** Big for large screen, normal otherwise */
-    standardizedWidth: "normal" | "big";
+    explorerType: "s3" | "secrets";
 
     /** Tell if we are displaying an directory or a secret */
     kind: "file" | "directory";
 };
 
 export const FileOrDirectoryIcon = memo((props: Props) => {
-    const { explorerType, kind, standardizedWidth } = props;
+    const { className, explorerType, kind } = props;
 
-    const { classes } = useStyles({ kind, standardizedWidth });
+    const { classes, cx } = useStyles({ kind });
 
     const SvgComponent = useMemo(() => {
         switch (kind) {
@@ -33,12 +32,12 @@ export const FileOrDirectoryIcon = memo((props: Props) => {
         }
     }, [kind, explorerType]);
 
-    return <SvgComponent className={classes.root} />;
+    return <SvgComponent className={cx(classes.root, className)} />;
 });
 
-const useStyles = makeStyles<Pick<Props, "kind" | "standardizedWidth">>({
+const useStyles = makeStyles<Pick<Props, "kind">>({
     "name": { FileOrDirectoryIcon },
-})((theme, { kind, standardizedWidth }) => ({
+})((theme, { kind }) => ({
     "root": {
         "fill": "currentColor",
         "color": (() => {
@@ -51,18 +50,7 @@ const useStyles = makeStyles<Pick<Props, "kind" | "standardizedWidth">>({
                     ].main;
             }
         })(),
-        ...(() => {
-            const width = (() => {
-                switch (standardizedWidth) {
-                    case "big":
-                        return 100;
-                    case "normal":
-                        return 60;
-                }
-            })();
-
-            return { width, "height": ~~((width * 8) / 10) };
-        })(),
+        "height": 60,
         "display": "block",
     },
 }));
