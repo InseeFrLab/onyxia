@@ -211,13 +211,24 @@ export declare namespace ExplorerItem {
     };
 }
 
-const useStyles = makeStyles<{ isSelected: boolean; basename: string }>({
+const useStyles = makeStyles<
+    Pick<ExplorerItemProps, "isSelected" | "basename" | "standardizedWidth">
+>({
     "name": { ExplorerItem },
-})((theme, { isSelected, basename }) => ({
+})((theme, { isSelected, basename, standardizedWidth }) => ({
     "root": {
         "textAlign": "center",
         "cursor": "pointer",
-        "width": theme.spacing(9),
+        "width": theme.spacing(
+            (() => {
+                switch (standardizedWidth) {
+                    case "normal":
+                        return 7;
+                    case "big":
+                        return 9;
+                }
+            })(),
+        ),
     },
     "frame": {
         "borderRadius": "5px",
