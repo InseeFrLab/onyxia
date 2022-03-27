@@ -1,3 +1,11 @@
+### **0.48.8** (2022-03-27)  
+  
+- Smarter core provider  
+- Change icon for file explorer  
+- Remove emotion warning in storybook  
+- Fix storybook reload  
+- Storybook fixes    
+  
 ### **0.48.7** (2022-03-26)  
   
 - Feat: Upload file s3    
