@@ -21,6 +21,9 @@ import type { SupportedLanguage } from "ui/i18n/translations";
 import { RouteProvider } from "ui/routes";
 import { useLng } from "ui/i18n/useLng";
 
+//NOTE: Storybook bug hotfix.
+const propsByTitle = new Map<string, any>();
+
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
@@ -75,6 +78,8 @@ export function getStoryFactory<Props>(params: {
         ? ({ children }) => <>{children}</>
         : ({ children }) => <CoreProvider>{children}</CoreProvider>;
 
+    const title = `${sectionName}/${symToStr(wrappedComponent)}`;
+
     const Template: Story<
         Props & {
             darkMode: boolean;
@@ -83,14 +88,21 @@ export function getStoryFactory<Props>(params: {
             targetWindowInnerWidth: number;
             lng: SupportedLanguage;
         }
-    > = ({
-        darkMode,
-        containerWidth,
-        targetWindowInnerWidth,
-        chromeFontSize,
-        lng,
-        ...props
-    }) => {
+    > = templateProps => {
+        //NOTE: We fix a bug of Storybook that override all props when we reload.
+        //If storybook worked as expected we would just deconstruct from templateProps
+        const {
+            darkMode,
+            containerWidth,
+            targetWindowInnerWidth,
+            chromeFontSize,
+            lng,
+            ...props
+        } = Object.assign(
+            propsByTitle.get(title)!,
+            templateProps,
+        ) as typeof templateProps;
+
         const { setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
         useEffect(() => {
@@ -164,12 +176,14 @@ export function getStoryFactory<Props>(params: {
             ...props,
         };
 
+        propsByTitle.set(title, out.args);
+
         return out;
     }
 
     return {
         "meta": id<Meta>({
-            "title": `${sectionName}/${symToStr(wrappedComponent)}`,
+            title,
             "component": Component,
             "argTypes": {
                 "containerWidth": {
