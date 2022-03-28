@@ -339,30 +339,26 @@ export const { fromNow } = (() => {
     return { fromNow };
 })();
 
-export const { useFromNow } = (() => {
-    function useFromNow(params: { dateTime: number }) {
-        const { dateTime } = params;
+export function useFromNow(params: { dateTime: number }) {
+    const { dateTime } = params;
 
-        const [trigger, forceUpdate] = useReducer(n => n + 1, 0);
+    const [trigger, forceUpdate] = useReducer(n => n + 1, 0);
 
-        useEffect(() => {
-            const timer = setInterval(() => forceUpdate(), 1000);
+    useEffect(() => {
+        const timer = setInterval(() => forceUpdate(), 1000);
 
-            return () => {
-                clearTimeout(timer);
-            };
-        }, []);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, []);
 
-        const { lng } = useLng();
+    const { lng } = useLng();
 
-        const fromNowText = useMemo(
-            () => fromNow({ dateTime, lng }),
+    const fromNowText = useMemo(
+        () => fromNow({ dateTime, lng }),
 
-            [lng, trigger, dateTime],
-        );
+        [lng, trigger, dateTime],
+    );
 
-        return { fromNowText };
-    }
-
-    return { useFromNow };
-})();
+    return { fromNowText };
+}
