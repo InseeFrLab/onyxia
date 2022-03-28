@@ -1,3 +1,7 @@
+### **0.48.9** (2022-03-28)  
+  
+- Fix bug in useApplyLanguageSelectedAtLogin    
+  
 ### **0.48.8** (2022-03-27)  
   
 - Smarter core provider  
