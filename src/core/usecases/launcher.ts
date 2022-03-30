@@ -1046,6 +1046,9 @@ export const thunks = {
                 "project": {
                     "id": project.id,
                     "password": servicePassword,
+                    "basic": btoa(
+                        unescape(encodeURIComponent(`${project.id}:${servicePassword}`)),
+                    ),
                 },
                 "git": {
                     "name": userConfigs.gitName,

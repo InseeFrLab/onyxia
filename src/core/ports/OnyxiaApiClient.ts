@@ -133,6 +133,7 @@ export type MustacheParams = {
     project: {
         id: string;
         password: string;
+        basic: string;
     };
     git: {
         name: string;
