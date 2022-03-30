@@ -1,3 +1,8 @@
+### **0.48.10** (2022-03-30)  
+  
+- Inject project.basic in mustch params  
+- Remove unessesary wrapping (unconsequential)    
+  
 ### **0.48.9** (2022-03-28)  
   
 - Fix bug in useApplyLanguageSelectedAtLogin    
