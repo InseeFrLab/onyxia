@@ -44,10 +44,22 @@ export const VueDefault = getStory({
     "scrollableDivRef": { "current": null },
     "search": "",
     "notShownPackageCount": 0,
+    "selectedCatalogId": "helm-charts-datascience",
+    "catalogs": [
+        {
+            "id": "helm-charts-datascience",
+            "name": "Helm charts datascience",
+        },
+        {
+            "id": "helm-charts-trainings",
+            "name": "Helm charts trainings",
+        },
+    ],
     /* spell-checker: enable */
     ...logCallbacks([
         "onSearchChange",
         "onRequestLaunch",
         "onRequestRevealPackagesNotShown",
+        "onSelectedCatalogIdChange",
     ]),
 });

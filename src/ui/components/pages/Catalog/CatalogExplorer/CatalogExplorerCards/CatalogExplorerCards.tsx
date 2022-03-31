@@ -12,115 +12,138 @@ import { SearchBar } from "onyxia-ui/SearchBar";
 import type { SearchBarProps } from "onyxia-ui/SearchBar";
 import type { UnpackEvt } from "evt";
 import { breakpointsValues } from "onyxia-ui";
+import type { LocalizedString } from "ui/i18n/useResolveLocalizedString";
+import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 import { Evt } from "evt";
 
-export type Props<PackageName extends string = string> = {
+export type Props = {
     className?: string;
     packages: {
-        packageName: PackageName;
+        packageName: string;
         packageIconUrl?: string;
         packageDescription: string;
         packageHomeUrl?: string;
     }[];
     search: string;
     onSearchChange: (search: string) => void;
-    onRequestLaunch: (packageName: PackageName) => void;
+    onRequestLaunch: (packageName: string) => void;
     onRequestRevealPackagesNotShown: () => void;
+    selectedCatalogId: string;
+    catalogs: {
+        id: string;
+        name: LocalizedString;
+    }[];
+    onSelectedCatalogIdChange: (selectedCatalogId: string) => void;
     scrollableDivRef: RefObject<HTMLDivElement>;
     notShownPackageCount: number;
 };
 
-export const CatalogExplorerCards = memo(
-    <PackageName extends string = string>(props: Props<PackageName>) => {
-        const {
-            className,
-            packages,
-            search,
-            onSearchChange,
-            onRequestLaunch,
-            onRequestRevealPackagesNotShown,
-            scrollableDivRef,
-            notShownPackageCount,
-        } = props;
+export const CatalogExplorerCards = memo((props: Props) => {
+    const {
+        className,
+        packages,
+        search,
+        onSearchChange,
+        onRequestLaunch,
+        onRequestRevealPackagesNotShown,
+        catalogs,
+        selectedCatalogId,
+        onSelectedCatalogIdChange,
+        scrollableDivRef,
+        notShownPackageCount,
+    } = props;
 
-        const onRequestLaunchFactory = useCallbackFactory(
-            ([packageName]: [PackageName]) => onRequestLaunch(packageName),
-        );
+    const onRequestLaunchFactory = useCallbackFactory(([packageName]: [string]) =>
+        onRequestLaunch(packageName),
+    );
 
-        const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
+    const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
 
-        const { t } = useTranslation({ CatalogExplorerCards });
+    const { t } = useTranslation({ CatalogExplorerCards });
 
-        const { classes, cx } = useStyles({
-            "filteredCardCount": packages.length,
-        });
+    const { classes, cx } = useStyles({
+        "filteredCardCount": packages.length,
+    });
 
-        const [evtSearchBarAction] = useState(() =>
-            Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>(),
-        );
+    const [evtSearchBarAction] = useState(() =>
+        Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>(),
+    );
 
-        const onGoBackClick = useConstCallback(() =>
-            evtSearchBarAction.post("CLEAR SEARCH"),
-        );
+    const onGoBackClick = useConstCallback(() => evtSearchBarAction.post("CLEAR SEARCH"));
 
-        return (
-            <div className={cx(classes.root, className, "foo-bar")}>
-                <SearchBar
-                    className={classes.searchBar}
-                    search={search}
-                    evtAction={evtSearchBarAction}
-                    onSearchChange={onSearchChange}
-                    placeholder={t("search")}
-                />
-                <div ref={scrollableDivRef} className={classes.cardsWrapper}>
-                    {packages.length === 0 ? undefined : (
-                        <Text typo="section heading" className={classes.contextTypo}>
-                            {t(
-                                search !== ""
-                                    ? "search results"
-                                    : notShownPackageCount === 0
-                                    ? "all services"
-                                    : "main services",
-                            )}
-                        </Text>
-                    )}
-                    <div className={classes.cards}>
-                        {packages.length === 0 ? (
-                            <NoMatches search={search} onGoBackClick={onGoBackClick} />
-                        ) : (
-                            packages.map(
-                                ({
-                                    packageName,
-                                    packageIconUrl,
-                                    packageDescription,
-                                    packageHomeUrl,
-                                }) => (
-                                    <CatalogExplorerCard
-                                        key={packageName}
-                                        packageIconUrl={packageIconUrl}
-                                        packageName={packageName}
-                                        packageDescription={packageDescription}
-                                        onRequestLaunch={onRequestLaunchFactory(
-                                            packageName,
-                                        )}
-                                        packageHomeUrl={packageHomeUrl}
-                                    />
-                                ),
-                            )
-                        )}
-                        {notShownPackageCount !== 0 && (
-                            <CardShowMore
-                                leftToShowCount={notShownPackageCount}
-                                onClick={onShowMoreClick}
-                            />
-                        )}
-                    </div>
-                    <div className={classes.bottomScrollSpace} />
+    const { resolveLocalizedString } = useResolveLocalizedString();
+
+    const onSelectedCatalogIdChangeFactory = useCallbackFactory(([catalogId]: [string]) =>
+        onSelectedCatalogIdChange(catalogId),
+    );
+
+    return (
+        <div className={cx(classes.root, className)}>
+            {catalogs.length > 1 && (
+                <div className={classes.catalogSwitcher}>
+                    {catalogs.map(({ id, name }) => (
+                        <CustomButton
+                            key={id}
+                            isSelected={id === selectedCatalogId}
+                            text={resolveLocalizedString(name)}
+                            onClick={onSelectedCatalogIdChangeFactory(id)}
+                        />
+                    ))}
                 </div>
+            )}
+            <SearchBar
+                className={classes.searchBar}
+                search={search}
+                evtAction={evtSearchBarAction}
+                onSearchChange={onSearchChange}
+                placeholder={t("search")}
+            />
+            <div ref={scrollableDivRef} className={classes.cardsWrapper}>
+                {packages.length === 0 ? undefined : (
+                    <Text typo="section heading" className={classes.contextTypo}>
+                        {t(
+                            search !== ""
+                                ? "search results"
+                                : notShownPackageCount === 0
+                                ? "all services"
+                                : "main services",
+                        )}
+                    </Text>
+                )}
+                <div className={classes.cards}>
+                    {packages.length === 0 ? (
+                        <NoMatches search={search} onGoBackClick={onGoBackClick} />
+                    ) : (
+                        packages.map(
+                            ({
+                                packageName,
+                                packageIconUrl,
+                                packageDescription,
+                                packageHomeUrl,
+                            }) => (
+                                <CatalogExplorerCard
+                                    key={packageName}
+                                    packageIconUrl={packageIconUrl}
+                                    packageName={packageName}
+                                    packageDescription={packageDescription}
+                                    onRequestLaunch={onRequestLaunchFactory(packageName)}
+                                    packageHomeUrl={packageHomeUrl}
+                                />
+                            ),
+                        )
+                    )}
+                    {notShownPackageCount !== 0 && (
+                        <CardShowMore
+                            leftToShowCount={notShownPackageCount}
+                            onClick={onShowMoreClick}
+                        />
+                    )}
+                </div>
+                <div className={classes.bottomScrollSpace} />
             </div>
-        );
-    },
-);
+        </div>
+    );
+});
 
 export declare namespace CatalogExplorerCards {
     export type I18nScheme = {
@@ -168,6 +191,51 @@ const { CardShowMore } = (() => {
 
     return { CardShowMore };
 })();
+
+const useStyles = makeStyles<{
+    filteredCardCount: number;
+}>({ "name": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+    },
+    "catalogSwitcher": {
+        "display": "flex",
+        "marginBottom": theme.spacing(2),
+    },
+    "searchBar": {
+        "marginBottom": theme.spacing(4),
+    },
+    "contextTypo": {
+        "marginBottom": theme.spacing(4),
+    },
+    "cardsWrapper": {
+        "flex": 1,
+        "overflow": "auto",
+    },
+    "cards": {
+        ...(filteredCardCount === 0
+            ? {}
+            : {
+                  "display": "grid",
+                  "gridTemplateColumns": `repeat(${(() => {
+                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
+                          return 4;
+                      }
+                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
+                          return 3;
+                      }
+
+                      return 2;
+                  })()},1fr)`,
+                  "gap": theme.spacing(4),
+              }),
+    },
+    "bottomScrollSpace": {
+        "height": theme.spacing(3),
+    },
+}));
 
 const { NoMatches } = (() => {
     type Props = {
@@ -232,43 +300,57 @@ const { NoMatches } = (() => {
     return { NoMatches };
 })();
 
-const useStyles = makeStyles<{
-    filteredCardCount: number;
-}>({ "name": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column",
-    },
-    "searchBar": {
-        "marginBottom": theme.spacing(4),
-    },
-    "contextTypo": {
-        "marginBottom": theme.spacing(4),
-    },
-    "cardsWrapper": {
-        "flex": 1,
-        "overflow": "auto",
-    },
-    "cards": {
-        ...(filteredCardCount === 0
-            ? {}
-            : {
-                  "display": "grid",
-                  "gridTemplateColumns": `repeat(${(() => {
-                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
-                          return 4;
-                      }
-                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
-                          return 3;
-                      }
+const { CustomButton } = (() => {
+    type CustomButtonProps = {
+        className?: string;
+        isSelected: boolean;
+        onClick: () => void;
+        text: string;
+    };
 
-                      return 2;
-                  })()},1fr)`,
-                  "gap": theme.spacing(4),
-              }),
-    },
-    "bottomScrollSpace": {
-        "height": theme.spacing(3),
-    },
-}));
+    const CustomButton = memo((props: CustomButtonProps) => {
+        const { onClick, className, isSelected } = props;
+
+        const onMouseDown = useConstCallback(
+            (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+                e.preventDefault();
+                if (e.button !== 0) {
+                    return;
+                }
+                onClick();
+            },
+        );
+
+        const { classes, cx } = useStyles();
+
+        return (
+            <div
+                className={cx(classes.root, className)}
+                color="secondary"
+                onMouseDown={onMouseDown}
+            >
+                <Text
+                    typo={"body 1"}
+                    color={!isSelected ? "secondary" : undefined}
+                    className={classes.typo}
+                >
+                    {props.text}
+                </Text>
+            </div>
+        );
+    });
+
+    const useStyles = makeStyles({ "name": { CustomButton } })(theme => ({
+        "root": {
+            "padding": theme.spacing({ "topBottom": 2, "rightLeft": 3 }),
+            "display": "flex",
+            "alignItems": "center",
+            "cursor": "pointer",
+        },
+        "typo": {
+            "fontWeight": 600,
+        },
+    }));
+
+    return { CustomButton };
+})();
