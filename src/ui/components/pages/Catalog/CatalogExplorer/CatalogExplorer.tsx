@@ -57,12 +57,6 @@ export const CatalogExplorer = memo((props: Props) => {
         }
     }, [catalogExplorerState.stateDescription]);
 
-    /**
-     * TODO: For the moment we provide no UI for switching from one catalog to another
-     * thus this hook is, in effect, useless.
-     * To switch from a catalog to another, simply update the route, this hook will
-     * propagate to the core.
-     */
     useEffect(() => {
         const { catalogId } = route.params;
 
@@ -104,11 +98,22 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const { filteredPackages } = useSelector(selectors.catalogExplorer.filteredPackages);
 
+    const { productionCatalogs } = useSelector(
+        selectors.catalogExplorer.productionCatalogs,
+    );
+    const { selectedCatalog } = useSelector(selectors.catalogExplorer.selectedCatalog);
+
+    const onSelectedCatalogIdChange = useConstCallback((catalogId: string) =>
+        routes.catalogExplorer({ catalogId }).push(),
+    );
+
     if (catalogExplorerState.stateDescription !== "ready") {
         return null;
     }
 
     assert(filteredPackages !== undefined);
+    assert(productionCatalogs !== undefined);
+    assert(selectedCatalog !== undefined);
 
     const { packages, notShownCount } = filteredPackages;
 
@@ -122,6 +127,9 @@ export const CatalogExplorer = memo((props: Props) => {
             scrollableDivRef={scrollableDivRef}
             onRequestRevealPackagesNotShown={onRequestRevealPackagesNotShown}
             notShownPackageCount={notShownCount}
+            selectedCatalogId={selectedCatalog.id}
+            catalogs={productionCatalogs}
+            onSelectedCatalogIdChange={onSelectedCatalogIdChange}
         />
     );
 });

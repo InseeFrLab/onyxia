@@ -302,17 +302,7 @@ export const selectors = (() => {
         return filterProductionCatalogs(state["~internal"].catalogs);
     };
 
-    const availableCatalogsId = (rootState: RootState): string[] | undefined => {
-        const state = rootState.catalogExplorer;
-
-        if (state.stateDescription !== "ready") {
-            return undefined;
-        }
-
-        return state["~internal"].catalogs.map(({ id }) => id);
-    };
-
-    return { filteredPackages, selectedCatalog, productionCatalogs, availableCatalogsId };
+    return { filteredPackages, selectedCatalog, productionCatalogs };
 })();
 
 function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
