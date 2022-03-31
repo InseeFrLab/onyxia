@@ -37,8 +37,7 @@ import { MyServicesCards } from "ui/components/pages/MyServices/MyServicesCards"
 import { LoginDivider } from "ui/components/KcApp/Login/LoginDivider";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets/MyFilesMySecrets";
 import { Login } from "ui/components/KcApp/Login";
-import type { KcLanguageTag } from "keycloakify";
-import { assert } from "tsafe/assert";
+import type { Language } from "./useLng";
 
 export type Scheme = {
     [key: string]: undefined | Record<string, string>;
@@ -94,17 +93,9 @@ export type Translations = {
     [K in keyof I18nSchemes]: ToTranslations<I18nSchemes[K]>;
 };
 
-export type SupportedLanguage = "en" | "fr";
-
-assert<SupportedLanguage extends KcLanguageTag ? true : false>();
-
-export const fallbackLanguage = "en";
-
-assert<typeof fallbackLanguage extends SupportedLanguage ? true : false>();
-
 const common = id<
     Record<
-        SupportedLanguage,
+        Language,
         Record<
             | "file"
             | "secret"
@@ -145,7 +136,7 @@ const common = id<
     },
 });
 
-export const resources = id<Record<SupportedLanguage, Translations>>({
+export const resources = id<Record<Language, Translations>>({
     "en": {
         "Account": {
             "infos": "Account infos",

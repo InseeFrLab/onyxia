@@ -1,26 +1,28 @@
-import type { SupportedLanguage, fallbackLanguage } from "./translations";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { getEvtKcLanguage } from "keycloakify";
 import { assert } from "tsafe/assert";
-import { id } from "tsafe/id";
-import type { Equals } from "tsafe";
+import type { KcLanguageTag } from "keycloakify";
+import type { Language } from "ui/coreApi";
+import { languages } from "ui/coreApi";
+export { languages };
+export type { Language };
 
-const supportedLanguage = ["en", "fr"] as const;
+assert<Language extends KcLanguageTag ? true : false>();
 
-assert<Equals<SupportedLanguage, typeof supportedLanguage[number]>>();
+export const fallbackLanguage = "en";
 
-export function getBrowserLng(): SupportedLanguage {
+assert<typeof fallbackLanguage extends Language ? true : false>();
+
+export function getBrowserLng(): Language {
     const iso2LanguageLike = navigator.language.split("-")[0].toLowerCase();
 
-    const lng = supportedLanguage.find(lng =>
-        lng.toLowerCase().includes(iso2LanguageLike),
-    );
+    const lng = languages.find(lng => lng.toLowerCase().includes(iso2LanguageLike));
 
     if (lng !== undefined) {
         return lng;
     }
 
-    return id<typeof fallbackLanguage>("en");
+    return fallbackLanguage;
 }
 
 export const { useLng, evtLng } = createUseGlobalState("lng", getBrowserLng);

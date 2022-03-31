@@ -11,11 +11,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { getHeaderLinksFromEnv } from "ui/env";
-import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
-import { useLng } from "ui/i18n/useLng";
-import { id } from "tsafe/id";
-import type { fallbackLanguage } from "ui/i18n/translations";
 import { getDoHideOnyxia } from "ui/env";
+import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 
 export type Props = Props.LoginPages | Props.UserNotLoggedIn | Props.UserLoggedIn;
 export declare namespace Props {
@@ -50,7 +47,7 @@ export const Header = memo((props: Props) => {
 
     const { classes, cx, css, theme } = useStyles({ logoContainerWidth });
 
-    const { lng } = useLng();
+    const { resolveLocalizedString } = useResolveLocalizedString();
 
     const doShowOnyxia = props.useCase === "core app" && !getDoHideOnyxia();
 
@@ -98,11 +95,6 @@ export const Header = memo((props: Props) => {
                                 return null;
                             }
 
-                            const { resolveLocalizedString } =
-                                createResolveLocalizedString({
-                                    "currentLanguage": lng,
-                                    "fallbackLanguage": id<typeof fallbackLanguage>("en"),
-                                });
                             return headerLinksFromEnv.map(({ iconId, url, label }) => (
                                 <ButtonBarButton
                                     key={url}

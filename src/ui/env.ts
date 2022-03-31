@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { SupportedLanguage } from "ui/i18n/translations";
+import type { LocalizedString } from "ui/i18n/useResolveLocalizedString";
 //TODO: Move in a slice, we shouldn't access env directly here.
 import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
@@ -12,7 +12,7 @@ import type { NonPostableEvt } from "evt";
 
 export type AdminProvidedLink = {
     iconId: string;
-    label: string | Partial<Record<SupportedLanguage, string>>;
+    label: LocalizedString;
     url: string;
 };
 
