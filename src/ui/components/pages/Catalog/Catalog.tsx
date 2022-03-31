@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, memo } from "react";
 import { createGroup } from "type-route";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useLng } from "ui/i18n/useLng";
@@ -36,27 +36,6 @@ export function Catalog(props: Props) {
     const { t } = useTranslation({ Catalog });
 
     const { classes, cx, css } = useStyles();
-
-    const sourcesUrls = useSelector(state => {
-        const { catalogExplorer, launcher } = state;
-
-        return launcher.stateDescription === "ready"
-            ? ({
-                  "type": "package",
-                  "sources": launcher.sources,
-                  "packageName": launcher.packageName,
-              } as const)
-            : catalogExplorer.stateDescription !== "ready"
-            ? undefined
-            : ({
-                  "type": "catalog",
-                  "locationUrl":
-                      selectors.catalogExplorer.locationUrl(state).locationUrl!,
-                  "catalogId": catalogExplorer.selectedCatalogId,
-              } as const);
-    });
-
-    const { lng } = useLng();
 
     const { scrollableDivRef } = (function useClosure() {
         const explorerScrollableDivRef = useRef<HTMLDivElement>(null);
@@ -115,57 +94,7 @@ export function Catalog(props: Props) {
                 mainIcon="catalog"
                 title={t("header text1")}
                 helpTitle={t("header text2")}
-                helpContent={
-                    <>
-                        {t("all services are open sources")}
-                        {sourcesUrls === undefined
-                            ? null
-                            : (() => {
-                                  switch (sourcesUrls.type) {
-                                      case "catalog":
-                                          return (
-                                              <>
-                                                  <Link
-                                                      href={sourcesUrls.locationUrl}
-                                                      target="_blank"
-                                                      underline="hover"
-                                                  >
-                                                      {t("contribute to the catalog", {
-                                                          "catalogId":
-                                                              sourcesUrls.catalogId,
-                                                      })}
-                                                  </Link>
-                                                  .
-                                              </>
-                                          );
-                                      case "package":
-                                          return sourcesUrls.sources.length ===
-                                              0 ? null : (
-                                              <>
-                                                  {t("contribute to the package", {
-                                                      "packageName":
-                                                          sourcesUrls.packageName,
-                                                  })}
-                                                  {elementsToSentence({
-                                                      "elements": sourcesUrls.sources.map(
-                                                          source => (
-                                                              <Link
-                                                                  href={source}
-                                                                  target="_blank"
-                                                                  underline="hover"
-                                                              >
-                                                                  {t("here")}
-                                                              </Link>
-                                                          ),
-                                                      ),
-                                                      "language": lng,
-                                                  })}
-                                              </>
-                                          );
-                                  }
-                              })()}
-                    </>
-                }
+                helpContent={<HelpContent />}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
@@ -214,4 +143,76 @@ const useStyles = makeStyles({ "name": { Catalog } })({
         "flex": 1,
         "overflow": "hidden",
     },
+});
+
+const HelpContent = memo(() => {
+    const sourcesUrls = useSelector(state => {
+        const { catalogExplorer, launcher } = state;
+
+        return launcher.stateDescription === "ready"
+            ? ({
+                  "type": "package",
+                  "sources": launcher.sources,
+                  "packageName": launcher.packageName,
+              } as const)
+            : catalogExplorer.stateDescription !== "ready"
+            ? undefined
+            : ({
+                  "type": "catalog",
+                  "locationUrl":
+                      selectors.catalogExplorer.locationUrl(state).locationUrl!,
+                  "catalogId": catalogExplorer.selectedCatalogId,
+              } as const);
+    });
+
+    const { t } = useTranslation({ Catalog });
+
+    const { lng } = useLng();
+
+    return (
+        <>
+            {t("all services are open sources")}
+            {sourcesUrls === undefined
+                ? null
+                : (() => {
+                      switch (sourcesUrls.type) {
+                          case "catalog":
+                              return (
+                                  <>
+                                      <Link
+                                          href={sourcesUrls.locationUrl}
+                                          target="_blank"
+                                          underline="hover"
+                                      >
+                                          {t("contribute to the catalog", {
+                                              "catalogId": sourcesUrls.catalogId,
+                                          })}
+                                      </Link>
+                                      .
+                                  </>
+                              );
+                          case "package":
+                              return sourcesUrls.sources.length === 0 ? null : (
+                                  <>
+                                      {t("contribute to the package", {
+                                          "packageName": sourcesUrls.packageName,
+                                      })}
+                                      {elementsToSentence({
+                                          "elements": sourcesUrls.sources.map(source => (
+                                              <Link
+                                                  href={source}
+                                                  target="_blank"
+                                                  underline="hover"
+                                              >
+                                                  {t("here")}
+                                              </Link>
+                                          )),
+                                          "language": lng,
+                                      })}
+                                  </>
+                              );
+                      }
+                  })()}
+        </>
+    );
 });
