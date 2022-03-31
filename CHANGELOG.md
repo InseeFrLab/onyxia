@@ -1,3 +1,8 @@
+### **0.48.11** (2022-03-31)  
+  
+- Refactor Language support  
+- Refactor Catalog page header    
+  
 ### **0.48.10** (2022-03-30)  
   
 - Inject project.basic in mustch params  
