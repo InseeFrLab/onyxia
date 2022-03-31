@@ -1,3 +1,7 @@
+## **0.49.0** (2022-03-31)  
+  
+- Support catalog switching #296    
+  
 ### **0.48.12** (2022-03-31)  
   
 - Set everything up to be able to switch catalog    
