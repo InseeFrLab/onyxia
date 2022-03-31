@@ -1,3 +1,7 @@
+### **0.48.12** (2022-03-31)  
+  
+- Set everything up to be able to switch catalog    
+  
 ### **0.48.11** (2022-03-31)  
   
 - Refactor Language support  
