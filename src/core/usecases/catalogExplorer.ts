@@ -7,6 +7,7 @@ import { assert } from "tsafe/assert";
 import type { ThunksExtraArgument, RootState } from "../setup";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import memoize from "memoizee";
+import { exclude } from "tsafe/exclude";
 
 type CatalogExplorerState = CatalogExplorerState.NotFetched | CatalogExplorerState.Ready;
 
@@ -19,9 +20,9 @@ namespace CatalogExplorerState {
     export type Ready = {
         stateDescription: "ready";
         "~internal": {
-            apiRequestResult: Catalog[];
+            catalogs: Catalog[];
+            selectedCatalogId: string;
         };
-        selectedCatalogId: string;
         doShowOnlyHighlighted: boolean;
         search: string;
         highlightedPackages: string[];
@@ -48,20 +49,19 @@ export const { name, reducer, actions } = createSlice({
             }: PayloadAction<{
                 selectedCatalogId: string;
                 highlightedPackages: string[];
-                apiRequestResult: Catalog[];
+                catalogs: Catalog[];
             }>,
         ) => {
-            const { selectedCatalogId, highlightedPackages, apiRequestResult } = payload;
+            const { selectedCatalogId, highlightedPackages, catalogs } = payload;
 
             return id<CatalogExplorerState.Ready>({
                 "stateDescription": "ready",
-                selectedCatalogId,
-                "~internal": { apiRequestResult },
+                "~internal": { catalogs, selectedCatalogId },
                 highlightedPackages,
                 "doShowOnlyHighlighted":
                     getAreConditionMetForOnlyShowingHighlightedPackaged({
                         "highlightedPackagesLength": highlightedPackages.length,
-                        apiRequestResult,
+                        catalogs,
                         selectedCatalogId,
                     }),
                 "search": "",
@@ -75,7 +75,22 @@ export const { name, reducer, actions } = createSlice({
 
             assert(state.stateDescription === "ready");
 
-            payload.selectedCatalogId = selectedCatalogId;
+            if (state["~internal"].selectedCatalogId === selectedCatalogId) {
+                return;
+            }
+
+            state["~internal"].selectedCatalogId = selectedCatalogId;
+
+            if (
+                state.search === "" &&
+                getAreConditionMetForOnlyShowingHighlightedPackaged({
+                    "highlightedPackagesLength": state.highlightedPackages.length,
+                    "catalogs": state["~internal"].catalogs,
+                    selectedCatalogId,
+                })
+            ) {
+                state.doShowOnlyHighlighted = true;
+            }
         },
         "setSearch": (state, { payload }: PayloadAction<{ search: string }>) => {
             const { search } = payload;
@@ -88,8 +103,8 @@ export const { name, reducer, actions } = createSlice({
                 search === "" &&
                 getAreConditionMetForOnlyShowingHighlightedPackaged({
                     "highlightedPackagesLength": state.highlightedPackages.length,
-                    "apiRequestResult": state["~internal"].apiRequestResult,
-                    "selectedCatalogId": state.selectedCatalogId,
+                    "catalogs": state["~internal"].catalogs,
+                    "selectedCatalogId": state["~internal"].selectedCatalogId,
                 })
             ) {
                 state.doShowOnlyHighlighted = true;
@@ -130,16 +145,16 @@ export const thunks = {
 
             dispatch(actions.catalogsFetching());
 
-            const apiRequestResult = await onyxiaApiClient.getCatalogs();
+            const catalogs = await onyxiaApiClient.getCatalogs();
 
             const selectedCatalogId = params.isCatalogIdInUrl
                 ? params.catalogId
-                : apiRequestResult[0].id;
+                : filterProductionCatalogs(catalogs)[0].id;
 
             dispatch(
                 actions.catalogsFetched({
                     highlightedPackages,
-                    apiRequestResult,
+                    catalogs,
                     selectedCatalogId,
                 }),
             );
@@ -211,16 +226,20 @@ export const selectors = (() => {
             return undefined;
         }
 
-        const { highlightedPackages, selectedCatalogId, doShowOnlyHighlighted, search } =
-            state;
+        const {
+            highlightedPackages,
+            doShowOnlyHighlighted,
+            search,
+            "~internal": { selectedCatalogId },
+        } = state;
 
-        const apiRequestResultResultForCatalog = state["~internal"].apiRequestResult.find(
+        const catalog = state["~internal"].catalogs.find(
             ({ id }) => id === selectedCatalogId,
         )!.catalog.packages;
 
         const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
 
-        const packages = apiRequestResultResultForCatalog
+        const packages = catalog
             .map(o => ({
                 "packageDescription": o.description,
                 "packageHomeUrl": o.home,
@@ -245,27 +264,42 @@ export const selectors = (() => {
 
         return {
             packages,
-            "notShownCount":
-                search !== ""
-                    ? 0
-                    : apiRequestResultResultForCatalog.length - packages.length,
+            "notShownCount": search !== "" ? 0 : catalog.length - packages.length,
         };
     };
 
-    const locationUrl = (rootState: RootState): string | undefined => {
+    const selectedCatalog = (
+        rootState: RootState,
+    ): Omit<Catalog, "catalog"> | undefined => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
             return undefined;
         }
 
-        const { selectedCatalogId } = state;
+        const { selectedCatalogId } = state["~internal"];
 
-        const apiRequestResultResultForCatalog = state["~internal"].apiRequestResult.find(
+        const catalog = state["~internal"].catalogs.find(
             ({ id }) => id === selectedCatalogId,
-        )!;
+        );
 
-        return apiRequestResultResultForCatalog.location;
+        assert(catalog !== undefined);
+
+        const { catalog: _, ...rest } = catalog;
+
+        return rest;
+    };
+
+    const productionCatalogs = (
+        rootState: RootState,
+    ): ReturnType<typeof filterProductionCatalogs> | undefined => {
+        const state = rootState.catalogExplorer;
+
+        if (state.stateDescription !== "ready") {
+            return undefined;
+        }
+
+        return filterProductionCatalogs(state["~internal"].catalogs);
     };
 
     const availableCatalogsId = (rootState: RootState): string[] | undefined => {
@@ -275,21 +309,32 @@ export const selectors = (() => {
             return undefined;
         }
 
-        return state["~internal"].apiRequestResult.map(({ id }) => id);
+        return state["~internal"].catalogs.map(({ id }) => id);
     };
 
-    return { filteredPackages, locationUrl, availableCatalogsId };
+    return { filteredPackages, selectedCatalog, productionCatalogs, availableCatalogsId };
 })();
 
 function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
     highlightedPackagesLength: number;
-    apiRequestResult: Catalog[];
+    catalogs: Catalog[];
     selectedCatalogId: string;
 }) {
-    const { highlightedPackagesLength, apiRequestResult, selectedCatalogId } = params;
+    const { highlightedPackagesLength, catalogs, selectedCatalogId } = params;
 
-    const totalPackageCount = apiRequestResult.find(({ id }) => id === selectedCatalogId)!
-        .catalog.packages.length;
+    const totalPackageCount = catalogs.find(({ id }) => id === selectedCatalogId)!.catalog
+        .packages.length;
 
     return highlightedPackagesLength !== 0 && totalPackageCount > 5;
+}
+
+function filterProductionCatalogs(
+    catalogs: Catalog[],
+): (Omit<Catalog, "catalog" | "status"> & { status: "PROD" })[] {
+    return catalogs
+        .map(({ status, ...rest }) =>
+            status === "PROD" ? { ...rest, status } : undefined,
+        )
+        .filter(exclude(undefined))
+        .map(({ catalog: _, ...rest }) => rest);
 }

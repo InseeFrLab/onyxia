@@ -1,4 +1,8 @@
-import type { OnyxiaApiClient, DeploymentRegion } from "../ports/OnyxiaApiClient";
+import type {
+    OnyxiaApiClient,
+    DeploymentRegion,
+    LocalizedString,
+} from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
@@ -225,7 +229,10 @@ export function createOfficialOnyxiaApiClient(params: {
                     .get<{
                         catalogs: {
                             id: string;
+                            name: LocalizedString;
                             location: string;
+                            description: LocalizedString;
+                            status: "PROD" | "TEST";
                             catalog: {
                                 packages: {
                                     description: string;

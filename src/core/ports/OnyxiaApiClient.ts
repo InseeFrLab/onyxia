@@ -1,4 +1,5 @@
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
+import type { LocalizedString as LocalizedStringGeneric } from "core/tools/resolveLocalizedString";
 import memoize from "memoizee";
 
 export type OnyxiaApiClient = {
@@ -66,6 +67,7 @@ export type OnyxiaApiClient = {
 
 export const languages = ["en", "fr"] as const;
 export type Language = typeof languages[number];
+export type LocalizedString = LocalizedStringGeneric<Language>;
 
 export type DeploymentRegion = {
     id: string;
@@ -114,7 +116,10 @@ export type Project = {
 
 export type Catalog = {
     id: string;
+    name: LocalizedString;
     location: string;
+    description: LocalizedString;
+    status: "PROD" | "TEST";
     catalog: {
         packages: {
             description: string;

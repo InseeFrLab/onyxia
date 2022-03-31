@@ -53,22 +53,9 @@ export const CatalogExplorer = memo((props: Props) => {
                 break;
             case "ready":
                 hideSplashScreen();
-                if (route.params.catalogId !== catalogExplorerState.selectedCatalogId) {
-                    routes
-                        .catalogExplorer({
-                            "catalogId": catalogExplorerState.selectedCatalogId,
-                        })
-                        [route.params.catalogId === undefined ? "replace" : "push"]();
-                }
                 break;
         }
-    }, [
-        catalogExplorerState.stateDescription,
-        route.params.catalogId,
-        catalogExplorerState.stateDescription !== "ready"
-            ? undefined
-            : catalogExplorerState.selectedCatalogId,
-    ]);
+    }, [catalogExplorerState.stateDescription]);
 
     /**
      * TODO: For the moment we provide no UI for switching from one catalog to another
