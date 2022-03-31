@@ -1,14 +1,16 @@
 import { assert } from "tsafe/assert";
 
+export type LocalizedString<Language extends string> =
+    | string
+    | Partial<Record<Language, string>>;
+
 export function createResolveLocalizedString<Language extends string>(params: {
     currentLanguage: Language;
     fallbackLanguage: Language;
 }) {
     const { currentLanguage, fallbackLanguage } = params;
 
-    type LocalizedString = string | Partial<Record<Language, string>>;
-
-    function resolveLocalizedString(localizedString: LocalizedString): string {
+    function resolveLocalizedString(localizedString: LocalizedString<Language>): string {
         if (typeof localizedString === "string") {
             return localizedString;
         }

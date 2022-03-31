@@ -3,7 +3,7 @@ import moment from "moment";
 import "moment/locale/fr";
 import { useLng } from "./useLng";
 import { assert } from "tsafe/assert";
-import type { SupportedLanguage } from "./translations";
+import type { Language } from "./useLng";
 
 export const { getFormattedDate } = (() => {
     const getFormatByLng = (isSameYear: boolean) => ({
@@ -13,7 +13,7 @@ export const { getFormattedDate } = (() => {
         /* spell-checker: enable */
     });
 
-    function getFormattedDate(params: { time: number; lng: SupportedLanguage }): string {
+    function getFormattedDate(params: { time: number; lng: Language }): string {
         const { time, lng } = params;
 
         const date = new Date(time);
@@ -72,7 +72,7 @@ export const { fromNow } = (() => {
             futureN: string;
         };
 
-        function getUnits(params: { lng: SupportedLanguage }): Unit[] {
+        function getUnits(params: { lng: Language }): Unit[] {
             const { lng } = params;
 
             return [
@@ -320,7 +320,7 @@ export const { fromNow } = (() => {
         return { getUnits };
     })();
 
-    function fromNow(params: { dateTime: number; lng: SupportedLanguage }): string {
+    function fromNow(params: { dateTime: number; lng: Language }): string {
         const { dateTime, lng } = params;
 
         const diff = Date.now() - dateTime;

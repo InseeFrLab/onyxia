@@ -17,9 +17,9 @@ import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
 import { CoreProvider } from "ui/coreApi/CoreProvider";
 import { I18nProvider } from "ui/i18n/I18nProvider";
-import type { SupportedLanguage } from "ui/i18n/translations";
 import { RouteProvider } from "ui/routes";
-import { useLng } from "ui/i18n/useLng";
+import { useLng, fallbackLanguage, languages } from "ui/i18n/useLng";
+import type { Language } from "ui/i18n/useLng";
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
@@ -86,7 +86,7 @@ export function getStoryFactory<Props>(params: {
             containerWidth: number;
             chromeFontSize: ChromeFontSize;
             targetWindowInnerWidth: number;
-            lng: SupportedLanguage;
+            lng: Language;
         }
     > = templateProps => {
         //NOTE: We fix a bug of Storybook that override all props when we reload.
@@ -172,7 +172,7 @@ export function getStoryFactory<Props>(params: {
             "containerWidth": defaultContainerWidth ?? 0,
             "targetWindowInnerWidth": 0,
             "chromeFontSize": "Medium (Recommended)",
-            "lng": id<SupportedLanguage>("en"),
+            "lng": fallbackLanguage,
             ...props,
         };
 
@@ -207,7 +207,7 @@ export function getStoryFactory<Props>(params: {
                     "control": { "type": "select" },
                 },
                 "lng": {
-                    "options": id<SupportedLanguage[]>(["fr", "en"]),
+                    "options": languages,
                     "control": {
                         "type": "inline-radio",
                     },

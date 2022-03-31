@@ -19,7 +19,8 @@ import { FourOhFour } from "ui/components/pages/FourOhFour";
 import { Catalog } from "ui/components/pages/Catalog";
 import { MyServices } from "ui/components/pages/MyServices";
 import { typeGuard } from "tsafe/typeGuard";
-import type { SupportedLanguage, fallbackLanguage } from "ui/i18n/translations";
+import type { Language } from "ui/i18n/useLng";
+import { languages } from "ui/i18n/useLng";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
@@ -30,7 +31,7 @@ import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
-import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
+import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 
@@ -110,6 +111,8 @@ export const App = memo((props: Props) => {
 
     const { lng } = useLng();
 
+    const { resolveLocalizedString } = useResolveLocalizedString();
+
     //TODO: The LefBar types assertion is broken, see what is up.
     const leftBarItems = useMemo(
         () =>
@@ -163,11 +166,6 @@ export const App = memo((props: Props) => {
                       }),
                 ...(() => {
                     const extraLeftBarItems = getExtraLeftBarItemsFromEnv();
-
-                    const { resolveLocalizedString } = createResolveLocalizedString({
-                        "currentLanguage": lng,
-                        "fallbackLanguage": id<typeof fallbackLanguage>("en"),
-                    });
 
                     return extraLeftBarItems === undefined
                         ? {}
@@ -479,14 +477,9 @@ function useApplyLanguageSelectedAtLogin() {
         const { locale } = userAuthenticationThunks.getUser();
 
         if (
-            !typeGuard<SupportedLanguage>(
+            !typeGuard<Language>(
                 locale,
-                locale !== undefined &&
-                    locale in
-                        id<Record<SupportedLanguage, null>>({
-                            "en": null,
-                            "fr": null,
-                        }),
+                locale !== undefined && id<readonly string[]>(languages).includes(locale),
             )
         ) {
             return;

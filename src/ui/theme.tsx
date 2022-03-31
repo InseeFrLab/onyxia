@@ -69,7 +69,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "ui/tools/types/ComponentType";
-import type { SupportedLanguage } from "ui/i18n/translations";
+import type { Language } from "ui/i18n/useLng";
 import { THEME_ID } from "ui/envCarriedOverToKc";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
@@ -207,7 +207,7 @@ export const { PageHeader } = createPageHeader({ Icon });
 
 export const { ButtonBarButton } = createButtonBarButton({ Icon });
 export const { ButtonBar } = createButtonBar({ Icon });
-export const { LanguageSelect } = createLanguageSelect<SupportedLanguage>({
+export const { LanguageSelect } = createLanguageSelect<Language>({
     "languagesPrettyPrint": {
         "en": "English",
         "fr": "Français",

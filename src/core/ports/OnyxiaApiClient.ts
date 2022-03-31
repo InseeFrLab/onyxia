@@ -64,6 +64,9 @@ export type OnyxiaApiClient = {
     }) => Promise<void>;
 };
 
+export const languages = ["en", "fr"] as const;
+export type Language = typeof languages[number];
+
 export type DeploymentRegion = {
     id: string;
     servicesMonitoringUrlPattern: string | undefined;

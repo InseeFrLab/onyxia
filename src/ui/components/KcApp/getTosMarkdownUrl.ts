@@ -1,8 +1,7 @@
 import type { KcLanguageTag } from "keycloakify";
-import type { fallbackLanguage } from "ui/i18n/translations";
+import { fallbackLanguage } from "ui/i18n/useLng";
 import { THERMS_OF_SERVICES as thermsOfServices } from "ui/envCarriedOverToKc";
-import { id } from "tsafe/id";
-import { createResolveLocalizedString } from "ui/tools/resolveLocalizedString";
+import { createResolveLocalizedString } from "core/tools/resolveLocalizedString";
 
 export function getTosMarkdownUrl(kcLanguageTag: KcLanguageTag): string | undefined {
     if (thermsOfServices === undefined) {
@@ -11,7 +10,7 @@ export function getTosMarkdownUrl(kcLanguageTag: KcLanguageTag): string | undefi
 
     const { resolveLocalizedString } = createResolveLocalizedString<KcLanguageTag>({
         "currentLanguage": kcLanguageTag,
-        "fallbackLanguage": id<typeof fallbackLanguage>("en"),
+        fallbackLanguage,
     });
 
     return resolveLocalizedString(thermsOfServices);
