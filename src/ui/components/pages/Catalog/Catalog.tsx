@@ -11,6 +11,8 @@ import Link from "@mui/material/Link";
 import { useSelector, selectors } from "ui/coreApi";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
+import { assert } from "tsafe/assert";
+import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
@@ -94,7 +96,7 @@ export function Catalog(props: Props) {
                 mainIcon="catalog"
                 title={t("header text1")}
                 helpTitle={t("header text2")}
-                helpContent={<HelpContent />}
+                helpContent={<PageHeaderHelpContent />}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
@@ -126,8 +128,7 @@ export declare namespace Catalog {
     export type I18nScheme = {
         "header text1": undefined;
         "header text2": undefined;
-        "all services are open sources": undefined;
-        "contribute to the catalog": { catalogId: string };
+        "contribute to the catalog": { catalogName: string };
         "contribute to the package": { packageName: string };
         "here": undefined;
     };
@@ -145,74 +146,79 @@ const useStyles = makeStyles({ "name": { Catalog } })({
     },
 });
 
-const HelpContent = memo(() => {
+const PageHeaderHelpContent = memo(() => {
     const sourcesUrls = useSelector(state => {
         const { catalogExplorer, launcher } = state;
 
-        return launcher.stateDescription === "ready"
-            ? ({
-                  "type": "package",
-                  "sources": launcher.sources,
-                  "packageName": launcher.packageName,
-              } as const)
-            : catalogExplorer.stateDescription !== "ready"
-            ? undefined
-            : ({
-                  "type": "catalog",
-                  "locationUrl":
-                      selectors.catalogExplorer.locationUrl(state).locationUrl!,
-                  "catalogId": catalogExplorer.selectedCatalogId,
-              } as const);
+        if (launcher.stateDescription === "ready") {
+            return {
+                "type": "package",
+                "sources": launcher.sources,
+                "packageName": launcher.packageName,
+            } as const;
+        }
+
+        if (catalogExplorer.stateDescription !== "ready") {
+            return undefined;
+        }
+
+        const { selectedCatalog } = selectors.catalogExplorer.selectedCatalog(state);
+
+        assert(selectedCatalog !== undefined);
+
+        return {
+            "type": "catalog",
+            selectedCatalog,
+        } as const;
     });
 
     const { t } = useTranslation({ Catalog });
 
     const { lng } = useLng();
 
-    return (
-        <>
-            {t("all services are open sources")}
-            {sourcesUrls === undefined
-                ? null
-                : (() => {
-                      switch (sourcesUrls.type) {
-                          case "catalog":
-                              return (
-                                  <>
-                                      <Link
-                                          href={sourcesUrls.locationUrl}
-                                          target="_blank"
-                                          underline="hover"
-                                      >
-                                          {t("contribute to the catalog", {
-                                              "catalogId": sourcesUrls.catalogId,
-                                          })}
-                                      </Link>
-                                      .
-                                  </>
-                              );
-                          case "package":
-                              return sourcesUrls.sources.length === 0 ? null : (
-                                  <>
-                                      {t("contribute to the package", {
-                                          "packageName": sourcesUrls.packageName,
-                                      })}
-                                      {elementsToSentence({
-                                          "elements": sourcesUrls.sources.map(source => (
-                                              <Link
-                                                  href={source}
-                                                  target="_blank"
-                                                  underline="hover"
-                                              >
-                                                  {t("here")}
-                                              </Link>
-                                          )),
-                                          "language": lng,
-                                      })}
-                                  </>
-                              );
-                      }
-                  })()}
-        </>
-    );
+    const { resolveLocalizedString } = useResolveLocalizedString();
+
+    if (sourcesUrls === undefined) {
+        return null;
+    }
+
+    switch (sourcesUrls.type) {
+        case "catalog":
+            const { selectedCatalog } = sourcesUrls;
+            return (
+                <>
+                    {resolveLocalizedString(selectedCatalog.description)}
+                    &nbsp;
+                    <Link
+                        href={selectedCatalog.location}
+                        target="_blank"
+                        underline="hover"
+                    >
+                        {t("contribute to the catalog", {
+                            "catalogName": resolveLocalizedString(selectedCatalog.name),
+                        })}
+                    </Link>
+                </>
+            );
+        case "package":
+            const { packageName, sources } = sourcesUrls;
+            if (sources.length === 0) {
+                return null;
+            }
+            return (
+                <>
+                    {t("contribute to the package", {
+                        "packageName": packageName,
+                    })}
+                    {elementsToSentence({
+                        "elements": sources.map(source => (
+                            <Link href={source} target="_blank" underline="hover">
+                                {t("here")}
+                            </Link>
+                        )),
+                        "language": lng,
+                    })}
+                </>
+            );
+    }
 });

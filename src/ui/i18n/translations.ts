@@ -358,8 +358,7 @@ export const resources = id<Record<Language, Translations>>({
             "header text1": "Services catalog",
             "header text2":
                 "Explore, launch and configure services with just a few clicks.",
-            "all services are open sources": "All services are open source. ",
-            "contribute to the catalog": "contribute to the {{catalogId}} catalog",
+            "contribute to the catalog": "Contribute to the {{catalogName}} catalog",
             "contribute to the package":
                 "Find the sources of the {{packageName}} package ",
             "here": "here",
@@ -695,9 +694,7 @@ export const resources = id<Record<Language, Translations>>({
             "header text1": "Catalogue de services",
             "header text2":
                 "Explorez, lancez et configurez des services en quelques clics seulement.",
-            "all services are open sources":
-                "Tous les services proposés sont open source, ",
-            "contribute to the catalog": "contribuer au catalogue {{catalogId}}",
+            "contribute to the catalog": "Contribuer au catalogue {{catalogName}}",
             "contribute to the package":
                 "Accéder aux sources du package {{packageName}} ",
             "here": "ici",
