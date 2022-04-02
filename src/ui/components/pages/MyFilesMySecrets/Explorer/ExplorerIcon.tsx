@@ -35,7 +35,9 @@ const useStyles = makeStyles<Pick<Props, "hasShadow" | "iconId">>({
     "name": { ExplorerIcon },
 })((theme, { hasShadow, iconId }) => ({
     "root": {
-        "filter": hasShadow ? "drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.4))" : undefined,
+        "filter": hasShadow
+            ? "drop-shadow(0px 4px 4px rgba(44, 50, 63, 0.2))"
+            : undefined,
         "fill": "currentColor",
         "color": (() => {
             switch (iconId) {
