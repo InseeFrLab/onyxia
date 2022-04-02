@@ -1,3 +1,9 @@
+### **0.49.1** (2022-04-02)  
+  
+- Use css shadow instead of svg  
+- Attempt to use Explorer Icon  
+- Implement ExplorerIcon component    
+  
 ## **0.49.0** (2022-03-31)  
   
 - Support catalog switching #296    
