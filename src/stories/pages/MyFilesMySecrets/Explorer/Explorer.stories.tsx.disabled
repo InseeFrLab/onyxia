@@ -65,7 +65,7 @@ function Component(
     const onEditedBasename = useCallback(
         ({
             basename,
-            editedBasename,
+            newBasename,
             kind,
         }: Parameters<ExplorerProps["onEditBasename"]>[0]) => {
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
@@ -87,20 +87,20 @@ function Component(
                 }
             })();
 
-            items[items.indexOf(basename)!] = editedBasename;
+            items[items.indexOf(basename)!] = newBasename;
 
             setItems([...items]);
 
             (async () => {
-                setBeingRenamedItems([...beingRenamedItems, editedBasename]);
+                setBeingRenamedItems([...beingRenamedItems, newBasename]);
 
-                if (basename !== editedBasename) {
+                if (basename !== newBasename) {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
 
                 setToRemoveFromBeingEdited({
                     kind,
-                    "basename": editedBasename,
+                    "basename": newBasename,
                 });
             })();
         },

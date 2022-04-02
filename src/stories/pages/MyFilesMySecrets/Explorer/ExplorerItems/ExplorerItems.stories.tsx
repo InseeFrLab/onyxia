@@ -1,6 +1,7 @@
 import { css } from "tss-react/@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { ExplorerItems, Props } from "ui/components/shared/Explorer/ExplorerItems";
+import { ExplorerItems } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";
@@ -14,7 +15,7 @@ const eventEmitter = new EventEmitter();
 
 function Component(
     props: Omit<
-        Props,
+        ExplorerItemsProps,
         "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"
     > & {
         containerWidth: number;
@@ -65,7 +66,11 @@ function Component(
     }, [toRemove, filesBeingRenamed, directoriesBeingRenamed]);
 
     const onEditedBasename = useCallback(
-        ({ basename, editedBasename, kind }: Parameters<Props["onEditBasename"]>[0]) => {
+        ({
+            basename,
+            newBasename,
+            kind,
+        }: Parameters<ExplorerItemsProps["onEditBasename"]>[0]) => {
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
                     case "directory":
@@ -85,18 +90,18 @@ function Component(
                 }
             })();
 
-            items[items.indexOf(basename)!] = editedBasename;
+            items[items.indexOf(basename)!] = newBasename;
 
             setItems([...items]);
 
             (async () => {
-                setBeingRenamedItems([...beingRenamedItems, editedBasename]);
+                setBeingRenamedItems([...beingRenamedItems, newBasename]);
 
-                if (basename !== editedBasename) {
+                if (basename !== newBasename) {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
 
-                setToRemove({ kind, "basename": editedBasename });
+                setToRemove({ kind, "basename": newBasename });
             })();
         },
         [files, directories, filesBeingRenamed, directoriesBeingRenamed],
@@ -134,7 +139,7 @@ export default {
         "visualRepresentationOfAFile": {
             "control": {
                 "type": "inline-radio",
-                "options": id<Props["visualRepresentationOfAFile"][]>(["file", "secret"]),
+                "options": id<ExplorerItemsProps["explorerType"][]>(["s3", "secrets"]),
             },
         },
     },
@@ -146,19 +151,22 @@ export default {
                 {
                     "title": "Start editing selected item",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>(
+                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
                         "START EDITING SELECTED ITEM BASENAME",
                     ),
                 },
                 {
                     "title": "Delete selected item",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>("DELETE SELECTED ITEM"),
+                    "payload":
+                        id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
+                            "DELETE SELECTED ITEM",
+                        ),
                 },
                 {
                     "title": "Copy selected item path",
                     "name": "default",
-                    "payload": id<UnpackEvt<Props["evtAction"]>>(
+                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
                         "COPY SELECTED ITEM PATH",
                     ),
                 },
@@ -169,8 +177,7 @@ export default {
 
 export const Vue1 = getStory({
     "containerWidth": 500,
-    "visualRepresentationOfAFile": "secret",
-    "getIsValidBasename": () => true,
+    "explorerType": "secrets",
     "files": [
         ...new Array(30).fill("").map((_, i) => `aaa${i}`),
         "this-is-a-file",
@@ -210,5 +217,6 @@ export const Vue1 = getStory({
         "onEditBasename",
         "onSelectedItemKindValueChange",
         "onIsSelectedItemInEditingStateValueChange",
+        "onOpenFile",
     ]),
 });
