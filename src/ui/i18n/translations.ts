@@ -7,6 +7,7 @@ import { ExplorerItems } from "ui/components/pages/MyFilesMySecrets/Explorer/Exp
 import { ExplorerItem } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem";
 import { MySecretsEditor } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor";
 import { MySecretsEditorRow } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow";
+import { ExplorerUploadModalDropArea } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea";
 import { Header } from "ui/components/shared/Header";
 import { App } from "ui/components/App/App";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
@@ -55,6 +56,7 @@ const reflectedI18nSchemes = {
     [symToStr({ ExplorerItems })]: Reflect<ExplorerItems.I18nScheme>(),
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
+    [symToStr({ ExplorerUploadModalDropArea })]: Reflect<ExplorerUploadModalDropArea.I18nScheme>(),
     [symToStr({ MyFilesMySecrets })]: Reflect<MyFilesMySecrets.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ App })]: Reflect<App.I18nScheme>(),
@@ -295,6 +297,10 @@ export const resources = id<Record<Language, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Environnement variable name",
             "value input desc": "Environnement variable value",
+        },
+        "ExplorerUploadModalDropArea": {
+            "browse files": "browse files",
+            "drag and drop or": "Drag and drop or",
         },
         "Header": {
             "login": "Login",
@@ -629,6 +635,10 @@ export const resources = id<Record<Language, Translations>>({
         "MySecretsEditorRow": {
             "key input desc": "Nom de la variable d'environnement",
             "value input desc": "Valeur de la variable d'environnement",
+        },
+        "ExplorerUploadModalDropArea": {
+            "browse files": "parcourir vos fichiers",
+            "drag and drop or": "Glisser et déposer ou",
         },
         "Header": {
             "login": "Connexion",
