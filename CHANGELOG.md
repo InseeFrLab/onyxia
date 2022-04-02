@@ -1,3 +1,7 @@
+### **0.49.2** (2022-04-02)  
+  
+- Implement ExplorerUploadModalDropArea    
+  
 ### **0.49.1** (2022-04-02)  
   
 - Use css shadow instead of svg  
