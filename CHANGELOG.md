@@ -1,3 +1,7 @@
+### **0.49.3** (2022-04-02)  
+  
+- Implement ExplorerUploadProgress    
+  
 ### **0.49.2** (2022-04-02)  
   
 - Implement ExplorerUploadModalDropArea    
