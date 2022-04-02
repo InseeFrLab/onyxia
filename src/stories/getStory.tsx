@@ -146,6 +146,7 @@ export function getStoryFactory<Props>(params: {
                     <ScreenSize />
                     <div
                         style={{
+                            "marginLeft": 50,
                             "width": containerWidth || undefined,
                             "border": "1px dotted grey",
                             "display": "inline-block",

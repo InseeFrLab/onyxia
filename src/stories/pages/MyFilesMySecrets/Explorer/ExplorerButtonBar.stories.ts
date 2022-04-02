@@ -1,4 +1,4 @@
-import { ExplorerButtonBar } from "ui/components/shared/Explorer/ExplorerButtonBar";
+import { ExplorerButtonBar } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 
@@ -9,10 +9,10 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const defaultView = getStory({
+export const vue = getStory({
+    "explorerType": "s3",
+    "isFileOpen": true,
     "selectedItemKind": "none",
-    "isViewingFile": false,
     "isSelectedItemInEditingState": false,
-    "wordForFile": "file",
     ...logCallbacks(["callback"]),
 });
