@@ -579,8 +579,8 @@ const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean
         "marginBottom": theme.spacing(4),
     },
     "fileOrDirectoryIcon": {
-        "height": "100%",
-        "width": "unset",
+        "height": "unset",
+        "width": "100%",
     },
 }));
 
