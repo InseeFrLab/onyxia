@@ -25,7 +25,7 @@ import { ExplorerButtonBar } from "./ExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "onyxia-ui";
-import { FileOrDirectoryIcon } from "./FileOrDirectoryIcon";
+import { ExplorerIcon } from "./ExplorerIcon";
 import { getFormattedDate } from "ui/i18n/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -408,10 +408,21 @@ export const Explorer = memo((props: ExplorerProps) => {
                             onGoBack={onGoBack}
                             subtitle={formattedDate}
                             image={
-                                <FileOrDirectoryIcon
+                                <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    explorerType={explorerType}
-                                    kind={props.isFileOpen ? "file" : "directory"}
+                                    iconId={
+                                        !props.isFileOpen
+                                            ? "directory"
+                                            : (() => {
+                                                  switch (explorerType) {
+                                                      case "s3":
+                                                          return "data";
+                                                      case "secrets":
+                                                          return "secret";
+                                                  }
+                                              })()
+                                    }
+                                    hasShadow={true}
                                 />
                             }
                         />
@@ -568,8 +579,8 @@ const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean
         "marginBottom": theme.spacing(4),
     },
     "fileOrDirectoryIcon": {
-        "height": "unset",
-        "width": "100%",
+        "height": "100%",
+        "width": "unset",
     },
 }));
 

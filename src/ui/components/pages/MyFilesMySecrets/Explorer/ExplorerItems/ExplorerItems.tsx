@@ -405,7 +405,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                                 ];
                                         }
                                     })().includes(basename)}
-                                    standardizedWidth="big"
                                     onMouseEvent={onMouseEventFactory(kind, basename)}
                                     onEditBasename={onEditBasenameFactory(kind, basename)}
                                     getIsValidBasename={getIsValidBasenameFactory(

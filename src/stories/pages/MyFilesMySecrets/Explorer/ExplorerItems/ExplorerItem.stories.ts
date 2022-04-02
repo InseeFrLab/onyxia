@@ -42,7 +42,6 @@ export const defaultView = getStory({
     "kind": "file",
     "basename": "aVeryLongNameThatShouldBreak.txt",
     "isSelected": false,
-    "standardizedWidth": "big",
     "isCircularProgressShown": false,
     "getIsValidBasename": () => true,
     "evtAction": Evt.from(eventEmitter, "default"),

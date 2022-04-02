@@ -12,7 +12,7 @@ import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "ui/tools/smartTrim";
-import { FileOrDirectoryIcon } from "../FileOrDirectoryIcon";
+import { ExplorerIcon } from "../ExplorerIcon";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -28,9 +28,6 @@ export type ExplorerItemProps = {
 
     /** Represent if the item is currently selected */
     isSelected: boolean;
-
-    /** Big for large screen, normal otherwise */
-    standardizedWidth: "normal" | "big";
 
     isCircularProgressShown: boolean;
 
@@ -57,8 +54,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         kind,
         basename,
         isCircularProgressShown,
-        standardizedWidth,
         evtAction,
+        isSelected,
         getIsValidBasename,
         onMouseEvent,
         onEditBasename,
@@ -67,7 +64,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 
     const { t } = useTranslation({ ExplorerItem });
 
-    const { classes, cx } = useStyles(props);
+    const { classes, cx } = useStyles({ isSelected, basename });
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
@@ -131,20 +128,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         () =>
             smartTrim({
                 "text": basename,
-                ...(() => {
-                    switch (standardizedWidth) {
-                        case "big":
-                            return {
-                                "maxLength": 25,
-                                "minCharAtTheEnd": 7,
-                            };
-                        case "normal":
-                            return {
-                                "maxLength": 21,
-                                "minCharAtTheEnd": 5,
-                            };
-                    }
-                })(),
+                "maxLength": 21,
+                "minCharAtTheEnd": 5,
             })
                 //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
@@ -165,13 +150,29 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     [],
                 ),
 
-        [basename, standardizedWidth, classes.hiddenSpan],
+        [basename, classes.hiddenSpan],
     );
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.frame} {...getOnMouseProps("icon")}>
-                <FileOrDirectoryIcon {...{ explorerType, standardizedWidth, kind }} />
+                <ExplorerIcon
+                    className={classes.explorerIcon}
+                    iconId={(() => {
+                        switch (kind) {
+                            case "directory":
+                                return "directory";
+                            case "file":
+                                switch (explorerType) {
+                                    case "s3":
+                                        return "data";
+                                    case "secrets":
+                                        return "secret";
+                                }
+                        }
+                    })()}
+                    hasShadow={true}
+                />
             </div>
             {!isInEditingState && !isCircularProgressShown ? (
                 <div {...getOnMouseProps("text")}>
@@ -211,30 +212,22 @@ export declare namespace ExplorerItem {
     };
 }
 
-const useStyles = makeStyles<
-    Pick<ExplorerItemProps, "isSelected" | "basename" | "standardizedWidth">
->({
+const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>({
     "name": { ExplorerItem },
-})((theme, { isSelected, basename, standardizedWidth }) => ({
+})((theme, { isSelected, basename }) => ({
     "root": {
         "textAlign": "center",
         "cursor": "pointer",
-        "width": theme.spacing(
-            (() => {
-                switch (standardizedWidth) {
-                    case "normal":
-                        return 7;
-                    case "big":
-                        return 9;
-                }
-            })(),
-        ),
+        "width": theme.spacing(9),
     },
     "frame": {
         "borderRadius": "5px",
         "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
         "display": "inline-block",
-        "padding": theme.muiTheme.spacing("4px", "6px"),
+        "padding": theme.muiTheme.spacing(2, 2),
+    },
+    "explorerIcon": {
+        "height": 60,
     },
     "text": {
         //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
