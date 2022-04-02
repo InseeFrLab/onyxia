@@ -108,13 +108,14 @@ const useStyles = makeStyles<{ isDragHover: boolean }>({
     "name": { ExplorerUploadModalDropArea },
 })((theme, { isDragHover }) => ({
     "root": {
-        "border": `1px ${
+        "border": `${isDragHover ? 3 : 1}px ${
             theme.colors.useCases.buttons[isDragHover ? "actionActive" : "actionDisabled"]
         } dashed`,
         "borderRadius": theme.spacing(3),
         "display": "flex",
         "justifyContent": "center",
         "alignItems": "center",
+        "boxSizing": "border-box",
         ...theme.spacing.topBottom("padding", 7),
     },
     "innerDiv": {

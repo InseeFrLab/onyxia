@@ -8,6 +8,7 @@ import { ExplorerItem } from "ui/components/pages/MyFilesMySecrets/Explorer/Expl
 import { MySecretsEditor } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor";
 import { MySecretsEditorRow } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow";
 import { ExplorerUploadModalDropArea } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea";
+import { ExplorerUploadProgress } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress";
 import { Header } from "ui/components/shared/Header";
 import { App } from "ui/components/App/App";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
@@ -57,6 +58,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditor })]: Reflect<MySecretsEditor.I18nScheme>(),
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ ExplorerUploadModalDropArea })]: Reflect<ExplorerUploadModalDropArea.I18nScheme>(),
+    [symToStr({ ExplorerUploadProgress })]: Reflect<ExplorerUploadProgress.I18nScheme>(),
     [symToStr({ MyFilesMySecrets })]: Reflect<MyFilesMySecrets.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ App })]: Reflect<App.I18nScheme>(),
@@ -301,6 +303,10 @@ export const resources = id<Record<Language, Translations>>({
         "ExplorerUploadModalDropArea": {
             "browse files": "browse files",
             "drag and drop or": "Drag and drop or",
+        },
+        "ExplorerUploadProgress": {
+            "over": "over",
+            "importing": "Importing",
         },
         "Header": {
             "login": "Login",
@@ -639,6 +645,10 @@ export const resources = id<Record<Language, Translations>>({
         "ExplorerUploadModalDropArea": {
             "browse files": "parcourir vos fichiers",
             "drag and drop or": "Glisser et déposer ou",
+        },
+        "ExplorerUploadProgress": {
+            "over": "sur",
+            "importing": "importation",
         },
         "Header": {
             "login": "Connexion",
