@@ -4,6 +4,9 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
+import { IconButton } from "ui/theme";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
@@ -11,10 +14,18 @@ export type Props = {
     percentUploaded: number;
     /** In bytes */
     fileSize: number;
-};
+} & (
+    | {
+          isFailed: true;
+          onClick: (action: "clear" | "restart") => void;
+      }
+    | {
+          isFailed: false;
+      }
+);
 
 export const ExplorerUploadProgress = memo((props: Props) => {
-    const { className, basename, percentUploaded, fileSize } = props;
+    const { className, basename, percentUploaded, fileSize, ...rest } = props;
 
     const {
         ref: progressBarRef,
@@ -25,33 +36,55 @@ export const ExplorerUploadProgress = memo((props: Props) => {
 
     const { t } = useTranslation({ ExplorerUploadProgress });
 
+    const onClickFactory = useCallbackFactory(([action]: ["clear" | "restart"]) => {
+        assert(rest.isFailed);
+
+        rest.onClick(action);
+    });
+
     return (
         <div className={cx(classes.root, className)}>
             <ExplorerIcon iconId="data" hasShadow={true} className={classes.icon} />
             <div className={classes.payload}>
                 <Text typo="label 1">{basename}</Text>
-                <div ref={progressBarRef} className={classes.progressBar}>
-                    <div className={classes.progressBarGauge} />
-                </div>
+                {!rest.isFailed && (
+                    <div ref={progressBarRef} className={classes.progressBar}>
+                        <div className={classes.progressBarGauge} />
+                    </div>
+                )}
                 <div className={classes.metric}>
                     <AdvancementText
                         percentUploaded={percentUploaded}
                         fileSize={fileSize}
                     />
-                    <div style={{ "flex": 1 }} />
-                    <Text typo="body 2" color="focus">
-                        {t("importing")}...
-                    </Text>
-                    <Text
-                        typo="body 2"
-                        color="focus"
-                        fixedSize_enabled={true}
-                        fixedSize_content="100%"
-                    >
-                        {percentUploaded}%
-                    </Text>
+                    {!rest.isFailed && (
+                        <>
+                            <div style={{ "flex": 1 }} />
+                            <Text typo="body 2" color="focus">
+                                {t("importing")}...
+                            </Text>
+                            <Text
+                                typo="body 2"
+                                color="focus"
+                                fixedSize_enabled={true}
+                                fixedSize_content="100%"
+                            >
+                                {percentUploaded}%
+                            </Text>
+                        </>
+                    )}
                 </div>
             </div>
+            {props.isFailed && (
+                <div style={{ "display": "flex" }}>
+                    <IconButton
+                        iconId="close"
+                        className={classes.closeIconButton}
+                        onClick={onClickFactory("clear")}
+                    />
+                    <IconButton iconId="refresh" onClick={onClickFactory("restart")} />
+                </div>
+            )}
         </div>
     );
 });
@@ -71,11 +104,15 @@ const useStyles = makeStyles<
             "display": "flex",
         },
         "icon": {
-            "width": 58,
-            ...theme.spacing.rightLeft("margin", 3),
+            "width": 50,
+            ...theme.spacing.rightLeft("margin", 4),
         },
         "payload": {
             "flex": 1,
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "space-between",
+            ...theme.spacing.topBottom("padding", 3),
         },
         "progressBar": {
             "position": "relative",
@@ -92,6 +129,11 @@ const useStyles = makeStyles<
             "borderRadius": 5,
             "height": 4,
             "backgroundColor": theme.colors.useCases.buttons.actionActive,
+        },
+        "closeIconButton": {
+            "& svg": {
+                "color": theme.colors.useCases.alertSeverity.error.main,
+            },
         },
         "metric": {
             "display": "flex",
