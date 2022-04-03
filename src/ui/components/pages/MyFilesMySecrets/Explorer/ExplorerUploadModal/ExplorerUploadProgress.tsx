@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { useMemo, memo } from "react";
 import { makeStyles, Text } from "ui/theme";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n/useTranslations";
@@ -34,18 +34,20 @@ export const ExplorerUploadProgress = memo((props: Props) => {
                     <div className={classes.progressBarGauge} />
                 </div>
                 <div className={classes.metric}>
-                    <Text typo="body 2">
-                        {fileSizePrettyPrint(fileSize * (percentUploaded / 100))}
-                        &nbsp;
-                        {t("over")}
-                        &nbsp;
-                        {fileSizePrettyPrint(fileSize)}
-                    </Text>
-
+                    <AdvancementText
+                        percentUploaded={percentUploaded}
+                        fileSize={fileSize}
+                    />
                     <div style={{ "flex": 1 }} />
-
                     <Text typo="body 2" color="focus">
-                        {t("importing")}... &nbsp;
+                        {t("importing")}...
+                    </Text>
+                    <Text
+                        typo="body 2"
+                        color="focus"
+                        fixedSize_enabled={true}
+                        fixedSize_content="100%"
+                    >
                         {percentUploaded}%
                     </Text>
                 </div>
@@ -96,3 +98,62 @@ const useStyles = makeStyles<
         },
     }),
 );
+
+const { AdvancementText } = (() => {
+    type Props = {
+        className?: string;
+        percentUploaded: number;
+        /** In bytes */
+        fileSize: number;
+    };
+
+    const AdvancementText = memo((props: Props) => {
+        const { className, percentUploaded, fileSize } = props;
+
+        const { t } = useTranslation({ ExplorerUploadProgress });
+
+        const { current, total } = useMemo(() => {
+            const total = fileSizePrettyPrint({
+                "bytes": fileSize,
+            });
+
+            const current = fileSizePrettyPrint({
+                "bytes": fileSize * (percentUploaded / 100),
+                "unit": total.unit,
+            });
+
+            return { total, current };
+        }, [fileSize, percentUploaded]);
+
+        const { classes, cx } = useStyle();
+
+        return (
+            <div className={cx(classes.root, className)}>
+                <Text
+                    typo="body 2"
+                    fixedSize_enabled={true}
+                    fixedSize_content={total.value + "_"}
+                >
+                    {current.value}
+                </Text>
+                <Text typo="body 2">
+                    {current.unit}
+                    &nbsp;
+                    {t("over")}
+                    &nbsp;
+                    {total.value}
+                    &nbsp;
+                    {total.unit}
+                </Text>
+            </div>
+        );
+    });
+
+    const useStyle = makeStyles()({
+        "root": {
+            "display": "flex",
+        },
+    });
+
+    return { AdvancementText };
+})();
