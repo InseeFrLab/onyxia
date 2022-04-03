@@ -1,3 +1,7 @@
+### **0.49.4** (2022-04-03)  
+  
+- Clean fixed size for ExplorerUploadProgress    
+  
 ### **0.49.3** (2022-04-02)  
   
 - Implement ExplorerUploadProgress    
