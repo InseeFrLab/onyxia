@@ -9,6 +9,7 @@ import { MySecretsEditor } from "ui/components/pages/MyFilesMySecrets/MySecretsE
 import { MySecretsEditorRow } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow";
 import { ExplorerUploadModalDropArea } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea";
 import { ExplorerUploadProgress } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress";
+import { ExplorerUploadModal } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModal";
 import { Header } from "ui/components/shared/Header";
 import { App } from "ui/components/App/App";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
@@ -59,6 +60,7 @@ const reflectedI18nSchemes = {
     [symToStr({ MySecretsEditorRow })]: Reflect<MySecretsEditorRow.I18nScheme>(),
     [symToStr({ ExplorerUploadModalDropArea })]: Reflect<ExplorerUploadModalDropArea.I18nScheme>(),
     [symToStr({ ExplorerUploadProgress })]: Reflect<ExplorerUploadProgress.I18nScheme>(),
+    [symToStr({ ExplorerUploadModal })]: Reflect<ExplorerUploadModal.I18nScheme>(),
     [symToStr({ MyFilesMySecrets })]: Reflect<MyFilesMySecrets.I18nScheme>(),
     [symToStr({ Header })]: Reflect<Header.I18nScheme>(),
     [symToStr({ App })]: Reflect<App.I18nScheme>(),
@@ -308,6 +310,12 @@ export const resources = id<Record<Language, Translations>>({
             "over": "over",
             "importing": "Importing",
         },
+        "ExplorerUploadModal": {
+            "import files": "Import files",
+            "cancel": "Cancel",
+            "minimize": "Minimize",
+        },
+
         "Header": {
             "login": "Login",
             "logout": "Logout",
@@ -649,6 +657,11 @@ export const resources = id<Record<Language, Translations>>({
         "ExplorerUploadProgress": {
             "over": "sur",
             "importing": "importation",
+        },
+        "ExplorerUploadModal": {
+            "import files": "Importer des fichiers",
+            "cancel": "Annuler",
+            "minimize": "Minimiser",
         },
         "Header": {
             "login": "Connexion",

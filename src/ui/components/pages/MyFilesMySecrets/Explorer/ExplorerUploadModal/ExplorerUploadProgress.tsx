@@ -102,6 +102,7 @@ const useStyles = makeStyles<
     (theme, { percentUploaded, progressBarWidth }) => ({
         "root": {
             "display": "flex",
+            "paddingRight": theme.spacing(4),
         },
         "icon": {
             "width": 50,
