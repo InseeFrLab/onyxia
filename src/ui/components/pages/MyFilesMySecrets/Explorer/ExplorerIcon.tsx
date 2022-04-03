@@ -49,5 +49,6 @@ const useStyles = makeStyles<Pick<Props, "hasShadow" | "iconId">>({
                     ].main;
             }
         })(),
+        "display": "block",
     },
 }));
