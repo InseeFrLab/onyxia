@@ -330,9 +330,8 @@ const { CustomButton } = (() => {
                 onMouseDown={onMouseDown}
             >
                 <Text
-                    typo={"body 1"}
+                    typo={isSelected ? "label 1" : "body 1"}
                     color={!isSelected ? "secondary" : undefined}
-                    className={classes.typo}
                 >
                     {props.text}
                 </Text>
@@ -346,9 +345,6 @@ const { CustomButton } = (() => {
             "display": "flex",
             "alignItems": "center",
             "cursor": "pointer",
-        },
-        "typo": {
-            "fontWeight": 600,
         },
     }));
 
