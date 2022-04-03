@@ -31,6 +31,7 @@ import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { ReactComponent as TrainingsLogoSvg } from "ui/assets/svg/Trainings2.svg";
+import { ReactComponent as RefreshLogoSvg } from "ui/assets/svg/Refresh.svg";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import GradingIcon from "@mui/icons-material/Grading";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
@@ -161,6 +162,7 @@ export const { Icon } = createIcon({
     "errorOutline": ErrorOutlineIcon,
     "assuredWorkload": AssuredWorkloadIcon,
     "grading": GradingIcon,
+    "refresh": RefreshLogoSvg,
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];

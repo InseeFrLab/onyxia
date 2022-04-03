@@ -1,6 +1,6 @@
 import { ExplorerUploadProgress } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/getStory";
+import { getStoryFactory, logCallbacks } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -10,8 +10,17 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const view = getStory({
+export const viewProgress = getStory({
     "basename": "nyr_data.csv",
     "percentUploaded": 72,
     "fileSize": 7_800_000,
+    "isFailed": false,
+});
+
+export const viewFailed = getStory({
+    "basename": "nyr_data.csv",
+    "percentUploaded": 72,
+    "fileSize": 7_800_000,
+    "isFailed": true,
+    ...logCallbacks(["onClick"]),
 });
