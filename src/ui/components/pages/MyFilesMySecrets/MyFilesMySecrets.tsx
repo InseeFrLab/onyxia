@@ -17,9 +17,6 @@ import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor, Props as MySecretsEditorProps } from "./MySecretsEditor";
-import { InputFile } from "ui/tools/InputFile";
-import type { InputFileProps } from "ui/tools/InputFile";
-import { useConst } from "powerhooks/useConst";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
@@ -136,18 +133,12 @@ export function MyFilesMySecrets(props: Props) {
                     });
                     break;
                 case "file":
-                    switch (explorerType) {
-                        case "secrets":
-                            explorersThunks.create({
-                                "explorerType": "secrets",
-                                "createWhat": "file",
-                                "basename": suggestedBasename,
-                            });
-                            break;
-                        case "s3":
-                            evtInputFileActionAction.post("TRIGGER");
-                            break;
-                    }
+                    assert(explorerType === "secrets");
+                    explorersThunks.create({
+                        "explorerType": "secrets",
+                        "createWhat": "file",
+                        "basename": suggestedBasename,
+                    });
                     break;
             }
         },
@@ -183,7 +174,7 @@ export function MyFilesMySecrets(props: Props) {
         }
     }, [cwdVue === undefined]);
 
-    const [evtButtonBarAction] = useState(() =>
+    const [evtExplorerAction] = useState(() =>
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
     );
 
@@ -268,7 +259,7 @@ export function MyFilesMySecrets(props: Props) {
     });
 
     const onMySecretEditorCopyPath = useConstCallback(() =>
-        evtButtonBarAction.post("TRIGGER COPY PATH"),
+        evtExplorerAction.post("TRIGGER COPY PATH"),
     );
 
     const onEdit = useConstCallback<MySecretsEditorProps["onEdit"]>(params =>
@@ -286,11 +277,7 @@ export function MyFilesMySecrets(props: Props) {
         }),
     );
 
-    const evtInputFileActionAction = useConst(() =>
-        Evt.create<UnpackEvt<InputFileProps["evtAction"]>>(),
-    );
-
-    const onFileSelected = useConstCallback<InputFileProps["onFileSelected"]>(
+    const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
         ({ files }) =>
             files.map(file =>
                 explorersThunks.create({
@@ -304,18 +291,12 @@ export function MyFilesMySecrets(props: Props) {
 
     const { uploadProgress } = useSelector(selectors.explorers.uploadProgress);
 
-    console.log(JSON.stringify(uploadProgress, null, 2));
-
     if (cwdVue === undefined) {
         return null;
     }
 
     return (
         <div className={cx(classes.root, className)}>
-            <InputFile
-                evtAction={evtInputFileActionAction}
-                onFileSelected={onFileSelected}
-            />
             <PageHeader
                 mainIcon={(() => {
                     switch (explorerType) {
@@ -351,13 +332,15 @@ export function MyFilesMySecrets(props: Props) {
                 helpCollapseParams={helpCollapseParams}
             />
             <Explorer
+                onFileSelected={onFileSelected}
+                filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
                 className={classes.explorer}
                 explorerType={explorerType}
                 doShowHidden={false}
                 directoryPath={cwdVue.directoryPath}
                 isNavigating={cwdVue.isNavigationOngoing}
                 apiLogs={fsApiLogs}
-                evtAction={evtButtonBarAction}
+                evtAction={evtExplorerAction}
                 files={cwdVue.files}
                 directories={cwdVue.directories}
                 directoriesBeingCreated={cwdVue.directoriesBeingCreated}

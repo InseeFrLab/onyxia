@@ -23,6 +23,18 @@ export const view = getStory({
             "size": 20_000_000,
             "uploadPercent": 23,
         },
+        {
+            "directoryPath": "/a/b/c/d",
+            "basename": "baz.csv",
+            "size": 20_000_000,
+            "uploadPercent": 23,
+        },
+        {
+            "directoryPath": "/a/b/c/d",
+            "basename": "baz.csv",
+            "size": 20_000_000,
+            "uploadPercent": 23,
+        },
     ],
     "isOpen": true,
     ...logCallbacks(["onClose", "onFileSelected"]),
