@@ -119,9 +119,10 @@ const { ExplorerUploadModalBody } = (() => {
     const useStyles = makeStyles({ "name": { ExplorerUploadModalBody } })(theme => ({
         "root": {
             "minWidth": 500,
+            ...theme.spacing.topBottom("padding", 3),
         },
         "progress": {
-            "marginTop": theme.spacing(2),
+            "marginTop": theme.spacing(4),
         },
     }));
 
