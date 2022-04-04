@@ -1,3 +1,7 @@
+### **0.50.1** (2022-04-04)  
+  
+- Fix regression in catalog    
+  
 ## **0.50.0** (2022-04-04)  
   
 - Checkmark when upload complete  
