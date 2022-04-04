@@ -53,6 +53,13 @@ export const CatalogExplorer = memo((props: Props) => {
                 break;
             case "ready":
                 hideSplashScreen();
+                //NOTE: When coming back to the catalog.
+                assert(selectedCatalog !== undefined);
+                if (route.params.catalogId !== selectedCatalog.id) {
+                    routes
+                        .catalogExplorer({ "catalogId": selectedCatalog.id })
+                        [route.params.catalogId === undefined ? "replace" : "push"]();
+                }
                 break;
         }
     }, [catalogExplorerState.stateDescription]);
@@ -69,14 +76,18 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const onRequestLaunch = useConstCallback<
         CatalogExplorerCardsProps["onRequestLaunch"]
-    >(packageName =>
+    >(packageName => {
+        const { catalogId } = route.params;
+
+        assert(catalogId !== undefined);
+
         routes
             .catalogLauncher({
-                "catalogId": route.params.catalogId!,
+                catalogId,
                 packageName,
             })
-            .push(),
-    );
+            .push();
+    });
 
     const onSearchChange = useConstCallback<CatalogExplorerCardsProps["onSearchChange"]>(
         search =>
