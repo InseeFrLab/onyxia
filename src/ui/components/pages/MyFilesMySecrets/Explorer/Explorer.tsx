@@ -38,6 +38,8 @@ import { Card } from "onyxia-ui/Card";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
+import { ExplorerUploadModal } from "./ExplorerUploadModal";
+import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 
 export type ExplorerProps = {
     /**
@@ -66,7 +68,6 @@ export type ExplorerProps = {
         newBasename: string;
     }) => void;
     onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
-    //NOTE: It can be a request to upload a file or creating a new secret
     onNewItem: (params: {
         kind: "file" | "directory";
         suggestedBasename: string;
@@ -93,7 +94,9 @@ export type ExplorerProps = {
           isFileOpen: false;
           onOpenFile: (params: { basename: string }) => void;
       }
-);
+) &
+    //NOTE: TODO only defined when explorer type is s3
+    Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
 
 export const Explorer = memo((props: ExplorerProps) => {
     const {
@@ -112,6 +115,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCopyPath,
         scrollableDivRef,
         pathMinDepth,
+        onFileSelected,
+        filesBeingUploaded,
     } = props;
 
     const [
@@ -260,28 +265,25 @@ export const Explorer = memo((props: ExplorerProps) => {
                 });
                 break;
             case "new":
-                onNewItem({
-                    "kind": "file" as const,
-                    "suggestedBasename": generateUniqDefaultName({
-                        "names": files,
-                        "buildName": buildNameFactory({
-                            "defaultName": t("untitled what", {
-                                "what": t(
-                                    (() => {
-                                        switch (explorerType) {
-                                            case "s3":
-                                                return "file";
-                                            case "secrets":
-                                                return "secret";
-                                        }
-                                    })(),
-                                ),
+                switch (explorerType) {
+                    case "s3":
+                        setIsUploadModalOpen(true);
+                        break;
+                    case "secrets":
+                        onNewItem({
+                            "kind": "file" as const,
+                            "suggestedBasename": generateUniqDefaultName({
+                                "names": files,
+                                "buildName": buildNameFactory({
+                                    "defaultName": t("untitled what", {
+                                        "what": t("secret"),
+                                    }),
+                                    "separator": "_",
+                                }),
                             }),
-                            "separator": "_",
-                        }),
-                    }),
-                });
-                break;
+                        });
+                        break;
+                }
         }
     });
 
@@ -377,6 +379,9 @@ export const Explorer = memo((props: ExplorerProps) => {
             onDeleteItem({ kind, basename });
         },
     );
+
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
 
     return (
         <>
@@ -528,6 +533,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                     </>
                 }
             />
+            {explorerType === "s3" && (
+                <ExplorerUploadModal
+                    isOpen={isUploadModalOpen}
+                    onClose={onUploadModalClose}
+                    onFileSelected={onFileSelected}
+                    filesBeingUploaded={filesBeingUploaded}
+                />
+            )}
         </>
     );
 });

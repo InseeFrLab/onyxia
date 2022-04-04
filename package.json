@@ -99,14 +99,14 @@
         "url-join-ts": "^1.0.5",
         "keycloakify": "^4.6.0",
         "onyxia-ui": "^0.31.0",
-        "powerhooks": "^0.14.0",
+        "powerhooks": "^0.14.1",
         "tss-react": "^3.6.0",
         "zod": "^3.14.2"
     },
     "resolutions": {
         "babel-loader": "8.1.0",
         "evt": "2.0.0-beta.39",
-        "powerhooks": "0.14.0",
+        "powerhooks": "0.14.1",
         "tss-react": "3.6.0"
     },
     "scripts": {
