@@ -24,3 +24,10 @@ export const viewFailed = getStory({
     "isFailed": true,
     ...logCallbacks(["onClick"]),
 });
+
+export const viewSuccess = getStory({
+    "basename": "nyr_data.csv",
+    "percentUploaded": 100,
+    "fileSize": 7_800_000,
+    "isFailed": false,
+});

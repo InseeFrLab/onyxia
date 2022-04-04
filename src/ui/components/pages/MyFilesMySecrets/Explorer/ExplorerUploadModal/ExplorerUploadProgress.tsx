@@ -4,7 +4,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
-import { IconButton } from "ui/theme";
+import { IconButton, Icon } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 
@@ -47,7 +47,7 @@ export const ExplorerUploadProgress = memo((props: Props) => {
             <ExplorerIcon iconId="data" hasShadow={true} className={classes.icon} />
             <div className={classes.payload}>
                 <Text typo="label 1">{basename}</Text>
-                {!rest.isFailed && (
+                {!rest.isFailed && percentUploaded !== 100 && (
                     <div ref={progressBarRef} className={classes.progressBar}>
                         <div className={classes.progressBarGauge} />
                     </div>
@@ -57,7 +57,7 @@ export const ExplorerUploadProgress = memo((props: Props) => {
                         percentUploaded={percentUploaded}
                         fileSize={fileSize}
                     />
-                    {!rest.isFailed && (
+                    {!rest.isFailed && percentUploaded !== 100 && (
                         <>
                             <div style={{ "flex": 1 }} />
                             <Text typo="body 2" color="focus">
@@ -76,13 +76,18 @@ export const ExplorerUploadProgress = memo((props: Props) => {
                 </div>
             </div>
             {props.isFailed && (
-                <div style={{ "display": "flex" }}>
+                <div className={classes.iconButtonWrapper}>
                     <IconButton
                         iconId="close"
                         className={classes.closeIconButton}
                         onClick={onClickFactory("clear")}
                     />
                     <IconButton iconId="refresh" onClick={onClickFactory("restart")} />
+                </div>
+            )}
+            {percentUploaded === 100 && (
+                <div className={classes.checkWrapper}>
+                    <Icon iconId="check" className={classes.check} />
                 </div>
             )}
         </div>
@@ -138,6 +143,16 @@ const useStyles = makeStyles<
         },
         "metric": {
             "display": "flex",
+        },
+        "iconButtonWrapper": {
+            "display": "flex",
+        },
+        "checkWrapper": {
+            "display": "flex",
+            "alignItems": "center",
+        },
+        "check": {
+            "color": theme.colors.useCases.alertSeverity.success.main,
         },
     }),
 );
