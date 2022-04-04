@@ -21,7 +21,17 @@
 <img src="https://user-images.githubusercontent.com/6702424/136545513-f623d8c7-260d-4d93-a01e-2dc5af6ad473.gif" />
 </p>
 
+### Launching a container
+
 https://user-images.githubusercontent.com/6702424/152631131-44050af8-a979-4c25-b09a-1a5521558361.mp4
+
+### S3 File explorer
+
+https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-971a-80a505928fb5.mp4
+
+### Vault secret manager  
+
+For injecting secret environment variables in the containers. 
 
 https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
 
