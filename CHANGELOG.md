@@ -1,3 +1,15 @@
+## **0.50.0** (2022-04-04)  
+  
+- Checkmark when upload complete  
+- Update README.md  
+- Draging anywhere opens the upload modal  
+- Fix spacing on upload dialog  
+- Fix re-reender bug  
+- Fix s3 command translator  
+- Implement ExplorerUploadModal  
+- Fix bottom spacing on SVG  
+- Implement isFailed state for ExplorerUploadProgress    
+  
 ### **0.49.5** (2022-04-03)  
   
   
