@@ -382,10 +382,15 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
+    const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
 
     return (
         <>
-            <div ref={rootRef} className={cx(classes.root, className)}>
+            <div
+                ref={rootRef}
+                className={cx(classes.root, className)}
+                onDragOver={onDragOver}
+            >
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
                         explorerType={explorerType}
