@@ -255,12 +255,11 @@ export function createOfficialOnyxiaApiClient(params: {
                     config: JSONSchemaObject;
                     sources?: string[];
                     dependencies?: {
-                        enabled: boolean;
                         name: string;
                     }[];
                 }>(`/public/catalog/${catalogId}/${packageName}`)
                 .then(({ data }) => ({
-                    "dependencies": data.dependencies ?? [],
+                    "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
                     "sources": data.sources ?? [],
                     "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({
                         mustacheParams,
