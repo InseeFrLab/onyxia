@@ -1,3 +1,7 @@
+### **0.50.2** (2022-04-05)  
+  
+- subchart always enabled #297    
+  
 ### **0.50.1** (2022-04-04)  
   
 - Fix regression in catalog    
