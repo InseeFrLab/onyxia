@@ -41,7 +41,7 @@ export type OnyxiaApiClient = {
         }
     ) => Promise<{
         getPackageConfigJSONSchemaObjectWithRenderedMustachParams: (params: { mustacheParams: MustacheParams; }) => JSONSchemaObject;
-        dependencies: { enabled: boolean; name: string; }[];
+        dependencies: string[];
         sources: string[];
     }>;
 

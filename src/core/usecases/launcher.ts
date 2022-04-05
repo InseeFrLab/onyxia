@@ -900,9 +900,7 @@ export const thunks = {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
-                    "dependencies": dependencies
-                        .filter(({ enabled }) => enabled)
-                        .map(({ name }) => name),
+                    dependencies,
                     formFieldsValueDifferentFromDefault,
                 }),
             );
