@@ -65,7 +65,7 @@ export type OnyxiaApiClient = {
     }) => Promise<void>;
 };
 
-export const languages = ["en", "fr"] as const;
+export const languages = ["en", "fr", "zh-CN"] as const;
 export type Language = typeof languages[number];
 export type LocalizedString = LocalizedStringGeneric<Language>;
 
