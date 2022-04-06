@@ -213,6 +213,7 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
     "languagesPrettyPrint": {
         "en": "English",
         "fr": "Français",
+        "zh-CN": "简体中文",
     },
 });
 
