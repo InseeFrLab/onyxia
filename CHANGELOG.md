@@ -1,3 +1,15 @@
+### **0.50.3** (2022-04-06)  
+  
+- Add china in language filter  
+- finish all translation  
+- add zh translation for explorer  
+- add translation of home  
+- add translation for catalog launcher  
+- add translation for service use timer  
+- Support chinese in elementToSentence  
+- add account translation  
+- add first chinese translation    
+  
 ### **0.50.2** (2022-04-05)  
   
 - subchart always enabled #297    
