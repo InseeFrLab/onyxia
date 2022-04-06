@@ -967,92 +967,89 @@ export const resources = id<Record<Language, Translations>>({
         },
         "Explorer": {
             ...common.fr,
-            "untitled what": "{{what}}_sans_nom",
-            "directory": "dossier",
-            "deletion dialog title": "Supprimer un {{deleteWhat}} ?",
+            "untitled what": "untitled_{{what}}",
+            "directory": "目录",
+            "deletion dialog title": "删除 {{deleteWhat}} ?",
             "deletion dialog body": `
-            Vous êtes sur le point de supprimer un {{deleteWhat}}. 
-            Cette action entraînera la perte potentielle des données liées à ce {{deleteWhat}}.
+            您即将删除 {{deleteWhat}} 服务.
+            此操作将导致与此 {{deleteWhat}} 服务相关的数据的潜在丢失
             `,
-            "already a directory with this name": "Il y a déjà un dossier avec ce nom",
-            "can't be empty": "Ne peut être vide",
-            "create": "Crée",
-            "new directory": "Nouveau dossier",
+            "already a directory with this name": "已经有一个同名的文件夹",
+            "can't be empty": "不能为空",
+            "create": "建立",
+            "new directory": "新建文件夹",
         },
         "ExplorerItems": {
-            "empty directory": "Ce répertoire est vide",
+            "empty directory": "此目录为空",
         },
         "MySecretsEditor": {
             ...common.fr,
-            "add an entry": "Ajouter une variable",
-            "environnement variable default name": "NOUVELLE_VARENV",
-            "table of secret": "table de secret",
+            "add an entry": "添加变量",
+            "environnement variable default name": "NEW_VARENV",
+            "table of secret": "密钥表",
 
-            "key column name": "Nom de la variable",
-            "value column name": "Valeur",
-            "resolved value column name": "Valeur résolue",
-            "what's a resolved value": `
-            Une variable d'environement peut en référencer une autre, si par example vous avez
-            défini la variable PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
-            qui aura comme valeur résolue «Louis-Dupon»
+            "key column name": "变量名",
+            "value column name": "变量值",
+            "resolved value column name": "求解值",
+            "what's a resolved value": `一个环境变量可以引用另一个，例如，如果你有
+            定义变量 PRENOM=Louis 你可以定义变量 NAME_COMPLET="$PRENOM"-Dupon
+            NAME_COMPLET的解析值将是"Louis-Dupon"
             `,
-            "unavailable key": "Déjà utilisé",
-            "invalid key empty string": "Un nom est requis",
-            "invalid key _ not valid": "Ne peut pas être juste _",
-            "invalid key start with digit": "Ne doit pas commencer par un chiffre",
-            "invalid key invalid character": "Caractère non valide",
-            "invalid value cannot eval": "Expression shell non valide",
-            "use this secret": "Utiliser dans un service",
+            "unavailable key": "已被使用",
+            "invalid key empty string": "名字是必需的",
+            "invalid key _ not valid": "不可以只有 _",
+            "invalid key start with digit": "不能以数字开头",
+            "invalid key invalid character": "无效字符",
+            "invalid value cannot eval": "无效的shell表达式",
+            "use this secret": "在服务中使用",
 
-            "use secret dialog title": "Utiliser dans un service",
-            "use secret dialog subtitle": "Le chemin du secret a été copié.",
-            "use secret dialog body": `
-                Au moment de lancer un service (RStudio, Jupyter), rendez-vous
-                dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
-                Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
-            `,
-            "use secret dialog ok": "J'ai compris",
+            "use secret dialog title": "在服务中使用",
+            "use secret dialog subtitle": "密钥路径已被复制",
+            "use secret dialog body": `启动服务（RStudio，Jupyter）时，
+                                    如果在"VAULT"选项卡中，将路径粘贴到提供的字段中。
+                                    您的键值将被作为环境变量.`,
+            "use secret dialog ok": "我知道了",
         },
         "MySecretsEditorRow": {
-            "key input desc": "Nom de la variable d'environnement",
-            "value input desc": "Valeur de la variable d'environnement",
+            "key input desc": "环境变量名称",
+            "value input desc": "环境变量值",
         },
         "ExplorerUploadModalDropArea": {
-            "browse files": "parcourir vos fichiers",
-            "drag and drop or": "Glisser et déposer ou",
+            "browse files": "浏览您的文件",
+            "drag and drop or": "拖拽，放置或",
         },
         "ExplorerUploadProgress": {
-            "over": "sur",
-            "importing": "importation",
+            "over": "over",
+            "importing": "导入",
         },
         "ExplorerUploadModal": {
-            "import files": "Importer des fichiers",
-            "cancel": "Annuler",
-            "minimize": "Minimiser",
+            "import files": "导入文件",
+            "cancel": "取消",
+            "minimize": "最小化",
         },
         "Header": {
-            "login": "Connexion",
-            "logout": "Déconnexion",
-            "trainings": "Formations",
-            "documentation": "Documentation",
-            "project": "Projet",
+            "login": "登录",
+            "logout": "登出",
+            "trainings": "培训",
+            "documentation": "文档",
+            "project": "项目",
         },
         "App": {
-            "reduce": "Réduire",
-            "home": "Accueil",
-            "account": "Mon compte",
-            "catalog": "Catalogue de services",
-            "myServices": "Mes services",
-            "mySecrets": "Mes secrets",
-            "myFiles": "Mes fichiers",
+            "reduce": "减少",
+            "home": "我的主页",
+            "account": "我的账号",
+            "catalog": "服务目录",
+            "myServices": "我的服务",
+            "mySecrets": "我的密钥",
+            "myFiles": "我的文档",
         },
         "FourOhFour": {
-            "not found": "Page non trouvée",
+            "not found": "网页未找到",
         },
         "PortraitModeUnsupported": {
-            "portrait mode not supported": "Le mode portrait n'est pas encore supporté",
+            "portrait mode not supported": "尚不支持纵向模式",
             "instructions":
-                "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone.",
+                "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机",
         },
         "Home": {
             "welcome": `你好 {{who}}!`,
