@@ -140,6 +140,19 @@ const common = id<
         "do not display again": "Ne plus afficher",
         /* spell-checker: enable */
     },
+    "zh-CN": {
+        /* spell-checker: disable */
+        "file": "文档",
+        "secret": "密码",
+        "create": "建立",
+        "cancel": "取消",
+        "rename": "重命名",
+        "delete": "删除",
+        "ok": "好的",
+        "here": "这里",
+        "do not display again": "不要再显示",
+        /* spell-checker: enable */
+    },
 });
 
 export const resources = id<Record<Language, Translations>>({
