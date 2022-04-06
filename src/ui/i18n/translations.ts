@@ -870,100 +870,87 @@ export const resources = id<Record<Language, Translations>>({
         },
         "AccountInfoTab": {
             "general information": "一般信息",
-            "user id": "Identifiant (IDEP)",
-            "full name": "Nom complet",
-            "email": "Adresse mail",
-            "change account info":
-                "Modifier les informations du compte (comme, par exemple, votre mot de passe)",
-            "auth information": "Informations d'authentification Onyxia",
-            "auth information helper": `Ces informations vous permettent de vous identifier 
-            au sein de la plateforme et des différents services.`,
-            "ip address": "Adresse IP",
+            "user id": "身分名 (IDEP)",
+            "full name": "全名",
+            "email": "邮件地址",
+            "change account info": "修改帐户信息（例如您的密码）",
+            "auth information": "Onyxia的认证信息",
+            "auth information helper": `此信息可让您在平台内和平台内的各种服务中认证自己.`,
+            "ip address": "IP地址",
         },
         "AccountIntegrationsTab": {
-            "git section title": "Configurations Git",
-            "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
-            services comme l'auteur des contributions Git`,
-            "gitName": "Nom d'utilisateur pour Git",
-            "gitEmail": "Email pour Git",
-            "third party tokens section title":
-                "Connecter vos comptes Gitlab, Github et Kaggle",
-            "third party tokens section helper": `Connectez vos services à des comptes extérieurs à l'aide
-            de jetons d'accès personnel et de variables d'environnement.`,
-            "personal token": "Jeton d'accès personnel {{serviceName}}",
-            "link for token creation": "Créer votre jeton {{serviceName}}.",
-            "accessible as env":
-                "Accessible au sein de vos services en tant que la variable d'environnement",
+            "git section title": "Git 配置",
+            "git section helper": `为了确保您在您的服务中
+            作为 Git 贡献者`,
+            "gitName": "您Git 账号的用户名",
+            "gitEmail": "您Git 账号的注册电子邮件",
+            "third party tokens section title": "连接您的 Gitlab、Github 和 Kaggle 帐户",
+            "third party tokens section helper":
+                "利用您的个人访问令牌和环境变量，来将您的服务连接到外部帐户.",
+            "personal token": "个人访问令牌 {{serviceName}}",
+            "link for token creation": "创建您的令牌 {{serviceName}}.",
+            "accessible as env": "可在您的服务中作为环境变量被访问",
         },
         "AccountStorageTab": {
-            "credentials section title": "Connecter vos données à vos services",
+            "credentials section title": "将您的数据连接到您的服务",
             "credentials section helper":
-                "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
-            "accessible as env":
-                "Accessible au sein de vos services en tant que la variable d'environnement",
-            "init script section title":
-                "Pour accèder au stockage en dehors des services du datalab",
-            "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-            "valid until": "Valides jusqu'a {{when}}",
+                "与 Amazon (AWS S3) 兼容的对象存储 MinIO. 此信息已自动填写.",
+            "accessible as env": "可在您的服务中作为环境变量被访问",
+            "init script section title": "访问datalab服务之外的存储器",
+            "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
+            "valid until": "在 {{when}} 前有效",
         },
         "AccountUserInterfaceTab": {
-            "title": "Configurer le mode d'interface",
-            "enable dark mode": "Activer le mode sombre",
-            "dark mode helper":
-                "Thème de l'interface à faible luminosité avec un fond de couleur sombre.",
-            "enable beta": "Activer le mode béta-testeur",
-            "beta mode helper":
-                "Pour des configurations et fonctionnalités avancées de la plateforme.",
-            "enable dev mode": "Activer le mode développeur",
-            "dev mode helper": "Activer les fonctionnalités en cours de développement",
+            "title": "配置界面模式",
+            "enable dark mode": "开启暗黑模式",
+            "dark mode helper": "适用于低光界面的暗色背景主题",
+            "enable beta": "启用 Beta 测试模式",
+            "beta mode helper": "用于平台高级配置和功能.",
+            "enable dev mode": "启用开发者模式",
+            "dev mode helper": "启用正在开发的功能",
         },
         "AccountField": {
-            "copy tooltip": "Copier dans le press papier",
-            "language": "Changer la langue",
-            "s3 scripts": "Script d'initialisation",
-            "service password": "Mot de passe pour vos services",
-            "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
-            Il est généré automatiquement et se renouvelle régulièrement.`,
-            "not yet defined": "Non définie",
-            "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
-            "reset": "Réinitialiser",
-            "reset helper dialogs helper text":
-                "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher",
+            "copy tooltip": "复制到剪贴板",
+            "language": "更改语言",
+            "s3 scripts": "初始化脚本",
+            "service password": "您的服务密码",
+            "service password helper text": `登录您的所有服务都需要此密码.
+            此密码自动生成并定期更新.`,
+            "not yet defined": "没有定义",
+            "reset helper dialogs": "重置指令窗口",
+            "reset": "重置",
+            "reset helper dialogs helper text": "重置您要求不再显示的消息窗口",
         },
         "RegisterUserProfile": {
-            "allowed email domains": "Domaines autorisés",
-            "minimum length": "Longueur minimum {{n}}",
-            "must be different from username": "Ne peut pas être le nom d'utilisateur",
-            "password mismatch": "Les deux mots de passe ne correspondent pas",
-            "go back": "Retour",
-            "form not filled properly yet":
-                "Veuillez vérifier que vous avez bien rempli le formulaire",
-            "must respect the pattern": "Dois respecter le format",
+            "allowed email domains": "授权域",
+            "minimum length": "最小长度 {{n}}",
+            "must be different from username": "用户名不可用",
+            "password mismatch": "两个密码不匹配",
+            "go back": "返回",
+            "form not filled properly yet": "请检查您是否正确填写了表格.",
+            "must respect the pattern": "必须尊守格式",
         },
         "MyFilesMySecrets": {
-            "page title - my files": "Mes fichiers",
-            "page title - my secrets": "My Secrets",
-            "what this page is used for - my files":
-                "Stocker ici vos fichiers de donnée.",
+            "page title - my files": "我的文件",
+            "page title - my secrets": "我的密钥",
+            "what this page is used for - my files": "在此处存储您的数据.",
             "what this page is used for - my secrets":
-                "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
-            "learn more - my files":
-                "Pour en savoir plus sur l'utilisation du stockage S3,",
-            "to learn more - my secrets":
-                "Pour en savoir plus sur l'utilisation de secrets,",
-            "read our documentation": "lisez notre documentation.",
+                "在此处存储可作为服务中的环境变量访问的密钥.",
+            "learn more - my files": "了解有关使用 S3 存储的更多信息,",
+            "to learn more - my secrets": "要了解有关使用密钥的更多信息",
+            "read our documentation": "阅读我们的文档",
         },
         "ExplorerItem": {
-            "description": "description",
+            "description": "描述",
         },
         "ExplorerButtonBar": {
             ...common.fr,
-            "create secret": "Nouveau secret",
-            "upload file": "Téléverser un fichier",
-            "copy path": "Utiliser dans le service",
-            "create directory": "Nouveau dossier",
-            "refresh": "rafraîchir",
-            "create what": "Nouveau {{what}}",
+            "create secret": "新的密钥",
+            "upload file": "上传文件",
+            "copy path": "在服务中使用",
+            "create directory": "新建文件夹",
+            "refresh": "刷新",
+            "create what": "新 {{what}}",
         },
         "Explorer": {
             ...common.fr,
