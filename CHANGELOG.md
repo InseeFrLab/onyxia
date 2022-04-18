@@ -1,3 +1,10 @@
+### **0.50.4** (2022-04-18)  
+  
+- Compile standalong keycloak theme with every release  
+- Update onyxia-ui  
+- Delete noUndefined.ts  
+- correct some chinese translation to make it nicer    
+  
 ### **0.50.3** (2022-04-06)  
   
 - Add china in language filter  
