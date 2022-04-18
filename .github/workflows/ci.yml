@@ -29,6 +29,11 @@ jobs:
       with:
         name: keycloak_theme
         path: build_keycloak/target/*keycloak-theme*.jar
+    - run: npx build-keycloak-theme
+    - uses: actions/upload-artifact@v2
+      with:
+        name: standalone_keycloak_theme
+        path: build_keycloak/target/*keycloak-theme*.jar
     - uses: actions/upload-artifact@v2
       with:
         name: build
@@ -145,6 +150,10 @@ jobs:
       with:
         name: keycloak_theme
     - run: mv *keycloak-theme*.jar keycloak-theme.jar
+    - uses: actions/download-artifact@v2
+      with:
+        name: standalone_keycloak_theme
+    - run: mv *keycloak-theme*.jar standalone-keycloak-theme.jar
     - name: Build GitHub release body
       id: step1
       run: |
@@ -161,7 +170,9 @@ jobs:
         name: Release v${{ needs.check_if_version_upgraded.outputs.to_version }}
         tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
         target_commitish: ${{ github.ref }}
-        files: keycloak-theme.jar
+        files: |
+          keycloak-theme.jar
+          standalone-keycloak-theme.jar
         body: ${{ steps.step1.outputs.body }}
         draft: false
         prerelease: false
