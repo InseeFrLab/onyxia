@@ -149,11 +149,12 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: keycloak_theme
-    - run: mv *keycloak-theme*.jar keycloak-theme.jar
+    - run: mkdir jars
+    - run: mv *keycloak-theme*.jar jars/keycloak-theme.jar
     - uses: actions/download-artifact@v2
       with:
         name: standalone_keycloak_theme
-    - run: mv *keycloak-theme*.jar standalone-keycloak-theme.jar
+    - run: mv *keycloak-theme*.jar jars/standalone-keycloak-theme.jar
     - name: Build GitHub release body
       id: step1
       run: |
@@ -171,8 +172,8 @@ jobs:
         tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
         target_commitish: ${{ github.ref }}
         files: |
-          keycloak-theme.jar
-          standalone-keycloak-theme.jar
+          jars/keycloak-theme.jar
+          jars/standalone-keycloak-theme.jar
         body: ${{ steps.step1.outputs.body }}
         draft: false
         prerelease: false
@@ -192,4 +193,4 @@ jobs:
       with:
         token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
         event-type: update_onyxia_web
-        repository: InseeFrLab/dev.insee.io
+  
