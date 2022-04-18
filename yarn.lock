@@ -10245,10 +10245,10 @@ keycloak-js@^15.0.2:
     base64-js "1.3.1"
     js-sha256 "0.9.0"
 
-keycloakify@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-4.6.0.tgz#67c28466674e3f99869ea3c3acb496a4b171fdeb"
-  integrity sha512-PoIIad5KaifdJukLzMLqfu7D4e9N+KxHLSMMI+JJZV+EoJxwltPsr0uESyOhKL6V+bmlc9E5YV6Imta76UVFRg==
+keycloakify@^4.7.6:
+  version "4.7.6"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-4.7.6.tgz#fd300c2278dbc4f9fa320c1844695887a66538b6"
+  integrity sha512-FMxFu/BgmqCazwvG3DmXA678NHhHWLKj1t4tCe15o5A8BZhHuCib57shGf5Nb7iKMoerO3ZU0WLxaq5wP/+mww==
   dependencies:
     cheerio "^1.0.0-rc.5"
     evt "2.0.0-beta.39"
@@ -11603,10 +11603,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.31.0:
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.31.0.tgz#becf047459de8afc36212aa7f9d982c75a49753a"
-  integrity sha512-wJ0sMkCDm1sXXZ5RAzsVAglxQMo7UHagPYs8Y5EIil62jAcbpgN5ZpQyeg1vACqY4/F9pkGW4lzVyvELJUsBcQ==
+onyxia-ui@^0.32.1:
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.32.1.tgz#e3fc3a9143dff2616473a7c6b2ae05c698dd3346"
+  integrity sha512-gfOi3Ya5FrIo86QDmEkrUnXN09MM+mgAT9YSFyBP3dojtV/YDOVOTg4oJghpIvG1sphRz3TRnXxNZxKDPHnQhg==
   dependencies:
     "@mui/icons-material" "^5.0.3"
     color "3.1.3"
@@ -11614,9 +11614,10 @@ onyxia-ui@^0.31.0:
     material-design-icons "^3.0.1"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
-    powerhooks "^0.14.0"
+    powerhooks "^0.16.3"
+    run-exclusive "^2.2.14"
     tsafe "^0.8.1"
-    tss-react "^3.5.2"
+    tss-react "^3.6.2"
 
 open@^7.0.2, open@^7.0.3:
   version "7.4.2"
@@ -12867,10 +12868,10 @@ postcss@^8.1.0:
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
 
-powerhooks@0.14.1, powerhooks@^0.14.0, powerhooks@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.14.1.tgz#2fd739a90231e21ea33400b24240dad02d47ed7c"
-  integrity sha512-JUTxVwhJpE8jfLAT75U5GjwBGHJ+6b16uFuWyeTp2EBQQ1a6LVCjLzU6ioAAZpFjCI9UNhMiAZ5MnmTYz+t1nA==
+powerhooks@0.16.3, powerhooks@^0.14.0, powerhooks@^0.16.3:
+  version "0.16.3"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.16.3.tgz#52965bcebf04f8f50c1ea99682572e2c9712a360"
+  integrity sha512-NOAtu51bqrGPIL24mrSLQr/hzcjy11nILRNE7LAWkCQbRZI+PZX6ZmuADzy+joVtcIe91VlZdgAuXGDFuQiCqA==
   dependencies:
     evt "2.0.0-beta.39"
     memoizee "^0.4.15"
@@ -15634,6 +15635,11 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
+tsafe@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.10.0.tgz#c4fba365a49467ea6167e8c9482ddb94ee51b795"
+  integrity sha512-CFfa1uJKfU0DDRbuB8bf2mfXjkOqiTsrltexzMMLxq5gjd1LttFECNGsO8dYUALJDbShb6+f3CwAppW/wf9BrA==
+
 tsafe@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.4.1.tgz#00af1be2db82abb4be531209b90232d7954e1a03"
@@ -15648,11 +15654,6 @@ tsafe@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.9.0.tgz#8394e5fdf81e690c97e2b8be4180a079a4a19bfb"
   integrity sha512-wmbu8pI/xmW69b13HoS8WbTcSlRTDjIut9ACblBjVZVTk0vsMRXdoh1k1jMu5EzKNohBavKHhqNOOsccSR7XCA==
-
-tsafe@^0.9.1:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.9.1.tgz#8d7f12e08638b1f5543b995cc35e6b8852dcf73f"
-  integrity sha512-zRnios5Z2dRGx1i1BnG4sDzjzwJHvZ5gcdoRgQMmik6lw50yuh4aWojVTtTGeqEN1YRK3SCyw+ju7wol0yEO7w==
 
 tsconfig-paths@^3.11.0:
   version "3.12.0"
@@ -15679,10 +15680,10 @@ tslib@~2.1.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
   integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
-tss-react@3.6.0, tss-react@^3.5.2, tss-react@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-3.6.0.tgz#22b58a65a1390507891d6b9ac95f58d22c5cd666"
-  integrity sha512-mtQ8VL0btMVZZtax5gwaGU+jSBdKtbYMLVCLGB26Bi+BcOI0GQ6GTn1EaeK1nSgN5qbe6FL0zEOC6qoY+8+MEg==
+tss-react@3.6.2, tss-react@^3.5.2, tss-react@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-3.6.2.tgz#5e995d8b82ca730ba04a21203ae68f1c5372a85e"
+  integrity sha512-+ecQIqCNFVlVJVk3NiCWZY2+5DhVKMVUVxIbEwv9nYsTRQA/KxyKCU8g+KMj5ByqFv9LW76+TUYzbWck/IHkfA==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"

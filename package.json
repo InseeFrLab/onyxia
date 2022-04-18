@@ -93,21 +93,21 @@
         "resize-observer-polyfill": "^1.5.1",
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
-        "tsafe": "^0.9.1",
+        "tsafe": "^0.10.0",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5",
-        "keycloakify": "^4.6.0",
-        "onyxia-ui": "^0.31.0",
-        "powerhooks": "^0.14.1",
-        "tss-react": "^3.6.0",
+        "keycloakify": "^4.7.6",
+        "onyxia-ui": "^0.32.1",
+        "powerhooks": "^0.16.3",
+        "tss-react": "^3.6.2",
         "zod": "^3.14.2"
     },
     "resolutions": {
         "babel-loader": "8.1.0",
         "evt": "2.0.0-beta.39",
-        "powerhooks": "0.14.1",
-        "tss-react": "3.6.0"
+        "powerhooks": "0.16.3",
+        "tss-react": "3.6.2"
     },
     "scripts": {
         "start": "react-app-rewired start",
