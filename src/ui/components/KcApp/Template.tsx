@@ -43,7 +43,7 @@ const useStyles = makeStyles<{
     windowInnerHeight: number;
 }>()(theme => ({
     "root": {
-        "height": "100%",
+        "height": "100vh",
         "display": "flex",
         "flexDirection": "column",
         "backgroundColor": theme.colors.useCases.surfaces.background,

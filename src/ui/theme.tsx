@@ -29,7 +29,6 @@ import { ReactComponent as CollaborationToolsSvg } from "./assets/svg/Collaborat
 import { ReactComponent as BashSvg } from "./assets/svg/Bash.svg";
 import { ReactComponent as CatalogSvg } from "./assets/svg/Catalog.svg";
 import { ReactComponent as KeySvg } from "./assets/svg/Key.svg";
-import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { ReactComponent as TrainingsLogoSvg } from "ui/assets/svg/Trainings2.svg";
 import { ReactComponent as RefreshLogoSvg } from "ui/assets/svg/Refresh.svg";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
@@ -71,6 +70,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "ui/tools/types/ComponentType";
 import type { Language } from "ui/i18n/useLng";
+import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "ui/envCarriedOverToKc";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
@@ -171,14 +171,14 @@ export const { IconButton } = createIconButton({ Icon });
 export const { Button } = createButton({ Icon });
 export const { Text } = createText({ useTheme });
 
-export function getThemeProviderProps(params: {
+export function createGetViewPortConfig(params: {
     PortraitModeUnsupported: ComponentType;
     doDisableViewPortAdapter: boolean;
-}): Omit<ThemeProviderProps, "children"> {
+}) {
     const { PortraitModeUnsupported, doDisableViewPortAdapter } = params;
 
-    return {
-        "getViewPortConfig": doDisableViewPortAdapter
+    const getViewPortConfig: ThemeProviderProps["getViewPortConfig"] =
+        doDisableViewPortAdapter
             ? undefined
             : ({ windowInnerWidth, windowInnerHeight }) => {
                   if (
@@ -200,10 +200,16 @@ export function getThemeProviderProps(params: {
                       targetWindowInnerWidth,
                       "targetBrowserFontSizeFactor": 1,
                   };
-              },
-        "splashScreen": { "Logo": OnyxiaLogoSvg },
-    };
+              };
+
+    return { getViewPortConfig };
 }
+
+const { OnyxiaSplashScreenLogo } = createOnyxiaSplashScreenLogo({ useTheme });
+
+export const splashScreen: ThemeProviderProps["splashScreen"] = {
+    "Logo": OnyxiaSplashScreenLogo,
+};
 
 export const { PageHeader } = createPageHeader({ Icon });
 
