@@ -1,3 +1,9 @@
+### **0.50.5** (2022-04-20)  
+  
+- Update email theme  
+- Add keycloak theme email  
+- update keycloakify    
+  
 ### **0.50.4** (2022-04-18)  
   
 - Compile standalong keycloak theme with every release  
