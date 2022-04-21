@@ -1,3 +1,7 @@
+### **0.50.6** (2022-04-21)  
+  
+- Orange fix loop single kc client with vault    
+  
 ### **0.50.5** (2022-04-20)  
   
 - Update email theme  
