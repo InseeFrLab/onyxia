@@ -13,6 +13,7 @@ import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyReques
 import { id } from "tsafe/id";
 import { ApiLogger } from "core/tools/apiLogger";
 import type { NonPostableEvt } from "evt";
+import type { OidcClient } from "../ports/OidcClient";
 
 const version = "v1";
 
@@ -25,23 +26,30 @@ type Params = {
         realm: string;
         clientId: string;
     };
+    fallbackOidcClient: OidcClient.LoggedIn;
     evtUserActivity: NonPostableEvt<void>;
 };
 
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, keycloakParams, evtUserActivity } = params;
+    const { url, engine, role, keycloakParams, evtUserActivity, fallbackOidcClient } =
+        params;
 
-    const oidcClient = await createKeycloakOidcClient({
-        ...keycloakParams,
-        "transformUrlBeforeRedirectToLogin": undefined,
-        evtUserActivity,
-    });
+    const oidcClient = await (async () => {
+        const oidcClient = await createKeycloakOidcClient({
+            ...keycloakParams,
+            "transformUrlBeforeRedirectToLogin": undefined,
+            evtUserActivity,
+        });
 
-    if (!oidcClient.isUserLoggedIn) {
-        return oidcClient.login();
-    }
+        if (!oidcClient.isUserLoggedIn) {
+            console.log("falling back to oidc client");
+            return fallbackOidcClient;
+        }
+
+        return oidcClient;
+    })();
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 

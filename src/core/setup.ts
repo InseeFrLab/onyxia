@@ -256,6 +256,7 @@ export async function createStore(params: CreateStoreParams) {
                           return { url, clientId, realm };
                       })(),
                       evtUserActivity,
+                      "fallbackOidcClient": oidcClient,
                   };
               })(),
           );
