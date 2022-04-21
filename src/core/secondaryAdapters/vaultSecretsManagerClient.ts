@@ -14,6 +14,7 @@ import { id } from "tsafe/id";
 import { ApiLogger } from "core/tools/apiLogger";
 import type { NonPostableEvt } from "evt";
 import type { OidcClient } from "../ports/OidcClient";
+import { assert } from "tsafe/assert";
 
 const version = "v1";
 
@@ -21,35 +22,34 @@ type Params = {
     url: string;
     engine: string;
     role: string;
-    keycloakParams: {
-        url: string;
-        realm: string;
-        clientId: string;
-    };
-    fallbackOidcClient: OidcClient.LoggedIn;
+    keycloakParams:
+        | {
+              url: string;
+              realm: string;
+              clientId: string;
+          }
+        | OidcClient.LoggedIn;
     evtUserActivity: NonPostableEvt<void>;
 };
 
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, keycloakParams, evtUserActivity, fallbackOidcClient } =
-        params;
+    const { url, engine, role, keycloakParams, evtUserActivity } = params;
 
-    const oidcClient = await (async () => {
-        const oidcClient = await createKeycloakOidcClient({
-            ...keycloakParams,
-            "transformUrlBeforeRedirectToLogin": undefined,
-            evtUserActivity,
-        });
+    const oidcClient =
+        "isUserLoggedIn" in keycloakParams
+            ? keycloakParams
+            : await createKeycloakOidcClient({
+                  ...keycloakParams,
+                  "transformUrlBeforeRedirectToLogin": undefined,
+                  evtUserActivity,
+              });
 
-        if (!oidcClient.isUserLoggedIn) {
-            console.log("falling back to oidc client");
-            return fallbackOidcClient;
-        }
-
-        return oidcClient;
-    })();
+    if (!oidcClient.isUserLoggedIn) {
+        await oidcClient.login();
+        assert(false);
+    }
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 

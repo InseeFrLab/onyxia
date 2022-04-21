@@ -253,6 +253,18 @@ export async function createStore(params: CreateStoreParams) {
                               "There is no specific keycloak config for Vault and no keycloak config to fallback to",
                           );
 
+                          if (
+                              fallbackKeycloakParams !== undefined &&
+                              fallbackKeycloakParams.url === url &&
+                              fallbackKeycloakParams.realm === realm &&
+                              fallbackKeycloakParams.clientId === clientId
+                          ) {
+                              console.log(
+                                  "TODO: Figure out. Hack for Orange. We reuse oidcClient of Onyxia for Vault",
+                              );
+                              return oidcClient;
+                          }
+
                           return { url, clientId, realm };
                       })(),
                       evtUserActivity,
