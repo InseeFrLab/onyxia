@@ -38,6 +38,8 @@ export async function createKeycloakOidcClient(params: {
         })
         .catch((error: Error) => error);
 
+    console.log({ isAuthenticated });
+
     //TODO: Make sure that result is always an object.
     if (isAuthenticated instanceof Error) {
         throw isAuthenticated;
