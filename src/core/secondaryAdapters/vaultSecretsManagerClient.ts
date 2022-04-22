@@ -22,7 +22,7 @@ type Params = {
     url: string;
     engine: string;
     role: string;
-    keycloakParams:
+    keycloakParamsOrOidcClient:
         | {
               url: string;
               realm: string;
@@ -35,13 +35,13 @@ type Params = {
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, keycloakParams, evtUserActivity } = params;
+    const { url, engine, role, keycloakParamsOrOidcClient, evtUserActivity } = params;
 
     const oidcClient =
-        "isUserLoggedIn" in keycloakParams
-            ? keycloakParams
+        "isUserLoggedIn" in keycloakParamsOrOidcClient
+            ? keycloakParamsOrOidcClient
             : await createKeycloakOidcClient({
-                  ...keycloakParams,
+                  ...keycloakParamsOrOidcClient,
                   "transformUrlBeforeRedirectToLogin": undefined,
                   evtUserActivity,
               });

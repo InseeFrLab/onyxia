@@ -1043,7 +1043,8 @@ export const resources = id<Record<Language, Translations>>({
             "title": "欢迎来到 datalab",
             "login": "登录",
             "new user": "您是datalab的新用户?",
-            "subtitle": "我们支持 Python 或 R，并为您提供各种数据服务和您需要的所有计算能力!",
+            "subtitle":
+                "我们支持 Python 或 R，并为您提供各种数据服务和您需要的所有计算能力!",
             "cardTitle1": "灵活的工作环境和按需分配的服务",
             "cardTitle2": "一个为您服务的，活跃的和热情的社区",
             "cardTitle3": "快速、灵活、在线的数据存储空间",
