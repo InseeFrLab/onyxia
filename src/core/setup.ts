@@ -233,7 +233,7 @@ export async function createStore(params: CreateStoreParams) {
                       engine,
                       role,
                       url,
-                      "keycloakParamsOrOidcClient": (() => {
+                      "oidc": (() => {
                           const fallbackKeycloakParams =
                               params.userAuthenticationParams.method !== "keycloak"
                                   ? undefined
@@ -259,15 +259,22 @@ export async function createStore(params: CreateStoreParams) {
                               fallbackKeycloakParams.realm === realm &&
                               fallbackKeycloakParams.clientId === clientId
                           ) {
-                              console.log(
-                                  "TODO: Figure out. Hack for Orange. We reuse oidcClient of Onyxia for Vault",
-                              );
-                              return oidcClient;
+                              return {
+                                  "type": "oidc client",
+                                  oidcClient,
+                              } as const;
                           }
 
-                          return { url, clientId, realm };
+                          return {
+                              "type": "keycloak params",
+                              "keycloakParams": {
+                                  url,
+                                  clientId,
+                                  realm,
+                              },
+                              evtUserActivity,
+                          } as const;
                       })(),
-                      evtUserActivity,
                   };
               })(),
           );
