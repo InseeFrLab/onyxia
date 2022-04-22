@@ -30,7 +30,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import { getCreateS3ClientParams } from "../secondaryAdapters/s3Client";
+import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 
 export type FormField =
@@ -950,7 +950,7 @@ export const thunks = {
             >
         > =>
         async (...args) => {
-            const [, getState, { s3Client, createStoreParams }] = args;
+            const [, getState, { s3Client }] = args;
 
             const { s3: s3Params } = deploymentRegionSelectors.selectedDeploymentRegion(
                 getState(),
@@ -987,13 +987,7 @@ export const thunks = {
 
             s3Client.createBucketIfNotExist(project.bucket);
 
-            const { region, url } = getCreateS3ClientParams({
-                s3Params,
-                "fallbackKeycloakParams":
-                    createStoreParams.userAuthenticationParams.method !== "keycloak"
-                        ? undefined
-                        : createStoreParams.userAuthenticationParams.keycloakParams,
-            });
+            const { region, url } = getS3UrlAndRegion(s3Params);
 
             const { host, port = 443 } = parseUrl(url);
 
