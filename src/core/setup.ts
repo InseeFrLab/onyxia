@@ -332,13 +332,18 @@ export async function createStore(params: CreateStoreParams) {
                 : await createS3Client({
                       ...getCreateS3ClientParams({
                           s3Params,
-                          "fallbackKeycloakParams":
+                          "fallbackOidc":
                               params.userAuthenticationParams.method !== "keycloak"
                                   ? undefined
-                                  : params.userAuthenticationParams.keycloakParams,
+                                  : {
+                                        "keycloakParams":
+                                            params.userAuthenticationParams
+                                                .keycloakParams,
+                                        "oidcClient": oidcClient,
+                                    },
+                          evtUserActivity,
                       }),
                       "createAwsBucket": onyxiaApiClient.createAwsBucket,
-                      evtUserActivity,
                   });
     }
 

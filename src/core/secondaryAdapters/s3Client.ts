@@ -14,16 +14,25 @@ import { join as pathJoin } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
 import type { NonPostableEvt } from "evt";
+import type { OidcClient } from "../ports/OidcClient";
 
 export type Params = {
     url: string;
     region: string;
-    keycloakParams: {
-        url: string;
-        clientId: string;
-        realm: string;
-    };
-    evtUserActivity: NonPostableEvt<void>;
+    oidc:
+        | {
+              type: "keycloak params";
+              keycloakParams: {
+                  url: string;
+                  realm: string;
+                  clientId: string;
+              };
+              evtUserActivity: NonPostableEvt<void>;
+          }
+        | {
+              type: "oidc client";
+              oidcClient: OidcClient.LoggedIn;
+          };
     durationSeconds: number;
     amazon:
         | undefined
@@ -42,27 +51,30 @@ export type Params = {
 };
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const {
-        url,
-        region,
-        keycloakParams,
-        amazon,
-        durationSeconds,
-        createAwsBucket,
-        evtUserActivity,
-    } = params;
+    const { url, region, amazon, oidc, durationSeconds, createAwsBucket } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
-    const oidcClient = await createKeycloakOidcClient({
-        ...keycloakParams,
-        "transformUrlBeforeRedirectToLogin": undefined,
-        evtUserActivity,
-    });
+    const oidcClient = await (async () => {
+        switch (oidc.type) {
+            case "oidc client":
+                return oidc.oidcClient;
+            case "keycloak params": {
+                const oidcClient = await createKeycloakOidcClient({
+                    ...oidc.keycloakParams,
+                    "transformUrlBeforeRedirectToLogin": undefined,
+                    "evtUserActivity": oidc.evtUserActivity,
+                });
 
-    if (!oidcClient.isUserLoggedIn) {
-        return oidcClient.login();
-    }
+                if (!oidcClient.isUserLoggedIn) {
+                    await oidcClient.login();
+                    assert(false);
+                }
+
+                return oidcClient;
+            }
+        }
+    })();
 
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
         "requestNewToken": async (restrictToBucketName: string | undefined) => {
@@ -423,50 +435,89 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
 
 export function getCreateS3ClientParams(params: {
     s3Params: DeploymentRegion.S3;
-    fallbackKeycloakParams:
+    fallbackOidc?:
         | {
-              url: string;
-              clientId: string;
-              realm: string;
+              keycloakParams: {
+                  url: string;
+                  clientId: string;
+                  realm: string;
+              };
+              oidcClient: OidcClient.LoggedIn;
           }
         | undefined;
-}): Omit<Params, "createAwsBucket" | "evtUserActivity"> {
-    const { s3Params, fallbackKeycloakParams } = params;
+    evtUserActivity: NonPostableEvt<void>;
+}): Omit<Params, "createAwsBucket"> {
+    const { s3Params, fallbackOidc, evtUserActivity } = params;
 
-    const keycloakParams = (() => {
-        const url = s3Params.keycloakParams?.url ?? fallbackKeycloakParams?.url;
-        const clientId =
-            s3Params.keycloakParams?.clientId ?? fallbackKeycloakParams?.clientId;
-        const realm = s3Params.keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
+    const oidc = (() => {
+        const { url, realm, clientId } = {
+            ...s3Params.keycloakParams,
+            ...fallbackOidc?.keycloakParams,
+        };
 
         assert(
             url !== undefined && clientId !== undefined && realm !== undefined,
             "There is no specific keycloak config in the region for s3 and no keycloak config to fallback to",
         );
 
-        return { url, clientId, realm };
+        if (
+            fallbackOidc !== undefined &&
+            url === fallbackOidc.keycloakParams.url &&
+            realm === fallbackOidc.keycloakParams.realm &&
+            clientId === fallbackOidc.keycloakParams.clientId
+        ) {
+            return {
+                "type": "oidc client",
+                "oidcClient": fallbackOidc.oidcClient,
+            } as const;
+        }
+
+        return {
+            "type": "keycloak params",
+            "keycloakParams": { url, realm, clientId },
+            evtUserActivity,
+        } as const;
     })();
 
+    const { url, region } = getS3UrlAndRegion(s3Params);
+
+    return (() => {
+        switch (s3Params.type) {
+            case "minio":
+                return {
+                    url,
+                    region,
+                    oidc,
+                    "amazon": undefined,
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600,
+                };
+            case "amazon":
+                return {
+                    url,
+                    region,
+                    oidc,
+                    "amazon": {
+                        "roleARN": s3Params.roleARN,
+                        "roleSessionName": s3Params.roleSessionName,
+                    },
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600,
+                };
+        }
+    })();
+}
+
+export function getS3UrlAndRegion(s3Params: DeploymentRegion.S3) {
     return (() => {
         switch (s3Params.type) {
             case "minio":
                 return {
                     "url": s3Params.url,
                     "region": s3Params.region ?? "us-east-1",
-                    keycloakParams,
-                    "amazon": undefined,
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600,
                 };
             case "amazon":
                 return {
                     "url": "https://s3.amazonaws.com",
                     "region": s3Params.region,
-                    keycloakParams,
-                    "amazon": {
-                        "roleARN": s3Params.roleARN,
-                        "roleSessionName": s3Params.roleSessionName,
-                    },
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600,
                 };
         }
     })();
