@@ -29,9 +29,9 @@ https://user-images.githubusercontent.com/6702424/152631131-44050af8-a979-4c25-b
 
 https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-971a-80a505928fb5.mp4
 
-### Vault secret manager  
+### Vault secret manager
 
-For injecting secret environment variables in the containers. 
+For injecting secret environment variables in the containers.
 
 https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
 

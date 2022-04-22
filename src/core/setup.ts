@@ -233,7 +233,7 @@ export async function createStore(params: CreateStoreParams) {
                       engine,
                       role,
                       url,
-                      "keycloakParams": (() => {
+                      "keycloakParamsOrOidcClient": (() => {
                           const fallbackKeycloakParams =
                               params.userAuthenticationParams.method !== "keycloak"
                                   ? undefined
@@ -268,7 +268,6 @@ export async function createStore(params: CreateStoreParams) {
                           return { url, clientId, realm };
                       })(),
                       evtUserActivity,
-                      "fallbackOidcClient": oidcClient,
                   };
               })(),
           );
