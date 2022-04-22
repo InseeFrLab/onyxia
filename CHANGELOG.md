@@ -1,3 +1,8 @@
+### **0.50.7** (2022-04-22)  
+  
+- Do not create a new oidcClient if we share the same keycloak client for minio  
+- Refactor vaultSecretsManagerClient adapter    
+  
 ### **0.50.6** (2022-04-21)  
   
 - Orange fix loop single kc client with vault    
