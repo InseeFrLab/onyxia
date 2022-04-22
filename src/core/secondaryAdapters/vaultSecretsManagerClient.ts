@@ -22,34 +22,47 @@ type Params = {
     url: string;
     engine: string;
     role: string;
-    keycloakParamsOrOidcClient:
+    oidc:
         | {
-              url: string;
-              realm: string;
-              clientId: string;
+              type: "keycloak params";
+              keycloakParams: {
+                  url: string;
+                  realm: string;
+                  clientId: string;
+              };
+              evtUserActivity: NonPostableEvt<void>;
           }
-        | OidcClient.LoggedIn;
-    evtUserActivity: NonPostableEvt<void>;
+        | {
+              type: "oidc client";
+              oidcClient: OidcClient.LoggedIn;
+          };
 };
 
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, keycloakParamsOrOidcClient, evtUserActivity } = params;
+    const { url, engine, role, oidc } = params;
 
-    const oidcClient =
-        "isUserLoggedIn" in keycloakParamsOrOidcClient
-            ? keycloakParamsOrOidcClient
-            : await createKeycloakOidcClient({
-                  ...keycloakParamsOrOidcClient,
-                  "transformUrlBeforeRedirectToLogin": undefined,
-                  evtUserActivity,
-              });
+    const oidcClient = await (async () => {
+        switch (oidc.type) {
+            case "oidc client":
+                return oidc.oidcClient;
+            case "keycloak params": {
+                const oidcClient = await createKeycloakOidcClient({
+                    ...oidc.keycloakParams,
+                    "transformUrlBeforeRedirectToLogin": undefined,
+                    "evtUserActivity": oidc.evtUserActivity,
+                });
 
-    if (!oidcClient.isUserLoggedIn) {
-        await oidcClient.login();
-        assert(false);
-    }
+                if (!oidcClient.isUserLoggedIn) {
+                    await oidcClient.login();
+                    assert(false);
+                }
+
+                return oidcClient;
+            }
+        }
+    })();
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
