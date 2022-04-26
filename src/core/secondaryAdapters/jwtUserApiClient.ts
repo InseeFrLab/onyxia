@@ -25,8 +25,8 @@ export function createJwtUserApiClient(params: {
 
 const zParsedJwtTokenPayload = z.object({
     "email": z.string(),
-    "familyName": z.string(),
-    "firstName": z.string(),
+    "familyName": z.string().optional(),
+    "firstName": z.string().optional(),
     "username": z.string(),
     "groups": z.array(z.string()).optional(),
     "locale": z.string().optional(),

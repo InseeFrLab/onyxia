@@ -53,7 +53,8 @@ export function Home(props: Props) {
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
-                                  "who": userAuthenticationThunks.getUser().firstName,
+                                  "who":
+                                      userAuthenticationThunks.getUser().firstName ?? "",
                               })
                             : t("title")}
                     </Text>
