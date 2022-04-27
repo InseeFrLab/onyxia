@@ -6,7 +6,6 @@ import {
     defaultGetTypographyDesc,
     getIsPortraitOrientation,
     ViewPortOutOfRangeError,
-    breakpointsValues,
 } from "onyxia-ui";
 import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
@@ -189,14 +188,8 @@ export function createGetViewPortConfig(params: {
             throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
         }
 
-        let targetWindowInnerWidth = 1100;
-
-        if (windowInnerWidth > breakpointsValues.md) {
-            targetWindowInnerWidth = windowInnerWidth;
-        }
-
         return {
-            targetWindowInnerWidth,
+            "targetWindowInnerWidth": Math.max(windowInnerWidth, 1100),
             "targetBrowserFontSizeFactor": 1,
         };
     };
