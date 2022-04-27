@@ -8,16 +8,15 @@ import { KcApp, kcContext } from "ui/components/KcApp";
 import { PortraitModeUnsupported } from "ui/components/pages/PortraitModeUnsupported";
 import "./envCarriedOverToKc";
 
-const { getViewPortConfig } = createGetViewPortConfig({
-    PortraitModeUnsupported,
-    "doDisableViewPortAdapter": kcContext !== undefined,
-});
+const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
 
 reactDom.render(
     <I18nProvider>
         <RouteProvider>
             <ThemeProvider
-                getViewPortConfig={getViewPortConfig}
+                getViewPortConfig={
+                    kcContext !== undefined ? undefined : getViewPortConfig
+                }
                 splashScreen={splashScreen}
             >
                 {kcContext !== undefined ? (

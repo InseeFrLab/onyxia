@@ -173,34 +173,33 @@ export const { Text } = createText({ useTheme });
 
 export function createGetViewPortConfig(params: {
     PortraitModeUnsupported: ComponentType;
-    doDisableViewPortAdapter: boolean;
 }) {
-    const { PortraitModeUnsupported, doDisableViewPortAdapter } = params;
+    const { PortraitModeUnsupported } = params;
 
-    const getViewPortConfig: ThemeProviderProps["getViewPortConfig"] =
-        doDisableViewPortAdapter
-            ? undefined
-            : ({ windowInnerWidth, windowInnerHeight }) => {
-                  if (
-                      getIsPortraitOrientation({
-                          windowInnerWidth,
-                          windowInnerHeight,
-                      })
-                  ) {
-                      throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
-                  }
+    const getViewPortConfig: ThemeProviderProps["getViewPortConfig"] = ({
+        windowInnerWidth,
+        windowInnerHeight,
+    }) => {
+        if (
+            getIsPortraitOrientation({
+                windowInnerWidth,
+                windowInnerHeight,
+            })
+        ) {
+            throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
+        }
 
-                  let targetWindowInnerWidth = 1100;
+        let targetWindowInnerWidth = 1100;
 
-                  if (windowInnerWidth > breakpointsValues.md) {
-                      targetWindowInnerWidth = windowInnerWidth;
-                  }
+        if (windowInnerWidth > breakpointsValues.md) {
+            targetWindowInnerWidth = windowInnerWidth;
+        }
 
-                  return {
-                      targetWindowInnerWidth,
-                      "targetBrowserFontSizeFactor": 1,
-                  };
-              };
+        return {
+            targetWindowInnerWidth,
+            "targetBrowserFontSizeFactor": 1,
+        };
+    };
 
     return { getViewPortConfig };
 }
