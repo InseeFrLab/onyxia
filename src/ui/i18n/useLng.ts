@@ -1,5 +1,4 @@
 import { createUseGlobalState } from "powerhooks/useGlobalState";
-import { getEvtKcLanguage } from "keycloakify";
 import { assert } from "tsafe/assert";
 import type { KcLanguageTag } from "keycloakify";
 import type { Language } from "ui/coreApi";
@@ -26,6 +25,3 @@ export function getBrowserLng(): Language {
 }
 
 export const { useLng, evtLng } = createUseGlobalState("lng", getBrowserLng);
-
-//NOTE: When we change langue in the main APP we change as well for the login pages
-evtLng.toStateless().attach(lng => (getEvtKcLanguage().state = lng));

@@ -2,7 +2,7 @@ import { useMemo, memo, useEffect, Fragment } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify";
 import type { KcContextBase } from "keycloakify";
-import { useKcMessage } from "keycloakify";
+import { getMsg } from "keycloakify";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useFormValidationSlice } from "keycloakify";
 import { useTranslation } from "ui/i18n/useTranslations";
@@ -23,7 +23,7 @@ export const RegisterUserProfile = memo(
     }: { kcContext: KcContextBase.RegisterUserProfile } & KcProps) => {
         const { url, messagesPerField, recaptchaRequired, recaptchaSiteKey } = kcContext;
 
-        const { msg, msgStr, advancedMsg } = useKcMessage();
+        const { msg, msgStr, advancedMsg } = getMsg(kcContext);
 
         const { classes, cx, css } = useStyles();
 

@@ -1,7 +1,7 @@
-import { useEffect, memo } from "react";
+import { memo } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify";
-import { useKcMessage, useKcLanguageTag, kcMessages } from "keycloakify";
+import { useDownloadTerms, getMsg } from "keycloakify";
 import { Button } from "ui/theme";
 import { makeStyles } from "ui/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
@@ -11,29 +11,25 @@ type KcContext_Terms = Extract<KcContext, { pageId: "terms.ftl" }>;
 
 export const Terms = memo(
     ({ kcContext, ...props }: { kcContext: KcContext_Terms } & KcProps) => {
-        const { msg, msgStr } = useKcMessage();
+        const { msg, msgStr } = getMsg(kcContext);
 
         const { url } = kcContext;
 
-        const { kcLanguageTag } = useKcLanguageTag();
+        useDownloadTerms({
+            kcContext,
+            "downloadTermMarkdown": ({ currentKcLanguageTag }) => {
+                const url = getTosMarkdownUrl(currentKcLanguageTag);
 
-        useEffect(() => {
-            if (kcContext!.pageId !== "terms.ftl") {
-                return;
-            }
-
-            const url = getTosMarkdownUrl(kcLanguageTag);
-
-            (url === undefined
-                ? Promise.resolve(
-                      [
-                          "There was no therms of service provided in the Onyxia-web configuration.",
-                          "Provide it or disable therms as required action in Keycloak",
-                      ].join(" "),
-                  )
-                : fetch(url).then(response => response.text())
-            ).then(rawMarkdown => (kcMessages[kcLanguageTag].termsText = rawMarkdown));
-        }, [kcLanguageTag]);
+                return url === undefined
+                    ? Promise.resolve(
+                          [
+                              "There was no therms of service provided in the Onyxia-web configuration.",
+                              "Provide it or disable therms as required action in Keycloak",
+                          ].join(" "),
+                      )
+                    : fetch(url).then(response => response.text());
+            },
+        });
 
         const { classes } = useStyles();
 

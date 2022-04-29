@@ -1,6 +1,6 @@
 import "minimal-polyfills/Object.fromEntries";
 import { getKcContext } from "keycloakify";
-import { kcMessages } from "keycloakify/lib/i18n/useKcMessage";
+import { kcMessages } from "keycloakify";
 import type { KcLanguageTag } from "keycloakify";
 import { id } from "tsafe/id";
 

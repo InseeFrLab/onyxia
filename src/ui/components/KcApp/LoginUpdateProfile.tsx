@@ -2,7 +2,7 @@ import type { ChangeEvent } from "react";
 import { useState, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "./kcContext";
-import { useKcMessage } from "keycloakify/lib/i18n/useKcMessage";
+import { getMsg } from "keycloakify";
 import { Template } from "./Template";
 import { useStyles } from "ui/theme";
 
@@ -18,7 +18,7 @@ export const LoginUpdateProfile = memo(
     ({ kcContext, ...props }: { kcContext: KcContext_LoginUpdateProfile } & KcProps) => {
         const { url, user, messagesPerField, isAppInitiatedAction } = kcContext;
 
-        const { msg, msgStr } = useKcMessage();
+        const { msg, msgStr } = getMsg(kcContext);
 
         const { cx } = useStyles();
 

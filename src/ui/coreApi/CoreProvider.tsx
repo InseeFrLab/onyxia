@@ -8,6 +8,8 @@ import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { Evt } from "evt";
 import { useRerenderOnStateChange } from "evt/hooks";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { evtLng } from "ui/i18n/useLng";
 
 type Props = {
     children: ReactNode;
@@ -32,7 +34,15 @@ export function CoreProvider(props: Props) {
                 "transformUrlBeforeRedirectToLogin": url =>
                     [url]
                         .map(injectTransferableEnvsInSearchParams)
-                        .map(injectGlobalStatesInSearchParams)[0],
+                        .map(injectGlobalStatesInSearchParams)
+                        .map(
+                            url =>
+                                addParamToUrl({
+                                    url,
+                                    "name": "ui_locales",
+                                    "value": evtLng.state,
+                                }).newUrl,
+                        )[0],
                 "evtUserActivity": Evt.merge([
                     Evt.from(document, "mousemove"),
                     Evt.from(document, "keydown"),
