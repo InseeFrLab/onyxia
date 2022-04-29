@@ -461,6 +461,9 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
  * For example we want that if a user selects english on the
  * register page while signing in that the app be set to english
  * automatically.
+ *
+ * Our Keycloak theme currently does not support changing the language
+ * but others themes might.
  */
 function useApplyLanguageSelectedAtLogin() {
     const { userAuthenticationThunks } = useThunks();
