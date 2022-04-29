@@ -1,3 +1,10 @@
+### **0.51.1** (2022-04-29)  
+  
+- Upgrade keycloakify  
+- Make ViewPortAdapter configuration more straight forward  
+- Refactor ViewPortAdapter  
+- Update onyxia-ui    
+  
 ## **0.51.0** (2022-04-26)  
   
 - JWT_FAMILY_NAME and JWT_FIRST_NAME are optional    
