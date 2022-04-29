@@ -1,3 +1,7 @@
+## **0.51.0** (2022-04-26)  
+  
+- JWT_FAMILY_NAME and JWT_FIRST_NAME are optional    
+  
 ### **0.50.7** (2022-04-22)  
   
 - Do not create a new oidcClient if we share the same keycloak client for minio  
