@@ -129,6 +129,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     regions: {
                         id: string;
                         services: {
+                            allowedURIPattern: string;
                             expose: { domain: string };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -220,6 +221,8 @@ export function createOfficialOnyxiaApiClient(params: {
                                 }
                             })();
                         })(),
+                        "allowedURIPatternForUserDefinedInitScript":
+                            region.services.allowedURIPattern,
                     })),
                 ),
         ),

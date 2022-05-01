@@ -1078,6 +1078,8 @@ export const thunks = {
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
+                    "allowedURIPattern":
+                        selectedDeploymentRegion.allowedURIPatternForUserDefinedInitScript,
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,

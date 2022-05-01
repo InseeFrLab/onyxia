@@ -77,6 +77,7 @@ export type DeploymentRegion = {
     kubernetesClusterDomain: string;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
+    allowedURIPatternForUserDefinedInitScript: string;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -168,6 +169,7 @@ export type MustacheParams = {
     region: {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
+        allowedURIPattern: string;
     };
     k8s: {
         domain: string;

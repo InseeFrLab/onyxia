@@ -31,6 +31,8 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "initScriptUrl":
                             "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                         "s3": undefined,
+
+                        "allowedURIPatternForUserDefinedInitScript": "^https://",
                     },
                 ]),
             { "promise": true },
