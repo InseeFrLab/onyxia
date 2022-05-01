@@ -409,6 +409,9 @@ export const resources = id<Record<Language, Translations>>({
                 "You already have a saved service with this name. If you replace it the previous configuration will be lost",
             "cancel": "Annuler",
             "replace": "Replace it",
+            "sensitive configuration dialog title":
+                "Launching this service may be dangerous",
+            "proceed to launch": "Proceed to launch",
         },
         "Footer": {
             "contribute": "Contribute",
@@ -758,6 +761,9 @@ export const resources = id<Record<Language, Translations>>({
                 "Un service enregistré du même nom exsiste déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
             "cancel": "Annuler",
             "replace": "Remplacer",
+            "sensitive configuration dialog title":
+                "Lancer ce service pourais être dangereux",
+            "proceed to launch": "Lancer en concience",
         },
         "Footer": {
             "contribute": "Contribuer au projet",
@@ -1089,6 +1095,8 @@ export const resources = id<Record<Language, Translations>>({
                 "已存在同名的注册服务. 如果替换它, 原始内容将丢失.",
             "cancel": "取消",
             "replace": "取代",
+            "sensitive configuration dialog title": "您想更换它吗?", //TODO
+            "proceed to launch": "继续启动", //TODO
         },
         "Footer": {
             "contribute": "为项目做贡献",

@@ -139,7 +139,11 @@ export declare namespace LauncherState {
         };
     } & (
         | {
-              launchState: "not launching" | "launching";
+              launchState: "not launching";
+              sensitiveConfigurations: FormFieldValue[];
+          }
+        | {
+              launchState: "launching";
           }
         | {
               launchState: "launched";
@@ -377,6 +381,7 @@ export const { name, reducer, actions } = createSlice({
                 config: LauncherState.Ready["~internal"]["config"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
+                sensitiveConfigurations: FormFieldValue[];
             }>,
         ) => {
             const {
@@ -389,6 +394,7 @@ export const { name, reducer, actions } = createSlice({
                 config,
                 dependencies,
                 formFieldsValueDifferentFromDefault,
+                sensitiveConfigurations,
             } = payload;
 
             Object.assign(
@@ -411,6 +417,7 @@ export const { name, reducer, actions } = createSlice({
                         config,
                     },
                     "launchState": "not launching",
+                    sensitiveConfigurations,
                 }),
             );
 
@@ -516,10 +523,31 @@ export const thunks = {
                 "mustacheParams": await dispatch(thunks.getMustacheParams()),
             });
 
-            const { formFields, infosAboutWhenFieldsShouldBeHidden } = (() => {
+            const {
+                formFields,
+                infosAboutWhenFieldsShouldBeHidden,
+                sensitiveConfigurations,
+            } = (() => {
                 const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
                 const infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
                     [];
+
+                const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
+                    if (
+                        getState().restorablePackageConfig.restorablePackageConfigs.find(
+                            restorablePackageConfig =>
+                                same(restorablePackageConfig, {
+                                    packageName,
+                                    catalogId,
+                                    formFieldsValueDifferentFromDefault,
+                                }),
+                        ) !== undefined
+                    ) {
+                        return undefined;
+                    }
+
+                    return [];
+                })();
 
                 (function callee(params: {
                     jsonSchemaObject: JSONSchemaObject;
@@ -832,6 +860,39 @@ export const thunks = {
                                         jsonSchemaFormFieldDescription,
                                     );
 
+                                    security_warning: {
+                                        if (sensitiveConfigurations === undefined) {
+                                            break security_warning;
+                                        }
+
+                                        const { pattern } =
+                                            jsonSchemaFormFieldDescription[
+                                                "x-security"
+                                            ] ?? {};
+
+                                        if (pattern === undefined) {
+                                            break security_warning;
+                                        }
+
+                                        const value =
+                                            formFieldsValueDifferentFromDefault.find(
+                                                ({ path }) => same(path, common.path),
+                                            )?.value;
+
+                                        if (value === undefined) {
+                                            break security_warning;
+                                        }
+
+                                        if (new RegExp(pattern).test(`${value}`)) {
+                                            break security_warning;
+                                        }
+
+                                        sensitiveConfigurations.push({
+                                            "path": common.path,
+                                            value,
+                                        });
+                                    }
+
                                     return id<FormField.Text>({
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
@@ -879,7 +940,11 @@ export const thunks = {
                     "jsonSchemaObject": config,
                 });
 
-                return { formFields, infosAboutWhenFieldsShouldBeHidden };
+                return {
+                    formFields,
+                    infosAboutWhenFieldsShouldBeHidden,
+                    sensitiveConfigurations,
+                };
             })();
 
             dispatch(
@@ -902,6 +967,7 @@ export const thunks = {
                     config,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
+                    "sensitiveConfigurations": sensitiveConfigurations ?? [],
                 }),
             );
         },

@@ -15,6 +15,13 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
+import type { NonPostableEvt } from "evt";
+import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
+import { useEvt } from "evt/hooks/useEvt";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
+import type { UnpackEvt } from "evt";
+import { Markdown } from "ui/tools/Markdown";
 
 export type Props = {
     className?: string;
@@ -169,8 +176,17 @@ export const CatalogLauncher = memo((props: Props) => {
                 switch (state.launchState) {
                     case "not launching":
                         if (route.params.autoLaunch) {
-                            launcherThunks.launch();
+                            const { sensitiveConfigurations } = state;
+
+                            if (sensitiveConfigurations.length !== 0) {
+                                evtSensitiveConfigurationDialogDialog.post({
+                                    sensitiveConfigurations,
+                                });
+                            } else {
+                                launcherThunks.launch();
+                            }
                         }
+
                         hideSplashScreen();
                         break;
                     case "launching":
@@ -195,6 +211,19 @@ export const CatalogLauncher = memo((props: Props) => {
     const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
 
     const { t } = useTranslation({ CatalogLauncher });
+
+    const evtSensitiveConfigurationDialogDialog = useConst(() =>
+        Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>(),
+    );
+
+    const onSensitiveConfigurationDialogDialogClose = useConstCallback<
+        SensitiveConfigurationDialogProps["onClose"]
+    >(({ doProceedToLaunch }) => {
+        if (!doProceedToLaunch) {
+            return;
+        }
+        launcherThunks.launch();
+    });
 
     if (state.stateDescription !== "ready") {
         return null;
@@ -284,6 +313,10 @@ export const CatalogLauncher = memo((props: Props) => {
                 isOpen={overwriteConfigurationDialogState !== undefined}
                 onClose={onOverwriteConfigurationDialogClickFactory("cancel")}
             />
+            <SensitiveConfigurationDialog
+                evtOpen={evtSensitiveConfigurationDialogDialog}
+                onClose={onSensitiveConfigurationDialogDialogClose}
+            />
         </>
     );
 });
@@ -298,6 +331,8 @@ export declare namespace CatalogLauncher {
         "should overwrite configuration dialog body": undefined;
         "cancel": undefined;
         "replace": undefined;
+        "proceed to launch": undefined;
+        "sensitive configuration dialog title": undefined;
     };
 }
 
@@ -313,3 +348,60 @@ const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
         },
     },
 }));
+
+type SensitiveConfigurationDialogProps = {
+    evtOpen: NonPostableEvt<{ sensitiveConfigurations: FormFieldValue[] }>;
+    onClose: (params: { doProceedToLaunch: boolean }) => void;
+};
+
+const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogProps) => {
+    const { evtOpen, onClose } = props;
+
+    const { t } = useTranslation({ CatalogLauncher });
+
+    const [sensitiveConfigurations, setSensitiveConfigurations] = useState<
+        FormFieldValue[] | undefined
+    >(undefined);
+
+    const onCloseFactory = useCallbackFactory(([doProceedToLaunch]: [boolean]) => {
+        setSensitiveConfigurations(undefined);
+        onClose({ doProceedToLaunch });
+    });
+
+    useEvt(
+        ctx =>
+            evtOpen.attach(ctx, ({ sensitiveConfigurations }) =>
+                setSensitiveConfigurations(sensitiveConfigurations),
+            ),
+        [evtOpen],
+    );
+
+    return (
+        <Dialog
+            isOpen={sensitiveConfigurations !== undefined}
+            title={t("sensitive configuration dialog title")}
+            body={
+                <>
+                    {sensitiveConfigurations === undefined
+                        ? null
+                        : sensitiveConfigurations.map(({ path, value }) => (
+                              <Markdown key={path.join()}>
+                                  {`**${path.join(".")}**: \`${value}\``}
+                              </Markdown>
+                          ))}
+                </>
+            }
+            buttons={
+                <>
+                    <Button onClick={onCloseFactory(false)} variant="secondary">
+                        {t("cancel")}
+                    </Button>
+                    <Button onClick={onCloseFactory(true)}>
+                        {t("proceed to launch")}
+                    </Button>
+                </>
+            }
+            onClose={onCloseFactory(false)}
+        />
+    );
+});
