@@ -41,6 +41,10 @@ export namespace JSONSchemaFormFieldDescription {
             type: "string";
             pattern?: string;
             render?: "textArea";
+            //NOTE: Only for init.personalInit
+            "x-security"?: {
+                pattern: string;
+            };
         };
 
         export type Enum<T extends string = string> = Common<T> & {
