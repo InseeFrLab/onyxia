@@ -1,3 +1,8 @@
+## **0.52.0** (2022-05-02)  
+  
+- Prevent auto launch with custom script not matching pattern  
+- Inject allowedURIPattern in mustach params    
+  
 ### **0.51.1** (2022-04-29)  
   
 - Upgrade keycloakify  
