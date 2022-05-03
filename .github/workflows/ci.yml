@@ -193,4 +193,10 @@ jobs:
       with:
         token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
         event-type: update_onyxia_web
+        repository: InseeFrLab/dev.insee.io
+    - uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
+        event-type: update_onyxia_web
+        repository: etalab/paris-sspcloud
   
