@@ -1,3 +1,8 @@
+### **0.52.1** (2022-05-04)  
+  
+- update keycloakify  
+- Automatically update onyxia-web on different repos    
+  
 ## **0.52.0** (2022-05-02)  
   
 - Prevent auto launch with custom script not matching pattern  
