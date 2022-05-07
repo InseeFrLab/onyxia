@@ -32,6 +32,7 @@ import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
+import * as yaml from "yaml";
 
 export type FormField =
     | FormField.Boolean
@@ -55,8 +56,14 @@ export declare namespace FormField {
 
     export type Object = Common & {
         type: "object";
-        value: Record<string, any>;
-        defaultValue: Record<string, any>;
+        value: {
+            type: "yaml";
+            value: string;
+        };
+        defaultValue: {
+            type: "yaml";
+            value: string;
+        };
     };
 
     export type Integer = Common & {
@@ -850,9 +857,15 @@ export const thunks = {
                                         return id<FormField.Object>({
                                             ...common,
                                             ...(() => {
-                                                const value = getDefaultValue(
-                                                    jsonSchemaFormFieldDescription,
-                                                );
+                                                const value = {
+                                                    "type": "yaml" as const,
+                                                    "value": yaml.stringify(
+                                                        getDefaultValue(
+                                                            jsonSchemaFormFieldDescription,
+                                                        ),
+                                                    ),
+                                                };
+
                                                 return { value, "defaultValue": value };
                                             })(),
                                             "type": "object",
@@ -1414,10 +1427,10 @@ export const selectors = (() => {
         },
     );
 
-    const isLaunchable = createSelector(
+    const formFieldsIsWellFormed = createSelector(
         formFields,
         infosAboutWhenFieldsShouldBeHidden,
-        (formFields, infosAboutWhenFieldsShouldBeHidden): boolean | undefined => {
+        (formFields, infosAboutWhenFieldsShouldBeHidden) => {
             if (!formFields || !infosAboutWhenFieldsShouldBeHidden) {
                 return undefined;
             }
@@ -1428,14 +1441,88 @@ export const selectors = (() => {
             });
 
             return formFields
-                .map(formField => (formField.type === "text" ? formField : undefined))
-                .filter(exclude(undefined))
                 .filter(({ path }) => !isFieldHidden({ path }))
-                .map(({ value, pattern }) =>
-                    pattern === undefined ? undefined : { value, pattern },
-                )
-                .filter(exclude(undefined))
-                .every(({ value, pattern }) => new RegExp(pattern).test(value));
+                .map(formField => ({
+                    "path": formField.path,
+                    ...(():
+                        | { isWellFormed: true }
+                        | {
+                              isWellFormed: false;
+                              message: "mismatching pattern";
+                              pattern: string;
+                          }
+                        | {
+                              isWellFormed: false;
+                              message: "Invalid YAML Object";
+                          } => {
+                        switch (formField.type) {
+                            case "text": {
+                                const { pattern } = formField;
+
+                                if (pattern === undefined) {
+                                    return {
+                                        "isWellFormed": true,
+                                    };
+                                }
+
+                                const isWellFormed =
+                                    pattern === undefined ||
+                                    new RegExp(pattern).test(formField.value);
+
+                                return isWellFormed
+                                    ? {
+                                          "isWellFormed": true,
+                                      }
+                                    : {
+                                          "isWellFormed": false,
+                                          "message": "mismatching pattern",
+                                          pattern,
+                                      };
+                            }
+                            case "object": {
+                                const { value } = formField;
+
+                                assert(value.type === "yaml");
+
+                                const isWellFormed = (() => {
+                                    let obj: any;
+
+                                    try {
+                                        obj = yaml.parse(value.value);
+                                    } catch {
+                                        return false;
+                                    }
+
+                                    return obj !== null && typeof obj === "object";
+                                })();
+
+                                return isWellFormed
+                                    ? {
+                                          "isWellFormed": true,
+                                      }
+                                    : {
+                                          "isWellFormed": false,
+                                          "message": "Invalid YAML Object",
+                                      };
+                            }
+                            default:
+                                return {
+                                    "isWellFormed": true,
+                                } as const;
+                        }
+                    })(),
+                }));
+        },
+    );
+
+    const isLaunchable = createSelector(
+        formFieldsIsWellFormed,
+        (formFieldsIsWellFormed): boolean | undefined => {
+            if (!formFieldsIsWellFormed) {
+                return undefined;
+            }
+
+            return formFieldsIsWellFormed.every(({ isWellFormed }) => isWellFormed);
         },
     );
 
@@ -1482,6 +1569,7 @@ export const selectors = (() => {
         isShared,
         indexedFormFields,
         isLaunchable,
+        formFieldsIsWellFormed,
         restorablePackageConfig,
     };
 })();
@@ -1500,7 +1588,7 @@ function formFieldValueChangedReducer(params: {
             same(formField.path, path),
         )!;
 
-        if (formField.value === value) {
+        if (same(formField.value, value)) {
             return;
         }
 
