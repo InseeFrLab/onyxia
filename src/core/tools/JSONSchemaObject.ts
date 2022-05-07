@@ -7,7 +7,8 @@ export type JSONSchemaObject = {
 export type JSONSchemaFormFieldDescription =
     | JSONSchemaFormFieldDescription.String
     | JSONSchemaFormFieldDescription.Boolean
-    | JSONSchemaFormFieldDescription.Integer;
+    | JSONSchemaFormFieldDescription.Integer
+    | JSONSchemaFormFieldDescription.Object;
 export namespace JSONSchemaFormFieldDescription {
     type Common<T> = {
         description?: string;
@@ -88,4 +89,8 @@ export namespace JSONSchemaFormFieldDescription {
             }
         }
     }
+
+    export type Object = Common<Record<string, any>> & {
+        type: "object";
+    };
 }

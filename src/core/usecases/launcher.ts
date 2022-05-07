@@ -35,6 +35,7 @@ import { interUsecasesThunks as explorersThunks } from "./explorers";
 
 export type FormField =
     | FormField.Boolean
+    | FormField.Object
     | FormField.Integer
     | FormField.Enum
     | FormField.Text
@@ -50,6 +51,12 @@ export declare namespace FormField {
     export type Boolean = Common & {
         type: "boolean";
         value: boolean;
+    };
+
+    export type Object = Common & {
+        type: "object";
+        value: Record<string, any>;
+        defaultValue: Record<string, any>;
     };
 
     export type Integer = Common & {
@@ -563,7 +570,9 @@ export const thunks = {
                             const newCurrentPath = [...currentPath, key];
 
                             if (
-                                jsonSchemaObjectOrFormFieldDescription.type === "object"
+                                jsonSchemaObjectOrFormFieldDescription.type ===
+                                    "object" &&
+                                "properties" in jsonSchemaObjectOrFormFieldDescription
                             ) {
                                 const jsonSchemaObject =
                                     jsonSchemaObjectOrFormFieldDescription;
@@ -600,37 +609,36 @@ export const thunks = {
                                         NonNullable<T["x-form"]>["value"] | T["default"]
                                     > => {
                                         const valuePotentiallyWronglyTyped = (() => {
-                                            const idOrUndefinedIfEmptyStringForBooleanOrNumber =
-                                                <
-                                                    T extends
-                                                        | string
-                                                        | boolean
-                                                        | number
-                                                        | undefined,
-                                                >(
-                                                    v: T,
-                                                ): T | undefined => {
-                                                    switch (
-                                                        jsonSchemaFormFieldDescription.type
-                                                    ) {
-                                                        case "boolean":
-                                                        case "integer":
-                                                        case "number":
-                                                            return v === ""
-                                                                ? undefined
-                                                                : v;
-                                                        case "string":
-                                                            return v;
-                                                    }
-                                                };
+                                            const idOrUndefinedIfEmptyString = <
+                                                T extends
+                                                    | string
+                                                    | boolean
+                                                    | number
+                                                    | Record<string, any>
+                                                    | undefined,
+                                            >(
+                                                v: T,
+                                            ): T | undefined => {
+                                                switch (
+                                                    jsonSchemaFormFieldDescription.type
+                                                ) {
+                                                    case "boolean":
+                                                    case "integer":
+                                                    case "number":
+                                                    case "object":
+                                                        return v === "" ? undefined : v;
+                                                    case "string":
+                                                        return v;
+                                                }
+                                            };
 
                                             return (
-                                                idOrUndefinedIfEmptyStringForBooleanOrNumber(
+                                                idOrUndefinedIfEmptyString(
                                                     jsonSchemaFormFieldDescription[
                                                         "x-form"
                                                     ]?.value,
                                                 ) ??
-                                                idOrUndefinedIfEmptyStringForBooleanOrNumber(
+                                                idOrUndefinedIfEmptyString(
                                                     jsonSchemaFormFieldDescription.default,
                                                 ) ??
                                                 (() => {
@@ -644,6 +652,8 @@ export const thunks = {
                                                         case "integer":
                                                         case "number":
                                                             return 0;
+                                                        case "object":
+                                                            return {};
                                                     }
                                                 })()
                                             );
@@ -656,6 +666,15 @@ export const thunks = {
                                                         typeof valuePotentiallyWronglyTyped ===
                                                             "string",
                                                         `${jsonSchemaFormFieldDescription.title}'s default value should be a string`,
+                                                    );
+
+                                                    return valuePotentiallyWronglyTyped;
+                                                }
+                                                case "object": {
+                                                    assert(
+                                                        typeof valuePotentiallyWronglyTyped ===
+                                                            "object",
+                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be an object`,
                                                     );
 
                                                     return valuePotentiallyWronglyTyped;
@@ -822,6 +841,21 @@ export const thunks = {
                                                 jsonSchemaFormFieldDescription,
                                             ),
                                             "type": "boolean",
+                                        });
+                                    }
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.type === "object"
+                                    ) {
+                                        return id<FormField.Object>({
+                                            ...common,
+                                            ...(() => {
+                                                const value = getDefaultValue(
+                                                    jsonSchemaFormFieldDescription,
+                                                );
+                                                return { value, "defaultValue": value };
+                                            })(),
+                                            "type": "object",
                                         });
                                     }
 
@@ -1315,7 +1349,7 @@ export const selectors = (() => {
                                 "description": (() => {
                                     const o = config?.properties[formField.path[0]];
 
-                                    assert(o?.type === "object");
+                                    assert(o?.type === "object" && "properties" in o);
 
                                     return o.properties[formField.path[1]].description;
                                 })(),
