@@ -1,6 +1,9 @@
+import * as yaml from "yaml";
+import { assert } from "tsafe/assert";
+
 export type FormFieldValue = {
     path: string[];
-    value: string | boolean | number | Record<string, any>;
+    value: string | boolean | number | { type: "yaml"; value: string };
 };
 
 /**
@@ -25,7 +28,21 @@ export function formFieldsValueToObject(
                 const [key, ...rest] = formFieldValue.path;
 
                 if (rest.length === 0) {
-                    launchRequestOptions[key] = formFieldValue.value;
+                    launchRequestOptions[key] = (() => {
+                        const { value } = formFieldValue;
+
+                        if (typeof value === "object") {
+                            assert(value.type === "yaml");
+
+                            try {
+                                return yaml.parse(value.value);
+                            } catch {
+                                return { "message": "parse error" };
+                            }
+                        }
+
+                        return value;
+                    })();
                 } else {
                     callee({
                         //"launchRequestOptions": launchRequestOptions[key] ??= {} as any,

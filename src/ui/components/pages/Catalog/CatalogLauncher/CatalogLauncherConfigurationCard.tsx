@@ -26,89 +26,102 @@ import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
-import * as yaml from "yaml";
 import { assert } from "tsafe/assert";
+import type { selectors } from "ui/coreApi";
 
-export type Props = {
+export type CatalogLauncherConfigurationCardProps = {
     className?: string;
     dependencyNamePackageNameOrGlobal: string;
     meta: IndexedFormFields[string]["meta"];
     formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"];
     onFormValueChange(params: FormFieldValue): void;
+    formFieldsIsWellFormed: NonNullable<
+        NonNullable<
+            ReturnType<typeof selectors["launcher"]["formFieldsIsWellFormed"]>
+        >["formFieldsIsWellFormed"]
+    >;
 };
 
-export const CatalogLauncherConfigurationCard = memo((props: Props) => {
-    const {
-        className,
-        dependencyNamePackageNameOrGlobal,
-        meta,
-        formFieldsByTabName,
-        onFormValueChange,
-    } = props;
+export const CatalogLauncherConfigurationCard = memo(
+    (props: CatalogLauncherConfigurationCardProps) => {
+        const {
+            className,
+            dependencyNamePackageNameOrGlobal,
+            meta,
+            formFieldsByTabName,
+            onFormValueChange,
+            formFieldsIsWellFormed,
+        } = props;
 
-    const { classes, cx } = useStyles();
+        const { classes, cx } = useStyles();
 
-    const [isCollapsed, setIsCollapsed] = useState(true);
+        const [isCollapsed, setIsCollapsed] = useState(true);
 
-    const tabs = useMemo(
-        () =>
-            Object.keys(formFieldsByTabName).map(title => ({
-                "id": title,
-                "title": capitalize(title),
-            })),
-        [formFieldsByTabName],
-    );
+        const tabs = useMemo(
+            () =>
+                Object.keys(formFieldsByTabName).map(title => ({
+                    "id": title,
+                    "title": capitalize(title),
+                })),
+            [formFieldsByTabName],
+        );
 
-    const onIsCollapsedValueChange = useConstCallback(() => setIsCollapsed(!isCollapsed));
+        const onIsCollapsedValueChange = useConstCallback(() =>
+            setIsCollapsed(!isCollapsed),
+        );
 
-    const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
+        const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
-    return (
-        <div className={cx(classes.root, className)}>
-            <Header
-                packageName={dependencyNamePackageNameOrGlobal}
-                isCollapsed={isCollapsed}
-                onIsCollapsedValueChange={
-                    tabs.length === 0 ? undefined : onIsCollapsedValueChange
-                }
-                {...(() => {
-                    switch (meta.type) {
-                        case "dependency":
-                            return {
-                                "type": "dependency",
-                                "dependencyName": dependencyNamePackageNameOrGlobal,
-                            } as const;
-                        case "global":
-                            return {
-                                "type": "global",
-                                "description": meta.description,
-                            } as const;
-                        case "package":
-                            return {
-                                "type": "package",
-                                "packageName": dependencyNamePackageNameOrGlobal,
-                            } as const;
+        return (
+            <div className={cx(classes.root, className)}>
+                <Header
+                    packageName={dependencyNamePackageNameOrGlobal}
+                    isCollapsed={isCollapsed}
+                    onIsCollapsedValueChange={
+                        tabs.length === 0 ? undefined : onIsCollapsedValueChange
                     }
-                })()}
-            />
-            {activeTabId !== undefined && (
-                <Tabs
-                    className={classes[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
-                    tabs={tabs}
-                    activeTabId={activeTabId}
-                    onRequestChangeActiveTab={setActiveTabId}
-                    size="small"
-                    maxTabCount={5}
-                >
-                    <TabContent
-                        {...formFieldsByTabName[activeTabId]}
-                        onFormValueChange={onFormValueChange}
-                    />
-                </Tabs>
-            )}
-        </div>
-    );
-});
+                    {...(() => {
+                        switch (meta.type) {
+                            case "dependency":
+                                return {
+                                    "type": "dependency",
+                                    "dependencyName": dependencyNamePackageNameOrGlobal,
+                                } as const;
+                            case "global":
+                                return {
+                                    "type": "global",
+                                    "description": meta.description,
+                                } as const;
+                            case "package":
+                                return {
+                                    "type": "package",
+                                    "packageName": dependencyNamePackageNameOrGlobal,
+                                } as const;
+                        }
+                    })()}
+                />
+                {activeTabId !== undefined && (
+                    <Tabs
+                        className={
+                            classes[isCollapsed ? "collapsedPanel" : "expandedPanel"]
+                        }
+                        tabs={tabs}
+                        activeTabId={activeTabId}
+                        onRequestChangeActiveTab={setActiveTabId}
+                        size="small"
+                        maxTabCount={5}
+                    >
+                        <TabContent
+                            {...formFieldsByTabName[activeTabId]}
+                            onFormValueChange={onFormValueChange}
+                            formFieldsIsWellFormed={formFieldsIsWellFormed}
+                        />
+                    </Tabs>
+                )}
+            </div>
+        );
+    },
+);
 
 export declare namespace CatalogLauncherConfigurationCard {
     export type I18nScheme = {
@@ -116,7 +129,8 @@ export declare namespace CatalogLauncherConfigurationCard {
         "configuration": { packageName: string };
         "dependency": { dependencyName: string };
         "launch of a service": { dependencyName: string };
-        "malformed input": undefined;
+        "mismatching pattern": { pattern: string };
+        "Invalid YAML Object": undefined;
     };
 }
 
@@ -259,6 +273,7 @@ const { TabContent } = (() => {
         formFields: Exclude<FormField, FormField.Slider.Range>[];
         assembledSliderRangeFormFields: IndexedFormFields.AssembledSliderRangeFormField[];
         onFormValueChange(params: FormFieldValue): void;
+        formFieldsIsWellFormed: CatalogLauncherConfigurationCardProps["formFieldsIsWellFormed"];
     };
 
     const useStyles = makeStyles()(theme => ({
@@ -285,81 +300,72 @@ const { TabContent } = (() => {
             onFormValueChange,
             description,
             assembledSliderRangeFormFields,
+            formFieldsIsWellFormed,
         } = props;
 
         const onValueBeingChangeFactory = useCallbackFactory(
             (
-                [path]: [string[]],
+                //NOTE: To be memoized it needs to be a primitive value
+                [pathStr]: [string],
                 [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
-            ) => onFormValueChange({ path, value }),
+            ) => onFormValueChange({ "path": JSON.parse(pathStr), value }),
         );
 
         const { t } = useTranslation({ CatalogLauncherConfigurationCard });
 
-        const getIsValidValueFactory = useCallbackFactory(
-            (
-                [pattern]: [string],
-                [value]: [string],
-            ): ReturnType<TextFieldProps["getIsValidValue"]> =>
-                new RegExp(pattern).test(value)
-                    ? { "isValidValue": true }
-                    : {
-                          "isValidValue": false,
-                          "message": `${t("malformed input")} ${pattern}`,
-                      },
-        );
-
         const onEscapeKeyDownFactory = useCallbackFactory(
-            ([path, defaultValue]: [string[], string]) =>
-                onFormValueChange({ path, "value": defaultValue }),
+            ([pathStr, defaultValue]: [string, string]) =>
+                onFormValueChange({ "path": JSON.parse(pathStr), "value": defaultValue }),
         );
 
-        const onCheckboxChangeFactory = useCallbackFactory(([path]: [string[]]) =>
+        const onCheckboxChangeFactory = useCallbackFactory(([pathStr]: [string]) => {
+            const path = JSON.parse(pathStr);
+
             onFormValueChange({
                 path,
                 "value": !formFields.find(formField => same(formField.path, path))!.value,
-            }),
-        );
+            });
+        });
 
         const onSelectChangeFactory = useCallbackFactory(
-            ([path]: [string[]], [event]: [SelectChangeEvent<string>]) =>
+            ([pathStr]: [string], [event]: [SelectChangeEvent<string>]) =>
                 onFormValueChange({
-                    path,
+                    "path": JSON.parse(pathStr),
                     "value": event.target.value,
                 }),
         );
 
         const onNumberTextFieldChangeFactory = useCallbackFactory(
             (
-                [path]: [string[]],
+                [pathStr]: [string],
                 [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>],
             ) =>
                 onFormValueChange({
-                    path,
+                    "path": JSON.parse(pathStr),
                     "value": parseFloat(target.value),
                 }),
         );
 
         const onSimpleSliderValueChange = useCallbackFactory(
-            ([path, unit]: [string[], string], [value]: [number]) =>
+            ([pathStr, unit]: [string, string], [value]: [number]) =>
                 onFormValueChange({
-                    path,
+                    "path": JSON.parse(pathStr),
                     "value": `${value}${unit}`,
                 }),
         );
 
         const onRangeSliderValueChange = useCallbackFactory(
             (
-                [pathDown, pathUp, unit]: [string[], string[], string],
+                [pathDownStr, pathUpStr, unit]: [string, string, string],
                 [params]: [Param0<RangeSliderProps["onValueChange"]>],
             ) =>
                 onFormValueChange({
                     "path": (() => {
                         switch (params.extremity) {
                             case "low":
-                                return pathDown;
+                                return JSON.parse(pathDownStr);
                             case "high":
-                                return pathUp;
+                                return JSON.parse(pathUpStr);
                         }
                     })(),
                     "value": `${params.value}${unit}`,
@@ -389,65 +395,75 @@ const { TabContent } = (() => {
                             >
                                 {(() => {
                                     const label = capitalize(formField.title);
+                                    let hasError = false;
                                     const helperText =
-                                        formField.description === undefined
+                                        (() => {
+                                            const formFieldIsWellFormed =
+                                                formFieldsIsWellFormed.find(({ path }) =>
+                                                    same(path, formField.path),
+                                                );
+
+                                            assert(formFieldIsWellFormed !== undefined);
+
+                                            if (formFieldIsWellFormed.isWellFormed) {
+                                                return undefined;
+                                            }
+
+                                            hasError = true;
+
+                                            switch (formFieldIsWellFormed.message) {
+                                                case "mismatching pattern":
+                                                    return t(
+                                                        formFieldIsWellFormed.message,
+                                                        {
+                                                            "pattern":
+                                                                formFieldIsWellFormed.pattern,
+                                                        },
+                                                    );
+                                                default: {
+                                                    return t(
+                                                        formFieldIsWellFormed.message,
+                                                    );
+                                                }
+                                            }
+                                        })() ??
+                                        (formField.description === undefined
                                             ? undefined
-                                            : capitalize(formField.description);
+                                            : capitalize(formField.description));
 
                                     switch (formField.type) {
                                         case "object":
                                             return (
                                                 <TextField
+                                                    doIndentOnTab={true}
                                                     doRenderAsTextArea={true}
                                                     className={classes.textField}
                                                     label={label}
-                                                    defaultValue={yaml.stringify(
-                                                        formField.value,
-                                                    )}
+                                                    defaultValue={formField.value.value}
+                                                    inputProps_aria-invalid={hasError}
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
+                                                    selectAllTextOnFocus={false}
                                                     onValueBeingTypedChange={({
-                                                        isValidValue,
                                                         value,
-                                                    }) => {
-                                                        if (!isValidValue) {
-                                                            return;
-                                                        }
-
+                                                    }) =>
                                                         onFormValueChange({
                                                             "path": formField.path,
-                                                            "value": yaml.parse(value),
-                                                        });
-                                                    }}
+                                                            "value": {
+                                                                "type": "yaml",
+                                                                value,
+                                                            },
+                                                        })
+                                                    }
                                                     inputProps_spellCheck={false}
                                                     autoComplete="off"
-                                                    selectAllTextOnFocus={true}
-                                                    getIsValidValue={str => {
-                                                        try {
-                                                            const obj = yaml.parse(str);
-
-                                                            assert(
-                                                                typeof obj === "object" &&
-                                                                    obj !== null,
-                                                            );
-                                                        } catch {
-                                                            return {
-                                                                "isValidValue": false,
-                                                                "message":
-                                                                    "Not a valid YAML string",
-                                                            };
-                                                        }
-
-                                                        return {
-                                                            "isValidValue": true,
-                                                        };
-                                                    }}
-                                                    onEscapeKeyDown={onEscapeKeyDownFactory(
-                                                        formField.path,
-                                                        yaml.stringify(
-                                                            formField.defaultValue,
-                                                        ),
-                                                    )}
+                                                    onEscapeKeyDown={() =>
+                                                        onFormValueChange({
+                                                            "path": formField.path,
+                                                            "value":
+                                                                formField.defaultValue,
+                                                        })
+                                                    }
                                                     doOnlyValidateInputAfterFistFocusLost={
                                                         false
                                                     }
@@ -463,7 +479,9 @@ const { TabContent } = (() => {
                                                                 color="primary"
                                                                 checked={formField.value}
                                                                 onChange={onCheckboxChangeFactory(
-                                                                    formField.path,
+                                                                    JSON.stringify(
+                                                                        formField.path,
+                                                                    ),
                                                                 )}
                                                             />
                                                         }
@@ -486,7 +504,9 @@ const { TabContent } = (() => {
                                                         labelId={labelId}
                                                         value={formField.value}
                                                         onChange={onSelectChangeFactory(
-                                                            formField.path,
+                                                            JSON.stringify(
+                                                                formField.path,
+                                                            ),
                                                         )}
                                                     >
                                                         {formField.enum.map(value => (
@@ -513,23 +533,17 @@ const { TabContent } = (() => {
                                                     className={classes.textField}
                                                     label={label}
                                                     defaultValue={formField.value}
+                                                    inputProps_aria-invalid={hasError}
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
                                                     onValueBeingTypedChange={onValueBeingChangeFactory(
-                                                        formField.path,
+                                                        JSON.stringify(formField.path),
                                                     )}
                                                     inputProps_spellCheck={false}
                                                     autoComplete="off"
                                                     selectAllTextOnFocus={true}
-                                                    getIsValidValue={
-                                                        formField.pattern === undefined
-                                                            ? undefined
-                                                            : getIsValidValueFactory(
-                                                                  formField.pattern,
-                                                              )
-                                                    }
                                                     onEscapeKeyDown={onEscapeKeyDownFactory(
-                                                        formField.path,
+                                                        JSON.stringify(formField.path),
                                                         formField.defaultValue,
                                                     )}
                                                     doOnlyValidateInputAfterFistFocusLost={
@@ -542,7 +556,7 @@ const { TabContent } = (() => {
                                                 <MuiTextField
                                                     value={formField.value}
                                                     onChange={onNumberTextFieldChangeFactory(
-                                                        formField.path,
+                                                        JSON.stringify(formField.path),
                                                     )}
                                                     inputProps={{
                                                         "min": formField.minimum,
@@ -569,7 +583,7 @@ const { TabContent } = (() => {
                                                         )[0],
                                                     )}
                                                     onValueChange={onSimpleSliderValueChange(
-                                                        formField.path,
+                                                        JSON.stringify(formField.path),
                                                         formField.sliderUnit,
                                                     )}
                                                     extraInfo={formField.description}
@@ -609,9 +623,14 @@ const { TabContent } = (() => {
                                             .semantic
                                     }
                                     onValueChange={onRangeSliderValueChange(
-                                        assembledSliderRangeFormField.extremities.down
-                                            .path,
-                                        assembledSliderRangeFormField.extremities.up.path,
+                                        JSON.stringify(
+                                            assembledSliderRangeFormField.extremities.down
+                                                .path,
+                                        ),
+                                        JSON.stringify(
+                                            assembledSliderRangeFormField.extremities.up
+                                                .path,
+                                        ),
                                         assembledSliderRangeFormField.sliderUnit,
                                     )}
                                 />

@@ -434,7 +434,8 @@ export const resources = id<Record<Language, Translations>>({
             "configuration": "{{packageName}} configurations",
             "dependency": "{{dependencyName}} dependency",
             "launch of a service": "A {{dependencyName}} service will be launched",
-            "malformed input": "Malformed input.",
+            "mismatching pattern": "Should match {{pattern}}",
+            "Invalid YAML Object": "Invalid YAML Object",
         },
         "MyServices": {
             "text1": "My Services",
@@ -787,7 +788,8 @@ export const resources = id<Record<Language, Translations>>({
             "configuration": "Configuration {{packageName}}",
             "dependency": "Dépendance {{dependencyName}}",
             "launch of a service": "Lancement d'un service {{dependencyName}}",
-            "malformed input": "Text non valide.",
+            "mismatching pattern": "Doit respecter {{pattern}}",
+            "Invalid YAML Object": "YAML non valid",
         },
         "MyServices": {
             "text1": "Mes services",
@@ -1118,7 +1120,8 @@ export const resources = id<Record<Language, Translations>>({
             "configuration": "配置 {{packageName}}",
             "dependency": "依赖服务 {{dependencyName}}",
             "launch of a service": "启动一个服务 {{dependencyName}}",
-            "malformed input": "无效的输入数据",
+            "mismatching pattern": "TODO {{pattern}}",
+            "Invalid YAML Object": "TODO",
         },
         "MyServices": {
             "text1": "我的服务",

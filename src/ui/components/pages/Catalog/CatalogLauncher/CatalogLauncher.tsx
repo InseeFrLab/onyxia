@@ -209,6 +209,9 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { indexedFormFields } = useSelector(selectors.launcher.indexedFormFields);
     const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
+    const { formFieldsIsWellFormed } = useSelector(
+        selectors.launcher.formFieldsIsWellFormed,
+    );
 
     const { t } = useTranslation({ CatalogLauncher });
 
@@ -234,6 +237,7 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(isLaunchable !== undefined);
     assert(friendlyName !== undefined);
     assert(isShared !== undefined);
+    assert(formFieldsIsWellFormed !== undefined);
 
     return (
         <>
@@ -270,6 +274,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 }
                                 {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
                                 onFormValueChange={launcherThunks.changeFormFieldValue}
+                                formFieldsIsWellFormed={formFieldsIsWellFormed}
                             />
                         ),
                     )}

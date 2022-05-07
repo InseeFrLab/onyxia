@@ -1,16 +1,21 @@
 import { useState, useMemo } from "react";
 import {
     CatalogLauncherConfigurationCard,
-    Props,
+    CatalogLauncherConfigurationCardProps,
 } from "ui/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { same } from "evt/tools/inDepth/same";
 import { useConstCallback } from "powerhooks/useConstCallback";
 
-function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange">) {
+function Container(
+    props: Omit<
+        CatalogLauncherConfigurationCardProps,
+        "formFieldsByTabName" | "onFormValueChange"
+    >,
+) {
     const [formFields, setFormFields] = useState<
-        Props["formFieldsByTabName"][string]["formFields"]
+        CatalogLauncherConfigurationCardProps["formFieldsByTabName"][string]["formFields"]
     >([
         {
             "type": "text",
@@ -101,7 +106,7 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
     ]);
 
     const formFieldsByTabName = useMemo(() => {
-        const out: Props["formFieldsByTabName"] = {};
+        const out: CatalogLauncherConfigurationCardProps["formFieldsByTabName"] = {};
 
         formFields.forEach(formField =>
             //(out[formField.path[0]] ??= []).push(formField)
@@ -118,16 +123,17 @@ function Container(props: Omit<Props, "formFieldsByTabName" | "onFormValueChange
         return out;
     }, [formFields]);
 
-    const onFormValueChange = useConstCallback<Props["onFormValueChange"]>(
-        ({ path, value }) =>
-            setFormFields(
-                formFields.map(formField => {
-                    if (same(formField.path, path)) {
-                        formField.value = value;
-                    }
-                    return formField;
-                }),
-            ),
+    const onFormValueChange = useConstCallback<
+        CatalogLauncherConfigurationCardProps["onFormValueChange"]
+    >(({ path, value }) =>
+        setFormFields(
+            formFields.map(formField => {
+                if (same(formField.path, path)) {
+                    formField.value = value;
+                }
+                return formField;
+            }),
+        ),
     );
 
     return (
@@ -149,4 +155,42 @@ export default meta;
 export const VueDefault = getStory({
     "meta": { "type": "dependency" },
     "dependencyNamePackageNameOrGlobal": "rstudio",
+    "formFieldsIsWellFormed": [
+        {
+            "path": ["resources", "cpu"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["resources", "memory"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["resources", "memory2"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["environnement", "s3"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["environnement", "vault"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["environnement", "git"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["environnement", "git2"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["environnement", "git3"],
+            "isWellFormed": true,
+        },
+        {
+            "path": ["r", "version"],
+            "isWellFormed": true,
+        },
+    ],
 });
