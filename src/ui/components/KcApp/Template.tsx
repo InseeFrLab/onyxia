@@ -66,9 +66,6 @@ const useStyles = makeStyles<{
         "height": "100%",
         "overflow": "auto",
     },
-    "footer": {
-        "height": 34,
-    },
 }));
 
 export const Template = memo((props: TemplateProps) => {

@@ -32,6 +32,7 @@
         "circular-dependency-plugin": "^5.2.0",
         "eslint": "^7.26.0",
         "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-tss-unused-classes": "^0.0.3",
         "events": "^3.2.0",
         "fs": "file:./.storybook/.compatibility/fs",
         "husky": "^4.3.8",
@@ -66,13 +67,16 @@
         "jwt-decode": "^2.2.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^15.0.2",
+        "keycloakify": "^5.3.1",
         "leaflet": "^1.6.0",
         "memoizee": "^0.4.14",
         "minio": "7.0.16",
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
+        "onyxia-ui": "^0.32.3",
         "path": "^0.12.7",
+        "powerhooks": "^0.16.3",
         "public-ip": "^4.0.3",
         "query-params": "0.0.1",
         "re-resizable": "^6.3.2",
@@ -94,13 +98,10 @@
         "run-exclusive": "^2.2.14",
         "shell-quote": "^1.7.2",
         "tsafe": "^0.10.0",
+        "tss-react": "^3.6.2",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5",
-        "keycloakify": "^5.3.1",
-        "onyxia-ui": "^0.32.3",
-        "powerhooks": "^0.16.3",
-        "tss-react": "^3.6.2",
         "zod": "^3.14.2"
     },
     "resolutions": {
@@ -124,6 +125,9 @@
         "emails_domain_accept_list_helper": "ts-node --skip-project src/bin/emails_domain_accept_list_helper.ts"
     },
     "eslintConfig": {
+        "plugins": [
+            "tss-unused-classes"
+        ],
         "extends": [
             "react-app",
             "prettier"
@@ -135,7 +139,8 @@
             "react-hooks/exhaustive-deps": "off",
             "no-labels": "off",
             "prefer-const": "off",
-            "no-sequences": "off"
+            "no-sequences": "off",
+            "tss-unused-classes/unused-classes": "warn"
         }
     },
     "husky": {

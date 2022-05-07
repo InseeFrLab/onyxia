@@ -354,10 +354,6 @@ const { NoRunningService } = (() => {
         "h2": {
             ...theme.spacing.topBottom("margin", 5),
         },
-        "typo": {
-            "marginBottom": theme.spacing(2),
-            "color": theme.colors.palette.light.greyVariant3,
-        },
         "link": {
             "cursor": "pointer",
         },

@@ -171,10 +171,6 @@ const useStyles = makeStyles({ "name": { AccountIntegrationsTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4),
     },
-    "link": {
-        "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
     "envVar": {
         "color": theme.colors.useCases.typography.textFocus,
     },
