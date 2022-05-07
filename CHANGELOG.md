@@ -1,3 +1,9 @@
+## **0.53.0** (2022-05-07)  
+  
+- #301  
+- #301 fist draft  
+- Setup eslint plugin for detecting unused classes    
+  
 ### **0.52.2** (2022-05-04)  
   
 - Update CI    
