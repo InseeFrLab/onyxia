@@ -47,9 +47,21 @@ const queryStringSerializer: QueryStringSerializer = {
                         }
                     }
 
-                    return decodeURIComponent(valueStr)
-                        .replace(/^«/, "")
-                        .replace(/»$/, "");
+                    {
+                        const str = decodeURIComponent(valueStr)
+                            .replace(/^«/, "")
+                            .replace(/»$/, "");
+
+                        if (str !== valueStr) {
+                            return str;
+                        }
+                    }
+
+                    const object = JSON.parse(decodeURIComponent(valueStr));
+
+                    assert(object !== null && typeof object === "object");
+
+                    return object;
                 })(),
             }),
         );
@@ -84,6 +96,12 @@ const queryStringSerializer: QueryStringSerializer = {
                                             return value.toString(10);
                                         case "string":
                                             return `«${encodeURIComponent(value)}»`;
+                                        case "object":
+                                            return encodeURIComponent(
+                                                JSON.stringify(value),
+                                            );
+                                        default:
+                                            assert(false);
                                     }
                                 })(),
                             ].join("="),

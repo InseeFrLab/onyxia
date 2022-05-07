@@ -1,6 +1,6 @@
 export type FormFieldValue = {
     path: string[];
-    value: string | boolean | number;
+    value: string | boolean | number | Record<string, any>;
 };
 
 /**
@@ -15,17 +15,17 @@ export function formFieldsValueToObject(
 ): Record<string, unknown> {
     return [...formFieldsValue]
         .sort((a, b) => JSON.stringify(a.path).localeCompare(JSON.stringify(b.path)))
-        .reduce<Record<string, unknown>>((launchRequestOptions, formField) => {
+        .reduce<Record<string, unknown>>((launchRequestOptions, formFieldValue) => {
             (function callee(props: {
                 launchRequestOptions: Record<string, unknown>;
                 formFieldValue: FormFieldValue;
             }): void {
-                const { launchRequestOptions, formFieldValue: formField } = props;
+                const { launchRequestOptions, formFieldValue } = props;
 
-                const [key, ...rest] = formField.path;
+                const [key, ...rest] = formFieldValue.path;
 
                 if (rest.length === 0) {
-                    launchRequestOptions[key] = formField.value;
+                    launchRequestOptions[key] = formFieldValue.value;
                 } else {
                     callee({
                         //"launchRequestOptions": launchRequestOptions[key] ??= {} as any,
@@ -34,13 +34,13 @@ export function formFieldsValueToObject(
                             (launchRequestOptions[key] = {} as any),
                         "formFieldValue": {
                             "path": rest,
-                            "value": formField.value,
+                            "value": formFieldValue.value,
                         },
                     });
                 }
             })({
                 launchRequestOptions,
-                formFieldValue: formField,
+                formFieldValue,
             });
 
             return launchRequestOptions;

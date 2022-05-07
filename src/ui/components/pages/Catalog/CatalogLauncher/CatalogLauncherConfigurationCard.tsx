@@ -26,6 +26,8 @@ import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
+import * as yaml from "yaml";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
@@ -393,6 +395,65 @@ const { TabContent } = (() => {
                                             : capitalize(formField.description);
 
                                     switch (formField.type) {
+                                        case "object":
+                                            return (
+                                                <TextField
+                                                    doRenderAsTextArea={true}
+                                                    className={classes.textField}
+                                                    label={label}
+                                                    defaultValue={yaml.stringify(
+                                                        formField.value,
+                                                    )}
+                                                    helperText={helperText}
+                                                    disabled={formField.isReadonly}
+                                                    onValueBeingTypedChange={({
+                                                        isValidValue,
+                                                        value,
+                                                    }) => {
+                                                        if (!isValidValue) {
+                                                            return;
+                                                        }
+
+                                                        onFormValueChange({
+                                                            "path": formField.path,
+                                                            "value": yaml.parse(value),
+                                                        });
+                                                    }}
+                                                    inputProps_spellCheck={false}
+                                                    autoComplete="off"
+                                                    selectAllTextOnFocus={true}
+                                                    getIsValidValue={str => {
+                                                        try {
+                                                            const obj = yaml.parse(str);
+
+                                                            assert(
+                                                                typeof obj === "object" &&
+                                                                    obj !== null,
+                                                            );
+                                                        } catch {
+                                                            return {
+                                                                "isValidValue": false,
+                                                                "message":
+                                                                    "Not a valid YAML string",
+                                                            };
+                                                        }
+
+                                                        return {
+                                                            "isValidValue": true,
+                                                        };
+                                                    }}
+                                                    onEscapeKeyDown={onEscapeKeyDownFactory(
+                                                        formField.path,
+                                                        yaml.stringify(
+                                                            formField.defaultValue,
+                                                        ),
+                                                    )}
+                                                    doOnlyValidateInputAfterFistFocusLost={
+                                                        false
+                                                    }
+                                                />
+                                            );
+
                                         case "boolean":
                                             return (
                                                 <FormControl>

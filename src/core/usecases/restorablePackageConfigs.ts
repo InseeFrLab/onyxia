@@ -13,7 +13,6 @@ import {
 } from "../tools/createObjectThatThrowsIfAccessed";
 import type { RootState } from "../setup";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApiClient";
-import { is } from "tsafe/is";
 
 type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
@@ -205,7 +204,7 @@ export const thunks = {
                 const friendlyName = formFieldsValue.find(({ path }) =>
                     same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
                 )?.value;
-                assert(!is<number | boolean>(friendlyName));
+                assert(friendlyName === undefined || typeof friendlyName === "string");
                 return friendlyName;
             };
 
