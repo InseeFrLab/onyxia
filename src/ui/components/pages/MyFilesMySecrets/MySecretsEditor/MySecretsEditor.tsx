@@ -393,9 +393,6 @@ const useStyles = makeStyles<Props>({ "name": { MySecretsEditor } })(theme => ({
     "tableContainerRoot": {
         "overflow": "visible",
     },
-    "dialog": {
-        "backgroundColor": "red",
-    },
 }));
 
 function stringifyValue(value: Secret.Value) {

@@ -202,13 +202,6 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
     "isSharedFormHelperText": {
         "marginLeft": 0,
     },
-    "bellowDividerLeft": {
-        "flex": 1,
-    },
-    "bellowDividerRight": {
-        "display": "flex",
-        "alignItems": "flex-end",
-    },
     "launchButton": {
         "marginLeft": theme.spacing(2),
     },

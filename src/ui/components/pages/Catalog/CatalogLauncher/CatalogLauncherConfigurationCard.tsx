@@ -571,10 +571,12 @@ const useStyles = makeStyles({ "name": { CatalogLauncherConfigurationCard } })(t
         "overflow": "hidden",
         "boxShadow": theme.shadows[1],
     },
+    // eslint-disable-next-line tss-unused-classes/unused-classes
     "collapsedPanel": {
         "maxHeight": 0,
         "transform": "scaleY(0)",
     },
+    // eslint-disable-next-line tss-unused-classes/unused-classes
     "expandedPanel": {
         "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         "transform": "scaleY(1)",

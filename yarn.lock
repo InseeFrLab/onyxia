@@ -7156,6 +7156,11 @@ eslint-plugin-testing-library@^3.9.2:
   dependencies:
     "@typescript-eslint/experimental-utils" "^3.10.1"
 
+eslint-plugin-tss-unused-classes@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tss-unused-classes/-/eslint-plugin-tss-unused-classes-0.0.3.tgz#b5e6fd8dcee18e16e5ee95cb6d8992b0229da887"
+  integrity sha512-ZnjySyIVUyf3PkzQZ0nnoHzqZDys/ro2etjbxAgbRT3RpN+d5dcJu39bWQHDDg3FSbBv9wwhnKinyuP17E+F4g==
+
 eslint-scope@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-4.0.3.tgz#ca03833310f6889a3264781aa82e63eb9cfe7848"
