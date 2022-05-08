@@ -1525,7 +1525,6 @@ export const selectors = (() => {
                                 const { value } = formField;
 
                                 assert(value.type === "yaml");
-
                                 const isWellFormed = (() => {
                                     let obj: any;
 

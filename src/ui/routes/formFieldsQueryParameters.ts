@@ -47,19 +47,19 @@ const queryStringSerializer: QueryStringSerializer = {
                         }
                     }
 
-                    {
-                        const str = decodeURIComponent(valueStr)
-                            .replace(/^«/, "")
-                            .replace(/»$/, "");
+                    const decodedValue = decodeURIComponent(valueStr);
 
-                        if (str !== valueStr) {
+                    {
+                        const str = decodedValue.replace(/^«/, "").replace(/»$/, "");
+
+                        if (str !== decodedValue) {
                             return str;
                         }
                     }
 
-                    const object = JSON.parse(decodeURIComponent(valueStr));
+                    const object = JSON.parse(decodeURIComponent(decodedValue));
 
-                    assert(object !== null && typeof object === "object");
+                    assert(object instanceof Object);
 
                     return object;
                 })(),
