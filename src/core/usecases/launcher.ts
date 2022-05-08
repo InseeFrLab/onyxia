@@ -878,7 +878,7 @@ export const thunks = {
                                     ) {
                                         const value = {
                                             "type": "yaml" as const,
-                                            "value": yaml.stringify(
+                                            "yamlStr": yaml.stringify(
                                                 getDefaultValue(
                                                     jsonSchemaFormFieldDescription,
                                                 ),
@@ -1530,7 +1530,7 @@ export const selectors = (() => {
                                     let obj: any;
 
                                     try {
-                                        obj = yaml.parse(value.value);
+                                        obj = yaml.parse(value.yamlStr);
                                     } catch {
                                         return false;
                                     }
@@ -1558,7 +1558,7 @@ export const selectors = (() => {
                                     let arr: any;
 
                                     try {
-                                        arr = yaml.parse(value.value);
+                                        arr = yaml.parse(value.yamlStr);
                                     } catch {
                                         return false;
                                     }

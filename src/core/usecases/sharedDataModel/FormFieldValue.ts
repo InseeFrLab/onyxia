@@ -12,8 +12,7 @@ export namespace FormFieldValue {
     export namespace Value {
         export type Yaml = {
             type: "yaml";
-            //TODO: Rename yamlStr
-            value: string;
+            yamlStr: string;
         };
     }
 }
@@ -47,7 +46,7 @@ export function formFieldsValueToObject(
                             assert(value.type === "yaml");
 
                             try {
-                                return yaml.parse(value.value);
+                                return yaml.parse(value.yamlStr);
                             } catch {
                                 return { "message": "parse error" };
                             }

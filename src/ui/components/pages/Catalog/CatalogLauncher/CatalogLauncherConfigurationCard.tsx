@@ -442,7 +442,7 @@ const { TabContent } = (() => {
                                                     doRenderAsTextArea={true}
                                                     className={classes.textField}
                                                     label={label}
-                                                    defaultValue={formField.value.value}
+                                                    defaultValue={formField.value.yamlStr}
                                                     inputProps_aria-invalid={hasError}
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
@@ -454,7 +454,7 @@ const { TabContent } = (() => {
                                                             "path": formField.path,
                                                             "value": {
                                                                 "type": "yaml",
-                                                                value,
+                                                                "yamlStr": value,
                                                             },
                                                         })
                                                     }
