@@ -872,43 +872,42 @@ export const thunks = {
                                     }
 
                                     if (
-                                        jsonSchemaFormFieldDescription.type === "object"
+                                        jsonSchemaFormFieldDescription.type ===
+                                            "object" ||
+                                        jsonSchemaFormFieldDescription.type === "array"
                                     ) {
-                                        return id<FormField.Object>({
-                                            ...common,
-                                            ...(() => {
-                                                const value = {
-                                                    "type": "yaml" as const,
-                                                    "value": yaml.stringify(
-                                                        getDefaultValue(
-                                                            jsonSchemaFormFieldDescription,
-                                                        ),
-                                                    ),
-                                                };
+                                        const value = {
+                                            "type": "yaml" as const,
+                                            "value": yaml.stringify(
+                                                getDefaultValue(
+                                                    jsonSchemaFormFieldDescription,
+                                                ),
+                                            ),
+                                        };
 
-                                                return { value, "defaultValue": value };
-                                            })(),
-                                            "type": "object",
-                                        });
-                                    }
+                                        switch (jsonSchemaFormFieldDescription.type) {
+                                            case "array":
+                                                return id<FormField.Array>({
+                                                    ...common,
+                                                    value,
+                                                    "defaultValue": value,
+                                                    "type": jsonSchemaFormFieldDescription.type,
+                                                });
+                                            case "object":
+                                                return id<FormField.Object>({
+                                                    ...common,
+                                                    value,
+                                                    "defaultValue": value,
+                                                    "type": jsonSchemaFormFieldDescription.type,
+                                                });
+                                        }
 
-                                    if (jsonSchemaFormFieldDescription.type === "array") {
-                                        return id<FormField.Array>({
-                                            ...common,
-                                            ...(() => {
-                                                const value = {
-                                                    "type": "yaml" as const,
-                                                    "value": yaml.stringify(
-                                                        getDefaultValue(
-                                                            jsonSchemaFormFieldDescription,
-                                                        ),
-                                                    ),
-                                                };
-
-                                                return { value, "defaultValue": value };
-                                            })(),
-                                            "type": "array",
-                                        });
+                                        assert<
+                                            Equals<
+                                                typeof jsonSchemaFormFieldDescription["type"],
+                                                never
+                                            >
+                                        >();
                                     }
 
                                     if (
