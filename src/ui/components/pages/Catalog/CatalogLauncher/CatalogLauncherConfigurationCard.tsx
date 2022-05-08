@@ -313,10 +313,25 @@ const { TabContent } = (() => {
             ) => onFormValueChange({ "path": JSON.parse(pathStr), value }),
         );
 
+        const onYamlValueBeingChangeFactory = useCallbackFactory(
+            (
+                //NOTE: To be memoized it needs to be a primitive value
+                [pathStr]: [string],
+                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
+            ) =>
+                onFormValueChange({
+                    "path": JSON.parse(pathStr),
+                    "value": {
+                        "type": "yaml",
+                        "yamlStr": value,
+                    },
+                }),
+        );
+
         const { t } = useTranslation({ CatalogLauncherConfigurationCard });
 
         const onEscapeKeyDownFactory = useCallbackFactory(
-            ([pathStr, defaultValue]: [string, string]) =>
+            ([pathStr, defaultValue]: [string, string | FormFieldValue.Value.Yaml]) =>
                 onFormValueChange({ "path": JSON.parse(pathStr), "value": defaultValue }),
         );
 
@@ -447,26 +462,15 @@ const { TabContent } = (() => {
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
                                                     selectAllTextOnFocus={false}
-                                                    onValueBeingTypedChange={({
-                                                        value,
-                                                    }) =>
-                                                        onFormValueChange({
-                                                            "path": formField.path,
-                                                            "value": {
-                                                                "type": "yaml",
-                                                                "yamlStr": value,
-                                                            },
-                                                        })
-                                                    }
+                                                    onValueBeingTypedChange={onYamlValueBeingChangeFactory(
+                                                        JSON.stringify(formField.path),
+                                                    )}
                                                     inputProps_spellCheck={false}
                                                     autoComplete="off"
-                                                    onEscapeKeyDown={() =>
-                                                        onFormValueChange({
-                                                            "path": formField.path,
-                                                            "value":
-                                                                formField.defaultValue,
-                                                        })
-                                                    }
+                                                    onEscapeKeyDown={onEscapeKeyDownFactory(
+                                                        JSON.stringify(formField.path),
+                                                        formField.defaultValue,
+                                                    )}
                                                     doOnlyValidateInputAfterFistFocusLost={
                                                         false
                                                     }
