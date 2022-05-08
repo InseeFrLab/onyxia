@@ -28,6 +28,7 @@ import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
 import type { selectors } from "ui/coreApi";
+import { Equals } from "tsafe";
 
 export type CatalogLauncherConfigurationCardProps = {
     className?: string;
@@ -131,6 +132,7 @@ export declare namespace CatalogLauncherConfigurationCard {
         "launch of a service": { dependencyName: string };
         "mismatching pattern": { pattern: string };
         "Invalid YAML Object": undefined;
+        "Invalid YAML Array": undefined;
     };
 }
 
@@ -433,6 +435,7 @@ const { TabContent } = (() => {
 
                                     switch (formField.type) {
                                         case "object":
+                                        case "array":
                                             return (
                                                 <TextField
                                                     doIndentOnTab={true}
@@ -590,6 +593,10 @@ const { TabContent } = (() => {
                                                 />
                                             );
                                     }
+
+                                    assert<Equals<typeof formField["type"], never>>(
+                                        false,
+                                    );
                                 })()}
                             </div>
                         )),

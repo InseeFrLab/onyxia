@@ -3,8 +3,20 @@ import { assert } from "tsafe/assert";
 
 export type FormFieldValue = {
     path: string[];
-    value: string | boolean | number | { type: "yaml"; value: string };
+    value: FormFieldValue.Value;
 };
+
+export namespace FormFieldValue {
+    export type Value = string | boolean | number | Value.Yaml;
+
+    export namespace Value {
+        export type Yaml = {
+            type: "yaml";
+            //TODO: Rename yamlStr
+            value: string;
+        };
+    }
+}
 
 /**
  *

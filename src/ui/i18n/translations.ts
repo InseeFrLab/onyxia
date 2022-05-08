@@ -436,6 +436,7 @@ export const resources = id<Record<Language, Translations>>({
             "launch of a service": "A {{dependencyName}} service will be launched",
             "mismatching pattern": "Should match {{pattern}}",
             "Invalid YAML Object": "Invalid YAML Object",
+            "Invalid YAML Array": "Invalid YAML Array",
         },
         "MyServices": {
             "text1": "My Services",
@@ -789,7 +790,8 @@ export const resources = id<Record<Language, Translations>>({
             "dependency": "Dépendance {{dependencyName}}",
             "launch of a service": "Lancement d'un service {{dependencyName}}",
             "mismatching pattern": "Doit respecter {{pattern}}",
-            "Invalid YAML Object": "YAML non valid",
+            "Invalid YAML Object": "Objet YAML non valid",
+            "Invalid YAML Array": "Tableau YAML non valid",
         },
         "MyServices": {
             "text1": "Mes services",
@@ -1122,6 +1124,7 @@ export const resources = id<Record<Language, Translations>>({
             "launch of a service": "启动一个服务 {{dependencyName}}",
             "mismatching pattern": "TODO {{pattern}}",
             "Invalid YAML Object": "TODO",
+            "Invalid YAML Array": "TODO",
         },
         "MyServices": {
             "text1": "我的服务",
