@@ -33,10 +33,12 @@ import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 import * as yaml from "yaml";
+import type { Equals } from "tsafe";
 
 export type FormField =
     | FormField.Boolean
     | FormField.Object
+    | FormField.Array
     | FormField.Integer
     | FormField.Enum
     | FormField.Text
@@ -56,14 +58,14 @@ export declare namespace FormField {
 
     export type Object = Common & {
         type: "object";
-        value: {
-            type: "yaml";
-            value: string;
-        };
-        defaultValue: {
-            type: "yaml";
-            value: string;
-        };
+        value: FormFieldValue.Value.Yaml;
+        defaultValue: FormFieldValue.Value.Yaml;
+    };
+
+    export type Array = Common & {
+        type: "array";
+        value: FormFieldValue.Value.Yaml;
+        defaultValue: FormFieldValue.Value.Yaml;
     };
 
     export type Integer = Common & {
@@ -633,6 +635,7 @@ export const thunks = {
                                                     case "integer":
                                                     case "number":
                                                     case "object":
+                                                    case "array":
                                                         return v === "" ? undefined : v;
                                                     case "string":
                                                         return v;
@@ -661,7 +664,15 @@ export const thunks = {
                                                             return 0;
                                                         case "object":
                                                             return {};
+                                                        case "array":
+                                                            return [];
                                                     }
+                                                    assert<
+                                                        Equals<
+                                                            typeof jsonSchemaFormFieldDescription.type,
+                                                            never
+                                                        >
+                                                    >(false);
                                                 })()
                                             );
                                         })();
@@ -682,6 +693,15 @@ export const thunks = {
                                                         typeof valuePotentiallyWronglyTyped ===
                                                             "object",
                                                         `${jsonSchemaFormFieldDescription.title}'s default value should be an object`,
+                                                    );
+
+                                                    return valuePotentiallyWronglyTyped;
+                                                }
+                                                case "array": {
+                                                    assert(
+                                                        valuePotentiallyWronglyTyped instanceof
+                                                            Array,
+                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be an array`,
                                                     );
 
                                                     return valuePotentiallyWronglyTyped;
@@ -869,6 +889,25 @@ export const thunks = {
                                                 return { value, "defaultValue": value };
                                             })(),
                                             "type": "object",
+                                        });
+                                    }
+
+                                    if (jsonSchemaFormFieldDescription.type === "array") {
+                                        return id<FormField.Array>({
+                                            ...common,
+                                            ...(() => {
+                                                const value = {
+                                                    "type": "yaml" as const,
+                                                    "value": yaml.stringify(
+                                                        getDefaultValue(
+                                                            jsonSchemaFormFieldDescription,
+                                                        ),
+                                                    ),
+                                                };
+
+                                                return { value, "defaultValue": value };
+                                            })(),
+                                            "type": "array",
                                         });
                                     }
 
@@ -1454,6 +1493,10 @@ export const selectors = (() => {
                         | {
                               isWellFormed: false;
                               message: "Invalid YAML Object";
+                          }
+                        | {
+                              isWellFormed: false;
+                              message: "Invalid YAML Array";
                           } => {
                         switch (formField.type) {
                             case "text": {
@@ -1493,7 +1536,9 @@ export const selectors = (() => {
                                         return false;
                                     }
 
-                                    return obj !== null && typeof obj === "object";
+                                    return (
+                                        obj instanceof Object && !(obj instanceof Array)
+                                    );
                                 })();
 
                                 return isWellFormed
@@ -1503,6 +1548,32 @@ export const selectors = (() => {
                                     : {
                                           "isWellFormed": false,
                                           "message": "Invalid YAML Object",
+                                      };
+                            }
+                            case "array": {
+                                const { value } = formField;
+
+                                assert(value.type === "yaml");
+
+                                const isWellFormed = (() => {
+                                    let arr: any;
+
+                                    try {
+                                        arr = yaml.parse(value.value);
+                                    } catch {
+                                        return false;
+                                    }
+
+                                    return arr instanceof Array;
+                                })();
+
+                                return isWellFormed
+                                    ? {
+                                          "isWellFormed": true,
+                                      }
+                                    : {
+                                          "isWellFormed": false,
+                                          "message": "Invalid YAML Array",
                                       };
                             }
                             default:
