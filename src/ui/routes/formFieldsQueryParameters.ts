@@ -36,8 +36,6 @@ const queryStringSerializer: QueryStringSerializer = {
                     )
                     .map(s => s.replace(/\\\./g, ".")),
                 "value": (() => {
-                    console.log(pathStr);
-
                     if (["true", "false"].includes(valueStr)) {
                         return "true" === valueStr;
                     }
