@@ -1,3 +1,7 @@
+### **0.54.2** (2022-05-11)  
+  
+- Fix go back button on register page    
+  
 ### **0.54.1** (2022-05-08)  
   
 - Fix url restoration of YAML  
