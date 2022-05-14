@@ -1,3 +1,8 @@
+### **0.55.1** (2022-05-14)  
+  
+- Update onyxia-ui, fix Dialog on small screens  
+- Update README.md    
+  
 ## **0.55.0** (2022-05-14)  
   
 - Enable to download file with the new s3 explorer  
