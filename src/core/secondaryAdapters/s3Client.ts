@@ -15,6 +15,7 @@ import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
 import type { NonPostableEvt } from "evt";
 import type { OidcClient } from "../ports/OidcClient";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 export type Params = {
     url: string;
@@ -223,7 +224,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 minioClientByTokenObj.set(tokenObj, wrap);
             }
 
-            return wrap;
+            return { ...wrap, tokenObj };
         }
 
         return { getMinioClient };
@@ -384,6 +385,38 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 }),
             );
         },
+        "getFileDownloadUrl": async ({ path }) => {
+            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
+
+            const { minioClient, tokenObj } = await getMinioClient({
+                "restrictToBucketName": bucketName,
+            });
+
+            const downloadUrlWithoutToken = await new Promise<string>(
+                (resolve, reject) => {
+                    minioClient.presignedGetObject(
+                        bucketName,
+                        objectName,
+                        3600, //One hour
+                        (err, url: string) => {
+                            if (err) {
+                                reject(err);
+                                return;
+                            }
+                            resolve(url);
+                        },
+                    );
+                },
+            );
+
+            const { newUrl: downloadUrl } = addParamToUrl({
+                "url": downloadUrlWithoutToken,
+                "name": "X-Amz-Security-Token",
+                "value": tokenObj.sessionToken,
+            });
+
+            return downloadUrl;
+        },
     };
 
     dS3Client.resolve(s3Client);
@@ -429,6 +462,10 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
         "deleteFile": {
             "buildCmd": ({ path }) => `# We delete a file at ${path}`,
             "fmtResult": () => `# File deleted`,
+        },
+        "getFileDownloadUrl": {
+            "buildCmd": ({ path }) => `# We delete generate a download link for ${path}`,
+            "fmtResult": ({ result: downloadUrl }) => downloadUrl,
         },
     },
 };

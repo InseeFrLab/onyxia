@@ -25,4 +25,6 @@ export type S3Client = {
     }) => Promise<void>;
 
     deleteFile: (params: { path: string }) => Promise<void>;
+
+    getFileDownloadUrl: (params: { path: string }) => Promise<string>;
 };
