@@ -932,6 +932,29 @@ export const thunks = {
                     );
             }
         },
+    "getFileDownloadUrl":
+        (params: { basename: string }): ThunkAction<Promise<string>> =>
+        async (...args) => {
+            const { basename } = params;
+
+            const [, getState, extraArg] = args;
+
+            const contextualState = getState().explorers["s3"];
+
+            const { directoryPath } = contextualState;
+
+            assert(directoryPath !== undefined);
+
+            const sliceContexts = getSliceContexts(extraArg);
+
+            const path = pathJoin(directoryPath, basename);
+
+            const downloadUrl = await sliceContexts.s3.loggedFsApi.getFileDownloadUrl({
+                path,
+            });
+
+            return downloadUrl;
+        },
 };
 
 type SliceContexts = {

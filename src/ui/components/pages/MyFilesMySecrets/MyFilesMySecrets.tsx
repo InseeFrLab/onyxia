@@ -16,7 +16,7 @@ import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
-import { MySecretsEditor, Props as MySecretsEditorProps } from "./MySecretsEditor";
+import { MySecretsEditor } from "./MySecretsEditor";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
@@ -227,7 +227,14 @@ export function MyFilesMySecrets(props: Props) {
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
-        routes[route.name]({ ...route.params, "openFile": basename }).replace();
+        switch (explorerType) {
+            case "s3":
+                explorersThunks.getFileDownloadUrl({ basename }).then(window.open);
+                break;
+            case "secrets":
+                routes.mySecrets({ ...route.params, "openFile": basename }).replace();
+                break;
+        }
     });
 
     const onCloseFile = useConstCallback<
@@ -260,10 +267,6 @@ export function MyFilesMySecrets(props: Props) {
 
     const onMySecretEditorCopyPath = useConstCallback(() =>
         evtExplorerAction.post("TRIGGER COPY PATH"),
-    );
-
-    const onEdit = useConstCallback<MySecretsEditorProps["onEdit"]>(params =>
-        secretsEditorThunks.editCurrentlyShownSecret(params),
     );
 
     const {
@@ -396,7 +399,9 @@ export function MyFilesMySecrets(props: Props) {
                                         onCopyPath={onMySecretEditorCopyPath}
                                         isBeingUpdated={secretEditorState.isBeingUpdated}
                                         secretWithMetadata={secretWithMetadata}
-                                        onEdit={onEdit}
+                                        onEdit={
+                                            secretsEditorThunks.editCurrentlyShownSecret
+                                        }
                                         doDisplayUseInServiceDialog={
                                             doDisplayMySecretsUseInServiceDialog
                                         }
