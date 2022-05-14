@@ -1,3 +1,8 @@
+## **0.55.0** (2022-05-14)  
+  
+- Enable to download file with the new s3 explorer  
+- Add method for getting the url for downloading file (s3)    
+  
 ### **0.54.2** (2022-05-11)  
   
 - Fix go back button on register page    
