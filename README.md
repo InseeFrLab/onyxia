@@ -45,6 +45,8 @@ and creating a [GitHub release](https://github.com/InseeFrLab/onyxia-web/release
 -   Every commit on branches that have an open pull-request on `main` will trigger the creation of a docker image
     tagged `:<name-of-the-feature-branch>`.
 
+### CD Pipeline
+
 A CD pipeline is also in place; The CI of this repo [triggers the CI of the GitOPS repo InseeFrLab/paris-sspcloud](https://github.com/InseeFrLab/onyxia-web/blob/ffe0ec4bc027f0993a5af6039a9f83bbe4384b39/.github/workflows/ci.yml#L169-L177). The [CI of paris-sspcloud](https://github.com/InseeFrLab/paris-sspcloud/blob/master/.github/workflows/update.yaml) checks if there is a newer version of Onyxia-web than the one already
 in production. If yes, it performs the [automatic commit](https://github.com/InseeFrLab/paris-sspcloud/commit/9b21fa792a113ea16a117cdf74c7c816d36bf84e)
 that cause ArgoCD to restart the relevant pods.
