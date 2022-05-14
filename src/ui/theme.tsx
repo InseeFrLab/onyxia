@@ -218,4 +218,5 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
 export const { LeftBar } = createLeftBar({
     Icon,
     "persistIsPanelOpen": true,
+    "defaultIsPanelOpen": true,
 });
