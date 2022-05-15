@@ -1,3 +1,7 @@
+### **0.55.3** (2022-05-15)  
+  
+- No resizing of div when file upload completed    
+  
 ### **0.55.2** (2022-05-15)  
   
 - Hover drop area do not resize div    
