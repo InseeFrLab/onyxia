@@ -1,3 +1,7 @@
+### **0.55.2** (2022-05-15)  
+  
+- Hover drop area do not resize div    
+  
 ### **0.55.1** (2022-05-14)  
   
 - Update onyxia-ui, fix Dialog on small screens  
