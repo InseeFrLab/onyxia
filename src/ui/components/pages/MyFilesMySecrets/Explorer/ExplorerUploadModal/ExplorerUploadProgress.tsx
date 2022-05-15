@@ -42,22 +42,26 @@ export const ExplorerUploadProgress = memo((props: Props) => {
         rest.onClick(action);
     });
 
+    const isIdle = rest.isFailed || percentUploaded === 100;
+
     return (
         <div className={cx(classes.root, className)}>
             <ExplorerIcon iconId="data" hasShadow={true} className={classes.icon} />
             <div className={classes.payload}>
                 <Text typo="label 1">{basename}</Text>
-                {!rest.isFailed && percentUploaded !== 100 && (
-                    <div ref={progressBarRef} className={classes.progressBar}>
-                        <div className={classes.progressBarGauge} />
-                    </div>
-                )}
+                <div
+                    ref={progressBarRef}
+                    className={classes.progressBar}
+                    style={{ "width": isIdle ? 0 : undefined }}
+                >
+                    <div className={classes.progressBarGauge} />
+                </div>
                 <div className={classes.metric}>
                     <AdvancementText
                         percentUploaded={percentUploaded}
                         fileSize={fileSize}
                     />
-                    {!rest.isFailed && percentUploaded !== 100 && (
+                    {!isIdle && (
                         <>
                             <div style={{ "flex": 1 }} />
                             <Text typo="body 2" color="focus">
