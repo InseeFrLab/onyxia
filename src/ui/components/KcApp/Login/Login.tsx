@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import { getMsg } from "keycloakify";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -18,6 +18,7 @@ import { LoginDivider } from "./LoginDivider";
 import { AgentConnectButton } from "./AgentConnectButton";
 import { useTranslation } from "ui/i18n/useTranslations";
 import type { KcContext } from "../kcContext";
+import { useStateRef } from "powerhooks/useStateRef";
 
 type KcContext_Login = Extract<KcContext, { pageId: "login.ftl" }>;
 
@@ -37,9 +38,9 @@ export const Login = memo(
 
         const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
-        const usernameInputRef = useRef<HTMLInputElement>(null);
-        const passwordInputRef = useRef<HTMLInputElement>(null);
-        const submitButtonRef = useRef<HTMLButtonElement>(null);
+        const usernameInputRef = useStateRef<HTMLInputElement>(null);
+        const passwordInputRef = useStateRef<HTMLInputElement>(null);
+        const submitButtonRef = useStateRef<HTMLButtonElement>(null);
 
         const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
             () => getBrowser() === "safari",
@@ -63,7 +64,7 @@ export const Login = memo(
 
             useEffect(() => {
                 setPasswordInput(passwordInputRef.current);
-            }, [passwordInputRef.current ?? {}]);
+            }, [passwordInputRef.current]);
 
             useEvt(
                 ctx => {

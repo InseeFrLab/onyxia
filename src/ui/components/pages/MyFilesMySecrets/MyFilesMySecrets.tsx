@@ -1,5 +1,5 @@
 import { makeStyles, PageHeader } from "ui/theme";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useSelector, useThunks, selectors } from "ui/coreApi";
@@ -17,6 +17,7 @@ import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor } from "./MySecretsEditor";
+import { useStateRef } from "powerhooks/useStateRef";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
@@ -178,7 +179,7 @@ export function MyFilesMySecrets(props: Props) {
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
     );
 
-    const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({

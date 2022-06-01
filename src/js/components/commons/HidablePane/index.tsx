@@ -1,10 +1,11 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Fade from "@mui/material/Fade";
 import classnames from "classnames";
 import "./style.scss";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
+import { useStateRef } from "powerhooks/useStateRef";
 
 export const HidablePane: React.FC<{
     post?: () => boolean;
@@ -18,7 +19,7 @@ export const HidablePane: React.FC<{
         undefined,
     );
 
-    const wrapperRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useStateRef<HTMLDivElement>(null);
     const [timer, setTimer] = useState(() => setTimeout(() => {}, 0));
 
     const checkPosition = useCallback(() => {
@@ -35,7 +36,7 @@ export const HidablePane: React.FC<{
         }px`;
         style.left = `${rect.left}px`;
         style.width = `${rect.width}px`;
-    }, [anchor]);
+    }, [anchor, wrapperRef.current]);
 
     const hide = useCallback(
         (who: "panel" | "anchor") => {

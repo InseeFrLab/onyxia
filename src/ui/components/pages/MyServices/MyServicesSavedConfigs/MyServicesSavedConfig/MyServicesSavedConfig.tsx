@@ -1,4 +1,4 @@
-import { memo, useRef, useReducer } from "react";
+import { memo, useReducer } from "react";
 import { makeStyles } from "ui/theme";
 import { RoundLogo } from "ui/components/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
@@ -10,6 +10,7 @@ import { IconButton } from "ui/theme";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
 import { assert } from "tsafe/assert";
+import { useStateRef } from "powerhooks/useStateRef";
 
 export type Props = {
     className?: string;
@@ -51,7 +52,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         };
     }, [isDeletionScheduled]);
 
-    const editButtonRef = useRef<HTMLButtonElement>(null);
+    const editButtonRef = useStateRef<HTMLButtonElement>(null);
 
     const configOptionsCallback = useConstCallback((action: SavedConfigurationAction) => {
         switch (action) {
