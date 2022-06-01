@@ -20,13 +20,11 @@ import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient"
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useThunks } from "ui/coreApi";
 
-export const { useIsCloudShellVisible } = createUseGlobalState(
-    "isCloudShellVisible",
-    () => false,
-    {
-        "persistance": false,
-    },
-);
+export const { useIsCloudShellVisible } = createUseGlobalState({
+    "name": "isCloudShellVisible",
+    "initialState": false,
+    "doPersistAcrossReloads": false,
+});
 interface CloudShellData {
     status?: "UP" | "DOWN" | undefined;
     packageToDeploy?: any;

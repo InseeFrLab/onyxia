@@ -17,17 +17,19 @@ export type ApiLogsBarProps = {
 export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
     const { className, apiLogs, maxHeight } = props;
 
-    useEvt(
-        (ctx, registerSideEffect) =>
-            apiLogs.evt.attach(ctx, () =>
-                registerSideEffect(() => {
-                    //This will trigger an update,
+    {
+        const [, forceUpdate] = useReducer(counter => counter + 1, 0);
+
+        useEvt(
+            ctx =>
+                apiLogs.evt.attach(ctx, () =>
                     //translations.history will have changed.
                     //console.log(JSON.stringify(translations.history[translations.history.length -1], null, 2));
-                }),
-            ),
-        [apiLogs.evt],
-    );
+                    forceUpdate(),
+                ),
+            [apiLogs.evt],
+        );
+    }
 
     const {
         domRect: { height: headerHeight },

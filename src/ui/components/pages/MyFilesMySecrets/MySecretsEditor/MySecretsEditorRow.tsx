@@ -106,31 +106,30 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 
     useEvt(
-        (ctx, registerSideEffect) =>
+        ctx =>
             evtEdited.attach(
                 ({ editedKey, editedStrValue }) =>
                     editedKey !== undefined && editedStrValue !== undefined,
                 ctx,
-                ({ editedKey, editedStrValue }) =>
-                    registerSideEffect(() => {
-                        evtEdited.state = {};
+                ({ editedKey, editedStrValue }) => {
+                    evtEdited.state = {};
 
-                        setIsInEditingState(false);
+                    setIsInEditingState(false);
 
-                        if (editedKey === key) {
-                            editedKey = undefined;
-                        }
+                    if (editedKey === key) {
+                        editedKey = undefined;
+                    }
 
-                        if (editedStrValue === strValue) {
-                            editedStrValue = undefined;
-                        }
+                    if (editedStrValue === strValue) {
+                        editedStrValue = undefined;
+                    }
 
-                        if (editedKey === undefined && editedStrValue === undefined) {
-                            return;
-                        }
+                    if (editedKey === undefined && editedStrValue === undefined) {
+                        return;
+                    }
 
-                        onEdit({ editedKey, editedStrValue });
-                    }),
+                    onEdit({ editedKey, editedStrValue });
+                },
             ),
         [evtEdited, onEdit, key, strValue],
     );

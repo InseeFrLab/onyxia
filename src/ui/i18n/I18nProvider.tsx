@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { resources } from "./translations";
@@ -34,15 +34,17 @@ export function I18nProvider(props: Props) {
         i18nInstance.changeLanguage(lng);
     }, [lng]);
 
-    useEvt(
-        (ctx, registerSideEffect) =>
-            Evt.from(ctx, i18nInstance as any, "languagechange").attach(() =>
-                registerSideEffect(() => {
-                    /* We just trigger a re-render */
-                }),
-            ),
-        [i18nInstance],
-    );
+    {
+        const [, forceUpdate] = useReducer(counter => counter + 1, 0);
+
+        useEvt(
+            ctx =>
+                Evt.from(ctx, i18nInstance as any, "languagechange").attach(() =>
+                    forceUpdate(),
+                ),
+            [i18nInstance],
+        );
+    }
 
     return <I18nextProvider i18n={i18nInstance}>{children}</I18nextProvider>;
 }

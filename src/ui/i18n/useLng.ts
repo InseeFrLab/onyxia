@@ -24,4 +24,8 @@ export function getBrowserLng(): Language {
     return fallbackLanguage;
 }
 
-export const { useLng, evtLng } = createUseGlobalState("lng", getBrowserLng);
+export const { useLng, evtLng } = createUseGlobalState({
+    "name": "lng",
+    "initialState": getBrowserLng,
+    "doPersistAcrossReloads": true,
+});
