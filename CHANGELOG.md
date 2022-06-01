@@ -1,3 +1,7 @@
+### **0.55.5** (2022-06-01)  
+  
+- Bump version (cangelog ignore)    
+  
 ### **0.55.4** (2022-06-01)  
   
 - Compat React 18, fix button bar    
