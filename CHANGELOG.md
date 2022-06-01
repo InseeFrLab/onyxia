@@ -1,3 +1,7 @@
+### **0.55.4** (2022-06-01)  
+  
+- Compat React 18, fix button bar    
+  
 ### **0.55.3** (2022-05-15)  
   
 - No resizing of div when file upload completed    
