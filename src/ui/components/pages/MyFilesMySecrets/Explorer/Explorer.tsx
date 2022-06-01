@@ -254,15 +254,32 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
                 break;
             case "create directory":
-                setCreateS3DirectoryDialogState({
-                    directories,
-                    "resolveBasename": basename => {
+                switch (explorerType) {
+                    case "secrets":
                         onNewItem({
                             "kind": "directory",
-                            "suggestedBasename": basename,
+                            "suggestedBasename": generateUniqDefaultName({
+                                "names": directories,
+                                "buildName": buildNameFactory({
+                                    "defaultName": t("untitled what", {
+                                        "what": t("directory"),
+                                    }),
+                                    "separator": "_",
+                                }),
+                            }),
                         });
-                    },
-                });
+                        break;
+                    case "s3":
+                        setCreateS3DirectoryDialogState({
+                            directories,
+                            "resolveBasename": basename =>
+                                onNewItem({
+                                    "kind": "directory",
+                                    "suggestedBasename": basename,
+                                }),
+                        });
+                        break;
+                }
                 break;
             case "new":
                 switch (explorerType) {
