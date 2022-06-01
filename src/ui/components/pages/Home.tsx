@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from "react";
+import { useEffect, useMemo, memo } from "react";
 import { Button } from "ui/theme";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
@@ -16,6 +16,7 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import homeIllustrationImgUrl from "ui/assets/img/homeIllustration.png";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
+import { useStateRef } from "powerhooks/useStateRef";
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -180,7 +181,7 @@ const { Card } = (() => {
 
         const { css, cx, theme } = useClasslessStyles();
 
-        const iconRef = useRef<SVGSVGElement>(null);
+        const iconRef = useStateRef<SVGSVGElement>(null);
 
         useEffect(() => {
             iconRef
@@ -193,7 +194,7 @@ const { Card } = (() => {
                             : theme.colors.useCases.typography.textPrimary,
                     ),
                 );
-        }, [theme]);
+        }, [theme, iconRef.current]);
 
         return (
             <OnyxiaUiCard

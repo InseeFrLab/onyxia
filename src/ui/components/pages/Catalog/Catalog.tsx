@@ -1,4 +1,4 @@
-import { useMemo, useRef, memo } from "react";
+import { useMemo, memo } from "react";
 import { createGroup } from "type-route";
 import { useTranslation } from "ui/i18n/useTranslations";
 import { useLng } from "ui/i18n/useLng";
@@ -13,6 +13,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import { assert } from "tsafe/assert";
 import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
+import { useStateRef } from "powerhooks/useStateRef";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
@@ -40,8 +41,8 @@ export function Catalog(props: Props) {
     const { classes, cx, css } = useStyles();
 
     const { scrollableDivRef } = (function useClosure() {
-        const explorerScrollableDivRef = useRef<HTMLDivElement>(null);
-        const launcherScrollableDivRef = useRef<HTMLDivElement>(null);
+        const explorerScrollableDivRef = useStateRef<HTMLDivElement>(null);
+        const launcherScrollableDivRef = useStateRef<HTMLDivElement>(null);
 
         const scrollableDivRef = (() => {
             switch (route.name) {

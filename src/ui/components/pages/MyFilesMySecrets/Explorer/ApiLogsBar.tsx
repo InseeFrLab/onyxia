@@ -1,11 +1,12 @@
 import { makeStyles } from "ui/theme";
-import { useReducer, useRef, useEffect, memo } from "react";
+import { useReducer, useEffect, memo } from "react";
 import { useEvt } from "evt/hooks/useEvt";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon } from "ui/theme";
 import { assert } from "tsafe/assert";
 import type { ApiLogs } from "core/tools/apiLogger";
+import { useStateRef } from "powerhooks/useStateRef";
 
 export type ApiLogsBarProps = {
     className?: string;
@@ -36,7 +37,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
         ref: headerRef,
     } = useDomRect();
 
-    const panelRef = useRef<HTMLDivElement>(null);
+    const panelRef = useStateRef<HTMLDivElement>(null);
 
     const [isExpended, toggleIsExpended] = useReducer(isExpended => !isExpended, false);
 
@@ -53,7 +54,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
             "top": element.scrollHeight,
             "behavior": "smooth",
         });
-    }, [isExpended, apiLogs.evt.postCount]);
+    }, [isExpended, apiLogs.evt.postCount, panelRef.current]);
 
     //TODO: see if classes are recomputed every time because ref object changes
     const { classes } = useStyles({ maxHeight, headerHeight, isExpended });

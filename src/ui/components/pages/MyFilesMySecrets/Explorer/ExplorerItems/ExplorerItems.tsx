@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, memo } from "react";
+import { useMemo, useState, memo } from "react";
 import type { ExplorerItemProps } from "./ExplorerItem";
 import { ExplorerItem } from "./ExplorerItem";
 import { getKeyPropFactory } from "ui/tools/getKeyProp";
@@ -16,6 +16,7 @@ import memoize from "memoizee";
 import { Text, makeStyles } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
+import { useStateRef } from "powerhooks/useStateRef";
 
 export type ExplorerItemsProps = {
     className?: string;
@@ -342,7 +343,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             setIsSelectedItemInEditingState(isInEditingState),
     );
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useStateRef<HTMLDivElement>(null);
 
     const onGridMouseDown = useConstCallback(
         ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
