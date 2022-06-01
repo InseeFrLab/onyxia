@@ -35,7 +35,6 @@ For injecting secret environment variables in the containers.
 
 https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
 
-
 ## CD Pipeline
 
 To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
@@ -47,7 +46,6 @@ and creating a [GitHub release](https://github.com/InseeFrLab/onyxia-web/release
     and `:latest`.
 -   Every commit on branches that have an open pull-request on `main` will trigger the creation of a docker image
     tagged `:<name-of-the-feature-branch>`.
-
 
 A CD pipeline is also in place; The CI of this repo [triggers the CI of the GitOPS repo InseeFrLab/paris-sspcloud](https://github.com/InseeFrLab/onyxia-web/blob/ffe0ec4bc027f0993a5af6039a9f83bbe4384b39/.github/workflows/ci.yml#L169-L177). The [CI of paris-sspcloud](https://github.com/InseeFrLab/paris-sspcloud/blob/master/.github/workflows/update.yaml) checks if there is a newer version of Onyxia-web than the one already
 in production. If yes, it performs the [automatic commit](https://github.com/InseeFrLab/paris-sspcloud/commit/9b21fa792a113ea16a117cdf74c7c816d36bf84e)
