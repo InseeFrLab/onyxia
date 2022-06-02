@@ -1,3 +1,7 @@
+### **0.55.6** (2022-06-02)  
+  
+- Fix many error related to useRef    
+  
 ### **0.55.5** (2022-06-01)  
   
 - Bump version (cangelog ignore)    
