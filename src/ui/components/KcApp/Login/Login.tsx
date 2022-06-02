@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import { getMsg } from "keycloakify";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -56,51 +56,41 @@ export const Login = memo(
             },
         });
 
-        //TODO: Export useEvtFromElement to evt
-        {
-            const [passwordInput, setPasswordInput] = useState<HTMLInputElement | null>(
-                null,
-            );
+        useEvt(
+            ctx => {
+                const passwordInput = passwordInputRef.current;
 
-            useEffect(() => {
-                setPasswordInput(passwordInputRef.current);
-            }, [passwordInputRef.current]);
+                if (passwordInput === null) {
+                    return;
+                }
 
-            useEvt(
-                ctx => {
-                    if (passwordInput === null) {
-                        return;
-                    }
-
-                    switch (getBrowser()) {
-                        case "chrome":
-                        case "safari":
-                            Evt.from(ctx, passwordInput, "change").attach(
-                                () =>
-                                    usernameInputRef.current?.matches(
-                                        ":-webkit-autofill",
-                                    ) ?? false,
-                                () => {
-                                    switch (getBrowser()) {
-                                        case "chrome":
-                                            //NOTE: Only works after user input
-                                            submitButtonRef.current?.focus();
-                                            break;
-                                        case "safari":
-                                            setTimeout(
-                                                () => submitButtonRef.current?.focus(),
-                                                100,
-                                            );
-                                            break;
-                                    }
-                                },
-                            );
-                            break;
-                    }
-                },
-                [passwordInput],
-            );
-        }
+                switch (getBrowser()) {
+                    case "chrome":
+                    case "safari":
+                        Evt.from(ctx, passwordInput, "change").attach(
+                            () =>
+                                usernameInputRef.current?.matches(":-webkit-autofill") ??
+                                false,
+                            () => {
+                                switch (getBrowser()) {
+                                    case "chrome":
+                                        //NOTE: Only works after user input
+                                        submitButtonRef.current?.focus();
+                                        break;
+                                    case "safari":
+                                        setTimeout(
+                                            () => submitButtonRef.current?.focus(),
+                                            100,
+                                        );
+                                        break;
+                                }
+                            },
+                        );
+                        break;
+                }
+            },
+            [passwordInputRef.current],
+        );
 
         const onSubmit = useConstCallback(() => {
             setIsLoginButtonDisabled(true);
