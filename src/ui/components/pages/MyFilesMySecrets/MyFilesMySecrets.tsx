@@ -5,7 +5,7 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useSelector, useThunks, selectors } from "ui/coreApi";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
@@ -18,6 +18,7 @@ import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
 
@@ -420,17 +421,15 @@ export function MyFilesMySecrets(props: Props) {
     );
 }
 
-export declare namespace MyFilesMySecrets {
-    export type I18nScheme = {
-        "page title - my files": undefined;
-        "page title - my secrets": undefined;
-        "what this page is used for - my files": undefined;
-        "what this page is used for - my secrets": undefined;
-        "learn more - my files": undefined;
-        "to learn more - my secrets": undefined;
-        "read our documentation": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "page title - my files"
+    | "page title - my secrets"
+    | "what this page is used for - my files"
+    | "what this page is used for - my secrets"
+    | "learn more - my files"
+    | "to learn more - my secrets"
+    | "read our documentation"
+>()({ MyFilesMySecrets });
 
 const useStyles = makeStyles({ "name": { MyFilesMySecrets } })({
     "root": {

@@ -1,5 +1,5 @@
 import { useMemo, memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation, useLang } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import type { Props as AccountFieldProps } from "../AccountField";
@@ -12,7 +12,7 @@ import { makeStyles } from "ui/theme";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import memoize from "memoizee";
-import { useLng } from "ui/i18n/useLng";
+import { declareComponentKeys } from "i18nifty";
 
 const editableFieldKeys = [
     "gitName",
@@ -61,7 +61,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
             .map(id => getEvtFieldAction(id).post("SUBMIT EDIT")),
     );
 
-    const { lng } = useLng();
+    const { lang } = useLang();
 
     return (
         <div className={className}>
@@ -106,7 +106,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 const tokenCreationHref = (() => {
                     switch (key) {
                         case "githubPersonalAccessToken":
-                            return `https://docs.github.com/${lng}/github/authenticating-to-github/creating-a-personal-access-token`;
+                            return `https://docs.github.com/${lang}/github/authenticating-to-github/creating-a-personal-access-token`;
                         case "kaggleApiToken":
                             return `https://www.kaggle.com/docs/api`;
                     }
@@ -153,19 +153,17 @@ export const AccountIntegrationsTab = memo((props: Props) => {
     );
 });
 
-export declare namespace AccountIntegrationsTab {
-    export type I18nScheme = {
-        "git section title": undefined;
-        "git section helper": undefined;
-        "gitName": undefined;
-        "gitEmail": undefined;
-        "third party tokens section title": undefined;
-        "third party tokens section helper": undefined;
-        "personal token": { serviceName: string };
-        "link for token creation": { serviceName: string };
-        "accessible as env": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "git section title"
+    | "git section helper"
+    | "gitName"
+    | "gitEmail"
+    | "third party tokens section title"
+    | "third party tokens section helper"
+    | ["personal token", { serviceName: string }]
+    | ["link for token creation", { serviceName: string }]
+    | "accessible as env"
+>()({ AccountIntegrationsTab });
 
 const useStyles = makeStyles({ "name": { AccountIntegrationsTab } })(theme => ({
     "divider": {

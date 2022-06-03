@@ -12,7 +12,7 @@ import * as clipboard from "clipboard-polyfill/text";
 import { assert } from "tsafe/assert";
 import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 import type { NonPostableEvt } from "evt";
@@ -22,6 +22,7 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { Markdown } from "ui/tools/Markdown";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -326,20 +327,18 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 });
 
-export declare namespace CatalogLauncher {
-    export type I18nScheme = {
-        "no longer bookmarked dialog title": undefined;
-        "no longer bookmarked dialog body": undefined;
-        "ok": undefined;
-        "should overwrite configuration dialog title": undefined;
-        "should overwrite configuration dialog subtitle": { friendlyName: string };
-        "should overwrite configuration dialog body": undefined;
-        "cancel": undefined;
-        "replace": undefined;
-        "proceed to launch": undefined;
-        "sensitive configuration dialog title": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "no longer bookmarked dialog title"
+    | "no longer bookmarked dialog body"
+    | "ok"
+    | "should overwrite configuration dialog title"
+    | ["should overwrite configuration dialog subtitle", { friendlyName: string }]
+    | "should overwrite configuration dialog body"
+    | "cancel"
+    | "replace"
+    | "proceed to launch"
+    | "sensitive configuration dialog title"
+>()({ CatalogLauncher });
 
 const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
     "wrapperForScroll": {

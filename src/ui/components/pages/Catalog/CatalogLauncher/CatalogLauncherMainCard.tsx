@@ -2,7 +2,7 @@ import { memo } from "react";
 import { makeStyles } from "ui/theme";
 import { RoundLogo } from "ui/components/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { IconButton } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
@@ -13,6 +13,7 @@ import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -143,18 +144,16 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     );
 });
 
-export declare namespace CatalogLauncherMainCard {
-    export type I18nScheme = {
-        "card title": undefined;
-        cancel: undefined;
-        launch: undefined;
-        "friendly name": undefined;
-        "copy url helper text": undefined;
-        "save configuration": undefined;
-        "share the service": undefined;
-        "share the service - explain": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "card title"
+    | "cancel"
+    | "launch"
+    | "friendly name"
+    | "copy url helper text"
+    | "save configuration"
+    | "share the service"
+    | "share the service - explain"
+>()({ CatalogLauncherMainCard });
 
 const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({
     "root": {

@@ -5,7 +5,7 @@ import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useClick } from "powerhooks/useClick";
 import Color from "color";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
@@ -13,6 +13,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { smartTrim } from "ui/tools/smartTrim";
 import { ExplorerIcon } from "../ExplorerIcon";
+import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -206,11 +207,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         </div>
     );
 });
-export declare namespace ExplorerItem {
-    export type I18nScheme = {
-        description: undefined;
-    };
-}
+
+export const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
 
 const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>({
     "name": { ExplorerItem },

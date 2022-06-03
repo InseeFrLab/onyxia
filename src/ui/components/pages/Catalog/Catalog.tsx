@@ -1,7 +1,6 @@
 import { useMemo, memo } from "react";
 import { createGroup } from "type-route";
-import { useTranslation } from "ui/i18n/useTranslations";
-import { useLng } from "ui/i18n/useLng";
+import { useResolveLocalizedString, useLang, useTranslation } from "ui/i18n";
 import { makeStyles, PageHeader } from "ui/theme";
 import { routes } from "ui/routes";
 import type { Route } from "type-route";
@@ -12,8 +11,8 @@ import { useSelector, selectors } from "ui/coreApi";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import { assert } from "tsafe/assert";
-import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
 
@@ -125,15 +124,14 @@ export function Catalog(props: Props) {
         </div>
     );
 }
-export declare namespace Catalog {
-    export type I18nScheme = {
-        "header text1": undefined;
-        "header text2": undefined;
-        "contribute to the catalog": { catalogName: string };
-        "contribute to the package": { packageName: string };
-        "here": undefined;
-    };
-}
+
+export const { i18n } = declareComponentKeys<
+    | "header text1"
+    | "header text2"
+    | ["contribute to the catalog", { catalogName: string }]
+    | ["contribute to the package", { packageName: string }]
+    | "here"
+>()({ Catalog });
 
 const useStyles = makeStyles({ "name": { Catalog } })({
     "root": {
@@ -175,7 +173,7 @@ const PageHeaderHelpContent = memo(() => {
 
     const { t } = useTranslation({ Catalog });
 
-    const { lng } = useLng();
+    const { lang } = useLang();
 
     const { resolveLocalizedString } = useResolveLocalizedString();
 
@@ -217,7 +215,7 @@ const PageHeaderHelpContent = memo(() => {
                                 {t("here")}
                             </Link>
                         )),
-                        "language": lng,
+                        "language": lang,
                     })}
                 </>
             );

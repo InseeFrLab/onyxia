@@ -102,17 +102,17 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
             {
                 const languages = objectKeys(tosUrlByLng);
 
-                languages.forEach(lng =>
+                languages.forEach(lang =>
                     assert(
-                        id<readonly string[]>(kcLanguageTags).includes(lng),
-                        `${lng} is not a supported languages, supported languages are: ${kcLanguageTags}`,
+                        id<readonly string[]>(kcLanguageTags).includes(lang),
+                        `${lang} is not a supported languages, supported languages are: ${kcLanguageTags}`,
                     ),
                 );
 
-                languages.forEach(lng =>
+                languages.forEach(lang =>
                     assert(
-                        typeof tosUrlByLng[lng] === "string",
-                        `therms of service malformed (${lng})`,
+                        typeof tosUrlByLng[lang] === "string",
+                        `therms of service malformed (${lang})`,
                     ),
                 );
             }

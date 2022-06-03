@@ -1,6 +1,7 @@
 import { memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { makeStyles, Text } from "ui/theme";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -39,9 +40,6 @@ const useStyles = makeStyles({ "name": { PortraitModeUnsupported } })(theme => (
     },
 }));
 
-export declare namespace PortraitModeUnsupported {
-    export type I18nScheme = {
-        "portrait mode not supported": undefined;
-        "instructions": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    "portrait mode not supported" | "instructions"
+>()({ PortraitModeUnsupported });

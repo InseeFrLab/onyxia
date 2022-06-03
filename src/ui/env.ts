@@ -1,12 +1,11 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { LocalizedString } from "ui/i18n/useResolveLocalizedString";
-//TODO: Move in a slice, we shouldn't access env directly here.
+import type { LocalizedString } from "ui/i18n";
+import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 import type { CreateStoreParams } from "core/setup";
-import { getBrowserLng } from "ui/i18n/useLng";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
 import type { NonPostableEvt } from "evt";
 
@@ -166,7 +165,7 @@ export const getCreateStoreParams = memoize(
                               "firstName": "John",
                               "username": "jdoe",
                               "groups": [],
-                              "locale": getBrowserLng(),
+                              "locale": evtLang.state,
                           },
                       }
                     : {

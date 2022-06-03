@@ -1,5 +1,5 @@
 import { useEffect, memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { makeStyles } from "ui/theme";
 import { ExplorerUploadModalDropArea } from "./ExplorerUploadModalDropArea";
 import type { Props as ExplorerUploadModalDropAreaProps } from "./ExplorerUploadModalDropArea";
@@ -11,6 +11,7 @@ import type { StatefulReadonlyEvt } from "evt";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
+import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerUploadModalProps = {
     isOpen: boolean;
@@ -129,10 +130,6 @@ const { ExplorerUploadModalBody } = (() => {
     return { ExplorerUploadModalBody };
 })();
 
-export declare namespace ExplorerUploadModal {
-    export type I18nScheme = {
-        "import files": undefined;
-        "cancel": undefined;
-        "minimize": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"import files" | "cancel" | "minimize">()({
+    ExplorerUploadModal,
+});

@@ -1,10 +1,11 @@
 import { memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useThunks, useSelector, selectors } from "ui/coreApi";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -88,14 +89,12 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     );
 });
 
-export declare namespace AccountUserInterfaceTab {
-    export type I18nScheme = {
-        "title": undefined;
-        "enable dark mode": undefined;
-        "enable beta": undefined;
-        "dark mode helper": undefined;
-        "beta mode helper": undefined;
-        "enable dev mode": undefined;
-        "dev mode helper": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "title"
+    | "enable dark mode"
+    | "enable beta"
+    | "dark mode helper"
+    | "beta mode helper"
+    | "enable dev mode"
+    | "dev mode helper"
+>()({ AccountUserInterfaceTab });

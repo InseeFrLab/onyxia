@@ -3,7 +3,7 @@ import type { RefObject } from "react";
 import { makeStyles } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { Button, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import Link from "@mui/material/Link";
@@ -12,9 +12,10 @@ import { SearchBar } from "onyxia-ui/SearchBar";
 import type { SearchBarProps } from "onyxia-ui/SearchBar";
 import type { UnpackEvt } from "evt";
 import { breakpointsValues } from "onyxia-ui";
-import type { LocalizedString } from "ui/i18n/useResolveLocalizedString";
-import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
+import type { LocalizedString } from "ui/i18n";
+import { useResolveLocalizedString } from "ui/i18n";
 import { Evt } from "evt";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -158,6 +159,18 @@ export declare namespace CatalogExplorerCards {
         "search": undefined;
     };
 }
+
+export const { i18n } = declareComponentKeys<
+    | "main services"
+    | "all services"
+    | "search results"
+    | "show more"
+    | "no service found"
+    | ["no result found", { forWhat: string }]
+    | "check spelling"
+    | "go back"
+    | "search"
+>()({ CatalogExplorerCards });
 
 const { CardShowMore } = (() => {
     type Props = {

@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { makeStyles, Icon, Text } from "ui/theme";
-
-import { useFromNow } from "ui/i18n/useMoment";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useFromNow } from "ui/useMoment";
+import { useTranslation } from "ui/i18n";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -38,11 +38,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesRunningTime {
-    export type I18nScheme = {
-        "launching": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"launching">()({ MyServicesRunningTime });
 
 const useStyles = makeStyles<{ isOvertime: boolean }>({
     "name": { MyServicesRunningTime },

@@ -9,7 +9,7 @@ import type { BreadcrumpProps } from "onyxia-ui/Breadcrump";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { ApiLogsBar } from "./ApiLogsBar";
 import {
     generateUniqDefaultName,
@@ -19,27 +19,27 @@ import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { NonPostableEvt, StatefulReadonlyEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
-
 import { ExplorerItems } from "./ExplorerItems";
 import { ExplorerButtonBar } from "./ExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "onyxia-ui";
 import { ExplorerIcon } from "./ExplorerIcon";
-import { getFormattedDate } from "ui/i18n/useMoment";
+import { getFormattedDate } from "ui/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
-import { useLng } from "ui/i18n/useLng";
+import { useLang } from "ui/i18n";
 import { Card } from "onyxia-ui/Card";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
+import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerProps = {
     /**
@@ -325,13 +325,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     });
 
     const { formattedDate } = (function useClosure() {
-        const { lng } = useLng();
+        const { lang } = useLang();
 
         const formattedDate = !props.isFileOpen ? undefined : props.openFileTime ===
           undefined ? (
             <>&nbsp;</>
         ) : (
-            getFormattedDate({ "time": props.openFileTime, lng })
+            getFormattedDate({ "time": props.openFileTime, lang })
         );
 
         return { formattedDate };
@@ -566,23 +566,22 @@ export const Explorer = memo((props: ExplorerProps) => {
         </>
     );
 });
-export declare namespace Explorer {
-    export type I18nScheme = {
-        "untitled what": { what: string };
-        directory: undefined;
-        file: undefined;
-        secret: undefined;
-        cancel: undefined;
-        delete: undefined;
-        "deletion dialog title": { deleteWhat: string };
-        "deletion dialog body": { deleteWhat: string };
-        "do not display again": undefined;
-        "already a directory with this name": undefined;
-        "can't be empty": undefined;
-        "create": undefined;
-        "new directory": undefined;
-    };
-}
+
+export const { i18n } = declareComponentKeys<
+    | ["untitled what", { what: string }]
+    | "directory"
+    | "file"
+    | "secret"
+    | "cancel"
+    | "delete"
+    | ["deletion dialog title", { deleteWhat: string }]
+    | ["deletion dialog body", { deleteWhat: string }]
+    | "do not display again"
+    | "already a directory with this name"
+    | "can't be empty"
+    | "create"
+    | "new directory"
+>()({ Explorer });
 
 const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean }>({
     "name": { Explorer },

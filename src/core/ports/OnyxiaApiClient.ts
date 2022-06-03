@@ -1,5 +1,5 @@
 import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
-import type { LocalizedString as LocalizedStringGeneric } from "core/tools/resolveLocalizedString";
+import type { LocalizedString as GenericLocalizedString } from "i18nifty";
 import memoize from "memoizee";
 
 export type OnyxiaApiClient = {
@@ -65,9 +65,8 @@ export type OnyxiaApiClient = {
     }) => Promise<void>;
 };
 
-export const languages = ["en", "fr", "zh-CN"] as const;
-export type Language = typeof languages[number];
-export type LocalizedString = LocalizedStringGeneric<Language>;
+export type Language = "en" | "fr" | "zh-CN";
+export type LocalizedString = GenericLocalizedString<Language>;
 
 export type DeploymentRegion = {
     id: string;

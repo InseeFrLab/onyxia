@@ -2,7 +2,7 @@ import { useState, memo } from "react";
 import type { DragEvent } from "react";
 import { makeStyles, Text } from "ui/theme";
 import { ExplorerIcon } from "../ExplorerIcon";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
 import { InputFile } from "ui/tools/InputFile";
 import type { InputFileProps } from "ui/tools/InputFile";
@@ -12,6 +12,7 @@ import type { UnpackEvt } from "evt";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -97,12 +98,9 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     );
 });
 
-export declare namespace ExplorerUploadModalDropArea {
-    export type I18nScheme = {
-        "drag and drop or": undefined;
-        "browse files": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"drag and drop or" | "browse files">()({
+    ExplorerUploadModalDropArea,
+});
 
 const useStyles = makeStyles<{ isDragHover: boolean }>({
     "name": { ExplorerUploadModalDropArea },

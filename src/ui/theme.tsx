@@ -68,7 +68,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "ui/tools/types/ComponentType";
-import type { Language } from "ui/i18n/useLng";
+import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "ui/envCarriedOverToKc";
 

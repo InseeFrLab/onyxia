@@ -5,12 +5,13 @@ import { Button, Text } from "ui/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
 import type { SavedConfigurationAction } from "./MyServicesSavedConfigOptions";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { IconButton } from "ui/theme";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -107,12 +108,9 @@ export const MyServicesSavedConfig = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesSavedConfig {
-    export type I18nScheme = {
-        "edit": undefined;
-        "launch": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"edit" | "launch">()({
+    MyServicesSavedConfig,
+});
 
 const useStyles = makeStyles<{ hasLogo: boolean; isShortVariant: boolean }>({
     "name": { MyServicesSavedConfig },

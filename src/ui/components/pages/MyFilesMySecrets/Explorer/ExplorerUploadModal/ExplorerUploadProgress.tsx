@@ -1,12 +1,13 @@
 import { useMemo, memo } from "react";
 import { makeStyles, Text } from "ui/theme";
 import { useDomRect } from "powerhooks/useDomRect";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { IconButton, Icon } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -98,12 +99,9 @@ export const ExplorerUploadProgress = memo((props: Props) => {
     );
 });
 
-export declare namespace ExplorerUploadProgress {
-    export type I18nScheme = {
-        "over": undefined;
-        "importing": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"over" | "importing">()({
+    ExplorerUploadProgress,
+});
 
 const useStyles = makeStyles<
     Pick<Props, "percentUploaded"> & { progressBarWidth: number }

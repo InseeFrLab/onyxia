@@ -19,7 +19,7 @@ import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValu
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { capitalize } from "tsafe/capitalize";
 import { Icon } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { Slider } from "onyxia-ui/Slider";
 import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
@@ -29,6 +29,7 @@ import type { TextFieldProps } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
 import type { selectors } from "ui/coreApi";
 import { Equals } from "tsafe";
+import { declareComponentKeys } from "i18nifty";
 
 export type CatalogLauncherConfigurationCardProps = {
     className?: string;
@@ -124,17 +125,15 @@ export const CatalogLauncherConfigurationCard = memo(
     },
 );
 
-export declare namespace CatalogLauncherConfigurationCard {
-    export type I18nScheme = {
-        "global config": undefined;
-        "configuration": { packageName: string };
-        "dependency": { dependencyName: string };
-        "launch of a service": { dependencyName: string };
-        "mismatching pattern": { pattern: string };
-        "Invalid YAML Object": undefined;
-        "Invalid YAML Array": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "global config"
+    | ["configuration", { packageName: string }]
+    | ["dependency", { dependencyName: string }]
+    | ["launch of a service", { dependencyName: string }]
+    | ["mismatching pattern", { pattern: string }]
+    | "Invalid YAML Object"
+    | "Invalid YAML Array"
+>()({ CatalogLauncherConfigurationCard });
 
 const { Header } = (() => {
     type Props = {
