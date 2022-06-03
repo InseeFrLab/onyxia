@@ -9,7 +9,7 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import memoize from "memoizee";
@@ -17,6 +17,7 @@ import { Text, makeStyles } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerItemsProps = {
     className?: string;
@@ -425,11 +426,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     );
 });
 
-export declare namespace ExplorerItems {
-    export type I18nScheme = {
-        "empty directory": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
 
 const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } })(
     (theme, { isEmpty }) => ({

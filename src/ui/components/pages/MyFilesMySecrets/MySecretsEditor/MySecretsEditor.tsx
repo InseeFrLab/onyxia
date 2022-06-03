@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { SecretWithMetadata, Secret } from "core/ports/SecretsManagerClient";
 import type { EditSecretParams } from "core/usecases/secretsEditor";
 import memoize from "memoizee";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
@@ -27,6 +27,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import { Dialog } from "onyxia-ui/Dialog";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -337,34 +338,28 @@ export const MySecretsEditor = memo((props: Props) => {
         </div>
     );
 });
-export declare namespace MySecretsEditor {
-    export type I18nScheme = {
-        "add an entry": undefined;
-        "environnement variable default name": undefined;
-        "table of secret": undefined;
-        "key column name": undefined;
-        "value column name": undefined;
-        "resolved value column name": undefined;
-        "what's a resolved value": undefined;
 
-        "unavailable key": undefined;
-        "invalid key empty string": undefined;
-        "invalid key _ not valid": undefined;
-        "invalid key start with digit": undefined;
-        "invalid key invalid character": undefined;
-
-        "invalid value cannot eval": undefined;
-
-        "use this secret": undefined;
-
-        "use secret dialog title": undefined;
-        "use secret dialog subtitle": undefined;
-        "use secret dialog body": undefined;
-        "use secret dialog ok": undefined;
-
-        "do not display again": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "add an entry"
+    | "environnement variable default name"
+    | "table of secret"
+    | "key column name"
+    | "value column name"
+    | "resolved value column name"
+    | "what's a resolved value"
+    | "unavailable key"
+    | "invalid key empty string"
+    | "invalid key _ not valid"
+    | "invalid key start with digit"
+    | "invalid key invalid character"
+    | "invalid value cannot eval"
+    | "use this secret"
+    | "use secret dialog title"
+    | "use secret dialog subtitle"
+    | "use secret dialog body"
+    | "use secret dialog ok"
+    | "do not display again"
+>()({ MySecretsEditor });
 
 const useStyles = makeStyles<Props>({ "name": { MySecretsEditor } })(theme => ({
     "root": {
@@ -409,7 +404,7 @@ export function getIsValidKey(params: { key: string }):
     | {
           isValidKey: false;
           message: Id<
-              keyof MySecretsEditor.I18nScheme,
+              typeof i18n[number],
               | "invalid key _ not valid"
               | "invalid key start with digit"
               | "invalid key invalid character"

@@ -1,7 +1,7 @@
 import { Fragment, useMemo, memo } from "react";
 import { makeStyles } from "ui/theme";
 import { Button, Text, Icon, IconButton } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
@@ -10,8 +10,9 @@ import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { exclude } from "tsafe/exclude";
 import { objectKeys } from "tsafe/objectKeys";
-import { fromNow } from "ui/i18n/useMoment";
-import { evtLng } from "ui/i18n/useLng";
+import { fromNow } from "ui/useMoment";
+import { evtLang } from "ui/i18n";
+import { declareComponentKeys } from "i18nifty";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -155,7 +156,7 @@ export const MyServicesCard = memo((props: Props) => {
                                             {t("which token expire when", {
                                                 "which": tokenType,
                                                 "howMuchTime": fromNow({
-                                                    "lng": evtLng.state,
+                                                    "lang": evtLang.state,
                                                     "dateTime": expirationTime,
                                                 }),
                                             })}
@@ -278,6 +279,18 @@ export declare namespace MyServicesCard {
         "this is a shared service": undefined;
     };
 }
+
+export const { i18n } = declareComponentKeys<
+    | "service"
+    | "running since"
+    | "open"
+    | "readme"
+    | "shared by you"
+    | ["which token expire when", { which: "vault" | "s3"; howMuchTime: string }]
+    | ["which token expired", { which: "vault" | "s3" }]
+    | "reminder to delete services"
+    | "this is a shared service"
+>()({ MyServicesCard });
 
 const useStyles = makeStyles<{
     severity: "error" | "warning" | undefined;

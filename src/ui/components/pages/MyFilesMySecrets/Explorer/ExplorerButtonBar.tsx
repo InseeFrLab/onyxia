@@ -1,8 +1,9 @@
 import { useMemo, memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { ButtonBar, IconId } from "ui/theme";
 import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     explorerType: "s3" | "secrets";
@@ -103,16 +104,15 @@ export const ExplorerButtonBar = memo((props: Props) => {
     return <ButtonBar buttons={buttons} onClick={onClick} />;
 });
 
-export declare namespace ExplorerButtonBar {
-    export type I18nScheme = Record<Exclude<ButtonId, "new">, undefined> & {
-        "create secret": undefined;
-        "upload file": undefined;
-        secret: undefined;
-        file: undefined;
-        //TODO: Remove
-        "create what": { what: string };
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | ButtonId
+    | "create secret"
+    | "upload file"
+    | "secret"
+    | "file"
+    //TODO: Remove
+    | ["create what", { what: string }]
+>()({ ExplorerButtonBar });
 
 const buttonIds = [
     "refresh",

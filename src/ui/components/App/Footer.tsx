@@ -1,9 +1,10 @@
 import { memo } from "react";
 import { makeStyles, Text, LanguageSelect } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
-import { useLng } from "ui/i18n/useLng";
+import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -19,7 +20,7 @@ export const Footer = memo((props: Props) => {
 
     const { t } = useTranslation({ Footer });
 
-    const { lng, setLng } = useLng();
+    const { lang, setLang } = useLang();
 
     const spacing = <div className={classes.spacing} />;
 
@@ -39,8 +40,8 @@ export const Footer = memo((props: Props) => {
             </a>
             <div className={classes.sep} />
             <LanguageSelect
-                language={lng}
-                onLanguageChange={setLng}
+                language={lang}
+                onLanguageChange={setLang}
                 variant="small"
                 changeLanguageText={t("change language")}
             />
@@ -67,13 +68,9 @@ export const Footer = memo((props: Props) => {
     );
 });
 
-export declare namespace Footer {
-    export type I18nScheme = {
-        "contribute": undefined;
-        "terms of service": undefined;
-        "change language": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    "contribute" | "terms of service" | "change language"
+>()({ Footer });
 
 const useStyles = makeStyles<Props>({ "name": { Footer } })(theme => ({
     "root": {

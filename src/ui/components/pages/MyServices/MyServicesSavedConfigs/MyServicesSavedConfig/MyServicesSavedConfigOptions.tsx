@@ -6,7 +6,8 @@ import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
 import { makeStyles, Icon, Text } from "ui/theme";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
+import { declareComponentKeys } from "i18nifty";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
@@ -101,13 +102,9 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesSavedConfigOptions {
-    export type I18nScheme = {
-        "edit": undefined;
-        "remove bookmark": undefined;
-        "copy link": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
+    MyServicesSavedConfigOptions,
+});
 
 const useStyles = makeStyles({ "name": { MyServicesSavedConfigOptions } })(theme => ({
     "icon": {

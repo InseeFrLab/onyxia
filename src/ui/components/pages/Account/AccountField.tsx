@@ -17,12 +17,13 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Switch from "@mui/material/Switch";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
 import { Button } from "ui/theme";
-import { useLng } from "ui/i18n/useLng";
+import { useLang } from "ui/i18n";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props<T extends string = string> =
     | Props.ServicePassword
@@ -360,7 +361,7 @@ export const AccountField = memo(
             props.onResetHelperDialogsClick();
         });
 
-        const { lng, setLng } = useLng();
+        const { lang, setLang } = useLang();
 
         return (
             <div className={cx(classes.root, className)}>
@@ -396,8 +397,8 @@ export const AccountField = memo(
                                         <LanguageSelect
                                             doShowIcon={false}
                                             variant="big"
-                                            language={lng}
-                                            onLanguageChange={setLng}
+                                            language={lang}
+                                            onLanguageChange={setLang}
                                         />
                                     );
                                 case "toggle":
@@ -541,18 +542,14 @@ export const AccountField = memo(
     },
 );
 
-export declare namespace AccountField {
-    export type I18nScheme = Record<
-        Exclude<Props["type"], "text" | "editable text" | "toggle">,
-        undefined
-    > & {
-        "copy tooltip": undefined;
-        "service password helper text": undefined;
-        "not yet defined": undefined;
-        "reset helper dialogs helper text": undefined;
-        "reset": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | Exclude<Props["type"], "text" | "editable text" | "toggle">
+    | "copy tooltip"
+    | "service password helper text"
+    | "not yet defined"
+    | "reset helper dialogs helper text"
+    | "reset"
+>()({ AccountField });
 
 const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField } })(
     (theme, { isFlashing }) => ({

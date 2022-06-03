@@ -1,5 +1,5 @@
 import { useEffect, useReducer, memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useSelector, useThunks } from "ui/coreApi";
@@ -10,6 +10,7 @@ import Link from "@mui/material/Link";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles } from "ui/theme";
 import { useAsync } from "react-async-hook";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -119,18 +120,16 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 });
 
-export declare namespace AccountInfoTab {
-    export type I18nScheme = {
-        "general information": undefined;
-        "user id": undefined;
-        "full name": undefined;
-        "email": undefined;
-        "change account info": undefined;
-        "auth information": undefined;
-        "auth information helper": undefined;
-        "ip address": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "general information"
+    | "user id"
+    | "full name"
+    | "email"
+    | "change account info"
+    | "auth information"
+    | "auth information helper"
+    | "ip address"
+>()({ AccountInfoTab });
 
 const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
     "divider": {

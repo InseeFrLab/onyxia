@@ -3,10 +3,10 @@ import { useMemo, useEffect, memo } from "react";
 import { Header } from "ui/components/shared/Header";
 import { LeftBar } from "ui/theme";
 import { Footer } from "./Footer";
-import { useLng } from "ui/i18n/useLng";
+import { useLang } from "ui/i18n";
 import { getTosMarkdownUrl } from "ui/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation, languages, useResolveLocalizedString } from "ui/i18n";
 import { useSelector, useThunks } from "ui/coreApi";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
@@ -19,8 +19,7 @@ import { FourOhFour } from "ui/components/pages/FourOhFour";
 import { Catalog } from "ui/components/pages/Catalog";
 import { MyServices } from "ui/components/pages/MyServices";
 import { typeGuard } from "tsafe/typeGuard";
-import type { Language } from "ui/i18n/useLng";
-import { languages } from "ui/i18n/useLng";
+import type { Language } from "ui/i18n";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
@@ -31,9 +30,9 @@ import {
     CloudShell,
     useIsCloudShellVisible,
 } from "js/components/cloud-shell/cloud-shell";
-import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
+import { declareComponentKeys } from "i18nifty";
 
 export const logoContainerWidthInPercent = 4;
 
@@ -102,14 +101,14 @@ export const App = memo((props: Props) => {
     );
 
     const { tosUrl } = (function useClosure() {
-        const { lng } = useLng();
-        const tosUrl = getTosMarkdownUrl(lng);
+        const { lang } = useLang();
+        const tosUrl = getTosMarkdownUrl(lang);
         return { tosUrl };
     })();
 
     const projectsSlice = useProjectsSlice();
 
-    const { lng } = useLng();
+    const { lang } = useLang();
 
     const { resolveLocalizedString } = useResolveLocalizedString();
 
@@ -202,7 +201,7 @@ export const App = memo((props: Props) => {
                     } as const;
                 })(),
             } as const),
-        [t, lng, isDevModeEnabled],
+        [t, lang, isDevModeEnabled],
     );
 
     return (
@@ -275,18 +274,9 @@ export const App = memo((props: Props) => {
     );
 });
 
-export declare namespace App {
-    export type I18nScheme = Record<
-        | "reduce"
-        | "home"
-        | "account"
-        | "catalog"
-        | "myServices"
-        | "mySecrets"
-        | "myFiles",
-        undefined
-    >;
-}
+export const { i18n } = declareComponentKeys<
+    "reduce" | "home" | "account" | "catalog" | "myServices" | "mySecrets" | "myFiles"
+>()({ App });
 
 const useStyles = makeStyles({ "name": { App } })(theme => {
     const footerHeight = 32;
@@ -470,7 +460,7 @@ function useApplyLanguageSelectedAtLogin() {
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
-    const { setLng } = useLng();
+    const { setLang } = useLang();
 
     useEffect(() => {
         if (!isUserLoggedIn) {
@@ -488,7 +478,7 @@ function useApplyLanguageSelectedAtLogin() {
             return;
         }
 
-        setLng(locale);
+        setLang(locale);
     }, []);
 }
 

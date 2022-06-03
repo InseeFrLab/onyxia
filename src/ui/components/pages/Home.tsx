@@ -5,7 +5,7 @@ import { routes } from "ui/routes";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { useThunks } from "ui/coreApi";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { ReactComponent as IconCommunitySvg } from "ui/assets/svg/IconCommunity.svg";
 import { ReactComponent as IconServiceSvg } from "ui/assets/svg/IconService.svg";
 import { ReactComponent as IconStorageSvg } from "ui/assets/svg/IconStorage.svg";
@@ -17,6 +17,7 @@ import homeIllustrationImgUrl from "ui/assets/img/homeIllustration.png";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -101,24 +102,22 @@ export function Home(props: Props) {
     );
 }
 
-export declare namespace Home {
-    export type I18nScheme = {
-        welcome: { who: string };
-        login: undefined;
-        "new user": undefined;
-        title: undefined;
-        subtitle: undefined;
-        cardTitle1: undefined;
-        cardTitle2: undefined;
-        cardTitle3: undefined;
-        cardText1: undefined;
-        cardText2: undefined;
-        cardText3: undefined;
-        cardButton1: undefined;
-        cardButton2: undefined;
-        cardButton3: undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | ["welcome", { who: string }]
+    | "login"
+    | "new user"
+    | "title"
+    | "subtitle"
+    | "cardTitle1"
+    | "cardTitle2"
+    | "cardTitle3"
+    | "cardText1"
+    | "cardText2"
+    | "cardText3"
+    | "cardButton1"
+    | "cardButton2"
+    | "cardButton3"
+>()({ Home });
 
 const useStyles = makeStyles({ "name": { Home } })(theme => ({
     "root": {

@@ -2,8 +2,9 @@ import { memo } from "react";
 import { makeStyles, Text } from "ui/theme";
 import { RoundLogo } from "ui/components/shared/RoundLogo";
 import { Button } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -63,12 +64,9 @@ export const CatalogExplorerCard = memo((props: Props) => {
     );
 });
 
-export declare namespace CatalogExplorerCard {
-    export type I18nScheme = {
-        "learn more": undefined;
-        launch: undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"learn more" | "launch">()({
+    CatalogExplorerCard,
+});
 
 const useStyles = makeStyles<void, "learnMoreButton">({
     "name": { CatalogExplorerCard },

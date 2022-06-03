@@ -2,7 +2,7 @@ import { useState, useMemo, useReducer, useRef, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { makeStyles, Text } from "ui/theme";
 import { smartTrim } from "ui/tools/smartTrim";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { ReactComponent as ServiceNotFoundSvg } from "ui/assets/svg/ServiceNotFound.svg";
 import MuiLink from "@mui/material/Link";
@@ -18,6 +18,7 @@ import { useEvt } from "evt/hooks";
 import * as clipboard from "clipboard-polyfill/text";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -252,19 +253,17 @@ export const MyServicesCards = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesCards {
-    export type I18nScheme = {
-        "running services": undefined;
-        "no services running": undefined;
-        "launch one": undefined;
-        ok: undefined;
-        "need to copy": undefined;
-        "everything have been printed to the console": undefined;
-        "first copy the password": undefined;
-        "open the service": undefined;
-        "return": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "running services"
+    | "no services running"
+    | "launch one"
+    | "ok"
+    | "need to copy"
+    | "everything have been printed to the console"
+    | "first copy the password"
+    | "open the service"
+    | "return"
+>()({ MyServicesCards });
 
 const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
     "name": { MyServicesCards },

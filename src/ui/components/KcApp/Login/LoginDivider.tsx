@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { makeStyles, Text } from "ui/theme";
-
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -27,11 +27,9 @@ export const LoginDivider = memo((props: Props) => {
     );
 });
 
-export declare namespace LoginDivider {
-    export type I18nScheme = {
-        or: undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"or">()({
+    LoginDivider,
+});
 
 const useStyles = makeStyles({ "name": { LoginDivider } })(theme => ({
     "root": {

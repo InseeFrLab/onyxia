@@ -16,9 +16,10 @@ import { useEvt } from "evt/hooks";
 import { Evt } from "evt";
 import { LoginDivider } from "./LoginDivider";
 import { AgentConnectButton } from "./AgentConnectButton";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import type { KcContext } from "../kcContext";
 import { useStateRef } from "powerhooks/useStateRef";
+import { declareComponentKeys } from "i18nifty";
 
 type KcContext_Login = Extract<KcContext, { pageId: "login.ftl" }>;
 
@@ -297,11 +298,7 @@ export const Login = memo(
     },
 );
 
-export declare namespace Login {
-    export type I18nScheme = {
-        "doRegister": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"doRegister">()({ Login });
 
 const useStyles = makeStyles({ "name": { Login } })(theme => ({
     "root": {

@@ -6,13 +6,14 @@ import { createGroup } from "type-route";
 import { routes } from "ui/routes";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
+import { declareComponentKeys } from "i18nifty";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -72,14 +73,9 @@ export function Account(props: Props) {
     );
 }
 
-export declare namespace Account {
-    export type I18nScheme = Record<AccountTabId, undefined> & {
-        text1: undefined;
-        text2: undefined;
-        text3: undefined;
-        "personal tokens tooltip": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"
+>()({ Account });
 
 const useStyles = makeStyles({ "name": { Account } })(theme => ({
     "root": {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useReducer } from "react";
 import { makeStyles, PageHeader } from "ui/theme";
 
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
@@ -22,6 +22,7 @@ import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
+import { declareComponentKeys } from "i18nifty";
 
 MyServices.routeGroup = createGroup([routes.myServices]);
 
@@ -347,20 +348,18 @@ export function MyServices(props: Props) {
     );
 }
 
-export declare namespace MyServices {
-    export type I18nScheme = {
-        text1: undefined;
-        text2: undefined;
-        text3: undefined;
-        "running services": undefined;
-        "confirm delete title": undefined;
-        "confirm delete subtitle": undefined;
-        "confirm delete body": undefined;
-        "confirm delete body shared services": undefined;
-        cancel: undefined;
-        confirm: undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "text1"
+    | "text2"
+    | "text3"
+    | "running services"
+    | "confirm delete title"
+    | "confirm delete subtitle"
+    | "confirm delete body"
+    | "confirm delete body shared services"
+    | "cancel"
+    | "confirm"
+>()({ MyServices });
 
 const useStyles = makeStyles<{
     isSavedConfigsExtended: boolean;

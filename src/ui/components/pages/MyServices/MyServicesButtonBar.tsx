@@ -1,8 +1,9 @@
 import { memo, useMemo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { ButtonBar } from "ui/theme";
 import type { IconId } from "ui/theme";
 import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
+import { declareComponentKeys } from "i18nifty";
 
 const buttonIds = ["refresh", "launch", "password", "trash"] as const;
 
@@ -57,8 +58,6 @@ export const MyServicesButtonBar = memo((props: Props) => {
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
 });
 
-export declare namespace MyServicesButtonBar {
-    export type I18nScheme = Record<ButtonId, undefined> & {
-        "trash my own": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    "refresh" | "launch" | "password" | "trash" | "trash my own"
+>()({ MyServicesButtonBar });

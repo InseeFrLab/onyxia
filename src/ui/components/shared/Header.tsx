@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "ui/theme";
 import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
@@ -12,7 +12,8 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { getHeaderLinksFromEnv } from "ui/env";
 import { getDoHideOnyxia } from "ui/env";
-import { useResolveLocalizedString } from "ui/i18n/useResolveLocalizedString";
+import { useResolveLocalizedString } from "ui/i18n";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = Props.LoginPages | Props.UserNotLoggedIn | Props.UserLoggedIn;
 export declare namespace Props {
@@ -132,15 +133,9 @@ export const Header = memo((props: Props) => {
     );
 });
 
-export declare namespace Header {
-    export type I18nScheme = {
-        logout: undefined;
-        login: undefined;
-        project: undefined;
-        trainings: undefined;
-        documentation: undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<
+    "logout" | "login" | "project" | "trainings" | "documentation"
+>()({ Header });
 
 const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header } })(
     (theme, { logoContainerWidth }) => ({

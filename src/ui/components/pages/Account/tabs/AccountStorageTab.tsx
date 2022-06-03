@@ -1,5 +1,5 @@
 import { useMemo, memo } from "react";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -10,9 +10,10 @@ import exportMinio from "js/components/mon-compte/export-credentials-minio";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
-import { useValidUntil } from "ui/i18n/useMoment";
+import { useValidUntil } from "ui/useMoment";
 import { useAsync } from "react-async-hook";
 import { useThunks, useSelector } from "ui/coreApi";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
@@ -144,16 +145,14 @@ export const AccountStorageTab = memo((props: Props) => {
     );
 });
 
-export declare namespace AccountStorageTab {
-    export type I18nScheme = {
-        "credentials section title": undefined;
-        "credentials section helper": undefined;
-        "accessible as env": undefined;
-        "init script section title": undefined;
-        "init script section helper": undefined;
-        "valid until": { when: string };
-    };
-}
+export const { i18n } = declareComponentKeys<
+    | "credentials section title"
+    | "credentials section helper"
+    | "accessible as env"
+    | "init script section title"
+    | "init script section helper"
+    | ["valid until", { when: string }]
+>()({ AccountStorageTab });
 
 const useStyles = makeStyles({ "name": { AccountStorageTab } })(theme => ({
     "divider": {

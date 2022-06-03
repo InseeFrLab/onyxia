@@ -1,5 +1,4 @@
 import * as reactDom from "react-dom";
-import { I18nProvider } from "./i18n/I18nProvider";
 import { RouteProvider } from "./routes";
 import { CoreProvider } from "ui/coreApi/CoreProvider";
 import { ThemeProvider, splashScreen, createGetViewPortConfig } from "./theme";
@@ -11,23 +10,19 @@ import "./envCarriedOverToKc";
 const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
 
 reactDom.render(
-    <I18nProvider>
-        <RouteProvider>
-            <ThemeProvider
-                getViewPortConfig={
-                    kcContext !== undefined ? undefined : getViewPortConfig
-                }
-                splashScreen={splashScreen}
-            >
-                {kcContext !== undefined ? (
-                    <KcApp kcContext={kcContext} />
-                ) : (
-                    <CoreProvider>
-                        <App />
-                    </CoreProvider>
-                )}
-            </ThemeProvider>
-        </RouteProvider>
-    </I18nProvider>,
+    <RouteProvider>
+        <ThemeProvider
+            getViewPortConfig={kcContext !== undefined ? undefined : getViewPortConfig}
+            splashScreen={splashScreen}
+        >
+            {kcContext !== undefined ? (
+                <KcApp kcContext={kcContext} />
+            ) : (
+                <CoreProvider>
+                    <App />
+                </CoreProvider>
+            )}
+        </ThemeProvider>
+    </RouteProvider>,
     document.getElementById("root"),
 );

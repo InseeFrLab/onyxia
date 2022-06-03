@@ -5,7 +5,7 @@ import { TextField } from "onyxia-ui/TextField";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import { IconButton, Text, makeStyles } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -14,6 +14,7 @@ import TableCell from "@mui/material/TableCell";
 import type { Parameters } from "tsafe";
 import { useDomRect } from "onyxia-ui";
 import type { Param0 } from "tsafe";
+import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     isLocked: boolean;
@@ -340,12 +341,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 });
 
-export declare namespace MySecretsEditorRow {
-    export type I18nScheme = {
-        "key input desc": undefined;
-        "value input desc": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"key input desc" | "value input desc">()({
+    MySecretsEditorRow,
+});
 
 const useStyles = makeStyles<Props & { isInEditingState: boolean }>({
     "name": { MySecretsEditorRow },

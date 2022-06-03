@@ -9,7 +9,7 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { Evt } from "evt";
 import { useRerenderOnStateChange } from "evt/hooks";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { evtLng } from "ui/i18n/useLng";
+import { evtLang } from "ui/i18n";
 
 type Props = {
     children: ReactNode;
@@ -40,7 +40,7 @@ export function CoreProvider(props: Props) {
                                 addParamToUrl({
                                     url,
                                     "name": "ui_locales",
-                                    "value": evtLng.state,
+                                    "value": evtLang.state,
                                 }).newUrl,
                         )[0],
                 "evtUserActivity": Evt.merge([

@@ -1,13 +1,13 @@
 import { memo } from "react";
 import { makeStyles } from "ui/theme";
-
 import { MyServicesSavedConfig } from "./MyServicesSavedConfig";
 import type { Props as MyServicesSavedConfigProps } from "./MyServicesSavedConfig";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { useTranslation } from "ui/i18n/useTranslations";
+import { useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 import type { Param0 } from "tsafe";
+import { declareComponentKeys } from "i18nifty";
 
 const maxConfigCountInShortVariant = 5;
 
@@ -84,12 +84,9 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesSavedConfigs {
-    export type I18nScheme = {
-        saved: undefined;
-        "show all": undefined;
-    };
-}
+export const { i18n } = declareComponentKeys<"saved" | "show all">()({
+    MyServicesSavedConfigs,
+});
 
 const useStyles = makeStyles({ "name": { MyServicesSavedConfigs } })(theme => ({
     "root": {
