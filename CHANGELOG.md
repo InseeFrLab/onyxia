@@ -1,3 +1,11 @@
+### **0.55.9** (2022-06-03)  
+  
+- Merge pull request #305 from thieryw/william_branch
+
+Update Onyxia-ui and fix account field text bug  
+- AccountField: fix middle cell text  
+- update onyxia-ui    
+  
 ### **0.55.8** (2022-06-03)  
   
 - Migrate to i18nifty    
