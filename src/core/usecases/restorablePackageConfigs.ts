@@ -299,27 +299,32 @@ export const selectors = (() => {
         const { restorablePackageConfigs, packageIcons } =
             rootState.restorablePackageConfig;
 
-        return restorablePackageConfigs.map(restorablePackageConfig => {
-            const { packageName, catalogId } = restorablePackageConfig;
+        return restorablePackageConfigs
+            .map(restorablePackageConfig => {
+                const { packageName, catalogId } = restorablePackageConfig;
 
-            return {
-                "logoUrl": !packageIcons.areFetched
-                    ? undefined
-                    : packageIcons.iconsUrl[catalogId][packageName],
-                "friendlyName": (() => {
-                    const friendlyName =
-                        restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
-                            ({ path }) =>
-                                same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
-                        )?.value ?? packageName;
+                return {
+                    "logoUrl": !packageIcons.areFetched
+                        ? undefined
+                        : packageIcons.iconsUrl[catalogId][packageName],
+                    "friendlyName": (() => {
+                        const friendlyName =
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
+                                ({ path }) =>
+                                    same(
+                                        path,
+                                        onyxiaFriendlyNameFormFieldPath.split("."),
+                                    ),
+                            )?.value ?? packageName;
 
-                    assert(typeof friendlyName === "string");
+                        assert(typeof friendlyName === "string");
 
-                    return friendlyName;
-                })(),
-                restorablePackageConfig,
-            };
-        });
+                        return friendlyName;
+                    })(),
+                    restorablePackageConfig,
+                };
+            })
+            .reverse();
     }
 
     return { displayableConfigs };
