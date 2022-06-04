@@ -404,17 +404,32 @@ export const AccountField = memo(
                                 case "toggle":
                                     return null;
                                 case "service password":
-                                    return <TextWd>{props.servicePassword}</TextWd>;
+                                    return (
+                                        <TextWd className={classes.cellMiddleText}>
+                                            {props.servicePassword}
+                                        </TextWd>
+                                    );
                                 case "text":
-                                    return <TextWd>{props.text}</TextWd>;
+                                    return (
+                                        <TextWd className={classes.cellMiddleText}>
+                                            {props.text}
+                                        </TextWd>
+                                    );
                                 case "editable text":
                                     return !isInEditingState ? (
                                         props.text === undefined ? (
-                                            <TextWd className={classes.noText}>
+                                            <TextWd
+                                                className={cx(
+                                                    classes.noText,
+                                                    classes.cellMiddleText,
+                                                )}
+                                            >
                                                 {t("not yet defined")}
                                             </TextWd>
                                         ) : (
-                                            <TextWd>{props.text}</TextWd>
+                                            <TextWd className={classes.cellMiddleText}>
+                                                {props.text}
+                                            </TextWd>
                                         )
                                     ) : (
                                         <TextField
@@ -570,18 +585,16 @@ const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField }
         "cellMiddle": {
             "flex": 1,
             "overflow": "hidden",
-            "& .MuiTypography-root": {
-                "overflow": "hidden",
-                "whiteSpace": "nowrap",
-                "textOverflow": "ellipsis",
-                "color": !isFlashing
-                    ? undefined
-                    : theme.colors.useCases.buttons.actionActive,
-            },
             "& .MuiTextField-root": {
                 "width": "100%",
                 "top": 2,
             },
+        },
+        "cellMiddleText": {
+            "overflow": "hidden",
+            "whiteSpace": "nowrap",
+            "textOverflow": "ellipsis",
+            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive,
         },
         "cellActions": {
             "marginRight": theme.spacing(2),
