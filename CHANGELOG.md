@@ -1,3 +1,7 @@
+### **0.55.10** (2022-06-04)  
+  
+- Reverse order of restorable package config    
+  
 ### **0.55.9** (2022-06-03)  
   
 - Merge pull request #305 from thieryw/william_branch
