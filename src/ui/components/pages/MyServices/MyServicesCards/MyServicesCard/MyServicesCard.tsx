@@ -286,8 +286,8 @@ export const { i18n } = declareComponentKeys<
     | "open"
     | "readme"
     | "shared by you"
-    | ["which token expire when", { which: "vault" | "s3"; howMuchTime: string }]
-    | ["which token expired", { which: "vault" | "s3" }]
+    | { K: "which token expire when"; P: { which: "vault" | "s3"; howMuchTime: string } }
+    | { K: "which token expired"; P: { which: "vault" | "s3" } }
     | "reminder to delete services"
     | "this is a shared service"
 >()({ MyServicesCard });

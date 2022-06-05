@@ -390,7 +390,7 @@ export const RegisterUserProfile = memo(
 
 export const { i18n } = declareComponentKeys<
     | "allowed email domains"
-    | ["minimum length", { n: number }]
+    | { K: "minimum length"; P: { n: number } }
     | "must be different from username"
     | "password mismatch"
     | "go back"

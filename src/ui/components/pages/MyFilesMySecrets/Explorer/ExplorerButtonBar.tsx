@@ -111,7 +111,7 @@ export const { i18n } = declareComponentKeys<
     | "secret"
     | "file"
     //TODO: Remove
-    | ["create what", { what: string }]
+    | { K: "create what"; P: { what: string } }
 >()({ ExplorerButtonBar });
 
 const buttonIds = [

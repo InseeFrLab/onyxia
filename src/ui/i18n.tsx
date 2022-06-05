@@ -118,7 +118,7 @@ export const {
     | typeof import("ui/components/pages/MyFilesMySecrets/MyFilesMySecrets").i18n
     | typeof import("ui/components/KcApp/Login").i18n
 >()(
-    { languages, fallbackLanguage, "doPersistLanguageInLocalStorage": true },
+    { languages, fallbackLanguage },
     {
         "en": {
             "Account": {

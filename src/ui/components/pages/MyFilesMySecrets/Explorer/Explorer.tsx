@@ -568,14 +568,14 @@ export const Explorer = memo((props: ExplorerProps) => {
 });
 
 export const { i18n } = declareComponentKeys<
-    | ["untitled what", { what: string }]
+    | { K: "untitled what"; P: { what: string } }
     | "directory"
     | "file"
     | "secret"
     | "cancel"
     | "delete"
-    | ["deletion dialog title", { deleteWhat: string }]
-    | ["deletion dialog body", { deleteWhat: string }]
+    | { K: "deletion dialog title"; P: { deleteWhat: string } }
+    | { K: "deletion dialog body"; P: { deleteWhat: string } }
     | "do not display again"
     | "already a directory with this name"
     | "can't be empty"

@@ -160,8 +160,8 @@ export const { i18n } = declareComponentKeys<
     | "gitEmail"
     | "third party tokens section title"
     | "third party tokens section helper"
-    | ["personal token", { serviceName: string }]
-    | ["link for token creation", { serviceName: string }]
+    | { K: "personal token"; P: { serviceName: string } }
+    | { K: "link for token creation"; P: { serviceName: string } }
     | "accessible as env"
 >()({ AccountIntegrationsTab });
 
