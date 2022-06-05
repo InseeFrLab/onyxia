@@ -127,10 +127,10 @@ export const CatalogLauncherConfigurationCard = memo(
 
 export const { i18n } = declareComponentKeys<
     | "global config"
-    | ["configuration", { packageName: string }]
-    | ["dependency", { dependencyName: string }]
-    | ["launch of a service", { dependencyName: string }]
-    | ["mismatching pattern", { pattern: string }]
+    | { K: "configuration"; P: { packageName: string } }
+    | { K: "dependency"; P: { dependencyName: string } }
+    | { K: "launch of a service"; P: { dependencyName: string } }
+    | { K: "mismatching pattern"; P: { pattern: string } }
     | "Invalid YAML Object"
     | "Invalid YAML Array"
 >()({ CatalogLauncherConfigurationCard });

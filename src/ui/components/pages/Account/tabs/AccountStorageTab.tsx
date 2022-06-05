@@ -151,7 +151,7 @@ export const { i18n } = declareComponentKeys<
     | "accessible as env"
     | "init script section title"
     | "init script section helper"
-    | ["valid until", { when: string }]
+    | { K: "valid until"; P: { when: string } }
 >()({ AccountStorageTab });
 
 const useStyles = makeStyles({ "name": { AccountStorageTab } })(theme => ({

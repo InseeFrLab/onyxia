@@ -103,7 +103,7 @@ export function Home(props: Props) {
 }
 
 export const { i18n } = declareComponentKeys<
-    | ["welcome", { who: string }]
+    | { K: "welcome"; P: { who: string } }
     | "login"
     | "new user"
     | "title"

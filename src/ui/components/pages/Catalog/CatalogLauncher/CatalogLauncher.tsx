@@ -332,7 +332,7 @@ export const { i18n } = declareComponentKeys<
     | "no longer bookmarked dialog body"
     | "ok"
     | "should overwrite configuration dialog title"
-    | ["should overwrite configuration dialog subtitle", { friendlyName: string }]
+    | { K: "should overwrite configuration dialog subtitle"; P: { friendlyName: string } }
     | "should overwrite configuration dialog body"
     | "cancel"
     | "replace"

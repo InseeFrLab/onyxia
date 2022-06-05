@@ -128,8 +128,8 @@ export function Catalog(props: Props) {
 export const { i18n } = declareComponentKeys<
     | "header text1"
     | "header text2"
-    | ["contribute to the catalog", { catalogName: string }]
-    | ["contribute to the package", { packageName: string }]
+    | { K: "contribute to the catalog"; P: { catalogName: string } }
+    | { K: "contribute to the package"; P: { packageName: string } }
     | "here"
 >()({ Catalog });
 

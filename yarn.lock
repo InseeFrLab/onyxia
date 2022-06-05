@@ -8880,13 +8880,13 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-0.4.1.tgz#85aa68d52ed7d22daf740a9c28f1ffdd08352d42"
-  integrity sha512-nyRZQAyfk7XRgMTk418Kk96QlAPuUzLQFf5FLZzuigq2re00gl7zUTyClV7EnIcYH/BknmrqEBg0B874KgyOVg==
+i18nifty@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.0.1.tgz#ff36e97e7e03d43ff92890b6db820321d04cfcc2"
+  integrity sha512-6uJlFRMN7g6aqNqcCNh9/qeEhxziLI43E0k6m6gbL/bapzgn/NBY4/eEnuu5Q+5V+fp0SXjKNTgat5KYdIipcQ==
   dependencies:
     evt "2.0.0-beta.44"
-    powerhooks "^0.17.2"
+    powerhooks "^0.19.0"
     tsafe "^0.10.0"
 
 iconv-lite@0.4.24:
@@ -11750,10 +11750,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.41.1:
-  version "0.41.1"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.41.1.tgz#953d35b121ef4ba8fee00e8a86a850d772c864fe"
-  integrity sha512-SOK6zNKjFsFeZnqNOhjvA6Lk6YaAySaRFjSupmvEQamLXkeZj/KCVJF78q1SLY5EetAe6aBXPg9LBdHP2e0HvA==
+onyxia-ui@^0.41.2:
+  version "0.41.2"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.41.2.tgz#99aeef38c3e2fe4f1993571d04b4b0b399156323"
+  integrity sha512-y1vDRZ/V4I0DL/obh2TjqA7uQ/Lh6cnUIU2lCIlScffu4QOiQAoJSSz2HzpyN3Hf8+G1MogkNm7j00ACcaRIxQ==
   dependencies:
     "@mui/icons-material" "^5.8.2"
     color "3.1.3"
@@ -11761,7 +11761,7 @@ onyxia-ui@^0.41.1:
     material-design-icons "^3.0.1"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
-    powerhooks "^0.17.2"
+    powerhooks "^0.19.0"
     run-exclusive "^2.2.14"
     tsafe "^0.10.0"
     tss-react "^3.7.0"
@@ -13015,10 +13015,10 @@ postcss@^8.1.0:
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
 
-powerhooks@0.17.2, powerhooks@^0.17.2:
-  version "0.17.2"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.17.2.tgz#262f86027ddbf7aa5b9ba5cbd262855b20453d9b"
-  integrity sha512-xArS3mnJedaCHotBpR/8JcmI8ucNEG3/aG6BgEQZkwVZ+EE3P+jRqGrRPCY3lXIggMjHX4YgckaZCarWJwxXRA==
+powerhooks@0.19.0, powerhooks@^0.17.2, powerhooks@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.19.0.tgz#2c3283e62539d47c1baaad06ca53ebb2874c5f8f"
+  integrity sha512-K/zJCvYIZhqGJK964yTOdqDomUDAGTWhCGRCcSN4M46Xqss9ZJxq8k0j/EEW9rMYad14+EZqnknENkg+94V7jw==
   dependencies:
     evt "2.0.0-beta.44"
     memoizee "^0.4.15"
