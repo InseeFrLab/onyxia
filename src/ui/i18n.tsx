@@ -405,7 +405,7 @@ export const {
             "CatalogLauncherConfigurationCard": {
                 "global config": "Global configuration",
                 "configuration": ({ packageName }) => `${packageName} configurations`,
-                "dependency": ({ dependencyName }) => `${dependencyName}} dependency`,
+                "dependency": ({ dependencyName }) => `${dependencyName} dependency`,
                 "launch of a service": ({ dependencyName }) =>
                     `A ${dependencyName} service will be launched`,
                 "mismatching pattern": ({ pattern }) => `Should match ${pattern}`,
