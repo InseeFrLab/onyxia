@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "0.55.14",
+    "version": "0.55.15",
     "license": "MIT",
     "devDependencies": {
         "@storybook/addon-actions": "^6.1.11",
