@@ -79,7 +79,10 @@ export function createOfficialOnyxiaApiClient(params: {
 
             axiosInstance.interceptors.response.use(
                 res => {
-                    if (res.headers["content-type"] !== "application/json") {
+                    if (
+                        `${res.status}`[0] === "2" &&
+                        res.headers["content-type"] !== "application/json"
+                    ) {
                         alert(errorMessage);
                         throw new Error(errorMessage);
                     }
