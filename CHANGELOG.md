@@ -1,3 +1,12 @@
+### **0.55.13** (2022-06-06)  
+  
+- Add missing content type for Gzip    
+  
+### **0.55.12** (2022-06-05)  
+  
+- update i18nifty  
+- enable gzip    
+  
 ### **0.55.11** (2022-06-05)  
   
   
