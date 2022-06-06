@@ -49,7 +49,7 @@ export function createOfficialOnyxiaApiClient(params: {
     } = params;
 
     const { axiosInstance } = (() => {
-        const axiosInstance = axios.create({ "baseURL": url });
+        const axiosInstance = axios.create({ "baseURL": url, "timeout": 10_000 });
 
         if (getOidcAccessToken !== undefined) {
             axiosInstance.interceptors.request.use(
