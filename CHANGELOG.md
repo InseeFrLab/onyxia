@@ -1,3 +1,9 @@
+### **0.55.14** (2022-06-06)  
+  
+- 2min timeout for REST request  
+- Fix wrongfully displayed message 'There isn't an onyxia-api hosted at...'  
+- REST API timeout 10s    
+  
 ### **0.55.13** (2022-06-06)  
   
 - Add missing content type for Gzip    
