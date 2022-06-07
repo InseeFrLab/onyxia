@@ -65,7 +65,7 @@
         "jsoneditor-react": "^3.0.0",
         "jwt-decode": "^2.2.0",
         "jwt-simple": "^0.5.6",
-        "keycloak-js": "^15.0.2",
+        "keycloak-js": "^18.0.0",
         "keycloakify": "^5.4.4",
         "leaflet": "^1.6.0",
         "memoizee": "^0.4.14",
