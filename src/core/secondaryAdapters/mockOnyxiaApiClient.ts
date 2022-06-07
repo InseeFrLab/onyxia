@@ -33,6 +33,7 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "s3": undefined,
 
                         "allowedURIPatternForUserDefinedInitScript": "^https://",
+                        "kafka": undefined,
                     },
                 ]),
             { "promise": true },

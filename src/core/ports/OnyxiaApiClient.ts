@@ -77,6 +77,12 @@ export type DeploymentRegion = {
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
+    kafka:
+        | {
+              url: string;
+              topicName: string;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -169,6 +175,12 @@ export type MustacheParams = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
         allowedURIPattern: string;
+        kafka:
+            | {
+                  url: string;
+                  topicName: string;
+              }
+            | undefined;
     };
     k8s: {
         domain: string;
