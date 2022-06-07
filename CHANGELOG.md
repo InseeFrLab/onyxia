@@ -1,3 +1,7 @@
+### **0.55.17** (2022-06-07)  
+  
+- Inject kafka params in Mustach    
+  
 ### **0.55.16** (2022-06-07)  
   
 - Upgrade keycloak-js    
