@@ -1231,6 +1231,7 @@ export const thunks = {
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
                     "allowedURIPattern":
                         selectedDeploymentRegion.allowedURIPatternForUserDefinedInitScript,
+                    "kafka": selectedDeploymentRegion.kafka,
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,

@@ -137,6 +137,10 @@ export function createOfficialOnyxiaApiClient(params: {
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
                                 networkPolicy?: boolean;
+                                kafka?: {
+                                    URL: string;
+                                    topicName: string;
+                                };
                             };
                             monitoring?: {
                                 URLPattern?: string;
@@ -226,6 +230,16 @@ export function createOfficialOnyxiaApiClient(params: {
                         })(),
                         "allowedURIPatternForUserDefinedInitScript":
                             region.services.allowedURIPattern,
+                        "kafka": (() => {
+                            const { kafka } = region.services.defaultConfiguration ?? {};
+
+                            if (kafka === undefined) {
+                                return undefined;
+                            }
+                            const { URL, topicName } = kafka;
+
+                            return { "url": URL, topicName };
+                        })(),
                     })),
                 ),
         ),
