@@ -1,3 +1,8 @@
+## **0.56.0** (2022-06-16)  
+  
+- Replace legacy s3 explorateur by the new one, the old one is still accecible in dev mode  
+- Correct minio command    
+  
 ### **0.55.17** (2022-06-07)  
   
 - Inject kafka params in Mustach    
