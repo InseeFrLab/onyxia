@@ -405,7 +405,7 @@ export class MyFiles extends React.Component<Props, State> {
                                 <Ligne
                                     key={i}
                                     linkProps={
-                                        routes.myFiles({
+                                        routes.myFilesLegacy({
                                             bucketName,
                                             "fileOrDirectoryPath": d.prefix,
                                         }).link
@@ -418,7 +418,7 @@ export class MyFiles extends React.Component<Props, State> {
                                 <Ligne
                                     key={i}
                                     linkProps={
-                                        routes.myFiles({
+                                        routes.myFilesLegacy({
                                             bucketName,
                                             "fileOrDirectoryPath": name,
                                         }).link

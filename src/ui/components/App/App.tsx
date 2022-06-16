@@ -157,7 +157,7 @@ export const App = memo((props: Props) => {
                           "myFiles": {
                               "iconId": "files",
                               "label": t("myFiles"),
-                              "link": routes.myBuckets().link,
+                              "link": routes.myFiles().link,
                               //TODO: This usage of getEnv should be removed as soon as we have the new explorer
                               //we should get the info "is file enabled" from the core.
                               "hasDividerBelow": true,
@@ -188,10 +188,10 @@ export const App = memo((props: Props) => {
                     }
 
                     return {
-                        "myFilesDev": {
+                        "myFilesLegacy": {
                             "iconId": "files",
-                            "label": t("myFiles") + " dev",
-                            "link": routes.myFilesDev().link,
+                            "label": t("myFiles") + " Legacy",
+                            "link": routes.myBuckets().link,
                             "availability": explorersThunks.getIsEnabled({
                                 "explorerType": "s3",
                             })
@@ -541,7 +541,7 @@ function useProjectsSlice() {
                     case "home":
                     case "account":
                     case "myServices":
-                    case "myFilesDev":
+                    case "myFilesLegacy":
                     case "mySecrets":
                         return undefined;
                     default:

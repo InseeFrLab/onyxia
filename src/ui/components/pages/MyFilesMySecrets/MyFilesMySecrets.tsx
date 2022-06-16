@@ -20,7 +20,7 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 
-MyFilesMySecrets.routeGroup = createGroup([routes.myFilesDev, routes.mySecrets]);
+MyFilesMySecrets.routeGroup = createGroup([routes.myFiles, routes.mySecrets]);
 
 type PageRoute = Route<typeof MyFilesMySecrets.routeGroup>;
 
@@ -38,7 +38,7 @@ export function MyFilesMySecrets(props: Props) {
 
     const explorerType = useMemo(() => {
         switch (route.name) {
-            case "myFilesDev":
+            case "myFiles":
                 return "s3";
             case "mySecrets":
                 return "secrets";

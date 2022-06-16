@@ -82,7 +82,7 @@ const Bucket = ({
     return (
         <>
             <Paper className="onyxia-toolbar actions" elevation={5}>
-                <a {...routes.myFiles({ "bucketName": id }).link}>
+                <a {...routes.myFilesLegacy({ "bucketName": id }).link}>
                     <h4>{id}</h4>
                     <h5>{description}</h5>
                 </a>
