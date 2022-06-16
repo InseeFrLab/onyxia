@@ -121,11 +121,11 @@ export const fil: any = {
                 "component": <span>mes fichiers</span>,
             },
             {
-                anchorProps: routes.myFiles({ bucketName }).link,
+                anchorProps: routes.myFilesLegacy({ bucketName }).link,
                 component: <span>{bucketName}</span>,
             },
             ...paths.map(({ label, path }: { label: any; path: any }) => ({
-                "anchorProps": routes.myFiles({
+                "anchorProps": routes.myFilesLegacy({
                     bucketName,
                     "fileOrDirectoryPath": path,
                 }).link,

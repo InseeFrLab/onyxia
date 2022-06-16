@@ -12,7 +12,7 @@ import { useLocation } from "js/utils/reactRouterPolyfills";
 import type { Route } from "type-route";
 import { useDispatch } from "js/hooks";
 
-NavigationFile.routeGroup = createGroup([routes.myFiles]);
+NavigationFile.routeGroup = createGroup([routes.myFilesLegacy]);
 
 NavigationFile.getDoRequireUserLoggedIn = true;
 

@@ -238,9 +238,9 @@ const getLinkToParentPath = (bucketName: string, fileName: string) => {
     const tmp = fileName.split("/");
     if (tmp.length > 1) {
         const last = fileName.replace(`/${tmp[tmp.length - 1]}`, "");
-        return routes.myFiles({ bucketName, "fileOrDirectoryPath": last }).link;
+        return routes.myFilesLegacy({ bucketName, "fileOrDirectoryPath": last }).link;
     } else {
-        return routes.myFiles({ bucketName }).link;
+        return routes.myFilesLegacy({ bucketName }).link;
     }
 };
 

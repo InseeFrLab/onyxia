@@ -70,7 +70,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
 
         return {
             "mySecrets": buildExplorerRoute("my-secrets"),
-            "myFilesDev": buildExplorerRoute("my-files-dev"),
+            "myFiles": buildExplorerRoute("my-files"),
         };
     })(),
     //TODO: legacy
@@ -79,7 +79,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
 
         return {
             myBuckets,
-            "myFiles": myBuckets.extend(
+            "myFilesLegacy": myBuckets.extend(
                 {
                     "bucketName": param.path.string,
                     "fileOrDirectoryPath": param.path.trailing.optional.string,
