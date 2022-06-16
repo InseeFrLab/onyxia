@@ -541,7 +541,7 @@ function useProjectsSlice() {
                     case "home":
                     case "account":
                     case "myServices":
-                    case "myFilesLegacy":
+                    case "myFiles":
                     case "mySecrets":
                         return undefined;
                     default:
