@@ -434,7 +434,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
     "methods": {
         //TODO, this is dummy
         "list": {
-            "buildCmd": ({ path }) => `mc list s3${pathJoin(path)}`,
+            "buildCmd": ({ path }) => `mc ls s3${pathJoin(path)}`,
             "fmtResult": ({ result: { directories, files } }) =>
                 [
                     "Keys",
