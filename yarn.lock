@@ -10377,10 +10377,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^5.4.4:
-  version "5.4.4"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-5.4.4.tgz#b3807fe7c7c74e294c0430ac11978995f32c2029"
-  integrity sha512-A2XVd2lBwv+7/X1KsGttpMblgCG38XMq+M+ReyEfHXsQAAcB8fbMUDMGPVKqu1qxDmsSgWo8ZPDwpai22mVfMw==
+keycloakify@^5.4.7:
+  version "5.4.7"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-5.4.7.tgz#9d4f6435c12f02883abfe4c3980bdda5897042a1"
+  integrity sha512-yZyPMWvVD2/7aHFf+YzmJzbp4E2hSfQaTnUfFByRSb3JNAZu8BxRRsq7n+OpX0VKbkSuiN/v5ktSY+x+O7jyfg==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -10389,7 +10389,7 @@ keycloakify@^5.4.4:
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
     path-browserify "^1.0.1"
-    powerhooks "^0.19.0"
+    powerhooks "^0.20.1"
     react-markdown "^5.0.3"
     scripting-tools "^0.19.13"
     tsafe "^0.10.0"
@@ -13022,7 +13022,7 @@ postcss@^8.1.0:
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
 
-powerhooks@0.19.0, powerhooks@^0.19.0:
+powerhooks@0.19.0, powerhooks@^0.19.0, powerhooks@^0.20.1:
   version "0.19.0"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.19.0.tgz#2c3283e62539d47c1baaad06ca53ebb2874c5f8f"
   integrity sha512-K/zJCvYIZhqGJK964yTOdqDomUDAGTWhCGRCcSN4M46Xqss9ZJxq8k0j/EEW9rMYad14+EZqnknENkg+94V7jw==
