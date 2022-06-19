@@ -1,3 +1,7 @@
+### **0.56.1** (2022-06-16)  
+  
+- Fix hot switching of project    
+  
 ## **0.56.0** (2022-06-16)  
   
 - Replace legacy s3 explorateur by the new one, the old one is still accecible in dev mode  
