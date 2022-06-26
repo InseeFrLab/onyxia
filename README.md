@@ -2,9 +2,6 @@
     <img src="https://user-images.githubusercontent.com/6702424/139264787-37efc793-1d55-4fa4-a4a9-782af8357cff.png">
 </p>
 <p align="center">
-    🥼  <i>The <a href="https://datalab.sspcloud.fr">Onyxia</a> frontend</i> 🥼
-    <br>
-    <br>
     <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
     <img src="https://img.shields.io/npm/l/onyxia-ui">
 </p>
