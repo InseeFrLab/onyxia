@@ -29,11 +29,11 @@ https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-9
 
 For injecting secret environment variables in the containers.
 
-https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov   
+https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
 
 ## Contributing
 
-If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).  
+If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
 
 ### CD Pipeline
 
