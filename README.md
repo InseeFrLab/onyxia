@@ -33,7 +33,7 @@ https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a
 
 ## Contributing
 
-If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing/onyxia-web).  
+If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).  
 
 ### CD Pipeline
 
