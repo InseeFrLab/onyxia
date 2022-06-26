@@ -10,11 +10,10 @@
 </p>
 
 <p align="center">
-    <b>Don't know Onyxia yet?</b> <a href="https://github.com/InseeFrLab/onyxia">Learn about the project</a>
+    <b>Don't know Onyxia yet?</b> <a href="https://www.onyxia.sh">Learn about the project</a>
     <br>
-    <b>Want to see the app live?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
+    <b>Want to see what it looks like?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
     <br>
-    <b>New contributor?</b> <a href="https://docs.onyxia.dev">docs.onyxia.dev</a>
 </p>
 
 <p align="center">
@@ -33,7 +32,9 @@ https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-9
 
 For injecting secret environment variables in the containers.
 
-https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
+https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov   
+
+If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing/onyxia-web).  
 
 ## CD Pipeline
 
