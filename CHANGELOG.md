@@ -1,3 +1,13 @@
+### **0.56.3** (2022-06-28)  
+  
+- Fix bug when user decide not to connect  
+- fmt  
+- Update README.md  
+- Create CONTRIBUTING.md  
+- Update README.md  
+- Update README.md  
+- Update README.md    
+  
 ### **0.56.2** (2022-06-19)  
   
   
