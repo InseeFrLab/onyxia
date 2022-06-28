@@ -55,7 +55,7 @@ export async function createVaultSecretsManagerClient(
                 });
 
                 if (!oidcClient.isUserLoggedIn) {
-                    await oidcClient.login();
+                    await oidcClient.login({ "doesCurrentHrefRequiresAuth": true });
                     assert(false);
                 }
 

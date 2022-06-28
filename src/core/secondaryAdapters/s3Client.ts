@@ -68,7 +68,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 });
 
                 if (!oidcClient.isUserLoggedIn) {
-                    await oidcClient.login();
+                    await oidcClient.login({ "doesCurrentHrefRequiresAuth": true });
                     assert(false);
                 }
 

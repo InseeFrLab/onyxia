@@ -97,7 +97,7 @@ export const App = memo((props: Props) => {
     const onHeaderAuthClick = useConstCallback(() =>
         isUserLoggedIn
             ? userAuthenticationThunks.logout({ "redirectTo": "home" })
-            : userAuthenticationThunks.login(),
+            : userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": false }),
     );
 
     const { tosUrl } = (function useClosure() {
@@ -337,7 +337,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         }
 
         if (Page.getDoRequireUserLoggedIn && !isUserLoggedIn) {
-            userAuthenticationThunks.login();
+            userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
             return null;
         }
 
@@ -379,7 +379,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn(route) && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -392,7 +392,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -405,7 +405,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -418,7 +418,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -431,7 +431,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login();
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 

@@ -66,7 +66,7 @@
         "jwt-decode": "^2.2.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^18.0.0",
-        "keycloakify": "^5.4.7",
+        "keycloakify": "^5.5.0",
         "leaflet": "^1.6.0",
         "memoizee": "^0.4.14",
         "minio": "7.0.16",

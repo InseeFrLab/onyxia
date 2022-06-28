@@ -27,13 +27,15 @@ export const thunks = {
             return oidcClient.isUserLoggedIn;
         },
     "login":
-        (): ThunkAction<Promise<never>> =>
+        (params: { doesCurrentHrefRequiresAuth: boolean }): ThunkAction<Promise<never>> =>
         (...args) => {
+            const { doesCurrentHrefRequiresAuth } = params;
+
             const [, , { oidcClient }] = args;
 
             assert(!oidcClient.isUserLoggedIn);
 
-            return oidcClient.login();
+            return oidcClient.login({ doesCurrentHrefRequiresAuth });
         },
     "logout":
         (params: { redirectTo: "home" | "current page" }): ThunkAction<Promise<never>> =>
