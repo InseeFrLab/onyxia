@@ -3,7 +3,7 @@ export declare type OidcClient = OidcClient.LoggedIn | OidcClient.NotLoggedIn;
 export declare namespace OidcClient {
     export type NotLoggedIn = {
         isUserLoggedIn: false;
-        login: () => Promise<never>;
+        login: (params: { doesCurrentHrefRequiresAuth: boolean }) => Promise<never>;
     };
 
     export type LoggedIn = {
