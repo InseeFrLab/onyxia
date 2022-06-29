@@ -1,3 +1,8 @@
+### **0.56.4** (2022-06-29)  
+  
+- Add email tempate for Keycloak theme  
+- rename the email template dir    
+  
 ### **0.56.3** (2022-06-28)  
   
 - Fix bug when user decide not to connect  
