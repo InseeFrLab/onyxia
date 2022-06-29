@@ -10377,10 +10377,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-5.5.0.tgz#5d50e9f8c6a3728e79d76d9e3b32069651b63df8"
-  integrity sha512-EGAf8Mu+hxM7WKrhjzbS7dsBukXiE21poSsat4VLJRQzPFvmZSyNfWEPBQyTSeZv594HULRiGepZDHemwpGErw==
+keycloakify@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-5.6.0.tgz#a31fcaeaa4a7ac32bfd2ac076337d419daaa9532"
+  integrity sha512-JUjhjPOhL/HZwSrvQdEx1Qu215Y/4SDfGd9OLrubjtO9ZeCDoqbG4BvLE/PVcfqn19xlj2ESc2ZkuQLlekZegg==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
