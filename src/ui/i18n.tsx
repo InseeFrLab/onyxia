@@ -4,6 +4,7 @@ import { assert } from "tsafe/assert";
 import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
+import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 
 export type { Language, LocalizedString };
 
@@ -71,11 +72,11 @@ const common = id<
     },
 });
 
-export const {
+const {
     useTranslation,
     resolveLocalizedString,
     useLang,
-    evtLang,
+    $lang,
     useResolveLocalizedString,
 } = createI18nApi<
     | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar").i18n
@@ -1193,3 +1194,9 @@ export const {
         },
     },
 );
+
+export { useTranslation, resolveLocalizedString, useLang, useResolveLocalizedString };
+
+export const evtLang = statefulObservableToStatefulEvt({
+    "statefulObservable": $lang,
+});
