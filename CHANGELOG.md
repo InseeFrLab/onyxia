@@ -1,3 +1,7 @@
+### **0.56.6** (2022-07-06)  
+  
+- Update keycloakify (fix login-verify-email.ftl)    
+  
 ### **0.56.5** (2022-07-03)  
   
 - Fix field description not showing up  
