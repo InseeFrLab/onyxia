@@ -1,3 +1,8 @@
+### **0.56.5** (2022-07-03)  
+  
+- Fix field description not showing up  
+- update i18nifty    
+  
 ### **0.56.4** (2022-06-29)  
   
 - Add email tempate for Keycloak theme  
