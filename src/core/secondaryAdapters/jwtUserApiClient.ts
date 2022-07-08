@@ -29,7 +29,6 @@ const zParsedJwtTokenPayload = z.object({
     "firstName": z.string().optional(),
     "username": z.string(),
     "groups": z.array(z.string()).optional(),
-    "locale": z.string().optional(),
 });
 
 assert<Equals<z.infer<typeof zParsedJwtTokenPayload>, User>>();

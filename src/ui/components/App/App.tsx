@@ -6,7 +6,7 @@ import { Footer } from "./Footer";
 import { useLang } from "ui/i18n";
 import { getTosMarkdownUrl } from "ui/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "ui/theme";
-import { useTranslation, languages, useResolveLocalizedString } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useSelector, useThunks } from "ui/coreApi";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
@@ -18,8 +18,6 @@ import { Account } from "ui/components/pages/Account";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
 import { Catalog } from "ui/components/pages/Catalog";
 import { MyServices } from "ui/components/pages/MyServices";
-import { typeGuard } from "tsafe/typeGuard";
-import type { Language } from "ui/i18n";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
@@ -46,8 +44,6 @@ export const App = memo((props: Props) => {
     const { t } = useTranslation({ App });
 
     useSyncDarkModeWithValueInProfile();
-
-    useApplyLanguageSelectedAtLogin();
 
     const {
         domRect: { width: rootWidth },
@@ -445,42 +441,6 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
     return <FourOhFour />;
 });
-
-/** On the login pages hosted by keycloak the user can select
- * a language, we want to use this language on the app.
- * For example we want that if a user selects english on the
- * register page while signing in that the app be set to english
- * automatically.
- *
- * Our Keycloak theme currently does not support changing the language
- * but others themes might.
- */
-function useApplyLanguageSelectedAtLogin() {
-    const { userAuthenticationThunks } = useThunks();
-
-    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
-
-    const { setLang } = useLang();
-
-    useEffect(() => {
-        if (!isUserLoggedIn) {
-            return;
-        }
-
-        const { locale } = userAuthenticationThunks.getUser();
-
-        if (
-            !typeGuard<Language>(
-                locale,
-                locale !== undefined && id<readonly string[]>(languages).includes(locale),
-            )
-        ) {
-            return;
-        }
-
-        setLang(locale);
-    }, []);
-}
 
 /**
  * This hook to two things:

@@ -4,7 +4,6 @@ export type User = {
     firstName?: string;
     username: string;
     groups?: string[];
-    locale?: string;
 };
 
 export type UserApiClient = {
