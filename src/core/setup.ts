@@ -165,7 +165,6 @@ export async function createStore(params: CreateStoreParams) {
                     "firstName": "c",
                     "username": "d",
                     "groups": "e",
-                    "locale": "f",
                 };
 
                 const oidcClient = createPhonyOidcClient({

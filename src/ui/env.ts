@@ -1,6 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
 import type { LocalizedString } from "ui/i18n";
-import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
@@ -99,7 +98,6 @@ export const getCreateStoreParams = memoize(
             JWT_EMAIL_CLAIM,
             JWT_FAMILY_NAME_CLAIM,
             JWT_FIRST_NAME_CLAIM,
-            JWT_LOCALE_CLAIM,
             JWT_USERNAME_CLAIM,
             JWT_GROUPS_CLAIM,
             KEYCLOAK_URL,
@@ -165,7 +163,6 @@ export const getCreateStoreParams = memoize(
                               "firstName": "John",
                               "username": "jdoe",
                               "groups": [],
-                              "locale": evtLang.state,
                           },
                       }
                     : {
@@ -180,7 +177,6 @@ export const getCreateStoreParams = memoize(
                                   "firstName": JWT_FIRST_NAME_CLAIM,
                                   "username": JWT_USERNAME_CLAIM,
                                   "groups": JWT_GROUPS_CLAIM,
-                                  "locale": JWT_LOCALE_CLAIM,
                               },
                           },
                           transformUrlBeforeRedirectToLogin,
