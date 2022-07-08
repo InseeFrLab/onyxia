@@ -1,3 +1,7 @@
+### **0.56.7** (2022-07-08)  
+  
+- Remove the use of 'locale' in JWT    
+  
 ### **0.56.6** (2022-07-06)  
   
 - Update keycloakify (fix login-verify-email.ftl)    
