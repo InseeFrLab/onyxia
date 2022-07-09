@@ -1,4 +1,3 @@
-import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
 import type { LocalizedString as GenericLocalizedString } from "i18nifty";
 import memoize from "memoizee";
 
@@ -33,14 +32,8 @@ export type OnyxiaApiClient = {
         clear: () => void;
     };
 
-    // prettier-ignore
-    getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory: (
-        params: {
-            catalogId: string;
-            packageName: string;
-        }
-    ) => Promise<{
-        getPackageConfigJSONSchemaObjectWithRenderedMustachParams: (params: { mustacheParams: MustacheParams; }) => JSONSchemaObject;
+    getPackageConfig: (params: { catalogId: string; packageName: string }) => Promise<{
+        getValuesSchemaJson: (params: { onyxiaValues: OnyxiaValues }) => JSONSchemaObject;
         dependencies: string[];
         sources: string[];
     }>;
@@ -136,7 +129,7 @@ export type Catalog = {
     };
 };
 
-export type MustacheParams = {
+export type OnyxiaValues = {
     user: {
         idep: string;
         name: string;
@@ -153,7 +146,7 @@ export type MustacheParams = {
         name: string;
         email: string;
         credentials_cache_duration: number;
-        token: string | null;
+        token: string | undefined;
     };
     vault: {
         VAULT_ADDR: string;
@@ -161,7 +154,7 @@ export type MustacheParams = {
         VAULT_MOUNT: string;
         VAULT_TOP_DIR: string;
     };
-    kaggleApiToken: string | null;
+    kaggleApiToken: string | undefined;
     s3: {
         AWS_ACCESS_KEY_ID: string;
         AWS_SECRET_ACCESS_KEY: string;
@@ -214,6 +207,109 @@ export declare namespace RunningService {
 }
 
 export type Contract = Record<string, unknown>[][];
+
+export type JSONSchemaObject = {
+    description?: string;
+    properties: Record<string, JSONSchemaObject | JSONSchemaFormFieldDescription>;
+    type: "object";
+};
+
+export type JSONSchemaFormFieldDescription =
+    | JSONSchemaFormFieldDescription.String
+    | JSONSchemaFormFieldDescription.Boolean
+    | JSONSchemaFormFieldDescription.Integer
+    | JSONSchemaFormFieldDescription.Object
+    | JSONSchemaFormFieldDescription.Array;
+export namespace JSONSchemaFormFieldDescription {
+    type Common<T> = {
+        description?: string;
+        title?: string;
+        //NOTE: Can be undefined before we inject the onyxia values.
+        default: T;
+        "x-onyxia"?: {
+            hidden?: boolean;
+            readonly?: boolean;
+            overwriteDefaultWith?: string;
+        };
+        hidden?:
+            | boolean
+            | {
+                  value: string | boolean | number;
+                  path: string;
+              };
+    };
+
+    export type Boolean = Common<boolean> & {
+        type: "boolean";
+    };
+
+    export type Integer = Common<number> & {
+        type: "integer" | "number";
+        minimum?: number;
+    };
+
+    export type String = String.Text | String.Enum | String.Slider;
+    export namespace String {
+        export type Text = Common<string> & {
+            type: "string";
+            pattern?: string;
+            render?: "textArea";
+            //NOTE: Only for init.personalInit
+            "x-security"?: {
+                pattern: string;
+            };
+        };
+
+        export type Enum<T extends string = string> = Common<T> & {
+            type: "string";
+            enum: T[];
+        };
+
+        export type Slider = Slider.Simple | Slider.Range;
+        export namespace Slider {
+            type SliderCommon<Unit extends string> = Common<`${number}${Unit}`> & {
+                type: "string";
+                render: "slider";
+            };
+
+            export type Simple<Unit extends string = string> = SliderCommon<Unit> & {
+                sliderMax: number;
+                sliderMin: number;
+                sliderUnit: Unit;
+                sliderStep: number;
+            };
+
+            export type Range = Range.Down | Range.Up;
+            export namespace Range {
+                type RangeCommon<Unit extends string> = SliderCommon<Unit> & {
+                    sliderExtremitySemantic: string;
+                    sliderRangeId: string;
+                };
+
+                export type Down<Unit extends string = string> = RangeCommon<Unit> & {
+                    sliderExtremity: "down";
+                    sliderMin: number;
+                    sliderUnit: Unit;
+                    sliderStep: number;
+                    title: string;
+                };
+
+                export type Up<Unit extends string = string> = RangeCommon<Unit> & {
+                    sliderExtremity: "up";
+                    sliderMax: number;
+                };
+            }
+        }
+    }
+
+    export type Object = Common<Record<string, any>> & {
+        type: "object";
+    };
+
+    export type Array = Common<any[]> & {
+        type: "array";
+    };
+}
 
 export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
 

@@ -19,7 +19,7 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
         : { ...field, ...field["x-form"], media };
 };
 
-export type BuildMustacheViewParams = {
+export type BuildOnyxiaValue = {
     s3: NonNullable<RootState["user"]["s3"]>;
     publicIp: string;
     parsedJwt: Record<"username" | "email" | "familyName" | "firstName", string>;
@@ -33,7 +33,7 @@ export type BuildMustacheViewParams = {
     vaultToken: string;
 };
 
-const buildMustacheView = (params: BuildMustacheViewParams) => {
+const buildMustacheView = (params: BuildOnyxiaValue) => {
     const env = getValidatedEnv();
 
     const {
@@ -85,11 +85,11 @@ const buildMustacheView = (params: BuildMustacheViewParams) => {
 //TODO: Rename
 export const mustacheRender = (
     field: { "x-form"?: { value: string } },
-    buildMustacheViewParams: BuildMustacheViewParams,
+    buildOnyxiaValue: BuildOnyxiaValue,
 ) => {
     const { value: template = "" } = field?.["x-form"] ?? {};
 
-    return Mustache.render(template, buildMustacheView(buildMustacheViewParams));
+    return Mustache.render(template, buildMustacheView(buildOnyxiaValue));
 };
 
 export type Field = {
