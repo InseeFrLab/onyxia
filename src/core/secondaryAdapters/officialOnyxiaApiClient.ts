@@ -288,7 +288,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             JSON.stringify(data.config),
                         ) as JSONSchemaObject;
 
-                        function overrideRec(
+                        function overrideDefaultsRec(
                             jsonSchemaObjectOrFormFieldDescription:
                                 | JSONSchemaObject
                                 | JSONSchemaFormFieldDescription,
@@ -301,7 +301,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 const jsonSchemaObject =
                                     jsonSchemaObjectOrFormFieldDescription;
                                 Object.values(jsonSchemaObject.properties).forEach(
-                                    overrideRec,
+                                    overrideDefaultsRec,
                                 );
                                 return;
                             }
@@ -338,51 +338,75 @@ export function createOfficialOnyxiaApiClient(params: {
 
                             switch (jsonSchemaFormFieldDescription.type) {
                                 case "string":
-                                    assert(
-                                        typeof resolvedValue === "string",
-                                        `${overwriteDefaultWith} is not a string`,
-                                    );
+                                    jsonSchemaFormFieldDescription.default =
+                                        typeof resolvedValue !== "object"
+                                            ? `${resolvedValue}`
+                                            : JSON.stringify(resolvedValue);
                                     break;
                                 case "array":
                                     assert(
                                         resolvedValue instanceof Array,
                                         `${overwriteDefaultWith} is not an array`,
                                     );
+                                    jsonSchemaFormFieldDescription.default =
+                                        resolvedValue;
                                     break;
                                 case "object":
                                     assert(
                                         resolvedValue instanceof Object,
                                         `${overwriteDefaultWith} is not an object`,
                                     );
+                                    jsonSchemaFormFieldDescription.default =
+                                        resolvedValue;
                                     break;
                                 case "boolean":
                                     assert(
-                                        typeof resolvedValue === "boolean",
-                                        `${overwriteDefaultWith} is not a boolean`,
+                                        typeof resolvedValue !== "object",
+                                        `${overwriteDefaultWith} can't be interpreted as a boolean`,
                                     );
+                                    jsonSchemaFormFieldDescription.default =
+                                        !!resolvedValue;
                                     break;
                                 case "number":
-                                    assert(
-                                        typeof resolvedValue === "number",
-                                        `${overwriteDefaultWith} is not a number`,
-                                    );
-                                    break;
                                 case "integer":
-                                    assert(
-                                        typeof resolvedValue === "number",
-                                        `${overwriteDefaultWith} is not a number`,
-                                    );
-                                    assert(
-                                        Number.isInteger(resolvedValue),
-                                        `${overwriteDefaultWith} is not an integer`,
-                                    );
+                                    {
+                                        const x = (() => {
+                                            if (typeof resolvedValue === "number") {
+                                                return resolvedValue;
+                                            }
+
+                                            const interpretedValue =
+                                                typeof resolvedValue === "string"
+                                                    ? parseFloat(resolvedValue)
+                                                    : undefined;
+
+                                            assert(
+                                                interpretedValue !== undefined &&
+                                                    !isNaN(interpretedValue),
+                                                `${overwriteDefaultWith} can't be interpreted as a number`,
+                                            );
+
+                                            return interpretedValue;
+                                        })();
+
+                                        jsonSchemaFormFieldDescription.default = (() => {
+                                            switch (jsonSchemaFormFieldDescription.type) {
+                                                case "number":
+                                                    return x;
+                                                case "integer":
+                                                    assert(
+                                                        Number.isInteger(x),
+                                                        `${overwriteDefaultWith} (${x}) is not an integer`,
+                                                    );
+                                                    return x;
+                                            }
+                                        })();
+                                    }
                                     break;
                             }
-
-                            jsonSchemaFormFieldDescription.default = resolvedValue;
                         }
 
-                        overrideRec(configCopy);
+                        overrideDefaultsRec(configCopy);
 
                         return configCopy;
                     },
