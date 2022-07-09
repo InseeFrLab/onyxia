@@ -5,7 +5,7 @@ import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 //import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "ui/coreApi";
 //import { useMustacheParams } from "js/hooks";
-import type { BuildMustacheViewParams } from "js/utils/form-field";
+import type { BuildOnyxiaValue } from "js/utils/form-field";
 import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
 
 type Service = {
@@ -97,7 +97,7 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
 
 const arrayToObject =
     (queryParams: Record<string, string>) =>
-    (buildMustacheViewParams: BuildMustacheViewParams) =>
+    (buildOnyxiaValue: BuildOnyxiaValue) =>
     (
         fields: {
             path: string;
@@ -110,7 +110,7 @@ const arrayToObject =
             ({ path, field }) =>
                 (obj[path] =
                     fromParams(path)(field) ??
-                    (mustacheRender(field as any, buildMustacheViewParams) ||
+                    (mustacheRender(field as any, buildOnyxiaValue) ||
                         getDefaultSingleOption(field))),
         );
         return obj;
@@ -189,7 +189,7 @@ const getPathValue =
     };
 
 export const getOptions = (
-    buildMustacheParams: BuildMustacheViewParams,
+    buildMustacheParams: BuildOnyxiaValue,
     service: Service,
     queryParams: Record<string, string>,
 ) => {

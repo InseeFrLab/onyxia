@@ -12,7 +12,12 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath,
 } from "core/ports/OnyxiaApiClient";
-import type { Contract, MustacheParams } from "core/ports/OnyxiaApiClient";
+import type {
+    Contract,
+    OnyxiaValues,
+    JSONSchemaObject,
+    JSONSchemaFormFieldDescription,
+} from "core/ports/OnyxiaApiClient";
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
@@ -21,10 +26,6 @@ import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import type {
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription,
-} from "core/tools/JSONSchemaObject";
 import { thunks as projectConfigsThunks } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
@@ -522,21 +523,16 @@ export const thunks = {
                 "the reset thunk need to be called before initializing again",
             );
 
-            const {
-                getPackageConfigJSONSchemaObjectWithRenderedMustachParams,
-                dependencies,
-                sources,
-            } = await onyxiaApiClient.getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory(
-                {
+            const { dependencies, sources, getValuesSchemaJson } =
+                await onyxiaApiClient.getPackageConfig({
                     catalogId,
                     packageName,
-                },
-            );
+                });
 
             assert(oidcClient.isUserLoggedIn);
 
-            const config = getPackageConfigJSONSchemaObjectWithRenderedMustachParams({
-                "mustacheParams": await dispatch(thunks.getMustacheParams()),
+            const valuesSchemaJson = getValuesSchemaJson({
+                "onyxiaValues": await dispatch(thunks.getOnyxiaValues()),
             });
 
             const {
@@ -606,173 +602,8 @@ export const thunks = {
                                         "description":
                                             jsonSchemaFormFieldDescription.description,
                                         "isReadonly":
-                                            jsonSchemaFormFieldDescription["x-form"]
+                                            jsonSchemaFormFieldDescription["x-onyxia"]
                                                 ?.readonly ?? false,
-                                    };
-
-                                    const getDefaultValue = <
-                                        T extends JSONSchemaFormFieldDescription,
-                                    >(
-                                        jsonSchemaFormFieldDescription: T,
-                                    ): NonNullable<
-                                        NonNullable<T["x-form"]>["value"] | T["default"]
-                                    > => {
-                                        const valuePotentiallyWronglyTyped = (() => {
-                                            const idOrUndefinedIfEmptyString = <
-                                                T extends
-                                                    | string
-                                                    | boolean
-                                                    | number
-                                                    | Record<string, any>
-                                                    | undefined,
-                                            >(
-                                                v: T,
-                                            ): T | undefined => {
-                                                switch (
-                                                    jsonSchemaFormFieldDescription.type
-                                                ) {
-                                                    case "boolean":
-                                                    case "integer":
-                                                    case "number":
-                                                    case "object":
-                                                    case "array":
-                                                        return v === "" ? undefined : v;
-                                                    case "string":
-                                                        return v;
-                                                }
-                                            };
-
-                                            return (
-                                                idOrUndefinedIfEmptyString(
-                                                    jsonSchemaFormFieldDescription[
-                                                        "x-form"
-                                                    ]?.value,
-                                                ) ??
-                                                idOrUndefinedIfEmptyString(
-                                                    jsonSchemaFormFieldDescription.default,
-                                                ) ??
-                                                (() => {
-                                                    switch (
-                                                        jsonSchemaFormFieldDescription.type
-                                                    ) {
-                                                        case "string":
-                                                            return "";
-                                                        case "boolean":
-                                                            return false;
-                                                        case "integer":
-                                                        case "number":
-                                                            return 0;
-                                                        case "object":
-                                                            return {};
-                                                        case "array":
-                                                            return [];
-                                                    }
-                                                    assert<
-                                                        Equals<
-                                                            typeof jsonSchemaFormFieldDescription.type,
-                                                            never
-                                                        >
-                                                    >(false);
-                                                })()
-                                            );
-                                        })();
-
-                                        const value = (() => {
-                                            switch (jsonSchemaFormFieldDescription.type) {
-                                                case "string": {
-                                                    assert(
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                            "string",
-                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be a string`,
-                                                    );
-
-                                                    return valuePotentiallyWronglyTyped;
-                                                }
-                                                case "object": {
-                                                    assert(
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                            "object",
-                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be an object`,
-                                                    );
-
-                                                    return valuePotentiallyWronglyTyped;
-                                                }
-                                                case "array": {
-                                                    assert(
-                                                        valuePotentiallyWronglyTyped instanceof
-                                                            Array,
-                                                        `${jsonSchemaFormFieldDescription.title}'s default value should be an array`,
-                                                    );
-
-                                                    return valuePotentiallyWronglyTyped;
-                                                }
-                                                case "boolean": {
-                                                    const errorMessage = [
-                                                        `${jsonSchemaFormFieldDescription.title}'s default value`,
-                                                        `should be a boolean, "true" or "false"`,
-                                                    ].join(" ");
-
-                                                    if (
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                        "string"
-                                                    ) {
-                                                        switch (
-                                                            valuePotentiallyWronglyTyped
-                                                        ) {
-                                                            case "true":
-                                                                return true;
-                                                            case "false":
-                                                                return false;
-                                                            default:
-                                                                throw new Error(
-                                                                    errorMessage,
-                                                                );
-                                                        }
-                                                    }
-
-                                                    assert(
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                            "boolean",
-                                                        errorMessage,
-                                                    );
-
-                                                    return valuePotentiallyWronglyTyped;
-                                                }
-                                                case "integer":
-                                                case "number": {
-                                                    const errorMessage = [
-                                                        `${jsonSchemaFormFieldDescription.title}'s default value`,
-                                                        `should be a number, or a string that can be interpreted as a number`,
-                                                    ].join(" ");
-
-                                                    if (
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                        "string"
-                                                    ) {
-                                                        const value = parseFloat(
-                                                            valuePotentiallyWronglyTyped,
-                                                        );
-
-                                                        assert(
-                                                            !isNaN(value),
-                                                            errorMessage,
-                                                        );
-
-                                                        return value;
-                                                    }
-
-                                                    assert(
-                                                        typeof valuePotentiallyWronglyTyped ===
-                                                            "number",
-                                                        errorMessage,
-                                                    );
-
-                                                    return valuePotentiallyWronglyTyped;
-                                                }
-                                            }
-                                        })();
-
-                                        return value as any;
                                     };
 
                                     //TODO: The JSON schema should be tested in entry of the system.
@@ -793,9 +624,8 @@ export const thunks = {
                                         "render" in jsonSchemaFormFieldDescription &&
                                         jsonSchemaFormFieldDescription.render === "slider"
                                     ) {
-                                        const value = getDefaultValue(
-                                            jsonSchemaFormFieldDescription,
-                                        );
+                                        const value =
+                                            jsonSchemaFormFieldDescription.default!;
 
                                         if (
                                             "sliderExtremity" in
@@ -864,9 +694,8 @@ export const thunks = {
                                     ) {
                                         return id<FormField.Boolean>({
                                             ...common,
-                                            "value": getDefaultValue(
-                                                jsonSchemaFormFieldDescription,
-                                            ),
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
                                             "type": "boolean",
                                         });
                                     }
@@ -879,9 +708,7 @@ export const thunks = {
                                         const value = {
                                             "type": "yaml" as const,
                                             "yamlStr": yaml.stringify(
-                                                getDefaultValue(
-                                                    jsonSchemaFormFieldDescription,
-                                                ),
+                                                jsonSchemaFormFieldDescription.default,
                                             ),
                                         };
 
@@ -921,9 +748,8 @@ export const thunks = {
                                     ) {
                                         return id<FormField.Integer>({
                                             ...common,
-                                            "value": getDefaultValue(
-                                                jsonSchemaFormFieldDescription,
-                                            ),
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
                                             "minimum":
                                                 jsonSchemaFormFieldDescription.minimum,
                                             "type": "integer",
@@ -933,17 +759,12 @@ export const thunks = {
                                     if ("enum" in jsonSchemaFormFieldDescription) {
                                         return id<FormField.Enum>({
                                             ...common,
-                                            "value": getDefaultValue(
-                                                jsonSchemaFormFieldDescription,
-                                            ),
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
                                             "enum": jsonSchemaFormFieldDescription.enum,
                                             "type": "enum",
                                         });
                                     }
-
-                                    const value = getDefaultValue(
-                                        jsonSchemaFormFieldDescription,
-                                    );
 
                                     security_warning: {
                                         if (sensitiveConfigurations === undefined) {
@@ -981,9 +802,10 @@ export const thunks = {
                                     return id<FormField.Text>({
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
-                                        value,
+                                        "value": jsonSchemaFormFieldDescription.default,
                                         "type": "text",
-                                        "defaultValue": value,
+                                        "defaultValue":
+                                            jsonSchemaFormFieldDescription.default,
                                         "doRenderAsTextArea":
                                             jsonSchemaFormFieldDescription.render ===
                                             "textArea",
@@ -998,7 +820,7 @@ export const thunks = {
 
                                     if (hidden === undefined) {
                                         const hidden =
-                                            jsonSchemaFormFieldDescription["x-form"]
+                                            jsonSchemaFormFieldDescription["x-onyxia"]
                                                 ?.hidden;
 
                                         if (hidden !== undefined) {
@@ -1022,7 +844,7 @@ export const thunks = {
                     );
                 })({
                     "currentPath": [],
-                    "jsonSchemaObject": config,
+                    "jsonSchemaObject": valuesSchemaJson,
                 });
 
                 return {
@@ -1049,7 +871,7 @@ export const thunks = {
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    config,
+                    config: valuesSchemaJson,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? [],
@@ -1097,7 +919,7 @@ export const thunks = {
     "getS3MustacheParamsForProjectBucket":
         (): ThunkAction<
             Promise<
-                MustacheParams["s3"] & { expirationTime: number; acquisitionTime: number }
+                OnyxiaValues["s3"] & { expirationTime: number; acquisitionTime: number }
             >
         > =>
         async (...args) => {
@@ -1157,8 +979,8 @@ export const thunks = {
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
-    "getMustacheParams":
-        (): ThunkAction<Promise<MustacheParams>> =>
+    "getOnyxiaValues":
+        (): ThunkAction<Promise<OnyxiaValues>> =>
         async (...args) => {
             const [dispatch, getState, { createStoreParams, secretsManagerClient }] =
                 args;
@@ -1178,7 +1000,7 @@ export const thunks = {
 
             const project = projectSelectionSelectors.selectedProject(getState());
 
-            return {
+            const onyxiaValues: OnyxiaValues = {
                 "user": {
                     "idep": user.username,
                     "name": `${user.familyName} ${user.firstName}`,
@@ -1197,7 +1019,7 @@ export const thunks = {
                     "name": userConfigs.gitName,
                     "email": userConfigs.gitEmail,
                     "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
-                    "token": userConfigs.githubPersonalAccessToken,
+                    "token": userConfigs.githubPersonalAccessToken ?? undefined,
                 },
                 "vault": await (async () => {
                     const vaultParams = !("vaultParams" in createStoreParams)
@@ -1224,7 +1046,7 @@ export const thunks = {
                         ),
                     };
                 })(),
-                "kaggleApiToken": userConfigs.kaggleApiToken,
+                "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
                 "s3": await dispatch(thunks.getS3MustacheParamsForProjectBucket()),
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
@@ -1240,6 +1062,8 @@ export const thunks = {
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
             };
+
+            return onyxiaValues;
         },
 };
 

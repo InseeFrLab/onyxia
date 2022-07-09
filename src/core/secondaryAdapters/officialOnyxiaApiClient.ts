@@ -18,8 +18,12 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import type { JSONSchemaObject } from "core/tools/JSONSchemaObject";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import type {
+    JSONSchemaObject,
+    JSONSchemaFormFieldDescription,
+} from "../ports/OnyxiaApiClient";
+import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -266,10 +270,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     .then(({ data }) => data.catalogs),
             { "promise": true },
         ),
-        "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory": ({
-            catalogId,
-            packageName,
-        }) =>
+        "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
                 .get<{
                     config: JSONSchemaObject;
@@ -281,12 +282,110 @@ export function createOfficialOnyxiaApiClient(params: {
                 .then(({ data }) => ({
                     "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
                     "sources": data.sources ?? [],
-                    "getPackageConfigJSONSchemaObjectWithRenderedMustachParams": ({
-                        mustacheParams,
-                    }) =>
-                        JSON.parse(
-                            Mustache.render(JSON.stringify(data.config), mustacheParams),
-                        ) as typeof data.config,
+                    "getValuesSchemaJson": ({ onyxiaValues }) => {
+                        //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
+                        const configCopy = JSON.parse(
+                            JSON.stringify(data.config),
+                        ) as JSONSchemaObject;
+
+                        function overrideRec(
+                            jsonSchemaObjectOrFormFieldDescription:
+                                | JSONSchemaObject
+                                | JSONSchemaFormFieldDescription,
+                        ) {
+                            if (
+                                jsonSchemaObjectOrFormFieldDescription.type ===
+                                    "object" &&
+                                "properties" in jsonSchemaObjectOrFormFieldDescription
+                            ) {
+                                const jsonSchemaObject =
+                                    jsonSchemaObjectOrFormFieldDescription;
+                                Object.values(jsonSchemaObject.properties).forEach(
+                                    overrideRec,
+                                );
+                                return;
+                            }
+
+                            const jsonSchemaFormFieldDescription =
+                                jsonSchemaObjectOrFormFieldDescription;
+
+                            const assertWeHaveADefault = () => {
+                                assert(
+                                    jsonSchemaFormFieldDescription.default !== undefined,
+                                    `${jsonSchemaFormFieldDescription.title} has no default value`,
+                                );
+                            };
+
+                            const { overwriteDefaultWith } =
+                                jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+                            if (overwriteDefaultWith === undefined) {
+                                assertWeHaveADefault();
+                                return;
+                            }
+
+                            const resolvedValue = overwriteDefaultWith.includes("{{")
+                                ? Mustache.render(overwriteDefaultWith, onyxiaValues)
+                                : getValueAtPathInObject({
+                                      "path": overwriteDefaultWith.split("."),
+                                      "obj": onyxiaApiClient,
+                                  });
+
+                            if (resolvedValue === undefined || resolvedValue === null) {
+                                assertWeHaveADefault();
+                                return;
+                            }
+
+                            switch (jsonSchemaFormFieldDescription.type) {
+                                case "string":
+                                    assert(
+                                        typeof resolvedValue === "string",
+                                        `${overwriteDefaultWith} is not a string`,
+                                    );
+                                    break;
+                                case "array":
+                                    assert(
+                                        resolvedValue instanceof Array,
+                                        `${overwriteDefaultWith} is not an array`,
+                                    );
+                                    break;
+                                case "object":
+                                    assert(
+                                        resolvedValue instanceof Object,
+                                        `${overwriteDefaultWith} is not an object`,
+                                    );
+                                    break;
+                                case "boolean":
+                                    assert(
+                                        typeof resolvedValue === "boolean",
+                                        `${overwriteDefaultWith} is not a boolean`,
+                                    );
+                                    break;
+                                case "number":
+                                    assert(
+                                        typeof resolvedValue === "number",
+                                        `${overwriteDefaultWith} is not a number`,
+                                    );
+                                    break;
+                                case "integer":
+                                    assert(
+                                        typeof resolvedValue === "number",
+                                        `${overwriteDefaultWith} is not a number`,
+                                    );
+                                    assert(
+                                        Number.isInteger(resolvedValue),
+                                        `${overwriteDefaultWith} is not an integer`,
+                                    );
+                                    break;
+                            }
+
+                            jsonSchemaFormFieldDescription.default = resolvedValue;
+                        }
+
+                        overrideRec(configCopy);
+
+                        return configCopy;
+                    },
                 })),
         ...(() => {
             const getMyLab_App = (params: { serviceId: string }) =>
