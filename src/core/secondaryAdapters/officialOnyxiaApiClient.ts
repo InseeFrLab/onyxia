@@ -292,6 +292,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             jsonSchemaObjectOrFormFieldDescription:
                                 | JSONSchemaObject
                                 | JSONSchemaFormFieldDescription,
+                            path: string,
                         ) {
                             if (
                                 jsonSchemaObjectOrFormFieldDescription.type ===
@@ -300,8 +301,9 @@ export function createOfficialOnyxiaApiClient(params: {
                             ) {
                                 const jsonSchemaObject =
                                     jsonSchemaObjectOrFormFieldDescription;
-                                Object.values(jsonSchemaObject.properties).forEach(
-                                    overrideDefaultsRec,
+                                Object.entries(jsonSchemaObject.properties).forEach(
+                                    ([key, value]) =>
+                                        overrideDefaultsRec(value, `${path}.${key}`),
                                 );
                                 return;
                             }
@@ -312,7 +314,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             const assertWeHaveADefault = () => {
                                 assert(
                                     jsonSchemaFormFieldDescription.default !== undefined,
-                                    `${jsonSchemaFormFieldDescription.title} has no default value`,
+                                    `${path} has no default value`,
                                 );
                             };
 
@@ -346,7 +348,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "array":
                                     assert(
                                         resolvedValue instanceof Array,
-                                        `${overwriteDefaultWith} is not an array`,
+                                        `${overwriteDefaultWith} is not an array (${path})`,
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         resolvedValue;
@@ -354,7 +356,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "object":
                                     assert(
                                         resolvedValue instanceof Object,
-                                        `${overwriteDefaultWith} is not an object`,
+                                        `${overwriteDefaultWith} is not an object (${path})`,
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         resolvedValue;
@@ -362,7 +364,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "boolean":
                                     assert(
                                         typeof resolvedValue !== "object",
-                                        `${overwriteDefaultWith} can't be interpreted as a boolean`,
+                                        `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`,
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         !!resolvedValue;
@@ -383,7 +385,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                             assert(
                                                 interpretedValue !== undefined &&
                                                     !isNaN(interpretedValue),
-                                                `${overwriteDefaultWith} can't be interpreted as a number`,
+                                                `${overwriteDefaultWith} can't be interpreted as a number (${path})`,
                                             );
 
                                             return interpretedValue;
@@ -396,7 +398,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                                 case "integer":
                                                     assert(
                                                         Number.isInteger(x),
-                                                        `${overwriteDefaultWith} (${x}) is not an integer`,
+                                                        `${overwriteDefaultWith} (${x}) is not an integer (${path})`,
                                                     );
                                                     return x;
                                             }
@@ -406,7 +408,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             }
                         }
 
-                        overrideDefaultsRec(configCopy);
+                        overrideDefaultsRec(configCopy, "");
 
                         return configCopy;
                     },
