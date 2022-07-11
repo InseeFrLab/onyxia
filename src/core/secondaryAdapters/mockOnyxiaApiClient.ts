@@ -34,6 +34,8 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
 
                         "allowedURIPatternForUserDefinedInitScript": "^https://",
                         "kafka": undefined,
+                        "from": undefined,
+                        "tolerations": undefined,
                     },
                 ]),
             { "promise": true },
