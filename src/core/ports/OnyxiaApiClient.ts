@@ -76,6 +76,8 @@ export type DeploymentRegion = {
               topicName: string;
           }
         | undefined;
+    tolerations: unknown[] | undefined;
+    from: unknown[] | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -174,6 +176,8 @@ export type OnyxiaValues = {
                   topicName: string;
               }
             | undefined;
+        tolerations: unknown[] | undefined;
+        from: unknown[] | undefined;
     };
     k8s: {
         domain: string;

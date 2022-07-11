@@ -151,6 +151,12 @@ export function createOfficialOnyxiaApiClient(params: {
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
                             initScript: string;
+                            quotas?: {
+                                defaultConfiguration?: {
+                                    from?: unknown[];
+                                    tolerations?: unknown[];
+                                };
+                            };
                         };
                         data?: {
                             S3?: {
@@ -244,6 +250,9 @@ export function createOfficialOnyxiaApiClient(params: {
 
                             return { "url": URL, topicName };
                         })(),
+                        "from": region.services.quotas?.defaultConfiguration?.from,
+                        "tolerations":
+                            region.services.quotas?.defaultConfiguration?.tolerations,
                     })),
                 ),
         ),
