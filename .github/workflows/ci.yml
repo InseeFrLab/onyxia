@@ -109,9 +109,9 @@ jobs:
           )
           if [ "$IS_UPGRADED_VERSION" = "true" ]; then
             OUT=$OUT,$GITHUB_REPOSITORY:$TO_VERSION
-          fi
-          if [ "$IS_RELEASE_BETA" = "false" ]; then
-            OUT=$OUT,$GITHUB_REPOSITORY:latest
+            if [ "$IS_RELEASE_BETA" = "false" ]; then
+              OUT=$OUT,$GITHUB_REPOSITORY:latest
+            fi
           fi
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
           echo ::set-output name=docker_tags::$OUT
