@@ -148,6 +148,15 @@ export function createOfficialOnyxiaApiClient(params: {
                                 from?: unknown[];
                                 tolerations?: unknown[];
                                 nodeSelector?: Record<string, unknown>;
+                                startupProbe:
+                                    | {
+                                          failureThreshold: number | undefined;
+                                          initialDelaySeconds: number | undefined;
+                                          periodSeconds: number | undefined;
+                                          successThreshold: number | undefined;
+                                          timeoutSeconds: number | undefined;
+                                      }
+                                    | undefined;
                             };
                             monitoring?: {
                                 URLPattern?: string;
@@ -251,6 +260,8 @@ export function createOfficialOnyxiaApiClient(params: {
                         "tolerations": region.services?.defaultConfiguration?.tolerations,
                         "nodeSelector":
                             region.services.defaultConfiguration?.nodeSelector,
+                        "startupProbe":
+                            region.services.defaultConfiguration?.startupProbe,
                     })),
                 ),
         ),

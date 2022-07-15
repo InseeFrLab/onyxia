@@ -1057,6 +1057,7 @@ export const thunks = {
                     "from": selectedDeploymentRegion.from,
                     "tolerations": selectedDeploymentRegion.tolerations,
                     "nodeSelector": selectedDeploymentRegion.nodeSelector,
+                    "startupProbe": selectedDeploymentRegion.startupProbe,
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
