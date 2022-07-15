@@ -1056,6 +1056,7 @@ export const thunks = {
                     "kafka": selectedDeploymentRegion.kafka,
                     "from": selectedDeploymentRegion.from,
                     "tolerations": selectedDeploymentRegion.tolerations,
+                    "nodeSelector": selectedDeploymentRegion.nodeSelector,
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
