@@ -78,6 +78,7 @@ export type DeploymentRegion = {
         | undefined;
     tolerations: unknown[] | undefined;
     from: unknown[] | undefined;
+    nodeSelector: Record<string, unknown> | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -178,6 +179,7 @@ export type OnyxiaValues = {
             | undefined;
         tolerations: unknown[] | undefined;
         from: unknown[] | undefined;
+        nodeSelector: Record<string, unknown> | undefined;
     };
     k8s: {
         domain: string;
