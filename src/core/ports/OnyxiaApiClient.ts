@@ -79,15 +79,7 @@ export type DeploymentRegion = {
     tolerations: unknown[] | undefined;
     from: unknown[] | undefined;
     nodeSelector: Record<string, unknown> | undefined;
-    startupProbe:
-        | {
-              failureThreshold: number | undefined;
-              initialDelaySeconds: number | undefined;
-              periodSeconds: number | undefined;
-              successThreshold: number | undefined;
-              timeoutSeconds: number | undefined;
-          }
-        | undefined;
+    startupProbe: Record<string, unknown> | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -189,15 +181,7 @@ export type OnyxiaValues = {
         tolerations: unknown[] | undefined;
         from: unknown[] | undefined;
         nodeSelector: Record<string, unknown> | undefined;
-        startupProbe:
-            | {
-                  failureThreshold: number | undefined;
-                  initialDelaySeconds: number | undefined;
-                  periodSeconds: number | undefined;
-                  successThreshold: number | undefined;
-                  timeoutSeconds: number | undefined;
-              }
-            | undefined;
+        startupProbe: Record<string, unknown> | undefined;
     };
     k8s: {
         domain: string;
