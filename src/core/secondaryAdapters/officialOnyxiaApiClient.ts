@@ -330,10 +330,32 @@ export function createOfficialOnyxiaApiClient(params: {
                                 jsonSchemaObjectOrFormFieldDescription;
 
                             const assertWeHaveADefault = () => {
-                                assert(
-                                    jsonSchemaFormFieldDescription.default !== undefined,
-                                    `${path} has no default value`,
-                                );
+                                //NOTE: Actually, the default can be undefined in the value.schema.json
+                                //      but it would be to complicated to specify in the type system
+                                //      thus the any.
+                                if (
+                                    (jsonSchemaFormFieldDescription.default as any) !==
+                                    undefined
+                                ) {
+                                    return;
+                                }
+
+                                if (jsonSchemaFormFieldDescription.type === "string") {
+                                    jsonSchemaFormFieldDescription.default = "";
+                                    return;
+                                }
+
+                                if (jsonSchemaFormFieldDescription.type === "object") {
+                                    jsonSchemaFormFieldDescription.default = {};
+                                    return;
+                                }
+
+                                if (jsonSchemaFormFieldDescription.type === "array") {
+                                    jsonSchemaFormFieldDescription.default = [];
+                                    return;
+                                }
+
+                                assert(false, `${path} has no default value`);
                             };
 
                             const { overwriteDefaultWith } =
