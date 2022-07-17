@@ -111,7 +111,6 @@
         "start": "react-app-rewired start",
         "build": "react-app-rewired build yarn",
         "keycloak": "yarn build && build-keycloak-theme",
-        "eject": "react-scripts eject",
         "storybook": "start-storybook -p 6006 -s public",
         "postinstall": "generate-env-getter",
         "prestart": "generate-env-getter",
