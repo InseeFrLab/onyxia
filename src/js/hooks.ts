@@ -1,4 +1,4 @@
-import type { BuildMustacheViewParams } from "js/utils/form-field";
+import type { BuildOnyxiaValue } from "js/utils/form-field";
 import { useSelector, selectors } from "ui/coreApi";
 import { useThunks } from "ui/coreApi";
 import type { Store } from "core/setup";
@@ -6,13 +6,13 @@ import * as reactRedux from "react-redux";
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
 export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
 
-export function useGetBuildMustacheViewParams() {
+export function useGetBuildOnyxiaValue() {
     const { launcherThunks } = useThunks();
 
     const { userConfigs } = useSelector(selectors.userConfigs.userConfigs);
 
-    async function getBuildMustacheViewParams(): Promise<BuildMustacheViewParams> {
-        const mustacheParams = await launcherThunks.getMustacheParams();
+    async function getBuildOnyxiaValue(): Promise<BuildOnyxiaValue> {
+        const mustacheParams = await launcherThunks.getOnyxiaValues();
 
         return {
             "s3": {
@@ -41,5 +41,5 @@ export function useGetBuildMustacheViewParams() {
         };
     }
 
-    return { getBuildMustacheViewParams };
+    return { getBuildOnyxiaValue };
 }

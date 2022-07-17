@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { useGetBuildMustacheViewParams, useDispatch } from "js/hooks";
+import { useGetBuildOnyxiaValue, useDispatch } from "js/hooks";
 import { Resizable } from "re-resizable";
 import type { ResizableProps } from "re-resizable";
 import IconButton from "@mui/material/IconButton";
@@ -47,12 +47,12 @@ export const CloudShell = memo(() => {
 
     const { css } = useStyles();
 
-    const { getBuildMustacheViewParams } = useGetBuildMustacheViewParams();
+    const { getBuildOnyxiaValue } = useGetBuildOnyxiaValue();
 
     const launchCloudShell = useConstCallback(async () => {
         const axiosAuth = await prAxiosInstance;
 
-        const buildMustacheViewParams = await getBuildMustacheViewParams();
+        const buildOnyxiaValue = await getBuildOnyxiaValue();
 
         axiosAuth
             .get<CloudShellData>(`${restApiPaths.cloudShell}`)
@@ -70,7 +70,7 @@ export const CloudShell = memo(() => {
                                     ...catalogId,
                                 },
                                 "options": getValuesObject(
-                                    getOptions(buildMustacheViewParams, service, {}).fV,
+                                    getOptions(buildOnyxiaValue, service, {}).fV,
                                 ) as any,
                                 "dryRun": false,
                             }),
