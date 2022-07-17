@@ -370,7 +370,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 ? Mustache.render(overwriteDefaultWith, onyxiaValues)
                                 : getValueAtPathInObject({
                                       "path": overwriteDefaultWith.split("."),
-                                      "obj": onyxiaApiClient,
+                                      "obj": onyxiaValues,
                                   });
 
                             if (resolvedValue === undefined || resolvedValue === null) {
