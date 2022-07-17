@@ -1,3 +1,20 @@
+## **0.57.0** (2022-07-17)  
+  
+- Merge pull request #310 from InseeFrLab/new_value_shema_syntax
+
+New value shema syntax  
+- Do not restrict the type of startupProbe  
+- Add startupProbe  
+- Fix ci  
+- #307  
+- #311  
+- Add region.tolerations and region.from to onyxia form values  
+- Better error log when values.shema.json is not OK  
+- Be more resilient overriding defaults  
+- Be resilient if the path of overwriteDefaultWith dosen't exsits  
+- Release beta  
+- Implement new way to inject values in values.shema.json    
+  
 ### **0.56.7** (2022-07-08)  
   
 - Remove the use of 'locale' in JWT    
