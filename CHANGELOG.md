@@ -1,3 +1,7 @@
+### **0.57.1** (2022-07-17)  
+  
+- Allow string, object and array not to have a default in shema.values.json    
+  
 ## **0.57.0** (2022-07-17)  
   
 - Merge pull request #310 from InseeFrLab/new_value_shema_syntax
