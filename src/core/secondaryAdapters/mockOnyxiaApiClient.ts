@@ -31,18 +31,18 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "initScriptUrl":
                             "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                         "s3": undefined,
-
                         "allowedURIPatternForUserDefinedInitScript": "^https://",
                         "kafka": undefined,
+                        "from": undefined,
+                        "tolerations": undefined,
+                        "nodeSelector": undefined,
+                        "startupProbe": undefined,
                     },
                 ]),
             { "promise": true },
         ),
         ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),
-        ...createPropertyThatThrowIfAccessed(
-            "getPackageConfigJSONSchemaObjectWithRenderedMustachParamsFactory",
-            "Not mocked",
-        ),
+        ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getRunningServices", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("stopService", "Not mocked"),
