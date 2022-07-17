@@ -1,3 +1,7 @@
+### **0.57.2** (2022-07-17)  
+  
+- Fix major bug in form    
+  
 ### **0.57.1** (2022-07-17)  
   
 - Allow string, object and array not to have a default in shema.values.json    
