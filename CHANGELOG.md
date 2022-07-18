@@ -1,3 +1,8 @@
+## **0.58.0** (2022-07-18)  
+  
+- Render Terms as HTML  
+- Externalize Markdown component    
+  
 ### **0.57.3** (2022-07-17)  
   
   
