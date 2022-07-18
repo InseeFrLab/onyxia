@@ -4,7 +4,6 @@ import { Header } from "ui/components/shared/Header";
 import { LeftBar } from "ui/theme";
 import { Footer } from "./Footer";
 import { useLang } from "ui/i18n";
-import { getTosMarkdownUrl } from "ui/components/KcApp/getTosMarkdownUrl";
 import { makeStyles } from "ui/theme";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useSelector, useThunks } from "ui/coreApi";
@@ -18,6 +17,7 @@ import { Account } from "ui/components/pages/Account";
 import { FourOhFour } from "ui/components/pages/FourOhFour";
 import { Catalog } from "ui/components/pages/Catalog";
 import { MyServices } from "ui/components/pages/MyServices";
+import { Terms } from "ui/components/pages/Terms";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
@@ -95,12 +95,6 @@ export const App = memo((props: Props) => {
             ? userAuthenticationThunks.logout({ "redirectTo": "home" })
             : userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": false }),
     );
-
-    const { tosUrl } = (function useClosure() {
-        const { lang } = useLang();
-        const tosUrl = getTosMarkdownUrl(lang);
-        return { tosUrl };
-    })();
 
     const projectsSlice = useProjectsSlice();
 
@@ -263,7 +257,7 @@ export const App = memo((props: Props) => {
                 //NOTE: Defined in ./config-overrides.js
                 packageJsonVersion={process.env.VERSION!}
                 contributeUrl={"https://github.com/InseeFrLab/onyxia-web"}
-                tosUrl={tosUrl}
+                termsLink={routes.terms().link}
             />
             {isUserLoggedIn && <CloudShell />}
         </div>
@@ -424,6 +418,19 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
     {
         const Page = MyFilesMySecrets;
+
+        if (Page.routeGroup.has(route)) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                return null;
+            }
+
+            return <Page route={route} />;
+        }
+    }
+
+    {
+        const Page = Terms;
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {

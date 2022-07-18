@@ -117,6 +117,7 @@ const {
     | typeof import("ui/components/pages/MyServices/MyServicesCards").i18n
     | typeof import("ui/components/KcApp/Login/LoginDivider").i18n
     | typeof import("ui/components/pages/MyFilesMySecrets/MyFilesMySecrets").i18n
+    | typeof import("ui/components/pages/Terms").i18n
     | typeof import("ui/components/KcApp/Login").i18n
 >()(
     { languages, fallbackLanguage },
@@ -479,6 +480,10 @@ const {
             },
             "LoginDivider": {
                 "or": "or",
+            },
+            "Terms": {
+                "no terms":
+                    "No terms of service document provided for this instance of Onyxia",
             },
             "Login": {
                 "doRegister": "Create an account",
@@ -852,6 +857,10 @@ const {
             "LoginDivider": {
                 "or": "ou",
             },
+            "Terms": {
+                "no terms":
+                    "Pas de document de terms et condition fournis pour cette instance d'Onyxia",
+            },
             "Login": {
                 "doRegister": "Créer un compte",
             },
@@ -1186,6 +1195,9 @@ const {
             },
             "LoginDivider": {
                 "or": "或者",
+            },
+            "Terms": {
+                "no terms": undefined,
             },
             "Login": {
                 "doRegister": "创建帐户",

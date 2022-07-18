@@ -61,6 +61,7 @@
         "file-saver": "^2.0.2",
         "filereader-stream": "^2.0.0",
         "fontsource-roboto": "^3.0.3",
+        "i18nifty": "^1.3.4",
         "jsoneditor": "^9.0.0",
         "jsoneditor-react": "^3.0.0",
         "jwt-decode": "^2.2.0",
@@ -101,8 +102,7 @@
         "typeface-roboto": "^0.0.75",
         "url-join-ts": "^1.0.5",
         "yaml": "^2.0.1",
-        "zod": "^3.14.2",
-        "i18nifty": "^1.3.4"
+        "zod": "^3.14.2"
     },
     "resolutions": {
         "babel-loader": "8.1.0"

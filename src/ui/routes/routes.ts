@@ -73,6 +73,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             "myFiles": buildExplorerRoute("my-files"),
         };
     })(),
+    "terms": defineRoute("/terms"),
     //TODO: legacy
     ...(() => {
         const myBuckets = defineRoute("/mes-fichiers");
