@@ -5,16 +5,17 @@ import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
+import type { Link } from "type-route";
 
 export type Props = {
     className?: string;
-    packageJsonVersion: string;
     contributeUrl: string;
-    tosUrl: string | undefined;
+    packageJsonVersion: string;
+    termsLink: Link;
 };
 
 export const Footer = memo((props: Props) => {
-    const { contributeUrl, tosUrl, packageJsonVersion, className } = props;
+    const { className, contributeUrl, packageJsonVersion, termsLink } = props;
 
     const { classes, cx } = useStyles(props);
 
@@ -46,15 +47,11 @@ export const Footer = memo((props: Props) => {
                 changeLanguageText={t("change language")}
             />
             {spacing}
-            {tosUrl !== undefined && (
-                <>
-                    <a href={tosUrl} target="_blank" rel="noreferrer">
-                        {" "}
-                        <Text typo="body 2">{t("terms of service")}</Text>{" "}
-                    </a>
-                    {spacing}
-                </>
-            )}
+            <a {...termsLink} target="_blank" rel="noreferrer">
+                {" "}
+                <Text typo="body 2">{t("terms of service")}</Text>{" "}
+            </a>
+            {spacing}
             <a
                 href={`https://github.com/InseeFrLab/onyxia-web/tree/v${packageJsonVersion}`}
                 target="_blank"

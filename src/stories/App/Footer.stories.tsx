@@ -12,6 +12,9 @@ export default meta;
 
 export const Vue1 = getStory({
     "packageJsonVersion": "0.9.3",
-    "tosUrl": "#",
     "contributeUrl": "#",
+    "termsLink": {
+        "href": "https://example.com",
+        "onClick": () => {},
+    },
 });
