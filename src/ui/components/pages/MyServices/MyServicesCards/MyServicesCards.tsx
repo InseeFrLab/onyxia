@@ -11,7 +11,7 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { assert } from "tsafe/assert";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Button } from "ui/theme";
-import { Markdown } from "ui/tools/Markdown";
+import { Markdown } from "onyxia-ui/Markdown";
 import { symToStr } from "tsafe/symToStr";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
