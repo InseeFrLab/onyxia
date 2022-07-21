@@ -16,7 +16,7 @@ function getValueAtPathInObjectRec<T>(params: {
         return obj;
     }
 
-    if (obj instanceof Object) {
+    if (!(obj instanceof Object)) {
         return undefined;
     }
 
