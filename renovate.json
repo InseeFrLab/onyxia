@@ -1,10 +1,11 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "baseBranches": ["main"],
     "extends": ["config:base"],
     "dependencyDashboard": false,
     "bumpVersion": "patch",
     "rangeStrategy": "bump",
-    "ignorePaths": [".github/**", "Dockerfile", ".storybook/.compatibility"],
+    "ignorePaths": [".github/**", "Dockerfile"],
     "branchPrefix": "renovate_",
     "vulnerabilityAlerts": {
         "enabled": false
@@ -13,37 +14,38 @@
         {
             "packagePatterns": ["*"],
             "excludePackagePatterns": [
-                "onyxia-ui",
-                "i18nifty",
-                "redux-clean-architecture",
+                "minimal-polyfills",
                 "cra-envs",
-                "keycloakify",
-                "tss-react",
-                "powerhooks",
-                "tsafe",
                 "evt",
+                "i18nifty",
+                "keycloakify",
+                "onyxia-ui",
+                "powerhooks",
+                "redux-clean-architecture",
                 "run-exclusive",
-                "minimal-polyfills"
+                "tsafe",
+                "tss-react"
             ],
             "enabled": false
         },
         {
             "packagePatterns": [
-                "onyxia-ui",
-                "i18nifty",
-                "redux-clean-architecture",
+                "minimal-polyfills",
                 "cra-envs",
-                "keycloakify",
-                "tss-react",
-                "powerhooks",
-                "tsafe",
                 "evt",
+                "i18nifty",
+                "keycloakify",
+                "onyxia-ui",
+                "powerhooks",
+                "redux-clean-architecture",
                 "run-exclusive",
-                "minimal-polyfills"
+                "tsafe",
+                "tss-react"
             ],
             "matchUpdateTypes": ["minor", "patch"],
             "automerge": true,
-            "automergeType": "branch",
+            "automergeType": "pr",
+            "platformAutomerge": true,
             "groupName": "garronej_modules_update"
         }
     ]
