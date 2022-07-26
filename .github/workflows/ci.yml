@@ -135,9 +135,6 @@ jobs:
         needs.check_if_version_upgraded.outputs.is_release_beta == 'true'
       )
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.ref }}
     - uses: actions/download-artifact@v2
       with:
         name: keycloak_theme
