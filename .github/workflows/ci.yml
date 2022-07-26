@@ -144,7 +144,7 @@ jobs:
       with:
         name: standalone_keycloak_theme
     - run: mv *keycloak-theme*.jar jars/standalone-keycloak-theme.jar
-    - uses: garronej/action-gh-release@v0.2.0
+    - uses: softprops/action-gh-release@v0.1.14
       with:
         name: Release v${{ needs.check_if_version_upgraded.outputs.to_version }}
         tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
