@@ -21,15 +21,15 @@ jobs:
         node-version: '14'
     - uses: bahmutov/npm-install@v1
     - run: yarn build
-    - run: npx build-keycloak-theme --external-assets
-    - uses: actions/upload-artifact@v2
-      with:
-        name: keycloak_theme
-        path: build_keycloak/target/*keycloak-theme*.jar
     - run: npx build-keycloak-theme
     - uses: actions/upload-artifact@v2
       with:
         name: standalone_keycloak_theme
+        path: build_keycloak/target/*keycloak-theme*.jar
+    - run: npx build-keycloak-theme --external-assets
+    - uses: actions/upload-artifact@v2
+      with:
+        name: keycloak_theme
         path: build_keycloak/target/*keycloak-theme*.jar
     - uses: actions/upload-artifact@v2
       with:
@@ -40,7 +40,6 @@ jobs:
         echo ::set-output name=out::$(
           node -e 'console.log(require("./node_modules/cra-envs/package.json")["version"])'
         )
-
 #  deploy_storybook:
 #    runs-on: ubuntu-latest
 #    needs: build
