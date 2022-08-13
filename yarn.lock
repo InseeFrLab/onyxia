@@ -8897,12 +8897,12 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.3.9:
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.9.tgz#cf8abcabc05bf2a6268caeaf91c347af96ad275a"
-  integrity sha512-dQKxrsxpXTQWOXcDMeEWUR6r9uH9gVgcn+vmMgCP5d7XozQgYgjl1PA0j7IdS3oV9KSd6HW6W/ewVYynS3moEQ==
+i18nifty@^1.3.10:
+  version "1.3.10"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.10.tgz#e56d7c8989d47f878729b3539e0c3a4bea89079d"
+  integrity sha512-yZUzeUnMy7OOoGGUZd798onBYUPyTHxx4woACN+a0vJKCf0qMjdGB+llTH+2+oXOUqoK+s4KNvqDrNLp3JxH2w==
   dependencies:
-    powerhooks "^0.20.10"
+    powerhooks "^0.20.11"
     tsafe "^1.0.0"
 
 iconv-lite@0.4.24:
@@ -11778,10 +11778,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.46.10:
-  version "0.46.10"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.10.tgz#3e9f60e186efcff9a0098ddcbd40a22834674010"
-  integrity sha512-Wn/OAVIpsY0dRU6jirRXeTCNUzdbUXuz4Up+cWxEtXXfSBYsdipb74N5UcwQ3/zs8nsgVqXBengTWK2VPmIuPg==
+onyxia-ui@^0.46.11:
+  version "0.46.11"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.11.tgz#8077cd0d0ab1173832f7aae716b7d710ae2d1802"
+  integrity sha512-6XwIu0CJNuhqVXefBYr59m6NgUgNT9yqJoaKWJZrpiiyAgzuxtL98xKPbXVz1CsHSiCTQ57LOppUEwtEuirfZA==
   dependencies:
     "@mui/icons-material" "^5.8.2"
     color "3.1.3"
@@ -11789,7 +11789,7 @@ onyxia-ui@^0.46.10:
     material-design-icons "^3.0.1"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
-    powerhooks "^0.20.10"
+    powerhooks "^0.20.11"
     run-exclusive "^2.2.16"
     tsafe "^0.10.1"
     tss-react "^3.7.1"
@@ -13053,6 +13053,16 @@ powerhooks@^0.20.10:
     resize-observer-polyfill "^1.5.1"
     tsafe "^0.10.1"
 
+powerhooks@^0.20.11:
+  version "0.20.11"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.11.tgz#68f8dd2826e4bce09c5676a152b4779544780db9"
+  integrity sha512-nQOtMkQrccRnSO33eqjIPBl4OKljFRst1hOTRNajU6ZXVcJg4jbcKnXomfSplZHcjZqYjIF+GvPAlLnjcksnXg==
+  dependencies:
+    evt "^2.3.2"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^0.10.1"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -13913,12 +13923,12 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.5.tgz#1ffbf55e686e3eea3ee3e378ceb4e138ddcb71ee"
-  integrity sha512-G/FTyJ4ZIDnuP3i1H9n2J9HFWc6c4dOcAiBq4g24LkHNTdMU10Cq7qBAToj24H+GAm+bzEdwFbnqCLvu1xHTVw==
+redux-clean-architecture@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.6.tgz#1c1ce25ed52b00040b9e3cff6ede172a32249245"
+  integrity sha512-6mnH+EzMptBK1kXNX1FKvi4RbxpiP/mYQWFSuwPXuRBvJkhsePu279Bvda+uxBfRtjTxWATpSSrHio+d9YnHqA==
   dependencies:
-    evt "^2.3.1"
+    evt "^2.3.2"
     minimal-polyfills "^2.2.1"
     tsafe "^0.10.1"
 
