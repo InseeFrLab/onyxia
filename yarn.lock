@@ -7390,6 +7390,15 @@ evt@^2.3.1:
     run-exclusive "^2.2.16"
     tsafe "^0.10.1"
 
+evt@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.3.2.tgz#fe0b0b1838fb9f2471d97a2a99a6adeac13d8924"
+  integrity sha512-mR/NJLkAS3g3+413fxneJhwvN8Lbgy56ivBQTUa6JGNEqksNDcAG4CWQfTIFLH2/k98EYsKxWpOcorVJEjfDQQ==
+  dependencies:
+    minimal-polyfills "^2.2.1"
+    run-exclusive "^2.2.16"
+    tsafe "^1.0.0"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -8888,13 +8897,13 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.3.8:
-  version "1.3.8"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.8.tgz#b7c4ff1f488382c3a1d158ed81aa14362e1ccb7c"
-  integrity sha512-B1MX17NFDrvCeks2yuJ01JavAbP4IvB1lJd8SzVIuy08ED8fzF368wcBFZw1Xi+Rm2lISrg6MWUzB3yTMsqYNQ==
+i18nifty@^1.3.9:
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.9.tgz#cf8abcabc05bf2a6268caeaf91c347af96ad275a"
+  integrity sha512-dQKxrsxpXTQWOXcDMeEWUR6r9uH9gVgcn+vmMgCP5d7XozQgYgjl1PA0j7IdS3oV9KSd6HW6W/ewVYynS3moEQ==
   dependencies:
     powerhooks "^0.20.10"
-    tsafe "^0.10.1"
+    tsafe "^1.0.0"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -11769,14 +11778,14 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.46.9:
-  version "0.46.9"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.9.tgz#05b9c48886aa4a9d06db38616a8e6930151ba0b5"
-  integrity sha512-o1OBd0T7VXdsZ8QlwaJ1C1s1mayaU6TG+tziJRsmtZVa9Uxp6pSldehEoZVUDT7mQqKTPrnnIoRbpo7itJX5bg==
+onyxia-ui@^0.46.10:
+  version "0.46.10"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.10.tgz#3e9f60e186efcff9a0098ddcbd40a22834674010"
+  integrity sha512-Wn/OAVIpsY0dRU6jirRXeTCNUzdbUXuz4Up+cWxEtXXfSBYsdipb74N5UcwQ3/zs8nsgVqXBengTWK2VPmIuPg==
   dependencies:
     "@mui/icons-material" "^5.8.2"
     color "3.1.3"
-    evt "^2.3.1"
+    evt "^2.3.2"
     material-design-icons "^3.0.1"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.1"
@@ -15796,6 +15805,11 @@ tsafe@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.10.1.tgz#8f100b901e4467c43c0484f56a063f4276683ce0"
   integrity sha512-S+LrpSjoH5Pah201KS0MxtJn88HVtKf4ZxUoQuW/Hnl4IK6ALu9Qwjed7RbohDeHn+iMuug4c5Mk/z1Cq2G3nw==
+
+tsafe@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.0.0.tgz#ba214cd9d50e5ecd57af583e2ff210ba0bfb14ff"
+  integrity sha512-4I2CYBIENMzW+AUHK2BTeNCbERBpCwL957HN+v9vYMBdaSlnEclT6eEOYqQgQit0oHbA8mP3HY/efcX0Gu49eQ==
 
 tsconfig-paths@^3.11.0:
   version "3.12.0"
