@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "0.58.19",
+    "version": "0.58.20",
     "license": "MIT",
     "devDependencies": {
         "@storybook/addon-actions": "^6.1.11",
@@ -74,7 +74,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
         "node-sass": "^4.14.0",
-        "onyxia-ui": "^0.46.14",
+        "onyxia-ui": "^0.46.15",
         "path": "^0.12.7",
         "powerhooks": "^0.20.13",
         "public-ip": "^4.0.3",
@@ -91,7 +91,7 @@
         "react-scripts": "4.0.1",
         "react-time-ago": "^6.0.0",
         "react-toastify": "^6.0.8",
-        "redux-clean-architecture": "^1.2.7",
+        "redux-clean-architecture": "^1.2.8",
         "remove-accents": "^0.4.2",
         "resize-observer-polyfill": "^1.5.1",
         "run-exclusive": "^2.2.16",
