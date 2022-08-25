@@ -7408,6 +7408,15 @@ evt@^2.3.3:
     run-exclusive "^2.2.16"
     tsafe "^1.0.1"
 
+evt@^2.3.4:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.3.4.tgz#34cf46e3522223d09122e57472acbf5ea12acae2"
+  integrity sha512-enLfY+aJ4PcygUydutkzdnWY9Z+Au6Sg7YFucxi7Pu3JdiY3yZqcpheSj+Yj4jwxRMbkb+N53nRMF04eey1/sQ==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.16"
+    tsafe "^1.0.1"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -11145,6 +11154,11 @@ minimal-polyfills@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/minimal-polyfills/-/minimal-polyfills-2.2.1.tgz#7249d7ece666d3b4e1ec1c1b8f949eb9d44e2308"
   integrity sha512-WLmHQrsZob4rVYf8yHapZPNJZ3sspGa/sN8abuSD59b0FifDEE7HMfLUi24z7mPZqTpBXy4Svp+iGvAmclCmXg==
+
+minimal-polyfills@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/minimal-polyfills/-/minimal-polyfills-2.2.2.tgz#6b06a004acce420eb91cf94698f5e6e7f2518378"
+  integrity sha512-eEOUq/LH/DbLWihrxUP050Wi7H/N/I2dQT98Ep6SqOpmIbk4sXOI4wqalve66QoZa+6oljbZWU6I6T4dehQGmw==
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
