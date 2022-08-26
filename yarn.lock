@@ -7408,6 +7408,15 @@ evt@^2.3.4:
     run-exclusive "^2.2.16"
     tsafe "^1.0.1"
 
+evt@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.0.tgz#5052d3a685bba8f7e7be699b358c1781bd4037bf"
+  integrity sha512-1V8FnExwqzX2fufT793mHfCnQay078kRdAEDHzJz863pgJK9aeDiWXZFs5aKmzJfIgi+svevtApVnleZXz4Jeg==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.16"
+    tsafe "^1.0.1"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -13947,12 +13956,12 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^1.2.9:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.9.tgz#f3ede8642463119c5a8ad6f1f1e86dc415636dd8"
-  integrity sha512-8vBQCBeLy0eRE3MHpxc8rX3hB7SPgNjOgyl1y142V5lmAHaxKVT20u+2HK0RutHI5HOS0MaZ82J5CGh1HGGm8g==
+redux-clean-architecture@^1.2.10:
+  version "1.2.10"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.10.tgz#1f39f2b7463af15d220f39c4bb8f92425fbea735"
+  integrity sha512-zwv4NnlKu79FYW97Hc4Ybz5zN4BzFmpnRF4ZSA49mPyISbcfon9I2uogKtygv0tJEDWuHE6Nk5MRX8zdJvcC9Q==
   dependencies:
-    evt "^2.3.4"
+    evt "^2.4.0"
     minimal-polyfills "^2.2.2"
     tsafe "^1.0.1"
 
