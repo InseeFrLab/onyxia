@@ -11801,14 +11801,14 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.46.20:
-  version "0.46.20"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.20.tgz#d4513669e62a3f854dddfa2ba23ca3079cd2fd5f"
-  integrity sha512-yyEw9jaNif5wJmRoK5+UwtWcKkKru/kBrtiMw7sLCi/+1WeqXgXD/7u6+KhR3Rt5eWUWyEK4R9y870McHMk3jA==
+onyxia-ui@^0.46.21:
+  version "0.46.21"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.21.tgz#fdad5e1690d5a2f0cc321240a083dac83a898907"
+  integrity sha512-Yto+qKZgh1AkQj2qQjdWnYaj1O+UUzShu1sF4b0U9H/ohZuwLhCURVNrGd7l7zmbgzSlV0/QF3vDZZpVqctzng==
   dependencies:
     "@mui/icons-material" "^5.10.3"
     color "3.1.3"
-    evt "^2.4.0"
+    evt "^2.4.1"
     material-design-icons "^3.0.1"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
@@ -13096,6 +13096,16 @@ powerhooks@^0.20.15:
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.0.1"
 
+powerhooks@^0.20.16:
+  version "0.20.16"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.16.tgz#03aadcccb4f70ca1c768369c01b84197cfeb97aa"
+  integrity sha512-pCDaiGe5p3NrTvtelDBjrclJtjmLQlf99EjHPpQCeQ1H1ZmwQDxV8DaSbguQq0jc1PGcJ5D6Ts3gcEr/e680fg==
+  dependencies:
+    evt "^2.4.1"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.0.1"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -13956,12 +13966,12 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^1.2.10:
-  version "1.2.10"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.10.tgz#1f39f2b7463af15d220f39c4bb8f92425fbea735"
-  integrity sha512-zwv4NnlKu79FYW97Hc4Ybz5zN4BzFmpnRF4ZSA49mPyISbcfon9I2uogKtygv0tJEDWuHE6Nk5MRX8zdJvcC9Q==
+redux-clean-architecture@^1.2.11:
+  version "1.2.11"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.11.tgz#f67894827be33d2c660fe42df87ae722552e4a2f"
+  integrity sha512-pJCTRYpxCpr9pUlWhHQQulx0pk7pNaPSElE1ihANWDjnzOSeDufrdHI0JMOSG9EEom4FuxlPq523W5Aq0qyemA==
   dependencies:
-    evt "^2.4.0"
+    evt "^2.4.1"
     minimal-polyfills "^2.2.2"
     tsafe "^1.0.1"
 
