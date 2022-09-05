@@ -73,7 +73,7 @@
         "minio": "7.0.16",
         "moment": "^2.29.1",
         "mustache": "^4.0.1",
-        "node-sass": "^4.14.0",
+        "sass": "^1.54.8",
         "onyxia-ui": "^0.46.24",
         "path": "^0.12.7",
         "powerhooks": "^0.20.16",
