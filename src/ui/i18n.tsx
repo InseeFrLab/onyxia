@@ -99,6 +99,7 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountInfoTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountIntegrationsTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountK8sTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
@@ -127,6 +128,7 @@ const {
                 "infos": "Account infos",
                 "third-party-integration": "external services",
                 "storage": "Connect to storage",
+                "kubernetes": "Connect to Kubernetes",
                 "user-interface": "Interface preferences",
                 "text1": "My account",
                 "text2": "Access your different account information.",
@@ -175,6 +177,14 @@ const {
                     "To access your storage outside of datalab services",
                 "init script section helper":
                     "Download or copy the init script in the programming language of your choice.",
+                "valid until": ({ when }) => `Valid until ${when}`,
+            },
+            "AccountK8sTab": {
+                "kubernetes section title": "Connect to Kubernetes",
+                "kubernetes section helper": "Helper section",
+                "automatic script section helper": "To access to the kubernetes cluster",
+                "automatic script section title":
+                    "Download or copy the init script of your choice",
                 "valid until": ({ when }) => `Valid until ${when}`,
             },
             "AccountUserInterfaceTab": {
@@ -495,6 +505,7 @@ const {
                 "infos": "Information du compte",
                 "third-party-integration": "Services externes",
                 "storage": "Connexion au stockage",
+                "kubernetes": "Connexion à Kubernetes",
                 "user-interface": "Modes d'interface",
                 "text1": "Mon compte",
                 "text2": "Accèdez à vos différentes informations de compte.",
@@ -540,7 +551,16 @@ const {
                 "init script section title":
                     "Pour accèder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-                "valid until": ({ when }) => `Valides jusqu'a ${when}`,
+                "valid until": ({ when }) => `Valides jusqu'à ${when}`,
+            },
+            "AccountK8sTab": {
+                "kubernetes section title": "Connexion à Kubernetes",
+                "kubernetes section helper": "Section helper text",
+                "automatic script section helper":
+                    "Pour vous connecter au cluster kubernetes",
+                "automatic script section title":
+                    "Téléchargez ou copiez le script d'initialisation de votre choix",
+                "valid until": ({ when }) => `Valides jusqu'à ${when}`,
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -872,6 +892,7 @@ const {
                 "infos": "账号信息",
                 "third-party-integration": "外部服务",
                 "storage": "链接到储存器",
+                "kubernetes": "TO TRANSLATE Connexion to Kubernetes ",
                 "user-interface": "变换显示模式",
                 "text1": "我的账号",
                 "text2": "访问我的账号信息",
@@ -910,6 +931,13 @@ const {
                 "accessible as env": "可在您的服务中作为环境变量被访问",
                 "init script section title": "访问datalab服务之外的存储器",
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
+                "valid until": ({ when }) => `在 ${when} 前有效`,
+            },
+            "AccountK8sTab": {
+                "kubernetes section title": "TO TRANSLATE",
+                "kubernetes section helper": "TO TRANSLATE",
+                "automatic script section helper": "TO TRANSLATE",
+                "automatic script section title": "TO TRANSLATE",
                 "valid until": ({ when }) => `在 ${when} 前有效`,
             },
             "AccountUserInterfaceTab": {

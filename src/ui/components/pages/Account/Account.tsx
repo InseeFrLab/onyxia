@@ -14,6 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
+import { AccountK8sTab } from "./tabs/AccountK8sTab";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -66,6 +67,8 @@ export function Account(props: Props) {
                             return <AccountStorageTab />;
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
+                        case "kubernetes":
+                            return <AccountK8sTab />;
                     }
                 })()}
             </Tabs>

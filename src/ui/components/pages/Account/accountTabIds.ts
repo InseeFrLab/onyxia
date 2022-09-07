@@ -3,6 +3,7 @@ export const accountTabIds = [
     "third-party-integration",
     "storage",
     "user-interface",
+    "kubernetes",
 ] as const;
 
 export type AccountTabId = typeof accountTabIds[number];
