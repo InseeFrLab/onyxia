@@ -19,6 +19,7 @@ import { CoreProvider } from "ui/coreApi/CoreProvider";
 import { RouteProvider } from "ui/routes";
 import { useLang, fallbackLanguage, languages } from "ui/i18n";
 import type { Language } from "ui/i18n";
+import type { ReactNode } from "react";
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
@@ -73,9 +74,10 @@ export function getStoryFactory<Props>(params: {
         );
     }
 
-    const StoreProviderOrFragment: React.ComponentType = !doUseLib
-        ? ({ children }) => <>{children}</>
-        : ({ children }) => <CoreProvider>{children}</CoreProvider>;
+    const StoreProviderOrFragment: React.ComponentType<{ children: ReactNode }> =
+        !doUseLib
+            ? ({ children }) => <>{children}</>
+            : ({ children }) => <CoreProvider>{children}</CoreProvider>;
 
     const title = `${sectionName}/${symToStr(wrappedComponent)}`;
 

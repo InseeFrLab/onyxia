@@ -50,6 +50,7 @@ const Message: React.FunctionComponent<{
     id?: string;
     nom?: string;
     color?: string;
+    children?: React.ReactNode;
 }> = ({ nom, id, color = "vert", icon, children }) => (
     <div className="message-service">
         {!icon ? null : (

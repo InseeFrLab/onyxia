@@ -8,7 +8,7 @@ import { Breadcrump } from "onyxia-ui/Breadcrump";
 import type { BreadcrumpProps } from "onyxia-ui/Breadcrump";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin, basename as pathBasename } from "core/tools/path";
 import { useTranslation } from "ui/i18n";
 import { ApiLogsBar } from "./ApiLogsBar";
 import {

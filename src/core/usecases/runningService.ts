@@ -50,8 +50,10 @@ export declare namespace RunningService {
     };
 }
 
-export const { name, reducer, actions } = createSlice({
-    "name": "runningService",
+export const name = "runningService";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<RunningServicesState>({
         "isUserWatching": false,
         "isUpdating": false,
