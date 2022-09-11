@@ -19,8 +19,10 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { name, reducer, actions } = createSlice({
-    "name": "deploymentRegion",
+export const name = "deploymentRegion";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
         "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,

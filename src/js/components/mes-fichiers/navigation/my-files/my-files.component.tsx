@@ -271,7 +271,7 @@ export class MyFiles extends React.Component<Props, State> {
                     }
                 }
             } catch ({ code, name, ...rest }) {
-                console.debug("debug", { code, name, ...rest });
+                console.debug("debug", { code, name, ...(rest as any) });
                 if (code === "NoSuchBucketPolicy") {
                     await minioTools.initBucketPolicy(bucketName);
                     await this.checkFolderStatus();
@@ -504,8 +504,10 @@ const DialogShare: React.FC<{
     bucket: string;
     onClose: () => void;
 }> = ({ visible, bucket, onClose }) => {
-    const [signedData, setSignedData] =
-        React.useState<{ postURL: string; formData: Record<string, string> }>();
+    const [signedData, setSignedData] = React.useState<{
+        postURL: string;
+        formData: Record<string, string>;
+    }>();
     const [folder, setFolder] = React.useState("");
     const [duration, setDuration] = React.useState(12 * 3600);
 

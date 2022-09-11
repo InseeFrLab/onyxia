@@ -113,7 +113,7 @@ export const HidablePane: React.FC<{
                 [className]: className,
             })}
             onMouseEnter={useCallback(
-                event => {
+                (event: any) => {
                     event.stopPropagation();
                     if (!isDisplayed) {
                         return;
@@ -123,7 +123,7 @@ export const HidablePane: React.FC<{
                 [isDisplayed, display],
             )}
             onMouseLeave={useCallback(
-                event => {
+                (event: any) => {
                     event.stopPropagation();
                     hide("panel");
                 },
@@ -138,7 +138,7 @@ export const HidablePane: React.FC<{
                     onClick={postProcessing}
                     onChange={postProcessing}
                 >
-                    {props.children}
+                    {(props as any).children}
                 </Paper>
             </Fade>
         </div>

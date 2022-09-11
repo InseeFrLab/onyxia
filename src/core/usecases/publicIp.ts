@@ -6,8 +6,10 @@ import { Evt } from "evt";
 
 type PublicIpState = string | null;
 
-export const { name, reducer, actions } = createSlice({
-    "name": "publicIp",
+export const name = "publicIp";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<PublicIpState>(null),
     "reducers": {
         "fetched": (_, { payload }: PayloadAction<string>) => payload,

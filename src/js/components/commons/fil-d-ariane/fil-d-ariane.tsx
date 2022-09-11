@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { Icon } from "@mui/material";
-import "./fil-d-ariane.scss";
 import D from "js/i18n";
 import { routes } from "ui/routes";
 

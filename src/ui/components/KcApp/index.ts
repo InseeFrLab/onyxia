@@ -1,2 +1,3 @@
+import { KcApp } from "./KcApp";
 export * from "./KcApp";
-export { kcContext } from "./kcContext";
+export default KcApp;

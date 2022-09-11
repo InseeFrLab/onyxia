@@ -295,12 +295,9 @@ export async function createStore(params: CreateStoreParams) {
     const store = configureStore({
         "reducer": usecasesToReducer(usecases),
         "middleware": getDefaultMiddleware =>
-            [
-                ...getDefaultMiddleware({
-                    "thunk": { extraArgument },
-                }),
+            getDefaultMiddleware({ "thunk": { extraArgument } }).concat(
                 middlewareEvtAction,
-            ] as const,
+            ),
     });
 
     dStoreInstance.resolve(store);
