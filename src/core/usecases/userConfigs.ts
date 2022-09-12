@@ -11,7 +11,7 @@ import {
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import type { RootState } from "../setup";
-import { join as pathJoin } from "core/tools/path";
+import { join as pathJoin } from "path";
 
 /*
  * Values of the user profile that can be changed.

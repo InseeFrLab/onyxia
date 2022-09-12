@@ -8,7 +8,7 @@ import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename,
-} from "core/tools/path";
+} from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
