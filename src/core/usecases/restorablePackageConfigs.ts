@@ -306,9 +306,10 @@ export const selectors = (() => {
                 const { packageName, catalogId } = restorablePackageConfig;
 
                 return {
-                    "logoUrl": !packageIcons.areFetched
-                        ? undefined
-                        : packageIcons.iconsUrl[catalogId][packageName],
+                    "logoUrl":
+                        !packageIcons.areFetched || !packageIcons.iconsUrl[catalogId]
+                            ? undefined
+                            : packageIcons.iconsUrl[catalogId][packageName],
                     "friendlyName": (() => {
                         const friendlyName =
                             restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
