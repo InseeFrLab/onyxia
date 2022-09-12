@@ -237,8 +237,8 @@ export const selectors = (() => {
 
         const catalog = state["~internal"].catalogs
             .filter(({ id }) => id === selectedCatalogId || state.search !== "")
-            .map(e => e.catalog.packages)
-            .reduce((r, e) => r.concat(e), []);
+            .map(catalog => catalog.catalog.packages)
+            .reduce((accumulator, packages) => accumulator.concat(packages), []);
 
         const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
 
