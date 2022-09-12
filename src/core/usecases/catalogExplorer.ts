@@ -236,7 +236,7 @@ export const selectors = (() => {
         } = state;
 
         const catalog = state["~internal"].catalogs.find(
-            ({ id }) => id === selectedCatalogId,
+            ({ id }) => id === selectedCatalogId || state.search !== "",
         )!.catalog.packages;
 
         const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
