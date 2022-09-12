@@ -1,4 +1,4 @@
-import { join as pathJoin, relative as pathRelative } from "core/tools/path";
+import { join as pathJoin, relative as pathRelative } from "path";
 import { partition } from "evt/tools/reducers/partition";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManagerClient";
