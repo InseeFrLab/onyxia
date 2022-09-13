@@ -8,7 +8,7 @@ import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename,
-} from "path";
+} from "core/tools/path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
@@ -67,8 +67,10 @@ export type ExplorersState = Record<
     };
 };
 
-export const { name, reducer, actions } = createSlice({
-    "name": "explorers",
+export const name = "explorers";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<ExplorersState>(
         (() => {
             const contextualState = {

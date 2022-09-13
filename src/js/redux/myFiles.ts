@@ -87,7 +87,7 @@ export const asyncThunks = {
                                       "directory": object as any,
                                   }) //TODO
                                 : actions.addObjectToCurrentBucket({
-                                      object,
+                                      "object": object as any,
                                   }),
                         ),
                     );

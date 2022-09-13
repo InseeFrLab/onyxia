@@ -1,7 +1,7 @@
 import type { ThunkAction } from "../setup";
 import { Id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "core/tools/path";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { hiddenDirectoryBasename } from "./userConfigs";
 
