@@ -82,6 +82,13 @@ export const CatalogExplorerCards = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
+            <SearchBar
+                className={classes.searchBar}
+                search={search}
+                evtAction={evtSearchBarAction}
+                onSearchChange={onSearchChange}
+                placeholder={t("search")}
+            />
             {catalogs.length > 1 && (
                 <div className={classes.catalogSwitcher}>
                     {catalogs.map(({ id, name }) => (
@@ -94,13 +101,6 @@ export const CatalogExplorerCards = memo((props: Props) => {
                     ))}
                 </div>
             )}
-            <SearchBar
-                className={classes.searchBar}
-                search={search}
-                evtAction={evtSearchBarAction}
-                onSearchChange={onSearchChange}
-                placeholder={t("search")}
-            />
             <div ref={scrollableDivRef} className={classes.cardsWrapper}>
                 {packages.length === 0 ? undefined : (
                     <Text typo="section heading" className={classes.contextTypo}>
