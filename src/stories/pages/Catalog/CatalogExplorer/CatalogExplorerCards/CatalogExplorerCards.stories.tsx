@@ -34,6 +34,7 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
         `
                 : ""),
         "packageHomeUrl": "https://example.com",
+        "catalogId": "helm-charts-datascience",
         /* spell-checker: enable */
     }),
 );

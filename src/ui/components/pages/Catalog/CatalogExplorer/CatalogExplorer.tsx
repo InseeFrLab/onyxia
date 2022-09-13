@@ -76,9 +76,7 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const onRequestLaunch = useConstCallback<
         CatalogExplorerCardsProps["onRequestLaunch"]
-    >(packageName => {
-        const { catalogId } = route.params;
-
+    >((packageName, catalogId) => {
         assert(catalogId !== undefined);
 
         routes
