@@ -4,7 +4,7 @@ import { id } from "tsafe/id";
 import type { ThunkAction } from "../setup";
 import type { SecretWithMetadata } from "core/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
-import { join as pathJoin } from "core/tools/path";
+import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 

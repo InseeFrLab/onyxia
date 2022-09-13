@@ -10,7 +10,7 @@ import * as Minio from "minio";
 import { parseUrl } from "core/tools/parseUrl";
 import memoize from "memoizee";
 import type { ApiLogger } from "core/tools/apiLogger";
-import { join as pathJoin } from "core/tools/path";
+import { join as pathJoin } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
 import type { NonPostableEvt } from "evt";
