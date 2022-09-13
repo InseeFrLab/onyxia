@@ -1,7 +1,10 @@
-import type { ReturnType as TsafeReturnType } from "tsafe/ReturnType";
 import type { NonPostableEvt, UnpackEvt } from "evt";
 import { Evt } from "evt";
-import type { MethodNames } from "tsafe";
+import type {
+    MethodNames,
+    ReturnType as TsafeReturnType,
+    Parameters as TsafeParameters,
+} from "tsafe";
 import { is } from "tsafe/is";
 import { assert } from "tsafe/assert";
 import memoize from "memoizee";
@@ -19,6 +22,9 @@ export type ApiLogs = {
     }[];
 };
 
+type Parameters<T> = T extends (...args: any) => any ? TsafeParameters<T> : never;
+type ReturnType<T> = T extends (...args: any) => any ? TsafeReturnType<T> : never;
+
 export type ApiLogger<Api extends Record<string, unknown>> = {
     initialHistory: readonly {
         cmd: string;
@@ -26,11 +32,11 @@ export type ApiLogger<Api extends Record<string, unknown>> = {
     }[];
     methods: {
         [K in MethodNames<Api>]: {
-            buildCmd(...args: Parameters<Api[K]>): string;
-            fmtResult(params: {
+            buildCmd: (...args: Parameters<Api[K]>) => string;
+            fmtResult: (params: {
                 inputs: Parameters<Api[K]>;
-                result: TsafeReturnType<Api[K]>;
-            }): string;
+                result: ReturnType<Api[K]>;
+            }) => string;
         };
     };
 };
@@ -61,7 +67,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                     const methodProxy = async (
                         ...inputs: Parameters<Api[MethodName]>
                     ) => {
-                        const runMethod = () => api[methodName](...inputs);
+                        const runMethod = () => (api[methodName] as any)(...inputs);
 
                         const cmdId = getCounter();
 

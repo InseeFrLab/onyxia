@@ -10,7 +10,7 @@ type OidcTokens = Readonly<{
 }>;
 
 // Disable mustache html escaping
-Mustache.escape = text => text;
+(Mustache as any).escape = (text: any) => text;
 
 export const getFieldSafeAttr = (field: Record<string, Field>) => {
     const media = (field.media && field.media.type && field.media.type) || "";

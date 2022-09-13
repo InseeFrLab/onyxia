@@ -11,7 +11,7 @@ import {
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import type { RootState } from "../setup";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "core/tools/path";
 
 /*
  * Values of the user profile that can be changed.
@@ -48,8 +48,10 @@ export type UserConfigsState = {
     };
 };
 
-export const { name, reducer, actions } = createSlice({
-    "name": "userConfigs",
+export const name = "userConfigs";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage":
             "The userConfigState should have been initialized during the store initialization",
