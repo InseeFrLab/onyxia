@@ -76,16 +76,14 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const onRequestLaunch = useConstCallback<
         CatalogExplorerCardsProps["onRequestLaunch"]
-    >((packageName, catalogId) => {
-        assert(catalogId !== undefined);
-
+    >(({ packageName, catalogId }) =>
         routes
             .catalogLauncher({
                 catalogId,
                 packageName,
             })
-            .push();
-    });
+            .push(),
+    );
 
     const onSearchChange = useConstCallback<CatalogExplorerCardsProps["onSearchChange"]>(
         search =>
