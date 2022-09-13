@@ -28,7 +28,7 @@ export type Props = {
     }[];
     search: string;
     onSearchChange: (search: string) => void;
-    onRequestLaunch: (packageName: string, catalogId: string) => void;
+    onRequestLaunch: (params: { packageName: string; catalogId: string }) => void;
     onRequestRevealPackagesNotShown: () => void;
     selectedCatalogId: string;
     catalogs: {
@@ -57,7 +57,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
 
     const onRequestLaunchFactory = useCallbackFactory(
         ([packageName, catalogId]: [string, string]) =>
-            onRequestLaunch(packageName, catalogId),
+            onRequestLaunch({ packageName, catalogId }),
     );
 
     const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
