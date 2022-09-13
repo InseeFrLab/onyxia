@@ -39,7 +39,7 @@ npx tsc -w
 to enable realtime compilation. 
 */
 import { execSync } from "child_process";
-import { join as pathJoin, relative as pathRelative } from "core/tools/path";
+import { join as pathJoin, relative as pathRelative } from "path";
 import * as fs from "fs";
 
 const webAppProjectRootDirPath = pathJoin(__dirname, "..", "..");
