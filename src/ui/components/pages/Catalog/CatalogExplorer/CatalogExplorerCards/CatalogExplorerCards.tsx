@@ -24,10 +24,11 @@ export type Props = {
         packageIconUrl?: string;
         packageDescription: string;
         packageHomeUrl?: string;
+        catalogId: string;
     }[];
     search: string;
     onSearchChange: (search: string) => void;
-    onRequestLaunch: (packageName: string) => void;
+    onRequestLaunch: (packageName: string, catalogId: string) => void;
     onRequestRevealPackagesNotShown: () => void;
     selectedCatalogId: string;
     catalogs: {
@@ -54,8 +55,9 @@ export const CatalogExplorerCards = memo((props: Props) => {
         notShownPackageCount,
     } = props;
 
-    const onRequestLaunchFactory = useCallbackFactory(([packageName]: [string]) =>
-        onRequestLaunch(packageName),
+    const onRequestLaunchFactory = useCallbackFactory(
+        ([packageName, catalogId]: [string, string]) =>
+            onRequestLaunch(packageName, catalogId),
     );
 
     const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
@@ -80,6 +82,13 @@ export const CatalogExplorerCards = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
+            <SearchBar
+                className={classes.searchBar}
+                search={search}
+                evtAction={evtSearchBarAction}
+                onSearchChange={onSearchChange}
+                placeholder={t("search")}
+            />
             {catalogs.length > 1 && (
                 <div className={classes.catalogSwitcher}>
                     {catalogs.map(({ id, name }) => (
@@ -92,13 +101,6 @@ export const CatalogExplorerCards = memo((props: Props) => {
                     ))}
                 </div>
             )}
-            <SearchBar
-                className={classes.searchBar}
-                search={search}
-                evtAction={evtSearchBarAction}
-                onSearchChange={onSearchChange}
-                placeholder={t("search")}
-            />
             <div ref={scrollableDivRef} className={classes.cardsWrapper}>
                 {packages.length === 0 ? undefined : (
                     <Text typo="section heading" className={classes.contextTypo}>
@@ -121,13 +123,17 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                 packageIconUrl,
                                 packageDescription,
                                 packageHomeUrl,
+                                catalogId,
                             }) => (
                                 <CatalogExplorerCard
-                                    key={packageName}
+                                    key={catalogId + "/" + packageName}
                                     packageIconUrl={packageIconUrl}
                                     packageName={packageName}
                                     packageDescription={packageDescription}
-                                    onRequestLaunch={onRequestLaunchFactory(packageName)}
+                                    onRequestLaunch={onRequestLaunchFactory(
+                                        packageName,
+                                        catalogId,
+                                    )}
                                     packageHomeUrl={packageHomeUrl}
                                 />
                             ),
