@@ -152,20 +152,6 @@ export const CatalogExplorerCards = memo((props: Props) => {
     );
 });
 
-export declare namespace CatalogExplorerCards {
-    export type I18nScheme = {
-        "main services": undefined;
-        "all services": undefined;
-        "search results": undefined;
-        "show more": undefined;
-        "no service found": undefined;
-        "no result found": { forWhat: string };
-        "check spelling": undefined;
-        "go back": undefined;
-        "search": undefined;
-    };
-}
-
 export const { i18n } = declareComponentKeys<
     | "main services"
     | "all services"

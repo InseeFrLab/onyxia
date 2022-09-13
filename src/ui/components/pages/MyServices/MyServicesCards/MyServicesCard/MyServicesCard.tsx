@@ -266,20 +266,6 @@ export const MyServicesCard = memo((props: Props) => {
     );
 });
 
-export declare namespace MyServicesCard {
-    export type I18nScheme = {
-        service: undefined;
-        "running since": undefined;
-        open: undefined;
-        readme: undefined;
-        "shared by you": undefined;
-        "which token expire when": { which: "vault" | "s3"; howMuchTime: string };
-        "which token expired": { which: "vault" | "s3" };
-        "reminder to delete services": undefined;
-        "this is a shared service": undefined;
-    };
-}
-
 export const { i18n } = declareComponentKeys<
     | "service"
     | "running since"
