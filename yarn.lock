@@ -10376,23 +10376,25 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^5.9.3:
-  version "5.9.3"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-5.9.3.tgz#c1349fb418502aaac5613430aff8637fecc9f06e"
-  integrity sha512-Xn/UZlpzgr389uOU7NnrC9CuvtiDBgb0CgQbCqGTagmXy/eIyLSZ0jYzGD3qy3Jdu1ZTDH6JTks+eVctJYuc4A==
+keycloakify@^6.3.6:
+  version "6.3.6"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.3.6.tgz#9c6d6d7df46e31ac20d72a62bc316d83e0ba6688"
+  integrity sha512-khve8U8/KVV6unxde55wpqZnTq+2YIloyaOefUyq2Jl+vO8XyauBfic6Du9dVu8rPweF0Zq1RtYKp+3h5++Hqg==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
     cli-select "^1.1.2"
-    evt "^2.4.1"
+    evt "^2.4.2"
     memoizee "^0.4.15"
-    minimal-polyfills "^2.2.1"
+    minimal-polyfills "^2.2.2"
+    minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.20.16"
+    powerhooks "^0.20.17"
     react-markdown "^5.0.3"
     scripting-tools "^0.19.13"
-    tsafe "^0.10.1"
-    tss-react "^3.7.1"
+    tsafe "^1.0.1"
+    tss-react "^4.1.3"
+    zod "^3.17.10"
 
 keyv@^3.0.0:
   version "3.1.0"
@@ -12662,7 +12664,7 @@ postcss@^8.3.5, postcss@^8.4.14, postcss@^8.4.4, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.20.11, powerhooks@^0.20.16, powerhooks@^0.20.17:
+powerhooks@^0.20.11, powerhooks@^0.20.17:
   version "0.20.17"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.17.tgz#bf9fd0c4a7f21a61aabbfc249a6d631cd1c06006"
   integrity sha512-c65WYqmSmjFQBLIgHN5nHDryVSU3ARII2C8nNX2cOYFsvzp+MvQJSAP1i1159U9RvuP1iayuUiQRk4nVwZYSlg==
@@ -15189,11 +15191,6 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsafe@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-0.10.1.tgz#8f100b901e4467c43c0484f56a063f4276683ce0"
-  integrity sha512-S+LrpSjoH5Pah201KS0MxtJn88HVtKf4ZxUoQuW/Hnl4IK6ALu9Qwjed7RbohDeHn+iMuug4c5Mk/z1Cq2G3nw==
-
 tsafe@^1.0.0, tsafe@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.0.1.tgz#c8c4eb2d75d1478418a4941307c5dd667fd76d23"
@@ -16499,7 +16496,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zod@^3.19.0:
+zod@^3.17.10, zod@^3.19.0:
   version "3.19.1"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.19.1.tgz#112f074a97b50bfc4772d4ad1576814bd8ac4473"
   integrity sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==

@@ -1,4 +1,4 @@
-import { KcApp } from "ui/components/KcApp";
+import KcApp from "ui/components/KcApp";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { kcContextLogin, kcContextRegister } from "./kcContexts";
