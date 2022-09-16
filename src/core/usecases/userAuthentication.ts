@@ -13,7 +13,7 @@ export const thunks = {
         (...args) => {
             const [, , extraArg] = args;
 
-            const { user } = getSliceContexts(extraArg);
+            const { user } = getSliceContext(extraArg);
 
             assert(user !== undefined, "Can't use getUser when not authenticated");
 
@@ -53,7 +53,7 @@ export const thunks = {
         (...args) => {
             const [, , extraArgs] = args;
 
-            return getSliceContexts(extraArgs).keycloakAccountConfigurationUrl;
+            return getSliceContext(extraArgs).keycloakAccountConfigurationUrl;
         },
 };
 
@@ -88,10 +88,10 @@ type SliceContext = {
     keycloakAccountConfigurationUrl: string | undefined;
 };
 
-const { getSliceContexts, setSliceContext } = (() => {
+const { getSliceContext, setSliceContext } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
 
-    function getSliceContexts(extraArg: ThunksExtraArgument): SliceContext {
+    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
         const sliceContext = weakMap.get(extraArg);
 
         assert(sliceContext !== undefined, "Slice context not initialized");
@@ -106,5 +106,5 @@ const { getSliceContexts, setSliceContext } = (() => {
         weakMap.set(extraArg, sliceContext);
     }
 
-    return { getSliceContexts, setSliceContext };
+    return { getSliceContext, setSliceContext };
 })();

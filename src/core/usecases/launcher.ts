@@ -1026,7 +1026,7 @@ export const thunks = {
                 "vault": await (async () => {
                     const vaultParams = !("vaultParams" in createStoreParams)
                         ? undefined
-                        : createStoreParams.vaultParams;
+                        : selectedDeploymentRegion.vault;
 
                     if (vaultParams === undefined) {
                         return {
@@ -1040,7 +1040,7 @@ export const thunks = {
                     return {
                         "VAULT_ADDR": vaultParams.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
-                        "VAULT_MOUNT": vaultParams.engine,
+                        "VAULT_MOUNT": vaultParams.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
                             explorersThunks.getProjectHomePath({
                                 "explorerType": "secrets",

@@ -25,7 +25,10 @@ import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
-import { createKeycloakOidcClient } from "./secondaryAdapters/keycloakOidcClient";
+import {
+    createKeycloakOidcClient,
+    creatOrFallbackOidcClient,
+} from "./secondaryAdapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
 import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
@@ -71,21 +74,6 @@ export type CreateStoreParams = {
      * when it's the first time the user logs in and the value hasn't been stored yet in vault.
      * */
     getIsDarkModeEnabledValueForProfileInitialization: () => boolean;
-    vaultParams:
-        | undefined
-        | {
-              url: string;
-              engine: string;
-              role: string;
-              /** If undefined we will use the root keycloakParams if any */
-              keycloakParams:
-                  | undefined
-                  | {
-                        url?: string;
-                        realm?: string;
-                        clientId: string;
-                    };
-          };
     highlightedPackages: string[];
     evtUserActivity: NonPostableEvt<void>;
     //NOTE: The s3 params are provided by the region.
@@ -218,74 +206,16 @@ export async function createStore(params: CreateStoreParams) {
                       }),
               });
 
-    const secretsManagerClient = !oidcClient.isUserLoggedIn
-        ? createObjectThatThrowsIfAccessed<SecretsManagerClient>({
-              "debugMessage": "User is not logged, we should't access the secret manager",
-          })
-        : params.vaultParams === undefined
-        ? createLocalStorageSecretManagerClient()
-        : await createVaultSecretsManagerClient(
-              (() => {
-                  const { url, engine, role, keycloakParams } = params.vaultParams;
-
-                  return {
-                      engine,
-                      role,
-                      url,
-                      "oidc": (() => {
-                          const fallbackKeycloakParams =
-                              params.userAuthenticationParams.method !== "keycloak"
-                                  ? undefined
-                                  : params.userAuthenticationParams.keycloakParams;
-
-                          const url = keycloakParams?.url ?? fallbackKeycloakParams?.url;
-                          const clientId =
-                              keycloakParams?.clientId ??
-                              fallbackKeycloakParams?.clientId;
-                          const realm =
-                              keycloakParams?.realm ?? fallbackKeycloakParams?.realm;
-
-                          assert(
-                              url !== undefined &&
-                                  clientId !== undefined &&
-                                  realm !== undefined,
-                              "There is no specific keycloak config for Vault and no keycloak config to fallback to",
-                          );
-
-                          if (
-                              fallbackKeycloakParams !== undefined &&
-                              fallbackKeycloakParams.url === url &&
-                              fallbackKeycloakParams.realm === realm &&
-                              fallbackKeycloakParams.clientId === clientId
-                          ) {
-                              return {
-                                  "type": "oidc client",
-                                  oidcClient,
-                              } as const;
-                          }
-
-                          return {
-                              "type": "keycloak params",
-                              "keycloakParams": {
-                                  url,
-                                  clientId,
-                                  realm,
-                              },
-                              evtUserActivity,
-                          } as const;
-                      })(),
-                  };
-              })(),
-          );
-
     const { evtAction, middlewareEvtAction } = createMiddlewareEvtAction();
 
     const extraArgument: ThunksExtraArgument = {
         "createStoreParams": params,
         oidcClient,
         onyxiaApiClient,
-        secretsManagerClient,
         userApiClient,
+        "secretsManagerClient": createObjectThatThrowsIfAccessed<SecretsManagerClient>({
+            "debugMessage": "secretsManagerClient is not yet initialized",
+        }),
         "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
             "debugMessage": "s3 client is not yet initialized",
         }),
@@ -303,13 +233,6 @@ export async function createStore(params: CreateStoreParams) {
     dStoreInstance.resolve(store);
 
     await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
-    if (oidcClient.isUserLoggedIn) {
-        await store.dispatch(userConfigsUseCase.privateThunks.initialize());
-    }
-
-    if (oidcClient.isUserLoggedIn) {
-        store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
-    }
 
     await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
 
@@ -319,37 +242,54 @@ export async function createStore(params: CreateStoreParams) {
     }
 
     if (oidcClient.isUserLoggedIn) {
-        const { s3: s3Params } =
+        const { s3: s3Params, vault: vaultParams } =
             deploymentRegionUseCase.selectors.selectedDeploymentRegion(store.getState());
+
+        const fallbackOidc =
+            params.userAuthenticationParams.method !== "keycloak"
+                ? undefined
+                : {
+                      "keycloakParams": params.userAuthenticationParams.keycloakParams,
+                      "oidcClient": oidcClient,
+                  };
 
         extraArgument.s3Client =
             s3Params === undefined
                 ? createDummyS3Client()
                 : await createS3Client({
-                      ...getCreateS3ClientParams({
-                          s3Params,
-                          "fallbackOidc":
-                              params.userAuthenticationParams.method !== "keycloak"
-                                  ? undefined
-                                  : {
-                                        "keycloakParams":
-                                            params.userAuthenticationParams
-                                                .keycloakParams,
-                                        "oidcClient": oidcClient,
-                                    },
+                      "oidcClient": await creatOrFallbackOidcClient({
+                          "keycloakParams": s3Params.keycloakParams,
+                          "fallback": fallbackOidc,
                           evtUserActivity,
                       }),
+                      ...getCreateS3ClientParams({ s3Params }),
                       "createAwsBucket": onyxiaApiClient.createAwsBucket,
                   });
-    }
 
-    if (oidcClient.isUserLoggedIn) {
+        extraArgument.secretsManagerClient =
+            vaultParams === undefined
+                ? createLocalStorageSecretManagerClient()
+                : await createVaultSecretsManagerClient({
+                      "kvEngine": vaultParams.kvEngine,
+                      "role": vaultParams.role,
+                      "url": vaultParams.url,
+                      "oidcClient": await creatOrFallbackOidcClient({
+                          "keycloakParams": vaultParams.keycloakParams,
+                          "fallback": fallbackOidc,
+                          evtUserActivity,
+                      }),
+                  });
+
+        await store.dispatch(userConfigsUseCase.privateThunks.initialize());
+
         await store.dispatch(projectSelectionUseCase.privateThunks.initialize());
 
         if (refGetCurrentlySelectedProjectId !== undefined) {
             refGetCurrentlySelectedProjectId.current = () =>
                 store.getState().projectSelection.selectedProjectId;
         }
+
+        store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
     }
 
     store.dispatch(runningServiceUseCase.privateThunks.initialize());

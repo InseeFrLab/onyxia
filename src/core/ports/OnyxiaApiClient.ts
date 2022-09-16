@@ -80,18 +80,34 @@ export type DeploymentRegion = {
     from: unknown[] | undefined;
     nodeSelector: Record<string, unknown> | undefined;
     startupProbe: Record<string, unknown> | undefined;
+    vault:
+        | {
+              url: string;
+              kvEngine: string;
+              role: string;
+              keycloakParams:
+                  | {
+                        url: string | undefined;
+                        realm: string | undefined;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
     export namespace S3 {
         export type Common = {
-            defaultDurationSeconds?: number;
-            monitoringUrlPattern?: string;
-            keycloakParams?: {
-                url?: string;
-                realm?: string;
-                clientId: string;
-            };
+            defaultDurationSeconds: number | undefined;
+            monitoringUrlPattern: string | undefined;
+            keycloakParams:
+                | {
+                      url: string | undefined;
+                      realm: string | undefined;
+                      clientId: string;
+                  }
+                | undefined;
         };
 
         export type Minio = Common & {
