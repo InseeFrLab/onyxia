@@ -4,7 +4,7 @@ import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
