@@ -1,6 +1,5 @@
 import axios from "axios";
 import type { ReturnType } from "tsafe";
-import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { S3Client } from "../ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
@@ -13,27 +12,13 @@ import type { ApiLogger } from "core/tools/apiLogger";
 import { join as pathJoin } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
-import type { NonPostableEvt } from "evt";
 import type { OidcClient } from "../ports/OidcClient";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 export type Params = {
     url: string;
     region: string;
-    oidc:
-        | {
-              type: "keycloak params";
-              keycloakParams: {
-                  url: string;
-                  realm: string;
-                  clientId: string;
-              };
-              evtUserActivity: NonPostableEvt<void>;
-          }
-        | {
-              type: "oidc client";
-              oidcClient: OidcClient.LoggedIn;
-          };
+    oidcClient: OidcClient.LoggedIn;
     durationSeconds: number;
     amazon:
         | undefined
@@ -41,7 +26,6 @@ export type Params = {
               roleARN: string;
               roleSessionName: string;
           };
-
     createAwsBucket: (params: {
         awsRegion: string;
         accessKey: string;
@@ -52,30 +36,9 @@ export type Params = {
 };
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, amazon, oidc, durationSeconds, createAwsBucket } = params;
+    const { url, region, amazon, oidcClient, durationSeconds, createAwsBucket } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
-
-    const oidcClient = await (async () => {
-        switch (oidc.type) {
-            case "oidc client":
-                return oidc.oidcClient;
-            case "keycloak params": {
-                const oidcClient = await createKeycloakOidcClient({
-                    ...oidc.keycloakParams,
-                    "transformUrlBeforeRedirectToLogin": undefined,
-                    "evtUserActivity": oidc.evtUserActivity,
-                });
-
-                if (!oidcClient.isUserLoggedIn) {
-                    await oidcClient.login({ "doesCurrentHrefRequiresAuth": true });
-                    assert(false);
-                }
-
-                return oidcClient;
-            }
-        }
-    })();
 
     const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
         "requestNewToken": async (restrictToBucketName: string | undefined) => {
@@ -472,49 +435,8 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
 
 export function getCreateS3ClientParams(params: {
     s3Params: DeploymentRegion.S3;
-    fallbackOidc?:
-        | {
-              keycloakParams: {
-                  url: string;
-                  clientId: string;
-                  realm: string;
-              };
-              oidcClient: OidcClient.LoggedIn;
-          }
-        | undefined;
-    evtUserActivity: NonPostableEvt<void>;
-}): Omit<Params, "createAwsBucket"> {
-    const { s3Params, fallbackOidc, evtUserActivity } = params;
-
-    const oidc = (() => {
-        const { url, realm, clientId } = {
-            ...s3Params.keycloakParams,
-            ...fallbackOidc?.keycloakParams,
-        };
-
-        assert(
-            url !== undefined && clientId !== undefined && realm !== undefined,
-            "There is no specific keycloak config in the region for s3 and no keycloak config to fallback to",
-        );
-
-        if (
-            fallbackOidc !== undefined &&
-            url === fallbackOidc.keycloakParams.url &&
-            realm === fallbackOidc.keycloakParams.realm &&
-            clientId === fallbackOidc.keycloakParams.clientId
-        ) {
-            return {
-                "type": "oidc client",
-                "oidcClient": fallbackOidc.oidcClient,
-            } as const;
-        }
-
-        return {
-            "type": "keycloak params",
-            "keycloakParams": { url, realm, clientId },
-            evtUserActivity,
-        } as const;
-    })();
+}): Omit<Params, "createAwsBucket" | "oidcClient"> {
+    const { s3Params } = params;
 
     const { url, region } = getS3UrlAndRegion(s3Params);
 
@@ -524,7 +446,6 @@ export function getCreateS3ClientParams(params: {
                 return {
                     url,
                     region,
-                    oidc,
                     "amazon": undefined,
                     "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600,
                 };
@@ -532,7 +453,6 @@ export function getCreateS3ClientParams(params: {
                 return {
                     url,
                     region,
-                    oidc,
                     "amazon": {
                         "roleARN": s3Params.roleARN,
                         "roleSessionName": s3Params.roleSessionName,
