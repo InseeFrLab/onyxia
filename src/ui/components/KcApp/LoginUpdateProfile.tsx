@@ -2,23 +2,26 @@ import type { ChangeEvent } from "react";
 import { useState, memo } from "react";
 import type { KcProps } from "keycloakify/lib/components/KcProps";
 import type { KcContext } from "./kcContext";
-import { getMsg } from "keycloakify";
 import { Template } from "./Template";
 import { useStyles } from "ui/theme";
-
 import { generateUsername, toAlphaNumerical } from "./generateUsername";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { I18n } from "./i18n";
 
 type KcContext_LoginUpdateProfile = Extract<
     KcContext,
     { pageId: "login-update-profile.ftl" }
 >;
 
-export const LoginUpdateProfile = memo(
-    ({ kcContext, ...props }: { kcContext: KcContext_LoginUpdateProfile } & KcProps) => {
+const LoginUpdateProfile = memo(
+    ({
+        kcContext,
+        i18n,
+        ...props
+    }: { kcContext: KcContext_LoginUpdateProfile; i18n: I18n } & KcProps) => {
         const { url, user, messagesPerField, isAppInitiatedAction } = kcContext;
 
-        const { msg, msgStr } = getMsg(kcContext);
+        const { msg, msgStr } = i18n;
 
         const { cx } = useStyles();
 
@@ -39,6 +42,7 @@ export const LoginUpdateProfile = memo(
                 {...{ kcContext, ...props }}
                 doFetchDefaultThemeResources={true}
                 headerNode={msg("loginProfileTitle")}
+                i18n={i18n}
                 formNode={
                     <form
                         id="kc-update-profile-form"
@@ -218,3 +222,5 @@ export const LoginUpdateProfile = memo(
         );
     },
 );
+
+export default LoginUpdateProfile;

@@ -1,24 +1,32 @@
 import { memo } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify";
-import { useDownloadTerms, getMsg } from "keycloakify";
+import { useDownloadTerms } from "keycloakify";
 import { Button } from "ui/theme";
 import { makeStyles } from "ui/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 import type { KcContext } from "./kcContext";
+import type { I18n } from "./i18n";
+import { evtTermMarkdown } from "keycloakify/lib/components/Terms";
+import { useRerenderOnStateChange } from "evt/hooks";
+import { Markdown } from "keycloakify/lib/tools/Markdown";
 
 type KcContext_Terms = Extract<KcContext, { pageId: "terms.ftl" }>;
 
-export const Terms = memo(
-    ({ kcContext, ...props }: { kcContext: KcContext_Terms } & KcProps) => {
-        const { msg, msgStr } = getMsg(kcContext);
+const Terms = memo(
+    ({
+        kcContext,
+        i18n,
+        ...props
+    }: { kcContext: KcContext_Terms; i18n: I18n } & KcProps) => {
+        const { msgStr } = i18n;
 
         const { url } = kcContext;
 
         useDownloadTerms({
             kcContext,
-            "downloadTermMarkdown": ({ currentKcLanguageTag }) => {
-                const url = getTosMarkdownUrl(currentKcLanguageTag);
+            "downloadTermMarkdown": ({ currentLanguageTag }) => {
+                const url = getTosMarkdownUrl(currentLanguageTag);
 
                 return url === undefined
                     ? Promise.resolve(
@@ -31,7 +39,13 @@ export const Terms = memo(
             },
         });
 
+        useRerenderOnStateChange(evtTermMarkdown);
+
         const { classes } = useStyles();
+
+        if (evtTermMarkdown.state === undefined) {
+            return null;
+        }
 
         return (
             <Template
@@ -39,10 +53,14 @@ export const Terms = memo(
                 doFetchDefaultThemeResources={false}
                 displayMessage={false}
                 headerNode={null}
+                i18n={i18n}
                 formNode={
                     <>
-                        <div className={classes.markdownWrapper}>{msg("termsText")}</div>
-
+                        <div className={classes.markdownWrapper}>
+                            {evtTermMarkdown.state && (
+                                <Markdown>{evtTermMarkdown.state}</Markdown>
+                            )}
+                        </div>
                         <form
                             className="form-actions"
                             action={url.loginAction}
@@ -69,6 +87,8 @@ export const Terms = memo(
         );
     },
 );
+
+export default Terms;
 
 const useStyles = makeStyles({ "name": { Terms } })(theme => ({
     "buttonsWrapper": {

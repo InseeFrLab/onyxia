@@ -2,7 +2,6 @@
 
 import { useReducer, useEffect, memo } from "react";
 import type { ReactNode } from "react";
-import { getMsg } from "keycloakify";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "ui/components/shared/Header";
@@ -16,7 +15,8 @@ import { Alert } from "onyxia-ui/Alert";
 import { headInsert } from "keycloakify/lib/tools/headInsert";
 import type { KcContext } from "./kcContext";
 import { symToStr } from "tsafe/symToStr";
-import { pathJoin } from "keycloakify/lib/tools/pathJoin";
+import { pathJoin } from "keycloakify/bin/tools/pathJoin";
+import type { I18n } from "./i18n";
 
 export type TemplateProps = {
     doFetchDefaultThemeResources: boolean;
@@ -30,7 +30,8 @@ export type TemplateProps = {
     showUsernameNode?: ReactNode;
     formNode: ReactNode;
     infoNode?: ReactNode;
-    onClickCross?(): void;
+    onClickCross?: () => void;
+    i18n: I18n;
 } & { kcContext: KcContext } & KcTemplateProps;
 
 const useStyles = makeStyles<{
@@ -192,6 +193,7 @@ const { Page } = (() => {
         formNode: ReactNode;
         infoNode?: ReactNode;
         onClickCross: (() => void) | undefined;
+        i18n: I18n;
     } & { kcContext: KcContext } & KcTemplateProps;
 
     const Page = memo((props: Props) => {
@@ -208,6 +210,7 @@ const { Page } = (() => {
             infoNode = null,
             kcContext,
             onClickCross,
+            i18n,
             ...kcProps
         } = props;
 
@@ -238,6 +241,7 @@ const { Page } = (() => {
                         displayRequiredFields={displayRequiredFields}
                         headerNode={headerNode}
                         showUsernameNode={showUsernameNode}
+                        i18n={i18n}
                     />
                     <Main
                         {...{ kcContext, ...kcProps }}
@@ -247,6 +251,7 @@ const { Page } = (() => {
                         displayWide={displayWide}
                         displayInfo={displayInfo}
                         infoNode={infoNode}
+                        i18n={i18n}
                     />
                 </Card>
             </div>
@@ -281,6 +286,7 @@ const { Page } = (() => {
             displayRequiredFields: boolean;
             headerNode: ReactNode;
             showUsernameNode?: ReactNode;
+            i18n: I18n;
         } & { kcContext: KcContext } & KcTemplateProps;
 
         const Head = memo((props: Props) => {
@@ -289,10 +295,11 @@ const { Page } = (() => {
                 displayRequiredFields,
                 headerNode,
                 showUsernameNode,
+                i18n,
                 ...kcProps
             } = props;
 
-            const { msg } = getMsg(kcContext);
+            const { msg } = i18n;
 
             const { classes, cx } = useStyles();
 
@@ -411,6 +418,7 @@ const { Page } = (() => {
             displayWide?: boolean;
             displayInfo?: boolean;
             infoNode?: ReactNode;
+            i18n: I18n;
         } & { kcContext: KcContext } & KcTemplateProps;
 
         const Main = memo((props: Props) => {
@@ -422,6 +430,7 @@ const { Page } = (() => {
                 kcContext,
                 formNode,
                 infoNode,
+                i18n,
                 ...kcProps
             } = props;
 
@@ -430,7 +439,7 @@ const { Page } = (() => {
                 return false;
             });
 
-            const { msg } = getMsg(kcContext);
+            const { msg } = i18n;
 
             const { classes, cx } = useStyles();
 
