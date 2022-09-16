@@ -112,7 +112,7 @@
     "scripts": {
         "start": "react-app-rewired start",
         "build": "react-app-rewired build yarn",
-        "keycloak": "yarn build && build-keycloak-theme",
+        "keycloak": "yarn build && keycloakify",
         "storybook": "start-storybook -p 6006",
         "postinstall": "generate-env-getter",
         "prestart": "generate-env-getter",
