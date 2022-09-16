@@ -1,4 +1,4 @@
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "../sectionName";
 import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
