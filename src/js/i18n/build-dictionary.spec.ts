@@ -57,8 +57,8 @@ import { createDictionary, getLang } from "./build-dictionary";
     test("should handle function", () => {
         const dictionary = {
             func: {
-                fr: d => `Bonjour ${d}`,
-                en: d => `Welcome ${d}`,
+                fr: (d: any) => `Bonjour ${d}`,
+                en: (d: any) => `Welcome ${d}`,
             },
         };
         expect(createDictionary("en")(dictionary).func("toto")).toBe("Welcome toto");

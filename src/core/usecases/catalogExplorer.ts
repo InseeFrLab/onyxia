@@ -29,8 +29,10 @@ namespace CatalogExplorerState {
     };
 }
 
-export const { name, reducer, actions } = createSlice({
-    "name": "catalogExplorer",
+export const name = "catalogExplorer";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<CatalogExplorerState>(
         id<CatalogExplorerState.NotFetched>({
             "stateDescription": "not fetched",
@@ -233,23 +235,26 @@ export const selectors = (() => {
             "~internal": { selectedCatalogId },
         } = state;
 
-        const catalog = state["~internal"].catalogs.find(
-            ({ id }) => id === selectedCatalogId,
-        )!.catalog.packages;
-
         const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
 
-        const packages = catalog
-            .map(o => ({
-                "packageDescription": o.description,
-                "packageHomeUrl": o.home,
-                "packageName": o.name,
-                "packageIconUrl": o.icon,
-            }))
+        const catalog = state["~internal"].catalogs
+            .filter(({ id }) => id === selectedCatalogId || state.search !== "")
+            .map(catalog =>
+                catalog.catalog.packages.map(pack => ({
+                    "packageDescription": pack.description,
+                    "packageHomeUrl": pack.home,
+                    "packageName": pack.name,
+                    "packageIconUrl": pack.icon,
+                    "catalogId": catalog.id,
+                })),
+            )
+            .reduce((accumulator, packages) => accumulator.concat(packages), [])
             .sort(
                 (a, b) =>
                     getPackageWeight(b.packageName) - getPackageWeight(a.packageName),
-            )
+            );
+
+        const packages = catalog
             .slice(
                 0,
                 doShowOnlyHighlighted && search === ""

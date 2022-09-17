@@ -13,6 +13,8 @@
     <br>
 </p>
 
+> 🗣 v1 (of onyxia-web) have been released with a breaking change. Please checkout [the migration guide](https://docs.onyxia.sh/update-to-v1)
+
 <p align="center">
 <img src="https://user-images.githubusercontent.com/6702424/136545513-f623d8c7-260d-4d93-a01e-2dc5af6ad473.gif" />
 </p>

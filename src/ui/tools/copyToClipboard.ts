@@ -12,7 +12,7 @@ export const copyToClipboard = (str: string) => {
             const successful = document.execCommand("copy");
             assert(!!successful);
         } catch (err) {
-            alert("Unable to copy value , error : " + err.message);
+            alert("Unable to copy value , error : " + (err as Error).message);
         }
 
         document.body.removeChild(textArea);

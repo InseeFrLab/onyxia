@@ -46,8 +46,10 @@ export type EditSecretParams = {
 const extraKey = ".onyxia";
 type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
-export const { name, reducer, actions } = createSlice({
-    "name": "secretsEditor",
+export const name = "secretsEditor";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<SecretsEditorState | null>(null),
     "reducers": {
         "openStarted": (

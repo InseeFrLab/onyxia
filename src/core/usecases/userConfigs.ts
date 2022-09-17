@@ -33,7 +33,6 @@ export type UserConfigs = Id<
         isBetaModeEnabled: boolean;
         isDevModeEnabled: boolean;
         isDarkModeEnabled: boolean;
-        deploymentRegionId: string | null;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
@@ -48,8 +47,10 @@ export type UserConfigsState = {
     };
 };
 
-export const { name, reducer, actions } = createSlice({
-    "name": "userConfigs",
+export const name = "userConfigs";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage":
             "The userConfigState should have been initialized during the store initialization",
@@ -148,7 +149,6 @@ export const privateThunks = {
                 "isBetaModeEnabled": false,
                 "isDevModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
-                "deploymentRegionId": null,
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
@@ -161,20 +161,12 @@ export const privateThunks = {
                 objectKeys(userConfigs).map(async key => {
                     const path = pathJoin(dirPath, key);
 
-                    const isLegacyValue = (value: unknown) => {
-                        switch (key) {
-                            case "deploymentRegionId":
-                                return value === null;
-                        }
-                        return false;
-                    };
-
                     const value = await secretsManagerClient
                         .get({ path })
                         .then(({ secret }) => secret["value"])
                         .catch(() => undefined);
 
-                    if (value === undefined || isLegacyValue(value)) {
+                    if (value === undefined) {
                         //Store default value.
                         await secretsManagerClient.put({
                             path,

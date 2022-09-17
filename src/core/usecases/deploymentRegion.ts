@@ -2,7 +2,6 @@ import { assert } from "tsafe/assert";
 import type { ThunkAction } from "../setup";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import { createSlice } from "@reduxjs/toolkit";
-import { thunks as userConfigsThunks } from "./userConfigs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
     createObjectThatThrowsIfAccessedFactory,
@@ -19,8 +18,10 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { name, reducer, actions } = createSlice({
-    "name": "deploymentRegion",
+export const name = "deploymentRegion";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
         "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,
@@ -34,21 +35,10 @@ export const thunks = {
             deploymentRegionId: string;
             reload: () => never;
         }): ThunkAction<Promise<never>> =>
-        async (...args) => {
+        async () => {
             const { deploymentRegionId, reload } = params;
 
-            const [dispatch, , { oidcClient }] = args;
-
-            if (oidcClient.isUserLoggedIn) {
-                await dispatch(
-                    userConfigsThunks.changeValue({
-                        "key": "deploymentRegionId",
-                        "value": deploymentRegionId,
-                    }),
-                );
-            } else {
-                localStorage.setItem(localStorageKey, deploymentRegionId);
-            }
+            localStorage.setItem(localStorageKey, deploymentRegionId);
 
             reload();
 
@@ -60,102 +50,32 @@ export const privateThunks = {
     "initialize":
         (): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
+            const [dispatch, , { onyxiaApiClient }] = args;
 
             const availableDeploymentRegions =
                 await onyxiaApiClient.getAvailableRegions();
 
-            const getAvailablePreviouslySelectedRegionIdFromLocalStorage = () => {
-                const value = localStorage.getItem(localStorageKey);
+            let previouslySelectedRegionIdFromLocalStorage =
+                localStorage.getItem(localStorageKey);
 
-                if (
-                    value !== null &&
-                    !availableDeploymentRegions.map(({ id }) => id).includes(value)
-                ) {
-                    localStorage.removeItem(localStorageKey);
-
-                    return null;
-                }
-
-                return value;
-            };
-
-            if (!oidcClient.isUserLoggedIn) {
-                dispatch(
-                    actions.initialize({
-                        availableDeploymentRegions,
-                        "selectedDeploymentRegionId":
-                            getAvailablePreviouslySelectedRegionIdFromLocalStorage() ??
-                            availableDeploymentRegions[0].id,
-                    }),
-                );
-
-                return;
-            }
-
-            {
-                const selectedDeploymentRegionId =
-                    getAvailablePreviouslySelectedRegionIdFromLocalStorage();
-
+            if (
+                previouslySelectedRegionIdFromLocalStorage !== null &&
+                !availableDeploymentRegions
+                    .map(({ id }) => id)
+                    .includes(previouslySelectedRegionIdFromLocalStorage)
+            ) {
                 localStorage.removeItem(localStorageKey);
-
-                if (selectedDeploymentRegionId !== null) {
-                    await dispatch(
-                        userConfigsThunks.changeValue({
-                            "key": "deploymentRegionId",
-                            "value": selectedDeploymentRegionId,
-                        }),
-                    );
-
-                    dispatch(
-                        actions.initialize({
-                            availableDeploymentRegions,
-                            selectedDeploymentRegionId,
-                        }),
-                    );
-
-                    return;
-                }
+                previouslySelectedRegionIdFromLocalStorage = null;
             }
 
-            {
-                const selectedDeploymentRegionId =
-                    getState().userConfigs.deploymentRegionId.value;
-
-                if (
-                    selectedDeploymentRegionId !== null &&
-                    availableDeploymentRegions
-                        .map(({ id }) => id)
-                        .includes(selectedDeploymentRegionId)
-                ) {
-                    dispatch(
-                        actions.initialize({
-                            availableDeploymentRegions,
-                            selectedDeploymentRegionId,
-                        }),
-                    );
-
-                    return;
-                }
-            }
-
-            {
-                const deploymentRegionId = availableDeploymentRegions[0].id;
-
-                await dispatch(
-                    userConfigsThunks.changeValue({
-                        "key": "deploymentRegionId",
-                        "value": deploymentRegionId,
-                    }),
-                );
-
-                dispatch(
-                    actions.initialize({
-                        availableDeploymentRegions,
-                        "selectedDeploymentRegionId": deploymentRegionId,
-                    }),
-                );
-            }
+            dispatch(
+                actions.initialize({
+                    availableDeploymentRegions,
+                    "selectedDeploymentRegionId":
+                        previouslySelectedRegionIdFromLocalStorage ??
+                        availableDeploymentRegions[0].id,
+                }),
+            );
         },
 };
 

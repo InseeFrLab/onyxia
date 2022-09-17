@@ -67,8 +67,10 @@ export type ExplorersState = Record<
     };
 };
 
-export const { name, reducer, actions } = createSlice({
-    "name": "explorers",
+export const name = "explorers";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<ExplorersState>(
         (() => {
             const contextualState = {
@@ -397,7 +399,7 @@ const privateThunks = {
                         : null,
                 ),
             ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
-                getSliceContexts(extraArg)[explorerType].onNavigate?.({
+                getSliceContexts(args)[explorerType].onNavigate?.({
                     "doRestoreOpenedFile": !isProjectChanged,
                     "directoryPath": (() => {
                         if (directNavigationDirectoryPath !== undefined) {
@@ -452,7 +454,7 @@ const privateThunks = {
 
             dispatch(actions.navigationStarted({ explorerType }));
 
-            const { loggedFsApi } = getSliceContexts(extraArg)[explorerType];
+            const { loggedFsApi } = getSliceContexts(args)[explorerType];
 
             dispatch(thunks.cancelNavigation({ explorerType }));
 
@@ -508,11 +510,8 @@ export const interUsecasesThunks = {
                 "loggedFsApi" | "loggedExtendedFsApi" | "fsApiLogs"
             >
         > =>
-        (...args) => {
-            const [, , extraArgs] = args;
-
-            return getSliceContexts(extraArgs)["secrets"];
-        },
+        (...args) =>
+            getSliceContexts(args)["secrets"],
     "waitForNoOngoingOperation":
         (params: {
             explorerType: "s3" | "secrets";
@@ -594,9 +593,9 @@ export const thunks = {
         }): ThunkAction<void> =>
         (...args) => {
             const { explorerType, directNavigationDirectoryPath, onNavigate } = params;
-            const [dispatch, , extraArg] = args;
+            const [dispatch] = args;
 
-            const sliceContext = getSliceContexts(extraArg)[explorerType];
+            const sliceContext = getSliceContexts(args)[explorerType];
 
             if (!sliceContext.isLazilyInitialized) {
                 sliceContext.isLazilyInitialized = true;
@@ -618,9 +617,9 @@ export const thunks = {
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<void> =>
         (...args) => {
             const { explorerType } = params;
-            const [dispatch, , extraArg] = args;
+            const [dispatch] = args;
 
-            const sliceContext = getSliceContexts(extraArg);
+            const sliceContext = getSliceContexts(args);
 
             delete sliceContext[explorerType].onNavigate;
 
@@ -691,7 +690,7 @@ export const thunks = {
         async (...args) => {
             const { explorerType, renamingWhat, basename, newBasename } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState] = args;
 
             const contextualState = getState().explorers[explorerType];
 
@@ -718,7 +717,7 @@ export const thunks = {
                 }),
             );
 
-            await getSliceContexts(extraArg)[explorerType].loggedExtendedFsApi[
+            await getSliceContexts(args)[explorerType].loggedExtendedFsApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -745,7 +744,7 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState] = args;
 
             const contextualState = getState().explorers[params.explorerType];
 
@@ -771,7 +770,7 @@ export const thunks = {
                 }),
             );
 
-            const sliceContexts = getSliceContexts(extraArg);
+            const sliceContexts = getSliceContexts(args);
 
             const path = pathJoin(directoryPath, params.basename);
 
@@ -844,7 +843,7 @@ export const thunks = {
         async (...args) => {
             const { explorerType, deleteWhat, basename } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState] = args;
 
             const contextualState = getState().explorers[params.explorerType];
 
@@ -870,7 +869,7 @@ export const thunks = {
                 }),
             );
 
-            const sliceContexts = getSliceContexts(extraArg);
+            const sliceContexts = getSliceContexts(args);
 
             const path = pathJoin(directoryPath, basename);
 
@@ -910,26 +909,22 @@ export const thunks = {
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<ApiLogs> =>
         (...args) => {
             const { explorerType } = params;
-
-            const [, , extraArg] = args;
-
-            return getSliceContexts(extraArg)[explorerType].fsApiLogs;
+            return getSliceContexts(args)[explorerType].fsApiLogs;
         },
     "getIsEnabled":
         (params: { explorerType: "s3" | "secrets" }): ThunkAction<boolean> =>
         (...args) => {
             const { explorerType } = params;
 
-            const [, getSate, { createStoreParams }] = args;
+            const [, getState] = args;
+
+            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             switch (explorerType) {
                 case "secrets":
-                    return createStoreParams.vaultParams !== undefined;
+                    return region.vault !== undefined;
                 case "s3":
-                    return (
-                        deploymentRegionSelectors.selectedDeploymentRegion(getSate())
-                            .s3 !== undefined
-                    );
+                    return region.s3 !== undefined;
             }
         },
     "getFileDownloadUrl":
@@ -937,7 +932,7 @@ export const thunks = {
         async (...args) => {
             const { basename } = params;
 
-            const [, getState, extraArg] = args;
+            const [, getState] = args;
 
             const contextualState = getState().explorers["s3"];
 
@@ -945,7 +940,7 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            const sliceContexts = getSliceContexts(extraArg);
+            const sliceContexts = getSliceContexts(args);
 
             const path = pathJoin(directoryPath, basename);
 
@@ -975,7 +970,9 @@ namespace SliceContexts {
 const { getSliceContexts } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContexts>();
 
-    function getSliceContexts(extraArg: ThunksExtraArgument): SliceContexts {
+    function getSliceContexts(args: Parameters<ThunkAction<unknown>>): SliceContexts {
+        const [, getState, extraArg] = args;
+
         let sliceContext = weakMap.get(extraArg);
 
         if (sliceContext !== undefined) {
@@ -1024,7 +1021,8 @@ const { getSliceContexts } = (() => {
                     "apiLogger": getVaultApiLogger({
                         "clientType": "CLI",
                         "engine":
-                            extraArg.createStoreParams.vaultParams?.engine ?? "onyxia-kv",
+                            deploymentRegionSelectors.selectedDeploymentRegion(getState())
+                                .vault?.kvEngine ?? "onyxia-kv",
                     }),
                 });
 

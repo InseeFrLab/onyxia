@@ -376,8 +376,10 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
     return { scaffoldingIndexedFormFieldsToFinal };
 })();
 
-export const { name, reducer, actions } = createSlice({
-    "name": "launcher",
+export const name = "launcher";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
@@ -1024,7 +1026,7 @@ export const thunks = {
                 "vault": await (async () => {
                     const vaultParams = !("vaultParams" in createStoreParams)
                         ? undefined
-                        : createStoreParams.vaultParams;
+                        : selectedDeploymentRegion.vault;
 
                     if (vaultParams === undefined) {
                         return {
@@ -1038,7 +1040,7 @@ export const thunks = {
                     return {
                         "VAULT_ADDR": vaultParams.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
-                        "VAULT_MOUNT": vaultParams.engine,
+                        "VAULT_MOUNT": vaultParams.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
                             explorersThunks.getProjectHomePath({
                                 "explorerType": "secrets",
@@ -1222,20 +1224,16 @@ export const selectors = (() => {
                 nonHiddenFormField
                     .filter(({ path }) => path[0] === dependencyOrGlobal)
                     .forEach(formField => {
-                        //TODO: Restore: (formFieldsByTabName[formField.path[1]] ??= []).push(formField); when ??= supported
-                        (
-                            formFieldsByTabName[formField.path[1]] ??
-                            (formFieldsByTabName[formField.path[1]] = {
-                                "description": (() => {
-                                    const o = config?.properties[formField.path[0]];
+                        (formFieldsByTabName[formField.path[1]] ??= {
+                            "description": (() => {
+                                const o = config?.properties[formField.path[0]];
 
-                                    assert(o?.type === "object" && "properties" in o);
+                                assert(o?.type === "object" && "properties" in o);
 
-                                    return o.properties[formField.path[1]].description;
-                                })(),
-                                "formFields": [],
-                            })
-                        ).formFields.push(formField);
+                                return o.properties[formField.path[1]].description;
+                            })(),
+                            "formFields": [],
+                        }).formFields.push(formField);
 
                         nonHiddenFormField.splice(
                             nonHiddenFormField.indexOf(formField),

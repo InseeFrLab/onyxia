@@ -57,10 +57,12 @@ export function createPropertyThatThrowIfAccessed<
     PropertyName extends keyof T,
 >(propertyName: PropertyName, debugMessage?: string): { [K in PropertyName]: T[K] } {
     const getAndSet = () => {
-        throw new Error(`Cannot access ${propertyName} yet ${debugMessage ?? ""}`);
+        throw new Error(
+            `Cannot access ${String(propertyName)} yet ${debugMessage ?? ""}`,
+        );
     };
 
-    return Object.defineProperty({}, propertyName, {
+    return Object.defineProperty({} as any, propertyName, {
         "get": getAndSet,
         "set": getAndSet,
         "enumerable": true,

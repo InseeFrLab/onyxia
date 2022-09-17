@@ -103,12 +103,6 @@ export const getCreateStoreParams = memoize(
             KEYCLOAK_URL,
             KEYCLOAK_REALM,
             KEYCLOAK_CLIENT_ID,
-            VAULT_URL,
-            VAULT_KV_ENGINE,
-            VAULT_ROLE,
-            VAULT_KEYCLOAK_URL,
-            VAULT_KEYCLOAK_REALM,
-            VAULT_KEYCLOAK_CLIENT_ID,
             HIGHLIGHTED_PACKAGES,
         } = getEnv();
 
@@ -180,22 +174,6 @@ export const getCreateStoreParams = memoize(
                               },
                           },
                           transformUrlBeforeRedirectToLogin,
-                      },
-            "vaultParams":
-                VAULT_URL === ""
-                    ? undefined
-                    : {
-                          "url": VAULT_URL,
-                          "role": VAULT_ROLE,
-                          "engine": VAULT_KV_ENGINE,
-                          "keycloakParams":
-                              VAULT_KEYCLOAK_CLIENT_ID === ""
-                                  ? undefined
-                                  : {
-                                        "url": VAULT_KEYCLOAK_URL || undefined,
-                                        "realm": VAULT_KEYCLOAK_REALM || undefined,
-                                        "clientId": VAULT_KEYCLOAK_CLIENT_ID,
-                                    },
                       },
             highlightedPackages,
             "getIsDarkModeEnabledValueForProfileInitialization":

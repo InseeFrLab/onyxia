@@ -61,7 +61,7 @@ const VisiteConnected: any = connect(undefined, {
     "startVisite": () => startVisite(),
 })(props => (
     <LegacyThemeProvider>
-        <VisiteGuide visite={true} etapes={ETAPES} {...props} />
+        <VisiteGuide visite={true} etapes={ETAPES} {...(props as any)} />
     </LegacyThemeProvider>
 ));
 

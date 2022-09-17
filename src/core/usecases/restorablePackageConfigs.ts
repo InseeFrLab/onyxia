@@ -41,8 +41,10 @@ const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFac
     "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
 });
 
-export const { name, reducer, actions } = createSlice({
-    "name": "restorablePackageConfig",
+export const name = "restorablePackageConfig";
+
+export const { reducer, actions } = createSlice({
+    name,
     "initialState": createObjectThatThrowsIfAccessed<RestorablePackageConfigsState>({
         "debugMessage": [
             "The restorablePackageConfigState should have been",
@@ -304,9 +306,10 @@ export const selectors = (() => {
                 const { packageName, catalogId } = restorablePackageConfig;
 
                 return {
-                    "logoUrl": !packageIcons.areFetched
-                        ? undefined
-                        : packageIcons.iconsUrl[catalogId][packageName],
+                    "logoUrl":
+                        !packageIcons.areFetched
+                            ? undefined
+                            : packageIcons.iconsUrl[catalogId]?.[packageName],
                     "friendlyName": (() => {
                         const friendlyName =
                             restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
