@@ -163,6 +163,14 @@ export function createOfficialOnyxiaApiClient(params: {
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
                             initScript: string;
+                            k8sPublicEndpoint?: {
+                                keycloakParams?: {
+                                    clientId: string;
+                                    realm?: string;
+                                    URL?: string;
+                                };
+                                URL: string;
+                            };
                         };
                         data?: {
                             S3?: {
@@ -288,6 +296,27 @@ export function createOfficialOnyxiaApiClient(params: {
                                                     "realm": vault.keycloakParams.realm,
                                                     "clientId":
                                                         vault.keycloakParams.clientId,
+                                                },
+                                  };
+                        })(),
+                        "kubernetes": (() => {
+                            const { k8sPublicEndpoint } = region.services;
+                            return k8sPublicEndpoint === undefined
+                                ? undefined
+                                : {
+                                      "url": k8sPublicEndpoint.URL,
+                                      "keycloakParams":
+                                          k8sPublicEndpoint.keycloakParams === undefined
+                                              ? undefined
+                                              : {
+                                                    "url": k8sPublicEndpoint
+                                                        .keycloakParams.URL,
+                                                    "realm":
+                                                        k8sPublicEndpoint.keycloakParams
+                                                            .realm,
+                                                    "clientId":
+                                                        k8sPublicEndpoint.keycloakParams
+                                                            .clientId,
                                                 },
                                   };
                         })(),

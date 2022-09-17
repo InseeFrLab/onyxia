@@ -94,6 +94,18 @@ export type DeploymentRegion = {
                   | undefined;
           }
         | undefined;
+    kubernetes:
+        | {
+              url: string;
+              keycloakParams:
+                  | {
+                        url: string | undefined;
+                        realm: string | undefined;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
