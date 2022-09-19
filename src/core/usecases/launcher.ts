@@ -984,8 +984,7 @@ export const thunks = {
     "getOnyxiaValues":
         (): ThunkAction<Promise<OnyxiaValues>> =>
         async (...args) => {
-            const [dispatch, getState, { createStoreParams, secretsManagerClient }] =
-                args;
+            const [dispatch, getState, { secretsManagerClient }] = args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
@@ -1024,11 +1023,9 @@ export const thunks = {
                     "token": userConfigs.githubPersonalAccessToken ?? undefined,
                 },
                 "vault": await (async () => {
-                    const vaultParams = !("vaultParams" in createStoreParams)
-                        ? undefined
-                        : selectedDeploymentRegion.vault;
+                    const { vault } = selectedDeploymentRegion;
 
-                    if (vaultParams === undefined) {
+                    if (vault === undefined) {
                         return {
                             "VAULT_ADDR": "",
                             "VAULT_TOKEN": "",
@@ -1038,9 +1035,9 @@ export const thunks = {
                     }
 
                     return {
-                        "VAULT_ADDR": vaultParams.url,
+                        "VAULT_ADDR": vault.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
-                        "VAULT_MOUNT": vaultParams.kvEngine,
+                        "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
                             explorersThunks.getProjectHomePath({
                                 "explorerType": "secrets",
@@ -1068,6 +1065,8 @@ export const thunks = {
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
             };
+
+            console.log(onyxiaValues);
 
             return onyxiaValues;
         },
