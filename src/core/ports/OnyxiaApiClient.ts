@@ -147,6 +147,7 @@ export type Catalog = {
             home?: string;
         }[];
     };
+    highlightedCharts?: string[];
 };
 
 export type OnyxiaValues = {
