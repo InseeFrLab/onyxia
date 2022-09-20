@@ -497,7 +497,7 @@ const {
                 "storage": "Connexion au stockage",
                 "user-interface": "Modes d'interface",
                 "text1": "Mon compte",
-                "text2": "Accèdez à vos différentes informations de compte.",
+                "text2": "Accédez à vos différentes informations de compte.",
                 "text3":
                     "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
                 "personal tokens tooltip": 'Ou en anglais "token".',
@@ -534,11 +534,11 @@ const {
             "AccountStorageTab": {
                 "credentials section title": "Connecter vos données à vos services",
                 "credentials section helper":
-                    "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignés automatiquement.",
+                    "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignées automatiquement.",
                 "accessible as env":
                     "Accessible au sein de vos services en tant que la variable d'environnement",
                 "init script section title":
-                    "Pour accèder au stockage en dehors des services du datalab",
+                    "Pour accéder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
                 "valid until": ({ when }) => `Valides jusqu'a ${when}`,
             },
@@ -555,7 +555,7 @@ const {
                     "Activer les fonctionnalités en cours de développement",
             },
             "AccountField": {
-                "copy tooltip": "Copier dans le press papier",
+                "copy tooltip": "Copier dans le presse-papier",
                 "language": "Changer la langue",
                 "s3 scripts": "Script d'initialisation",
                 "service password": "Mot de passe pour vos services",
@@ -576,13 +576,13 @@ const {
                 "go back": "Retour",
                 "form not filled properly yet":
                     "Veuillez vérifier que vous avez bien rempli le formulaire",
-                "must respect the pattern": "Dois respecter le format",
+                "must respect the pattern": "Doit respecter le format",
             },
             "MyFilesMySecrets": {
                 "page title - my files": "Mes fichiers",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
-                    "Stocker ici vos fichiers de donnée.",
+                    "Stocker ici vos fichiers de données.",
                 "what this page is used for - my secrets":
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
                 "learn more - my files":
@@ -700,9 +700,9 @@ const {
                 "welcome": ({ who }) => `Bienvenue ${who}!`,
                 "title": "Bienvenue sur le datalab",
                 "login": "Connexion",
-                "new user": "Nouvel utilisateur du datalab?",
+                "new user": "Nouvel utilisateur du datalab ?",
                 "subtitle":
-                    "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin!",
+                    "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin !",
                 "cardTitle1": "Un environnement ergonomique et des services à la demande",
                 "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
                 "cardTitle3":
@@ -710,7 +710,7 @@ const {
                 "cardText1":
                     "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
                 "cardText2":
-                    "Profitez et partagez des ressources mises à votre disposition: tutoriels, formations et canaux d’échanges.",
+                    "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d’échanges.",
                 "cardText3":
                     "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
                 "cardButton1": "Consulter le catalogue",
@@ -754,12 +754,12 @@ const {
                 "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
                     `«${friendlyName}» exsiste déjà dans vos enregistrements.`,
                 "should overwrite configuration dialog body":
-                    "Un service enregistré du même nom exsiste déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
+                    "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
                 "cancel": "Annuler",
                 "replace": "Remplacer",
                 "sensitive configuration dialog title":
-                    "Lancer ce service pourais être dangereux",
-                "proceed to launch": "Lancer en concience",
+                    "Lancer ce service pourrait être dangereux",
+                "proceed to launch": "Lancer en conscience",
             },
             "Footer": {
                 "contribute": "Contribuer au projet",
@@ -768,7 +768,7 @@ const {
             },
             "CatalogLauncherMainCard": {
                 "card title": "Créer votre propre service",
-                "friendly name": "Nom personalisé",
+                "friendly name": "Nom personnalisé",
                 "launch": "Lancer",
                 "cancel": "Annuler",
                 "copy url helper text":
@@ -785,8 +785,8 @@ const {
                 "launch of a service": ({ dependencyName }) =>
                     `Lancement d'un service ${dependencyName}`,
                 "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
-                "Invalid YAML Object": "Objet YAML non valid",
-                "Invalid YAML Array": "Tableau YAML non valid",
+                "Invalid YAML Object": "Objet YAML non valide",
+                "Invalid YAML Array": "Tableau YAML non valide",
             },
             "MyServices": {
                 "text1": "Mes services",
@@ -795,9 +795,9 @@ const {
                 "text3":
                     "Il est recommandé de supprimer vos services après chaque session de travail.",
                 "running services": "Services en cours",
-                "confirm delete title": "Êtes-vous sur?",
+                "confirm delete title": "Êtes-vous sûr?",
                 "confirm delete subtitle":
-                    "Assurez-vous que vos services ne contentent pas de travail non sauvegardé.",
+                    "Assurez-vous que vos services ne contiennent pas de travail non sauvegardé.",
                 "confirm delete body":
                     "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
                 "confirm delete body shared services":
@@ -814,13 +814,13 @@ const {
             },
             "MyServicesCard": {
                 "service": "Service",
-                "running since": "En exécution depuis: ",
+                "running since": "En exécution depuis : ",
                 "open": "ouvrir",
                 "readme": "readme",
                 "shared by you": "partagé par vous",
                 "which token expire when": ({ which, howMuchTime }) =>
                     `Le token ${which} expire ${howMuchTime}.`,
-                "which token expired": ({ which }) => `Le token ${which} est expiré.`,
+                "which token expired": ({ which }) => `Le token ${which} a expiré.`,
                 "reminder to delete services":
                     "Rappelez-vous de supprimer vos services après utilisation.",
                 "this is a shared service": "Ce service est partagé au sein du projet",
@@ -847,7 +847,7 @@ const {
                     "Vous n'avez actuellement aucun service en cours d'exécution",
                 "launch one": "Cliquez ici pour en lancer un",
                 "ok": "ok",
-                "need to copy": "Besoin de copier les valeurs non tronquées?",
+                "need to copy": "Besoin de copier les valeurs non tronquées ?",
                 "everything have been printed to the console":
                     "Tout a été loggé dans la console",
                 "first copy the password": "Commencez par copier le mot de passe...",
