@@ -37,6 +37,7 @@ export type UserConfigs = Id<
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
         selectedProjectId: string | null;
+        accessToken: string | null;
     }
 >;
 
@@ -139,7 +140,7 @@ export const privateThunks = {
             assert(oidcClient.isUserLoggedIn);
 
             const { username, email } = dispatch(userAuthenticationThunks.getUser());
-
+            const { accessToken } = oidcClient;
             //Default values
             const userConfigs: UserConfigs = {
                 "kaggleApiToken": null,
@@ -153,6 +154,7 @@ export const privateThunks = {
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
                 "selectedProjectId": null,
+                "accessToken": accessToken,
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());

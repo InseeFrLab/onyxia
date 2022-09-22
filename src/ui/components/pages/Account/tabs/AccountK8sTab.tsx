@@ -10,10 +10,10 @@ import exportK8S from "js/components/mon-compte/export-credentials-k8s";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
-import { useValidUntil } from "ui/useMoment";
-import { useAsync } from "react-async-hook";
-import { useThunks, useSelector } from "ui/coreApi";
+import { useFormattedDate } from "ui/useMoment";
+import { useSelector } from "ui/coreApi";
 import { declareComponentKeys } from "i18nifty";
+import * as jwtSimple from "jwt-simple";
 
 export type Props = {
     className?: string;
@@ -26,19 +26,28 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountK8sTab });
 
-    const { launcherThunks } = useThunks();
-
     const selectedProjectId = useSelector(
         state => state.projectSelection.selectedProjectId,
     );
 
+    const accessToken = useSelector(state => state.userConfigs.accessToken.value || "");
+    const availableDeploymentRegions = useSelector(
+        state => state.deploymentRegion.availableDeploymentRegions,
+    );
+    const kubernetesClusterDomain =
+        availableDeploymentRegions[0].kubernetesClusterDomain || "";
+    const kubernetesServerUrl = availableDeploymentRegions[0].kubernetes?.url || "";
+
+    const user = jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
+    const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
+
     const k8sMustacheParams = {
-        "K8S_CLUSTER": "dev-insee-io",
-        "K8S_USER": "ddecrulle",
-        "K8S_SERVER_URL": "api-server-test.url",
-        "K8S_NAMESPACE": "dev-ddecrulle",
-        "K8S_TOKEN": "eyTOKEN",
-        "expirationTime": 1000000,
+        "K8S_CLUSTER": kubernetesClusterDomain,
+        "K8S_USER": user,
+        "K8S_SERVER_URL": kubernetesServerUrl,
+        "K8S_NAMESPACE": selectedProjectId,
+        "K8S_TOKEN": accessToken,
+        "expirationTime": expirationTime,
     };
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
@@ -76,16 +85,9 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const scriptLabels = useMemo(() => exportK8S.map(({ label }) => label), []);
 
-    const { credentialExpiriesWhen } = (function useClosure() {
-        const millisecondsLeft = useMemo(
-            () => k8sMustacheParams?.expirationTime ?? 0 - Date.now(),
-            [k8sMustacheParams?.expirationTime],
-        );
-
-        const credentialExpiriesWhen = useValidUntil({ millisecondsLeft });
-
-        return { credentialExpiriesWhen };
-    })();
+    const credentialExpiriesWhen = useFormattedDate({
+        time: expirationTime * 1000,
+    });
 
     if (k8sMustacheParams === undefined) {
         return <span>⏳</span>;
@@ -117,13 +119,6 @@ export const AccountK8sTab = memo((props: Props) => {
                         "minCharAtTheEnd": 20,
                         "text": k8sMustacheParams[key],
                     })}
-                    helperText={
-                        <>
-                            {"HELPER TEXT"}
-                            &nbsp;
-                            <span className={classes.envVar}>{`$${key}`}</span>
-                        </>
-                    }
                     onRequestCopy={onRequestCopyFactory(k8sMustacheParams[key])}
                 />
             ))}
@@ -153,8 +148,5 @@ export const { i18n } = declareComponentKeys<
 const useStyles = makeStyles({ "name": { AccountK8sTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4),
-    },
-    "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
     },
 }));

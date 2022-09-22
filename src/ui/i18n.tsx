@@ -181,7 +181,8 @@ const {
             },
             "AccountK8sTab": {
                 "kubernetes section title": "Connect to Kubernetes",
-                "kubernetes section helper": "Helper section",
+                "kubernetes section helper":
+                    "Connexion for interacting directly with kubernetes cluster",
                 "automatic script section helper": "To access to the kubernetes cluster",
                 "automatic script section title":
                     "Download or copy the init script of your choice",
@@ -555,7 +556,8 @@ const {
             },
             "AccountK8sTab": {
                 "kubernetes section title": "Connexion à Kubernetes",
-                "kubernetes section helper": "Section helper text",
+                "kubernetes section helper":
+                    "Connexion pour interagir directement avec le cluster kubernetes",
                 "automatic script section helper":
                     "Pour vous connecter au cluster kubernetes",
                 "automatic script section title":
