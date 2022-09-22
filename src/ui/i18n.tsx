@@ -582,7 +582,7 @@ const {
                 "page title - my files": "Mes fichiers",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
-                    "Stocker ici vos fichiers de données.",
+                    "Stockez ici vos fichiers de données.",
                 "what this page is used for - my secrets":
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
                 "learn more - my files":
