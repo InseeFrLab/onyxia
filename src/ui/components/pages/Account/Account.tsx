@@ -15,6 +15,7 @@ import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 import { AccountK8sTab } from "./tabs/AccountK8sTab";
+import { useSelector } from "ui/coreApi";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -32,7 +33,18 @@ export function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const tabs = useMemo(() => accountTabIds.map(id => ({ id, "title": t(id) })), [t]);
+    const availableDeploymentRegions = useSelector(
+        state => state.deploymentRegion.availableDeploymentRegions,
+    );
+    const kubernetesServerUrl = availableDeploymentRegions[0].kubernetes?.url || "";
+
+    const tabs = useMemo(
+        () =>
+            accountTabIds
+                .filter(name => name !== "kubernetes" || kubernetesServerUrl)
+                .map(id => ({ id, "title": t(id) })),
+        [t],
+    );
 
     const onRequestChangeActiveTab = useConstCallback((tabId: AccountTabId) =>
         routes.account({ tabId }).push(),
