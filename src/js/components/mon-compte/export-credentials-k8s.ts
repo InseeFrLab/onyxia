@@ -13,28 +13,24 @@ const exportTypes = [
         label: "bash",
         fileName: "init-kub.sh",
         text: (c: K8s) =>
-            `
-#!/bin/bash
+            `#!/bin/bash
 kubectl config set-cluster ${c.K8S_CLUSTER} --server=${c.K8S_SERVER_URL}
 kubectl config set-credentials ${c.K8S_USER} --token ${c.K8S_TOKEN} 
-kubectl config set-context ${c.K8S_CLUSTER} --user=${c.K8S_NAMESPACE} --cluster=${c.K8S_CLUSTER} --namespace=${c.K8S_NAMESPACE}
+kubectl config set-context ${c.K8S_CLUSTER} --user=${c.K8S_USER} --cluster=${c.K8S_CLUSTER} --namespace=${c.K8S_NAMESPACE}
 kubectl config use-context ${c.K8S_CLUSTER}
-
-    `,
+`,
     },
     {
         id: "shell",
         label: "shell",
         fileName: "init-kub.sh",
         text: (c: K8s) =>
-            `
-#!/bin/sh
+            `#!/bin/sh
 kubectl config set-cluster ${c.K8S_CLUSTER} --server=${c.K8S_SERVER_URL}
 kubectl config set-credentials ${c.K8S_USER} --token ${c.K8S_TOKEN} 
-kubectl config set-context ${c.K8S_CLUSTER} --user=${c.K8S_NAMESPACE} --cluster=${c.K8S_CLUSTER} --namespace=${c.K8S_NAMESPACE}
+kubectl config set-context ${c.K8S_CLUSTER} --user=${c.K8S_USER} --cluster=${c.K8S_CLUSTER} --namespace=${c.K8S_NAMESPACE}
 kubectl config use-context ${c.K8S_CLUSTER}
-
-  `,
+`,
     },
 ];
 
