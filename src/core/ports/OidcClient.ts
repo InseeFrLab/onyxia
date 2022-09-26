@@ -13,3 +13,9 @@ export declare namespace OidcClient {
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
     };
 }
+
+export function isLoggedIn(
+    client: OidcClient.LoggedIn | OidcClient.NotLoggedIn,
+): client is OidcClient.LoggedIn {
+    return (client as OidcClient.LoggedIn).accessToken !== undefined;
+}

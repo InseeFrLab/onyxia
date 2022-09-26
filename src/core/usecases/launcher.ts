@@ -37,7 +37,7 @@ import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { createKeycloakOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
 
-import { OidcClient } from "core/ports/OidcClient";
+import { isLoggedIn, OidcClient } from "core/ports/OidcClient";
 import * as jwtSimple from "jwt-simple";
 
 export type FormField =
@@ -1029,12 +1029,6 @@ export const thunks = {
                 transformUrlBeforeRedirectToLogin: undefined,
                 evtUserActivity: undefined,
             });
-
-            function isLoggedIn(
-                client: OidcClient.LoggedIn | OidcClient.NotLoggedIn,
-            ): client is OidcClient.LoggedIn {
-                return (client as OidcClient.LoggedIn).accessToken !== undefined;
-            }
 
             const accessToken = isLoggedIn(oidcClient) ? oidcClient.accessToken : "";
 
