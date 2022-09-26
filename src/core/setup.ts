@@ -74,7 +74,6 @@ export type CreateStoreParams = {
      * when it's the first time the user logs in and the value hasn't been stored yet in vault.
      * */
     getIsDarkModeEnabledValueForProfileInitialization: () => boolean;
-    highlightedPackages: string[];
     evtUserActivity: NonPostableEvt<void>;
     //NOTE: The s3 params are provided by the region.
 };
