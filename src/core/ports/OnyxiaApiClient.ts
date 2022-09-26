@@ -99,8 +99,8 @@ export type DeploymentRegion = {
               url: string;
               keycloakParams:
                   | {
-                        url: string | undefined;
-                        realm: string | undefined;
+                        url: string;
+                        realm: string;
                         clientId: string;
                     }
                   | undefined;
