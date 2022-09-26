@@ -6,14 +6,14 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import { makeStyles } from "ui/theme";
-import exportK8S from "js/components/mon-compte/export-credentials-k8s";
+import { exportK8sCredentials } from "core/exports/export-credentials-k8s";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useFormattedDate } from "ui/useMoment";
-import { useSelector } from "ui/coreApi";
+import { useSelector, useThunks } from "ui/coreApi";
 import { declareComponentKeys } from "i18nifty";
-import * as jwtSimple from "jwt-simple";
+import { useAsync } from "react-async-hook";
 
 export type Props = {
     className?: string;
@@ -26,29 +26,16 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountK8sTab });
 
+    const { launcherThunks } = useThunks();
+
     const selectedProjectId = useSelector(
         state => state.projectSelection.selectedProjectId,
     );
 
-    const accessToken = useSelector(state => state.userConfigs.accessToken.value || "");
-    const availableDeploymentRegions = useSelector(
-        state => state.deploymentRegion.availableDeploymentRegions,
+    const { result: k8sParams } = useAsync(
+        () => launcherThunks.getK8sParamsForProjectBucket(),
+        [selectedProjectId],
     );
-    const kubernetesClusterDomain =
-        availableDeploymentRegions[0].kubernetesClusterDomain || "";
-    const kubernetesServerUrl = availableDeploymentRegions[0].kubernetes?.url || "";
-
-    const user = jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
-    const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
-
-    const k8sMustacheParams = {
-        "K8S_CLUSTER": kubernetesClusterDomain,
-        "K8S_USER": user,
-        "K8S_SERVER_URL": kubernetesServerUrl,
-        "K8S_NAMESPACE": selectedProjectId,
-        "K8S_TOKEN": accessToken,
-        "expirationTime": expirationTime,
-    };
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
@@ -56,15 +43,15 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const onRequestScriptFactory = useCallbackFactory(
         ([action]: ["download" | "copy"], [scriptLabel]: [string]) => {
-            assert(k8sMustacheParams !== undefined);
+            assert(k8sParams !== undefined);
 
-            const { text, fileName } = exportK8S.find(
+            const { text, fileName } = exportK8sCredentials.find(
                 ({ label }) => label === scriptLabel,
             )!;
 
             const scriptContent = text({
-                ...k8sMustacheParams,
-                "K8S_EXPIRATION": `${k8sMustacheParams.expirationTime}`,
+                ...k8sParams,
+                "K8S_EXPIRATION": `${k8sParams.expirationTime}`,
             });
 
             switch (action) {
@@ -83,16 +70,17 @@ export const AccountK8sTab = memo((props: Props) => {
         },
     );
 
-    const scriptLabels = useMemo(() => exportK8S.map(({ label }) => label), []);
+    const scriptLabels = useMemo(
+        () => exportK8sCredentials.map(({ label }) => label),
+        [],
+    );
 
     const credentialExpiriesWhen = useFormattedDate({
-        time: expirationTime * 1000,
+        time: k8sParams ? k8sParams.expirationTime * 1000 : 1000,
     });
-
-    if (k8sMustacheParams === undefined) {
+    if (k8sParams === undefined) {
         return <span>⏳</span>;
     }
-
     return (
         <div className={className}>
             <AccountSectionHeader
@@ -109,19 +97,32 @@ export const AccountK8sTab = memo((props: Props) => {
                     </>
                 }
             />
-            {(["K8S_SERVER_URL", "K8S_NAMESPACE", "K8S_TOKEN"] as const).map(key => (
-                <AccountField
-                    type="text"
-                    key={key}
-                    title={key.replace(/^AWS/, "").replace(/_/g, " ").toLowerCase()}
-                    text={smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": k8sMustacheParams[key],
-                    })}
-                    onRequestCopy={onRequestCopyFactory(k8sMustacheParams[key])}
-                />
-            ))}
+
+            <AccountField
+                type="text"
+                title="k8s server url"
+                text={k8sParams.K8S_SERVER_URL}
+                onRequestCopy={onRequestCopyFactory(k8sParams.K8S_SERVER_URL)}
+            />
+
+            <AccountField
+                type="text"
+                title="k8s namespace"
+                text={selectedProjectId}
+                onRequestCopy={onRequestCopyFactory(selectedProjectId)}
+            />
+
+            <AccountField
+                type="text"
+                title="k8s token"
+                text={smartTrim({
+                    "maxLength": 50,
+                    "minCharAtTheEnd": 20,
+                    "text": k8sParams.K8S_TOKEN,
+                })}
+                onRequestCopy={onRequestCopyFactory(k8sParams.K8S_TOKEN)}
+            />
+
             <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("automatic script section title")}

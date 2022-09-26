@@ -12,7 +12,7 @@ export async function createKeycloakOidcClient(params: {
     realm: string;
     clientId: string;
     transformUrlBeforeRedirectToLogin: ((url: string) => string) | undefined;
-    evtUserActivity: NonPostableEvt<void>;
+    evtUserActivity: NonPostableEvt<void> | undefined;
     log?: typeof console.log;
 }): Promise<OidcClient> {
     const {
@@ -97,7 +97,7 @@ export async function createKeycloakOidcClient(params: {
                 `OIDC access token will expire in ${minValiditySecond} seconds, waiting for user activity before renewing`,
             );
 
-            await evtUserActivity.waitFor();
+            if (evtUserActivity) await evtUserActivity.waitFor();
 
             log?.("User activity detected. Refreshing access token now");
 

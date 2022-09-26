@@ -35,6 +35,10 @@ import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
+import { createKeycloakOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
+
+import { OidcClient } from "core/ports/OidcClient";
+import * as jwtSimple from "jwt-simple";
 
 export type FormField =
     | FormField.Boolean
@@ -976,6 +980,77 @@ export const thunks = {
                 "AWS_SESSION_TOKEN": sessionToken,
                 expirationTime,
                 acquisitionTime,
+            };
+        },
+    /** This thunk can be used outside of the launcher page,
+     *  even if the slice isn't initialized */
+    //@deprecated should be moved to privateThunks
+    "getK8sParamsForProjectBucket":
+        (): ThunkAction<
+            Promise<{
+                "K8S_CLUSTER": string;
+                "K8S_USER": string;
+                "K8S_SERVER_URL": string;
+                "K8S_NAMESPACE": string;
+                "K8S_TOKEN": string;
+                expirationTime: number;
+            }>
+        > =>
+        async (...args) => {
+            const [, getState] = args;
+
+            const { kubernetes } = deploymentRegionSelectors.selectedDeploymentRegion(
+                getState(),
+            );
+
+            const project = projectSelectionSelectors.selectedProject(getState());
+
+            if (kubernetes === undefined) {
+                return {
+                    "K8S_CLUSTER": "",
+                    "K8S_USER": "",
+                    "K8S_SERVER_URL": "",
+                    "K8S_NAMESPACE": "",
+                    "K8S_TOKEN": "",
+                    "expirationTime": Infinity,
+                };
+            }
+
+            assert(
+                kubernetes.keycloakParams !== undefined,
+                "There is no specific kubernetes config in the region",
+            );
+            const { url, realm, clientId } = kubernetes.keycloakParams;
+
+            const oidcClient = await createKeycloakOidcClient({
+                url,
+                realm,
+                clientId,
+                transformUrlBeforeRedirectToLogin: undefined,
+                evtUserActivity: undefined,
+            });
+
+            function isLoggedIn(
+                client: OidcClient.LoggedIn | OidcClient.NotLoggedIn,
+            ): client is OidcClient.LoggedIn {
+                return (client as OidcClient.LoggedIn).accessToken !== undefined;
+            }
+
+            const accessToken = isLoggedIn(oidcClient) ? oidcClient.accessToken : "";
+
+            const kubernetesClusterDomain = kubernetes.url;
+
+            const user =
+                jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
+            const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
+
+            return {
+                "K8S_CLUSTER": kubernetesClusterDomain,
+                "K8S_USER": user,
+                "K8S_SERVER_URL": kubernetes.url,
+                "K8S_NAMESPACE": project.id,
+                "K8S_TOKEN": accessToken,
+                "expirationTime": expirationTime,
             };
         },
     /** This thunk can be used outside of the launcher page,
