@@ -14,8 +14,7 @@ export declare namespace OidcClient {
     };
 }
 
-export function isLoggedIn(
+export const isLoggedIn = (
     client: OidcClient.LoggedIn | OidcClient.NotLoggedIn,
-): client is OidcClient.LoggedIn {
-    return (client as OidcClient.LoggedIn).accessToken !== undefined;
-}
+): client is OidcClient.LoggedIn =>
+    (client as OidcClient.LoggedIn).accessToken !== undefined;

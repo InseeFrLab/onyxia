@@ -37,7 +37,7 @@ import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { createKeycloakOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
 
-import { isLoggedIn, OidcClient } from "core/ports/OidcClient";
+import { isLoggedIn } from "core/ports/OidcClient";
 import * as jwtSimple from "jwt-simple";
 
 export type FormField =
