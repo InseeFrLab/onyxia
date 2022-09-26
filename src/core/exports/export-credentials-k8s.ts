@@ -7,7 +7,7 @@ type K8s = {
     "K8S_EXPIRATION": string;
 };
 
-const exportTypes = [
+export const exportK8sCredentials = [
     {
         id: "bash",
         label: "bash",
@@ -33,5 +33,3 @@ kubectl config use-context ${c.K8S_CLUSTER}
 `,
     },
 ];
-
-export default exportTypes;
