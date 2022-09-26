@@ -166,8 +166,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             k8sPublicEndpoint?: {
                                 keycloakParams?: {
                                     clientId: string;
-                                    realm?: string;
-                                    URL?: string;
+                                    realm: string;
+                                    URL: string;
                                 };
                                 URL: string;
                             };
