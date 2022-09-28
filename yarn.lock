@@ -11575,17 +11575,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.46.30:
-  version "0.46.30"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.30.tgz#e64fc305f2df174d92bc7db701002acfaec41546"
-  integrity sha512-NSzvWFWjHHKo5Ue345WZp4QJtBHp1PYf3G5LFdmxeCdeC6v5Zg3pvLMmx6H8irrh/bf+FKRvc7i7T0S0FAE/6Q==
+onyxia-ui@^0.46.31:
+  version "0.46.31"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.31.tgz#a9e567dfeee73753b7698ce26f3b1f3503da13d5"
+  integrity sha512-alpYUbYXZoiLhHnuznnIjf4iip67hrAg+6FB5O6WNJyyPDKZfPytL73gonsTE9/Wg1lQaGvUWGAbYUGAd3vSeQ==
   dependencies:
     "@mui/icons-material" "^5.10.3"
     color "3.1.3"
-    evt "^2.4.2"
+    evt "^2.4.3"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.17"
+    powerhooks "^0.20.18"
     run-exclusive "^2.2.16"
     tsafe "^1.1.0"
     tss-react "^4.1.4"
