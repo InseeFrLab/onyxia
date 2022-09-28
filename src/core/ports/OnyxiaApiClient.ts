@@ -67,6 +67,7 @@ export type DeploymentRegion = {
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
+    ingressClassName: string | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -202,6 +203,7 @@ export type OnyxiaValues = {
     };
     k8s: {
         domain: string;
+        ingressClassName: string | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };
