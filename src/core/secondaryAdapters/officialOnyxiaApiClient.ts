@@ -137,7 +137,10 @@ export function createOfficialOnyxiaApiClient(params: {
                         id: string;
                         services: {
                             allowedURIPattern: string;
-                            expose: { domain: string };
+                            expose: { 
+                                domain: string;
+                                ingressClassName: string; 
+                            };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
                                 networkPolicy?: boolean;
@@ -211,6 +214,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
                         "kubernetesClusterDomain": region.services.expose.domain,
+                        "ingressClassName": region.services.expose.ingressClassName,
                         "initScriptUrl": region.services.initScript,
                         "s3": (() => {
                             const { S3 } = region.data ?? {};
