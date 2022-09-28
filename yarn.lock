@@ -7658,6 +7658,15 @@ evt@^2.4.1, evt@^2.4.2:
     run-exclusive "^2.2.16"
     tsafe "^1.0.1"
 
+evt@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.3.tgz#c70dab423135ade17de8152ea988fc8ef81f4513"
+  integrity sha512-mjvab7nRg3NnioKh9MKs5ajPlBjvrQ+dOTkDPzExpZFnzC9sebVOu7NsRj8xd1WfL02iih1rIYUVz6+Hr2F/Lg==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.16"
+    tsafe "^1.1.0"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -8944,13 +8953,13 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.3.10:
-  version "1.3.10"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.10.tgz#e56d7c8989d47f878729b3539e0c3a4bea89079d"
-  integrity sha512-yZUzeUnMy7OOoGGUZd798onBYUPyTHxx4woACN+a0vJKCf0qMjdGB+llTH+2+oXOUqoK+s4KNvqDrNLp3JxH2w==
+i18nifty@^1.3.17:
+  version "1.3.17"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.17.tgz#de0d5fc0b160165e3441fb1c684269653788b07e"
+  integrity sha512-6tUUXVQXRePkl5XTDeHeB/YheuNcvMKiEq5iy4BMAMynUDjH3tNHYgYuwG+hfDrLWoB02W8ifmk5u9jBqdrEIg==
   dependencies:
-    powerhooks "^0.20.11"
-    tsafe "^1.0.0"
+    powerhooks "^0.20.17"
+    tsafe "^1.1.0"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -12669,7 +12678,7 @@ postcss@^8.3.5, postcss@^8.4.14, postcss@^8.4.4, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.20.11, powerhooks@^0.20.17:
+powerhooks@^0.20.17:
   version "0.20.17"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.17.tgz#bf9fd0c4a7f21a61aabbfc249a6d631cd1c06006"
   integrity sha512-c65WYqmSmjFQBLIgHN5nHDryVSU3ARII2C8nNX2cOYFsvzp+MvQJSAP1i1159U9RvuP1iayuUiQRk4nVwZYSlg==
@@ -12678,6 +12687,16 @@ powerhooks@^0.20.11, powerhooks@^0.20.17:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.0.1"
+
+powerhooks@^0.20.18:
+  version "0.20.18"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.18.tgz#8d0fe7527d7f43ab8e83587dc6a1e192e3269a52"
+  integrity sha512-oI+WTQu4obdrB8Yjb2Nvcuh4Dyj0ParA8Iq14QCO9VpGGPg1CSl7Zb/Yi5IOpfPis3TZHHMwCUcSIhHNnAkqjQ==
+  dependencies:
+    evt "^2.4.3"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.1.0"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -15196,7 +15215,7 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsafe@^1.0.0, tsafe@^1.0.1:
+tsafe@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.0.1.tgz#c8c4eb2d75d1478418a4941307c5dd667fd76d23"
   integrity sha512-FgJ1a4rE7YbmW5QIzpsfFl4tsAp0x74FH2bVE6qODb2U8jSrwTr5/ckIazeylme5zXndVbtgKm4BZdqmoGhiPw==
