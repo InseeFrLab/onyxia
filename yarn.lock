@@ -11566,10 +11566,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.46.29:
-  version "0.46.29"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.29.tgz#0f8912816ec78938b74433ffee189855ad8f1207"
-  integrity sha512-Ch2JMnj2GSTJyUJx7yJIjHNQkUUWqhKZks+/hizvdonOs83VTec3lvTm653tMUj59aCTuGrbamSgx1lQfs/V7w==
+onyxia-ui@^0.46.30:
+  version "0.46.30"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.46.30.tgz#e64fc305f2df174d92bc7db701002acfaec41546"
+  integrity sha512-NSzvWFWjHHKo5Ue345WZp4QJtBHp1PYf3G5LFdmxeCdeC6v5Zg3pvLMmx6H8irrh/bf+FKRvc7i7T0S0FAE/6Q==
   dependencies:
     "@mui/icons-material" "^5.10.3"
     color "3.1.3"
@@ -11578,8 +11578,8 @@ onyxia-ui@^0.46.29:
     minimal-polyfills "^2.2.2"
     powerhooks "^0.20.17"
     run-exclusive "^2.2.16"
-    tsafe "^1.0.1"
-    tss-react "^4.1.3"
+    tsafe "^1.1.0"
+    tss-react "^4.1.4"
 
 open@^7.0.3:
   version "7.4.2"
@@ -15200,6 +15200,11 @@ tsafe@^1.0.0, tsafe@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.0.1.tgz#c8c4eb2d75d1478418a4941307c5dd667fd76d23"
   integrity sha512-FgJ1a4rE7YbmW5QIzpsfFl4tsAp0x74FH2bVE6qODb2U8jSrwTr5/ckIazeylme5zXndVbtgKm4BZdqmoGhiPw==
+
+tsafe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.1.0.tgz#3fa2f5a902803fccc8d3a0e28ff8154e0380cffa"
+  integrity sha512-u+dbgaG/D3ej1AGZYOe6pb7eDLhn+cmuw1Vx2pnj62PklH/yj+RN1DOxe18ncbZSu91IXmE8LrrGbwByNmuGvw==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"
