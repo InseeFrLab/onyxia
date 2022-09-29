@@ -15225,6 +15225,11 @@ tsafe@^1.1.0:
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.1.0.tgz#3fa2f5a902803fccc8d3a0e28ff8154e0380cffa"
   integrity sha512-u+dbgaG/D3ej1AGZYOe6pb7eDLhn+cmuw1Vx2pnj62PklH/yj+RN1DOxe18ncbZSu91IXmE8LrrGbwByNmuGvw==
 
+tsafe@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.1.1.tgz#8d6998c726f8c63c518e1d1e283bbcd282a2b9a9"
+  integrity sha512-Ogblm3uh0dVupcCcC4IT641rnSQ7CW9IO0q8yIncG8OBe4DDXEqGtUE8LWf7+0MK1qZGeWPWEqSxlLzY2xzREA==
+
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
