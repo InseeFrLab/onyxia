@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "license": "MIT",
     "devDependencies": {
         "@storybook/addon-actions": "^6.5.10",
@@ -94,7 +94,7 @@
         "resize-observer-polyfill": "^1.5.1",
         "run-exclusive": "^2.2.16",
         "shell-quote": "^1.7.2",
-        "tsafe": "^1.1.0",
+        "tsafe": "^1.1.1",
         "tss-react": "^4.1.4",
         "type-route": "^0.6.0",
         "typeface-roboto": "^0.0.75",
