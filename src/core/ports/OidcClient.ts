@@ -10,11 +10,7 @@ export declare namespace OidcClient {
         isUserLoggedIn: true;
         //NOTE: It changes when renewed, don't store it.
         accessToken: string;
+        expirationTime: number;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
     };
 }
-
-export const isLoggedIn = (
-    client: OidcClient.LoggedIn | OidcClient.NotLoggedIn,
-): client is OidcClient.LoggedIn =>
-    (client as OidcClient.LoggedIn).accessToken !== undefined;

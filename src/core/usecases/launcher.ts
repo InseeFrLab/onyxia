@@ -35,10 +35,7 @@ import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
-import { createKeycloakOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
-
-import { isLoggedIn } from "core/ports/OidcClient";
-import * as jwtSimple from "jwt-simple";
+import { creatOrFallbackOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
 
 export type FormField =
     | FormField.Boolean
@@ -997,7 +994,7 @@ export const thunks = {
             }>
         > =>
         async (...args) => {
-            const [, getState] = args;
+            const [dispatch, getState, { createStoreParams, oidcClient }] = args;
 
             const { kubernetes } = deploymentRegionSelectors.selectedDeploymentRegion(
                 getState(),
@@ -1020,31 +1017,34 @@ export const thunks = {
                 kubernetes.keycloakParams !== undefined,
                 "There is no specific kubernetes config in the region",
             );
-            const { url, realm, clientId } = kubernetes.keycloakParams;
+            assert(oidcClient.isUserLoggedIn);
+            assert(createStoreParams.userAuthenticationParams.method === "keycloak");
 
-            const oidcClient = await createKeycloakOidcClient({
-                url,
-                realm,
-                clientId,
-                transformUrlBeforeRedirectToLogin: undefined,
-                evtUserActivity: undefined,
+            const kubernetesOidcClient = await creatOrFallbackOidcClient({
+                "fallback": {
+                    "keycloakParams":
+                        createStoreParams.userAuthenticationParams.keycloakParams,
+                    oidcClient,
+                },
+                "keycloakParams": kubernetes.keycloakParams,
+                "evtUserActivity": createStoreParams.evtUserActivity,
             });
 
-            const accessToken = isLoggedIn(oidcClient) ? oidcClient.accessToken : "";
+            // const user =
+            //     jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
+            //const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
 
-            const kubernetesClusterDomain = kubernetes.url;
+            assert(kubernetesOidcClient.isUserLoggedIn);
 
-            const user =
-                jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
-            const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
+            const user = dispatch(userAuthenticationThunk.getUser());
 
             return {
-                "K8S_CLUSTER": kubernetesClusterDomain,
-                "K8S_USER": user,
+                "K8S_CLUSTER": kubernetes.url,
+                "K8S_USER": user.username,
                 "K8S_SERVER_URL": kubernetes.url,
                 "K8S_NAMESPACE": project.id,
-                "K8S_TOKEN": accessToken,
-                "expirationTime": expirationTime,
+                "K8S_TOKEN": kubernetesOidcClient.accessToken,
+                "expirationTime": kubernetesOidcClient.expirationTime,
             };
         },
     /** This thunk can be used outside of the launcher page,
