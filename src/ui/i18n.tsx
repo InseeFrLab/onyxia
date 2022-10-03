@@ -187,6 +187,9 @@ const {
                 "automatic script section title":
                     "Download or copy the init script of your choice",
                 "valid until": ({ when }) => `Valid until ${when}`,
+                "k8s server url": "k8s server url",
+                "k8s namespace": "k8s namespace",
+                "k8s token": "k8s token",
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -563,6 +566,9 @@ const {
                 "automatic script section title":
                     "Téléchargez ou copiez le script d'initialisation de votre choix",
                 "valid until": ({ when }) => `Valides jusqu'à ${when}`,
+                "k8s server url": "k8s server url",
+                "k8s namespace": "k8s namespace",
+                "k8s token": "k8s token",
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -941,6 +947,9 @@ const {
                 "automatic script section helper": "TO TRANSLATE",
                 "automatic script section title": "TO TRANSLATE",
                 "valid until": ({ when }) => `在 ${when} 前有效`,
+                "k8s server url": "TO TRANSLATE",
+                "k8s namespace": "TO TRANSLATE",
+                "k8s token": "TO TRANSLATE",
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",

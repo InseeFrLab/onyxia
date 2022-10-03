@@ -76,7 +76,7 @@ export const AccountK8sTab = memo((props: Props) => {
     );
 
     const credentialExpiriesWhen = useFormattedDate({
-        time: k8sParams ? k8sParams.expirationTime * 1000 : 1000,
+        time: k8sParams ? k8sParams.expirationTime * 1000 : 0,
     });
     if (k8sParams === undefined) {
         return <span>⏳</span>;
@@ -100,21 +100,21 @@ export const AccountK8sTab = memo((props: Props) => {
 
             <AccountField
                 type="text"
-                title="k8s server url"
+                title={t("k8s server url")}
                 text={k8sParams.K8S_SERVER_URL}
                 onRequestCopy={onRequestCopyFactory(k8sParams.K8S_SERVER_URL)}
             />
 
             <AccountField
                 type="text"
-                title="k8s namespace"
+                title={t("k8s namespace")}
                 text={selectedProjectId}
                 onRequestCopy={onRequestCopyFactory(selectedProjectId)}
             />
 
             <AccountField
                 type="text"
-                title="k8s token"
+                title={t("k8s token")}
                 text={smartTrim({
                     "maxLength": 50,
                     "minCharAtTheEnd": 20,
@@ -144,6 +144,9 @@ export const { i18n } = declareComponentKeys<
     | "automatic script section title"
     | "automatic script section helper"
     | { K: "valid until"; P: { when: string } }
+    | "k8s server url"
+    | "k8s namespace"
+    | "k8s token"
 >()({ AccountK8sTab });
 
 const useStyles = makeStyles({ "name": { AccountK8sTab } })(theme => ({
