@@ -1030,10 +1030,6 @@ export const thunks = {
                 "evtUserActivity": createStoreParams.evtUserActivity,
             });
 
-            // const user =
-            //     jwtSimple.decode(accessToken, "", true)["preferred_username"] || "";
-            //const expirationTime = jwtSimple.decode(accessToken, "", true)["exp"] || "";
-
             assert(kubernetesOidcClient.isUserLoggedIn);
 
             const user = dispatch(userAuthenticationThunk.getUser());
