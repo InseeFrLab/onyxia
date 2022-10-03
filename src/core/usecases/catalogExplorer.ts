@@ -233,7 +233,6 @@ export const selectors = (() => {
             catalogs?.find(catalog => catalog.id === selectedCatalogId)
                 ?.highlightedCharts || [];
         const { getPackageWeight } = getPackageWeightFactory({ highlightedCharts });
-        console.log(highlightedCharts);
         const catalog = catalogs
             .filter(({ id }) => id === selectedCatalogId || state.search !== "")
             .map(catalog =>
