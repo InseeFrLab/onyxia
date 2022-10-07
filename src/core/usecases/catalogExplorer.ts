@@ -204,13 +204,12 @@ export const selectors = (() => {
         const { highlightedCharts } = params;
 
         function getPackageWeight(packageName: string) {
-            for (let i = 0; i < highlightedCharts.length; i++) {
-                if (packageName.toLowerCase().includes(highlightedCharts[i])) {
-                    return highlightedCharts.length - i;
-                }
-            }
-
-            return 0;
+            const indexHiglightedCharts = highlightedCharts.findIndex(
+                v => v.toLowerCase() === packageName.toLowerCase(),
+            );
+            return indexHiglightedCharts !== -1
+                ? highlightedCharts.length - indexHiglightedCharts
+                : 0;
         }
 
         return { getPackageWeight };
