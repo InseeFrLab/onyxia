@@ -2,8 +2,12 @@
     <img src="https://user-images.githubusercontent.com/6702424/139264787-37efc793-1d55-4fa4-a4a9-782af8357cff.png">
 </p>
 <p align="center">
-    <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
-    <img src="https://img.shields.io/npm/l/onyxia-ui">
+    <a href="https://github.com/InseeFrLab/onyxia-web/actions">
+      <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
+    </a>
+    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
+      <img src="https://camo.githubusercontent.com/552ad37eb845d5e54e1bef55f3ea7adb185f36c845a6b676eec85e97122b2fcd/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
+    </a>
 </p>
 
 <p align="center">
@@ -11,6 +15,7 @@
     <br>
     <b>Want to see what it looks like?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
     <br>
+    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
 </p>
 
 > 🗣 v1 (of onyxia-web) have been released with a breaking change. Please checkout [the migration guide](https://docs.onyxia.sh/update-to-v1)
