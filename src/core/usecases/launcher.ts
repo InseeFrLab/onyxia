@@ -133,6 +133,7 @@ type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
 export declare namespace LauncherState {
     export type NotInitialized = {
         stateDescription: "not initialized";
+        isInitializing: boolean;
     };
 
     export type Ready = {
@@ -383,9 +384,14 @@ export const { reducer, actions } = createSlice({
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
+            "isInitializing": false,
         }),
     ),
     "reducers": {
+        "initializationStarted": state => {
+            assert(state.stateDescription === "not initialized");
+            state.isInitializing = true;
+        },
         "initialized": (
             state,
             {
@@ -449,6 +455,7 @@ export const { reducer, actions } = createSlice({
         "reset": () =>
             id<LauncherState.NotInitialized>({
                 "stateDescription": "not initialized",
+                "isInitializing": false,
             }),
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
             assert(state.stateDescription === "ready");
@@ -525,11 +532,23 @@ export const thunks = {
                 "the reset thunk need to be called before initializing again",
             );
 
+            dispatch(actions.initializationStarted());
+
             const { dependencies, sources, getValuesSchemaJson } =
                 await onyxiaApiClient.getPackageConfig({
                     catalogId,
                     packageName,
                 });
+
+            {
+                const state = getState().launcher;
+
+                assert(state.stateDescription === "not initialized");
+
+                if (!state.isInitializing) {
+                    return;
+                }
+            }
 
             assert(oidcClient.isUserLoggedIn);
 
