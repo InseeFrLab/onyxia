@@ -9,6 +9,7 @@ import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
 import * as catalogExplorerUseCase from "./usecases/catalogExplorer";
 import * as deploymentRegionUseCase from "./usecases/deploymentRegion";
 import * as explorersUseCase from "./usecases/explorers";
+import * as initScriptsGeneratorUseCase from "./usecases/initScriptsGenerator";
 import * as launcherUseCase from "./usecases/launcher";
 import * as projectConfigUseCase from "./usecases/projectConfigs";
 import * as projectSelectionUseCase from "./usecases/projectSelection";
@@ -18,7 +19,6 @@ import * as runningServiceUseCase from "./usecases/runningService";
 import * as userAuthenticationUseCase from "./usecases/userAuthentication";
 import * as userConfigsUseCase from "./usecases/userConfigs";
 import * as secretsEditorUseCase from "./usecases/secretsEditor";
-
 import type { UserApiClient } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { S3Client } from "./ports/S3Client";
@@ -87,6 +87,7 @@ export const usecases = [
     catalogExplorerUseCase,
     deploymentRegionUseCase,
     explorersUseCase,
+    initScriptsGeneratorUseCase,
     launcherUseCase,
     projectConfigUseCase,
     projectSelectionUseCase,

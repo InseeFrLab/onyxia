@@ -1,4 +1,4 @@
-import { useMemo, memo } from "react";
+import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
@@ -6,7 +6,6 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import { makeStyles } from "ui/theme";
-import { exportK8sCredentials } from "core/exports/export-credentials-k8s";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
@@ -26,7 +25,7 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountK8sTab });
 
-    const { launcherThunks } = useThunks();
+    const { launcherThunks, initScriptsGeneratorThunks } = useThunks();
 
     const selectedProjectId = useSelector(
         state => state.projectSelection.selectedProjectId,
@@ -45,14 +44,11 @@ export const AccountK8sTab = memo((props: Props) => {
         ([action]: ["download" | "copy"], [scriptLabel]: [string]) => {
             assert(k8sParams !== undefined);
 
-            const { text, fileName } = exportK8sCredentials.find(
-                ({ label }) => label === scriptLabel,
-            )!;
-
-            const scriptContent = text({
-                ...k8sParams,
-                "K8S_EXPIRATION": `${k8sParams.expirationTime}`,
-            });
+            const { scriptContent, fileName } =
+                initScriptsGeneratorThunks.k8sExportCredentials({
+                    k8sParams,
+                    scriptLabel,
+                });
 
             switch (action) {
                 case "copy":
@@ -70,13 +66,10 @@ export const AccountK8sTab = memo((props: Props) => {
         },
     );
 
-    const scriptLabels = useMemo(
-        () => exportK8sCredentials.map(({ label }) => label),
-        [],
-    );
+    const scriptLabels = initScriptsGeneratorThunks.getScriptLabels();
 
     const credentialExpiriesWhen = useFormattedDate({
-        time: k8sParams ? k8sParams.expirationTime * 1000 : 0,
+        time: k8sParams ? k8sParams.K8S_EXPIRATION * 1000 : 0,
     });
     if (k8sParams === undefined) {
         return <span>⏳</span>;

@@ -170,6 +170,15 @@ export declare namespace LauncherState {
     );
 }
 
+export type K8sClusterParams = {
+    "K8S_CLUSTER": string;
+    "K8S_USER": string;
+    "K8S_SERVER_URL": string;
+    "K8S_NAMESPACE": string;
+    "K8S_TOKEN": string;
+    "K8S_EXPIRATION": number;
+};
+
 export type IndexedFormFields = IndexedFormFields.Final;
 
 export declare namespace IndexedFormFields {
@@ -983,16 +992,7 @@ export const thunks = {
      *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getK8sParamsForProjectBucket":
-        (): ThunkAction<
-            Promise<{
-                "K8S_CLUSTER": string;
-                "K8S_USER": string;
-                "K8S_SERVER_URL": string;
-                "K8S_NAMESPACE": string;
-                "K8S_TOKEN": string;
-                expirationTime: number;
-            }>
-        > =>
+        (): ThunkAction<Promise<K8sClusterParams>> =>
         async (...args) => {
             const [dispatch, getState, { createStoreParams, oidcClient }] = args;
 
@@ -1009,7 +1009,7 @@ export const thunks = {
                     "K8S_SERVER_URL": "",
                     "K8S_NAMESPACE": "",
                     "K8S_TOKEN": "",
-                    "expirationTime": Infinity,
+                    "K8S_EXPIRATION": Infinity,
                 };
             }
 
@@ -1040,7 +1040,7 @@ export const thunks = {
                 "K8S_SERVER_URL": kubernetes.url,
                 "K8S_NAMESPACE": project.id,
                 "K8S_TOKEN": kubernetesOidcClient.accessToken,
-                "expirationTime": kubernetesOidcClient.expirationTime,
+                "K8S_EXPIRATION": kubernetesOidcClient.expirationTime,
             };
         },
     /** This thunk can be used outside of the launcher page,
