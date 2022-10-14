@@ -51,7 +51,7 @@ export function createPhonyOidcClient(params: {
                 "xxx",
             );
 
-            return { accessToken, "expirationTime": 0 };
+            return { accessToken, "expirationTime": Infinity };
         })(),
         "logout": () => {
             const { newUrl } = addParamToUrl({
