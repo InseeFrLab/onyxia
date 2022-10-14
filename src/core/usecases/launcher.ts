@@ -1040,7 +1040,7 @@ export const thunks = {
                 "K8S_SERVER_URL": kubernetes.url,
                 "K8S_NAMESPACE": project.id,
                 "K8S_TOKEN": kubernetesOidcClient.accessToken,
-                "K8S_EXPIRATION": kubernetesOidcClient.expirationTime,
+                "K8S_EXPIRATION": kubernetesOidcClient.expirationTime * 1000,
             };
         },
     /** This thunk can be used outside of the launcher page,

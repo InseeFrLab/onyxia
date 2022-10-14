@@ -69,7 +69,7 @@ export const AccountK8sTab = memo((props: Props) => {
     const scriptLabels = initScriptsGeneratorThunks.getScriptLabels();
 
     const credentialExpiriesWhen = useFormattedDate({
-        time: k8sParams ? k8sParams.K8S_EXPIRATION * 1000 : 0,
+        time: k8sParams ? k8sParams.K8S_EXPIRATION : 0,
     });
     if (k8sParams === undefined) {
         return <span>⏳</span>;
