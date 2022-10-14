@@ -12,7 +12,7 @@ export async function createKeycloakOidcClient(params: {
     realm: string;
     clientId: string;
     transformUrlBeforeRedirectToLogin: ((url: string) => string) | undefined;
-    evtUserActivity: NonPostableEvt<void> | undefined;
+    evtUserActivity: NonPostableEvt<void>;
     log?: typeof console.log;
 }): Promise<OidcClient> {
     const {
