@@ -20,30 +20,23 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 
-MyFilesMySecrets.routeGroup = createGroup([routes.myFiles, routes.mySecrets]);
+MySecrets.routeGroup = createGroup([routes.myFiles]);
 
-type PageRoute = Route<typeof MyFilesMySecrets.routeGroup>;
+type PageRoute = Route<typeof MySecrets.routeGroup>;
 
-MyFilesMySecrets.getDoRequireUserLoggedIn = () => true;
+MySecrets.getDoRequireUserLoggedIn = () => true;
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function MyFilesMySecrets(props: Props) {
+export function MySecrets(props: Props) {
     const { className, route } = props;
 
-    const { t } = useTranslation({ MyFilesMySecrets });
+    const { t } = useTranslation({ MySecrets });
 
-    const explorerType = useMemo(() => {
-        switch (route.name) {
-            case "myFiles":
-                return "s3";
-            case "mySecrets":
-                return "secrets";
-        }
-    }, [route.name]);
+    const explorerType = "secrets";
 
     const cwdVue = useSelector(selectors.explorers.cwdIconsVue).cwdIconsVue[explorerType];
 
@@ -203,16 +196,7 @@ export function MyFilesMySecrets(props: Props) {
     const helpContent = useMemo(
         () => (
             <>
-                {t(
-                    (() => {
-                        switch (explorerType) {
-                            case "s3":
-                                return "learn more - my files";
-                            case "secrets":
-                                return "to learn more - my secrets";
-                        }
-                    })(),
-                )}
+                {t("to learn more - my secrets")}
                 &nbsp;
                 <Link
                     href="https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement"
@@ -229,14 +213,7 @@ export function MyFilesMySecrets(props: Props) {
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
-        switch (explorerType) {
-            case "s3":
-                explorersThunks.getFileDownloadUrl({ basename }).then(window.open);
-                break;
-            case "secrets":
-                routes.mySecrets({ ...route.params, "openFile": basename }).replace();
-                break;
-        }
+        routes.mySecrets({ ...route.params, "openFile": basename }).replace();
     });
 
     const onCloseFile = useConstCallback<
@@ -253,18 +230,12 @@ export function MyFilesMySecrets(props: Props) {
     const onRefreshOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: true }>["onRefreshOpenFile"]
     >(() => {
-        switch (explorerType) {
-            case "s3":
-                alert("TODO");
-                return;
-            case "secrets":
-                assert(secretEditorState !== null);
-                assert(secretEditorState.secretWithMetadata !== undefined);
+        assert(secretEditorState !== null);
+        assert(secretEditorState.secretWithMetadata !== undefined);
 
-                const { basename, directoryPath } = secretEditorState;
+        const { basename, directoryPath } = secretEditorState;
 
-                secretsEditorThunks.openSecret({ directoryPath, basename });
-        }
+        secretsEditorThunks.openSecret({ directoryPath, basename });
     });
 
     const onMySecretEditorCopyPath = useConstCallback(() =>
@@ -303,34 +274,9 @@ export function MyFilesMySecrets(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                mainIcon={(() => {
-                    switch (explorerType) {
-                        case "s3":
-                            return "files";
-                        case "secrets":
-                            return "secrets";
-                    }
-                })()}
-                title={t(
-                    (() => {
-                        switch (explorerType) {
-                            case "s3":
-                                return "page title - my files";
-                            case "secrets":
-                                return "page title - my secrets";
-                        }
-                    })(),
-                )}
-                helpTitle={t(
-                    (() => {
-                        switch (explorerType) {
-                            case "s3":
-                                return "what this page is used for - my files";
-                            case "secrets":
-                                return "what this page is used for - my secrets";
-                        }
-                    })(),
-                )}
+                mainIcon={"secrets"}
+                title={t("page title - my secrets")}
+                helpTitle={t("what this page is used for - my secrets")}
                 helpContent={helpContent}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
@@ -361,60 +307,49 @@ export function MyFilesMySecrets(props: Props) {
                 pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 {...(() => {
-                    switch (explorerType) {
-                        case "s3":
-                            return {
-                                "isFileOpen": false as const,
-                                onOpenFile,
-                            };
-                        case "secrets": {
-                            if (secretEditorState === null) {
-                                return {
-                                    "isFileOpen": false as const,
-                                    onOpenFile,
-                                };
-                            }
-
-                            const { secretWithMetadata } = secretEditorState;
-
-                            if (secretWithMetadata === undefined) {
-                                return {
-                                    "isFileOpen": true as const,
-                                    "openFileTime": undefined,
-                                    "openFileBasename": secretEditorState.basename,
-                                    "onCloseFile": () => {},
-                                    "onRefreshOpenFile": () => {},
-                                    "openFileNode": null,
-                                };
-                            }
-
-                            return {
-                                "isFileOpen": true as const,
-                                "openFileTime": new Date(
-                                    secretWithMetadata.metadata.created_time,
-                                ).getTime(),
-                                "openFileBasename": secretEditorState.basename,
-                                onCloseFile,
-                                onRefreshOpenFile,
-                                "openFileNode": (
-                                    <MySecretsEditor
-                                        onCopyPath={onMySecretEditorCopyPath}
-                                        isBeingUpdated={secretEditorState.isBeingUpdated}
-                                        secretWithMetadata={secretWithMetadata}
-                                        onEdit={
-                                            secretsEditorThunks.editCurrentlyShownSecret
-                                        }
-                                        doDisplayUseInServiceDialog={
-                                            doDisplayMySecretsUseInServiceDialog
-                                        }
-                                        onDoDisplayUseInServiceDialogValueChange={
-                                            onDoDisplayUseInServiceDialogValueChange
-                                        }
-                                    />
-                                ),
-                            };
-                        }
+                    if (secretEditorState === null) {
+                        return {
+                            "isFileOpen": false as const,
+                            onOpenFile,
+                        };
                     }
+
+                    const { secretWithMetadata } = secretEditorState;
+
+                    if (secretWithMetadata === undefined) {
+                        return {
+                            "isFileOpen": true as const,
+                            "openFileTime": undefined,
+                            "openFileBasename": secretEditorState.basename,
+                            "onCloseFile": () => {},
+                            "onRefreshOpenFile": () => {},
+                            "openFileNode": null,
+                        };
+                    }
+
+                    return {
+                        "isFileOpen": true as const,
+                        "openFileTime": new Date(
+                            secretWithMetadata.metadata.created_time,
+                        ).getTime(),
+                        "openFileBasename": secretEditorState.basename,
+                        onCloseFile,
+                        onRefreshOpenFile,
+                        "openFileNode": (
+                            <MySecretsEditor
+                                onCopyPath={onMySecretEditorCopyPath}
+                                isBeingUpdated={secretEditorState.isBeingUpdated}
+                                secretWithMetadata={secretWithMetadata}
+                                onEdit={secretsEditorThunks.editCurrentlyShownSecret}
+                                doDisplayUseInServiceDialog={
+                                    doDisplayMySecretsUseInServiceDialog
+                                }
+                                onDoDisplayUseInServiceDialogValueChange={
+                                    onDoDisplayUseInServiceDialogValueChange
+                                }
+                            />
+                        ),
+                    };
                 })()}
             />
         </div>
@@ -429,9 +364,9 @@ export const { i18n } = declareComponentKeys<
     | "learn more - my files"
     | "to learn more - my secrets"
     | "read our documentation"
->()({ MyFilesMySecrets });
+>()({ MySecrets });
 
-const useStyles = makeStyles({ "name": { MyFilesMySecrets } })({
+const useStyles = makeStyles({ "name": { MySecrets } })({
     "root": {
         "height": "100%",
         "display": "flex",

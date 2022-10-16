@@ -1,4 +1,4 @@
-import { ExplorerUploadProgress } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress";
+import { ExplorerUploadProgress } from "ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 

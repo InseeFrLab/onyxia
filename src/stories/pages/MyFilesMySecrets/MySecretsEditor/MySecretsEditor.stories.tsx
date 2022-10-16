@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { MySecretsEditor } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor";
-import type { Props } from "ui/components/pages/MyFilesMySecrets/MySecretsEditor";
+import { MySecretsEditor } from "ui/components/pages/MySecrets/MySecretsEditor";
+import type { Props } from "ui/components/pages/MySecrets/MySecretsEditor";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { symToStr } from "tsafe/symToStr";

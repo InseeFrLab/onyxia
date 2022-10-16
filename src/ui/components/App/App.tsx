@@ -20,7 +20,9 @@ import { MyServices } from "ui/components/pages/MyServices";
 import { Terms } from "ui/components/pages/Terms";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
-import { MyFilesMySecrets } from "ui/components/pages/MyFilesMySecrets";
+import { MyFiles } from "ui/components/pages/MyFiles";
+import { MySecrets } from "ui/components/pages/MySecrets";
+
 //Legacy
 import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
@@ -417,7 +419,20 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
     }
 
     {
-        const Page = MyFilesMySecrets;
+        const Page = MyFiles;
+
+        if (Page.routeGroup.has(route)) {
+            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
+                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                return null;
+            }
+
+            return <Page route={route} />;
+        }
+    }
+
+    {
+        const Page = MySecrets;
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {

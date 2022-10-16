@@ -1,7 +1,7 @@
 import {
     ExplorerItem,
     ExplorerItemProps,
-} from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem";
+} from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { Evt } from "evt";

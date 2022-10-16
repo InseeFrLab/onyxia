@@ -79,15 +79,17 @@ const {
     $lang,
     useResolveLocalizedString,
 } = createI18nApi<
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
+    | typeof import("ui/components/pages/MyFiles/MyFiles").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecrets").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
     | typeof import("ui/components/shared/Header").i18n
     | typeof import("ui/components/App/App").i18n
     | typeof import("ui/components/pages/FourOhFour").i18n
@@ -116,7 +118,6 @@ const {
     | typeof import("ui/components/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/components/pages/MyServices/MyServicesCards").i18n
     | typeof import("ui/components/KcApp/Login/LoginDivider").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MyFilesMySecrets").i18n
     | typeof import("ui/components/pages/Terms").i18n
     | typeof import("ui/components/KcApp/Login").i18n
 >()(
@@ -210,7 +211,18 @@ const {
                     "Please make sure the form is properly filled out",
                 "must respect the pattern": "Must respect the pattern",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "My Files",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Here you can browse your S3 Buckets.",
+                "what this page is used for - my secrets":
+                    "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+                "learn more - my files": "To learn more about file management,",
+                "to learn more - my secrets": "To learn more about secrets management,",
+                "read our documentation": "read our documentation.",
+            },
+            "MySecrets": {
                 "page title - my files": "My Files",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -578,7 +590,20 @@ const {
                     "Veuillez vérifier que vous avez bien rempli le formulaire",
                 "must respect the pattern": "Doit respecter le format",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "Mes fichiers",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Stocker ici vos fichiers de donnée.",
+                "what this page is used for - my secrets":
+                    "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
+                "learn more - my files":
+                    "Pour en savoir plus sur l'utilisation du stockage S3,",
+                "to learn more - my secrets":
+                    "Pour en savoir plus sur l'utilisation de secrets,",
+                "read our documentation": "lisez notre documentation.",
+            },
+            "MySecrets": {
                 "page title - my files": "Mes fichiers",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -942,7 +967,17 @@ const {
                 "form not filled properly yet": "请检查您是否正确填写了表格.",
                 "must respect the pattern": "必须尊守格式",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "我的文件",
+                "page title - my secrets": "我的密钥",
+                "what this page is used for - my files": "在此处存储您的数据.",
+                "what this page is used for - my secrets":
+                    "在此处存储可作为服务中的环境变量访问的密钥.",
+                "learn more - my files": "了解有关使用 S3 存储的更多信息,",
+                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
+                "read our documentation": "阅读我们的文档",
+            },
+            "MySecrets": {
                 "page title - my files": "我的文件",
                 "page title - my secrets": "我的密钥",
                 "what this page is used for - my files": "在此处存储您的数据.",
