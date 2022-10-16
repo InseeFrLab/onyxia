@@ -1,4 +1,4 @@
-import { ExplorerIcon } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerIcon";
+import { ExplorerIcon } from "ui/components/pages/MyFiles/Explorer/ExplorerIcon";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { css } from "@emotion/css";

@@ -32,7 +32,8 @@ import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
-import { interUsecasesThunks as explorersThunks } from "./explorers";
+import { interUsecasesThunks as secretExplorerThunks } from "./secretExplorer";
+
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 
@@ -1058,7 +1059,7 @@ export const thunks = {
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
-                            explorersThunks.getProjectHomePath({
+                            secretExplorerThunks.getProjectHomePath({
                                 "explorerType": "secrets",
                             }),
                         ),
