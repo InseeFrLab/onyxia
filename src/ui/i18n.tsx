@@ -942,17 +942,14 @@ const {
                 "valid until": ({ when }) => `在 ${when} 前有效`,
             },
             "AccountK8sTab": {
-                "kubernetes section title": "TO TRANSLATE Connect to Kubernetes",
-                "kubernetes section helper":
-                    "TO TRANSLATE Connexion for interacting directly with kubernetes cluster",
-                "automatic script section helper":
-                    "TO TRANSLATE To access to the kubernetes cluster",
-                "automatic script section title":
-                    "TO TRANSLATE Download or copy the init script of your choice",
+                "kubernetes section title": undefined,
+                "kubernetes section helper": undefined,
+                "automatic script section helper": undefined,
+                "automatic script section title": undefined,
                 "valid until": ({ when }) => `在 ${when} 前有效`,
-                "k8s server url": "TO TRANSLATE k8s server url",
-                "k8s namespace": "TO TRANSLATE k8s namespace",
-                "k8s token": "TO TRANSLATE k8s token",
+                "k8s server url": undefined,
+                "k8s namespace": undefined,
+                "k8s token": undefined,
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",
