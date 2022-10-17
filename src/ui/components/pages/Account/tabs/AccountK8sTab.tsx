@@ -1,18 +1,17 @@
-import { memo } from "react";
-import { useTranslation } from "ui/i18n";
-import { AccountSectionHeader } from "../AccountSectionHeader";
-import { AccountField } from "../AccountField";
-import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
-import { makeStyles } from "ui/theme";
-import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
+import { declareComponentKeys } from "i18nifty";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { memo } from "react";
+import { assert } from "tsafe/assert";
+import { useSelector, useThunks } from "ui/coreApi";
+import { useTranslation } from "ui/i18n";
+import { makeStyles } from "ui/theme";
+import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useFormattedDate } from "ui/useMoment";
-import { useSelector, useThunks } from "ui/coreApi";
-import { declareComponentKeys } from "i18nifty";
-import { useAsync } from "react-async-hook";
+import { AccountField } from "../AccountField";
+import { AccountSectionHeader } from "../AccountSectionHeader";
 
 export type Props = {
     className?: string;
@@ -25,17 +24,12 @@ export const AccountK8sTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountK8sTab });
 
-    const { launcherThunks, initScriptsGeneratorThunks } = useThunks();
-
+    const { initScriptsGeneratorThunks } = useThunks();
     const selectedProjectId = useSelector(
         state => state.projectSelection.selectedProjectId,
     );
 
-    const { result: k8sParams } = useAsync(
-        () => launcherThunks.getK8sParamsForProjectBucket(),
-        [selectedProjectId],
-    );
-
+    const k8sParams = initScriptsGeneratorThunks.getK8sParamsForProjectBucket();
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
     );

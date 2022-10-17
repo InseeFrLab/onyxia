@@ -87,7 +87,6 @@ export const usecases = [
     catalogExplorerUseCase,
     deploymentRegionUseCase,
     explorersUseCase,
-    initScriptsGeneratorUseCase,
     launcherUseCase,
     projectConfigUseCase,
     projectSelectionUseCase,
@@ -97,6 +96,7 @@ export const usecases = [
     userAuthenticationUseCase,
     userConfigsUseCase,
     secretsEditorUseCase,
+    initScriptsGeneratorUseCase,
 ];
 
 const { createMiddlewareEvtAction } = createMiddlewareEvtActionFactory(usecases);
@@ -294,6 +294,8 @@ export async function createStore(params: CreateStoreParams) {
     }
 
     store.dispatch(runningServiceUseCase.privateThunks.initialize());
+
+    store.dispatch(initScriptsGeneratorUseCase.thunks.initialize());
 
     return store;
 }

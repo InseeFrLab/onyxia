@@ -35,7 +35,6 @@ import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
 import { interUsecasesThunks as explorersThunks } from "./explorers";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
-import { creatOrFallbackOidcClient } from "core/secondaryAdapters/keycloakOidcClient";
 
 export type FormField =
     | FormField.Boolean
@@ -169,15 +168,6 @@ export declare namespace LauncherState {
           }
     );
 }
-
-export type K8sClusterParams = {
-    "K8S_CLUSTER": string;
-    "K8S_USER": string;
-    "K8S_SERVER_URL": string;
-    "K8S_NAMESPACE": string;
-    "K8S_TOKEN": string;
-    "K8S_EXPIRATION": number;
-};
 
 export type IndexedFormFields = IndexedFormFields.Final;
 
@@ -986,61 +976,6 @@ export const thunks = {
                 "AWS_SESSION_TOKEN": sessionToken,
                 expirationTime,
                 acquisitionTime,
-            };
-        },
-    /** This thunk can be used outside of the launcher page,
-     *  even if the slice isn't initialized */
-    //@deprecated should be moved to privateThunks
-    "getK8sParamsForProjectBucket":
-        (): ThunkAction<Promise<K8sClusterParams>> =>
-        async (...args) => {
-            const [dispatch, getState, { createStoreParams, oidcClient }] = args;
-
-            const { kubernetes } = deploymentRegionSelectors.selectedDeploymentRegion(
-                getState(),
-            );
-
-            const project = projectSelectionSelectors.selectedProject(getState());
-
-            if (kubernetes === undefined) {
-                return {
-                    "K8S_CLUSTER": "",
-                    "K8S_USER": "",
-                    "K8S_SERVER_URL": "",
-                    "K8S_NAMESPACE": "",
-                    "K8S_TOKEN": "",
-                    "K8S_EXPIRATION": Infinity,
-                };
-            }
-
-            assert(
-                kubernetes.keycloakParams !== undefined,
-                "There is no specific kubernetes config in the region",
-            );
-            assert(oidcClient.isUserLoggedIn);
-            assert(createStoreParams.userAuthenticationParams.method === "keycloak");
-
-            const kubernetesOidcClient = await creatOrFallbackOidcClient({
-                "fallback": {
-                    "keycloakParams":
-                        createStoreParams.userAuthenticationParams.keycloakParams,
-                    oidcClient,
-                },
-                "keycloakParams": kubernetes.keycloakParams,
-                "evtUserActivity": createStoreParams.evtUserActivity,
-            });
-
-            assert(kubernetesOidcClient.isUserLoggedIn);
-
-            const user = dispatch(userAuthenticationThunk.getUser());
-
-            return {
-                "K8S_CLUSTER": kubernetes.url,
-                "K8S_USER": user.username,
-                "K8S_SERVER_URL": kubernetes.url,
-                "K8S_NAMESPACE": project.id,
-                "K8S_TOKEN": kubernetesOidcClient.accessToken,
-                "K8S_EXPIRATION": kubernetesOidcClient.expirationTime * 1000,
             };
         },
     /** This thunk can be used outside of the launcher page,
