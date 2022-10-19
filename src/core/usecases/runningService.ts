@@ -1,13 +1,11 @@
 import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ThunkAction } from "../setup";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { RootState } from "../setup";
+import type { ThunkAction, RootState, ThunksExtraArgument } from "../setup";
 import { exclude } from "tsafe/exclude";
-import { thunks as launcherThunks } from "./launcher";
 
 type RunningServicesState = {
     isUserWatching: boolean;
@@ -139,11 +137,7 @@ export const thunks = {
     "update":
         (): ThunkAction<void> =>
         async (...args) => {
-            const [
-                dispatch,
-                getState,
-                { onyxiaApiClient, userApiClient, secretsManagerClient },
-            ] = args;
+            const [dispatch, getState, { onyxiaApiClient, userApiClient }] = args;
 
             {
                 const state = getState().runningService;
@@ -193,21 +187,9 @@ export const thunks = {
 
             const { username } = await userApiClient.getUser();
 
-            const [{ s3TokensTTLms }, { vaultTokenTTLms }] = await Promise.all([
-                (async () => {
-                    const { acquisitionTime, expirationTime } = await dispatch(
-                        launcherThunks.getS3MustacheParamsForProjectBucket(),
-                    );
-
-                    return { "s3TokensTTLms": expirationTime - acquisitionTime };
-                })(),
-                (async () => {
-                    const { acquisitionTime, expirationTime } =
-                        await secretsManagerClient.getToken();
-
-                    return { "vaultTokenTTLms": expirationTime - acquisitionTime };
-                })(),
-            ]);
+            const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
+                privateThunks.getDefaultTokenTTL(),
+            );
 
             dispatch(
                 actions.updateCompleted({
@@ -331,7 +313,72 @@ export const privateThunks = {
                 },
             );
         },
+    /** We ask tokens just to tel how long is their lifespan */
+    "getDefaultTokenTTL":
+        (): ThunkAction<Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }>> =>
+        async (...args) => {
+            const [, getState, extraArgs] = args;
+
+            const sliceContext = getSliceContext(extraArgs);
+
+            if (sliceContext.prDefaultTokenTTL !== undefined) {
+                return sliceContext.prDefaultTokenTTL;
+            }
+
+            const { s3Client, secretsManagerClient } = extraArgs;
+
+            return (sliceContext.prDefaultTokenTTL = Promise.all([
+                (async () => {
+                    const project = projectSelectionSelectors.selectedProject(getState());
+
+                    const isDefaultProject =
+                        getState().projectSelection.projects[0].id === project.id;
+
+                    const { expirationTime, acquisitionTime } = await s3Client.getToken({
+                        "restrictToBucketName": isDefaultProject
+                            ? undefined
+                            : project.bucket,
+                    });
+
+                    return { "s3TokensTTLms": expirationTime - acquisitionTime };
+                })(),
+                (async () => {
+                    const { acquisitionTime, expirationTime } =
+                        await secretsManagerClient.getToken();
+
+                    return { "vaultTokenTTLms": expirationTime - acquisitionTime };
+                })(),
+            ]).then(([{ s3TokensTTLms }, { vaultTokenTTLms }]) => ({
+                s3TokensTTLms,
+                vaultTokenTTLms,
+            })));
+        },
 };
+
+type SliceContext = {
+    prDefaultTokenTTL:
+        | Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }>
+        | undefined;
+};
+
+const { getSliceContext } = (() => {
+    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
+
+    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
+        let sliceContext = weakMap.get(extraArg);
+
+        if (sliceContext === undefined) {
+            sliceContext = {
+                "prDefaultTokenTTL": undefined,
+            };
+            weakMap.set(extraArg, sliceContext);
+        }
+
+        return sliceContext;
+    }
+
+    return { getSliceContext };
+})();
 
 export const selectors = (() => {
     const runningServices = (rootState: RootState): RunningService[] => {

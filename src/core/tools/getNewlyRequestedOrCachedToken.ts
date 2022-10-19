@@ -68,5 +68,9 @@ export function getNewlyRequestedOrCachedTokenFactory<
         return getNewlyRequestedOrCachedTokenWithoutParams();
     }
 
-    return { getNewlyRequestedOrCachedToken };
+    function clearCachedToken() {
+        getNewlyRequestedOrCachedTokenFactory_memo.clear();
+    }
+
+    return { getNewlyRequestedOrCachedToken, clearCachedToken };
 }

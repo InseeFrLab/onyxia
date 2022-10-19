@@ -40,110 +40,114 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
     const { host, port = 443 } = parseUrl(params.url);
 
-    const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
-        "requestNewToken": async (restrictToBucketName: string | undefined) => {
-            const now = Date.now();
+    const { getNewlyRequestedOrCachedToken, clearCachedToken } =
+        getNewlyRequestedOrCachedTokenFactory({
+            "requestNewToken": async (restrictToBucketName: string | undefined) => {
+                const now = Date.now();
 
-            const { data } = await axios
-                .create({
-                    "baseURL": amazon !== undefined ? "https://sts.amazonaws.com" : url,
-                    "headers": {
-                        "Accept": "*/*",
-                    },
-                })
-                .post<string>(
-                    "/?" +
-                        Object.entries({
-                            "Action": "AssumeRoleWithWebIdentity",
-                            "WebIdentityToken": oidcClient.accessToken,
-                            //Desired TTL of the token, depending of the configuration
-                            //and version of minio we could get less than that but never more.
-                            "DurationSeconds": durationSeconds,
-                            "Version": "2011-06-15",
-                            ...(restrictToBucketName === undefined
-                                ? {}
-                                : {
-                                      "Policy": encodeURI(
-                                          JSON.stringify({
-                                              "Version": "2012-10-17",
-                                              "Statement": [
-                                                  {
-                                                      "Effect": "Allow",
-                                                      "Action": ["s3:*"],
-                                                      "Resource": [
-                                                          `arn:aws:s3:::${restrictToBucketName}`,
-                                                          `arn:aws:s3:::${restrictToBucketName}/*`,
-                                                      ],
-                                                  },
-                                                  {
-                                                      "Effect": "Allow",
-                                                      "Action": ["s3:ListBucket"],
-                                                      "Resource": ["arn:aws:s3:::*"],
-                                                      "Condition": {
-                                                          "StringLike": {
-                                                              "s3:prefix": "diffusion/*",
+                const { data } = await axios
+                    .create({
+                        "baseURL":
+                            amazon !== undefined ? "https://sts.amazonaws.com" : url,
+                        "headers": {
+                            "Accept": "*/*",
+                        },
+                    })
+                    .post<string>(
+                        "/?" +
+                            Object.entries({
+                                "Action": "AssumeRoleWithWebIdentity",
+                                "WebIdentityToken": oidcClient.accessToken,
+                                //Desired TTL of the token, depending of the configuration
+                                //and version of minio we could get less than that but never more.
+                                "DurationSeconds": durationSeconds,
+                                "Version": "2011-06-15",
+                                ...(restrictToBucketName === undefined
+                                    ? {}
+                                    : {
+                                          "Policy": encodeURI(
+                                              JSON.stringify({
+                                                  "Version": "2012-10-17",
+                                                  "Statement": [
+                                                      {
+                                                          "Effect": "Allow",
+                                                          "Action": ["s3:*"],
+                                                          "Resource": [
+                                                              `arn:aws:s3:::${restrictToBucketName}`,
+                                                              `arn:aws:s3:::${restrictToBucketName}/*`,
+                                                          ],
+                                                      },
+                                                      {
+                                                          "Effect": "Allow",
+                                                          "Action": ["s3:ListBucket"],
+                                                          "Resource": ["arn:aws:s3:::*"],
+                                                          "Condition": {
+                                                              "StringLike": {
+                                                                  "s3:prefix":
+                                                                      "diffusion/*",
+                                                              },
                                                           },
                                                       },
-                                                  },
-                                                  {
-                                                      "Effect": "Allow",
-                                                      "Action": ["s3:GetObject"],
-                                                      "Resource": [
-                                                          "arn:aws:s3:::*/diffusion/*",
-                                                      ],
-                                                  },
-                                              ],
-                                          }),
-                                      ),
-                                  }),
-                            ...(amazon === undefined
-                                ? {}
-                                : {
-                                      "RoleSessionName": amazon.roleSessionName,
-                                      "RoleArn": amazon.roleARN,
-                                  }),
-                        })
-                            .map(([key, value]) => `${key}=${value}`)
-                            .join("&"),
+                                                      {
+                                                          "Effect": "Allow",
+                                                          "Action": ["s3:GetObject"],
+                                                          "Resource": [
+                                                              "arn:aws:s3:::*/diffusion/*",
+                                                          ],
+                                                      },
+                                                  ],
+                                              }),
+                                          ),
+                                      }),
+                                ...(amazon === undefined
+                                    ? {}
+                                    : {
+                                          "RoleSessionName": amazon.roleSessionName,
+                                          "RoleArn": amazon.roleARN,
+                                      }),
+                            })
+                                .map(([key, value]) => `${key}=${value}`)
+                                .join("&"),
+                    );
+
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+                const root = xmlDoc.getElementsByTagName(
+                    "AssumeRoleWithWebIdentityResponse",
+                )[0];
+
+                const credentials = root.getElementsByTagName("Credentials")[0];
+                const accessKeyId =
+                    credentials.getElementsByTagName("AccessKeyId")[0].childNodes[0]
+                        .nodeValue;
+                const secretAccessKey =
+                    credentials.getElementsByTagName("SecretAccessKey")[0].childNodes[0]
+                        .nodeValue;
+                const sessionToken =
+                    credentials.getElementsByTagName("SessionToken")[0].childNodes[0]
+                        .nodeValue;
+                const expiration =
+                    credentials.getElementsByTagName("Expiration")[0].childNodes[0]
+                        .nodeValue;
+
+                assert(
+                    accessKeyId !== null &&
+                        secretAccessKey !== null &&
+                        sessionToken !== null &&
+                        expiration !== null,
+                    "Error parsing minio response",
                 );
 
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, "text/xml");
-            const root = xmlDoc.getElementsByTagName(
-                "AssumeRoleWithWebIdentityResponse",
-            )[0];
-
-            const credentials = root.getElementsByTagName("Credentials")[0];
-            const accessKeyId =
-                credentials.getElementsByTagName("AccessKeyId")[0].childNodes[0]
-                    .nodeValue;
-            const secretAccessKey =
-                credentials.getElementsByTagName("SecretAccessKey")[0].childNodes[0]
-                    .nodeValue;
-            const sessionToken =
-                credentials.getElementsByTagName("SessionToken")[0].childNodes[0]
-                    .nodeValue;
-            const expiration =
-                credentials.getElementsByTagName("Expiration")[0].childNodes[0].nodeValue;
-
-            assert(
-                accessKeyId !== null &&
-                    secretAccessKey !== null &&
-                    sessionToken !== null &&
-                    expiration !== null,
-                "Error parsing minio response",
-            );
-
-            return id<ReturnType<S3Client["getToken"]>>({
-                accessKeyId,
-                "expirationTime": new Date(expiration).getTime(),
-                secretAccessKey,
-                sessionToken,
-                "acquisitionTime": now,
-            });
-        },
-        "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
-    });
+                return id<ReturnType<S3Client["getToken"]>>({
+                    accessKeyId,
+                    "expirationTime": new Date(expiration).getTime(),
+                    secretAccessKey,
+                    sessionToken,
+                    "acquisitionTime": now,
+                });
+            },
+            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+        });
 
     const { getMinioClient } = (() => {
         const minioClientByTokenObj = new WeakMap<
@@ -205,8 +209,13 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     }
 
     const s3Client: S3Client = {
-        "getToken": async ({ restrictToBucketName }) =>
-            getNewlyRequestedOrCachedToken(restrictToBucketName),
+        "getToken": async ({ restrictToBucketName, doForceRenew }) => {
+            if (doForceRenew) {
+                clearCachedToken();
+            }
+
+            return getNewlyRequestedOrCachedToken(restrictToBucketName);
+        },
         "createBucketIfNotExist": memoize(
             async bucketName => {
                 const { minioClient, createAwsBucket } = await getMinioClient({

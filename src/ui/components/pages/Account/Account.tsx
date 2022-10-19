@@ -14,6 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
+import { useThunks } from "ui/coreApi";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -31,7 +32,17 @@ export function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const tabs = useMemo(() => accountTabIds.map(id => ({ id, "title": t(id) })), [t]);
+    const { s3CredentialsThunks } = useThunks();
+
+    const tabs = useMemo(
+        () =>
+            accountTabIds
+                .filter(accountTabId =>
+                    accountTabId !== "storage" ? true : s3CredentialsThunks.isAvailable(),
+                )
+                .map(id => ({ id, "title": t(id) })),
+        [t],
+    );
 
     const onRequestChangeActiveTab = useConstCallback((tabId: AccountTabId) =>
         routes.account({ tabId }).push(),
