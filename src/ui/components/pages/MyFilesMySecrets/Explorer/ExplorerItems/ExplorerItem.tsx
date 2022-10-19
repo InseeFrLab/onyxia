@@ -193,7 +193,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                         disabled={isCircularProgressShown}
                         isCircularProgressShown={isCircularProgressShown}
                         selectAllTextOnFocus={true}
-                        multiline={true}
+                        doRenderAsTextArea={true}
                         onEscapeKeyDown={onEscapeKeyDown}
                         onEnterKeyDown={onEnterKeyDown}
                         onBlur={onEnterKeyDown}
