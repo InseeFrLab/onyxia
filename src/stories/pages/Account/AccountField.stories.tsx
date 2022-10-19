@@ -26,20 +26,6 @@ export const ServicePassword = getStory(
     }),
 );
 
-export const S3Scripts = getStory(
-    id<Props.S3Scripts<string>>({
-        className,
-        "type": "s3 scripts",
-        "scriptLabels": [
-            "R (aws.S3)",
-            "R (paws)",
-            "Python (s3fs)",
-            "Environnement variables",
-        ],
-        ...logCallbacks(["onRequestDownloadScript", "onRequestCopyScript"]),
-    }),
-);
-
 export const SwitchLanguage = getStory(
     id<Props.Language>({
         className,

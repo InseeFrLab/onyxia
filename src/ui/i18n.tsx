@@ -175,7 +175,7 @@ const {
                     "To access your storage outside of datalab services",
                 "init script section helper":
                     "Download or copy the init script in the programming language of your choice.",
-                "valid until": ({ when }) => `Valid until ${when}`,
+                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`,
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -190,7 +190,6 @@ const {
             "AccountField": {
                 "copy tooltip": "Copy in clipboard",
                 "language": "Change language",
-                "s3 scripts": "Init script",
                 "service password": "Password for your services",
                 "service password helper text": `This password is required to log in to all of your services. 
             It is generated automatically and renews itself regularly.`,
@@ -540,7 +539,7 @@ const {
                 "init script section title":
                     "Pour accéder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-                "valid until": ({ when }) => `Valides jusqu'a ${when}`,
+                "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`,
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -557,7 +556,6 @@ const {
             "AccountField": {
                 "copy tooltip": "Copier dans le presse-papier",
                 "language": "Changer la langue",
-                "s3 scripts": "Script d'initialisation",
                 "service password": "Mot de passe pour vos services",
                 "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
             Il est généré automatiquement et se renouvelle régulièrement.`,
@@ -910,7 +908,7 @@ const {
                 "accessible as env": "可在您的服务中作为环境变量被访问",
                 "init script section title": "访问datalab服务之外的存储器",
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
-                "valid until": ({ when }) => `在 ${when} 前有效`,
+                "expires in": undefined,
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",
@@ -924,7 +922,6 @@ const {
             "AccountField": {
                 "copy tooltip": "复制到剪贴板",
                 "language": "更改语言",
-                "s3 scripts": "初始化脚本",
                 "service password": "您的服务密码",
                 "service password helper text": `登录您的所有服务都需要此密码.
             此密码自动生成并定期更新.`,
