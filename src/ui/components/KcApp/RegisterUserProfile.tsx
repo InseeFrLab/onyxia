@@ -2,7 +2,6 @@ import { useMemo, memo, useEffect, Fragment } from "react";
 import { Template } from "./Template";
 import type { KcProps } from "keycloakify";
 import type { KcContextBase } from "keycloakify";
-import { getMsg } from "keycloakify";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useFormValidationSlice } from "keycloakify";
 import { useTranslation } from "ui/i18n";
@@ -16,15 +15,17 @@ import { capitalize } from "tsafe/capitalize";
 import { generateUsername } from "./generateUsername";
 import { regExpStrToEmailDomains } from "./emailDomainAcceptListHelper";
 import { declareComponentKeys } from "i18nifty";
+import type { I18n } from "./i18n";
 
-export const RegisterUserProfile = memo(
+const RegisterUserProfile = memo(
     ({
         kcContext,
+        i18n,
         ...props_
-    }: { kcContext: KcContextBase.RegisterUserProfile } & KcProps) => {
+    }: { kcContext: KcContextBase.RegisterUserProfile; i18n: I18n } & KcProps) => {
         const { url, messagesPerField, recaptchaRequired, recaptchaSiteKey } = kcContext;
 
-        const { msg, msgStr, advancedMsg } = getMsg(kcContext);
+        const { msg, msgStr, advancedMsg } = i18n;
 
         const { classes, cx, css } = useStyles();
 
@@ -66,6 +67,7 @@ export const RegisterUserProfile = memo(
         } = useFormValidationSlice({
             kcContext,
             passwordValidators,
+            i18n,
         });
 
         const attributesWithPassword = useMemo(
@@ -148,6 +150,7 @@ export const RegisterUserProfile = memo(
                 displayRequiredFields={false}
                 doFetchDefaultThemeResources={false}
                 headerNode={msg("registerTitle")}
+                i18n={i18n}
                 formNode={
                     <form
                         className={classes.root}
@@ -387,6 +390,8 @@ export const RegisterUserProfile = memo(
         );
     },
 );
+
+export default RegisterUserProfile;
 
 export const { i18n } = declareComponentKeys<
     | "allowed email domains"

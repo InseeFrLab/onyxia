@@ -1,7 +1,7 @@
 import { AccountSectionHeader } from "ui/components/pages/Account/AccountSectionHeader";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

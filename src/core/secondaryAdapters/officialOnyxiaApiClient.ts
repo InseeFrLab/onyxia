@@ -137,7 +137,10 @@ export function createOfficialOnyxiaApiClient(params: {
                         id: string;
                         services: {
                             allowedURIPattern: string;
-                            expose: { domain: string };
+                            expose: { 
+                                domain: string;
+                                ingressClassName: string; 
+                            };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
                                 networkPolicy?: boolean;
@@ -189,6 +192,16 @@ export function createOfficialOnyxiaApiClient(params: {
                                   }
                             );
                         };
+                        vault?: {
+                            URL: string;
+                            kvEngine: string;
+                            role: string;
+                            keycloakParams?: {
+                                URL?: string;
+                                realm?: string;
+                                clientId: string;
+                            };
+                        };
                     }[];
                 }>("/public/configuration")
                 .then(({ data }) =>
@@ -201,6 +214,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         "defaultNetworkPolicy":
                             region.services.defaultConfiguration?.networkPolicy,
                         "kubernetesClusterDomain": region.services.expose.domain,
+                        "ingressClassName": region.services.expose.ingressClassName,
                         "initScriptUrl": region.services.initScript,
                         "s3": (() => {
                             const { S3 } = region.data ?? {};
@@ -262,6 +276,25 @@ export function createOfficialOnyxiaApiClient(params: {
                             region.services.defaultConfiguration?.nodeSelector,
                         "startupProbe":
                             region.services.defaultConfiguration?.startupProbe,
+                        "vault": (() => {
+                            const { vault } = region;
+                            return vault === undefined
+                                ? undefined
+                                : {
+                                      "url": vault.URL,
+                                      "kvEngine": vault.kvEngine,
+                                      "role": vault.role,
+                                      "keycloakParams":
+                                          vault.keycloakParams === undefined
+                                              ? undefined
+                                              : {
+                                                    "url": vault.keycloakParams.URL,
+                                                    "realm": vault.keycloakParams.realm,
+                                                    "clientId":
+                                                        vault.keycloakParams.clientId,
+                                                },
+                                  };
+                        })(),
                     })),
                 ),
         ),

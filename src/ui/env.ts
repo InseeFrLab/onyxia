@@ -103,13 +103,6 @@ export const getCreateStoreParams = memoize(
             KEYCLOAK_URL,
             KEYCLOAK_REALM,
             KEYCLOAK_CLIENT_ID,
-            VAULT_URL,
-            VAULT_KV_ENGINE,
-            VAULT_ROLE,
-            VAULT_KEYCLOAK_URL,
-            VAULT_KEYCLOAK_REALM,
-            VAULT_KEYCLOAK_CLIENT_ID,
-            HIGHLIGHTED_PACKAGES,
         } = getEnv();
 
         if (KEYCLOAK_URL !== "") {
@@ -120,35 +113,6 @@ export const getCreateStoreParams = memoize(
                 })} should be specified too.`,
             );
         }
-
-        //TODO: Perform more checks on envs
-
-        const { highlightedPackages } = (() => {
-            let highlightedPackages: string[];
-
-            if (HIGHLIGHTED_PACKAGES === "") {
-                highlightedPackages = [];
-                return { highlightedPackages };
-            }
-
-            try {
-                highlightedPackages = JSON.parse(HIGHLIGHTED_PACKAGES);
-
-                assert(
-                    highlightedPackages.find(
-                        packageName => typeof packageName !== "string",
-                    ) === undefined,
-                );
-            } catch {
-                throw new Error(
-                    `${symToStr({
-                        HIGHLIGHTED_PACKAGES,
-                    })}, is not a valid value: \`${HIGHLIGHTED_PACKAGES}\` please refer to the comments in the .env file at the root of the project.`,
-                );
-            }
-
-            return { highlightedPackages };
-        })();
 
         return {
             "onyxiaApiUrl": ONYXIA_API_URL || undefined,
@@ -181,23 +145,6 @@ export const getCreateStoreParams = memoize(
                           },
                           transformUrlBeforeRedirectToLogin,
                       },
-            "vaultParams":
-                VAULT_URL === ""
-                    ? undefined
-                    : {
-                          "url": VAULT_URL,
-                          "role": VAULT_ROLE,
-                          "engine": VAULT_KV_ENGINE,
-                          "keycloakParams":
-                              VAULT_KEYCLOAK_CLIENT_ID === ""
-                                  ? undefined
-                                  : {
-                                        "url": VAULT_KEYCLOAK_URL || undefined,
-                                        "realm": VAULT_KEYCLOAK_REALM || undefined,
-                                        "clientId": VAULT_KEYCLOAK_CLIENT_ID,
-                                    },
-                      },
-            highlightedPackages,
             "getIsDarkModeEnabledValueForProfileInitialization":
                 getIsDarkModeEnabledOsDefault,
             evtUserActivity,

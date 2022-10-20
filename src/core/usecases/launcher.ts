@@ -133,6 +133,7 @@ type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
 export declare namespace LauncherState {
     export type NotInitialized = {
         stateDescription: "not initialized";
+        isInitializing: boolean;
     };
 
     export type Ready = {
@@ -383,9 +384,14 @@ export const { reducer, actions } = createSlice({
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
+            "isInitializing": false,
         }),
     ),
     "reducers": {
+        "initializationStarted": state => {
+            assert(state.stateDescription === "not initialized");
+            state.isInitializing = true;
+        },
         "initialized": (
             state,
             {
@@ -449,6 +455,7 @@ export const { reducer, actions } = createSlice({
         "reset": () =>
             id<LauncherState.NotInitialized>({
                 "stateDescription": "not initialized",
+                "isInitializing": false,
             }),
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
             assert(state.stateDescription === "ready");
@@ -525,11 +532,23 @@ export const thunks = {
                 "the reset thunk need to be called before initializing again",
             );
 
+            dispatch(actions.initializationStarted());
+
             const { dependencies, sources, getValuesSchemaJson } =
                 await onyxiaApiClient.getPackageConfig({
                     catalogId,
                     packageName,
                 });
+
+            {
+                const state = getState().launcher;
+
+                assert(state.stateDescription === "not initialized");
+
+                if (!state.isInitializing) {
+                    return;
+                }
+            }
 
             assert(oidcClient.isUserLoggedIn);
 
@@ -918,74 +937,11 @@ export const thunks = {
             ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
-    "getS3MustacheParamsForProjectBucket":
-        (): ThunkAction<
-            Promise<
-                OnyxiaValues["s3"] & { expirationTime: number; acquisitionTime: number }
-            >
-        > =>
-        async (...args) => {
-            const [, getState, { s3Client }] = args;
-
-            const { s3: s3Params } = deploymentRegionSelectors.selectedDeploymentRegion(
-                getState(),
-            );
-
-            const project = projectSelectionSelectors.selectedProject(getState());
-
-            const isDefaultProject =
-                getState().projectSelection.projects[0].id === project.id;
-
-            if (s3Params === undefined) {
-                return {
-                    "AWS_ACCESS_KEY_ID": "",
-                    "AWS_BUCKET_NAME": "",
-                    "AWS_DEFAULT_REGION": "us-east-1" as const,
-                    "AWS_S3_ENDPOINT": "",
-                    "AWS_SECRET_ACCESS_KEY": "",
-                    "AWS_SESSION_TOKEN": "",
-                    "port": NaN,
-                    "expirationTime": Infinity,
-                    "acquisitionTime": Date.now(),
-                };
-            }
-
-            const {
-                accessKeyId,
-                secretAccessKey,
-                sessionToken,
-                expirationTime,
-                acquisitionTime,
-            } = await s3Client.getToken({
-                "restrictToBucketName": isDefaultProject ? undefined : project.bucket,
-            });
-
-            s3Client.createBucketIfNotExist(project.bucket);
-
-            const { region, url } = getS3UrlAndRegion(s3Params);
-
-            const { host, port = 443 } = parseUrl(url);
-
-            return {
-                "AWS_ACCESS_KEY_ID": accessKeyId,
-                "AWS_BUCKET_NAME": project.bucket,
-                "AWS_DEFAULT_REGION": region,
-                "AWS_S3_ENDPOINT": host,
-                port,
-                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                "AWS_SESSION_TOKEN": sessionToken,
-                expirationTime,
-                acquisitionTime,
-            };
-        },
-    /** This thunk can be used outside of the launcher page,
-     *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getOnyxiaValues":
         (): ThunkAction<Promise<OnyxiaValues>> =>
         async (...args) => {
-            const [dispatch, getState, { createStoreParams, secretsManagerClient }] =
-                args;
+            const [dispatch, getState, { secretsManagerClient, s3Client }] = args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
@@ -1024,11 +980,9 @@ export const thunks = {
                     "token": userConfigs.githubPersonalAccessToken ?? undefined,
                 },
                 "vault": await (async () => {
-                    const vaultParams = !("vaultParams" in createStoreParams)
-                        ? undefined
-                        : createStoreParams.vaultParams;
+                    const { vault } = selectedDeploymentRegion;
 
-                    if (vaultParams === undefined) {
+                    if (vault === undefined) {
                         return {
                             "VAULT_ADDR": "",
                             "VAULT_TOKEN": "",
@@ -1038,9 +992,9 @@ export const thunks = {
                     }
 
                     return {
-                        "VAULT_ADDR": vaultParams.url,
+                        "VAULT_ADDR": vault.url,
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
-                        "VAULT_MOUNT": vaultParams.engine,
+                        "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
                             explorersThunks.getProjectHomePath({
                                 "explorerType": "secrets",
@@ -1049,7 +1003,56 @@ export const thunks = {
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
-                "s3": await dispatch(thunks.getS3MustacheParamsForProjectBucket()),
+                "s3": await (async () => {
+                    const project = projectSelectionSelectors.selectedProject(getState());
+
+                    const isDefaultProject =
+                        getState().projectSelection.projects[0].id === project.id;
+
+                    const { accessKeyId, secretAccessKey, sessionToken } =
+                        await s3Client.getToken({
+                            "restrictToBucketName": isDefaultProject
+                                ? undefined
+                                : project.bucket,
+                        });
+
+                    s3Client.createBucketIfNotExist(project.bucket);
+
+                    return {
+                        "AWS_ACCESS_KEY_ID": accessKeyId,
+                        "AWS_BUCKET_NAME": project.bucket,
+                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                        "AWS_SESSION_TOKEN": sessionToken,
+                        ...(() => {
+                            const { s3: s3Params } =
+                                deploymentRegionSelectors.selectedDeploymentRegion(
+                                    getState(),
+                                );
+
+                            if (s3Params === undefined) {
+                                return {
+                                    "AWS_DEFAULT_REGION": "",
+                                    "AWS_S3_ENDPOINT": "",
+                                    "port": 443,
+                                };
+                            }
+
+                            const { region, host, port } = (() => {
+                                const { region, url } = getS3UrlAndRegion(s3Params);
+
+                                const { host, port = 443 } = parseUrl(url);
+
+                                return { region, host, port };
+                            })();
+
+                            return {
+                                "AWS_DEFAULT_REGION": region,
+                                "AWS_S3_ENDPOINT": host,
+                                port,
+                            };
+                        })(),
+                    };
+                })(),
                 "region": {
                     "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
                     "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
@@ -1063,11 +1066,14 @@ export const thunks = {
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
+                    "ingressClassName": selectedDeploymentRegion.ingressClassName,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
             };
+
+            console.log(onyxiaValues);
 
             return onyxiaValues;
         },

@@ -1,4 +1,4 @@
-import { join as pathJoin, relative as pathRelative } from "core/tools/path";
+import { join as pathJoin, relative as pathRelative } from "path";
 
 export function crawlFactory(params: {
     list(params: { directoryPath: string }): Promise<{

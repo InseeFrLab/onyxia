@@ -5,7 +5,7 @@ import {
 import { sectionName } from "../sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 import { id } from "tsafe/id";
 
 const { meta, getStory } = getStoryFactory({
@@ -34,6 +34,7 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
         `
                 : ""),
         "packageHomeUrl": "https://example.com",
+        "catalogId": "helm-charts-datascience",
         /* spell-checker: enable */
     }),
 );

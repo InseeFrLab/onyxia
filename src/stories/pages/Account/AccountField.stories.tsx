@@ -4,7 +4,7 @@ import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -23,20 +23,6 @@ export const ServicePassword = getStory(
             "xiLdIdjNdiF39djKxiLdIdjNdiF39djKdxiLdIdjNdiF39djKxiLdIdjNdiF39djKd",
         "isLocked": false,
         ...logCallbacks(["onRequestServicePasswordRenewal", "onRequestCopy"]),
-    }),
-);
-
-export const S3Scripts = getStory(
-    id<Props.S3Scripts<string>>({
-        className,
-        "type": "s3 scripts",
-        "scriptLabels": [
-            "R (aws.S3)",
-            "R (paws)",
-            "Python (s3fs)",
-            "Environnement variables",
-        ],
-        ...logCallbacks(["onRequestDownloadScript", "onRequestCopyScript"]),
     }),
 );
 
