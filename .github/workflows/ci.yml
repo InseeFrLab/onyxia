@@ -23,12 +23,12 @@ jobs:
         node-version: '14'
     - uses: bahmutov/npm-install@v1.8.17
     - run: yarn build
-    - run: npx build-keycloak-theme
+    - run: npx keycloakify
     - uses: actions/upload-artifact@v2
       with:
         name: standalone_keycloak_theme
         path: build_keycloak/target/*keycloak-theme*.jar
-    - run: npx build-keycloak-theme --external-assets
+    - run: npx keycloakify --external-assets
     - uses: actions/upload-artifact@v2
       with:
         name: keycloak_theme

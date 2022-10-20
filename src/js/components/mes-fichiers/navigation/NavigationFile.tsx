@@ -4,7 +4,7 @@ import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
 import { useSelector } from "ui/coreApi";
-import { relative as pathRelative } from "core/tools/path";
+import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";

@@ -5,6 +5,7 @@ import { createKeycloakAdapter } from "keycloakify";
 import type { NonPostableEvt } from "evt";
 import * as jwtSimple from "jwt-simple";
 import type { Param0, ReturnType } from "tsafe";
+import { assert } from "tsafe/assert";
 
 export async function createKeycloakOidcClient(params: {
     url: string;
@@ -121,3 +122,75 @@ export async function createKeycloakOidcClient(params: {
 }
 
 const minValiditySecond = 25;
+
+export async function creatOrFallbackOidcClient(params: {
+    keycloakParams:
+        | {
+              url?: string;
+              realm?: string;
+              clientId: string;
+          }
+        | undefined;
+    fallback:
+        | {
+              keycloakParams: {
+                  url: string;
+                  clientId: string;
+                  realm: string;
+              };
+              oidcClient: OidcClient.LoggedIn;
+          }
+        | undefined;
+    evtUserActivity: NonPostableEvt<void>;
+}): Promise<OidcClient.LoggedIn> {
+    const { keycloakParams, fallback, evtUserActivity } = params;
+
+    const oidc = (() => {
+        const { url, realm, clientId } = {
+            ...keycloakParams,
+            ...fallback?.keycloakParams,
+        };
+
+        assert(
+            url !== undefined && clientId !== undefined && realm !== undefined,
+            "There is no specific keycloak config in the region for s3 and no keycloak config to fallback to",
+        );
+
+        if (
+            fallback !== undefined &&
+            url === fallback.keycloakParams.url &&
+            realm === fallback.keycloakParams.realm &&
+            clientId === fallback.keycloakParams.clientId
+        ) {
+            return {
+                "type": "oidc client",
+                "oidcClient": fallback.oidcClient,
+            } as const;
+        }
+
+        return {
+            "type": "keycloak params",
+            "keycloakParams": { url, realm, clientId },
+            evtUserActivity,
+        } as const;
+    })();
+
+    switch (oidc.type) {
+        case "oidc client":
+            return oidc.oidcClient;
+        case "keycloak params": {
+            const oidcClient = await createKeycloakOidcClient({
+                ...oidc.keycloakParams,
+                "transformUrlBeforeRedirectToLogin": undefined,
+                "evtUserActivity": oidc.evtUserActivity,
+            });
+
+            if (!oidcClient.isUserLoggedIn) {
+                await oidcClient.login({ "doesCurrentHrefRequiresAuth": true });
+                assert(false);
+            }
+
+            return oidcClient;
+        }
+    }
+}

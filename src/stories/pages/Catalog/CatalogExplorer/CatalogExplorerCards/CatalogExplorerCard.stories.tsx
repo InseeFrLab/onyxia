@@ -2,7 +2,7 @@ import { CatalogExplorerCard } from "ui/components/pages/Catalog/CatalogExplorer
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

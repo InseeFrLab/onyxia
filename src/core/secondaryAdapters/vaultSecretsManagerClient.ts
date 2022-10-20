@@ -1,5 +1,5 @@
 import axios from "axios";
-import { join as pathJoin } from "core/tools/path";
+import { join as pathJoin } from "path";
 import { partition } from "evt/tools/reducers";
 import type {
     Secret,
@@ -8,61 +8,24 @@ import type {
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
 import type { ReturnType } from "tsafe";
-import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
 import { ApiLogger } from "core/tools/apiLogger";
-import type { NonPostableEvt } from "evt";
 import type { OidcClient } from "../ports/OidcClient";
-import { assert } from "tsafe/assert";
 
 const version = "v1";
 
 type Params = {
     url: string;
-    engine: string;
+    kvEngine: string;
     role: string;
-    oidc:
-        | {
-              type: "keycloak params";
-              keycloakParams: {
-                  url: string;
-                  realm: string;
-                  clientId: string;
-              };
-              evtUserActivity: NonPostableEvt<void>;
-          }
-        | {
-              type: "oidc client";
-              oidcClient: OidcClient.LoggedIn;
-          };
+    oidcClient: OidcClient.LoggedIn;
 };
 
 export async function createVaultSecretsManagerClient(
     params: Params,
 ): Promise<SecretsManagerClient> {
-    const { url, engine, role, oidc } = params;
-
-    const oidcClient = await (async () => {
-        switch (oidc.type) {
-            case "oidc client":
-                return oidc.oidcClient;
-            case "keycloak params": {
-                const oidcClient = await createKeycloakOidcClient({
-                    ...oidc.keycloakParams,
-                    "transformUrlBeforeRedirectToLogin": undefined,
-                    "evtUserActivity": oidc.evtUserActivity,
-                });
-
-                if (!oidcClient.isUserLoggedIn) {
-                    await oidcClient.login({ "doesCurrentHrefRequiresAuth": true });
-                    assert(false);
-                }
-
-                return oidcClient;
-            }
-        }
-    })();
+    const { url, kvEngine, role, oidcClient } = params;
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
@@ -104,7 +67,7 @@ export async function createVaultSecretsManagerClient(
     })();
 
     const ctxPathJoin = (...args: Parameters<typeof pathJoin>) =>
-        pathJoin(version, engine, ...args);
+        pathJoin(version, kvEngine, ...args);
 
     const secretsManagerClient: SecretsManagerClient = {
         "list": async ({ path }) => {

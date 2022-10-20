@@ -2,8 +2,12 @@
     <img src="https://user-images.githubusercontent.com/6702424/139264787-37efc793-1d55-4fa4-a4a9-782af8357cff.png">
 </p>
 <p align="center">
-    <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
-    <img src="https://img.shields.io/npm/l/onyxia-ui">
+    <a href="https://github.com/InseeFrLab/onyxia-web/actions">
+      <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
+    </a>
+    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
+      <img src="https://camo.githubusercontent.com/552ad37eb845d5e54e1bef55f3ea7adb185f36c845a6b676eec85e97122b2fcd/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
+    </a>
 </p>
 
 <p align="center">
@@ -11,11 +15,33 @@
     <br>
     <b>Want to see what it looks like?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
     <br>
+    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
 </p>
+
+> 🗣 v1 (of onyxia-web) have been released with a breaking change. Please checkout [the migration guide](https://docs.onyxia.sh/update-to-v1)
+
+Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
+provide a state of art working environnement for data scientists.  
+Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)).
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/6702424/136545513-f623d8c7-260d-4d93-a01e-2dc5af6ad473.gif" />
 </p>
+
+**Core feature set**:
+
+-   [An interface for launching docker images](https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience)
+    (e.g: [Jupyter](https://jupyter.org), [RStudio](https://www.rstudio.com)) on demand on a [Kubernetes](https://kubernetes.io) cluster.  
+    The catalog of available images is not part of the app, you can create your own.
+    ([here](https://github.com/inseefrlab/helm-charts-datascience) is the catalog we build for the institute's needs.)
+-   Users can define [the amount of RAM, CPU and **GPU** they would like to allocate](https://user-images.githubusercontent.com/6702424/137818454-3fdb3efb-1fbd-4e4d-85b1-64b00d8af03e.png)
+    to their containers.
+-   Specify [a custom init script](https://user-images.githubusercontent.com/6702424/137819445-a9dfd053-a5f1-48da-a294-f20717512ef5.png) to be executed at launch.
+-   [Define environnement variables](https://user-images.githubusercontent.com/6702424/137819689-71e59823-a553-4c3c-8558-2576316e4709.png) to be made available in the containers.
+-   [Save and restore your service service configurations](https://user-images.githubusercontent.com/6702424/137819972-b9974760-4647-43ff-b985-f3facfce99de.png)
+-   Deep integration with S3 for working with data (S3 as the open standard, not the AWS service) and with [Vault](https://www.vaultproject.io)
+    (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png))
+-   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
 ### Launching a container
 
@@ -30,6 +56,43 @@ https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-9
 For injecting secret environment variables in the containers.
 
 https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
+
+## Screenshots
+
+![scree_myservices](https://user-images.githubusercontent.com/6702424/121828699-a8a36600-ccc0-11eb-903c-1cd4b6cbb0ff.png)
+![image](https://user-images.githubusercontent.com/6702424/140529760-37b5a57b-5da6-4993-ba30-c1a4da68edba.png)
+![screen_launcher](https://user-images.githubusercontent.com/6702424/121828696-a80acf80-ccc0-11eb-86fb-c7d0bca55d4f.png)
+![my_secrets](https://user-images.githubusercontent.com/6702424/121828695-a5a87580-ccc0-11eb-9e86-295fdac6c497.png)
+
+## Media
+
+<p align="center">
+    <i>Energy Data Hack</i><br>
+    <a href="https://www.youtube.com/watch?v=1G0J950sWso">
+        <img src="https://user-images.githubusercontent.com/6702424/170261575-e5c2345e-4de2-4878-ac06-f362b7affd2a.png">
+    </a>
+</p>
+
+<p align="center">
+    <i>OpenLAB - <a href="https://speakerdeck.com/etalabia/openlab-onyxia-06122021?slide=6">Download slides</a></i><br>
+    <a href="https://bbb-dinum-scalelite.visio.education.fr/playback/presentation/2.3/9be5b08deee82b1ba557f360214500580cfbda51-1638792324069">
+        <img src="https://user-images.githubusercontent.com/6702424/147028499-cab9868d-1cee-439d-a777-59f5c2169b3a.png">
+    </a>
+</p>
+
+<p align="center">
+    <i>Article d'acteurs publics</i><br>
+    <a href="https://www.acteurspublics.fr/articles/une-boite-a-outils-en-ligne-pour-booster-lexploitation-des-donnees-dans-ladministration">
+        <img src="https://user-images.githubusercontent.com/6702424/147030430-afec9c32-372d-4118-85ee-4c773f16d12c.png">
+    </a>
+</p>
+
+<p align="center">
+    <i>Les Entrepreuneurs d'intérêt général - <a href="https://eig.etalab.gouv.fr">Découvrir le programme</a> </i><br>
+    <a href="https://youtu.be/ukMHBAXwzRg">
+        <img src="https://user-images.githubusercontent.com/6702424/137893928-e341f3fe-13cf-44e6-9332-7ade8653c7f8.png">
+    </a>
+</p>
 
 ## Contributing
 

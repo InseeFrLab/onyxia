@@ -1,4 +1,4 @@
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 import { useState, useEffect, useReducer } from "react";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";

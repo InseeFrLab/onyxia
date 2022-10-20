@@ -1,6 +1,9 @@
 /** All path are supposed to start with /<bucket_name> */
 export type S3Client = {
-    getToken: (params: { restrictToBucketName: string | undefined }) => Promise<{
+    getToken: (params: {
+        restrictToBucketName: string | undefined;
+        doForceRenew?: boolean;
+    }) => Promise<{
         accessKeyId: string;
         secretAccessKey: string;
         sessionToken: string;

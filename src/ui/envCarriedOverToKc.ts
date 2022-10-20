@@ -23,9 +23,8 @@ import { isStorybook } from "ui/tools/isStorybook";
 import { capitalize } from "tsafe/capitalize";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
-import type { KcLanguageTag } from "keycloakify";
-import { kcLanguageTags } from "keycloakify";
 import { objectKeys } from "tsafe/objectKeys";
+import type { Language } from "ui/i18n";
 
 const paletteIds = ["onyxia", "france", "ultraviolet"] as const;
 
@@ -78,7 +77,7 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
         "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
         "validateAndParseOrGetDefault": (
             valueStr,
-        ): Partial<Record<KcLanguageTag, string>> | string | undefined => {
+        ): Partial<Record<Language, string>> | string | undefined => {
             if (valueStr === "") {
                 return undefined;
             }
@@ -91,7 +90,7 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
                 }
             }
 
-            let tosUrlByLng: Partial<Record<KcLanguageTag, string>>;
+            let tosUrlByLng: Partial<Record<Language, string>>;
 
             try {
                 tosUrlByLng = JSON.parse(valueStr);
@@ -104,8 +103,10 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
 
                 languages.forEach(lang =>
                     assert(
-                        id<readonly string[]>(kcLanguageTags).includes(lang),
-                        `${lang} is not a supported languages, supported languages are: ${kcLanguageTags}`,
+                        id<readonly string[]>(languages).includes(lang),
+                        `${lang} is not a supported languages, supported languages are: ${languages.join(
+                            ", ",
+                        )}`,
                     ),
                 );
 

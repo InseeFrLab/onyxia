@@ -1,4 +1,4 @@
-import { css } from "tss-react/@emotion/css";
+import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
 import { ExplorerItems } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItems";
 import type { ExplorerItemsProps } from "ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItems";

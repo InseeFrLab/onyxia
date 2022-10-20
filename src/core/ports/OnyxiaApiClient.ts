@@ -67,6 +67,7 @@ export type DeploymentRegion = {
     defaultIpProtection: boolean | undefined;
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
+    ingressClassName: string | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -80,18 +81,34 @@ export type DeploymentRegion = {
     from: unknown[] | undefined;
     nodeSelector: Record<string, unknown> | undefined;
     startupProbe: Record<string, unknown> | undefined;
+    vault:
+        | {
+              url: string;
+              kvEngine: string;
+              role: string;
+              keycloakParams:
+                  | {
+                        url: string | undefined;
+                        realm: string | undefined;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
     export namespace S3 {
         export type Common = {
-            defaultDurationSeconds?: number;
-            monitoringUrlPattern?: string;
-            keycloakParams?: {
-                url?: string;
-                realm?: string;
-                clientId: string;
-            };
+            defaultDurationSeconds: number | undefined;
+            monitoringUrlPattern: string | undefined;
+            keycloakParams:
+                | {
+                      url: string | undefined;
+                      realm: string | undefined;
+                      clientId: string;
+                  }
+                | undefined;
         };
 
         export type Minio = Common & {
@@ -131,6 +148,7 @@ export type Catalog = {
             home?: string;
         }[];
     };
+    highlightedCharts?: string[];
 };
 
 export type OnyxiaValues = {
@@ -185,6 +203,7 @@ export type OnyxiaValues = {
     };
     k8s: {
         domain: string;
+        ingressClassName: string | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };

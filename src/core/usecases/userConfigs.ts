@@ -11,7 +11,7 @@ import {
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
 import type { RootState } from "../setup";
-import { join as pathJoin } from "core/tools/path";
+import { join as pathJoin } from "path";
 
 /*
  * Values of the user profile that can be changed.
@@ -33,7 +33,6 @@ export type UserConfigs = Id<
         isBetaModeEnabled: boolean;
         isDevModeEnabled: boolean;
         isDarkModeEnabled: boolean;
-        deploymentRegionId: string | null;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
@@ -150,7 +149,6 @@ export const privateThunks = {
                 "isBetaModeEnabled": false,
                 "isDevModeEnabled": false,
                 "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
-                "deploymentRegionId": null,
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
@@ -163,20 +161,12 @@ export const privateThunks = {
                 objectKeys(userConfigs).map(async key => {
                     const path = pathJoin(dirPath, key);
 
-                    const isLegacyValue = (value: unknown) => {
-                        switch (key) {
-                            case "deploymentRegionId":
-                                return value === null;
-                        }
-                        return false;
-                    };
-
                     const value = await secretsManagerClient
                         .get({ path })
                         .then(({ secret }) => secret["value"])
                         .catch(() => undefined);
 
-                    if (value === undefined || isLegacyValue(value)) {
+                    if (value === undefined) {
                         //Store default value.
                         await secretsManagerClient.put({
                             path,

@@ -25,7 +25,6 @@ namespace CatalogExplorerState {
         };
         doShowOnlyHighlighted: boolean;
         search: string;
-        highlightedPackages: string[];
     };
 }
 
@@ -50,19 +49,20 @@ export const { reducer, actions } = createSlice({
                 payload,
             }: PayloadAction<{
                 selectedCatalogId: string;
-                highlightedPackages: string[];
                 catalogs: Catalog[];
             }>,
         ) => {
-            const { selectedCatalogId, highlightedPackages, catalogs } = payload;
+            const { selectedCatalogId, catalogs } = payload;
+            const highlightedCharts =
+                catalogs?.find(catalog => catalog.id === selectedCatalogId)
+                    ?.highlightedCharts || [];
 
             return id<CatalogExplorerState.Ready>({
                 "stateDescription": "ready",
                 "~internal": { catalogs, selectedCatalogId },
-                highlightedPackages,
                 "doShowOnlyHighlighted":
                     getAreConditionMetForOnlyShowingHighlightedPackaged({
-                        "highlightedPackagesLength": highlightedPackages.length,
+                        "highlightedChartsLength": highlightedCharts.length,
                         catalogs,
                         selectedCatalogId,
                     }),
@@ -82,17 +82,17 @@ export const { reducer, actions } = createSlice({
             }
 
             state["~internal"].selectedCatalogId = selectedCatalogId;
-
-            if (
+            const catalogs = state["~internal"].catalogs;
+            const highlightedCharts =
+                catalogs?.find(catalog => catalog.id === selectedCatalogId)
+                    ?.highlightedCharts || [];
+            state.doShowOnlyHighlighted =
                 state.search === "" &&
                 getAreConditionMetForOnlyShowingHighlightedPackaged({
-                    "highlightedPackagesLength": state.highlightedPackages.length,
-                    "catalogs": state["~internal"].catalogs,
+                    "highlightedChartsLength": highlightedCharts.length,
+                    "catalogs": catalogs,
                     selectedCatalogId,
-                })
-            ) {
-                state.doShowOnlyHighlighted = true;
-            }
+                });
         },
         "setSearch": (state, { payload }: PayloadAction<{ search: string }>) => {
             const { search } = payload;
@@ -101,16 +101,19 @@ export const { reducer, actions } = createSlice({
 
             state.search = search;
 
-            if (
+            const selectedCatalogId = state["~internal"].selectedCatalogId;
+            const catalogs = state["~internal"].catalogs;
+            const highlightedCharts =
+                catalogs?.find(catalog => catalog.id === selectedCatalogId)
+                    ?.highlightedCharts || [];
+
+            state.doShowOnlyHighlighted =
                 search === "" &&
                 getAreConditionMetForOnlyShowingHighlightedPackaged({
-                    "highlightedPackagesLength": state.highlightedPackages.length,
-                    "catalogs": state["~internal"].catalogs,
-                    "selectedCatalogId": state["~internal"].selectedCatalogId,
-                })
-            ) {
-                state.doShowOnlyHighlighted = true;
-            }
+                    "highlightedChartsLength": highlightedCharts.length,
+                    "catalogs": catalogs,
+                    "selectedCatalogId": selectedCatalogId,
+                });
         },
         "setDoShowOnlyHighlightedToFalse": state => {
             assert(state.stateDescription === "ready");
@@ -136,14 +139,7 @@ export const thunks = {
                   },
         ): ThunkAction =>
         async (...args) => {
-            const [
-                dispatch,
-                ,
-                {
-                    onyxiaApiClient,
-                    createStoreParams: { highlightedPackages },
-                },
-            ] = args;
+            const [dispatch, , { onyxiaApiClient }] = args;
 
             dispatch(actions.catalogsFetching());
 
@@ -155,7 +151,6 @@ export const thunks = {
 
             dispatch(
                 actions.catalogsFetched({
-                    highlightedPackages,
                     catalogs,
                     selectedCatalogId,
                 }),
@@ -205,17 +200,16 @@ const getSliceContext = memoize((_: ThunksExtraArgument) => {
 });
 
 export const selectors = (() => {
-    function getPackageWeightFactory(params: { highlightedPackages: string[] }) {
-        const { highlightedPackages } = params;
+    function getPackageWeightFactory(params: { highlightedCharts: string[] }) {
+        const { highlightedCharts } = params;
 
         function getPackageWeight(packageName: string) {
-            for (let i = 0; i < highlightedPackages.length; i++) {
-                if (packageName.toLowerCase().includes(highlightedPackages[i])) {
-                    return highlightedPackages.length - i;
-                }
-            }
-
-            return 0;
+            const indexHiglightedCharts = highlightedCharts.findIndex(
+                v => v.toLowerCase() === packageName.toLowerCase(),
+            );
+            return indexHiglightedCharts !== -1
+                ? highlightedCharts.length - indexHiglightedCharts
+                : 0;
         }
 
         return { getPackageWeight };
@@ -229,33 +223,38 @@ export const selectors = (() => {
         }
 
         const {
-            highlightedPackages,
             doShowOnlyHighlighted,
             search,
             "~internal": { selectedCatalogId },
         } = state;
 
-        const catalog = state["~internal"].catalogs.find(
-            ({ id }) => id === selectedCatalogId,
-        )!.catalog.packages;
-
-        const { getPackageWeight } = getPackageWeightFactory({ highlightedPackages });
-
-        const packages = catalog
-            .map(o => ({
-                "packageDescription": o.description,
-                "packageHomeUrl": o.home,
-                "packageName": o.name,
-                "packageIconUrl": o.icon,
-            }))
+        const catalogs = state["~internal"].catalogs;
+        const highlightedCharts =
+            catalogs?.find(catalog => catalog.id === selectedCatalogId)
+                ?.highlightedCharts || [];
+        const { getPackageWeight } = getPackageWeightFactory({ highlightedCharts });
+        const catalog = catalogs
+            .filter(({ id }) => id === selectedCatalogId || state.search !== "")
+            .map(catalog =>
+                catalog.catalog.packages.map(pack => ({
+                    "packageDescription": pack.description,
+                    "packageHomeUrl": pack.home,
+                    "packageName": pack.name,
+                    "packageIconUrl": pack.icon,
+                    "catalogId": catalog.id,
+                })),
+            )
+            .reduce((accumulator, packages) => accumulator.concat(packages), [])
             .sort(
                 (a, b) =>
                     getPackageWeight(b.packageName) - getPackageWeight(a.packageName),
-            )
+            );
+
+        const packages = catalog
             .slice(
                 0,
                 doShowOnlyHighlighted && search === ""
-                    ? highlightedPackages.length
+                    ? highlightedCharts.length
                     : undefined,
             )
             .filter(({ packageName, packageDescription }) =>
@@ -308,16 +307,16 @@ export const selectors = (() => {
 })();
 
 function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
-    highlightedPackagesLength: number;
+    highlightedChartsLength: number;
     catalogs: Catalog[];
     selectedCatalogId: string;
 }) {
-    const { highlightedPackagesLength, catalogs, selectedCatalogId } = params;
+    const { highlightedChartsLength, catalogs, selectedCatalogId } = params;
 
     const totalPackageCount = catalogs.find(({ id }) => id === selectedCatalogId)!.catalog
         .packages.length;
 
-    return highlightedPackagesLength !== 0 && totalPackageCount > 5;
+    return highlightedChartsLength !== 0 && totalPackageCount > 5;
 }
 
 function filterProductionCatalogs(

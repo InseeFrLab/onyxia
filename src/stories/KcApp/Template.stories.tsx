@@ -19,5 +19,7 @@ export const Vue1 = getStory({
     "headerNode": <p>Header node</p>,
     "formNode": <p>Form node</p>,
     "infoNode": <p>Info node</p>,
+    //TODO: Fix, find a way to make it work
+    "i18n": null as any,
     ...defaultKcProps,
 });
