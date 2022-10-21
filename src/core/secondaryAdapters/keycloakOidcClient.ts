@@ -147,8 +147,8 @@ export async function creatOrFallbackOidcClient(params: {
 
     const oidc = (() => {
         const { url, realm, clientId } = {
-            ...keycloakParams,
             ...fallback?.keycloakParams,
+            ...keycloakParams,
         };
 
         assert(
