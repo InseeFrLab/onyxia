@@ -14023,6 +14023,13 @@ run-exclusive@^2.2.16:
   dependencies:
     minimal-polyfills "^2.2.1"
 
+run-exclusive@^2.2.17:
+  version "2.2.17"
+  resolved "https://registry.yarnpkg.com/run-exclusive/-/run-exclusive-2.2.17.tgz#1c967c942ad146fe5a4cc6e28a4e3c1b996c09bd"
+  integrity sha512-RM/mJJuX0VVfkiCa/yWJLs8Tb2OTweRaKEbWtVj77jXz94ztheIFnfLtK91u7XY5iy4/tyVIXEdv+kQmC1E51w==
+  dependencies:
+    minimal-polyfills "^2.2.1"
+
 run-parallel@^1.1.9:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/run-parallel/-/run-parallel-1.2.0.tgz#66d1368da7bdf921eb9d95bd1a9229e7f21a43ee"

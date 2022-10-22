@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "2.2.4",
+    "version": "2.2.5",
     "license": "MIT",
     "devDependencies": {
         "@emotion/css": "^11.10.0",
@@ -97,7 +97,7 @@
         "redux-clean-architecture": "^1.2.15",
         "remove-accents": "^0.4.2",
         "resize-observer-polyfill": "^1.5.1",
-        "run-exclusive": "^2.2.16",
+        "run-exclusive": "^2.2.17",
         "sass": "^1.54.8",
         "shell-quote": "^1.7.2",
         "stream-browserify": "^3.0.0",
