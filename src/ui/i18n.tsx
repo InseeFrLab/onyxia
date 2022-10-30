@@ -750,7 +750,7 @@ const {
                 "should overwrite configuration dialog title":
                     "Souhaitez-vous le remplacer ?",
                 "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-                    `«${friendlyName}» exsiste déjà dans vos enregistrements.`,
+                    `«${friendlyName}» existe déjà dans vos enregistrements.`,
                 "should overwrite configuration dialog body":
                     "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
                 "cancel": "Annuler",
