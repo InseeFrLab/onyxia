@@ -533,6 +533,7 @@ const { TabContent } = (() => {
                                         case "text":
                                             return (
                                                 <TextField
+                                                    type={formField.type}
                                                     doRenderAsTextArea={
                                                         formField.doRenderAsTextArea
                                                     }
