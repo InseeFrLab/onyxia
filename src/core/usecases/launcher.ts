@@ -637,7 +637,7 @@ export const thunks = {
                                     //TODO: The JSON schema should be tested in entry of the system.
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
-                                            ["slider", "textArea"].find(
+                                            ["slider", "textArea", "password"].find(
                                                 render =>
                                                     render ===
                                                     jsonSchemaFormFieldDescription.render,
@@ -824,6 +824,23 @@ export const thunks = {
                                         sensitiveConfigurations.push({
                                             "path": common.path,
                                             value,
+                                        });
+                                    }
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.render ===
+                                        "password"
+                                    ) {
+                                        return id<FormField.Password>({
+                                            ...common,
+                                            "pattern":
+                                                jsonSchemaFormFieldDescription.pattern,
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
+                                            "type": "password",
+                                            "defaultValue":
+                                                jsonSchemaFormFieldDescription.default,
+                                            "doRenderAsTextArea": false,
                                         });
                                     }
 

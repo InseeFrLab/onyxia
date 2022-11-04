@@ -280,7 +280,7 @@ export namespace JSONSchemaFormFieldDescription {
         export type Text = Common<string> & {
             type: "string";
             pattern?: string;
-            render?: "textArea";
+            render?: "textArea" | "password";
             //NOTE: Only for init.personalInit
             "x-security"?: {
                 pattern: string;
