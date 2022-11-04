@@ -1,25 +1,23 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { RootState, ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
+import type {
+    Contract,
+    JSONSchemaFormFieldDescription,
+    JSONSchemaObject,
+    OnyxiaValues,
+} from "core/ports/OnyxiaApiClient";
 import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath,
 } from "core/ports/OnyxiaApiClient";
-import type {
-    Contract,
-    OnyxiaValues,
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription,
-} from "core/ports/OnyxiaApiClient";
-import { createSelector } from "@reduxjs/toolkit";
-import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
@@ -42,6 +40,7 @@ export type FormField =
     | FormField.Array
     | FormField.Integer
     | FormField.Enum
+    | FormField.Password
     | FormField.Text
     | FormField.Slider;
 export declare namespace FormField {
@@ -79,6 +78,14 @@ export declare namespace FormField {
         type: "enum";
         enum: T[];
         value: T;
+    };
+
+    export type Password = Common & {
+        type: "password";
+        pattern: string | undefined;
+        value: string;
+        defaultValue: string;
+        doRenderAsTextArea: boolean;
     };
 
     export type Text = Common & {

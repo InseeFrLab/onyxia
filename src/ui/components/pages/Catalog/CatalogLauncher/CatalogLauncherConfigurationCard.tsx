@@ -4,31 +4,30 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import { same } from "evt/tools/inDepth/same";
-import { useState, useMemo, memo } from "react";
+import { memo, useMemo, useState } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
-import { makeStyles, IconButton, Text } from "ui/theme";
+import { Icon, IconButton, makeStyles, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { FormField, IndexedFormFields } from "core/usecases/launcher";
 import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { capitalize } from "tsafe/capitalize";
-import { Icon } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { Slider } from "onyxia-ui/Slider";
-import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
+import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
-import { TextField } from "onyxia-ui/TextField";
+import { Equals } from "tsafe";
 import type { TextFieldProps } from "onyxia-ui/TextField";
+import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
 import type { selectors } from "ui/coreApi";
-import { Equals } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
 
 export type CatalogLauncherConfigurationCardProps = {
@@ -530,6 +529,7 @@ const { TabContent } = (() => {
                                                 </FormControl>
                                             );
                                         }
+                                        case "password":
                                         case "text":
                                             return (
                                                 <TextField
