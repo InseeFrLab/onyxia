@@ -40,7 +40,6 @@ export type FormField =
     | FormField.Array
     | FormField.Integer
     | FormField.Enum
-    | FormField.Password
     | FormField.Text
     | FormField.Slider;
 export declare namespace FormField {
@@ -80,16 +79,8 @@ export declare namespace FormField {
         value: T;
     };
 
-    export type Password = Common & {
-        type: "password";
-        pattern: string | undefined;
-        value: string;
-        defaultValue: string;
-        doRenderAsTextArea: boolean;
-    };
-
     export type Text = Common & {
-        type: "text";
+        type: "text" | "password";
         pattern: string | undefined;
         value: string;
         defaultValue: string;
@@ -827,28 +818,15 @@ export const thunks = {
                                         });
                                     }
 
-                                    if (
-                                        jsonSchemaFormFieldDescription.render ===
-                                        "password"
-                                    ) {
-                                        return id<FormField.Password>({
-                                            ...common,
-                                            "pattern":
-                                                jsonSchemaFormFieldDescription.pattern,
-                                            "value":
-                                                jsonSchemaFormFieldDescription.default,
-                                            "type": "password",
-                                            "defaultValue":
-                                                jsonSchemaFormFieldDescription.default,
-                                            "doRenderAsTextArea": false,
-                                        });
-                                    }
-
                                     return id<FormField.Text>({
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
                                         "value": jsonSchemaFormFieldDescription.default,
-                                        "type": "text",
+                                        "type":
+                                            jsonSchemaFormFieldDescription.render ===
+                                            "password"
+                                                ? "password"
+                                                : "text",
                                         "defaultValue":
                                             jsonSchemaFormFieldDescription.default,
                                         "doRenderAsTextArea":
