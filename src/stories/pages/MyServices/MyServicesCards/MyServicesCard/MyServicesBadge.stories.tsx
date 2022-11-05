@@ -10,22 +10,22 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueSuccess = getStory({
+export const ViewSuccess = getStory({
     "url": rstudioLogoUrl,
     "severity": "success",
 });
 
-export const VueWarning = getStory({
+export const ViewWarning = getStory({
     "url": rstudioLogoUrl,
     "severity": "warning",
 });
 
-export const VueError = getStory({
+export const ViewError = getStory({
     "url": rstudioLogoUrl,
     "severity": "error",
 });
 
-export const VuePending = getStory({
+export const ViewPending = getStory({
     "url": rstudioLogoUrl,
     "severity": "pending",
 });

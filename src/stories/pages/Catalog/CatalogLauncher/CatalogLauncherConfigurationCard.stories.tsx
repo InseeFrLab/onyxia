@@ -152,7 +152,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "meta": { "type": "dependency" },
     "dependencyNamePackageNameOrGlobal": "rstudio",
     "formFieldsIsWellFormed": [

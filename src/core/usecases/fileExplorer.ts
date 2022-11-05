@@ -27,7 +27,7 @@ import { createObjectThatThrowsIfAccessed } from "core/tools/createObjectThatThr
 
 //All explorer path are expected to be absolute (start with /)
 
-export type FileExplorersState = {
+export type FileExplorerState = {
     directoryPath: string | undefined;
     directoryItems: {
         kind: "file" | "directory";
@@ -55,7 +55,7 @@ export const name = "fileExplorer";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<FileExplorersState>({
+    "initialState": id<FileExplorerState>({
         "directoryPath": undefined,
         "directoryItems": [],
         "isNavigationOngoing": false,
@@ -781,23 +781,23 @@ function removeIfPresent(
 }
 
 export const selectors = (() => {
-    type CwdIconsVue = {
+    type CurrentWorkingDirectoryView = {
         directoryPath: string;
         isNavigationOngoing: boolean;
         directories: string[];
         files: string[];
         directoriesBeingCreated: string[];
-        directoriesBeingRenamed: string[];
         filesBeingCreated: string[];
-        filesBeingRenamed: string[];
     };
 
-    const cwdIconsVue = (rootState: RootState): CwdIconsVue | undefined => {
+    const currentWorkingDirectoryView = (
+        rootState: RootState,
+    ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.fileExplorer;
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
             state;
 
-        return ((): CwdIconsVue | undefined => {
+        return ((): CurrentWorkingDirectoryView | undefined => {
             if (directoryPath === undefined) {
                 return undefined;
             }
@@ -841,7 +841,7 @@ export const selectors = (() => {
     };
 
     type UploadProgress = {
-        s3FilesBeingUploaded: FileExplorersState["~internal"]["s3FilesBeingUploaded"];
+        s3FilesBeingUploaded: FileExplorerState["~internal"]["s3FilesBeingUploaded"];
         overallProgress: {
             completedFileCount: number;
             remainingFileCount: number;
@@ -874,5 +874,5 @@ export const selectors = (() => {
         };
     };
 
-    return { cwdIconsVue, uploadProgress };
+    return { currentWorkingDirectoryView, uploadProgress };
 })();

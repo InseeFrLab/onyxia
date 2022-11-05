@@ -183,50 +183,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         });
     }
 
-    // secrets only: When an item is created automatically enter editing mode.
-    {
-        const callbackFactory = useCallbackFactory(
-            ([kind]: ["file" | "directory"], [params]: [{ added: string[] }]) => {
-                const { added } = params;
-
-                if (added.length > 1) {
-                    return;
-                }
-
-                const [basename] = added;
-
-                if (
-                    !(() => {
-                        switch (kind) {
-                            case "directory":
-                                return directoriesBeingCreated;
-                            case "file":
-                                return filesBeingCreated;
-                        }
-                    })().includes(basename)
-                ) {
-                    return;
-                }
-
-                const evtItemAction = getEvtItemAction(getKeyProp({ kind, basename }));
-
-                evtItemAction.post("ENTER EDITING STATE");
-            },
-        );
-
-        useArrayDiff({
-            "watchFor": "addition",
-            "array": files,
-            "callback": callbackFactory("file"),
-        });
-
-        useArrayDiff({
-            "watchFor": "addition",
-            "array": directories,
-            "callback": callbackFactory("directory"),
-        });
-    }
-
     const onMouseEventFactory = useCallbackFactory(
         async (
             [kind, basename]: ["file" | "directory", string],

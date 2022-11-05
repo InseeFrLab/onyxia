@@ -20,7 +20,7 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 
-MySecrets.routeGroup = createGroup([routes.myFiles]);
+MySecrets.routeGroup = createGroup([routes.mySecrets]);
 
 type PageRoute = Route<typeof MySecrets.routeGroup>;
 
@@ -36,21 +36,21 @@ export function MySecrets(props: Props) {
 
     const { t } = useTranslation({ MySecrets });
 
-    const explorerType = "secrets";
-
-    const cwdVue = useSelector(selectors.explorers.cwdIconsVue).cwdIconsVue[explorerType];
+    const currentWorkingDirectoryView = useSelector(
+        selectors.secretExplorer.currentWorkingDirectoryView,
+    ).currentWorkingDirectoryView;
 
     const secretEditorState = useSelector(state => state.secretsEditor);
 
-    const { explorersThunks, secretsEditorThunks, userConfigsThunks } = useThunks();
+    const { secretExplorerThunks, secretsEditorThunks, userConfigsThunks } = useThunks();
 
     {
         const onNavigate = useConstCallback<
-            Param0<typeof explorersThunks["notifyThatUserIsWatching"]>["onNavigate"]
+            Param0<typeof secretExplorerThunks["notifyThatUserIsWatching"]>["onNavigate"]
         >(({ directoryPath, doRestoreOpenedFile }) =>
             routes[route.name]({
                 "path": directoryPath,
-                ...(explorerType !== "secrets" || !doRestoreOpenedFile
+                ...(!doRestoreOpenedFile
                     ? {}
                     : {
                           "openFile":
@@ -60,19 +60,17 @@ export function MySecrets(props: Props) {
         );
 
         useEffect(() => {
-            explorersThunks.notifyThatUserIsWatching({
-                explorerType,
+            secretExplorerThunks.notifyThatUserIsWatching({
                 "directNavigationDirectoryPath": route.params.path,
                 onNavigate,
             });
 
-            return () =>
-                explorersThunks.notifyThatUserIsNoLongerWatching({ explorerType });
-        }, [explorerType, route.name]);
+            return () => secretExplorerThunks.notifyThatUserIsNoLongerWatching();
+        }, [route.name]);
     }
 
     useEffect(() => {
-        if (explorerType !== "secrets" || route.params.path === undefined) {
+        if (route.params.path === undefined) {
             return;
         }
 
@@ -84,32 +82,28 @@ export function MySecrets(props: Props) {
                 "basename": route.params.openFile,
             });
         }
-    }, [explorerType, route.params.path, route.params.openFile]);
+    }, [route.params.path, route.params.openFile]);
 
     useEffect(() => {
         if (route.params.path === undefined) {
             return;
         }
 
-        explorersThunks.navigate({
-            explorerType,
+        secretExplorerThunks.navigate({
             "directoryPath": route.params.path,
         });
-    }, [route.params.path, explorerType]);
+    }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
             routes[route.name]({ "path": directoryPath }).push(),
     );
 
-    const onRefresh = useConstCallback(() => explorersThunks.refresh({ explorerType }));
+    const onRefresh = useConstCallback(() => secretExplorerThunks.refresh());
 
     const onEditBasename = useConstCallback(
         ({ kind, basename, newBasename }: Param0<ExplorerProps["onEditBasename"]>) => {
-            assert(explorerType === "secrets", "Can't rename in S3");
-
-            explorersThunks.rename({
-                explorerType,
+            secretExplorerThunks.rename({
                 "renamingWhat": kind,
                 basename,
                 newBasename,
@@ -121,16 +115,13 @@ export function MySecrets(props: Props) {
         ({ kind, suggestedBasename }: Param0<ExplorerProps["onNewItem"]>) => {
             switch (kind) {
                 case "directory":
-                    explorersThunks.create({
-                        explorerType,
+                    secretExplorerThunks.create({
                         "createWhat": "directory",
                         "basename": suggestedBasename,
                     });
                     break;
                 case "file":
-                    assert(explorerType === "secrets");
-                    explorersThunks.create({
-                        "explorerType": "secrets",
+                    secretExplorerThunks.create({
                         "createWhat": "file",
                         "basename": suggestedBasename,
                     });
@@ -141,8 +132,7 @@ export function MySecrets(props: Props) {
 
     const onDeleteItem = useConstCallback(
         ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
-            explorersThunks.delete({
-                explorerType,
+            secretExplorerThunks.delete({
                 "deleteWhat": kind,
                 basename,
             }),
@@ -152,22 +142,19 @@ export function MySecrets(props: Props) {
         copyToClipboard(path.split("/").slice(2).join("/")),
     );
 
-    const fsApiLogs = useMemo(
-        () => explorersThunks.getFsApiLogs({ explorerType }),
-        [explorerType],
-    );
+    const fsApiLogs = useMemo(() => secretExplorerThunks.getFsApiLogs(), []);
 
     const { classes, cx } = useStyles();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (cwdVue === undefined) {
+        if (currentWorkingDirectoryView === undefined) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [cwdVue === undefined]);
+    }, [currentWorkingDirectoryView === undefined]);
 
     const [evtExplorerAction] = useState(() =>
         Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
@@ -207,7 +194,7 @@ export function MySecrets(props: Props) {
                 </Link>
             </>
         ),
-        [explorerType, t],
+        [t],
     );
 
     const onOpenFile = useConstCallback<
@@ -253,21 +240,7 @@ export function MySecrets(props: Props) {
         }),
     );
 
-    const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
-        ({ files }) =>
-            files.map(file =>
-                explorersThunks.create({
-                    "explorerType": "s3",
-                    "createWhat": "file",
-                    "basename": file.name,
-                    "blob": file,
-                }),
-            ),
-    );
-
-    const { uploadProgress } = useSelector(selectors.explorers.uploadProgress);
-
-    if (cwdVue === undefined) {
+    if (currentWorkingDirectoryView === undefined) {
         return null;
     }
 
@@ -283,21 +256,22 @@ export function MySecrets(props: Props) {
                 helpCollapseParams={helpCollapseParams}
             />
             <Explorer
-                onFileSelected={onFileSelected}
-                filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
                 className={classes.explorer}
-                explorerType={explorerType}
                 doShowHidden={false}
-                directoryPath={cwdVue.directoryPath}
-                isNavigating={cwdVue.isNavigationOngoing}
+                directoryPath={currentWorkingDirectoryView.directoryPath}
+                isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
                 apiLogs={fsApiLogs}
                 evtAction={evtExplorerAction}
-                files={cwdVue.files}
-                directories={cwdVue.directories}
-                directoriesBeingCreated={cwdVue.directoriesBeingCreated}
-                directoriesBeingRenamed={cwdVue.directoriesBeingRenamed}
-                filesBeingCreated={cwdVue.filesBeingCreated}
-                filesBeingRenamed={cwdVue.filesBeingRenamed}
+                files={currentWorkingDirectoryView.files}
+                directories={currentWorkingDirectoryView.directories}
+                directoriesBeingCreated={
+                    currentWorkingDirectoryView.directoriesBeingCreated
+                }
+                directoriesBeingRenamed={
+                    currentWorkingDirectoryView.directoriesBeingRenamed
+                }
+                filesBeingCreated={currentWorkingDirectoryView.filesBeingCreated}
+                filesBeingRenamed={currentWorkingDirectoryView.filesBeingRenamed}
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onEditBasename={onEditBasename}

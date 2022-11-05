@@ -21,7 +21,6 @@ import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerItemsProps = {
     className?: string;
-    explorerType: "s3" | "secrets";
 
     isNavigating: boolean;
 
@@ -64,7 +63,6 @@ export type ExplorerItemsProps = {
 export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     const {
         className,
-        explorerType,
         isNavigating,
         files,
         directories,
@@ -196,10 +194,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     {
         const callbackFactory = useCallbackFactory(
             ([kind]: ["file" | "directory"], [params]: [{ added: string[] }]) => {
-                if (explorerType !== "secrets") {
-                    return;
-                }
-
                 const { added } = params;
 
                 if (added.length > 1) {
@@ -253,11 +247,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                 case "down":
                     const keyProp = getKeyProp({ kind, basename });
 
-                    if (
-                        explorerType !== "s3" &&
-                        target === "text" &&
-                        selectedItemKeyProp === keyProp
-                    ) {
+                    if (target === "text" && selectedItemKeyProp === keyProp) {
                         await Evt.from(window, "mouseup").waitFor();
 
                         getEvtItemAction(keyProp).post("ENTER EDITING STATE");
@@ -387,7 +377,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                             return (
                                 <ExplorerItem
                                     className={classes.item}
-                                    explorerType={explorerType}
                                     key={keyProp}
                                     kind={kind}
                                     basename={basename}

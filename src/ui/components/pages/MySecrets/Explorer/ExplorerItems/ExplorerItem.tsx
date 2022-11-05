@@ -18,9 +18,6 @@ import { declareComponentKeys } from "i18nifty";
 export type ExplorerItemProps = {
     className?: string;
 
-    /** [HIGHER ORDER] What visual asset should be used to represent a file */
-    explorerType: "s3" | "secrets";
-
     /** Tell if we are displaying an directory or a secret */
     kind: "file" | "directory";
 
@@ -51,7 +48,6 @@ export type ExplorerItemProps = {
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
     const {
         className,
-        explorerType,
         kind,
         basename,
         isCircularProgressShown,
@@ -164,12 +160,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                             case "directory":
                                 return "directory";
                             case "file":
-                                switch (explorerType) {
-                                    case "s3":
-                                        return "data";
-                                    case "secrets":
-                                        return "secret";
-                                }
+                                return "secret";
                         }
                     })()}
                     hasShadow={true}

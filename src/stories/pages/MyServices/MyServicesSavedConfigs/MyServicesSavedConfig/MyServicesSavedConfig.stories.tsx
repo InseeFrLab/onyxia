@@ -13,7 +13,7 @@ export default meta;
 
 const link = { "href": "https://example.com", "onClick": () => {} };
 
-export const VueShortVariant = getStory({
+export const ViewShortVariant = getStory({
     "className": css({ "width": 400 }),
     "isShortVariant": true,
     "logoUrl": rstudioImgUrl,
@@ -23,7 +23,7 @@ export const VueShortVariant = getStory({
     ...logCallbacks(["callback"]),
 });
 
-export const VueLongVariant = getStory({
+export const ViewLongVariant = getStory({
     "className": css({ "width": 1000 }),
     "isShortVariant": false,
     "logoUrl": rstudioImgUrl,
@@ -33,7 +33,7 @@ export const VueLongVariant = getStory({
     ...logCallbacks(["callback"]),
 });
 
-export const VueNoLogo = getStory({
+export const ViewNoLogo = getStory({
     "className": css({ "width": 1000 }),
     "logoUrl": undefined,
     "isShortVariant": false,

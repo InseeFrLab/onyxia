@@ -19,7 +19,7 @@ import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 
-MyFiles.routeGroup = createGroup([routes.myFiles, routes.mySecrets]);
+MyFiles.routeGroup = createGroup([routes.myFiles]);
 
 type PageRoute = Route<typeof MyFiles.routeGroup>;
 
@@ -35,24 +35,24 @@ export function MyFiles(props: Props) {
 
     const { t } = useTranslation({ MyFiles });
 
-    const cwdVue = useSelector(selectors.fileExplorer.cwdIconsVue).cwdIconsVue;
-
-    const secretEditorState = useSelector(state => state.secretsEditor);
+    const currentWorkingDirectoryView = useSelector(
+        selectors.fileExplorer.currentWorkingDirectoryView,
+    ).currentWorkingDirectoryView;
 
     const { fileExplorerThunks, secretsEditorThunks } = useThunks();
 
     {
         const onNavigate = useConstCallback<
             Param0<typeof fileExplorerThunks["notifyThatUserIsWatching"]>["onNavigate"]
-        >(({ directoryPath, doRestoreOpenedFile }) =>
+        >(({ directoryPath }) =>
             routes[route.name]({
                 "path": directoryPath,
-                ...(!doRestoreOpenedFile
-                    ? {}
-                    : {
-                          "openFile":
-                              route.params.openFile ?? secretEditorState?.basename,
-                      }),
+                // ...(!doRestoreOpenedFile
+                //     ? {}
+                //     : {
+                //         "openFile":
+                //             route.params.openFile ?? secretEditorState?.basename,
+                //     }),
             }).replace(),
         );
 
@@ -128,12 +128,12 @@ export function MyFiles(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (cwdVue === undefined) {
+        if (currentWorkingDirectoryView === undefined) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [cwdVue === undefined]);
+    }, [currentWorkingDirectoryView === undefined]);
 
     const evtExplorerAction = useConst(() => Evt.create<ExplorerProps["evtAction"]>());
 
@@ -193,7 +193,7 @@ export function MyFiles(props: Props) {
 
     const { uploadProgress } = useSelector(selectors.fileExplorer.uploadProgress);
 
-    if (cwdVue === undefined) {
+    if (currentWorkingDirectoryView === undefined) {
         return null;
     }
 
@@ -213,16 +213,22 @@ export function MyFiles(props: Props) {
                 filesBeingUploaded={uploadProgress.s3FilesBeingUploaded}
                 className={classes.explorer}
                 doShowHidden={false}
-                directoryPath={cwdVue.directoryPath}
-                isNavigating={cwdVue.isNavigationOngoing}
+                directoryPath={currentWorkingDirectoryView.directoryPath}
+                isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
                 apiLogs={s3ApiLogs}
                 evtAction={evtExplorerAction}
-                files={cwdVue.files}
-                directories={cwdVue.directories}
-                directoriesBeingCreated={cwdVue.directoriesBeingCreated}
-                directoriesBeingRenamed={cwdVue.directoriesBeingRenamed}
-                filesBeingCreated={cwdVue.filesBeingCreated}
-                filesBeingRenamed={cwdVue.filesBeingRenamed}
+                files={currentWorkingDirectoryView.files}
+                directories={currentWorkingDirectoryView.directories}
+                directoriesBeingCreated={
+                    currentWorkingDirectoryView.directoriesBeingCreated
+                }
+                //delete
+                directoriesBeingRenamed={
+                    currentWorkingDirectoryView.directoriesBeingCreated
+                }
+                filesBeingCreated={currentWorkingDirectoryView.filesBeingCreated}
+                //delete
+                filesBeingRenamed={currentWorkingDirectoryView.filesBeingCreated}
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}

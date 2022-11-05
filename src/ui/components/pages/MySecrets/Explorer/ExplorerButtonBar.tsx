@@ -6,8 +6,6 @@ import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
-    explorerType: "s3" | "secrets";
-
     selectedItemKind: "file" | "directory" | "none";
     isSelectedItemInEditingState: boolean;
     isFileOpen: boolean;
@@ -16,13 +14,8 @@ export type Props = {
 };
 
 export const ExplorerButtonBar = memo((props: Props) => {
-    const {
-        explorerType,
-        selectedItemKind,
-        isSelectedItemInEditingState,
-        isFileOpen,
-        callback,
-    } = props;
+    const { selectedItemKind, isSelectedItemInEditingState, isFileOpen, callback } =
+        props;
 
     const { t } = useTranslation({ ExplorerButtonBar });
 
@@ -32,73 +25,46 @@ export const ExplorerButtonBar = memo((props: Props) => {
 
     const buttons = useMemo(
         (): ButtonBarProps<ButtonId, IconId>["buttons"] =>
-            buttonIds
-                // eslint-disable-next-line array-callback-return
-                .filter(buttonId => {
-                    switch (explorerType) {
-                        case "s3":
-                            switch (buttonId) {
-                                case "rename":
-                                    return false;
-                                default:
-                                    return true;
-                            }
-                        case "secrets":
-                            return true;
+            buttonIds.map(buttonId => ({
+                "buttonId": buttonId,
+                "icon": (() => {
+                    switch (buttonId) {
+                        case "refresh":
+                            return "cached" as const;
+                        case "copy path":
+                            return "filterNone";
+                        case "create directory":
+                            return "add";
+                        case "new":
+                            return "add";
+                        case "delete":
+                            return "delete";
+                        case "rename":
+                            return "edit";
                     }
-                })
-                .map(buttonId => ({
-                    "buttonId": buttonId,
-                    "icon": (() => {
-                        switch (buttonId) {
-                            case "refresh":
-                                return "cached" as const;
-                            case "copy path":
-                                return "filterNone";
-                            case "create directory":
-                                return "add";
-                            case "new":
-                                return "add";
-                            case "delete":
-                                return "delete";
-                            case "rename":
-                                return "edit";
-                        }
-                    })(),
-                    "isDisabled": (() => {
-                        switch (buttonId) {
-                            case "refresh":
-                                return false;
-                            case "rename":
-                                return (
-                                    isSelectedItemInEditingState ||
-                                    selectedItemKind === "none" ||
-                                    isFileOpen
-                                );
-                            case "new":
-                            case "create directory":
-                                return isFileOpen;
-                            case "delete":
-                                return selectedItemKind === "none" || isFileOpen;
-                            case "copy path":
-                                return selectedItemKind !== "file" && !isFileOpen;
-                        }
-                    })(),
-                    "label":
-                        buttonId === "new"
-                            ? t(
-                                  (() => {
-                                      switch (explorerType) {
-                                          case "s3":
-                                              return "upload file";
-                                          case "secrets":
-                                              return "create secret";
-                                      }
-                                  })(),
-                              )
-                            : t(buttonId),
-                })),
-        [isSelectedItemInEditingState, selectedItemKind, isFileOpen, explorerType, t],
+                })(),
+                "isDisabled": (() => {
+                    switch (buttonId) {
+                        case "refresh":
+                            return false;
+                        case "rename":
+                            return (
+                                isSelectedItemInEditingState ||
+                                selectedItemKind === "none" ||
+                                isFileOpen
+                            );
+                        case "new":
+                        case "create directory":
+                            return isFileOpen;
+                        case "delete":
+                            return selectedItemKind === "none" || isFileOpen;
+                        case "copy path":
+                            return selectedItemKind !== "file" && !isFileOpen;
+                    }
+                })(),
+                "label": buttonId === "new" ? t("create secret") : t(buttonId),
+            })),
+        [isSelectedItemInEditingState, selectedItemKind, isFileOpen, t],
     );
 
     return <ButtonBar buttons={buttons} onClick={onClick} />;
