@@ -11,9 +11,7 @@ import {
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
-import { S3Client } from "../ports/S3Client";
 import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
-import { s3ApiLogger } from "../secondaryAdapters/s3Client";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
@@ -25,138 +23,57 @@ import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { createObjectThatThrowsIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
 
 //All explorer path are expected to be absolute (start with /)
 
-export type ExplorersState = Record<
-    "s3" | "secrets",
-    {
-        directoryPath: string | undefined;
-        directoryItems: {
-            kind: "file" | "directory";
-            basename: string;
-        }[];
-        isNavigationOngoing: boolean;
-        ongoingOperations: ({
-            directoryPath: string;
-            basename: string;
-            kind: "file" | "directory";
-            operation: "create" | "rename" | "delete";
-        } & (
-            | {
-                  operation: "create" | "delete";
-              }
-            | {
-                  operation: "rename";
-                  previousBasename: string;
-              }
-        ))[];
-        "~internal": {
-            isUserWatching: boolean;
-        };
-    }
-> & {
+export type SecretExplorerState = {
+    directoryPath: string | undefined;
+    directoryItems: {
+        kind: "file" | "directory";
+        basename: string;
+    }[];
+    isNavigationOngoing: boolean;
+    ongoingOperations: ({
+        directoryPath: string;
+        basename: string;
+        kind: "file" | "directory";
+        operation: "create" | "rename" | "delete";
+    } & (
+        | {
+              operation: "create" | "delete";
+          }
+        | {
+              operation: "rename";
+              previousBasename: string;
+          }
+    ))[];
     "~internal": {
-        s3FilesBeingUploaded: {
-            directoryPath: string;
-            basename: string;
-            size: number;
-            uploadPercent: number;
-        }[];
+        isUserWatching: boolean;
     };
 };
 
-export const name = "explorers";
+export const name = "secretExplorer";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<ExplorersState>(
-        (() => {
-            const contextualState = {
-                "directoryPath": undefined,
-                "directoryItems": [],
-                "isNavigationOngoing": false,
-                "ongoingOperations": [],
-                "~internal": {
-                    "isUserWatching": false,
-                },
-            };
-
-            return {
-                "s3": contextualState,
-                "secrets": contextualState,
-                "~internal": {
-                    "s3FilesBeingUploaded": [],
-                },
-            };
-        })(),
-    ),
+    "initialState": id<SecretExplorerState>({
+        "directoryPath": undefined,
+        "directoryItems": [],
+        "isNavigationOngoing": false,
+        "ongoingOperations": [],
+        "~internal": {
+            "isUserWatching": false,
+        },
+    }),
     "reducers": {
-        "fileUploadStarted": (
-            state,
-            {
-                payload,
-            }: PayloadAction<{
-                directoryPath: string;
-                basename: string;
-                size: number;
-            }>,
-        ) => {
-            const { directoryPath, basename, size } = payload;
-
-            state["~internal"].s3FilesBeingUploaded.push({
-                directoryPath,
-                basename,
-                size,
-                "uploadPercent": 0,
-            });
-        },
-        "uploadProgressUpdated": (
-            state,
-            {
-                payload,
-            }: PayloadAction<{
-                directoryPath: string;
-                basename: string;
-                uploadPercent: number;
-            }>,
-        ) => {
-            const { basename, directoryPath, uploadPercent } = payload;
-            const { s3FilesBeingUploaded } = state["~internal"];
-
-            const s3FileBeingUploaded = s3FilesBeingUploaded.find(
-                s3FileBeingUploaded =>
-                    s3FileBeingUploaded.directoryPath === directoryPath &&
-                    s3FileBeingUploaded.basename === basename,
-            );
-            assert(s3FileBeingUploaded !== undefined);
-            s3FileBeingUploaded.uploadPercent = uploadPercent;
-
-            if (
-                !!s3FilesBeingUploaded.find(({ uploadPercent }) => uploadPercent !== 100)
-            ) {
-                return;
-            }
-
-            state["~internal"].s3FilesBeingUploaded = [];
-        },
-        "navigationStarted": (
-            state,
-            { payload }: PayloadAction<{ explorerType: "s3" | "secrets" }>,
-        ) => {
-            const { explorerType } = payload;
-
-            const contextualState = state[explorerType];
-
-            contextualState.isNavigationOngoing = true;
+        "navigationStarted": state => {
+            state.isNavigationOngoing = true;
         },
         "navigationCompleted": (
             state,
             {
                 payload,
             }: PayloadAction<{
-                explorerType: "s3" | "secrets";
                 directoryPath: string;
                 directoryItems: {
                     kind: "file" | "directory";
@@ -164,42 +81,37 @@ export const { reducer, actions } = createSlice({
                 }[];
             }>,
         ) => {
-            const { explorerType, directoryPath, directoryItems } = payload;
+            const { directoryPath, directoryItems } = payload;
 
-            const contextualState = state[explorerType];
-
-            contextualState.directoryPath = directoryPath;
-            contextualState.directoryItems = directoryItems;
-            contextualState.isNavigationOngoing = false;
+            state.directoryPath = directoryPath;
+            state.directoryItems = directoryItems;
+            state.isNavigationOngoing = false;
 
             //Properly restore state when navigating back to
             //a directory with ongoing operations.
-            contextualState.ongoingOperations
+            state.ongoingOperations
                 .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
                 .forEach(o => {
                     switch (o.operation) {
                         case "rename":
-                            removeIfPresent(contextualState.directoryItems, {
+                            removeIfPresent(state.directoryItems, {
                                 "kind": o.kind,
                                 "basename": o.previousBasename,
                             });
                             break;
                         case "delete":
-                            removeIfPresent(contextualState.directoryItems, {
+                            removeIfPresent(state.directoryItems, {
                                 "kind": o.kind,
                                 "basename": o.basename,
                             });
                             break;
+                        case "create":
+                            break;
                     }
                 });
         },
-        "navigationCanceled": (
-            state,
-            { payload }: PayloadAction<{ explorerType: "s3" | "secrets" }>,
-        ) => {
-            const { explorerType } = payload;
-
-            state[explorerType].isNavigationOngoing = false;
+        "navigationCanceled": state => {
+            state.isNavigationOngoing = false;
         },
         "operationStarted": (
             state,
@@ -207,7 +119,6 @@ export const { reducer, actions } = createSlice({
                 payload,
             }: PayloadAction<
                 {
-                    explorerType: "s3" | "secrets";
                     kind: "file" | "directory";
                     basename: string;
                 } & (
@@ -221,21 +132,19 @@ export const { reducer, actions } = createSlice({
                 )
             >,
         ) => {
-            const { explorerType, kind, basename } = payload;
+            const { kind, basename } = payload;
 
-            const contextualState = state[explorerType];
-
-            assert(contextualState.directoryPath !== undefined);
+            assert(state.directoryPath !== undefined);
 
             switch (payload.operation) {
                 case "rename":
                 case "delete":
-                    removeIfPresent(contextualState.directoryItems, { kind, basename });
+                    removeIfPresent(state.directoryItems, { kind, basename });
                     break;
             }
 
-            contextualState.ongoingOperations.push({
-                "directoryPath": contextualState.directoryPath,
+            state.ongoingOperations.push({
+                "directoryPath": state.directoryPath,
                 kind,
                 ...(() => {
                     switch (payload.operation) {
@@ -260,19 +169,16 @@ export const { reducer, actions } = createSlice({
             {
                 payload,
             }: PayloadAction<{
-                explorerType: "s3" | "secrets";
                 kind: "file" | "directory";
                 basename: string;
                 directoryPath: string;
             }>,
         ) => {
-            const { explorerType, kind, basename, directoryPath } = payload;
+            const { kind, basename, directoryPath } = payload;
 
-            const contextualState = state[explorerType];
+            assert(state.directoryPath !== undefined);
 
-            assert(contextualState.directoryPath !== undefined);
-
-            const { ongoingOperations } = contextualState;
+            const { ongoingOperations } = state;
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
@@ -285,14 +191,14 @@ export const { reducer, actions } = createSlice({
 
             ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
 
-            if (pathRelative(contextualState.directoryPath, directoryPath) !== "") {
+            if (pathRelative(state.directoryPath, directoryPath) !== "") {
                 return;
             }
 
             switch (ongoingOperation.operation) {
                 case "create":
                 case "rename":
-                    contextualState.directoryItems.push({
+                    state.directoryItems.push({
                         "basename": ongoingOperation.basename,
                         kind,
                     });
@@ -304,22 +210,18 @@ export const { reducer, actions } = createSlice({
             {
                 payload,
             }: PayloadAction<
-                {
-                    explorerType: "s3" | "secrets";
-                } & (
-                    | {
-                          isUserWatching: false;
-                      }
-                    | {
-                          isUserWatching: true;
-                          directNavigationDirectoryPath: string | undefined;
-                      }
-                )
+                | {
+                      isUserWatching: false;
+                  }
+                | {
+                      isUserWatching: true;
+                      directNavigationDirectoryPath: string | undefined;
+                  }
             >,
         ) => {
-            const { explorerType, isUserWatching } = payload;
+            const { isUserWatching } = payload;
 
-            state[explorerType]["~internal"].isUserWatching = isUserWatching;
+            state["~internal"].isUserWatching = isUserWatching;
         },
     },
 });
@@ -335,33 +237,17 @@ export declare namespace ExplorersCreateParams {
 
     export type Directory = _Common & {
         createWhat: "directory";
-        explorerType: "s3" | "secrets";
     };
 
-    export type File = File.S3 | File.Secrets;
-
-    export namespace File {
-        type _FileCommon = _Common & {
-            createWhat: "file";
-        };
-
-        export type S3 = _FileCommon & {
-            explorerType: "s3";
-            blob: Blob;
-        };
-
-        export type Secrets = _FileCommon & {
-            explorerType: "secrets";
-        };
-    }
+    export type File = _Common & {
+        createWhat: "file";
+    };
 }
 
 const privateThunks = {
     "lazyInitialization":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<void> =>
+        (): ThunkAction<void> =>
         (...args) => {
-            const { explorerType } = params;
-
             const [dispatch, getState, extraArg] = args;
 
             const { evtAction } = extraArg;
@@ -371,7 +257,7 @@ const privateThunks = {
                     .pipe(event =>
                         event.sliceName === "projectSelection" &&
                         event.actionName === "projectChanged" &&
-                        getState().explorers[explorerType]["~internal"].isUserWatching
+                        getState().secretExplorer["~internal"].isUserWatching
                             ? [
                                   {
                                       "directNavigationDirectoryPath": undefined,
@@ -381,13 +267,12 @@ const privateThunks = {
                             : null,
                     )
                     .attach(
-                        () => getState().explorers[explorerType].isNavigationOngoing,
-                        () => dispatch(actions.navigationCanceled({ explorerType })),
+                        () => getState().secretExplorer.isNavigationOngoing,
+                        () => dispatch(actions.navigationCanceled()),
                     ),
                 evtAction.pipe(event =>
-                    event.sliceName === "explorers" &&
+                    event.sliceName === "secretExplorer" &&
                     event.actionName === "isUserWatchingChanged" &&
-                    event.payload.explorerType === explorerType &&
                     event.payload.isUserWatching
                         ? [
                               {
@@ -399,7 +284,7 @@ const privateThunks = {
                         : null,
                 ),
             ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
-                getSliceContexts(args)[explorerType].onNavigate?.({
+                getSliceContexts(args).onNavigate?.({
                     "doRestoreOpenedFile": !isProjectChanged,
                     "directoryPath": (() => {
                         if (directNavigationDirectoryPath !== undefined) {
@@ -407,11 +292,11 @@ const privateThunks = {
                         }
 
                         const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath({ explorerType }),
+                            interUsecasesThunks.getProjectHomePath(),
                         );
 
                         const currentDirectoryPath =
-                            getState().explorers[explorerType].directoryPath;
+                            getState().secretExplorer.directoryPath;
 
                         if (
                             currentDirectoryPath !== undefined &&
@@ -429,20 +314,15 @@ const privateThunks = {
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
-        (params: {
-            explorerType: "s3" | "secrets";
-            directoryPath: string;
-            forceReload: boolean;
-        }): ThunkAction =>
+        (params: { directoryPath: string; forceReload: boolean }): ThunkAction =>
         async (...args) => {
-            const { explorerType, directoryPath, forceReload } = params;
+            const { directoryPath, forceReload } = params;
 
             const [dispatch, getState, extraArg] = args;
 
             //Avoid navigating to the current directory.
             if (!forceReload) {
-                const currentDirectoryPath =
-                    getState().explorers[explorerType].directoryPath;
+                const currentDirectoryPath = getState().secretExplorer.directoryPath;
 
                 if (
                     currentDirectoryPath !== undefined &&
@@ -452,26 +332,24 @@ const privateThunks = {
                 }
             }
 
-            dispatch(actions.navigationStarted({ explorerType }));
+            dispatch(actions.navigationStarted());
 
-            const { loggedFsApi } = getSliceContexts(args)[explorerType];
+            const { loggedSecretClient } = getSliceContexts(args);
 
-            dispatch(thunks.cancelNavigation({ explorerType }));
+            dispatch(thunks.cancelNavigation());
 
             const ctx = Evt.newCtx();
 
             extraArg.evtAction.attach(
                 event =>
-                    event.sliceName === "explorers" &&
-                    event.actionName === "navigationCanceled" &&
-                    event.payload.explorerType === explorerType,
+                    event.sliceName === "secretExplorer" &&
+                    event.actionName === "navigationCanceled",
                 ctx,
                 () => ctx.done(),
             );
 
             await dispatch(
                 interUsecasesThunks.waitForNoOngoingOperation({
-                    explorerType,
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
@@ -481,14 +359,13 @@ const privateThunks = {
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedFsApi.list({ "path": directoryPath }),
+                loggedSecretClient.list({ "path": directoryPath }),
             ).waitFor();
 
             ctx.done();
 
             dispatch(
                 actions.navigationCompleted({
-                    explorerType,
                     directoryPath,
                     "directoryItems": [
                         ...directories.map(basename => ({
@@ -506,15 +383,14 @@ export const interUsecasesThunks = {
     "getLoggedSecretsApis":
         (): ThunkAction<
             Pick<
-                SliceContexts["secrets"],
-                "loggedFsApi" | "loggedExtendedFsApi" | "fsApiLogs"
+                SliceContexts,
+                "loggedSecretClient" | "loggedExtendedFsApi" | "secretClientLogs"
             >
         > =>
         (...args) =>
-            getSliceContexts(args)["secrets"],
+            getSliceContexts(args),
     "waitForNoOngoingOperation":
         (params: {
-            explorerType: "s3" | "secrets";
             kind: "file" | "directory";
             basename: string;
             directoryPath: string;
@@ -523,15 +399,9 @@ export const interUsecasesThunks = {
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const {
-                explorerType,
-                kind,
-                basename,
-                directoryPath,
-                ctx = Evt.newCtx(),
-            } = params;
+            const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
 
-            const { ongoingOperations } = getState().explorers[explorerType];
+            const { ongoingOperations } = getState().secretExplorer;
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
@@ -546,9 +416,8 @@ export const interUsecasesThunks = {
 
             await evtAction.waitFor(
                 event =>
-                    event.sliceName === "explorers" &&
+                    event.sliceName === "secretExplorer" &&
                     event.actionName === "operationCompleted" &&
-                    event.payload.explorerType === explorerType &&
                     event.payload.kind === kind &&
                     (event.payload.basename === basename ||
                         (ongoingOperation.operation === "rename" &&
@@ -559,24 +428,12 @@ export const interUsecasesThunks = {
             );
         },
     "getProjectHomePath":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<string> =>
+        (): ThunkAction<string> =>
         (...args) => {
-            const { explorerType } = params;
-
             const [, getState] = args;
 
             return (
-                "/" +
-                (() => {
-                    const project = projectSelectionSelectors.selectedProject(getState());
-
-                    switch (explorerType) {
-                        case "s3":
-                            return project.bucket;
-                        case "secrets":
-                            return project.vaultTopDir;
-                    }
-                })()
+                "/" + projectSelectionSelectors.selectedProject(getState()).vaultTopDir
             );
         },
 };
@@ -584,7 +441,6 @@ export const interUsecasesThunks = {
 export const thunks = {
     "notifyThatUserIsWatching":
         (params: {
-            explorerType: "s3" | "secrets";
             directNavigationDirectoryPath: string | undefined;
             onNavigate: (params: {
                 directoryPath: string;
@@ -592,57 +448,49 @@ export const thunks = {
             }) => void;
         }): ThunkAction<void> =>
         (...args) => {
-            const { explorerType, directNavigationDirectoryPath, onNavigate } = params;
+            const { directNavigationDirectoryPath, onNavigate } = params;
             const [dispatch] = args;
 
-            const sliceContext = getSliceContexts(args)[explorerType];
+            const sliceContext = getSliceContexts(args);
 
             if (!sliceContext.isLazilyInitialized) {
                 sliceContext.isLazilyInitialized = true;
 
-                dispatch(privateThunks.lazyInitialization({ explorerType }));
+                dispatch(privateThunks.lazyInitialization());
             }
 
             sliceContext.onNavigate = onNavigate;
 
             dispatch(
                 actions.isUserWatchingChanged({
-                    explorerType,
                     "isUserWatching": true,
                     directNavigationDirectoryPath,
                 }),
             );
         },
     "notifyThatUserIsNoLongerWatching":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<void> =>
+        (): ThunkAction<void> =>
         (...args) => {
-            const { explorerType } = params;
             const [dispatch] = args;
 
             const sliceContext = getSliceContexts(args);
 
-            delete sliceContext[explorerType].onNavigate;
+            delete sliceContext.onNavigate;
 
-            dispatch(
-                actions.isUserWatchingChanged({ explorerType, "isUserWatching": false }),
-            );
+            dispatch(actions.isUserWatchingChanged({ "isUserWatching": false }));
         },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
-        (params: {
-            explorerType: "s3" | "secrets";
-            directoryPath: string;
-        }): ThunkAction =>
+        (params: { directoryPath: string }): ThunkAction =>
         async (...args) => {
-            const { explorerType, directoryPath } = params;
+            const { directoryPath } = params;
 
             const [dispatch] = args;
 
             return dispatch(
                 privateThunks.navigate({
-                    explorerType,
                     directoryPath,
                     "forceReload": false,
                 }),
@@ -650,23 +498,20 @@ export const thunks = {
         },
     //Not used by the UI so far but we want to later
     "cancelNavigation":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<void> =>
+        (): ThunkAction<void> =>
         (...args) => {
-            const { explorerType } = params;
             const [dispatch, getState] = args;
-            if (!getState().explorers[explorerType].isNavigationOngoing) {
+            if (!getState().secretExplorer.isNavigationOngoing) {
                 return;
             }
-            dispatch(actions.navigationCanceled({ explorerType }));
+            dispatch(actions.navigationCanceled());
         },
     "refresh":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction =>
+        (): ThunkAction =>
         async (...args) => {
-            const { explorerType } = params;
-
             const [dispatch, getState] = args;
 
-            const { directoryPath } = getState().explorers[explorerType];
+            const { directoryPath } = getState().secretExplorer;
 
             if (directoryPath === undefined) {
                 return;
@@ -674,7 +519,6 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.navigate({
-                    explorerType,
                     directoryPath,
                     "forceReload": true,
                 }),
@@ -682,17 +526,16 @@ export const thunks = {
         },
     "rename":
         (params: {
-            explorerType: "secrets";
             renamingWhat: "file" | "directory";
             basename: string;
             newBasename: string;
         }): ThunkAction =>
         async (...args) => {
-            const { explorerType, renamingWhat, basename, newBasename } = params;
+            const { renamingWhat, basename, newBasename } = params;
 
             const [dispatch, getState] = args;
 
-            const contextualState = getState().explorers[explorerType];
+            const contextualState = getState().secretExplorer;
 
             const { directoryPath } = contextualState;
 
@@ -700,7 +543,6 @@ export const thunks = {
 
             await dispatch(
                 interUsecasesThunks.waitForNoOngoingOperation({
-                    explorerType,
                     "kind": renamingWhat,
                     directoryPath,
                     basename,
@@ -709,7 +551,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationStarted({
-                    explorerType,
                     "kind": renamingWhat,
                     basename,
                     "operation": "rename",
@@ -717,7 +558,7 @@ export const thunks = {
                 }),
             );
 
-            await getSliceContexts(args)[explorerType].loggedExtendedFsApi[
+            await getSliceContexts(args).loggedExtendedFsApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -733,7 +574,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    explorerType,
                     "kind": renamingWhat,
                     "basename": newBasename,
                     directoryPath,
@@ -746,7 +586,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const contextualState = getState().explorers[params.explorerType];
+            const contextualState = getState().secretExplorer;
 
             const { directoryPath } = contextualState;
 
@@ -754,7 +594,6 @@ export const thunks = {
 
             await dispatch(
                 interUsecasesThunks.waitForNoOngoingOperation({
-                    "explorerType": params.explorerType,
                     "kind": params.createWhat,
                     directoryPath,
                     "basename": params.basename,
@@ -763,7 +602,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationStarted({
-                    "explorerType": params.explorerType,
                     "kind": params.createWhat,
                     "basename": params.basename,
                     "operation": "create",
@@ -776,52 +614,18 @@ export const thunks = {
 
             switch (params.createWhat) {
                 case "file":
-                    switch (params.explorerType) {
-                        case "s3":
-                            console.log(
-                                "todo: here we need to wait that the upload start",
-                            );
-
-                            dispatch(
-                                actions.fileUploadStarted({
-                                    "basename": params.basename,
-                                    directoryPath,
-                                    "size": params.blob.size,
-                                }),
-                            );
-
-                            sliceContexts[params.explorerType].loggedFsApi.uploadFile({
-                                path,
-                                "blob": params.blob,
-                                "onUploadProgress": ({ uploadPercent }) =>
-                                    dispatch(
-                                        actions.uploadProgressUpdated({
-                                            "basename": params.basename,
-                                            directoryPath,
-                                            uploadPercent,
-                                        }),
-                                    ),
-                            });
-
-                            break;
-                        case "secrets":
-                            await sliceContexts[params.explorerType].loggedFsApi.put({
-                                path,
-                                "secret": {},
-                            });
-                            break;
-                    }
+                    await sliceContexts.loggedSecretClient.put({
+                        path,
+                        "secret": {},
+                    });
                     break;
                 case "directory":
-                    await sliceContexts[
-                        params.explorerType
-                    ].loggedExtendedFsApi.createDirectory({ path });
+                    await sliceContexts.loggedExtendedFsApi.createDirectory({ path });
                     break;
             }
 
             dispatch(
                 actions.operationCompleted({
-                    "explorerType": params.explorerType,
                     "kind": params.createWhat,
                     "basename": params.basename,
                     directoryPath,
@@ -835,17 +639,13 @@ export const thunks = {
      * currently listed.
      */
     "delete":
-        (params: {
-            explorerType: "s3" | "secrets";
-            deleteWhat: "file" | "directory";
-            basename: string;
-        }): ThunkAction =>
+        (params: { deleteWhat: "file" | "directory"; basename: string }): ThunkAction =>
         async (...args) => {
-            const { explorerType, deleteWhat, basename } = params;
+            const { deleteWhat, basename } = params;
 
             const [dispatch, getState] = args;
 
-            const contextualState = getState().explorers[params.explorerType];
+            const contextualState = getState().secretExplorer;
 
             const { directoryPath } = contextualState;
 
@@ -853,7 +653,6 @@ export const thunks = {
 
             await dispatch(
                 interUsecasesThunks.waitForNoOngoingOperation({
-                    explorerType,
                     "kind": deleteWhat,
                     directoryPath,
                     basename,
@@ -862,7 +661,6 @@ export const thunks = {
 
             dispatch(
                 actions.operationStarted({
-                    "explorerType": params.explorerType,
                     "kind": params.deleteWhat,
                     "basename": params.basename,
                     "operation": "delete",
@@ -875,30 +673,17 @@ export const thunks = {
 
             switch (deleteWhat) {
                 case "directory":
-                    await sliceContexts[explorerType].loggedExtendedFsApi.deleteDirectory(
-                        { path },
-                    );
+                    await sliceContexts.loggedExtendedFsApi.deleteDirectory({ path });
                     break;
                 case "file":
-                    switch (explorerType) {
-                        case "s3":
-                            await sliceContexts[explorerType].loggedFsApi.deleteFile({
-                                path,
-                            });
-                            break;
-                        case "secrets":
-                            await sliceContexts[explorerType].loggedFsApi.delete({
-                                path,
-                            });
-                            break;
-                    }
-
+                    await sliceContexts.loggedSecretClient.delete({
+                        path,
+                    });
                     break;
             }
 
             dispatch(
                 actions.operationCompleted({
-                    explorerType,
                     "kind": deleteWhat,
                     basename,
                     directoryPath,
@@ -906,66 +691,28 @@ export const thunks = {
             );
         },
     "getFsApiLogs":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<ApiLogs> =>
+        (): ThunkAction<ApiLogs> =>
         (...args) => {
-            const { explorerType } = params;
-            return getSliceContexts(args)[explorerType].fsApiLogs;
+            return getSliceContexts(args).secretClientLogs;
         },
     "getIsEnabled":
-        (params: { explorerType: "s3" | "secrets" }): ThunkAction<boolean> =>
+        (): ThunkAction<boolean> =>
         (...args) => {
-            const { explorerType } = params;
-
             const [, getState] = args;
 
             const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
-            switch (explorerType) {
-                case "secrets":
-                    return region.vault !== undefined;
-                case "s3":
-                    return region.s3 !== undefined;
-            }
-        },
-    "getFileDownloadUrl":
-        (params: { basename: string }): ThunkAction<Promise<string>> =>
-        async (...args) => {
-            const { basename } = params;
-
-            const [, getState] = args;
-
-            const contextualState = getState().explorers["s3"];
-
-            const { directoryPath } = contextualState;
-
-            assert(directoryPath !== undefined);
-
-            const sliceContexts = getSliceContexts(args);
-
-            const path = pathJoin(directoryPath, basename);
-
-            const downloadUrl = await sliceContexts.s3.loggedFsApi.getFileDownloadUrl({
-                path,
-            });
-
-            return downloadUrl;
+            return region.vault !== undefined;
         },
 };
 
 type SliceContexts = {
-    s3: SliceContexts.Common<S3Client>;
-    secrets: SliceContexts.Common<SecretsManagerClient>;
+    loggedSecretClient: SecretsManagerClient;
+    secretClientLogs: ApiLogs;
+    onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
+    isLazilyInitialized: boolean;
+    loggedExtendedFsApi: ExtendedFsApi;
 };
-
-namespace SliceContexts {
-    export type Common<FsApi extends S3Client | SecretsManagerClient> = {
-        loggedFsApi: FsApi;
-        fsApiLogs: ApiLogs;
-        onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
-        isLazilyInitialized: boolean;
-        loggedExtendedFsApi: ExtendedFsApi;
-    };
-}
 
 const { getSliceContexts } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContexts>();
@@ -981,75 +728,40 @@ const { getSliceContexts } = (() => {
 
         const isLazilyInitialized = false;
 
-        sliceContext = {
-            "s3": (() => {
-                const { apiLogs: fsApiLogs, loggedApi: loggedFsApi } = logApi({
-                    "api": extraArg.s3Client,
-                    "apiLogger": s3ApiLogger,
-                });
+        sliceContext = (() => {
+            const { apiLogs: secretClientLogs, loggedApi: loggedSecretClient } = logApi({
+                "api": extraArg.secretsManagerClient,
+                "apiLogger": getVaultApiLogger({
+                    "clientType": "CLI",
+                    "engine":
+                        deploymentRegionSelectors.selectedDeploymentRegion(getState())
+                            .vault?.kvEngine ?? "onyxia-kv",
+                }),
+            });
 
-                return {
-                    loggedFsApi,
-                    fsApiLogs,
-                    isLazilyInitialized,
-                    "loggedExtendedFsApi": createExtendedFsApi({
-                        "baseFsApi": {
-                            "list": loggedFsApi.list,
-                            "deleteFile": loggedFsApi.deleteFile,
-                            "downloadFile": createObjectThatThrowsIfAccessed({
-                                "debugMessage":
-                                    "We are not supposed to have do download file here. Moving file is too expensive in S3",
-                            }),
-                            "uploadFile": ({ file, path }) =>
-                                loggedFsApi.uploadFile({
-                                    path,
-                                    "blob": file,
-                                    "onUploadProgress": () => {},
-                                }),
-                        },
-                        "keepFile": new Blob(
-                            ["This file tells that a directory exists"],
-                            { "type": "text/plain" },
-                        ),
-                        "keepFileBasename": ".keep",
+            return {
+                loggedSecretClient,
+                secretClientLogs,
+                isLazilyInitialized,
+                "loggedExtendedFsApi": createExtendedFsApi({
+                    "baseFsApi": {
+                        "list": loggedSecretClient.list,
+                        "deleteFile": loggedSecretClient.delete,
+                        "downloadFile": async ({ path }) =>
+                            (await loggedSecretClient.get({ path })).secret,
+                        "uploadFile": ({ path, file }) =>
+                            loggedSecretClient.put({ path, "secret": file }),
+                    },
+                    "keepFile": id<Secret>({
+                        "info": [
+                            "This is a dummy secret so that this directory is kept even if there",
+                            "is no other secrets in it",
+                        ].join(" "),
                     }),
-                };
-            })(),
-            "secrets": (() => {
-                const { apiLogs: fsApiLogs, loggedApi: loggedFsApi } = logApi({
-                    "api": extraArg.secretsManagerClient,
-                    "apiLogger": getVaultApiLogger({
-                        "clientType": "CLI",
-                        "engine":
-                            deploymentRegionSelectors.selectedDeploymentRegion(getState())
-                                .vault?.kvEngine ?? "onyxia-kv",
-                    }),
-                });
-
-                return {
-                    loggedFsApi,
-                    fsApiLogs,
-                    isLazilyInitialized,
-                    "loggedExtendedFsApi": createExtendedFsApi({
-                        "baseFsApi": {
-                            "list": loggedFsApi.list,
-                            "deleteFile": loggedFsApi.delete,
-                            "downloadFile": async ({ path }) =>
-                                (await loggedFsApi.get({ path })).secret,
-                            "uploadFile": ({ path, file }) =>
-                                loggedFsApi.put({ path, "secret": file }),
-                        },
-                        "keepFile": id<Secret>({
-                            "info": [
-                                "This is a dummy secret so that this directory is kept even if there",
-                                "is no other secrets in it",
-                            ].join(" "),
-                        }),
-                        "keepFileBasename": ".keep",
-                    }),
-                };
-            })(),
-        };
+                    "keepFileBasename": ".keep",
+                }),
+            };
+        })();
 
         weakMap.set(extraArg, sliceContext);
 
@@ -1076,11 +788,7 @@ function removeIfPresent(
 }
 
 export const selectors = (() => {
-    const explorerTypes = ["s3", "secrets"] as const;
-
-    type ExplorerType = typeof explorerTypes[number];
-
-    type CwdIconsVue = {
+    type CurrentWorkingDirectoryView = {
         directoryPath: string;
         isNavigationOngoing: boolean;
         directories: string[];
@@ -1091,112 +799,56 @@ export const selectors = (() => {
         filesBeingRenamed: string[];
     };
 
-    const cwdIconsVue = (
+    const currentWorkingDirectoryView = (
         rootState: RootState,
-    ): Record<ExplorerType, CwdIconsVue | undefined> => {
-        const state = rootState.explorers;
+    ): CurrentWorkingDirectoryView | undefined => {
+        const state = rootState.secretExplorer;
 
-        return Object.fromEntries(
-            explorerTypes.map(explorerType => {
-                const contextualState = state[explorerType];
+        const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
+            state;
 
-                const {
-                    directoryPath,
-                    isNavigationOngoing,
-                    directoryItems,
-                    ongoingOperations,
-                } = contextualState;
+        return ((): CurrentWorkingDirectoryView | undefined => {
+            if (directoryPath === undefined) {
+                return undefined;
+            }
 
-                return [
-                    explorerType,
-                    ((): CwdIconsVue | undefined => {
-                        if (directoryPath === undefined) {
-                            return undefined;
-                        }
+            return {
+                directoryPath,
+                isNavigationOngoing,
+                ...(() => {
+                    const selectOngoing = memoize(
+                        (kind: "directory" | "file", operation: "create" | "rename") =>
+                            ongoingOperations
+                                .filter(
+                                    o =>
+                                        o.directoryPath === directoryPath &&
+                                        o.kind === kind &&
+                                        o.operation === operation,
+                                )
+                                .map(({ basename }) => basename),
+                    );
 
-                        return {
-                            directoryPath,
-                            isNavigationOngoing,
-                            ...(() => {
-                                const selectOngoing = memoize(
-                                    (
-                                        kind: "directory" | "file",
-                                        operation: "create" | "rename",
-                                    ) =>
-                                        ongoingOperations
-                                            .filter(
-                                                o =>
-                                                    o.directoryPath === directoryPath &&
-                                                    o.kind === kind &&
-                                                    o.operation === operation,
-                                            )
-                                            .map(({ basename }) => basename),
-                                );
+                    const select = (kind: "directory" | "file") =>
+                        [
+                            ...directoryItems
+                                .filter(item => item.kind === kind)
+                                .map(({ basename }) => basename),
+                            ...selectOngoing(kind, "create"),
+                            ...selectOngoing(kind, "rename"),
+                        ].sort((a, b) => a.localeCompare(b));
 
-                                const select = (kind: "directory" | "file") =>
-                                    [
-                                        ...directoryItems
-                                            .filter(item => item.kind === kind)
-                                            .map(({ basename }) => basename),
-                                        ...selectOngoing(kind, "create"),
-                                        ...selectOngoing(kind, "rename"),
-                                    ].sort((a, b) => a.localeCompare(b));
-
-                                return {
-                                    "directories": select("directory"),
-                                    "files": select("file"),
-                                    "directoriesBeingCreated": selectOngoing(
-                                        "directory",
-                                        "create",
-                                    ),
-                                    "directoriesBeingRenamed": selectOngoing(
-                                        "directory",
-                                        "rename",
-                                    ),
-                                    "filesBeingCreated": selectOngoing("file", "create"),
-                                    "filesBeingRenamed": selectOngoing("file", "rename"),
-                                };
-                            })(),
-                        };
-                    })(),
-                ] as const;
-            }),
-        ) as any;
+                    return {
+                        "directories": select("directory"),
+                        "files": select("file"),
+                        "directoriesBeingCreated": selectOngoing("directory", "create"),
+                        "directoriesBeingRenamed": selectOngoing("directory", "rename"),
+                        "filesBeingCreated": selectOngoing("file", "create"),
+                        "filesBeingRenamed": selectOngoing("file", "rename"),
+                    };
+                })(),
+            };
+        })();
     };
 
-    type UploadProgress = {
-        s3FilesBeingUploaded: ExplorersState["~internal"]["s3FilesBeingUploaded"];
-        overallProgress: {
-            completedFileCount: number;
-            remainingFileCount: number;
-            totalFileCount: number;
-            uploadPercent: number;
-        };
-    };
-
-    const uploadProgress = (rootState: RootState): UploadProgress => {
-        const { s3FilesBeingUploaded } = rootState.explorers["~internal"];
-
-        const completedFileCount = s3FilesBeingUploaded.map(
-            ({ uploadPercent }) => uploadPercent === 100,
-        ).length;
-
-        return {
-            s3FilesBeingUploaded,
-            "overallProgress": {
-                completedFileCount,
-                "remainingFileCount": s3FilesBeingUploaded.length - completedFileCount,
-                "totalFileCount": s3FilesBeingUploaded.length,
-                "uploadPercent":
-                    s3FilesBeingUploaded
-                        .map(({ size, uploadPercent }) => size * uploadPercent)
-                        .reduce((prev, curr) => prev + curr, 0) /
-                    s3FilesBeingUploaded
-                        .map(({ size }) => size)
-                        .reduce((prev, curr) => prev + curr, 0),
-            },
-        };
-    };
-
-    return { cwdIconsVue, uploadProgress };
+    return { currentWorkingDirectoryView };
 })();

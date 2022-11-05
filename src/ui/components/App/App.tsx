@@ -84,7 +84,8 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const { userAuthenticationThunks, explorersThunks } = useThunks();
+    const { userAuthenticationThunks, fileExplorerThunks, secretExplorerThunks } =
+        useThunks();
 
     const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
 
@@ -134,7 +135,7 @@ export const App = memo((props: Props) => {
                     "link": routes.myServices().link,
                     "hasDividerBelow": true,
                 },
-                ...(!explorersThunks.getIsEnabled({ "explorerType": "secrets" })
+                ...(!secretExplorerThunks.getIsEnabled()
                     ? ({} as never)
                     : {
                           "mySecrets": {
@@ -143,7 +144,7 @@ export const App = memo((props: Props) => {
                               "link": routes.mySecrets().link,
                           } as const,
                       }),
-                ...(!explorersThunks.getIsEnabled({ "explorerType": "s3" })
+                ...(!fileExplorerThunks.getIsEnabled()
                     ? ({} as never)
                     : {
                           "myFiles": {
@@ -184,9 +185,7 @@ export const App = memo((props: Props) => {
                             "iconId": "files",
                             "label": t("myFiles") + " Legacy",
                             "link": routes.myBuckets().link,
-                            "availability": explorersThunks.getIsEnabled({
-                                "explorerType": "s3",
-                            })
+                            "availability": fileExplorerThunks.getIsEnabled()
                                 ? "available"
                                 : "greyed",
                         },

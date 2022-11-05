@@ -12,7 +12,7 @@ export default meta;
 
 const className = css({ "width": 900 });
 
-export const Vue1 = getStory({
+export const View1 = getStory({
     className,
     //* spell-checker: disable */
     "title": "Utilisation des APIs Gitlab, GitHub et Kaggle",
@@ -22,7 +22,7 @@ export const Vue1 = getStory({
     "tooltipText": "Foo bar this is the text of the tooltip",
 });
 
-export const Vue2 = getStory({
+export const View2 = getStory({
     className,
     //* spell-checker: disable */
     "title": "Utilisation des APIs Gitlab, GitHub et Kaggle",
@@ -31,7 +31,7 @@ export const Vue2 = getStory({
     //* spell-checker: enable */
 });
 
-export const Vue3 = getStory({
+export const View3 = getStory({
     className,
     //* spell-checker: disable */
     "title": "Utilisation des APIs Gitlab, GitHub et Kaggle",

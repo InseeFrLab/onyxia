@@ -11,7 +11,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueRegular = getStory({
+export const ViewRegular = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
@@ -30,7 +30,7 @@ export const VueRegular = getStory({
     ]),
 });
 
-export const VueStarting = getStory({
+export const ViewStarting = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",

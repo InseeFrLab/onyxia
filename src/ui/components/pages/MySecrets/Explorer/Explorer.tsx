@@ -37,8 +37,6 @@ import { Card } from "onyxia-ui/Card";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
-import { ExplorerUploadModal } from "./ExplorerUploadModal";
-import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 
 export type ExplorerProps = {
@@ -47,7 +45,6 @@ export type ExplorerProps = {
      * For being able to scroll without moving the button bar it must have a fixed height.
      * */
     className?: string;
-    explorerType: "s3" | "secrets";
     doShowHidden: boolean;
 
     directoryPath: string;
@@ -94,14 +91,11 @@ export type ExplorerProps = {
           isFileOpen: false;
           onOpenFile: (params: { basename: string }) => void;
       }
-) &
-    //NOTE: TODO only defined when explorer type is s3
-    Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
+);
 
 export const Explorer = memo((props: ExplorerProps) => {
     const {
         className,
-        explorerType,
         doShowHidden,
         directoryPath,
         isNavigating,
@@ -115,8 +109,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCopyPath,
         scrollableDivRef,
         pathMinDepth,
-        onFileSelected,
-        filesBeingUploaded,
     } = props;
 
     const [
@@ -254,53 +246,33 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
                 break;
             case "create directory":
-                switch (explorerType) {
-                    case "secrets":
-                        onNewItem({
-                            "kind": "directory",
-                            "suggestedBasename": generateUniqDefaultName({
-                                "names": directories,
-                                "buildName": buildNameFactory({
-                                    "defaultName": t("untitled what", {
-                                        "what": t("directory"),
-                                    }),
-                                    "separator": "_",
-                                }),
+                onNewItem({
+                    "kind": "directory",
+                    "suggestedBasename": generateUniqDefaultName({
+                        "names": directories,
+                        "buildName": buildNameFactory({
+                            "defaultName": t("untitled what", {
+                                "what": t("directory"),
                             }),
-                        });
-                        break;
-                    case "s3":
-                        setCreateS3DirectoryDialogState({
-                            directories,
-                            "resolveBasename": basename =>
-                                onNewItem({
-                                    "kind": "directory",
-                                    "suggestedBasename": basename,
-                                }),
-                        });
-                        break;
-                }
+                            "separator": "_",
+                        }),
+                    }),
+                });
                 break;
             case "new":
-                switch (explorerType) {
-                    case "s3":
-                        setIsUploadModalOpen(true);
-                        break;
-                    case "secrets":
-                        onNewItem({
-                            "kind": "file" as const,
-                            "suggestedBasename": generateUniqDefaultName({
-                                "names": files,
-                                "buildName": buildNameFactory({
-                                    "defaultName": t("untitled what", {
-                                        "what": t("secret"),
-                                    }),
-                                    "separator": "_",
-                                }),
+                onNewItem({
+                    "kind": "file" as const,
+                    "suggestedBasename": generateUniqDefaultName({
+                        "names": files,
+                        "buildName": buildNameFactory({
+                            "defaultName": t("untitled what", {
+                                "what": t("secret"),
                             }),
-                        });
-                        break;
-                }
+                            "separator": "_",
+                        }),
+                    }),
+                });
+                break;
         }
     });
 
@@ -397,20 +369,11 @@ export const Explorer = memo((props: ExplorerProps) => {
         },
     );
 
-    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
-    const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
-
     return (
         <>
-            <div
-                ref={rootRef}
-                className={cx(classes.root, className)}
-                onDragOver={onDragOver}
-            >
+            <div ref={rootRef} className={cx(classes.root, className)}>
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
-                        explorerType={explorerType}
                         selectedItemKind={selectedItemKind}
                         isSelectedItemInEditingState={isSelectedItemInEditingState}
                         isFileOpen={props.isFileOpen}
@@ -437,18 +400,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                             image={
                                 <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    iconId={
-                                        !props.isFileOpen
-                                            ? "directory"
-                                            : (() => {
-                                                  switch (explorerType) {
-                                                      case "s3":
-                                                          return "data";
-                                                      case "secrets":
-                                                          return "secret";
-                                                  }
-                                              })()
-                                    }
+                                    iconId={!props.isFileOpen ? "directory" : "secret"}
                                     hasShadow={true}
                                 />
                             }
@@ -480,7 +432,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                         <Card className={classes.openFile}>{props.openFileNode}</Card>
                     ) : (
                         <ExplorerItems
-                            explorerType={explorerType}
                             isNavigating={isNavigating}
                             files={files}
                             directories={directories}
@@ -517,14 +468,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                           case "directory":
                                               return "directory";
                                           case "file":
-                                              return (() => {
-                                                  switch (explorerType) {
-                                                      case "s3":
-                                                          return "file";
-                                                      case "secrets":
-                                                          return "secret";
-                                                  }
-                                              })();
+                                              return "secret";
                                       }
                                   })(),
                               );
@@ -555,14 +499,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                     </>
                 }
             />
-            {explorerType === "s3" && (
-                <ExplorerUploadModal
-                    isOpen={isUploadModalOpen}
-                    onClose={onUploadModalClose}
-                    onFileSelected={onFileSelected}
-                    filesBeingUploaded={filesBeingUploaded}
-                />
-            )}
         </>
     );
 });
