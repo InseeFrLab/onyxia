@@ -23,7 +23,7 @@ import { Slider } from "onyxia-ui/Slider";
 import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
 import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
-import { Equals } from "tsafe";
+import type { Equals } from "tsafe";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
