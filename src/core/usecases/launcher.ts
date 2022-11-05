@@ -1,25 +1,23 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { RootState, ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
+import type {
+    Contract,
+    JSONSchemaFormFieldDescription,
+    JSONSchemaObject,
+    OnyxiaValues,
+} from "core/ports/OnyxiaApiClient";
 import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath,
 } from "core/ports/OnyxiaApiClient";
-import type {
-    Contract,
-    OnyxiaValues,
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription,
-} from "core/ports/OnyxiaApiClient";
-import { createSelector } from "@reduxjs/toolkit";
-import type { RootState } from "../setup";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
@@ -82,7 +80,7 @@ export declare namespace FormField {
     };
 
     export type Text = Common & {
-        type: "text";
+        type: "text" | "password";
         pattern: string | undefined;
         value: string;
         defaultValue: string;
@@ -630,7 +628,7 @@ export const thunks = {
                                     //TODO: The JSON schema should be tested in entry of the system.
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
-                                            ["slider", "textArea"].find(
+                                            ["slider", "textArea", "password"].find(
                                                 render =>
                                                     render ===
                                                     jsonSchemaFormFieldDescription.render,
@@ -824,7 +822,11 @@ export const thunks = {
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
                                         "value": jsonSchemaFormFieldDescription.default,
-                                        "type": "text",
+                                        "type":
+                                            jsonSchemaFormFieldDescription.render ===
+                                            "password"
+                                                ? "password"
+                                                : "text",
                                         "defaultValue":
                                             jsonSchemaFormFieldDescription.default,
                                         "doRenderAsTextArea":
