@@ -11718,10 +11718,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.47.12:
-  version "0.47.12"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.12.tgz#623b54754309ff0324d61dccccc861894a48b68f"
-  integrity sha512-0aiJT8s0yV4mDY9Iflox9xZosSi+f3LNreilY9JV6X0LD/7lgN7/saCx+fQetP4bBoC849hLeDfrx2QXyzJmoQ==
+onyxia-ui@^0.47.13:
+  version "0.47.13"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.13.tgz#252951373b5ebc8eb758652124cd1ec2b17e18c7"
+  integrity sha512-SNgx+2RNFSdvG1fiVMAcniLkTTXc+K4G0IA8hcl0jNDfc0UcRb26vHNoew+217r02rvbNG91Mzg/U7xJ+LSfww==
   dependencies:
     "@mui/icons-material" "^5.10.3"
     color "3.1.3"
@@ -11731,7 +11731,7 @@ onyxia-ui@^0.47.12:
     powerhooks "^0.20.24"
     run-exclusive "^2.2.18"
     tsafe "^1.2.1"
-    tss-react "^4.4.3"
+    tss-react "^4.4.4"
 
 open@^7.0.3:
   version "7.4.2"
@@ -15490,10 +15490,10 @@ tss-react@4.4.1-rc.0:
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.1-rc.0.tgz#96f9c2edcb9208ae39e845e6bafc9a50c9b96c66"
   integrity sha512-ozltdpdDrB/6Ml6UpaL/eGwGZzTXXcHnJxwwO7mxcFaZnLaetbbbQHNUerRmqr21i9vgA6HFBAzOv9pa2PUsww==
 
-tss-react@^4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.3.tgz#85233e6a8663c9cd13cba086deedfaa13d74e1f8"
-  integrity sha512-cqCKPZYDetHBdN2Sip45llWdiwbr6ttjvSj58id1gSCKNC8iggrN3dnWih6NVuvoS4j1iPwrWvi5VjtNA/8HPg==
+tss-react@^4.4.4:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.4.tgz#12207842dfc58676a9f4d0f532741257428a78e7"
+  integrity sha512-Bzyg99bIQq3Lk4Rwc5XMOps58c1biw1rghCkApIX5XkAB+/VjGCIFSl63PePhmiRNvKRxJRpawGPPxHytiw1TA==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
