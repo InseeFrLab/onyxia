@@ -11,7 +11,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const Vue1 = getStory({
+export const View1 = getStory({
     "doFetchDefaultThemeResources": false,
     "kcContext": kcContextLogin,
     "displayInfo": true,

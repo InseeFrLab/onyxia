@@ -79,15 +79,21 @@ const {
     $lang,
     useResolveLocalizedString,
 } = createI18nApi<
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecrets").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow").i18n
+    | typeof import("ui/components/pages/MyFiles/MyFiles").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/Explorer").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
     | typeof import("ui/components/shared/Header").i18n
     | typeof import("ui/components/App/App").i18n
     | typeof import("ui/components/pages/FourOhFour").i18n
@@ -116,7 +122,6 @@ const {
     | typeof import("ui/components/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/components/pages/MyServices/MyServicesCards").i18n
     | typeof import("ui/components/KcApp/Login/LoginDivider").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MyFilesMySecrets").i18n
     | typeof import("ui/components/pages/Terms").i18n
     | typeof import("ui/components/KcApp/Login").i18n
 >()(
@@ -209,7 +214,7 @@ const {
                     "Please make sure the form is properly filled out",
                 "must respect the pattern": "Must respect the pattern",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
                 "page title - my files": "My Files",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -220,10 +225,24 @@ const {
                 "to learn more - my secrets": "To learn more about secrets management,",
                 "read our documentation": "read our documentation.",
             },
+            "MySecrets": {
+                "page title - my files": "My Files",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Here you can browse your S3 Buckets.",
+                "what this page is used for - my secrets":
+                    "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+                "learn more - my files": "To learn more about file management,",
+                "to learn more - my secrets": "To learn more about secrets management,",
+                "read our documentation": "read our documentation.",
+            },
+            "SecretsExplorerItem": {
+                "description": "description",
+            },
             "ExplorerItem": {
                 "description": "description",
             },
-            "ExplorerButtonBar": {
+            "SecretsExplorerButtonBar": {
                 ...common.en,
                 "create secret": "Create secret",
                 "upload file": "Upload file",
@@ -232,6 +251,37 @@ const {
                 "refresh": "refresh",
                 "create what": ({ what }) => `Create ${what}`,
                 "new": "New",
+            },
+            "ExplorerButtonBar": {
+                ...common.en,
+                "create secret": "Create secret",
+                "upload file": "Upload file",
+                "copy path": "Copy S3 object name",
+                "create directory": "Create directory",
+                "refresh": "refresh",
+                "create what": ({ what }) => `Create ${what}`,
+                "new": "New",
+            },
+            "ExplorerItems": {
+                "empty directory": "This directory is empty",
+            },
+            "SecretsExplorerItems": {
+                "empty directory": "This directory is empty",
+            },
+            "SecretsExplorer": {
+                ...common.en,
+                "untitled what": ({ what }) => `untitled_${what}`,
+                "directory": "folder",
+                "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
+                "deletion dialog body": ({
+                    deleteWhat,
+                }) => `You are about to delete ${deleteWhat}.
+            This action can't be reverted.`,
+                "already a directory with this name":
+                    "There is already a directory with this name",
+                "can't be empty": "Can't be empty",
+                "create": "create",
+                "new directory": "New directory",
             },
             "Explorer": {
                 ...common.en,
@@ -247,9 +297,6 @@ const {
                 "can't be empty": "Can't be empty",
                 "create": "create",
                 "new directory": "New directory",
-            },
-            "ExplorerItems": {
-                "empty directory": "This directory is empty",
             },
             "MySecretsEditor": {
                 ...common.en,
@@ -576,7 +623,20 @@ const {
                     "Veuillez vérifier que vous avez bien rempli le formulaire",
                 "must respect the pattern": "Doit respecter le format",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "Mes fichiers",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Stocker ici vos fichiers de donnée.",
+                "what this page is used for - my secrets":
+                    "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
+                "learn more - my files":
+                    "Pour en savoir plus sur l'utilisation du stockage S3,",
+                "to learn more - my secrets":
+                    "Pour en savoir plus sur l'utilisation de secrets,",
+                "read our documentation": "lisez notre documentation.",
+            },
+            "MySecrets": {
                 "page title - my files": "Mes fichiers",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -592,7 +652,20 @@ const {
             "ExplorerItem": {
                 "description": "description",
             },
+            "SecretsExplorerItem": {
+                "description": "description",
+            },
             "ExplorerButtonBar": {
+                ...common.fr,
+                "create secret": "Nouveau secret",
+                "upload file": "Téléverser un fichier",
+                "copy path": "Copier le nom de l'objet S3",
+                "create directory": "Nouveau dossier",
+                "refresh": "rafraîchir",
+                "create what": ({ what }) => `Nouveau ${what}`,
+                "new": "Nouveau",
+            },
+            "SecretsExplorerButtonBar": {
                 ...common.fr,
                 "create secret": "Nouveau secret",
                 "upload file": "Téléverser un fichier",
@@ -615,10 +688,29 @@ const {
                 "already a directory with this name":
                     "Il y a déjà un dossier avec ce nom",
                 "can't be empty": "Ne peut être vide",
-                "create": "Crée",
+                "create": "Créer",
+                "new directory": "Nouveau dossier",
+            },
+            "SecretsExplorer": {
+                ...common.fr,
+                "untitled what": ({ what }) => `${what}_sans_nom`,
+                "directory": "dossier",
+                "deletion dialog title": ({ deleteWhat }) =>
+                    `Supprimer un ${deleteWhat} ?`,
+                "deletion dialog body": ({ deleteWhat }) => `
+            Vous êtes sur le point de supprimer un ${deleteWhat}. 
+            Cette action entraînera la perte potentielle des données liées à ce ${deleteWhat}.
+            `,
+                "already a directory with this name":
+                    "Il y a déjà un dossier avec ce nom",
+                "can't be empty": "Ne peut être vide",
+                "create": "Créer",
                 "new directory": "Nouveau dossier",
             },
             "ExplorerItems": {
+                "empty directory": "Ce répertoire est vide",
+            },
+            "SecretsExplorerItems": {
                 "empty directory": "Ce répertoire est vide",
             },
             "MySecretsEditor": {
@@ -939,7 +1031,17 @@ const {
                 "form not filled properly yet": "请检查您是否正确填写了表格.",
                 "must respect the pattern": "必须尊守格式",
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "我的文件",
+                "page title - my secrets": "我的密钥",
+                "what this page is used for - my files": "在此处存储您的数据.",
+                "what this page is used for - my secrets":
+                    "在此处存储可作为服务中的环境变量访问的密钥.",
+                "learn more - my files": "了解有关使用 S3 存储的更多信息,",
+                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
+                "read our documentation": "阅读我们的文档",
+            },
+            "MySecrets": {
                 "page title - my files": "我的文件",
                 "page title - my secrets": "我的密钥",
                 "what this page is used for - my files": "在此处存储您的数据.",
@@ -952,7 +1054,20 @@ const {
             "ExplorerItem": {
                 "description": "描述",
             },
+            "SecretsExplorerItem": {
+                "description": "描述",
+            },
             "ExplorerButtonBar": {
+                ...common.fr,
+                "create secret": "新的密钥",
+                "upload file": "上传文件",
+                "copy path": undefined,
+                "create directory": "新建文件夹",
+                "refresh": "刷新",
+                "create what": ({ what }) => `新 ${what}`,
+                "new": undefined,
+            },
+            "SecretsExplorerButtonBar": {
                 ...common.fr,
                 "create secret": "新的密钥",
                 "upload file": "上传文件",
@@ -976,7 +1091,24 @@ const {
                 "create": "建立",
                 "new directory": "新建文件夹",
             },
+            "SecretsExplorer": {
+                ...common.fr,
+                "untitled what": undefined,
+                "directory": "目录",
+                "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
+                "deletion dialog body": ({ deleteWhat }) => `
+            您即将删除 ${deleteWhat} 服务.
+            此操作将导致与此 ${deleteWhat} 服务相关的数据的潜在丢失
+            `,
+                "already a directory with this name": "已经有一个同名的文件夹",
+                "can't be empty": "不能为空",
+                "create": "建立",
+                "new directory": "新建文件夹",
+            },
             "ExplorerItems": {
+                "empty directory": "此目录为空",
+            },
+            "SecretsExplorerItems": {
                 "empty directory": "此目录为空",
             },
             "MySecretsEditor": {

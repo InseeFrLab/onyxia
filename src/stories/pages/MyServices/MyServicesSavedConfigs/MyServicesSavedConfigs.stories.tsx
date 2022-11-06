@@ -32,9 +32,9 @@ const props: Props = {
     ...logCallbacks(["callback", "onRequestToggleIsShortVariant"]),
 };
 
-export const VueShortVariant = getStory(props);
+export const ViewShortVariant = getStory(props);
 
-export const VueFullPage = getStory({
+export const ViewFullPage = getStory({
     ...props,
     "className": css({ "width": 800, "height": 300 }),
     "isShortVariant": false,

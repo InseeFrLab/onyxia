@@ -37,7 +37,7 @@ const propCoreAppCommon = {
     useIsCloudShellVisible,
 } as const;
 
-export const VueUserLoggedIn = getStory({
+export const ViewUserLoggedIn = getStory({
     ...propCoreAppCommon,
     "isUserLoggedIn": true,
     ...logCallbacks(["onLogoutClick", "onSelectedProjectChange"]),
@@ -58,7 +58,7 @@ export const VueUserLoggedIn = getStory({
     "selectedProjectId": "project2",
 });
 
-export const VueUserNotLoggedIn = getStory({
+export const ViewUserNotLoggedIn = getStory({
     ...propCoreAppCommon,
     "isUserLoggedIn": false,
     ...logCallbacks(["onLoginClick"]),

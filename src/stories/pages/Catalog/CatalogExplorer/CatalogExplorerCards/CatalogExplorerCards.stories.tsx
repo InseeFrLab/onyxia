@@ -39,7 +39,7 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
     }),
 );
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     className,
     packages,
     "scrollableDivRef": { "current": null },

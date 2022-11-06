@@ -52,7 +52,7 @@ const props: Props = {
     ...logCallbacks(["onRequestDelete"]),
 };
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     ...props,
     "className": css({ "width": 950, "height": 300 }),
 });
