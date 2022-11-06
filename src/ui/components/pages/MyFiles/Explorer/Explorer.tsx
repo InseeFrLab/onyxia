@@ -60,10 +60,7 @@ export type ExplorerProps = {
     onNavigate: (params: { directoryPath: string }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
-    onNewItem: (params: {
-        kind: "file" | "directory";
-        suggestedBasename: string;
-    }) => void;
+    onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     //Defines how hight users should be allowed to browse up in the path
     pathMinDepth: number;
@@ -101,7 +98,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onNavigate,
         onRefresh,
         onDeleteItem,
-        onNewItem,
+        onCreateDirectory,
         onCopyPath,
         scrollableDivRef,
         pathMinDepth,
@@ -222,11 +219,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "create directory":
                 setCreateS3DirectoryDialogState({
                     directories,
-                    "resolveBasename": basename =>
-                        onNewItem({
-                            "kind": "directory",
-                            "suggestedBasename": basename,
-                        }),
+                    "resolveBasename": basename => onCreateDirectory({ basename }),
                 });
                 break;
 

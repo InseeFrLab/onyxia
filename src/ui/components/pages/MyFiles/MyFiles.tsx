@@ -14,7 +14,6 @@ import type { Route } from "type-route";
 import { Evt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
-import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
@@ -102,15 +101,12 @@ export function MyFiles(props: Props) {
 
     const onRefresh = useConstCallback(() => fileExplorerThunks.refresh());
 
-    const onNewItem = useConstCallback(
-        ({ kind, suggestedBasename }: Param0<ExplorerProps["onNewItem"]>) => {
-            assert(kind === "file");
-
+    const onCreateDirectory = useConstCallback(
+        ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
             fileExplorerThunks.create({
                 "createWhat": "directory",
-                "basename": suggestedBasename,
-            });
-        },
+                basename,
+            }),
     );
 
     const onDeleteItem = useConstCallback(
@@ -230,7 +226,7 @@ export function MyFiles(props: Props) {
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}
-                onNewItem={onNewItem}
+                onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
