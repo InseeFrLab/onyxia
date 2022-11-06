@@ -1,6 +1,6 @@
 import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { ExplorerItems } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
+import { SecretsExplorerItems } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import type { SecretsExplorerItemsProps } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
@@ -108,7 +108,7 @@ function Component(
     );
 
     return (
-        <ExplorerItems
+        <SecretsExplorerItems
             {...props}
             className={css({ "width": `${containerWidth}vw` })}
             files={files}
@@ -122,7 +122,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ ExplorerItems })]: Component },
+    "wrappedComponent": { [symToStr({ SecretsExplorerItems })]: Component },
 });
 
 export default {
