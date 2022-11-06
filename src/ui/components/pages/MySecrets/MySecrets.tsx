@@ -3,8 +3,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { useSelector, useThunks, selectors } from "ui/coreApi";
-import { Explorer } from "./Explorer";
-import { ExplorerProps } from "./Explorer";
+import { SecretsExplorer } from "./SecretsExplorer";
+import { ExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
@@ -255,7 +255,7 @@ export function MySecrets(props: Props) {
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
             />
-            <Explorer
+            <SecretsExplorer
                 className={classes.explorer}
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
@@ -338,9 +338,9 @@ export const { i18n } = declareComponentKeys<
     | "learn more - my files"
     | "to learn more - my secrets"
     | "read our documentation"
->()({ MySecrets });
+>()({ MySecrets: MySecrets });
 
-const useStyles = makeStyles({ "name": { MySecrets } })({
+const useStyles = makeStyles({ "name": { MySecrets: MySecrets } })({
     "root": {
         "height": "100%",
         "display": "flex",

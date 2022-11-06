@@ -79,14 +79,14 @@ const {
     $lang,
     useResolveLocalizedString,
 } = createI18nApi<
-    | typeof import("ui/components/pages/MyFiles/MyFiles").i18n
     | typeof import("ui/components/pages/MySecrets/MySecrets").i18n
-    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/components/pages/MyFiles/Explorer").i18n
-    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems").i18n
-    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
     | typeof import("ui/components/pages/MySecrets/MySecretsEditor").i18n
     | typeof import("ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow").i18n
+    | typeof import("ui/components/pages/MyFiles/MyFiles").i18n
     | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
     | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
     | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
@@ -233,10 +233,10 @@ const {
                 "to learn more - my secrets": "To learn more about secrets management,",
                 "read our documentation": "read our documentation.",
             },
-            "ExplorerItem": {
+            "SecretsExplorerItem": {
                 "description": "description",
             },
-            "ExplorerButtonBar": {
+            "SecretsExplorerButtonBar": {
                 ...common.en,
                 "create secret": "Create secret",
                 "upload file": "Upload file",
@@ -246,7 +246,7 @@ const {
                 "create what": ({ what }) => `Create ${what}`,
                 "new": "New",
             },
-            "Explorer": {
+            "SecretsExplorer": {
                 ...common.en,
                 "untitled what": ({ what }) => `untitled_${what}`,
                 "directory": "folder",
@@ -261,7 +261,7 @@ const {
                 "create": "create",
                 "new directory": "New directory",
             },
-            "ExplorerItems": {
+            "SecretsExplorerItems": {
                 "empty directory": "This directory is empty",
             },
             "MySecretsEditor": {

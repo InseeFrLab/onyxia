@@ -39,20 +39,22 @@ export function MyFiles(props: Props) {
         selectors.fileExplorer.currentWorkingDirectoryView,
     ).currentWorkingDirectoryView;
 
-    const { fileExplorerThunks, secretsEditorThunks } = useThunks();
+    const { fileExplorerThunks } = useThunks();
 
     {
         const onNavigate = useConstCallback<
             Param0<typeof fileExplorerThunks["notifyThatUserIsWatching"]>["onNavigate"]
-        >(({ directoryPath }) =>
+        >(({ directoryPath, doRestoreOpenedFile: _doRestoreOpenedFile }) =>
             routes[route.name]({
                 "path": directoryPath,
-                // ...(!doRestoreOpenedFile
-                //     ? {}
-                //     : {
-                //         "openFile":
-                //             route.params.openFile ?? secretEditorState?.basename,
-                //     }),
+                /* TODO: Restore when we have a fileViewer usecase
+                 ...(!doRestoreOpenedFile
+                     ? {}
+                     : {
+                         "openFile":
+                             route.params.openFile ?? secretEditorState?.basename,
+                     }),
+                */
             }).replace(),
         );
 
@@ -66,20 +68,22 @@ export function MyFiles(props: Props) {
         }, [route.name]);
     }
 
+    /* TODO: Restore when we have a fileViewer usecase
     useEffect(() => {
         if (route.params.path === undefined) {
             return;
         }
 
         if (route.params.openFile === undefined) {
-            secretsEditorThunks.closeSecret();
+            fileViewerThunks.closeSecret();
         } else {
-            secretsEditorThunks.openSecret({
+            fileViewerThunks.openSecret({
                 "directoryPath": route.params.path,
                 "basename": route.params.openFile,
             });
         }
     }, [route.params.path, route.params.openFile]);
+    */
 
     useEffect(() => {
         if (route.params.path === undefined) {
@@ -222,13 +226,7 @@ export function MyFiles(props: Props) {
                 directoriesBeingCreated={
                     currentWorkingDirectoryView.directoriesBeingCreated
                 }
-                //delete
-                directoriesBeingRenamed={
-                    currentWorkingDirectoryView.directoriesBeingCreated
-                }
                 filesBeingCreated={currentWorkingDirectoryView.filesBeingCreated}
-                //delete
-                filesBeingRenamed={currentWorkingDirectoryView.filesBeingCreated}
                 onNavigate={onNavigate}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}

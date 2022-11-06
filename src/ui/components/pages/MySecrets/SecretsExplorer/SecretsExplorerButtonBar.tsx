@@ -13,11 +13,11 @@ export type Props = {
     callback: (buttonId: ButtonId) => void;
 };
 
-export const ExplorerButtonBar = memo((props: Props) => {
+export const SecretsExplorerButtonBar = memo((props: Props) => {
     const { selectedItemKind, isSelectedItemInEditingState, isFileOpen, callback } =
         props;
 
-    const { t } = useTranslation({ ExplorerButtonBar });
+    const { t } = useTranslation({ SecretsExplorerButtonBar });
 
     const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
         callback(buttonId),
@@ -78,7 +78,7 @@ export const { i18n } = declareComponentKeys<
     | "file"
     //TODO: Remove
     | { K: "create what"; P: { what: string } }
->()({ ExplorerButtonBar });
+>()({ SecretsExplorerButtonBar });
 
 const buttonIds = [
     "refresh",

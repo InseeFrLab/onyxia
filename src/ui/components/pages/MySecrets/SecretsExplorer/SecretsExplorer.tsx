@@ -3,10 +3,10 @@ import { makeStyles, Button } from "ui/theme";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems/ExplorerItems";
+import type { SecretsExplorerItemsProps as ItemsProps } from "./SecretsExplorerItems/SecretsExplorerItems";
 import { Breadcrump } from "onyxia-ui/Breadcrump";
 import type { BreadcrumpProps } from "onyxia-ui/Breadcrump";
-import { Props as ButtonBarProps } from "./ExplorerButtonBar";
+import { Props as ButtonBarProps } from "./SecretsExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
 import { useTranslation } from "ui/i18n";
@@ -19,8 +19,8 @@ import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import type { NonPostableEvt, StatefulReadonlyEvt, UnpackEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { ExplorerItems } from "./ExplorerItems";
-import { ExplorerButtonBar } from "./ExplorerButtonBar";
+import { SecretsExplorerItems } from "./SecretsExplorerItems";
+import { SecretsExplorerButtonBar } from "./SecretsExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "onyxia-ui";
@@ -93,7 +93,7 @@ export type ExplorerProps = {
       }
 );
 
-export const Explorer = memo((props: ExplorerProps) => {
+export const SecretsExplorer = memo((props: ExplorerProps) => {
     const {
         className,
         doShowHidden,
@@ -145,7 +145,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         ],
     );
 
-    const { t } = useTranslation({ Explorer });
+    const { t } = useTranslation({ SecretsExplorer });
 
     const [selectedItemKind, setSelectedItemKind] = useState<
         "file" | "directory" | "none"
@@ -373,7 +373,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         <>
             <div ref={rootRef} className={cx(classes.root, className)}>
                 <div ref={buttonBarRef}>
-                    <ExplorerButtonBar
+                    <SecretsExplorerButtonBar
                         selectedItemKind={selectedItemKind}
                         isSelectedItemInEditingState={isSelectedItemInEditingState}
                         isFileOpen={props.isFileOpen}
@@ -431,7 +431,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                     {props.isFileOpen ? (
                         <Card className={classes.openFile}>{props.openFileNode}</Card>
                     ) : (
-                        <ExplorerItems
+                        <SecretsExplorerItems
                             isNavigating={isNavigating}
                             files={files}
                             directories={directories}
@@ -517,10 +517,10 @@ export const { i18n } = declareComponentKeys<
     | "can't be empty"
     | "create"
     | "new directory"
->()({ Explorer });
+>()({ SecretsExplorer });
 
 const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean }>({
-    "name": { Explorer },
+    "name": { SecretsExplorer },
 })((theme, { apiLogBarTop, isOpenFileNodeNull }) => ({
     "root": {
         "position": "relative",
@@ -606,7 +606,7 @@ const { CreateS3DirectoryDialog } = (() => {
             BodyProps["onResolveFunctionChanged"]
         >(({ resolve }) => (evtResolve.state = resolve));
 
-        const { t } = useTranslation({ Explorer });
+        const { t } = useTranslation({ SecretsExplorer });
 
         return (
             <Dialog
@@ -639,7 +639,7 @@ const { CreateS3DirectoryDialog } = (() => {
 
         const { classes } = useStyles();
 
-        const { t } = useTranslation({ Explorer });
+        const { t } = useTranslation({ SecretsExplorer });
 
         const getIsValidValue = useConstCallback<TextFieldProps["getIsValidValue"]>(
             text => {
@@ -738,7 +738,7 @@ const { CreateS3DirectoryDialog } = (() => {
     const Buttons = memo((props: ButtonsProps) => {
         const { onClose, evtResolve } = props;
 
-        const { t } = useTranslation({ Explorer });
+        const { t } = useTranslation({ SecretsExplorer });
 
         useRerenderOnStateChange(evtResolve);
 

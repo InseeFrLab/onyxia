@@ -4,15 +4,12 @@ import { ExplorerItem } from "./ExplorerItem";
 import { getKeyPropFactory } from "ui/tools/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import memoize from "memoizee";
 import { Text, makeStyles } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
@@ -30,9 +27,7 @@ export type ExplorerItemsProps = {
     directories: string[];
 
     directoriesBeingCreated: string[];
-    directoriesBeingRenamed: string[];
     filesBeingCreated: string[];
-    filesBeingRenamed: string[];
 
     onNavigate: (params: { basename: string }) => void;
     onOpenFile: (params: { basename: string }) => void;
@@ -44,14 +39,8 @@ export type ExplorerItemsProps = {
         selectedItemKind: "file" | "directory" | "none";
     }) => void;
 
-    onIsSelectedItemInEditingStateValueChange: (params: {
-        isSelectedItemInEditingState: boolean;
-    }) => void;
-
     evtAction: NonPostableEvt<
-        | "START EDITING SELECTED ITEM BASENAME"
-        | "DELETE SELECTED ITEM"
-        | "COPY SELECTED ITEM PATH"
+        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
     >;
 };
 
@@ -66,12 +55,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         onDeleteItem,
         onCopyPath,
         directoriesBeingCreated,
-        directoriesBeingRenamed,
         filesBeingCreated,
-        filesBeingRenamed,
         evtAction,
         onSelectedItemKindValueChange,
-        onIsSelectedItemInEditingStateValueChange,
     } = props;
 
     const { classes, cx } = useStyles({
@@ -102,12 +88,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         ],
     );
 
-    const getEvtItemAction = useConst(() =>
-        memoize((_keyProp: string) =>
-            Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>(),
-        ),
-    );
-
     useEvt(
         ctx =>
             evtAction.attach(ctx, action => {
@@ -117,10 +97,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                         onDeleteItem(
                             getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp),
                         );
-                        break;
-                    case "START EDITING SELECTED ITEM BASENAME":
-                        assert(selectedItemKeyProp !== undefined);
-                        getEvtItemAction(selectedItemKeyProp).post("ENTER EDITING STATE");
                         break;
                     case "COPY SELECTED ITEM PATH":
                         assert(selectedItemKeyProp !== undefined);
@@ -136,14 +112,12 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             evtAction,
             onDeleteItem,
             onCopyPath,
-            getEvtItemAction,
             selectedItemKeyProp,
             getValuesCurrentlyMappedToKeyProp,
         ],
     );
 
     useEffectOnValueChange(() => {
-        setIsSelectedItemInEditingState(false);
         setSelectedItemKeyProp(undefined);
     }, [isNavigating]);
 
@@ -164,7 +138,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     selectedItem.kind === kind &&
                     removed.includes(selectedItem.basename)
                 ) {
-                    setIsSelectedItemInEditingState(false);
                     setSelectedItemKeyProp(undefined);
                 }
             },
@@ -212,17 +185,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         },
     );
 
-    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] =
-        useState(false);
-
-    useEffectOnValueChange(
-        () =>
-            onIsSelectedItemInEditingStateValueChange({
-                isSelectedItemInEditingState,
-            }),
-        [isSelectedItemInEditingState],
-    );
-
     const getIsValidBasenameFactory = useCallbackFactory(
         (
             [kind, basename]: ["file" | "directory", string],
@@ -252,13 +214,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         },
     );
 
-    const onIsInEditingStateValueChange = useConstCallback(
-        ({
-            isInEditingState,
-        }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
-            setIsSelectedItemInEditingState(isInEditingState),
-    );
-
     const containerRef = useStateRef<HTMLDivElement>(null);
 
     const onGridMouseDown = useConstCallback(
@@ -270,7 +225,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                 return;
             }
 
-            setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
         },
     );
@@ -306,19 +260,12 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                     kind={kind}
                                     basename={basename}
                                     isSelected={isSelected}
-                                    evtAction={getEvtItemAction(keyProp)}
                                     isCircularProgressShown={(() => {
                                         switch (kind) {
                                             case "directory":
-                                                return [
-                                                    ...directoriesBeingCreated,
-                                                    ...directoriesBeingRenamed,
-                                                ];
+                                                return [...directoriesBeingCreated];
                                             case "file":
-                                                return [
-                                                    ...filesBeingCreated,
-                                                    ...filesBeingRenamed,
-                                                ];
+                                                return [...filesBeingCreated];
                                         }
                                     })().includes(basename)}
                                     onMouseEvent={onMouseEventFactory(kind, basename)}
@@ -326,9 +273,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                         kind,
                                         basename,
                                     )}
-                                    onIsInEditingStateValueChange={
-                                        onIsInEditingStateValueChange
-                                    }
                                 />
                             );
                         }),

@@ -1,7 +1,7 @@
 import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { ExplorerItems } from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItems";
-import type { ExplorerItemsProps } from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItems";
+import { ExplorerItems } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
+import type { SecretsExplorerItemsProps } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";
@@ -15,7 +15,7 @@ const eventEmitter = new EventEmitter();
 
 function Component(
     props: Omit<
-        ExplorerItemsProps,
+        SecretsExplorerItemsProps,
         "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"
     > & {
         containerWidth: number;
@@ -70,7 +70,7 @@ function Component(
             basename,
             newBasename,
             kind,
-        }: Parameters<ExplorerItemsProps["onEditBasename"]>[0]) => {
+        }: Parameters<SecretsExplorerItemsProps["onEditBasename"]>[0]) => {
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
                     case "directory":
@@ -145,7 +145,7 @@ export default {
                 {
                     "title": "Start editing selected item",
                     "name": "default",
-                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
+                    "payload": id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
                         "START EDITING SELECTED ITEM BASENAME",
                     ),
                 },
@@ -153,14 +153,14 @@ export default {
                     "title": "Delete selected item",
                     "name": "default",
                     "payload":
-                        id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
+                        id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
                             "DELETE SELECTED ITEM",
                         ),
                 },
                 {
                     "title": "Copy selected item path",
                     "name": "default",
-                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
+                    "payload": id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
                         "COPY SELECTED ITEM PATH",
                     ),
                 },
