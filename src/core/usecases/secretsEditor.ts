@@ -6,7 +6,7 @@ import type { SecretWithMetadata } from "core/ports/SecretsManagerClient";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
-import { interUsecasesThunks as explorersThunks } from "./explorers";
+import { interUsecasesThunks as secretExplorersThunks } from "./secretExplorer";
 
 export type SecretsEditorState = {
     directoryPath: string;
@@ -198,9 +198,11 @@ export const thunks = {
 
             const path = pathJoin(directoryPath, basename);
 
-            const { loggedFsApi } = dispatch(explorersThunks.getLoggedSecretsApis());
+            const { loggedSecretClient } = dispatch(
+                secretExplorersThunks.getLoggedSecretsApis(),
+            );
 
-            const secretWithMetadata = await loggedFsApi.get({ path });
+            const secretWithMetadata = await loggedSecretClient.get({ path });
 
             const { secret } = secretWithMetadata;
 
@@ -251,7 +253,9 @@ export const thunks = {
         async (...args) => {
             const [dispatch] = args;
 
-            const { loggedFsApi } = dispatch(explorersThunks.getLoggedSecretsApis());
+            const { loggedSecretClient } = dispatch(
+                secretExplorersThunks.getLoggedSecretsApis(),
+            );
 
             const getSecretCurrentPathAndHiddenKeys = () => {
                 const [, getState] = args;
@@ -311,7 +315,7 @@ export const thunks = {
 
             dispatch(actions.editSecretStarted(params));
 
-            await loggedFsApi.put(
+            await loggedSecretClient.put(
                 (() => {
                     const { path, secret, hiddenKeys } =
                         getSecretCurrentPathAndHiddenKeys();

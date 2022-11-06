@@ -11,7 +11,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "packageName": "rstudio",
     "packageIconUrl": rstudioImg,
     "isBookmarked": true,

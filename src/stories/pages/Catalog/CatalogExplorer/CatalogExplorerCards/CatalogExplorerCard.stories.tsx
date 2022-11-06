@@ -12,7 +12,7 @@ const { meta, getStory } = getStoryFactory({
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     /* spell-checker: disable */
@@ -26,7 +26,7 @@ export const VueDefault = getStory({
     ...logCallbacks(["onRequestLaunch"]),
 });
 
-export const VueNoDesc = getStory({
+export const ViewNoDesc = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     "packageDescription": "",
@@ -34,7 +34,7 @@ export const VueNoDesc = getStory({
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
 });
 
-export const VueNoLearnMore = getStory({
+export const ViewNoLearnMore = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     /* spell-checker: disable */
@@ -48,7 +48,7 @@ export const VueNoLearnMore = getStory({
     "packageHomeUrl": undefined,
 });
 
-export const VueScroll = getStory({
+export const ViewScroll = getStory({
     "className": css({ "height": 308 }),
     "packageIconUrl": rstudioImgUrl,
     "packageName": "Service title",
