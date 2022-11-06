@@ -1,7 +1,7 @@
 import {
-    ExplorerItem,
-    ExplorerItemProps,
-} from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItem";
+    SecretsExplorerItem,
+    SecretsExplorerItemProps,
+} from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { Evt } from "evt";
@@ -12,7 +12,7 @@ import { EventEmitter } from "events";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerItem },
+    "wrappedComponent": { ExplorerItem: SecretsExplorerItem },
 });
 
 const eventEmitter = new EventEmitter();
@@ -28,7 +28,7 @@ export default {
                     "title": "Enter editing state",
                     "name": "default",
                     "payload":
-                        id<UnpackEvt<ExplorerItemProps["evtAction"]>>(
+                        id<UnpackEvt<SecretsExplorerItemProps["evtAction"]>>(
                             "ENTER EDITING STATE",
                         ),
                 },

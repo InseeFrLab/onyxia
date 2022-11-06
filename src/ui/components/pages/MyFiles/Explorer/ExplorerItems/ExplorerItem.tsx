@@ -6,11 +6,7 @@ import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useClick } from "powerhooks/useClick";
 import Color from "color";
 import { useTranslation } from "ui/i18n";
-import type { NonPostableEvt } from "evt";
-import { useEvt } from "evt/hooks";
-import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
 import { smartTrim } from "ui/tools/smartTrim";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
@@ -36,11 +32,6 @@ export type ExplorerItemProps = {
      * and when it has been double clicked
      */
     onMouseEvent: (params: { type: "down" | "double"; target: "icon" | "text" }) => void;
-
-    /** Assert initial value is false */
-    onIsInEditingStateValueChange: (params: { isInEditingState: boolean }) => void;
-
-    evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 };
 
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
@@ -49,11 +40,9 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         kind,
         basename,
         isCircularProgressShown,
-        evtAction,
         isSelected,
         getIsValidBasename,
         onMouseEvent,
-        onIsInEditingStateValueChange,
     } = props;
 
     const { t } = useTranslation({ ExplorerItem });
@@ -61,11 +50,6 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     const { classes, cx } = useStyles({ isSelected, basename });
 
     const [isInEditingState, setIsInEditingState] = useState(false);
-
-    useEffectOnValueChange(
-        () => onIsInEditingStateValueChange({ isInEditingState }),
-        [isInEditingState],
-    );
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
@@ -80,29 +64,13 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         evtIsCircularProgressShown.state = isCircularProgressShown;
     });
 
-    useEvt(
-        ctx =>
-            evtAction.pipe(ctx).attach(
-                action => action === "ENTER EDITING STATE",
-                () =>
-                    evtIsCircularProgressShown.attachOnce(
-                        isCircularProgressShown => !isCircularProgressShown,
-                        ctx,
-                        () => setIsInEditingState(true),
-                    ),
-            ),
-        [evtAction, evtIsCircularProgressShown],
-    );
-
     const getIsValidValue = useConstCallback((value: string) =>
         getIsValidBasename({ "basename": value })
             ? ({ "isValidValue": true } as const)
             : ({ "isValidValue": false, "message": "" } as const),
     );
 
-    const [evtInputAction] = useState(() =>
-        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
-    );
+    const [evtInputAction] = useState(() => Evt.create<TextFieldProps["evtAction"]>());
 
     const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(() => {
         setIsInEditingState(false);

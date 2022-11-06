@@ -56,9 +56,7 @@ export type ExplorerProps = {
     files: string[];
     directories: string[];
     directoriesBeingCreated: string[];
-    directoriesBeingRenamed: string[];
     filesBeingCreated: string[];
-    filesBeingRenamed: string[];
     onNavigate: (params: { directoryPath: string }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
@@ -111,23 +109,14 @@ export const Explorer = memo((props: ExplorerProps) => {
         filesBeingUploaded,
     } = props;
 
-    const [
-        files,
-        directories,
-        directoriesBeingCreated,
-        directoriesBeingRenamed,
-        filesBeingCreated,
-        filesBeingRenamed,
-    ] = useMemo(
+    const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
         () =>
             (
                 [
                     props.files,
                     props.directories,
                     props.directoriesBeingCreated,
-                    props.directoriesBeingRenamed,
                     props.filesBeingCreated,
-                    props.filesBeingRenamed,
                 ] as const
             ).map(
                 doShowHidden
@@ -138,9 +127,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             props.files,
             props.directories,
             props.directoriesBeingCreated,
-            props.directoriesBeingRenamed,
             props.filesBeingCreated,
-            props.filesBeingRenamed,
             doShowHidden,
         ],
     );
@@ -154,16 +141,6 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onSelectedItemKindValueChange = useConstCallback(
         ({ selectedItemKind }: Param0<ItemsProps["onSelectedItemKindValueChange"]>) =>
             setSelectedItemKind(selectedItemKind),
-    );
-
-    const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] =
-        useState(false);
-
-    const onIsSelectedItemInEditingStateValueChange = useConstCallback(
-        ({
-            isSelectedItemInEditingState,
-        }: Param0<ItemsProps["onIsSelectedItemInEditingStateValueChange"]>) =>
-            setIsSelectedItemInEditingState(isSelectedItemInEditingState),
     );
 
     const onBreadcrumpNavigate = useConstCallback(
@@ -227,9 +204,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                 } else {
                     onRefresh();
                 }
-                break;
-            case "rename":
-                evtItemsAction.post("START EDITING SELECTED ITEM BASENAME");
                 break;
             case "delete":
                 evtItemsAction.post("DELETE SELECTED ITEM");
@@ -368,10 +342,8 @@ export const Explorer = memo((props: ExplorerProps) => {
             >
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
-                        explorerType="s3"
                         selectedItemKind={selectedItemKind}
-                        isSelectedItemInEditingState={isSelectedItemInEditingState}
-                        isFileOpen={props.isFileOpen}
+                        //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
                     />
                 </div>
@@ -431,15 +403,10 @@ export const Explorer = memo((props: ExplorerProps) => {
                             files={files}
                             directories={directories}
                             directoriesBeingCreated={directoriesBeingCreated}
-                            directoriesBeingRenamed={directoriesBeingRenamed}
                             filesBeingCreated={filesBeingCreated}
-                            filesBeingRenamed={filesBeingRenamed}
                             onNavigate={onItemsNavigate}
                             onOpenFile={onItemsOpenFile}
                             onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                            onIsSelectedItemInEditingStateValueChange={
-                                onIsSelectedItemInEditingStateValueChange
-                            }
                             onCopyPath={itemsOnCopyPath}
                             onDeleteItem={itemsOnDeleteItem}
                             evtAction={evtItemsAction}

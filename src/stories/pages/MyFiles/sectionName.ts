@@ -1,3 +1,3 @@
 import { sectionName as parentSectionName } from "../sectionName";
 
-export const sectionName = `${parentSectionName}/MyFilesMySecrets`;
+export const sectionName = `${parentSectionName}/MyFiles`;

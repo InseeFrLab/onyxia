@@ -10,9 +10,6 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const View = getStory({
-    "explorerType": "s3",
-    "isFileOpen": true,
     "selectedItemKind": "none",
-    "isSelectedItemInEditingState": false,
     ...logCallbacks(["callback"]),
 });

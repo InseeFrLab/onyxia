@@ -29,7 +29,7 @@ function Component(
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "doUseLib": true,
-    "wrappedComponent": { [symToStr({ MySecrets })]: Component },
+    "wrappedComponent": { [symToStr({ MySecrets: MySecrets })]: Component },
 });
 
 export default {

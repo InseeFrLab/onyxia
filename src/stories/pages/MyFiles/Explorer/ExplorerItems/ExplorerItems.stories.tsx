@@ -1,15 +1,12 @@
 import { css } from "@emotion/css";
-import { useState, useCallback, useEffect } from "react";
-import { ExplorerItems } from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItems";
-import type { ExplorerItemsProps } from "ui/components/pages/MySecrets/Explorer/ExplorerItems/ExplorerItems";
+import { useState, useEffect } from "react";
+import { ExplorerItems } from "ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps } from "ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";
 import { Evt } from "evt";
-import { id } from "tsafe/id";
 import { EventEmitter } from "events";
-import withEvents from "@storybook/addon-events";
-import type { UnpackEvt } from "evt";
 
 const eventEmitter = new EventEmitter();
 
@@ -65,57 +62,12 @@ function Component(
         setToRemove(undefined);
     }, [toRemove, filesBeingRenamed, directoriesBeingRenamed]);
 
-    const onEditedBasename = useCallback(
-        ({
-            basename,
-            newBasename,
-            kind,
-        }: Parameters<ExplorerItemsProps["onEditBasename"]>[0]) => {
-            const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
-                switch (kind) {
-                    case "directory":
-                        return [
-                            directories,
-                            setDirectories,
-                            directoriesBeingRenamed,
-                            setDirectoriesBeingRenamed,
-                        ] as const;
-                    case "file":
-                        return [
-                            files,
-                            setFiles,
-                            filesBeingRenamed,
-                            setFilesBeingRenamed,
-                        ] as const;
-                }
-            })();
-
-            items[items.indexOf(basename)!] = newBasename;
-
-            setItems([...items]);
-
-            (async () => {
-                setBeingRenamedItems([...beingRenamedItems, newBasename]);
-
-                if (basename !== newBasename) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-
-                setToRemove({ kind, "basename": newBasename });
-            })();
-        },
-        [files, directories, filesBeingRenamed, directoriesBeingRenamed],
-    );
-
     return (
         <ExplorerItems
             {...props}
             className={css({ "width": `${containerWidth}vw` })}
             files={files}
             directories={directories}
-            filesBeingRenamed={filesBeingRenamed}
-            directoriesBeingRenamed={directoriesBeingRenamed}
-            onEditBasename={onEditedBasename}
         />
     );
 }
@@ -137,36 +89,6 @@ export default {
             },
         },
     },
-    "decorators": [
-        ...(meta.decorators ? meta.decorators : []),
-        withEvents({
-            "emit": eventEmitter.emit.bind(eventEmitter),
-            "events": [
-                {
-                    "title": "Start editing selected item",
-                    "name": "default",
-                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
-                        "START EDITING SELECTED ITEM BASENAME",
-                    ),
-                },
-                {
-                    "title": "Delete selected item",
-                    "name": "default",
-                    "payload":
-                        id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
-                            "DELETE SELECTED ITEM",
-                        ),
-                },
-                {
-                    "title": "Copy selected item path",
-                    "name": "default",
-                    "payload": id<UnpackEvt<ExplorerItemsProps["evtAction"]>>(
-                        "COPY SELECTED ITEM PATH",
-                    ),
-                },
-            ],
-        }),
-    ],
 };
 
 export const View1 = getStory({

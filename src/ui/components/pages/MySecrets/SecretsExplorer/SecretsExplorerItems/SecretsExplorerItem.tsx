@@ -15,7 +15,7 @@ import { smartTrim } from "ui/tools/smartTrim";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
 
-export type ExplorerItemProps = {
+export type SecretsExplorerItemProps = {
     className?: string;
 
     /** Tell if we are displaying an directory or a secret */
@@ -45,7 +45,7 @@ export type ExplorerItemProps = {
     evtAction: NonPostableEvt<"ENTER EDITING STATE">;
 };
 
-export const ExplorerItem = memo((props: ExplorerItemProps) => {
+export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
     const {
         className,
         kind,
@@ -59,7 +59,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         onIsInEditingStateValueChange,
     } = props;
 
-    const { t } = useTranslation({ ExplorerItem });
+    const { t } = useTranslation({ SecretsExplorerItem });
 
     const { classes, cx } = useStyles({ isSelected, basename });
 
@@ -199,10 +199,10 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
+export const { i18n } = declareComponentKeys<"description">()({ SecretsExplorerItem });
 
-const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>({
-    "name": { ExplorerItem },
+const useStyles = makeStyles<Pick<SecretsExplorerItemProps, "isSelected" | "basename">>({
+    "name": { ExplorerItem: SecretsExplorerItem },
 })((theme, { isSelected, basename }) => ({
     "root": {
         "textAlign": "center",

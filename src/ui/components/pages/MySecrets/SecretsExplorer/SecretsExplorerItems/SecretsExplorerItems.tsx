@@ -1,6 +1,6 @@
 import { useMemo, useState, memo } from "react";
-import type { ExplorerItemProps } from "./ExplorerItem";
-import { ExplorerItem } from "./ExplorerItem";
+import type { SecretsExplorerItemProps } from "./SecretsExplorerItem";
+import { SecretsExplorerItem } from "./SecretsExplorerItem";
 import { getKeyPropFactory } from "ui/tools/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -19,7 +19,7 @@ import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 
-export type ExplorerItemsProps = {
+export type SecretsExplorerItemsProps = {
     className?: string;
 
     isNavigating: boolean;
@@ -60,7 +60,7 @@ export type ExplorerItemsProps = {
     >;
 };
 
-export const ExplorerItems = memo((props: ExplorerItemsProps) => {
+export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
     const {
         className,
         isNavigating,
@@ -111,7 +111,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
 
     const getEvtItemAction = useConst(() =>
         memoize((_keyProp: string) =>
-            Evt.create<UnpackEvt<ExplorerItemProps["evtAction"]>>(),
+            Evt.create<UnpackEvt<SecretsExplorerItemProps["evtAction"]>>(),
         ),
     );
 
@@ -237,7 +237,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     const onMouseEventFactory = useCallbackFactory(
         async (
             [kind, basename]: ["file" | "directory", string],
-            [{ type, target }]: [Param0<ExplorerItemProps["onMouseEvent"]>],
+            [{ type, target }]: [Param0<SecretsExplorerItemProps["onMouseEvent"]>],
         ) => {
             if (isNavigating) {
                 return;
@@ -287,7 +287,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     const onEditBasenameFactory = useCallbackFactory(
         (
             [kind, basename]: ["file" | "directory", string],
-            [{ editedBasename }]: [Parameters<ExplorerItemProps["onEditBasename"]>[0]],
+            [{ editedBasename }]: [
+                Parameters<SecretsExplorerItemProps["onEditBasename"]>[0],
+            ],
         ) => {
             transfersKeyProp({
                 "toValues": { kind, "basename": editedBasename },
@@ -303,7 +305,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             [kind, basename]: ["file" | "directory", string],
 
             [{ basename: candidateBasename }]: [
-                Parameters<ExplorerItemProps["getIsValidBasename"]>[0],
+                Parameters<SecretsExplorerItemProps["getIsValidBasename"]>[0],
             ],
         ) => {
             if (basename === candidateBasename) {
@@ -330,7 +332,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     const onIsInEditingStateValueChange = useConstCallback(
         ({
             isInEditingState,
-        }: Parameters<ExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
+        }: Parameters<SecretsExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
             setIsSelectedItemInEditingState(isInEditingState),
     );
 
@@ -350,7 +352,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         },
     );
 
-    const { t } = useTranslation({ ExplorerItems });
+    const { t } = useTranslation({ SecretsExplorerItems });
 
     return (
         <div
@@ -375,7 +377,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                             const isSelected = selectedItemKeyProp === keyProp;
 
                             return (
-                                <ExplorerItem
+                                <SecretsExplorerItem
                                     className={classes.item}
                                     key={keyProp}
                                     kind={kind}
@@ -415,9 +417,11 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
+export const { i18n } = declareComponentKeys<"empty directory">()({
+    SecretsExplorerItems,
+});
 
-const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } })(
+const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { SecretsExplorerItems } })(
     (theme, { isEmpty }) => ({
         "root": {
             ...(isEmpty
