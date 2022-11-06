@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "2.2.13",
+    "version": "2.2.14",
     "license": "MIT",
     "devDependencies": {
         "@emotion/css": "^11.10.0",
