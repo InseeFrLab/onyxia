@@ -137,9 +137,9 @@ export function createOfficialOnyxiaApiClient(params: {
                         id: string;
                         services: {
                             allowedURIPattern: string;
-                            expose: { 
+                            expose: {
                                 domain: string;
-                                ingressClassName: string; 
+                                ingressClassName: string;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -609,7 +609,8 @@ export function createOfficialOnyxiaApiClient(params: {
                         }) => ({
                             id,
                             ...(() => {
-                                const packageName = id.split("-")[0];
+                                //TODO: We shouldn't compute things here.
+                                const packageName = id.replace(/-[^-]+$/, "");
 
                                 return {
                                     packageName,
