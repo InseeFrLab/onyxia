@@ -202,6 +202,19 @@ export function createOfficialOnyxiaApiClient(params: {
                                 clientId: string;
                             };
                         };
+                        proxyInjection?: {
+                            httpProxyUrl: string;
+                            httpsProxyUrl: string;
+                            noProxy: string;
+                        };
+                        packageRepositoryInjection?: {
+                            cranProxyUrl: string;
+                            condaProxyUrl: string;
+                            pypiProxyUrl: string;
+                        };
+                        certificateAuthorityInjection?: {
+                            crts: unknown[];
+                        };
                     }[];
                 }>("/public/configuration")
                 .then(({ data }) =>
@@ -294,6 +307,33 @@ export function createOfficialOnyxiaApiClient(params: {
                                                         vault.keycloakParams.clientId,
                                                 },
                                   };
+                        })(),
+                        "proxyInjection": (() => {
+                            const { proxyInjection } = region ?? {};
+
+                            if (proxyInjection === undefined) {
+                                return undefined;
+                            }
+
+                            return { ...proxyInjection };
+                        })(),
+                        "packageRepositoryInjection": (() => {
+                            const { packageRepositoryInjection } = region ?? {};
+
+                            if (packageRepositoryInjection === undefined) {
+                                return undefined;
+                            }
+
+                            return { ...packageRepositoryInjection };
+                        })(),
+                        "certificateAuthorityInjection": (() => {
+                            const { certificateAuthorityInjection } = region ?? {};
+
+                            if (certificateAuthorityInjection === undefined) {
+                                return undefined;
+                            }
+
+                            return { ...certificateAuthorityInjection };
                         })(),
                     })),
                 ),
