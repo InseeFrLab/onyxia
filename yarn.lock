@@ -10530,10 +10530,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.5:
-  version "6.8.5"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.5.tgz#08a759db42352d4510144de3e5ee68b0d0ade4bf"
-  integrity sha512-ZG0VQrQDU7xww2/sC3IA6ANDQAxOqcZaXc02mnEeHTR5WE/Qgw+Nao/OocckfR83uyFSnsY/Aj16IP5MQH4AdA==
+keycloakify@^6.8.6:
+  version "6.8.6"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.6.tgz#152ed8a989c723ee44ffd0030c18c7eaf1552dc0"
+  integrity sha512-VqlmU98izLRKO3dz2/6kaGMWT/XKOxP26vfQMdM6LlknhvdniWCb+7FRFTeSk8CMjinrmVbn1/qfJkqea5yyiA==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
