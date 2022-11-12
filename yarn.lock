@@ -7749,7 +7749,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-evt@^2.4.10, evt@^2.4.7:
+evt@^2.4.10:
   version "2.4.10"
   resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.10.tgz#91b3c10e5ce50112656bdbe6c599c38f72617e51"
   integrity sha512-HPepROqeyGpl54AvytYMJh+JoB5eGInaRG3Sqr7VAQX69jzWdou6mq8vNvy41lRSSsK2rQ7XJXoyEaqVnLDBSw==
@@ -13617,14 +13617,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^1.2.16:
-  version "1.2.16"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-1.2.16.tgz#5af350c8c3d707d0abd4da3644bea0c57ed1dd6b"
-  integrity sha512-aNzJlSHkrS3gLnkQ5COxeIfagcnvWZ8ncp1GUcPkSAM5XIT3TZ0wd7HcOe7XbB9I3ETawlC2fhLPFcAmbGJo+Q==
+redux-clean-architecture@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-2.8.0.tgz#e12483fd93cf4d4b03f89064d4f660753c78ebb9"
+  integrity sha512-QAQCcZdtGkDS3wfaE88BagTdh+vjweAlPF5idWLtMSMdkng+Jfp09JzcBUS+V2J0niG+A7kpUkFP5sq5tHkkGg==
   dependencies:
-    evt "^2.4.7"
     minimal-polyfills "^2.2.2"
-    tsafe "^1.1.3"
+    tsafe "^1.2.1"
 
 redux-thunk@^2.4.1:
   version "2.4.1"
@@ -15438,11 +15437,6 @@ ts-pnp@^1.1.6:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
-
-tsafe@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.1.3.tgz#fa7c2ae7da689884292b70ee30febbca5c665d03"
-  integrity sha512-QQQoed5Acb7Qe/sjMwE/qg57mxD5MXqY5HcGN4i3QyhJiplpo79ABEZiOBvL1cRTOYIzeryWvWQ3xsotTA49MQ==
 
 tsafe@^1.2.1:
   version "1.2.1"
