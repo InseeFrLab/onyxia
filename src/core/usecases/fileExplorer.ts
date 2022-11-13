@@ -11,19 +11,19 @@ import {
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
-import { s3ApiLogger } from "../secondaryAdapters/s3Client";
+import { s3ApiLogger } from "../adapters/s3Client";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { RootState } from "../setup";
+import type { State } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { createObjectThatThrowsIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -711,6 +711,7 @@ type SliceContext = {
     loggedExtendedFsApi: ExtendedFsApi;
 };
 
+//TODO: Make it so the framework can accommodate this usecase
 const { getSliceContext } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
 
@@ -721,8 +722,6 @@ const { getSliceContext } = (() => {
             return sliceContext;
         }
 
-        const isLazilyInitialized = false;
-
         sliceContext = (() => {
             const { apiLogs: s3ClientLogs, loggedApi: loggedS3Client } = logApi({
                 "api": extraArg.s3Client,
@@ -732,7 +731,7 @@ const { getSliceContext } = (() => {
             return {
                 loggedS3Client,
                 s3ClientLogs,
-                isLazilyInitialized,
+                "isLazilyInitialized": false,
                 "loggedExtendedFsApi": createExtendedFsApi({
                     "baseFsApi": {
                         "list": loggedS3Client.list,
@@ -791,7 +790,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: RootState,
+        rootState: State,
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.fileExplorer;
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
@@ -850,7 +849,7 @@ export const selectors = (() => {
         };
     };
 
-    const uploadProgress = (rootState: RootState): UploadProgress => {
+    const uploadProgress = (rootState: State): UploadProgress => {
         const { s3FilesBeingUploaded } = rootState.fileExplorer["~internal"];
 
         const completedFileCount = s3FilesBeingUploaded.map(

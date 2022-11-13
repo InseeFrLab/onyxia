@@ -7,7 +7,7 @@ import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
-import { useSelector, selectors } from "ui/coreApi";
+import { useCoreState, selectors } from "core";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import { assert } from "tsafe/assert";
@@ -146,7 +146,7 @@ const useStyles = makeStyles({ "name": { Catalog } })({
 });
 
 const PageHeaderHelpContent = memo(() => {
-    const sourcesUrls = useSelector(state => {
+    const sourcesUrls = useCoreState(state => {
         const { catalogExplorer, launcher } = state;
 
         if (launcher.stateDescription === "ready") {

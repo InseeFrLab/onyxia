@@ -9,7 +9,7 @@ import {
 	getValuesObject,
 } from 'js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service';
 import { prStore } from "core/setup";
-import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { prAxiosInstance } from "core/adapters/officialOnyxiaApiClient";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "tsafe/assert";

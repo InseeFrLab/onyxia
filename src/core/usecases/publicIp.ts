@@ -1,8 +1,9 @@
-import type { ThunkAction, ThunksExtraArgument } from "../setup";
+import type { ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 
 type PublicIpState = string | null;
 
@@ -17,7 +18,11 @@ export const { reducer, actions } = createSlice({
     },
 });
 
-const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>();
+//const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>();
+
+const { getContext } = createUsecaseContextApi(() => ({
+    "isEvtOnlineRegisteredByStoreInst": false,
+}));
 
 export const thunks = {
     "fetch":
@@ -29,7 +34,9 @@ export const thunks = {
 
             const publicIp = await onyxiaApiClient.getIp();
 
-            if (!isEvtOnlineRegisteredByStoreInst.has(extraArg)) {
+            const context = getContext(extraArg);
+
+            if (!context.isEvtOnlineRegisteredByStoreInst) {
                 Evt.from(window, "online").attach(() => {
                     dispatch(actions.publicIpMightHaveChanged());
 
@@ -38,7 +45,7 @@ export const thunks = {
                     dispatch(thunks.fetch());
                 });
 
-                isEvtOnlineRegisteredByStoreInst.set(extraArg, true);
+                context.isEvtOnlineRegisteredByStoreInst = true;
             }
 
             dispatch(actions.fetched(publicIp));

@@ -4,8 +4,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { ThunkAction, RootState, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, State } from "../setup";
 import { exclude } from "tsafe/exclude";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 
 type RunningServicesState = {
     isUserWatching: boolean;
@@ -319,7 +320,7 @@ export const privateThunks = {
         async (...args) => {
             const [, getState, extraArgs] = args;
 
-            const sliceContext = getSliceContext(extraArgs);
+            const sliceContext = getContext(extraArgs);
 
             if (sliceContext.prDefaultTokenTTL !== undefined) {
                 return sliceContext.prDefaultTokenTTL;
@@ -361,27 +362,12 @@ type SliceContext = {
         | undefined;
 };
 
-const { getSliceContext } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
-
-    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
-        let sliceContext = weakMap.get(extraArg);
-
-        if (sliceContext === undefined) {
-            sliceContext = {
-                "prDefaultTokenTTL": undefined,
-            };
-            weakMap.set(extraArg, sliceContext);
-        }
-
-        return sliceContext;
-    }
-
-    return { getSliceContext };
-})();
+const { getContext } = createUsecaseContextApi<SliceContext>(() => ({
+    "prDefaultTokenTTL": undefined,
+}));
 
 export const selectors = (() => {
-    const runningServices = (rootState: RootState): RunningService[] => {
+    const runningServices = (rootState: State): RunningService[] => {
         const { runningServices } = rootState.runningService["~internal"];
 
         return runningServices === undefined

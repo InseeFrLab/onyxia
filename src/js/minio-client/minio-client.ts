@@ -1,11 +1,11 @@
 import * as Minio from "minio";
 import memoize from "memoizee";
-import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { getS3Url } from "core/adapters/officialOnyxiaApiClient";
 //import { prKeycloakClient } from "core/setup";
 
 /** We avoid importing app right away to prevent require cycles */
 const getS3Client = memoize(
-    () => import("core/secondaryAdapters/s3Client").then(ns => ns.prS3Client),
+    () => import("core/adapters/s3Client").then(ns => ns.prS3Client),
     {
         "promise": true,
     },

@@ -15,14 +15,32 @@ import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react/compat";
 import { objectKeys } from "tsafe/objectKeys";
-import { CoreProvider } from "ui/coreApi/CoreProvider";
+import { createCoreProvider } from "core";
 import { RouteProvider } from "ui/routes";
 import { useLang, fallbackLanguage, languages } from "ui/i18n";
 import type { Language } from "ui/i18n";
 import type { ReactNode } from "react";
+import { Evt } from "evt";
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
+
+const { CoreProvider } = createCoreProvider({
+    "evtUserActivity": new Evt(),
+    "getIsDarkModeEnabledValueForProfileInitialization": () => false,
+    "onyxiaApiUrl": "",
+    "userAuthenticationParams": {
+        "method": "mock",
+        "isUserInitiallyLoggedIn": false,
+        "user": {
+            "email": "joseph.garrone@data.gouv.fr",
+            "familyName": "Garrone",
+            "firstName": "Joseph",
+            "groups": ["projet-onyxia"],
+            "username": "jgarrone",
+        },
+    },
+});
 
 export function getStoryFactory<Props>(params: {
     sectionName: string;

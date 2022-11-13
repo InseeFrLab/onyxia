@@ -4,20 +4,13 @@ import type { Project } from "../ports/OnyxiaApiClient";
 import { createSlice } from "@reduxjs/toolkit";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import {
-    createObjectThatThrowsIfAccessedFactory,
-    isPropertyAccessedByReduxOrStorybook,
-} from "../tools/createObjectThatThrowsIfAccessed";
-import type { RootState } from "../setup";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import type { State } from "../setup";
 
 type ProjectsState = {
     projects: Project[];
     selectedProjectId: string;
 };
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
-    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
-});
 
 export const name = "projectSelection";
 
@@ -95,7 +88,7 @@ export const privateThunks = {
 };
 
 export const selectors = (() => {
-    const selectedProject = (rootState: RootState): Project => {
+    const selectedProject = (rootState: State): Project => {
         const { projects, selectedProjectId } = rootState.projectSelection;
 
         const selectedProject = projects.find(({ id }) => id === selectedProjectId);

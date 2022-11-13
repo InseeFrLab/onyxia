@@ -14,7 +14,7 @@ import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "ui/routes";
-import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { getS3Url } from "core/adapters/officialOnyxiaApiClient";
 
 export const MyFile: React.FC<{
     file: Blob & { name: string };

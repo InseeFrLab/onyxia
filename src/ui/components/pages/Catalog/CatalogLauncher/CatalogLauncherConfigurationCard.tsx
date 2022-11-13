@@ -27,7 +27,7 @@ import type { Equals } from "tsafe";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
-import type { selectors } from "ui/coreApi";
+import type { selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 
 export type CatalogLauncherConfigurationCardProps = {

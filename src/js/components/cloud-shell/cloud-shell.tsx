@@ -16,9 +16,9 @@ import {
 } from "js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { useStyles } from "ui/theme";
-import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { prAxiosInstance } from "core/adapters/officialOnyxiaApiClient";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useThunks } from "ui/coreApi";
+import { useCoreFunctions } from "core";
 
 export const { useIsCloudShellVisible } = createUseGlobalState({
     "name": "isCloudShellVisible",
@@ -33,9 +33,9 @@ interface CloudShellData {
 }
 
 export const CloudShell = memo(() => {
-    const { userAuthenticationThunks } = useThunks();
+    const { userAuthentication } = useCoreFunctions();
 
-    const { username } = userAuthenticationThunks.getUser();
+    const { username } = userAuthentication.getUser();
 
     const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(
         undefined,

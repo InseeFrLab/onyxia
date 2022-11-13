@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { RootState, ThunkAction } from "../setup";
+import type { State, ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -24,12 +24,12 @@ import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import { thunks as projectConfigsThunks } from "./projectConfigs";
+import { thunks as projectConfigs } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
+import { getS3UrlAndRegion } from "../adapters/s3Client";
 import { interUsecasesThunks as secretExplorerThunks } from "./secretExplorer";
 
 import * as yaml from "yaml";
@@ -956,7 +956,7 @@ export const thunks = {
                 deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             const servicePassword = await dispatch(
-                projectConfigsThunks.getValue({ "key": "servicePassword" }),
+                projectConfigs.getValue({ "key": "servicePassword" }),
             );
 
             const project = projectSelectionSelectors.selectedProject(getState());
@@ -1081,7 +1081,7 @@ export const thunks = {
 };
 
 export const selectors = (() => {
-    const readyLauncher = (rootState: RootState): LauncherState.Ready | undefined => {
+    const readyLauncher = (rootState: State): LauncherState.Ready | undefined => {
         const state = rootState.launcher;
         switch (state.stateDescription) {
             case "ready":

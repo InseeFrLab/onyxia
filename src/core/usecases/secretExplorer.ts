@@ -11,12 +11,12 @@ import {
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
-import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
+import { getVaultApiLogger } from "../adapters/vaultSecretsManagerClient";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { RootState } from "../setup";
+import type { State } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -800,7 +800,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: RootState,
+        rootState: State,
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.secretExplorer;
 

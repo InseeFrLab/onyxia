@@ -3,10 +3,10 @@ import { mustacheRender } from "js/utils";
 import { restApiPaths } from "js/restApiPaths";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-//import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "ui/coreApi";
+//import { useDispatch, useIsBetaModeEnabled, useAppConstants } from "core";
 //import { useMustacheParams } from "js/hooks";
 import type { BuildOnyxiaValue } from "js/utils/form-field";
-import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { prAxiosInstance } from "core/adapters/officialOnyxiaApiClient";
 
 type Service = {
     category: "group" | "service";

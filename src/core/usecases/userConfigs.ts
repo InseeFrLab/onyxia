@@ -4,13 +4,10 @@ import type { ThunkAction } from "../setup";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
-import {
-    createObjectThatThrowsIfAccessedFactory,
-    isPropertyAccessedByReduxOrStorybook,
-} from "../tools/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import "minimal-polyfills/Object.fromEntries";
-import { thunks as userAuthenticationThunks } from "./userAuthentication";
-import type { RootState } from "../setup";
+import { thunks as userAuthentication } from "./userAuthentication";
+import type { State } from "../setup";
 import { join as pathJoin } from "path";
 
 /*
@@ -18,10 +15,6 @@ import { join as pathJoin } from "path";
  * Those value are persisted in the secret manager
  * (That is currently vault)
  */
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
-    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
-});
 
 export type UserConfigs = Id<
     Record<string, string | boolean | number | null>,
@@ -138,7 +131,7 @@ export const privateThunks = {
 
             assert(oidcClient.isUserLoggedIn);
 
-            const { username, email } = dispatch(userAuthenticationThunks.getUser());
+            const { username, email } = dispatch(userAuthentication.getUser());
 
             //Default values
             const userConfigs: UserConfigs = {
@@ -197,7 +190,7 @@ export const privateThunks = {
 
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */
-    const userConfigs = (rootState: RootState): UserConfigs => {
+    const userConfigs = (rootState: State): UserConfigs => {
         const userConfigs: any = {};
 
         const state = rootState.userConfigs;
