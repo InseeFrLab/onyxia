@@ -4,11 +4,11 @@ import { getStoryFactory, logCallbacks } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerItem },
+    "wrappedComponent": { ExplorerItem }
 });
 
 export default {
-    ...meta,
+    ...meta
 };
 
 export const defaultView = getStory({
@@ -17,5 +17,5 @@ export const defaultView = getStory({
     "isSelected": false,
     "isCircularProgressShown": false,
     "getIsValidBasename": () => true,
-    ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"]),
+    ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"])
 });

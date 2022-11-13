@@ -1,14 +1,14 @@
 import type {
     OnyxiaApiClient,
     DeploymentRegion,
-    LocalizedString,
+    LocalizedString
 } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
 import {
     onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath,
+    onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
@@ -21,7 +21,7 @@ import { getEnv } from "env";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import type {
     JSONSchemaObject,
-    JSONSchemaFormFieldDescription,
+    JSONSchemaFormFieldDescription
 } from "../ports/OnyxiaApiClient";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
@@ -49,7 +49,7 @@ export function createOfficialOnyxiaApiClient(params: {
         url,
         getOidcAccessToken,
         refGetCurrentlySelectedDeployRegionId,
-        refGetCurrentlySelectedProjectId,
+        refGetCurrentlySelectedProjectId
     } = params;
 
     const { axiosInstance } = (() => {
@@ -61,14 +61,14 @@ export function createOfficialOnyxiaApiClient(params: {
                     ...(config as any),
                     "headers": {
                         ...config.headers,
-                        "Authorization": `Bearer ${getOidcAccessToken()}`,
+                        "Authorization": `Bearer ${getOidcAccessToken()}`
                     },
                     "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json;charset=utf-8",
+                    "Accept": "application/json;charset=utf-8"
                 }),
                 error => {
                     throw error;
-                },
+                }
             );
         }
 
@@ -78,7 +78,7 @@ export function createOfficialOnyxiaApiClient(params: {
                 `Check the ${(() => {
                     const { ONYXIA_API_URL } = getEnv();
                     return symToStr({ ONYXIA_API_URL });
-                })()} environnement variable you provided with docker run.`,
+                })()} environnement variable you provided with docker run.`
             ].join(" ");
 
             axiosInstance.interceptors.response.use(
@@ -97,7 +97,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     alert(errorMessage);
 
                     throw error;
-                },
+                }
             );
         }
 
@@ -108,15 +108,14 @@ export function createOfficialOnyxiaApiClient(params: {
                 ...(refGetCurrentlySelectedDeployRegionId.current === undefined
                     ? {}
                     : {
-                          "ONYXIA-REGION":
-                              refGetCurrentlySelectedDeployRegionId.current(),
+                          "ONYXIA-REGION": refGetCurrentlySelectedDeployRegionId.current()
                       }),
                 ...(refGetCurrentlySelectedProjectId.current === undefined
                     ? {}
                     : {
-                          "ONYXIA-PROJECT": refGetCurrentlySelectedProjectId.current(),
-                      }),
-            },
+                          "ONYXIA-PROJECT": refGetCurrentlySelectedProjectId.current()
+                      })
+            }
         }));
 
         return { axiosInstance };
@@ -128,7 +127,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
     const onyxiaApiClient: OnyxiaApiClient = {
         "getIp": memoize(() =>
-            axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip),
+            axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip)
         ),
         "getAvailableRegions": memoize(() =>
             axiosInstance
@@ -232,8 +231,8 @@ export function createOfficialOnyxiaApiClient(params: {
                                         : {
                                               "url": S3.keycloakParams.URL,
                                               "realm": S3.keycloakParams.realm,
-                                              "clientId": S3.keycloakParams.clientId,
-                                          },
+                                              "clientId": S3.keycloakParams.clientId
+                                          }
                             };
 
                             return (() => {
@@ -244,7 +243,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                             "type": "minio",
                                             "url": S3.URL,
                                             "region": S3.region,
-                                            ...common,
+                                            ...common
                                         });
                                     case "amazon":
                                         _s3url = "https://s3.amazonaws.com";
@@ -253,7 +252,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                             "region": S3.region,
                                             "roleARN": S3.roleARN,
                                             "roleSessionName": S3.roleSessionName,
-                                            ...common,
+                                            ...common
                                         });
                                 }
                             })();
@@ -291,12 +290,12 @@ export function createOfficialOnyxiaApiClient(params: {
                                                     "url": vault.keycloakParams.URL,
                                                     "realm": vault.keycloakParams.realm,
                                                     "clientId":
-                                                        vault.keycloakParams.clientId,
-                                                },
+                                                        vault.keycloakParams.clientId
+                                                }
                                   };
-                        })(),
-                    })),
-                ),
+                        })()
+                    }))
+                )
         ),
         "getCatalogs": memoize(
             () =>
@@ -319,7 +318,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         }[];
                     }>("/public/catalog")
                     .then(({ data }) => data.catalogs),
-            { "promise": true },
+            { "promise": true }
         ),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
@@ -336,14 +335,14 @@ export function createOfficialOnyxiaApiClient(params: {
                     "getValuesSchemaJson": ({ onyxiaValues }) => {
                         //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                         const configCopy = JSON.parse(
-                            JSON.stringify(data.config),
+                            JSON.stringify(data.config)
                         ) as JSONSchemaObject;
 
                         function overrideDefaultsRec(
                             jsonSchemaObjectOrFormFieldDescription:
                                 | JSONSchemaObject
                                 | JSONSchemaFormFieldDescription,
-                            path: string,
+                            path: string
                         ) {
                             if (
                                 jsonSchemaObjectOrFormFieldDescription.type ===
@@ -354,7 +353,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                     jsonSchemaObjectOrFormFieldDescription;
                                 Object.entries(jsonSchemaObject.properties).forEach(
                                     ([key, value]) =>
-                                        overrideDefaultsRec(value, `${path}.${key}`),
+                                        overrideDefaultsRec(value, `${path}.${key}`)
                                 );
                                 return;
                             }
@@ -403,7 +402,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 ? Mustache.render(overwriteDefaultWith, onyxiaValues)
                                 : getValueAtPathInObject({
                                       "path": overwriteDefaultWith.split("."),
-                                      "obj": onyxiaValues,
+                                      "obj": onyxiaValues
                                   });
 
                             if (resolvedValue === undefined || resolvedValue === null) {
@@ -421,7 +420,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "array":
                                     assert(
                                         resolvedValue instanceof Array,
-                                        `${overwriteDefaultWith} is not an array (${path})`,
+                                        `${overwriteDefaultWith} is not an array (${path})`
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         resolvedValue;
@@ -429,7 +428,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "object":
                                     assert(
                                         resolvedValue instanceof Object,
-                                        `${overwriteDefaultWith} is not an object (${path})`,
+                                        `${overwriteDefaultWith} is not an object (${path})`
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         resolvedValue;
@@ -437,7 +436,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 case "boolean":
                                     assert(
                                         typeof resolvedValue !== "object",
-                                        `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`,
+                                        `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
                                     );
                                     jsonSchemaFormFieldDescription.default =
                                         !!resolvedValue;
@@ -458,7 +457,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                             assert(
                                                 interpretedValue !== undefined &&
                                                     !isNaN(interpretedValue),
-                                                `${overwriteDefaultWith} can't be interpreted as a number (${path})`,
+                                                `${overwriteDefaultWith} can't be interpreted as a number (${path})`
                                             );
 
                                             return interpretedValue;
@@ -471,7 +470,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                                 case "integer":
                                                     assert(
                                                         Number.isInteger(x),
-                                                        `${overwriteDefaultWith} (${x}) is not an integer (${path})`,
+                                                        `${overwriteDefaultWith} (${x}) is not an integer (${path})`
                                                     );
                                                     return x;
                                             }
@@ -484,7 +483,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         overrideDefaultsRec(configCopy, "");
 
                         return configCopy;
-                    },
+                    }
                 })),
         ...(() => {
             const getMyLab_App = (params: { serviceId: string }) =>
@@ -494,7 +493,7 @@ export function createOfficialOnyxiaApiClient(params: {
                 async ({ catalogId, packageName, options, isDryRun }) => {
                     const { serviceId } = getServiceId({
                         packageName,
-                        "randomK8sSubdomain": getRandomK8sSubdomain(),
+                        "randomK8sSubdomain": getRandomK8sSubdomain()
                     });
 
                     const { data: contract } = await axiosInstance.put<
@@ -504,7 +503,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         packageName,
                         "name": serviceId,
                         options,
-                        "dryRun": isDryRun,
+                        "dryRun": isDryRun
                     });
 
                     while (true) {
@@ -517,7 +516,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     }
 
                     return { contract };
-                },
+                }
             );
 
             return { launchPackage };
@@ -544,7 +543,7 @@ export function createOfficialOnyxiaApiClient(params: {
             const getMyLab_Services = memoize(
                 () =>
                     axiosInstance.get<Data>("/my-lab/services").then(({ data }) => data),
-                { "promise": true, "maxAge": 1000 },
+                { "promise": true, "maxAge": 1000 }
             );
 
             type PodsStatus = {
@@ -564,12 +563,12 @@ export function createOfficialOnyxiaApiClient(params: {
 
                     return {
                         "podRunningCount": containers.filter(({ ready }) => ready).length,
-                        "totalPodCount": containers.length,
+                        "totalPodCount": containers.length
                     };
                 } catch {
                     if (id !== undefined) {
                         console.warn(
-                            `Couldn't get the service status from tasks for ${id}`,
+                            `Couldn't get the service status from tasks for ${id}`
                         );
                     }
 
@@ -596,7 +595,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             return podsStatus === undefined
                                 ? false
                                 : getAreAllPodsRunning(podsStatus);
-                        })(),
+                        })()
                     }))
                     .map(
                         ({
@@ -605,7 +604,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             urls,
                             startedAt,
                             postInstallInstructions,
-                            areAllPodsRunning,
+                            areAllPodsRunning
                         }) => ({
                             id,
                             ...(() => {
@@ -616,7 +615,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                     packageName,
                                     "friendlyName":
                                         env[onyxiaFriendlyNameFormFieldPath] ??
-                                        packageName,
+                                        packageName
                                 };
                             })(),
                             postInstallInstructions,
@@ -643,12 +642,12 @@ export function createOfficialOnyxiaApiClient(params: {
                                               }
 
                                               const podsStatus = getPodsStatus({
-                                                  "tasks": app.tasks,
+                                                  "tasks": app.tasks
                                               });
 
                                               if (podsStatus === undefined) {
                                                   resolve({
-                                                      "isConfirmedJustStarted": false,
+                                                      "isConfirmedJustStarted": false
                                                   });
 
                                                   return;
@@ -661,9 +660,9 @@ export function createOfficialOnyxiaApiClient(params: {
 
                                               resolve({ "isConfirmedJustStarted": true });
                                           }, 3000);
-                                      }),
-                                  } as const)),
-                        }),
+                                      })
+                                  } as const))
+                        })
                     );
 
             return { getRunningServices };
@@ -671,7 +670,7 @@ export function createOfficialOnyxiaApiClient(params: {
         "stopService": ({ serviceId }) =>
             axiosInstance
                 .delete<{ success: boolean }>(`/my-lab/app`, {
-                    "params": { "path": serviceId },
+                    "params": { "path": serviceId }
                 })
                 .then(({ data }) => {
                     //TODO: Wrong assertion here once, investigate
@@ -691,14 +690,14 @@ export function createOfficialOnyxiaApiClient(params: {
                         }[];
                     }>("/user/info")
                     .then(({ data }) => data.projects),
-            { "promise": true },
+            { "promise": true }
         ),
         "createAwsBucket": ({
             awsRegion,
             accessKey,
             secretKey,
             sessionToken,
-            bucketName,
+            bucketName
         }) =>
             axiosInstance
                 .post<void>(
@@ -708,12 +707,12 @@ export function createOfficialOnyxiaApiClient(params: {
                         accessKey,
                         secretKey,
                         sessionToken,
-                        bucketName,
+                        bucketName
                     })
                         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                        .join("&"),
+                        .join("&")
                 )
-                .then(() => undefined),
+                .then(() => undefined)
     };
 
     return onyxiaApiClient;

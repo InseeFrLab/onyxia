@@ -17,29 +17,29 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
                             !id<readonly string[]>(accountTabIds).includes(raw)
                                 ? noMatch
                                 : (raw as AccountTabId),
-                        "stringify": value => value,
-                    }),
+                        "stringify": value => value
+                    })
                 )
-                .default(accountTabIds[0]),
+                .default(accountTabIds[0])
         },
-        ({ tabId }) => `/account/${tabId}`,
+        ({ tabId }) => `/account/${tabId}`
     ),
     "home": defineRoute(["/home", "/", "/accueil"]),
     "catalogExplorer": defineRoute(
         {
             "catalogId": param.path.optional.string,
-            "search": param.query.optional.string.default(""),
+            "search": param.query.optional.string.default("")
         },
-        ({ catalogId }) => `/catalog/${catalogId}`,
+        ({ catalogId }) => `/catalog/${catalogId}`
     ),
     "catalogLauncher": defineRoute(
         {
             "catalogId": param.path.string,
             "packageName": param.path.string,
             "autoLaunch": param.query.optional.boolean.default(false),
-            ...formFieldsDefineRouteParam,
+            ...formFieldsDefineRouteParam
         },
-        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`,
+        ({ catalogId, packageName }) => `/launcher/${catalogId}/${packageName}`
     ),
     ...(() => {
         const myServices = defineRoute("/my-service");
@@ -47,30 +47,30 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         return {
             "myService": myServices.extend(
                 { "serviceId": param.path.string },
-                ({ serviceId }) => `/${serviceId}`,
-            ),
+                ({ serviceId }) => `/${serviceId}`
+            )
         };
     })(),
     "myServices": defineRoute(
         {
             "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-            "autoLaunchServiceId": param.query.optional.string,
+            "autoLaunchServiceId": param.query.optional.string
         },
-        () => `/my-services`,
+        () => `/my-services`
     ),
     ...(() => {
         const buildExplorerRoute = (prefix: string) =>
             defineRoute(
                 {
                     "path": paramPathTrailingOptional,
-                    "openFile": param.query.optional.string,
+                    "openFile": param.query.optional.string
                 },
-                ({ path }) => `/${prefix}/${path}`,
+                ({ path }) => `/${prefix}/${path}`
             );
 
         return {
             "mySecrets": buildExplorerRoute("my-secrets"),
-            "myFiles": buildExplorerRoute("my-files"),
+            "myFiles": buildExplorerRoute("my-files")
         };
     })(),
     "terms": defineRoute("/terms"),
@@ -83,11 +83,11 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
             "myFilesLegacy": myBuckets.extend(
                 {
                     "bucketName": param.path.string,
-                    "fileOrDirectoryPath": param.path.trailing.optional.string,
+                    "fileOrDirectoryPath": param.path.trailing.optional.string
                 },
                 ({ bucketName, fileOrDirectoryPath }) =>
-                    `/${bucketName}/${fileOrDirectoryPath}`,
-            ),
+                    `/${bucketName}/${fileOrDirectoryPath}`
+            )
         };
-    })(),
+    })()
 });

@@ -7,7 +7,7 @@ import {
     Grid,
     Avatar,
     Fab,
-    Icon,
+    Icon
 } from "@mui/material";
 import "./training-card.scss";
 import { routes } from "ui/routes";
@@ -33,7 +33,7 @@ const TrainingCard = ({ training }: Props) => {
         license,
         version,
         hasPart,
-        deployment,
+        deployment
     } = training;
 
     if (abstract === undefined) {
@@ -60,7 +60,7 @@ const TrainingCard = ({ training }: Props) => {
                         root: "en-tete",
                         avatar: "avatar",
                         title: "titre",
-                        subheader: "sous-titre",
+                        subheader: "sous-titre"
                     }}
                 />
                 <CardContent>

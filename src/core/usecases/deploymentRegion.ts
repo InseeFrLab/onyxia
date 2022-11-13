@@ -17,8 +17,8 @@ export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,
-    },
+        "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload
+    }
 });
 
 export const thunks = {
@@ -36,7 +36,7 @@ export const thunks = {
             reload();
 
             assert(false);
-        },
+        }
 };
 
 export const privateThunks = {
@@ -66,10 +66,10 @@ export const privateThunks = {
                     availableDeploymentRegions,
                     "selectedDeploymentRegionId":
                         previouslySelectedRegionIdFromLocalStorage ??
-                        availableDeploymentRegions[0].id,
-                }),
+                        availableDeploymentRegions[0].id
+                })
             );
-        },
+        }
 };
 
 export const selectors = (() => {
@@ -78,7 +78,7 @@ export const selectors = (() => {
             rootState.deploymentRegion;
 
         const selectedDeploymentRegion = availableDeploymentRegions.find(
-            ({ id }) => id === selectedDeploymentRegionId,
+            ({ id }) => id === selectedDeploymentRegionId
         );
 
         assert(selectedDeploymentRegion !== undefined);

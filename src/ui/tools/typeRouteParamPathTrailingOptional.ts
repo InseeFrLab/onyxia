@@ -14,12 +14,12 @@ export const paramPathTrailingOptional = param.path.trailing.optional.ofType(
 
             assert(
                 value !== "/",
-                "'/' alone is like undefined this model only enable to work with pat of at least one",
+                "'/' alone is like undefined this model only enable to work with pat of at least one"
             );
 
             const out = value.replace(/^\/+/, "");
 
             return out;
-        },
-    }),
+        }
+    })
 );

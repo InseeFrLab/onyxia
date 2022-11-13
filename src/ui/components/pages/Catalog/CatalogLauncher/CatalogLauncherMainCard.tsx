@@ -51,7 +51,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onIsSharedValueChange,
         onRequestLaunch,
         onRequestCancel,
-        onRequestCopyLaunchUrl,
+        onRequestCopyLaunchUrl
     } = props;
 
     const { classes, cx } = useStyles();
@@ -59,7 +59,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     const { t } = useTranslation({ CatalogLauncherMainCard });
 
     const onBookmarkIconButtonClick = useConstCallback(() =>
-        onIsBookmarkedValueChange(!isBookmarked),
+        onIsBookmarkedValueChange(!isBookmarked)
     );
 
     const onValueBeingTypedChange = useConstCallback<
@@ -68,7 +68,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
     const onIsSharedCheckboxChange = useConstCallback(
         (event: React.ChangeEvent<HTMLInputElement>) =>
-            onIsSharedValueChange({ "isShared": event.target.checked }),
+            onIsSharedValueChange({ "isShared": event.target.checked })
     );
 
     return (
@@ -161,47 +161,47 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
         "boxShadow": theme.shadows[7],
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "aboveDivider": {
         "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
-        "display": "flex",
+        "display": "flex"
     },
     "cardTitle": {
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "belowDivider": {
         "padding": theme.spacing(4),
         "paddingLeft": theme.spacing(5),
         "paddingTop": theme.spacing(3),
-        "flex": 1,
+        "flex": 1
     },
     "logoAndTitleWrapper": {
         "display": "flex",
-        "marginBottom": theme.spacing(3),
+        "marginBottom": theme.spacing(3)
     },
     "title": {
         "display": "flex",
         "alignItems": "center",
-        "marginLeft": theme.spacing(3),
+        "marginLeft": theme.spacing(3)
     },
     "textFieldAndButtonWrapper": {
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "isSharedWrapper": {
-        "marginLeft": theme.spacing(7),
+        "marginLeft": theme.spacing(7)
     },
     "isSharedCheckbox": {
-        "padding": theme.spacing(2),
+        "padding": theme.spacing(2)
     },
     "isSharedFormHelperText": {
-        "marginLeft": 0,
+        "marginLeft": 0
     },
     "launchButton": {
-        "marginLeft": theme.spacing(2),
-    },
+        "marginLeft": theme.spacing(2)
+    }
 }));

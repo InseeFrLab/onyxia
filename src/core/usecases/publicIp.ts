@@ -14,14 +14,14 @@ export const { reducer, actions } = createSlice({
     "initialState": id<PublicIpState>(null),
     "reducers": {
         "fetched": (_, { payload }: PayloadAction<string>) => payload,
-        "publicIpMightHaveChanged": () => null,
-    },
+        "publicIpMightHaveChanged": () => null
+    }
 });
 
 //const isEvtOnlineRegisteredByStoreInst = new WeakMap<ThunksExtraArgument, true>();
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "isEvtOnlineRegisteredByStoreInst": false,
+    "isEvtOnlineRegisteredByStoreInst": false
 }));
 
 export const thunks = {
@@ -51,5 +51,5 @@ export const thunks = {
             dispatch(actions.fetched(publicIp));
 
             return { publicIp };
-        },
+        }
 };

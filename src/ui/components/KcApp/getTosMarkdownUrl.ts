@@ -9,7 +9,7 @@ export function getTosMarkdownUrl(kcLanguageTag: string): string | undefined {
 
     const { resolveLocalizedString } = createResolveLocalizedString({
         "currentLanguage": kcLanguageTag,
-        fallbackLanguage,
+        fallbackLanguage
     });
 
     return resolveLocalizedString(thermsOfServices);

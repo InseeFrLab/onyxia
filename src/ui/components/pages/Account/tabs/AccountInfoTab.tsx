@@ -24,17 +24,17 @@ export const AccountInfoTab = memo((props: Props) => {
     const {
         publicIp: publicIpFunctions,
         projectConfigs,
-        userAuthentication,
+        userAuthentication
     } = useCoreFunctions();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
-        copyToClipboard(textToCopy),
+        copyToClipboard(textToCopy)
     );
 
     const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
 
     const selectedProjectId = useCoreState(
-        state => state.projectSelection.selectedProjectId,
+        state => state.projectSelection.selectedProjectId
     );
 
     useEffect(() => {
@@ -43,12 +43,12 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
         n => n + 1,
-        0,
+        0
     );
 
     const servicePasswordAsync = useAsync(
         () => projectConfigs.getValue({ "key": "servicePassword" }),
-        [refreshServicePasswordTrigger, selectedProjectId],
+        [refreshServicePasswordTrigger, selectedProjectId]
     );
 
     const onRequestServicePasswordRenewal = useConstCallback(async () => {
@@ -136,10 +136,10 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
     "divider": {
-        ...theme.spacing.topBottom("margin", 4),
+        ...theme.spacing.topBottom("margin", 4)
     },
     "link": {
         "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
+        "display": "inline-block"
+    }
 }));

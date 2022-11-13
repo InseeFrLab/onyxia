@@ -6,7 +6,7 @@ import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MySecretsEditorRow },
+    "wrappedComponent": { MySecretsEditorRow }
 });
 
 export default meta;
@@ -17,7 +17,7 @@ const baseParams: Parameters<typeof getStory>[0] = {
     "strValue": "hello world",
     "getResolvedValue": ({ strValue }) => ({
         "isResolvedSuccessfully": true,
-        "resolvedValue": `$(${strValue})`,
+        "resolvedValue": `$(${strValue})`
     }),
     "getIsValidAndAvailableKey": ({ key }) => {
         const r = getIsValidKey({ key });
@@ -28,7 +28,7 @@ const baseParams: Parameters<typeof getStory>[0] = {
     },
     "evtAction": new Evt(),
     ...logCallbacks(["onEdit", "onDelete", "onStartEdit"]),
-    "isDarker": true,
+    "isDarker": true
 };
 
 export const ViewDefault = getStory(baseParams);
@@ -38,7 +38,7 @@ export const { ViewEditing } = (() => {
 
     const ViewEditing = getStory({
         ...baseParams,
-        evtAction,
+        evtAction
     });
 
     Evt.asPostable(evtAction).post("ENTER EDITING STATE");
@@ -48,10 +48,10 @@ export const { ViewEditing } = (() => {
 
 export const ViewLongValue = getStory({
     ...baseParams,
-    "strValue": [...Array(30)].map(() => Math.random().toString(36)[2]).join(""),
+    "strValue": [...Array(30)].map(() => Math.random().toString(36)[2]).join("")
 });
 
 export const ViewLongKey = getStory({
     ...baseParams,
-    "keyOfSecret": "thisIsAVeryLongKeyToSeeHowItShouldBeDisplayed",
+    "keyOfSecret": "thisIsAVeryLongKeyToSeeHowItShouldBeDisplayed"
 });

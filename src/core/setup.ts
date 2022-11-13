@@ -2,7 +2,7 @@
 import type { Action, ThunkAction as ReduxGenericThunkAction } from "@reduxjs/toolkit";
 import {
     createCoreFromUsecases,
-    createObjectThatThrowsIfAccessed,
+    createObjectThatThrowsIfAccessed
 } from "redux-clean-architecture";
 import type { GenericCreateEvt, GenericThunks } from "redux-clean-architecture";
 import { createLocalStorageSecretManagerClient } from "./adapters/localStorageSecretsManagerClient";
@@ -18,7 +18,7 @@ import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
 import {
     createKeycloakOidcClient,
-    creatOrFallbackOidcClient,
+    creatOrFallbackOidcClient
 } from "./adapters/keycloakOidcClient";
 import { createPhonyOidcClient } from "./adapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
@@ -70,7 +70,7 @@ export async function createCore(params: CoreParams) {
             case "keycloak": {
                 const {
                     keycloakParams: { clientId, realm, url, jwtClaims },
-                    transformUrlBeforeRedirectToLogin,
+                    transformUrlBeforeRedirectToLogin
                 } = userAuthenticationParams;
 
                 const oidcClient = await createKeycloakOidcClient({
@@ -78,7 +78,7 @@ export async function createCore(params: CoreParams) {
                     realm,
                     url,
                     transformUrlBeforeRedirectToLogin,
-                    evtUserActivity,
+                    evtUserActivity
                 });
 
                 return { oidcClient, jwtClaims };
@@ -91,13 +91,13 @@ export async function createCore(params: CoreParams) {
                     "familyName": "b",
                     "firstName": "c",
                     "username": "d",
-                    "groups": "e",
+                    "groups": "e"
                 };
 
                 const oidcClient = createPhonyOidcClient({
                     isUserInitiallyLoggedIn,
                     jwtClaims,
-                    user,
+                    user
                 });
 
                 return { jwtClaims, oidcClient };
@@ -110,11 +110,11 @@ export async function createCore(params: CoreParams) {
 
     const userApiClient = !oidcClient.isUserLoggedIn
         ? createObjectThatThrowsIfAccessed<UserApiClient>({
-              "debugMessage": "User is not logged we should't access the useApiClient",
+              "debugMessage": "User is not logged we should't access the useApiClient"
           })
         : createJwtUserApiClient({
               jwtClaims,
-              "getOidcAccessToken": () => oidcClient.accessToken,
+              "getOidcAccessToken": () => oidcClient.accessToken
           });
 
     let refGetCurrentlySelectedDeployRegionId:
@@ -137,12 +137,12 @@ export async function createCore(params: CoreParams) {
                       : () => oidcClient.accessToken,
                   "refGetCurrentlySelectedDeployRegionId":
                       (refGetCurrentlySelectedDeployRegionId = {
-                          "current": undefined,
+                          "current": undefined
                       }),
                   "refGetCurrentlySelectedProjectId": (refGetCurrentlySelectedProjectId =
                       {
-                          "current": undefined,
-                      }),
+                          "current": undefined
+                      })
               });
 
     const thunksExtraArgument = {
@@ -151,16 +151,16 @@ export async function createCore(params: CoreParams) {
         onyxiaApiClient,
         userApiClient,
         "secretsManagerClient": createObjectThatThrowsIfAccessed<SecretsManagerClient>({
-            "debugMessage": "secretsManagerClient is not yet initialized",
+            "debugMessage": "secretsManagerClient is not yet initialized"
         }),
         "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
-            "debugMessage": "s3 client is not yet initialized",
-        }),
+            "debugMessage": "s3 client is not yet initialized"
+        })
     };
 
     const core = createCoreFromUsecases({
         thunksExtraArgument,
-        usecases,
+        usecases
     });
 
     refStore.current = (core as any).store;
@@ -185,7 +185,7 @@ export async function createCore(params: CoreParams) {
                 ? undefined
                 : {
                       "keycloakParams": params.userAuthenticationParams.keycloakParams,
-                      "oidcClient": oidcClient,
+                      "oidcClient": oidcClient
                   };
 
         thunksExtraArgument.s3Client =
@@ -195,10 +195,10 @@ export async function createCore(params: CoreParams) {
                       "oidcClient": await creatOrFallbackOidcClient({
                           "keycloakParams": s3Params.keycloakParams,
                           "fallback": fallbackOidc,
-                          evtUserActivity,
+                          evtUserActivity
                       }),
                       ...getCreateS3ClientParams({ s3Params }),
-                      "createAwsBucket": onyxiaApiClient.createAwsBucket,
+                      "createAwsBucket": onyxiaApiClient.createAwsBucket
                   });
 
         thunksExtraArgument.secretsManagerClient =
@@ -211,8 +211,8 @@ export async function createCore(params: CoreParams) {
                       "oidcClient": await creatOrFallbackOidcClient({
                           "keycloakParams": vaultParams.keycloakParams,
                           "fallback": fallbackOidc,
-                          evtUserActivity,
-                      }),
+                          evtUserActivity
+                      })
                   });
 
         await core.dispatch(usecases.userConfigs.privateThunks.initialize());

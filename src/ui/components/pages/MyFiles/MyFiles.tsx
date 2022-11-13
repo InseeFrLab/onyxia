@@ -35,7 +35,7 @@ export function MyFiles(props: Props) {
     const { t } = useTranslation({ MyFiles });
 
     const currentWorkingDirectoryView = useCoreState(
-        selectors.fileExplorer.currentWorkingDirectoryView,
+        selectors.fileExplorer.currentWorkingDirectoryView
     ).currentWorkingDirectoryView;
 
     const { fileExplorer } = useCoreFunctions();
@@ -45,7 +45,7 @@ export function MyFiles(props: Props) {
             Param0<typeof fileExplorer["notifyThatUserIsWatching"]>["onNavigate"]
         >(({ directoryPath, doRestoreOpenedFile: _doRestoreOpenedFile }) =>
             routes[route.name]({
-                "path": directoryPath,
+                "path": directoryPath
                 /* TODO: Restore when we have a fileViewer usecase
                  ...(!doRestoreOpenedFile
                      ? {}
@@ -54,13 +54,13 @@ export function MyFiles(props: Props) {
                              route.params.openFile ?? secretEditorState?.basename,
                      }),
                 */
-            }).replace(),
+            }).replace()
         );
 
         useEffect(() => {
             fileExplorer.notifyThatUserIsWatching({
                 "directNavigationDirectoryPath": route.params.path,
-                onNavigate,
+                onNavigate
             });
 
             return () => fileExplorer.notifyThatUserIsNoLongerWatching();
@@ -90,13 +90,13 @@ export function MyFiles(props: Props) {
         }
 
         fileExplorer.navigate({
-            "directoryPath": route.params.path,
+            "directoryPath": route.params.path
         });
     }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({ "path": directoryPath }).push(),
+            routes[route.name]({ "path": directoryPath }).push()
     );
 
     const onRefresh = useConstCallback(() => fileExplorer.refresh());
@@ -105,20 +105,20 @@ export function MyFiles(props: Props) {
         ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
             fileExplorer.create({
                 "createWhat": "directory",
-                basename,
-            }),
+                basename
+            })
     );
 
     const onDeleteItem = useConstCallback(
         ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
             fileExplorer.delete({
                 "deleteWhat": kind,
-                basename,
-            }),
+                basename
+            })
     );
 
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/")),
+        copyToClipboard(path.split("/").slice(2).join("/"))
     );
 
     const s3ApiLogs = fileExplorer.getS3ClientLogs();
@@ -143,18 +143,18 @@ export function MyFiles(props: Props) {
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpContent = useMemo(
@@ -171,7 +171,7 @@ export function MyFiles(props: Props) {
                 </Link>
             </>
         ),
-        [t],
+        [t]
     );
 
     const onOpenFile = useConstCallback<
@@ -184,9 +184,9 @@ export function MyFiles(props: Props) {
                 fileExplorer.create({
                     "createWhat": "file",
                     "basename": file.name,
-                    "blob": file,
-                }),
-            ),
+                    "blob": file
+                })
+            )
     );
 
     const { uploadProgress } = useCoreState(selectors.fileExplorer.uploadProgress);
@@ -230,7 +230,7 @@ export function MyFiles(props: Props) {
                 scrollableDivRef={scrollableDivRef}
                 {...{
                     "isFileOpen": false as const,
-                    onOpenFile,
+                    onOpenFile
                 }}
             />
         </div>
@@ -251,11 +251,11 @@ const useStyles = makeStyles({ "name": { MyFiles } })({
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "explorer": {
         "overflow": "hidden",
         "flex": 1,
-        "width": "100%",
-    },
+        "width": "100%"
+    }
 });

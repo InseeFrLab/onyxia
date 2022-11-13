@@ -1,6 +1,6 @@
 import {
     CatalogExplorerCards,
-    Props,
+    Props
 } from "ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { sectionName } from "../sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
@@ -11,7 +11,7 @@ import { id } from "tsafe/id";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCards },
-    "defaultContainerWidth": 1550,
+    "defaultContainerWidth": 1550
 });
 
 export default meta;
@@ -34,9 +34,9 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
         `
                 : ""),
         "packageHomeUrl": "https://example.com",
-        "catalogId": "helm-charts-datascience",
+        "catalogId": "helm-charts-datascience"
         /* spell-checker: enable */
-    }),
+    })
 );
 
 export const ViewDefault = getStory({
@@ -49,18 +49,18 @@ export const ViewDefault = getStory({
     "catalogs": [
         {
             "id": "helm-charts-datascience",
-            "name": "Helm charts datascience",
+            "name": "Helm charts datascience"
         },
         {
             "id": "helm-charts-trainings",
-            "name": "Helm charts trainings",
-        },
+            "name": "Helm charts trainings"
+        }
     ],
     /* spell-checker: enable */
     ...logCallbacks([
         "onSearchChange",
         "onRequestLaunch",
         "onRequestRevealPackagesNotShown",
-        "onSelectedCatalogIdChange",
-    ]),
+        "onSelectedCatalogIdChange"
+    ])
 });

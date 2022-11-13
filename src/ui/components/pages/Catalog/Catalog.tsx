@@ -66,9 +66,9 @@ export function Catalog(props: Props) {
                         return 100;
                 }
             })(),
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [scrollableDivRef, route.name],
+        [scrollableDivRef, route.name]
     );
 
     const helpCollapseParams = useMemo(
@@ -82,16 +82,16 @@ export function Catalog(props: Props) {
                         return 50;
                 }
             })(),
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [scrollableDivRef, route.name],
+        [scrollableDivRef, route.name]
     );
 
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
                 classes={{
-                    "title": css({ "paddingBottom": 3 }),
+                    "title": css({ "paddingBottom": 3 })
                 }}
                 mainIcon="catalog"
                 title={t("header text1")}
@@ -137,12 +137,12 @@ const useStyles = makeStyles({ "name": { Catalog } })({
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "bodyWrapper": {
         "flex": 1,
-        "overflow": "hidden",
-    },
+        "overflow": "hidden"
+    }
 });
 
 const PageHeaderHelpContent = memo(() => {
@@ -153,7 +153,7 @@ const PageHeaderHelpContent = memo(() => {
             return {
                 "type": "package",
                 "sources": launcher.sources,
-                "packageName": launcher.packageName,
+                "packageName": launcher.packageName
             } as const;
         }
 
@@ -167,7 +167,7 @@ const PageHeaderHelpContent = memo(() => {
 
         return {
             "type": "catalog",
-            selectedCatalog,
+            selectedCatalog
         } as const;
     });
 
@@ -194,7 +194,7 @@ const PageHeaderHelpContent = memo(() => {
                         underline="hover"
                     >
                         {t("contribute to the catalog", {
-                            "catalogName": resolveLocalizedString(selectedCatalog.name),
+                            "catalogName": resolveLocalizedString(selectedCatalog.name)
                         })}
                     </Link>
                 </>
@@ -207,7 +207,7 @@ const PageHeaderHelpContent = memo(() => {
             return (
                 <>
                     {t("contribute to the package", {
-                        "packageName": packageName,
+                        "packageName": packageName
                     })}
                     {elementsToSentence({
                         "elements": sources.map(source => (
@@ -215,7 +215,7 @@ const PageHeaderHelpContent = memo(() => {
                                 {t("here")}
                             </Link>
                         )),
-                        "language": lang,
+                        "language": lang
                     })}
                 </>
             );

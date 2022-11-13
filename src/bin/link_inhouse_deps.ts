@@ -59,7 +59,7 @@ const inHouseModuleNames = (() => {
               "tsafe",
               "cra-envs",
               "redux-clean-architecture",
-              "i18nifty",
+              "i18nifty"
           ];
 })();
 
@@ -71,8 +71,8 @@ const commonThirdPartyDeps = (() => {
         "react",
         "@types/react",
         ...inHouseModulePeerDepNames.filter(
-            moduleName => !inHouseModuleNames.includes(moduleName),
-        ),
+            moduleName => !inHouseModuleNames.includes(moduleName)
+        )
     ];
 
     return [
@@ -83,13 +83,13 @@ const commonThirdPartyDeps = (() => {
                         pathJoin(
                             webAppProjectRootDirPath,
                             "node_modules",
-                            namespaceModuleName,
-                        ),
+                            namespaceModuleName
+                        )
                     )
-                    .map(submoduleName => `${namespaceModuleName}/${submoduleName}`),
+                    .map(submoduleName => `${namespaceModuleName}/${submoduleName}`)
             )
             .reduce((prev, curr) => [...prev, ...curr], []),
-        ...standaloneModuleNames,
+        ...standaloneModuleNames
     ];
 })();
 
@@ -103,7 +103,7 @@ const execYarnLink = (params: { targetModuleName?: string; cwd: string }) => {
     const cmd = [
         "yarn",
         "link",
-        ...(targetModuleName !== undefined ? [targetModuleName] : []),
+        ...(targetModuleName !== undefined ? [targetModuleName] : [])
     ].join(" ");
 
     console.log(`$ cd ${pathRelative(webAppProjectRootDirPath, cwd) || "."} && ${cmd}`);
@@ -112,8 +112,8 @@ const execYarnLink = (params: { targetModuleName?: string; cwd: string }) => {
         cwd,
         "env": {
             ...process.env,
-            "HOME": yarnHomeDirPath,
-        },
+            "HOME": yarnHomeDirPath
+        }
     });
 };
 
@@ -133,8 +133,8 @@ commonThirdPartyDeps.forEach(commonThirdPartyDep => {
             "node_modules",
             ...(commonThirdPartyDep.startsWith("@")
                 ? commonThirdPartyDep.split("/")
-                : [commonThirdPartyDep]),
-        ],
+                : [commonThirdPartyDep])
+        ]
     );
 
     execYarnLink({ "cwd": localInstallPath });
@@ -142,8 +142,8 @@ commonThirdPartyDeps.forEach(commonThirdPartyDep => {
     inHouseModuleNames.forEach(inHouseModuleName =>
         execYarnLink({
             "targetModuleName": commonThirdPartyDep,
-            "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleName),
-        }),
+            "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleName)
+        })
     );
 });
 
@@ -153,7 +153,7 @@ inHouseModuleNames.forEach(inHouseModuleName => {
     const inHouseModuleRootPath = pathJoin(
         webAppProjectRootDirPath,
         "..",
-        inHouseModuleName,
+        inHouseModuleName
     );
 
     fs.writeFileSync(
@@ -164,27 +164,27 @@ inHouseModuleNames.forEach(inHouseModuleName => {
                     const packageJsonParsed = JSON.parse(
                         fs
                             .readFileSync(pathJoin(inHouseModuleRootPath, "package.json"))
-                            .toString("utf8"),
+                            .toString("utf8")
                     );
 
                     return {
                         ...packageJsonParsed,
                         "main": packageJsonParsed["main"].replace(/^dist\//, ""),
-                        "types": packageJsonParsed["types"].replace(/^dist\//, ""),
+                        "types": packageJsonParsed["types"].replace(/^dist\//, "")
                     };
                 })(),
                 null,
-                2,
+                2
             ),
-            "utf8",
-        ),
+            "utf8"
+        )
     );
 });
 
 inHouseModuleNames.forEach(inHouseModuleName =>
     execYarnLink({
-        "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleName, "dist"),
-    }),
+        "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleName, "dist")
+    })
 );
 
 console.log("=== Linking in house dependencies to one another ===");
@@ -192,14 +192,14 @@ console.log("=== Linking in house dependencies to one another ===");
 inHouseModuleNames.forEach(inHouseModuleNameOuter =>
     inHouseModuleNames
         .filter(
-            inHouseModuleNameInner => inHouseModuleNameInner !== inHouseModuleNameOuter,
+            inHouseModuleNameInner => inHouseModuleNameInner !== inHouseModuleNameOuter
         )
         .forEach(inHouseModuleNameInner =>
             execYarnLink({
                 "targetModuleName": inHouseModuleNameInner,
-                "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleNameOuter),
-            }),
-        ),
+                "cwd": pathJoin(webAppProjectRootDirPath, "..", inHouseModuleNameOuter)
+            })
+        )
 );
 
 console.log("=== Linking in house dependencies in web app ===");
@@ -207,6 +207,6 @@ console.log("=== Linking in house dependencies in web app ===");
 inHouseModuleNames.forEach(inHouseModuleName => {
     execYarnLink({
         "targetModuleName": inHouseModuleName,
-        "cwd": webAppProjectRootDirPath,
+        "cwd": webAppProjectRootDirPath
     });
 });

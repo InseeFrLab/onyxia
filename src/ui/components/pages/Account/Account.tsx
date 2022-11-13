@@ -38,14 +38,14 @@ export function Account(props: Props) {
         () =>
             accountTabIds
                 .filter(accountTabId =>
-                    accountTabId !== "storage" ? true : s3Credentials.isAvailable(),
+                    accountTabId !== "storage" ? true : s3Credentials.isAvailable()
                 )
                 .map(id => ({ id, "title": t(id) })),
-        [t],
+        [t]
     );
 
     const onRequestChangeActiveTab = useConstCallback((tabId: AccountTabId) =>
-        routes.account({ tabId }).push(),
+        routes.account({ tabId }).push()
     );
 
     const { classes, cx } = useStyles();
@@ -86,16 +86,18 @@ export function Account(props: Props) {
 
 export const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"
->()({ Account });
+>()({
+    Account
+});
 
 const useStyles = makeStyles({ "name": { Account } })(theme => ({
     "root": {
         "height": "100%",
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "tabs": {
         "borderRadius": 8,
         "overflow": "hidden",
-        "boxShadow": theme.shadows[1],
-    },
+        "boxShadow": theme.shadows[1]
+    }
 }));

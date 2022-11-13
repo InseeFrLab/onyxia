@@ -7,21 +7,21 @@ import { getBucketPolicy } from "./minio-tools";
 export const S3Actions = {
     GetObject: "s3:GetObject",
     GetBucketLocation: "s3:GetBucketLocation",
-    ListBucket: "s3:ListBucket",
+    ListBucket: "s3:ListBucket"
 };
 
 export const S3Principal = {
-    any: "*",
+    any: "*"
 };
 
 export const S3Version = "2012-10-17";
 
 export const S3Effect = {
-    Allow: "Allow",
+    Allow: "Allow"
 };
 
 export const S3Resource = {
-    prefix: "arn:aws:s3:::",
+    prefix: "arn:aws:s3:::"
 };
 
 const toArray = (e: any) => (e ? (Array.isArray(e) ? e : [e]) : []);
@@ -35,7 +35,7 @@ const createGetObjectPolicy =
         Effect,
         Action: toArray(Action),
         Principal: { AWS: toArray(Principal) },
-        Resource: toArray(resources),
+        Resource: toArray(resources)
     });
 
 const isStatementPoliciy =
@@ -48,21 +48,21 @@ const isStatementPoliciy =
 export const publicGetObjectPolicy = createGetObjectPolicy({
     Effect: S3Effect.Allow,
     Principal: S3Principal.any,
-    Action: S3Actions.GetObject,
+    Action: S3Actions.GetObject
 });
 
 export const statementPublicBucket = (bucketName: any) => ({
     Effect: S3Effect.Allow,
     Principal: { AWS: S3Principal.any },
     Action: [S3Actions.GetBucketLocation, S3Actions.GetObject, S3Actions.ListBucket],
-    Resource: `${S3Resource}${bucketName}/*`,
+    Resource: `${S3Resource}${bucketName}/*`
 });
 
 export const publicListBucketPolicy = ({ resource, files }: any) => {
     const policy = createGetObjectPolicy({
         Effect: S3Effect.Allow,
         Principal: S3Principal.any,
-        Action: S3Actions.ListBucket,
+        Action: S3Actions.ListBucket
     })(resource);
     (policy as any).Condition = { StringEquals: { "s3:prefix": files } };
     return policy;
@@ -71,7 +71,7 @@ export const publicListBucketPolicy = ({ resource, files }: any) => {
 export const isPublicGetObjectPolicy = isStatementPoliciy({
     Effect: S3Effect.Allow,
     Action: S3Actions.GetObject,
-    Principal: S3Principal.any,
+    Principal: S3Principal.any
 });
 
 export const converToS3path = (path: string) => `${S3Resource.prefix}${path}`;
@@ -84,12 +84,12 @@ export const createPolicyWithDirectory =
         if (policy) {
             return {
                 ...policies,
-                Statement: [{ ...policy, Resource: [...policy.Resource, minioPath] }],
+                Statement: [{ ...policy, Resource: [...policy.Resource, minioPath] }]
             };
         }
         return {
             Version: S3Version,
-            Statement: [{ ...publicGetObjectPolicy(minioPath) }],
+            Statement: [{ ...publicGetObjectPolicy(minioPath) }]
         };
     };
 

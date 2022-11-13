@@ -17,27 +17,27 @@ export function useGetBuildOnyxiaValue() {
         return {
             "s3": {
                 ...mustacheParams.s3,
-                "AWS_EXPIRATION": "",
+                "AWS_EXPIRATION": ""
             },
             "publicIp": mustacheParams.user.ip,
             "parsedJwt": {
                 "email": mustacheParams.user.email,
                 "familyName": mustacheParams.user.name,
                 "firstName": mustacheParams.user.name,
-                "username": mustacheParams.user.idep,
+                "username": mustacheParams.user.idep
             },
             "secretExplorerUserHomePath": "...",
             userConfigs,
             "vaultClientConfig": {
                 "baseUri": mustacheParams.vault.VAULT_ADDR,
-                "engine": mustacheParams.vault.VAULT_MOUNT,
+                "engine": mustacheParams.vault.VAULT_MOUNT
             },
             "oidcTokens": {
                 "accessToken": "",
                 "idToken": "",
-                "refreshToken": "",
+                "refreshToken": ""
             },
-            "vaultToken": mustacheParams.vault.VAULT_TOKEN,
+            "vaultToken": mustacheParams.vault.VAULT_TOKEN
         };
     }
 

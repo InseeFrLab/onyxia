@@ -42,7 +42,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         isCircularProgressShown,
         isSelected,
         getIsValidBasename,
-        onMouseEvent,
+        onMouseEvent
     } = props;
 
     const { t } = useTranslation({ ExplorerItem });
@@ -53,12 +53,12 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target }),
+        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
     });
 
     //TODO: We need a custom hook for this.
     const [evtIsCircularProgressShown] = useState(() =>
-        Evt.create(isCircularProgressShown),
+        Evt.create(isCircularProgressShown)
     );
     useEffect(() => {
         evtIsCircularProgressShown.state = isCircularProgressShown;
@@ -67,7 +67,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     const getIsValidValue = useConstCallback((value: string) =>
         getIsValidBasename({ "basename": value })
             ? ({ "isValidValue": true } as const)
-            : ({ "isValidValue": false, "message": "" } as const),
+            : ({ "isValidValue": false, "message": "" } as const)
     );
 
     const [evtInputAction] = useState(() => Evt.create<TextFieldProps["evtAction"]>());
@@ -85,7 +85,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
             smartTrim({
                 "text": basename,
                 "maxLength": 21,
-                "minCharAtTheEnd": 5,
+                "minCharAtTheEnd": 5
             })
                 //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
@@ -99,14 +99,14 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                                   "_",
                                   <span key={i} className={classes.hiddenSpan}>
                                       {" "}
-                                  </span>,
+                                  </span>
                               ]),
-                        curr,
+                        curr
                     ],
-                    [],
+                    []
                 ),
 
-        [basename, classes.hiddenSpan],
+        [basename, classes.hiddenSpan]
     );
 
     return (
@@ -161,21 +161,21 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 export const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
 
 const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>({
-    "name": { ExplorerItem },
+    "name": { ExplorerItem }
 })((theme, { isSelected, basename }) => ({
     "root": {
         "textAlign": "center",
         "cursor": "pointer",
-        "width": theme.spacing(9),
+        "width": theme.spacing(9)
     },
     "frame": {
         "borderRadius": "5px",
         "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
         "display": "inline-block",
-        "padding": theme.muiTheme.spacing(2, 2),
+        "padding": theme.muiTheme.spacing(2, 2)
     },
     "explorerIcon": {
-        "height": 60,
+        "height": 60
     },
     "text": {
         //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
@@ -185,12 +185,12 @@ const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>
 
             return color.alpha((color as any).valpha * (isSelected ? 1.2 : 0.8)).string();
         })(),
-        "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all",
+        "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
     },
     "hiddenSpan": {
         "width": 0,
         "overflow": "hidden",
-        "display": "inline-block",
+        "display": "inline-block"
     },
     "input": {
         //NOTE: So that the text does not move when editing start.
@@ -199,7 +199,7 @@ const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>
 
         "paddingTop": 0,
         "& .MuiInput-input": {
-            "textAlign": "center",
-        },
-    },
+            "textAlign": "center"
+        }
+    }
 }));

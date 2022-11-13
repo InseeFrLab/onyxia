@@ -52,7 +52,7 @@ const escapeDots = (str: string) => str.replace(/\./g, "\\.");
 const mapOngletToFields = (nom: string) => (onglet: Onglet) => ({
     nom: nom,
     description: onglet.description || "Cet onglet ne possède pas de description.",
-    fields: getFields(escapeDots(nom))(onglet.properties),
+    fields: getFields(escapeDots(nom))(onglet.properties)
 });
 
 const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
@@ -75,8 +75,8 @@ const getFields = (nom: string) => (ongletProperties: Onglet["properties"]) => {
                         ...entry,
                         type: options && options.length > 0 ? "select" : type,
                         nom: title || key,
-                        options: options,
-                    },
+                        options: options
+                    }
                 });
                 break;
             case "object":
@@ -102,7 +102,7 @@ const arrayToObject =
         fields: {
             path: string;
             field: { "js-control": string; type: string };
-        }[],
+        }[]
     ) => {
         const obj: Record<string, any> = {};
         const fromParams = getFromQueryParams(queryParams);
@@ -111,7 +111,7 @@ const arrayToObject =
                 (obj[path] =
                     fromParams(path)(field) ??
                     (mustacheRender(field as any, buildOnyxiaValue) ||
-                        getDefaultSingleOption(field))),
+                        getDefaultSingleOption(field)))
         );
         return obj;
     };
@@ -145,7 +145,7 @@ const getFromQueryParams =
  * de champs comme attendu par l'api.
  */
 export const getValuesObject = (
-    fieldsValues: Record<string, string | boolean | number>,
+    fieldsValues: Record<string, string | boolean | number>
 ) =>
     Object.entries(fieldsValues)
         .map(([key, value]) => ({
@@ -158,40 +158,40 @@ export const getValuesObject = (
                         prev[prev.length - 1]?.endsWith("\\")
                             ? ((prev[prev.length - 1] += `.${curr}`), prev)
                             : [...prev, curr],
-                    [],
+                    []
                 )
                 .map(s => s.replace(/\\\./g, ".")),
-            value,
+            value
         }))
         .reduce(
             (acc, curr) => ({ ...acc, ...getPathValue(curr)(acc) }),
-            id<Record<string, string | boolean | number>>({}),
+            id<Record<string, string | boolean | number>>({})
         );
 
 const getPathValue =
     ({
         path: [first, ...rest],
-        value,
+        value
     }: {
         path: string[];
         value: string | boolean | number;
     }) =>
     (
-        other = id<Record<string, string | boolean | number>>({}),
+        other = id<Record<string, string | boolean | number>>({})
     ): Record<string, string | boolean | number> => {
         if (rest.length === 0) {
             return { [first]: value, ...other };
         }
         return {
             ...other,
-            [first]: getPathValue({ path: rest, value })(other[first] as any) as any,
+            [first]: getPathValue({ path: rest, value })(other[first] as any) as any
         };
     };
 
 export const getOptions = (
     buildMustacheParams: BuildOnyxiaValue,
     service: Service,
-    queryParams: Record<string, string>,
+    queryParams: Record<string, string>
 ) => {
     const onglets = (service && service.config && service.config.properties) || {};
     const oF = getOnglets(onglets);
@@ -199,21 +199,21 @@ export const getOptions = (
     const fV = fields.reduce(
         (acc, curr) => ({
             ...acc,
-            ...arrayToObject(queryParams)(buildMustacheParams)(curr as any),
+            ...arrayToObject(queryParams)(buildMustacheParams)(curr as any)
         }),
-        {},
+        {}
     );
     const iFV = fields.reduce(
         (acc, curr) => ({
             ...acc,
-            ...arrayToObject({})(buildMustacheParams)(curr as any),
+            ...arrayToObject({})(buildMustacheParams)(curr as any)
         }),
-        {},
+        {}
     );
     return { fV, iFV, oF };
 };
 
 export const getService = async (idCatalogue: string, idService: string) =>
     (await prAxiosInstance)(`${restApiPaths.catalogue}/${idCatalogue}/${idService}`).then(
-        ({ data }) => data,
+        ({ data }) => data
     );

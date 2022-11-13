@@ -21,7 +21,7 @@ const Toolbar = ({
     userPassword,
     handleDeleteAll,
     handlePauseAll,
-    handleRefresh,
+    handleRefresh
 }: Props) => {
     const [dialog, setDialog] = useState(false);
     const wantDelete = () => {
@@ -61,7 +61,7 @@ const Actions = ({
     userPassword,
     handleDeleteAll,
     handlePauseAll,
-    handleRefresh,
+    handleRefresh
 }: any) => (
     <>
         {handleRefresh && (
@@ -131,7 +131,7 @@ const Actions = ({
                             pauseOnHover: true,
                             draggable: false,
                             progress: undefined,
-                            type: "info",
+                            type: "info"
                         });
                     }}
                 >

@@ -16,7 +16,7 @@ import { kcContext } from "ui/components/KcApp/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
-    updateSearchBarUrl,
+    updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
 import { assert } from "tsafe/assert";
 import { isStorybook } from "ui/tools/isStorybook";
@@ -40,15 +40,15 @@ const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
                   assert(
                       typeGuard<PaletteId>(
                           valueStr,
-                          id<readonly string[]>(paletteIds).includes(valueStr),
+                          id<readonly string[]>(paletteIds).includes(valueStr)
                       ),
                       `${valueStr} is not a valid palette. Available are: ${paletteIds.join(
-                          ", ",
-                      )}`,
+                          ", "
+                      )}`
                   );
 
                   return valueStr;
-              })(),
+              })()
 });
 
 export { THEME_ID };
@@ -57,7 +57,7 @@ const { HEADER_ORGANIZATION, injectHEADER_ORGANIZATIONInSearchParams } =
     getTransferableEnv({
         "name": "HEADER_ORGANIZATION" as const,
         "getSerializedValueFromEnv": () => getEnv().HEADER_ORGANIZATION,
-        "validateAndParseOrGetDefault": (valueStr): string => valueStr,
+        "validateAndParseOrGetDefault": (valueStr): string => valueStr
     });
 
 export { HEADER_ORGANIZATION };
@@ -66,7 +66,7 @@ const { HEADER_USECASE_DESCRIPTION, injectHEADER_USECASE_DESCRIPTIONInSearchPara
     getTransferableEnv({
         "name": "HEADER_USECASE_DESCRIPTION" as const,
         "getSerializedValueFromEnv": () => getEnv().HEADER_USECASE_DESCRIPTION,
-        "validateAndParseOrGetDefault": (valueStr): string => valueStr,
+        "validateAndParseOrGetDefault": (valueStr): string => valueStr
     });
 
 export { HEADER_USECASE_DESCRIPTION };
@@ -76,7 +76,7 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
         "name": "THERMS_OF_SERVICES" as const,
         "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
         "validateAndParseOrGetDefault": (
-            valueStr,
+            valueStr
         ): Partial<Record<Language, string>> | string | undefined => {
             if (valueStr === "") {
                 return undefined;
@@ -105,16 +105,16 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
                     assert(
                         id<readonly string[]>(languages).includes(lang),
                         `${lang} is not a supported languages, supported languages are: ${languages.join(
-                            ", ",
-                        )}`,
-                    ),
+                            ", "
+                        )}`
+                    )
                 );
 
                 languages.forEach(lang =>
                     assert(
                         typeof tosUrlByLng[lang] === "string",
-                        `therms of service malformed (${lang})`,
-                    ),
+                        `therms of service malformed (${lang})`
+                    )
                 );
             }
 
@@ -123,8 +123,8 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
             }
 
             return tosUrlByLng;
-        },
-    },
+        }
+    }
 );
 
 export { THERMS_OF_SERVICES };
@@ -136,7 +136,7 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
         injectTHEME_IDInSearchParams,
         injectHEADER_ORGANIZATIONInSearchParams,
         injectHEADER_USECASE_DESCRIPTIONInSearchParams,
-        injectTHERMS_OF_SERVICESInSearchParams,
+        injectTHERMS_OF_SERVICESInSearchParams
     ]) {
         newUrl = inject(newUrl);
     }
@@ -158,7 +158,7 @@ function getTransferableEnv<T, Name extends string>(params: {
         scope: {
             const result = retrieveParamFromUrl({
                 "url": window.location.href,
-                name,
+                name
             });
 
             if (!result.wasPresent) {
@@ -204,6 +204,6 @@ function getTransferableEnv<T, Name extends string>(params: {
     return {
         [name]: validateAndParseOrGetDefault(serializedValue),
         [`inject${capitalize(name)}InSearchParams`]: (url: string) =>
-            addParamToUrl({ url, name, "value": serializedValue }).newUrl,
+            addParamToUrl({ url, name, "value": serializedValue }).newUrl
     } as any;
 }

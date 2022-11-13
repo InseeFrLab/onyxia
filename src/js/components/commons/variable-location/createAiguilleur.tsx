@@ -6,13 +6,13 @@ type PropsBase = { location: string };
 export function createAiguilleur<
     LeafProps extends PropsBase,
     NodeProps extends PropsBase,
-    RootProps extends PropsBase,
+    RootProps extends PropsBase
 >({
     Leaf,
     Node,
     Root = () => null,
     isLeaf = () => Promise.resolve(false),
-    isRoot = () => Promise.resolve(false),
+    isRoot = () => Promise.resolve(false)
 }: {
     Leaf: React.FC<LeafProps>;
     Node: React.FC<NodeProps>;
@@ -52,7 +52,7 @@ export function createAiguilleur<
 
         const p: LeafProps & NodeProps & RootProps = {
             ...props,
-            location,
+            location
         } as any;
 
         return !init ? null : (

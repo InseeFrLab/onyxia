@@ -41,25 +41,25 @@ export const { reducer, actions } = createSlice({
     "initialState": createObjectThatThrowsIfAccessed<RestorablePackageConfigsState>({
         "debugMessage": [
             "The restorablePackageConfigState should have been",
-            "initialized during the store initialization",
-        ].join(" "),
+            "initialized during the store initialization"
+        ].join(" ")
     }),
     "reducers": {
         "initializationCompleted": (
             _,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 restorablePackageConfigs: RestorablePackageConfig[];
-            }>,
+            }>
         ) => {
             const { restorablePackageConfigs } = payload;
             return {
                 restorablePackageConfigs,
                 "packageIcons": {
                     "areFetched": false,
-                    "isFetching": false,
-                },
+                    "isFetching": false
+                }
             };
         },
         "fetchIconStarted": state => {
@@ -72,16 +72,16 @@ export const { reducer, actions } = createSlice({
 
             state.packageIcons = {
                 "areFetched": true,
-                iconsUrl,
+                iconsUrl
             };
         },
         "restorablePackageConfigSaved": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 restorablePackageConfig: RestorablePackageConfig;
-            }>,
+            }>
         ) => {
             const { restorablePackageConfig } = payload;
 
@@ -90,10 +90,10 @@ export const { reducer, actions } = createSlice({
         "restorablePackageConfigDeleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 restorablePackageConfig: RestorablePackageConfig;
-            }>,
+            }>
         ) => {
             const { restorablePackageConfig } = payload;
 
@@ -101,8 +101,8 @@ export const { reducer, actions } = createSlice({
                 restorablePackageConfig_i =>
                     areSameRestorablePackageConfig(
                         restorablePackageConfig_i,
-                        restorablePackageConfig,
-                    ),
+                        restorablePackageConfig
+                    )
             );
 
             if (index <= -1) {
@@ -110,8 +110,8 @@ export const { reducer, actions } = createSlice({
             }
 
             state.restorablePackageConfigs.splice(index, 1);
-        },
-    },
+        }
+    }
 });
 
 export const privateThunks = {
@@ -123,18 +123,18 @@ export const privateThunks = {
                         getState().userConfigs.bookmarkedServiceConfigurationStr;
 
                     return value === null ? [] : JSON.parse(value);
-                })(),
-            }),
+                })()
+            })
         ),
     "syncWithUserConfig": (): ThunkAction => async (dispatch, getState) =>
         dispatch(
             userConfigsThunks.changeValue({
                 "key": "bookmarkedServiceConfigurationStr",
                 "value": JSON.stringify(
-                    getState().restorablePackageConfig.restorablePackageConfigs,
-                ),
-            }),
-        ),
+                    getState().restorablePackageConfig.restorablePackageConfigs
+                )
+            })
+        )
 };
 
 export const thunks = {
@@ -170,7 +170,7 @@ export const thunks = {
                     });
 
                     iconsUrl[catalogId] = urlByPackageName;
-                },
+                }
             );
 
             dispatch(actions.iconsFetched({ iconsUrl }));
@@ -189,7 +189,7 @@ export const thunks = {
                 isRestorablePackageConfigInStore({
                     "restorablePackageConfigs":
                         getState().restorablePackageConfig.restorablePackageConfigs,
-                    restorablePackageConfig,
+                    restorablePackageConfig
                 })
             ) {
                 return;
@@ -197,7 +197,7 @@ export const thunks = {
 
             const getFriendlyName = (formFieldsValue: FormFieldValue[]) => {
                 const friendlyName = formFieldsValue.find(({ path }) =>
-                    same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
+                    same(path, onyxiaFriendlyNameFormFieldPath.split("."))
                 )?.value;
                 assert(friendlyName === undefined || typeof friendlyName === "string");
                 return friendlyName;
@@ -207,14 +207,14 @@ export const thunks = {
                 .restorablePackageConfig.restorablePackageConfigs.filter(
                     ({ catalogId, packageName }) =>
                         restorablePackageConfig.catalogId === catalogId &&
-                        restorablePackageConfig.packageName === packageName,
+                        restorablePackageConfig.packageName === packageName
                 )
                 .find(
                     ({ formFieldsValueDifferentFromDefault }) =>
                         getFriendlyName(formFieldsValueDifferentFromDefault) ===
                         getFriendlyName(
-                            restorablePackageConfig.formFieldsValueDifferentFromDefault,
-                        ),
+                            restorablePackageConfig.formFieldsValueDifferentFromDefault
+                        )
                 );
 
             if (restorablePackageConfigWithSameFriendlyName !== undefined) {
@@ -222,8 +222,8 @@ export const thunks = {
                     !(await getDoOverwriteConfiguration({
                         "friendlyName":
                             getFriendlyName(
-                                restorablePackageConfig.formFieldsValueDifferentFromDefault,
-                            ) ?? restorablePackageConfig.packageName,
+                                restorablePackageConfig.formFieldsValueDifferentFromDefault
+                            ) ?? restorablePackageConfig.packageName
                     }))
                 ) {
                     return;
@@ -232,15 +232,15 @@ export const thunks = {
                 dispatch(
                     actions.restorablePackageConfigDeleted({
                         "restorablePackageConfig":
-                            restorablePackageConfigWithSameFriendlyName,
-                    }),
+                            restorablePackageConfigWithSameFriendlyName
+                    })
                 );
             }
 
             dispatch(
                 actions.restorablePackageConfigSaved({
-                    restorablePackageConfig,
-                }),
+                    restorablePackageConfig
+                })
             );
 
             await dispatch(privateThunks.syncWithUserConfig());
@@ -252,8 +252,8 @@ export const thunks = {
 
             dispatch(
                 actions.restorablePackageConfigDeleted({
-                    restorablePackageConfig,
-                }),
+                    restorablePackageConfig
+                })
             );
 
             await dispatch(privateThunks.syncWithUserConfig());
@@ -265,7 +265,7 @@ export const thunks = {
             restorablePackageConfig: RestorablePackageConfig;
         }): ThunkAction<boolean> =>
         () =>
-            isRestorablePackageConfigInStore(params),
+            isRestorablePackageConfigInStore(params)
 };
 
 function isRestorablePackageConfigInStore(params: {
@@ -275,22 +275,19 @@ function isRestorablePackageConfigInStore(params: {
     const { restorablePackageConfig, restorablePackageConfigs } = params;
 
     return !!restorablePackageConfigs.find(restorablePackageConfig_i =>
-        areSameRestorablePackageConfig(
-            restorablePackageConfig_i,
-            restorablePackageConfig,
-        ),
+        areSameRestorablePackageConfig(restorablePackageConfig_i, restorablePackageConfig)
     );
 }
 
 function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
-    restorablePackageConfiguration2: RestorablePackageConfig,
+    restorablePackageConfiguration2: RestorablePackageConfig
 ): boolean {
     return [restorablePackageConfiguration1, restorablePackageConfiguration2]
         .map(({ catalogId, packageName, formFieldsValueDifferentFromDefault }) => [
             catalogId,
             packageName,
-            formFieldsValueToObject(formFieldsValueDifferentFromDefault),
+            formFieldsValueToObject(formFieldsValueDifferentFromDefault)
         ])
         .reduce(...allEquals(same));
 }
@@ -312,17 +309,14 @@ export const selectors = (() => {
                         const friendlyName =
                             restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
                                 ({ path }) =>
-                                    same(
-                                        path,
-                                        onyxiaFriendlyNameFormFieldPath.split("."),
-                                    ),
+                                    same(path, onyxiaFriendlyNameFormFieldPath.split("."))
                             )?.value ?? packageName;
 
                         assert(typeof friendlyName === "string");
 
                         return friendlyName;
                     })(),
-                    restorablePackageConfig,
+                    restorablePackageConfig
                 };
             })
             .reverse();

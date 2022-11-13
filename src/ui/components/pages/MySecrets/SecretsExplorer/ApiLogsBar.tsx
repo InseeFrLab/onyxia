@@ -26,15 +26,15 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
                 apiLogs.evt.attach(ctx, () =>
                     //translations.history will have changed.
                     //console.log(JSON.stringify(translations.history[translations.history.length -1], null, 2));
-                    forceUpdate(),
+                    forceUpdate()
                 ),
-            [apiLogs.evt],
+            [apiLogs.evt]
         );
     }
 
     const {
         domRect: { height: headerHeight },
-        ref: headerRef,
+        ref: headerRef
     } = useDomRect();
 
     const panelRef = useStateRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
 
         element.scroll({
             "top": element.scrollHeight,
-            "behavior": "smooth",
+            "behavior": "smooth"
         });
     }, [isExpended, apiLogs.evt.postCount, panelRef.current]);
 
@@ -114,7 +114,7 @@ const useStyles = makeStyles<{
     headerHeight: number;
     isExpended: boolean;
 }>({
-    "name": { ApiLogsBar },
+    "name": { ApiLogsBar }
 })((theme, { isExpended, maxHeight, headerHeight }) => {
     const borderRadius = `0 0 0 30px`;
 
@@ -127,29 +127,29 @@ const useStyles = makeStyles<{
             "& svg": {
                 "color": textColor,
                 "transition": theme.muiTheme.transitions.create(["transform"], {
-                    "duration": theme.muiTheme.transitions.duration.short,
+                    "duration": theme.muiTheme.transitions.duration.short
                 }),
-                "transform": isExpended ? "rotate(-180deg)" : "rotate(0)",
+                "transform": isExpended ? "rotate(-180deg)" : "rotate(0)"
             },
             "&:hover": {
                 "& svg": {
                     "color": theme.isDarkModeEnabled
                         ? theme.colors.palette.light.light
-                        : theme.colors.palette.dark.greyVariant2,
-                },
+                        : theme.colors.palette.dark.greyVariant2
+                }
             },
             "& .MuiTouchRipple-root": {
-                "color": textColor,
-            },
+                "color": textColor
+            }
         },
         "circularLoading": {
-            "color": theme.colors.palette.light.main,
+            "color": theme.colors.palette.light.main
         },
         "collapsedPanel": {
             "maxHeight": 0,
             "overflow": "hidden",
             "transform": "scaleY(0)",
-            "transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
         },
         "expandedPanel": {
             "maxHeight": maxHeight - headerHeight,
@@ -158,12 +158,12 @@ const useStyles = makeStyles<{
             "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
             "& pre": {
                 "whiteSpace": "pre-wrap",
-                "wordBreak": "break-all",
+                "wordBreak": "break-all"
             },
             "transform": "scaleY(1)",
             "transformOrigin": "top",
             borderRadius,
-            "paddingTop": theme.spacing(2),
+            "paddingTop": theme.spacing(2)
         },
         "header": {
             "backgroundColor": theme.isDarkModeEnabled
@@ -174,8 +174,8 @@ const useStyles = makeStyles<{
             "display": "flex",
             "alignItems": "center",
             "& .dollarSign": {
-                "color": textColor,
-            },
+                "color": textColor
+            }
         },
         "lastTranslatedCmd": {
             "flex": 1,
@@ -183,28 +183,28 @@ const useStyles = makeStyles<{
             "overflow": "hidden",
             "textOverflow": "ellipsis",
             "fontFamily": "monospace",
-            "color": textColor,
+            "color": textColor
         },
         "dollarContainer": {
             "width": 70,
             "textAlign": "end",
-            "paddingRight": 10,
+            "paddingRight": 10
         },
         "entryRoot": {
-            "display": "flex",
+            "display": "flex"
         },
         "preWrapper": {
             "flex": 1,
             "& pre:nth-of-type(1)": {
                 "color": theme.colors.palette.limeGreen.main,
-                "marginTop": 2,
+                "marginTop": 2
             },
             "& pre:nth-of-type(2)": {
-                "color": theme.colors.palette.light.light,
-            },
+                "color": theme.colors.palette.light.light
+            }
         },
         "dollarIcon": {
-            "color": theme.colors.palette.limeGreen.main,
-        },
+            "color": theme.colors.palette.limeGreen.main
+        }
     };
 });

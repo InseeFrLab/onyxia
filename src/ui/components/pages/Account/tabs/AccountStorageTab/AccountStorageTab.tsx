@@ -33,7 +33,7 @@ const technologies = [
     "shell environnement variables",
     "MC client",
     "s3cmd",
-    "rclone",
+    "rclone"
 ] as const;
 
 assert<Equals<typeof technologies[number], Technology>>();
@@ -60,7 +60,7 @@ export const AccountStorageTab = memo((props: Props) => {
     const { expirationTime } = useCoreState(selectors.s3Credentials.expirationTime);
     const { initScript } = useCoreState(selectors.s3Credentials.initScript);
     const { selectedTechnology } = useCoreState(
-        selectors.s3Credentials.selectedTechnology,
+        selectors.s3Credentials.selectedTechnology
     );
     const { isRefreshing } = useCoreState(selectors.s3Credentials.isRefreshing);
 
@@ -68,26 +68,26 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
         s3Credentials.changeTechnology({
-            "technology": e.target.value as Technology,
-        }),
+            "technology": e.target.value as Technology
+        })
     );
 
     const onFieldRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
-        copyToClipboard(textToCopy),
+        copyToClipboard(textToCopy)
     );
 
     const onGetAppIconButtonClick = useConstCallback(() => {
         assert(initScript !== undefined);
         saveAs(
             new Blob([initScript.scriptCode], {
-                "type": "text/plain;charset=utf-8",
+                "type": "text/plain;charset=utf-8"
             }),
-            initScript.fileBasename,
+            initScript.fileBasename
         );
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        s3Credentials.refresh({ "doForceRenewToken": true }),
+        s3Credentials.refresh({ "doForceRenewToken": true })
     );
 
     if (!isReady) {
@@ -126,19 +126,19 @@ export const AccountStorageTab = memo((props: Props) => {
                     "AWS_SECRET_ACCESS_KEY",
                     "AWS_SESSION_TOKEN",
                     "AWS_S3_ENDPOINT",
-                    "AWS_DEFAULT_REGION",
+                    "AWS_DEFAULT_REGION"
                 ] as const
             ).map(key => (
                 <AccountField
                     type="text"
                     key={key}
                     title={capitalize(
-                        key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase(),
+                        key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase()
                     )}
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
-                        "text": credentials[key],
+                        "text": credentials[key]
                     })}
                     helperText={
                         <>
@@ -197,13 +197,13 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = makeStyles({ "name": { AccountStorageTab } })(theme => ({
     "divider": {
-        ...theme.spacing.topBottom("margin", 4),
+        ...theme.spacing.topBottom("margin", 4)
     },
     "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
+        "color": theme.colors.useCases.typography.textFocus
     },
     "codeBlockHeaderWrapper": {
         "display": "flex",
-        "marginBottom": theme.spacing(3),
-    },
+        "marginBottom": theme.spacing(3)
+    }
 }));

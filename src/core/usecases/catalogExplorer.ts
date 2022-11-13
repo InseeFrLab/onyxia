@@ -35,8 +35,8 @@ export const { reducer, actions } = createSlice({
     "initialState": id<CatalogExplorerState>(
         id<CatalogExplorerState.NotFetched>({
             "stateDescription": "not fetched",
-            "isFetching": false,
-        }),
+            "isFetching": false
+        })
     ),
     "reducers": {
         "catalogsFetching": state => {
@@ -46,11 +46,11 @@ export const { reducer, actions } = createSlice({
         "catalogsFetched": (
             _state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 selectedCatalogId: string;
                 catalogs: Catalog[];
-            }>,
+            }>
         ) => {
             const { selectedCatalogId, catalogs } = payload;
             const highlightedCharts =
@@ -64,14 +64,14 @@ export const { reducer, actions } = createSlice({
                     getAreConditionMetForOnlyShowingHighlightedPackaged({
                         "highlightedChartsLength": highlightedCharts.length,
                         catalogs,
-                        selectedCatalogId,
+                        selectedCatalogId
                     }),
-                "search": "",
+                "search": ""
             });
         },
         "changeSelectedCatalogue": (
             state,
-            { payload }: PayloadAction<{ selectedCatalogId: string }>,
+            { payload }: PayloadAction<{ selectedCatalogId: string }>
         ) => {
             const { selectedCatalogId } = payload;
 
@@ -91,7 +91,7 @@ export const { reducer, actions } = createSlice({
                 getAreConditionMetForOnlyShowingHighlightedPackaged({
                     "highlightedChartsLength": highlightedCharts.length,
                     "catalogs": catalogs,
-                    selectedCatalogId,
+                    selectedCatalogId
                 });
         },
         "setSearch": (state, { payload }: PayloadAction<{ search: string }>) => {
@@ -112,15 +112,15 @@ export const { reducer, actions } = createSlice({
                 getAreConditionMetForOnlyShowingHighlightedPackaged({
                     "highlightedChartsLength": highlightedCharts.length,
                     "catalogs": catalogs,
-                    "selectedCatalogId": selectedCatalogId,
+                    "selectedCatalogId": selectedCatalogId
                 });
         },
         "setDoShowOnlyHighlightedToFalse": state => {
             assert(state.stateDescription === "ready");
 
             state.doShowOnlyHighlighted = false;
-        },
-    },
+        }
+    }
 });
 
 export const thunks = {
@@ -136,7 +136,7 @@ export const thunks = {
                       onAutoSelectCatalogId: (params: {
                           selectedCatalogId: string;
                       }) => void;
-                  },
+                  }
         ): ThunkAction =>
         async (...args) => {
             const [dispatch, , { onyxiaApiClient }] = args;
@@ -152,8 +152,8 @@ export const thunks = {
             dispatch(
                 actions.catalogsFetched({
                     catalogs,
-                    selectedCatalogId,
-                }),
+                    selectedCatalogId
+                })
             );
 
             if (!params.isCatalogIdInUrl) {
@@ -189,13 +189,13 @@ export const thunks = {
             }
 
             dispatch(actions.changeSelectedCatalogue({ "selectedCatalogId": catalogId }));
-        },
+        }
 };
 
 const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
     return {
-        "waitForSearchDebounce": waitForDebounce,
+        "waitForSearchDebounce": waitForDebounce
     };
 });
 
@@ -205,7 +205,7 @@ export const selectors = (() => {
 
         function getPackageWeight(packageName: string) {
             const indexHiglightedCharts = highlightedCharts.findIndex(
-                v => v.toLowerCase() === packageName.toLowerCase(),
+                v => v.toLowerCase() === packageName.toLowerCase()
             );
             return indexHiglightedCharts !== -1
                 ? highlightedCharts.length - indexHiglightedCharts
@@ -225,7 +225,7 @@ export const selectors = (() => {
         const {
             doShowOnlyHighlighted,
             search,
-            "~internal": { selectedCatalogId },
+            "~internal": { selectedCatalogId }
         } = state;
 
         const catalogs = state["~internal"].catalogs;
@@ -241,13 +241,13 @@ export const selectors = (() => {
                     "packageHomeUrl": pack.home,
                     "packageName": pack.name,
                     "packageIconUrl": pack.icon,
-                    "catalogId": catalog.id,
-                })),
+                    "catalogId": catalog.id
+                }))
             )
             .reduce((accumulator, packages) => accumulator.concat(packages), [])
             .sort(
                 (a, b) =>
-                    getPackageWeight(b.packageName) - getPackageWeight(a.packageName),
+                    getPackageWeight(b.packageName) - getPackageWeight(a.packageName)
             );
 
         const packages = catalog
@@ -255,17 +255,17 @@ export const selectors = (() => {
                 0,
                 doShowOnlyHighlighted && search === ""
                     ? highlightedCharts.length
-                    : undefined,
+                    : undefined
             )
             .filter(({ packageName, packageDescription }) =>
                 [packageName, packageDescription]
                     .map(str => str.toLowerCase().includes(search.toLowerCase()))
-                    .includes(true),
+                    .includes(true)
             );
 
         return {
             packages,
-            "notShownCount": search !== "" ? 0 : catalog.length - packages.length,
+            "notShownCount": search !== "" ? 0 : catalog.length - packages.length
         };
     };
 
@@ -279,7 +279,7 @@ export const selectors = (() => {
         const { selectedCatalogId } = state["~internal"];
 
         const catalog = state["~internal"].catalogs.find(
-            ({ id }) => id === selectedCatalogId,
+            ({ id }) => id === selectedCatalogId
         );
 
         assert(catalog !== undefined);
@@ -290,7 +290,7 @@ export const selectors = (() => {
     };
 
     const productionCatalogs = (
-        rootState: State,
+        rootState: State
     ): ReturnType<typeof filterProductionCatalogs> | undefined => {
         const state = rootState.catalogExplorer;
 
@@ -318,11 +318,11 @@ function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
 }
 
 function filterProductionCatalogs(
-    catalogs: Catalog[],
+    catalogs: Catalog[]
 ): (Omit<Catalog, "catalog" | "status"> & { status: "PROD" })[] {
     return catalogs
         .map(({ status, ...rest }) =>
-            status === "PROD" ? { ...rest, status } : undefined,
+            status === "PROD" ? { ...rest, status } : undefined
         )
         .filter(exclude(undefined))
         .map(({ catalog: _, ...rest }) => rest);

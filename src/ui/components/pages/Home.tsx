@@ -49,7 +49,7 @@ export function Home(props: Props) {
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
     const onLoginClick = useConstCallback(() =>
-        userAuthentication.login({ "doesCurrentHrefRequiresAuth": false }),
+        userAuthentication.login({ "doesCurrentHrefRequiresAuth": false })
     );
 
     return (
@@ -60,7 +60,7 @@ export function Home(props: Props) {
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
-                                  "who": userAuthentication.getUser().firstName ?? "",
+                                  "who": userAuthentication.getUser().firstName ?? ""
                               })
                             : t("title")}
                     </Text>
@@ -127,7 +127,7 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
         "overflow": "auto",
         "backgroundColor": "transparent",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "hero": {
         "flex": 1,
@@ -138,33 +138,33 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
         })`,
         "backgroundPosition": "171% 38%, 100% 0%",
         "backgroundRepeat": "no-repeat, no-repeat",
-        "backgroundSize": "76%, 80%",
+        "backgroundSize": "76%, 80%"
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),
         "maxWidth": "42%",
         "& > *": {
-            "marginBottom": theme.spacing(4),
-        },
+            "marginBottom": theme.spacing(4)
+        }
     },
     "heroSubtitle": {
-        "marginBottom": theme.spacing(5),
+        "marginBottom": theme.spacing(5)
     },
     "cardsWrapper": {
         "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
         "display": "flex",
         ...theme.spacing.topBottom("padding", 4),
         "& > *": {
-            "flex": 1,
-        },
+            "flex": 1
+        }
     },
     "middleCard": {
-        ...theme.spacing.rightLeft("margin", 3),
+        ...theme.spacing.rightLeft("margin", 3)
     },
     "svg": {
         "fill": theme.colors.useCases.typography.textFocus,
-        "width": 122,
-    },
+        "width": 122
+    }
 }));
 
 const { Card } = (() => {
@@ -192,8 +192,8 @@ const { Card } = (() => {
                         "fill",
                         g.classList.contains("colorPrimary")
                             ? theme.colors.useCases.typography.textFocus
-                            : theme.colors.useCases.typography.textPrimary,
-                    ),
+                            : theme.colors.useCases.typography.textPrimary
+                    )
                 );
         }, [theme, iconRef.current]);
 
@@ -204,11 +204,9 @@ const { Card } = (() => {
                         "display": "flex",
                         "flexDirection": "column",
                         "padding": theme.spacing(4),
-                        "backgroundColor": theme.isDarkModeEnabled
-                            ? "#383E50"
-                            : undefined,
+                        "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
                     }),
-                    className,
+                    className
                 )}
             >
                 <div className={css({ "display": "flex" })}>
@@ -218,7 +216,7 @@ const { Card } = (() => {
                             "flex": 1,
                             "display": "flex",
                             "alignItems": "center",
-                            ...theme.spacing.rightLeft("padding", 4),
+                            ...theme.spacing.rightLeft("padding", 4)
                         })}
                     >
                         <Text typo="section heading">{title}</Text>
@@ -229,7 +227,7 @@ const { Card } = (() => {
                         "flex": 1,
                         "display": "flex",
                         "flexDirection": "column",
-                        "paddingTop": theme.spacing(3),
+                        "paddingTop": theme.spacing(3)
                     })}
                 >
                     <div className={css({ "flex": 1 })}>
@@ -238,7 +236,7 @@ const { Card } = (() => {
                     <div
                         className={css({
                             "marginTop": theme.spacing(5),
-                            "display": "flex",
+                            "display": "flex"
                         })}
                     >
                         <div style={{ "flex": 1 }} />

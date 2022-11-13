@@ -13,7 +13,7 @@ import { useTranslation } from "ui/i18n";
 import { ApiLogsBar } from "./ApiLogsBar";
 import {
     generateUniqDefaultName,
-    buildNameFactory,
+    buildNameFactory
 } from "ui/tools/generateUniqDefaultName";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -103,7 +103,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         scrollableDivRef,
         pathMinDepth,
         onFileSelected,
-        filesBeingUploaded,
+        filesBeingUploaded
     } = props;
 
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
@@ -113,20 +113,20 @@ export const Explorer = memo((props: ExplorerProps) => {
                     props.files,
                     props.directories,
                     props.directoriesBeingCreated,
-                    props.filesBeingCreated,
+                    props.filesBeingCreated
                 ] as const
             ).map(
                 doShowHidden
                     ? id
-                    : arr => arr.filter(basename => !basename.startsWith(".")),
+                    : arr => arr.filter(basename => !basename.startsWith("."))
             ),
         [
             props.files,
             props.directories,
             props.directoriesBeingCreated,
             props.filesBeingCreated,
-            doShowHidden,
-        ],
+            doShowHidden
+        ]
     );
 
     const { t } = useTranslation({ Explorer });
@@ -137,7 +137,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const onSelectedItemKindValueChange = useConstCallback(
         ({ selectedItemKind }: Param0<ItemsProps["onSelectedItemKindValueChange"]>) =>
-            setSelectedItemKind(selectedItemKind),
+            setSelectedItemKind(selectedItemKind)
     );
 
     const onBreadcrumpNavigate = useConstCallback(
@@ -145,17 +145,17 @@ export const Explorer = memo((props: ExplorerProps) => {
             onNavigate({
                 "directoryPath": pathJoin(
                     directoryPath,
-                    ...new Array(upCount - (props.isFileOpen ? 1 : 0)).fill(".."),
-                ),
+                    ...new Array(upCount - (props.isFileOpen ? 1 : 0)).fill("..")
+                )
             });
-        },
+        }
     );
 
     const onItemsNavigate = useConstCallback(
         ({ basename }: Param0<ItemsProps["onNavigate"]>) =>
             onNavigate({
-                "directoryPath": pathJoin(directoryPath, basename),
-            }),
+                "directoryPath": pathJoin(directoryPath, basename)
+            })
     );
 
     const onItemsOpenFile = useConstCallback(
@@ -163,22 +163,22 @@ export const Explorer = memo((props: ExplorerProps) => {
             assert(!props.isFileOpen);
 
             props.onOpenFile({ basename });
-        },
+        }
     );
 
     const evtBreadcrumpAction = useConst(() =>
-        Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>(),
+        Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>()
     );
 
     const itemsOnCopyPath = useConstCallback(
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
             evtBreadcrumpAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
-                basename,
+                basename
             });
 
             onCopyPath({ "path": pathJoin(directoryPath, basename) });
-        },
+        }
     );
 
     const onGoBack = useConstCallback(() => {
@@ -190,7 +190,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     });
 
     const { evtItemsAction } = useConst(() => ({
-        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>(),
+        "evtItemsAction": Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
     }));
 
     const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
@@ -210,7 +210,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                     evtBreadcrumpAction.post({ "action": "DISPLAY COPY FEEDBACK" });
 
                     onCopyPath({
-                        "path": pathJoin(directoryPath, props.openFileBasename),
+                        "path": pathJoin(directoryPath, props.openFileBasename)
                     });
                 } else {
                     evtItemsAction.post("COPY SELECTED ITEM PATH");
@@ -219,7 +219,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "create directory":
                 setCreateS3DirectoryDialogState({
                     directories,
-                    "resolveBasename": basename => onCreateDirectory({ basename }),
+                    "resolveBasename": basename => onCreateDirectory({ basename })
                 });
                 break;
 
@@ -234,10 +234,10 @@ export const Explorer = memo((props: ExplorerProps) => {
             evtAction.attach(
                 action => action === "TRIGGER COPY PATH",
                 ctx,
-                () => buttonBarCallback("copy path"),
+                () => buttonBarCallback("copy path")
             ),
 
-        [evtAction],
+        [evtAction]
     );
 
     const { rootRef, buttonBarRef, apiLogBarTop, apiLogBarMaxHeight } =
@@ -246,7 +246,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const { classes, cx, css, theme } = useStyles({
         ...props,
         apiLogBarTop,
-        "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null,
+        "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null
     });
 
     const { formattedDate } = (function useClosure() {
@@ -278,7 +278,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         useState<CreateS3DirectoryDialogProps["state"]>(undefined);
 
     const onCreateS3DirectoryDialogClose = useConstCallback(() =>
-        setCreateS3DirectoryDialogState(undefined),
+        setCreateS3DirectoryDialogState(undefined)
     );
 
     const onDeletionDialogClickFactory = useCallbackFactory(
@@ -293,9 +293,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                         case "delete":
                             return true;
                     }
-                })(),
+                })()
             );
-        },
+        }
     );
 
     const itemsOnDeleteItem = useConstCallback(
@@ -306,7 +306,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 setDeletionDialogState({
                     kind,
                     basename,
-                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve,
+                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
                 });
 
                 const doProceedToDeletion = await dDoProceedToDeletion.pr;
@@ -319,7 +319,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ kind, basename });
-        },
+        }
     );
 
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -372,7 +372,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                     minDepth={pathMinDepth}
                     path={[
                         ...directoryPath.split("/"),
-                        ...(props.isFileOpen ? [props.openFileBasename] : []),
+                        ...(props.isFileOpen ? [props.openFileBasename] : [])
                     ]}
                     isNavigationDisabled={isNavigating}
                     onNavigate={onBreadcrumpNavigate}
@@ -384,8 +384,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                         css({
                             "flex": 1,
                             "paddingRight": theme.spacing(2),
-                            "overflow": "auto",
-                        }),
+                            "overflow": "auto"
+                        })
                     )}
                 >
                     {props.isFileOpen ? (
@@ -420,7 +420,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
                     return {
                         "title": t("deletion dialog title", { deleteWhat }),
-                        "body": t("deletion dialog body", { deleteWhat }),
+                        "body": t("deletion dialog body", { deleteWhat })
                     };
                 })()}
                 isOpen={deletionDialogState !== undefined}
@@ -472,12 +472,12 @@ export const { i18n } = declareComponentKeys<
 >()({ Explorer });
 
 const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean }>({
-    "name": { Explorer },
+    "name": { Explorer }
 })((theme, { apiLogBarTop, isOpenFileNodeNull }) => ({
     "root": {
         "position": "relative",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "apiLogBar": {
         "position": "absolute",
@@ -486,36 +486,36 @@ const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean
         "top": apiLogBarTop,
         "zIndex": 1,
         "opacity": apiLogBarTop === 0 ? 0 : 1,
-        "transition": "opacity 750ms linear",
+        "transition": "opacity 750ms linear"
     },
     "openFile": (() => {
         const opacity = isOpenFileNodeNull ? 0 : 1;
 
         return {
             opacity,
-            "transition": opacity === 0 ? undefined : "opacity 500ms linear",
+            "transition": opacity === 0 ? undefined : "opacity 500ms linear"
         };
     })(),
     "breadcrump": {
         "marginTop": theme.spacing(3),
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(4)
     },
     "fileOrDirectoryIcon": {
         "height": "unset",
-        "width": "100%",
-    },
+        "width": "100%"
+    }
 }));
 
 function useApiLogsBarPositioning() {
     const {
         domRect: { bottom: rootBottom },
-        ref: rootRef,
+        ref: rootRef
     } = useDomRect();
 
     // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
     const {
         domRect: { height: buttonBarHeight, bottom: buttonBarBottom },
-        ref: buttonBarRef,
+        ref: buttonBarRef
     } = useDomRect();
 
     const [apiLogBarTop, setApiLogBarTop] = useState<number>(0);
@@ -532,7 +532,7 @@ function useApiLogsBarPositioning() {
         rootRef,
         buttonBarRef,
         apiLogBarTop,
-        apiLogBarMaxHeight,
+        apiLogBarMaxHeight
     };
 }
 
@@ -551,7 +551,7 @@ const { CreateS3DirectoryDialog } = (() => {
         const { state, onClose } = props;
 
         const evtResolve = useConst(() =>
-            Evt.create<UnpackEvt<ButtonsProps["evtResolve"]>>(null),
+            Evt.create<UnpackEvt<ButtonsProps["evtResolve"]>>(null)
         );
 
         const onResolveFunctionChanged = useConstCallback<
@@ -598,25 +598,25 @@ const { CreateS3DirectoryDialog } = (() => {
                 if (text === "") {
                     return {
                         "isValidValue": false,
-                        "message": t("can't be empty"),
+                        "message": t("can't be empty")
                     };
                 }
 
                 if (directories.includes(text)) {
                     return {
                         "isValidValue": false,
-                        "message": t("already a directory with this name"),
+                        "message": t("already a directory with this name")
                     };
                 }
 
                 return {
-                    "isValidValue": true,
+                    "isValidValue": true
                 };
-            },
+            }
         );
 
         const [{ resolve }, setResolve] = useState<{ resolve: (() => void) | null }>({
-            "resolve": null,
+            "resolve": null
         });
 
         const onValueBeingTypedChange = useConstCallback<
@@ -628,8 +628,8 @@ const { CreateS3DirectoryDialog } = (() => {
                           resolveBasename(value);
                           onClose();
                       }
-                    : null,
-            }),
+                    : null
+            })
         );
 
         useEffect(() => {
@@ -642,23 +642,23 @@ const { CreateS3DirectoryDialog } = (() => {
                     "names": directories,
                     "buildName": buildNameFactory({
                         "defaultName": t("untitled what", {
-                            "what": t("directory"),
+                            "what": t("directory")
                         }),
-                        "separator": "_",
-                    }),
+                        "separator": "_"
+                    })
                 }),
-            [directories, t],
+            [directories, t]
         );
 
         const evtAction = useConst(() =>
-            Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+            Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
         );
 
         const onEnterKeyDown = useConstCallback<TextFieldProps["onEnterKeyDown"]>(
             ({ preventDefaultAndStopPropagation }) => {
                 preventDefaultAndStopPropagation();
                 evtAction.post("TRIGGER SUBMIT");
-            },
+            }
         );
 
         const onSubmit = useConstCallback<TextFieldProps["onSubmit"]>(() => {
@@ -712,8 +712,8 @@ const { CreateS3DirectoryDialog } = (() => {
     const useStyles = makeStyles({ "name": { CreateS3DirectoryDialog } })(theme => ({
         "textField": {
             "width": 250,
-            "margin": theme.spacing(5),
-        },
+            "margin": theme.spacing(5)
+        }
     }));
 
     return { CreateS3DirectoryDialog };

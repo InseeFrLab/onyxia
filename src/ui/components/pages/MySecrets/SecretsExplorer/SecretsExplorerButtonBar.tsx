@@ -20,7 +20,7 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
     const { t } = useTranslation({ SecretsExplorerButtonBar });
 
     const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
-        callback(buttonId),
+        callback(buttonId)
     );
 
     const buttons = useMemo(
@@ -62,9 +62,9 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
                             return selectedItemKind !== "file" && !isFileOpen;
                     }
                 })(),
-                "label": buttonId === "new" ? t("create secret") : t(buttonId),
+                "label": buttonId === "new" ? t("create secret") : t(buttonId)
             })),
-        [isSelectedItemInEditingState, selectedItemKind, isFileOpen, t],
+        [isSelectedItemInEditingState, selectedItemKind, isFileOpen, t]
     );
 
     return <ButtonBar buttons={buttons} onClick={onClick} />;
@@ -86,7 +86,7 @@ const buttonIds = [
     "new",
     "create directory",
     "delete",
-    "copy path",
+    "copy path"
 ] as const;
 
 export type ButtonId = typeof buttonIds[number];

@@ -54,8 +54,8 @@ export const { reducer, actions } = createSlice({
     "initialState": id<s3CredentialsState>(
         id<s3CredentialsState.NotRefreshed>({
             "stateDescription": "not refreshed",
-            "isRefreshing": false,
-        }),
+            "isRefreshing": false
+        })
     ),
     "reducers": {
         "refreshStarted": state => {
@@ -64,11 +64,11 @@ export const { reducer, actions } = createSlice({
         "refreshed": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 credentials: s3CredentialsState.Ready["credentials"];
                 expirationTime: number;
-            }>,
+            }>
         ) => {
             const { credentials, expirationTime } = payload;
 
@@ -82,18 +82,18 @@ export const { reducer, actions } = createSlice({
                 "stateDescription": "ready",
                 selectedTechnology,
                 credentials,
-                expirationTime,
+                expirationTime
             });
         },
         "technologyChanged": (
             state,
-            { payload }: PayloadAction<{ technology: Technology }>,
+            { payload }: PayloadAction<{ technology: Technology }>
         ) => {
             const { technology } = payload;
             assert(state.stateDescription === "ready");
             state.selectedTechnology = technology;
-        },
-    },
+        }
+    }
 });
 
 export const thunks = {
@@ -145,7 +145,7 @@ export const thunks = {
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
                 await s3Client.getToken({
                     "restrictToBucketName": isDefaultProject ? undefined : project.bucket,
-                    "doForceRenew": doForceRenewToken,
+                    "doForceRenew": doForceRenewToken
                 });
 
             dispatch(
@@ -155,10 +155,10 @@ export const thunks = {
                         "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                         "AWS_DEFAULT_REGION": region,
                         "AWS_SESSION_TOKEN": sessionToken,
-                        "AWS_S3_ENDPOINT": `${host}${port === 443 ? "" : `:${port}`}`,
+                        "AWS_S3_ENDPOINT": `${host}${port === 443 ? "" : `:${port}`}`
                     },
-                    expirationTime,
-                }),
+                    expirationTime
+                })
             );
         },
     "changeTechnology":
@@ -167,7 +167,7 @@ export const thunks = {
             const { technology } = params;
             const [dispatch] = args;
             dispatch(actions.technologyChanged({ technology }));
-        },
+        }
 };
 
 export const selectors = (() => {
@@ -402,9 +402,9 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
                             //NOTE: Not supported by the react-code-block
                             return "init";
                     }
-                })(),
+                })()
             };
-        },
+        }
     );
 
     const expirationTime = createSelector(readyState, state => {
@@ -429,6 +429,6 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
         selectedTechnology,
         initScript,
         expirationTime,
-        isRefreshing,
+        isRefreshing
     };
 })();

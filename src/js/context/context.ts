@@ -4,7 +4,7 @@ import type { State } from "core/setup";
 let user: State["user"] = {
     "SSH": {
         "SSH_PUBLIC_KEY": "",
-        "SSH_KEY_PASSWORD": "",
+        "SSH_KEY_PASSWORD": ""
     },
     "USERNAME": "",
     "USERMAIL": "",
@@ -16,8 +16,8 @@ let user: State["user"] = {
     "IP": "",
     "S3": {
         "AWS_DEFAULT_REGION": "us-east-1",
-        "AWS_S3_ENDPOINT": "s3.example.com",
-    },
+        "AWS_S3_ENDPOINT": "s3.example.com"
+    }
 } as any;
 
 prStore.then(store => (user = store.getState().user));

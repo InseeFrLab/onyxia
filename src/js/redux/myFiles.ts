@@ -43,14 +43,14 @@ export const asyncThunks = {
                         prefix: string;
                         rec: boolean;
                     },
-                    { dispatch },
+                    { dispatch }
                 ) => {
                     const { bucketName, prefix, rec } = payload;
 
                     assert(
                         typeof bucketName === "string" &&
                             typeof prefix === "string" &&
-                            typeof rec === "boolean",
+                            typeof rec === "boolean"
                     );
 
                     dispatch(actions.emptyCurrentBucket());
@@ -69,36 +69,36 @@ export const asyncThunks = {
                         dispatch(
                             actions.setBucketPolicy({
                                 "bucket": bucketName,
-                                "policy": JSON.parse(policy),
-                            }),
+                                "policy": JSON.parse(policy)
+                            })
                         );
                     }
 
                     const stream = await minio.getBucketContent(
                         bucketName,
                         prefix.replace(/^\//, ""),
-                        rec,
+                        rec
                     );
 
                     stream.on("data", object =>
                         dispatch(
                             "prefix" in object
                                 ? actions.addDirectoryToCurrentBucket({
-                                      "directory": object as any,
+                                      "directory": object as any
                                   }) //TODO
                                 : actions.addObjectToCurrentBucket({
-                                      "object": object as any,
-                                  }),
-                        ),
+                                      "object": object as any
+                                  })
+                        )
                     );
 
                     stream.on(
                         "error",
                         (error: { resource: string }) =>
-                            PUSHER.push(`Accés refusé : ${error.resource}`), //TODO: Franglish
+                            PUSHER.push(`Accés refusé : ${error.resource}`) //TODO: Franglish
                     );
-                },
-            ),
+                }
+            )
         };
     })(),
     ...(() => {
@@ -122,7 +122,7 @@ export const asyncThunks = {
                         typeof file === "object" &&
                             typeof bucketName === "string" &&
                             typeof notify === "function" &&
-                            typeof path === "string",
+                            typeof path === "string"
                     );
 
                     const result = await minio
@@ -135,8 +135,8 @@ export const asyncThunks = {
                     }
 
                     PUSHER.push(`${file.name} a été uploadé.`);
-                },
-            ),
+                }
+            )
         };
     })(),
     ...(() => {
@@ -152,7 +152,7 @@ export const asyncThunks = {
                     const { bucketName, objectName } = payload;
 
                     assert(
-                        typeof bucketName === "string" && typeof objectName === "string",
+                        typeof bucketName === "string" && typeof objectName === "string"
                     );
 
                     const result = await minio
@@ -165,8 +165,8 @@ export const asyncThunks = {
                     }
 
                     PUSHER.push(`${objectName} a été supprimé.`);
-                },
-            ),
+                }
+            )
         };
     })(),
     "loadUserBuckets":
@@ -182,12 +182,12 @@ export const asyncThunks = {
                         (id, i) => ({
                             id,
                             "description": i === 0 ? "bucket personnel" : "", //TODO: Franglish
-                            "isPublic": false,
-                        }),
-                    ),
-                }),
+                            "isPublic": false
+                        })
+                    )
+                })
             );
-        },
+        }
 };
 
 const slice = createSlice({
@@ -196,12 +196,12 @@ const slice = createSlice({
         "currentObjects": [],
         "currentDirectories": [],
         "bucketsPolicies": {},
-        "userBuckets": undefined,
+        "userBuckets": undefined
     }),
     "reducers": {
         "loadUserBuckets": (
             state,
-            { payload }: PayloadAction<{ buckets: State.Bucket[] }>,
+            { payload }: PayloadAction<{ buckets: State.Bucket[] }>
         ) => {
             const { buckets } = payload;
 
@@ -213,7 +213,7 @@ const slice = createSlice({
         },
         "addObjectToCurrentBucket": (
             state,
-            { payload }: PayloadAction<{ object: State["currentObjects"][number] }>,
+            { payload }: PayloadAction<{ object: State["currentObjects"][number] }>
         ) => {
             const { object } = payload;
 
@@ -224,10 +224,10 @@ const slice = createSlice({
         "addDirectoryToCurrentBucket": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directory: State["currentDirectories"][number];
-            }>,
+            }>
         ) => {
             const { directory } = payload;
 
@@ -236,19 +236,19 @@ const slice = createSlice({
         "setBucketPolicy": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 bucket: keyof State["bucketsPolicies"];
                 policy: State["bucketsPolicies"][string];
-            }>,
+            }>
         ) => {
             const { bucket, policy } = payload;
 
             assert(typeof bucket === "string" && typeof policy === "object");
 
             state.bucketsPolicies[bucket] = policy;
-        },
-    },
+        }
+    }
 });
 
 export const { actions } = slice;

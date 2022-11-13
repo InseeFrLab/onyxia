@@ -7,8 +7,8 @@ import { getS3Url } from "core/adapters/officialOnyxiaApiClient";
 const getS3Client = memoize(
     () => import("core/adapters/s3Client").then(ns => ns.prS3Client),
     {
-        "promise": true,
-    },
+        "promise": true
+    }
 );
 
 export async function getMinioToken() {
@@ -22,7 +22,7 @@ export async function getMinioToken() {
             "accessKey": s3.AWS_ACCESS_KEY_ID,
             "secretAccessKey": s3.AWS_SECRET_ACCESS_KEY,
             "sessionToken": s3.AWS_SESSION_TOKEN,
-            "expiration": s3.AWS_EXPIRATION,
+            "expiration": s3.AWS_EXPIRATION
         };
     }
 
@@ -34,7 +34,7 @@ export async function getMinioToken() {
         "accessKey": token.accessKeyId,
         "expiration": "",
         "secretAccessKey": token.secretAccessKey,
-        "sessionToken": token.sessionToken,
+        "sessionToken": token.sessionToken
     };
 
     store.dispatch(actions.newS3Credentials(credentials));
@@ -66,8 +66,8 @@ export const getMinioClient = memoize(
             "useSSL": true,
             "accessKey": credentials.accessKey,
             "secretKey": credentials.secretAccessKey,
-            "sessionToken": credentials.sessionToken,
+            "sessionToken": credentials.sessionToken
         });
     },
-    { "promise": true },
+    { "promise": true }
 );

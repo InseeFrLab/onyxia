@@ -22,7 +22,7 @@ export function MyBuckets() {
     const buckets = useCoreState(state => state.myFiles.userBuckets);
 
     const { selectedDeploymentRegion } = useCoreState(
-        selectors.deploymentRegion.selectedDeploymentRegion,
+        selectors.deploymentRegion.selectedDeploymentRegion
     );
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export function MyBuckets() {
 const Bucket = ({
     id,
     description,
-    region,
+    region
 }: {
     id: string;
     description: string;

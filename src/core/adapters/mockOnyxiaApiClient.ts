@@ -14,10 +14,10 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "name": "my project",
                         "bucket": "my-project",
                         "namespace": "my-namespace",
-                        "vaultTopDir": "my-top-dir",
-                    },
+                        "vaultTopDir": "my-top-dir"
+                    }
                 ]),
-            { "promise": true },
+            { "promise": true }
         ),
         "getAvailableRegions": memoize(
             () =>
@@ -38,16 +38,16 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "tolerations": undefined,
                         "nodeSelector": undefined,
                         "startupProbe": undefined,
-                        "vault": undefined,
-                    },
+                        "vault": undefined
+                    }
                 ]),
-            { "promise": true },
+            { "promise": true }
         ),
         ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getRunningServices", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("stopService", "Not mocked"),
-        ...createPropertyThatThrowIfAccessed("createAwsBucket", "Not mocked"),
+        ...createPropertyThatThrowIfAccessed("createAwsBucket", "Not mocked")
     };
 }

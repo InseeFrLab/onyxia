@@ -23,8 +23,8 @@ export const { reducer, actions } = createSlice({
             const { projectId } = payload;
 
             state.selectedProjectId = projectId;
-        },
-    },
+        }
+    }
 });
 
 export const thunks = {
@@ -42,8 +42,8 @@ export const thunks = {
             await dispatch(
                 userConfigsThunks.changeValue({
                     "key": "selectedProjectId",
-                    "value": projectId,
-                }),
+                    "value": projectId
+                })
             );
 
             if (doPreventDispatch) {
@@ -51,7 +51,7 @@ export const thunks = {
             }
 
             dispatch(actions.projectChanged({ projectId }));
-        },
+        }
 };
 
 export const privateThunks = {
@@ -73,18 +73,18 @@ export const privateThunks = {
                 await dispatch(
                     userConfigsThunks.changeValue({
                         "key": "selectedProjectId",
-                        "value": selectedProjectId,
-                    }),
+                        "value": selectedProjectId
+                    })
                 );
             }
 
             dispatch(
                 actions.initialize({
                     projects,
-                    selectedProjectId,
-                }),
+                    selectedProjectId
+                })
             );
-        },
+        }
 };
 
 export const selectors = (() => {
