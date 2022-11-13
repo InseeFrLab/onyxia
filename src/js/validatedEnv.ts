@@ -3,25 +3,25 @@ import { getEnv } from "env";
 
 export const getValidatedEnv = memoizee(() => ({
     "API": {
-        "BASE_URL": getEnv().ONYXIA_API_URL,
+        "BASE_URL": getEnv().ONYXIA_API_URL
     },
     "CONTENT": {
         "SERVICES_URL": "",
-        "TRAININGS_URL": "",
+        "TRAININGS_URL": ""
     },
     "APP": {
         "CONTACT": "",
         "WARNING_MESSAGE": "",
-        "INFO_MESSAGE": "",
+        "INFO_MESSAGE": ""
     },
     "KUBERNETES": {
         "KUB_SERVER_NAME": "",
-        "KUB_SERVER_URL": "",
+        "KUB_SERVER_URL": ""
     },
     "VAULT": {
         "BASE_URI": "",
         "ENGINE": "",
-        "ROLE": "",
+        "ROLE": ""
     },
     "AUTHENTICATION": {
         /*
@@ -32,7 +32,7 @@ export const getValidatedEnv = memoizee(() => ({
             "url": getEnvVar("AUTH_OIDC_URL"),
         },
         */
-        "TYPE": "none",
+        "TYPE": "none"
     },
     /*
     "MINIO": {
@@ -53,9 +53,9 @@ export const getValidatedEnv = memoizee(() => ({
     "FOOTER": {
         "ONYXIA": {
             "GIT": "",
-            "CHAT_ROOM": "",
+            "CHAT_ROOM": ""
         },
         "SWAGGER_API": "",
-        "MONITORING_URL": "",
-    },
+        "MONITORING_URL": ""
+    }
 }));

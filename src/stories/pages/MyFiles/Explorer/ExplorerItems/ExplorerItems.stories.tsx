@@ -16,7 +16,7 @@ function Component(
         "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"
     > & {
         containerWidth: number;
-    },
+    }
 ) {
     const { containerWidth } = props;
 
@@ -56,7 +56,7 @@ function Component(
         })();
 
         setBeingRenamedItems(
-            beingRenamedItems.filter(basename_i => basename_i !== basename),
+            beingRenamedItems.filter(basename_i => basename_i !== basename)
         );
 
         setToRemove(undefined);
@@ -74,7 +74,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ ExplorerItems })]: Component },
+    "wrappedComponent": { [symToStr({ ExplorerItems })]: Component }
 });
 
 export default {
@@ -85,10 +85,10 @@ export default {
             "control": {
                 "type": "range",
                 "min": 10,
-                "max": 100,
-            },
-        },
-    },
+                "max": 100
+            }
+        }
+    }
 };
 
 export const View1 = getStory({
@@ -97,7 +97,7 @@ export const View1 = getStory({
         ...new Array(30).fill("").map((_, i) => `aaa${i}`),
         "this-is-a-file",
         "aFileWithAveryLongNameThatShouldNotOverlap.txt",
-        "foo.csv",
+        "foo.csv"
     ],
     "directories": [
         "My_directory-1",
@@ -119,7 +119,7 @@ export const View1 = getStory({
         "My_directory-5",
         "dir6",
         "another-directory_4",
-        "another_directory_6",
+        "another_directory_6"
     ],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,
@@ -132,6 +132,6 @@ export const View1 = getStory({
         "onEditBasename",
         "onSelectedItemKindValueChange",
         "onIsSelectedItemInEditingStateValueChange",
-        "onOpenFile",
-    ]),
+        "onOpenFile"
+    ])
 });

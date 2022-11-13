@@ -1,12 +1,12 @@
 const dictionary = {
     about: {
         fr: "A propos",
-        en: "About",
+        en: "About"
     },
     cluster: {
         fr: "Mon cluster",
-        en: "My cluster",
-    },
+        en: "My cluster"
+    }
 };
 
 export default dictionary;

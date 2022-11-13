@@ -43,14 +43,14 @@ export const CatalogLauncher = memo((props: Props) => {
         launcher.initialize({
             catalogId,
             packageName,
-            formFieldsValueDifferentFromDefault,
+            formFieldsValueDifferentFromDefault
         });
 
         return () => launcher.reset();
     }, []);
 
     const { restorablePackageConfig } = useCoreState(
-        selectors.launcher.restorablePackageConfig,
+        selectors.launcher.restorablePackageConfig
     );
 
     useEffect(() => {
@@ -66,13 +66,13 @@ export const CatalogLauncher = memo((props: Props) => {
                 catalogId,
                 packageName,
                 formFieldsValueDifferentFromDefault,
-                "autoLaunch": route.params.autoLaunch,
+                "autoLaunch": route.params.autoLaunch
             })
             .replace();
     }, [restorablePackageConfig ?? Object]);
 
     const restorablePackageConfigs = useCoreState(
-        state => state.restorablePackageConfig.restorablePackageConfigs,
+        state => state.restorablePackageConfig.restorablePackageConfigs
     );
 
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -81,14 +81,14 @@ export const CatalogLauncher = memo((props: Props) => {
         useState(false);
 
     const onNoLongerBookmarkedDialogClose = useConstCallback(() =>
-        setIsNoLongerBookmarkedDialogOpen(false),
+        setIsNoLongerBookmarkedDialogOpen(false)
     );
 
     const [overwriteConfigurationDialogState, setOverwriteConfigurationDialogState] =
         useState<
             | {
                   resolveDoOverwriteConfiguration: (
-                      doOverwriteConfiguration: boolean,
+                      doOverwriteConfiguration: boolean
                   ) => void;
                   friendlyName: string;
               }
@@ -107,11 +107,11 @@ export const CatalogLauncher = memo((props: Props) => {
                         case "cancel":
                             return false;
                     }
-                })(),
+                })()
             );
 
             setOverwriteConfigurationDialogState(undefined);
-        },
+        }
     );
 
     useEffect(() => {
@@ -122,7 +122,7 @@ export const CatalogLauncher = memo((props: Props) => {
         const isBookmarkedNew =
             restorablePackageConfigFunctions.isRestorablePackageConfigInStore({
                 restorablePackageConfigs,
-                restorablePackageConfig,
+                restorablePackageConfig
             });
 
         if (isBookmarked && !isBookmarkedNew) {
@@ -135,11 +135,11 @@ export const CatalogLauncher = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     const onRequestCancel = useConstCallback(() =>
-        routes.catalogExplorer({ "catalogId": route.params.catalogId }).push(),
+        routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
-        clipboard.writeText(window.location.href),
+        clipboard.writeText(window.location.href)
     );
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
@@ -154,11 +154,11 @@ export const CatalogLauncher = memo((props: Props) => {
 
                 setOverwriteConfigurationDialogState({
                     friendlyName,
-                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve,
+                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve
                 });
 
                 return await dDoOverwriteConfiguration.pr;
-            },
+            }
         });
     });
 
@@ -182,7 +182,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
                             if (sensitiveConfigurations.length !== 0) {
                                 evtSensitiveConfigurationDialogDialog.post({
-                                    sensitiveConfigurations,
+                                    sensitiveConfigurations
                                 });
                             } else {
                                 launcher.launch();
@@ -206,19 +206,19 @@ export const CatalogLauncher = memo((props: Props) => {
     }, [
         state.stateDescription === "not initialized"
             ? state.stateDescription
-            : state.launchState,
+            : state.launchState
     ]);
 
     const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
     const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
     const { formFieldsIsWellFormed } = useCoreState(
-        selectors.launcher.formFieldsIsWellFormed,
+        selectors.launcher.formFieldsIsWellFormed
     );
 
     const { t } = useTranslation({ CatalogLauncher });
 
     const evtSensitiveConfigurationDialogDialog = useConst(() =>
-        Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>(),
+        Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>()
     );
 
     const onSensitiveConfigurationDialogDialogClose = useConstCallback<
@@ -278,7 +278,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                 onFormValueChange={launcher.changeFormFieldValue}
                                 formFieldsIsWellFormed={formFieldsIsWellFormed}
                             />
-                        ),
+                        )
                     )}
                 </div>
             </div>
@@ -296,7 +296,7 @@ export const CatalogLauncher = memo((props: Props) => {
             <Dialog
                 title={t("should overwrite configuration dialog title")}
                 subtitle={t("should overwrite configuration dialog subtitle", {
-                    "friendlyName": overwriteConfigurationDialogState?.friendlyName ?? "",
+                    "friendlyName": overwriteConfigurationDialogState?.friendlyName ?? ""
                 })}
                 body={t("should overwrite configuration dialog body")}
                 buttons={
@@ -310,7 +310,7 @@ export const CatalogLauncher = memo((props: Props) => {
                         </Button>
                         <Button
                             onClick={onOverwriteConfigurationDialogClickFactory(
-                                "overwrite",
+                                "overwrite"
                             )}
                         >
                             {t("replace")}
@@ -344,14 +344,14 @@ export const { i18n } = declareComponentKeys<
 const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
     "wrapperForScroll": {
         "height": "100%",
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "wrapperForMawWidth": {
         "maxWidth": 1200,
         "& > *": {
-            "marginBottom": theme.spacing(3),
-        },
-    },
+            "marginBottom": theme.spacing(3)
+        }
+    }
 }));
 
 type SensitiveConfigurationDialogProps = {
@@ -376,9 +376,9 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
     useEvt(
         ctx =>
             evtOpen.attach(ctx, ({ sensitiveConfigurations }) =>
-                setSensitiveConfigurations(sensitiveConfigurations),
+                setSensitiveConfigurations(sensitiveConfigurations)
             ),
-        [evtOpen],
+        [evtOpen]
     );
 
     return (
@@ -390,9 +390,9 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
                     {sensitiveConfigurations === undefined
                         ? null
                         : sensitiveConfigurations.map(({ path, value }) => (
-                              <Markdown key={path.join()}>
-                                  {`**${path.join(".")}**: \`${value}\``}
-                              </Markdown>
+                              <Markdown key={path.join()}>{`**${path.join(
+                                  "."
+                              )}**: \`${value}\``}</Markdown>
                           ))}
                 </>
             }

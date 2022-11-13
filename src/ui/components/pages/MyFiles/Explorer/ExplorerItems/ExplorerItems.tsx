@@ -57,22 +57,22 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         directoriesBeingCreated,
         filesBeingCreated,
         evtAction,
-        onSelectedItemKindValueChange,
+        onSelectedItemKindValueChange
     } = props;
 
     const { classes, cx } = useStyles({
-        "isEmpty": files.length === 0 && directories.length === 0,
+        "isEmpty": files.length === 0 && directories.length === 0
     });
 
     const { getKeyProp, getValuesCurrentlyMappedToKeyProp } = useConst(() =>
         getKeyPropFactory<{
             kind: "directory" | "file";
             basename: string;
-        }>(),
+        }>()
     );
 
     const [selectedItemKeyProp, setSelectedItemKeyProp] = useState<string | undefined>(
-        undefined,
+        undefined
     );
 
     useEffectOnValueChange(
@@ -83,9 +83,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     selectedItemKeyProp === undefined
                         ? ("none" as const)
                         : getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp).kind,
-                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp],
-            ),
-        ],
+                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
+            )
+        ]
     );
 
     useEvt(
@@ -95,7 +95,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItemKeyProp !== undefined);
                         onDeleteItem(
-                            getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp),
+                            getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp)
                         );
                         break;
                     case "COPY SELECTED ITEM PATH":
@@ -103,7 +103,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                         onCopyPath({
                             "basename":
                                 getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp)
-                                    .basename,
+                                    .basename
                         });
                         break;
                 }
@@ -113,8 +113,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             onDeleteItem,
             onCopyPath,
             selectedItemKeyProp,
-            getValuesCurrentlyMappedToKeyProp,
-        ],
+            getValuesCurrentlyMappedToKeyProp
+        ]
     );
 
     useEffectOnValueChange(() => {
@@ -140,26 +140,26 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                 ) {
                     setSelectedItemKeyProp(undefined);
                 }
-            },
+            }
         );
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": files,
-            "callback": callbackFactory("file"),
+            "callback": callbackFactory("file")
         });
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": directories,
-            "callback": callbackFactory("directory"),
+            "callback": callbackFactory("directory")
         });
     }
 
     const onMouseEventFactory = useCallbackFactory(
         async (
             [kind, basename]: ["file" | "directory", string],
-            [{ type }]: [Param0<ExplorerItemProps["onMouseEvent"]>],
+            [{ type }]: [Param0<ExplorerItemProps["onMouseEvent"]>]
         ) => {
             if (isNavigating) {
                 return;
@@ -182,7 +182,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     }
                     break;
             }
-        },
+        }
     );
 
     const getIsValidBasenameFactory = useCallbackFactory(
@@ -190,8 +190,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             [kind, basename]: ["file" | "directory", string],
 
             [{ basename: candidateBasename }]: [
-                Parameters<ExplorerItemProps["getIsValidBasename"]>[0],
-            ],
+                Parameters<ExplorerItemProps["getIsValidBasename"]>[0]
+            ]
         ) => {
             if (basename === candidateBasename) {
                 return true;
@@ -211,7 +211,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             }
 
             return !candidateBasename.includes(" ") && !candidateBasename.includes("/");
-        },
+        }
     );
 
     const containerRef = useStateRef<HTMLDivElement>(null);
@@ -226,7 +226,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             }
 
             setSelectedItemKeyProp(undefined);
-        },
+        }
     );
 
     const { t } = useTranslation({ ExplorerItems });
@@ -271,11 +271,11 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                     onMouseEvent={onMouseEventFactory(kind, basename)}
                                     getIsValidBasename={getIsValidBasenameFactory(
                                         kind,
-                                        basename,
+                                        basename
                                     )}
                                 />
                             );
-                        }),
+                        })
                     )}
                 </>
             )}
@@ -293,11 +293,11 @@ const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } }
                 : {
                       "display": "flex",
                       "flexWrap": "wrap",
-                      "justifyContent": "flex-start",
-                  }),
+                      "justifyContent": "flex-start"
+                  })
         },
         "item": {
-            "margin": theme.spacing(2),
-        },
-    }),
+            "margin": theme.spacing(2)
+        }
+    })
 );

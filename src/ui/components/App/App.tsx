@@ -28,7 +28,7 @@ import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
 import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
 import {
     CloudShell,
-    useIsCloudShellVisible,
+    useIsCloudShellVisible
 } from "js/components/cloud-shell/cloud-shell";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
@@ -49,7 +49,7 @@ export const App = memo((props: Props) => {
 
     const {
         domRect: { width: rootWidth },
-        ref: rootRef,
+        ref: rootRef
     } = useDomRect();
 
     {
@@ -77,7 +77,7 @@ export const App = memo((props: Props) => {
 
     const logoContainerWidth = Math.max(
         Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
-        45,
+        45
     );
 
     const route = useRoute();
@@ -89,13 +89,13 @@ export const App = memo((props: Props) => {
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const isDevModeEnabled = useCoreState(state =>
-        isUserLoggedIn ? state.userConfigs.isDevModeEnabled.value : false,
+        isUserLoggedIn ? state.userConfigs.isDevModeEnabled.value : false
     );
 
     const onHeaderAuthClick = useConstCallback(() =>
         isUserLoggedIn
             ? userAuthentication.logout({ "redirectTo": "home" })
-            : userAuthentication.login({ "doesCurrentHrefRequiresAuth": false }),
+            : userAuthentication.login({ "doesCurrentHrefRequiresAuth": false })
     );
 
     const projectsSlice = useProjectsSlice();
@@ -114,25 +114,25 @@ export const App = memo((props: Props) => {
                           "home": {
                               "iconId": "home",
                               "label": t("home"),
-                              "link": routes.home().link,
-                          } as const,
+                              "link": routes.home().link
+                          } as const
                       }),
                 "account": {
                     "iconId": "account",
                     "label": t("account"),
                     "link": routes.account().link,
-                    "hasDividerBelow": true,
+                    "hasDividerBelow": true
                 },
                 "catalog": {
                     "iconId": "catalog",
                     "label": t("catalog"),
-                    "link": routes.catalogExplorer().link,
+                    "link": routes.catalogExplorer().link
                 },
                 "myServices": {
                     "iconId": "services",
                     "label": t("myServices"),
                     "link": routes.myServices().link,
-                    "hasDividerBelow": true,
+                    "hasDividerBelow": true
                 },
                 ...(!secretExplorer.getIsEnabled()
                     ? ({} as never)
@@ -140,8 +140,8 @@ export const App = memo((props: Props) => {
                           "mySecrets": {
                               "iconId": "secrets",
                               "label": t("mySecrets"),
-                              "link": routes.mySecrets().link,
-                          } as const,
+                              "link": routes.mySecrets().link
+                          } as const
                       }),
                 ...(!fileExplorer.getIsEnabled()
                     ? ({} as never)
@@ -152,8 +152,8 @@ export const App = memo((props: Props) => {
                               "link": routes.myFiles().link,
                               //TODO: This usage of getEnv should be removed as soon as we have the new explorer
                               //we should get the info "is file enabled" from the core.
-                              "hasDividerBelow": true,
-                          } as const,
+                              "hasDividerBelow": true
+                          } as const
                       }),
                 ...(() => {
                     const extraLeftBarItems = getExtraLeftBarItemsFromEnv();
@@ -168,10 +168,10 @@ export const App = memo((props: Props) => {
                                       "label": resolveLocalizedString(label),
                                       "link": {
                                           "href": url,
-                                          "target": "_blank",
-                                      },
-                                  }),
-                              ]),
+                                          "target": "_blank"
+                                      }
+                                  })
+                              ])
                           );
                 })(),
                 ...(() => {
@@ -186,12 +186,12 @@ export const App = memo((props: Props) => {
                             "link": routes.myBuckets().link,
                             "availability": fileExplorer.getIsEnabled()
                                 ? "available"
-                                : "greyed",
-                        },
+                                : "greyed"
+                        }
                     } as const;
-                })(),
+                })()
             } as const),
-        [t, lang, isDevModeEnabled],
+        [t, lang, isDevModeEnabled]
     );
 
     return (
@@ -201,7 +201,7 @@ export const App = memo((props: Props) => {
                     "className": classes.header,
                     "useCase": "core app",
                     logoContainerWidth,
-                    "onLogoClick": onHeaderLogoClick,
+                    "onLogoClick": onHeaderLogoClick
                 } as const;
 
                 return isUserLoggedIn ? (
@@ -278,35 +278,35 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
             "flexDirection": "column",
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
-            "position": "relative",
+            "position": "relative"
         },
         "header": {
-            "paddingBottom": 0, //For the LeftBar shadow
+            "paddingBottom": 0 //For the LeftBar shadow
         },
         "betweenHeaderAndFooter": {
             "flex": 1,
             "overflow": "hidden",
             "display": "flex",
             "paddingTop": theme.spacing(2.3), //For the LeftBar shadow
-            "paddingBottom": footerHeight,
+            "paddingBottom": footerHeight
         },
         "footer": {
             "height": footerHeight,
             "position": "absolute",
             "bottom": 0,
             "width": "100%",
-            "background": "transparent",
+            "background": "transparent"
         },
         "leftBar": {
-            "height": "100%",
+            "height": "100%"
         },
         "main": {
             "height": "100%",
             "flex": 1,
             //TODO: See if scroll delegation works if we put auto here instead of "hidden"
             "paddingLeft": theme.spacing(4),
-            "overflow": "hidden",
-        },
+            "overflow": "hidden"
+        }
     };
 });
 
@@ -319,7 +319,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
     const legacyRoute = useMemo(() => {
         const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
-            routeGroup.has(route),
+            routeGroup.has(route)
         );
 
         if (Page === undefined) {
@@ -338,7 +338,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
                     <div
                         style={{
                             "height": "100%",
-                            "overflow": "auto",
+                            "overflow": "auto"
                         }}
                     >
                         <Page route={route} />
@@ -349,7 +349,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
                     <div
                         style={{
                             "height": "100%",
-                            "overflow": "auto",
+                            "overflow": "auto"
                         }}
                     >
                         <Page />
@@ -477,7 +477,7 @@ function useSyncDarkModeWithValueInProfile() {
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
     const userConfigsIsDarkModeEnabled = useCoreState(state =>
-        !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value,
+        !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value
     );
 
     useEffect(() => {
@@ -495,7 +495,7 @@ function useSyncDarkModeWithValueInProfile() {
 
         userConfigs.changeValue({
             "key": "isDarkModeEnabled",
-            "value": isDarkModeEnabled,
+            "value": isDarkModeEnabled
         });
     }, [isDarkModeEnabled]);
 }
@@ -503,7 +503,7 @@ function useSyncDarkModeWithValueInProfile() {
 function useProjectsSlice() {
     const { projectSelection, userAuthentication } = useCoreFunctions();
     const projectsState = useCoreState(state =>
-        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectSelection,
+        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectSelection
     );
 
     const route = useRoute();
@@ -529,11 +529,11 @@ function useProjectsSlice() {
 
             await projectSelection.changeProject({
                 projectId,
-                "doPreventDispatch": reload !== undefined,
+                "doPreventDispatch": reload !== undefined
             });
 
             reload?.();
-        },
+        }
     );
 
     if (projectsState === undefined) {

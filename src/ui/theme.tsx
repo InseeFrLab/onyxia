@@ -5,7 +5,7 @@ import {
     ultravioletPalette,
     defaultGetTypographyDesc,
     getIsPortraitOrientation,
-    ViewPortOutOfRangeError,
+    ViewPortOutOfRangeError
 } from "onyxia-ui";
 import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
@@ -83,7 +83,7 @@ const { ThemeProvider, useTheme } = createThemeProvider({
                 case "ultraviolet":
                     return '"Work Sans"';
             }
-        })()}, sans-serif`,
+        })()}, sans-serif`
     }),
     "palette": {
         ...(() => {
@@ -98,14 +98,14 @@ const { ThemeProvider, useTheme } = createThemeProvider({
         })(),
         "limeGreen": {
             "main": "#BAFF29",
-            "light": "#E2FFA6",
+            "light": "#E2FFA6"
         },
         "agentConnectBlue": {
             "main": "#0579EE",
             "light": "#2E94FA",
-            "lighter": "#E5EDF5",
-        },
-    },
+            "lighter": "#E5EDF5"
+        }
+    }
 });
 
 export { ThemeProvider };
@@ -161,7 +161,7 @@ export const { Icon } = createIcon({
     "errorOutline": ErrorOutlineIcon,
     "assuredWorkload": AssuredWorkloadIcon,
     "grading": GradingIcon,
-    "refresh": RefreshLogoSvg,
+    "refresh": RefreshLogoSvg
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];
@@ -177,12 +177,12 @@ export function createGetViewPortConfig(params: {
 
     const getViewPortConfig: ThemeProviderProps["getViewPortConfig"] = ({
         windowInnerWidth,
-        windowInnerHeight,
+        windowInnerHeight
     }) => {
         if (
             getIsPortraitOrientation({
                 windowInnerWidth,
-                windowInnerHeight,
+                windowInnerHeight
             })
         ) {
             throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
@@ -190,7 +190,7 @@ export function createGetViewPortConfig(params: {
 
         return {
             "targetWindowInnerWidth": Math.max(windowInnerWidth, 1100),
-            "targetBrowserFontSizeFactor": 1,
+            "targetBrowserFontSizeFactor": 1
         };
     };
 
@@ -200,7 +200,7 @@ export function createGetViewPortConfig(params: {
 const { OnyxiaSplashScreenLogo } = createOnyxiaSplashScreenLogo({ useTheme });
 
 export const splashScreen: ThemeProviderProps["splashScreen"] = {
-    "Logo": OnyxiaSplashScreenLogo,
+    "Logo": OnyxiaSplashScreenLogo
 };
 
 export const { PageHeader } = createPageHeader({ Icon });
@@ -211,12 +211,12 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
     "languagesPrettyPrint": {
         "en": "English",
         "fr": "Français",
-        "zh-CN": "简体中文",
-    },
+        "zh-CN": "简体中文"
+    }
 });
 
 export const { LeftBar } = createLeftBar({
     Icon,
     "persistIsPanelOpen": true,
-    "defaultIsPanelOpen": true,
+    "defaultIsPanelOpen": true
 });

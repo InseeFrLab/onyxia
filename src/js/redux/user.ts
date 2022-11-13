@@ -22,7 +22,7 @@ export const name = "user";
 const slice = createSlice({
     name,
     "initialState": id<UserState>({
-        "s3": undefined,
+        "s3": undefined
     }),
     "reducers": {
         /*
@@ -41,13 +41,13 @@ const slice = createSlice({
         "newS3Credentials": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 accessKey: string;
                 secretAccessKey: string;
                 expiration: string;
                 sessionToken: string;
-            }>,
+            }>
         ) => {
             const { accessKey, secretAccessKey, expiration, sessionToken } = payload;
 
@@ -55,7 +55,7 @@ const slice = createSlice({
                 typeof accessKey === "string" &&
                     typeof secretAccessKey === "string" &&
                     typeof expiration === "string" &&
-                    typeof sessionToken === "string",
+                    typeof sessionToken === "string"
             );
 
             state.s3 = {
@@ -64,10 +64,10 @@ const slice = createSlice({
                 "AWS_EXPIRATION": expiration,
                 "AWS_SESSION_TOKEN": sessionToken,
                 "AWS_DEFAULT_REGION": "us-east-1",
-                "AWS_S3_ENDPOINT": getS3Url().split("//")[1].split(":")[0],
+                "AWS_S3_ENDPOINT": getS3Url().split("//")[1].split(":")[0]
             };
-        },
-    },
+        }
+    }
 });
 
 export const thunks = {};

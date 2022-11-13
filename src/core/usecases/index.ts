@@ -37,5 +37,5 @@ export const usecases = {
     userAuthentication,
     userConfigs,
     secretsEditor,
-    s3Credentials,
+    s3Credentials
 };

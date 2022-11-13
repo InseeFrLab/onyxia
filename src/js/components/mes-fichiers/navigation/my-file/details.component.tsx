@@ -4,7 +4,7 @@ import { Typography, Paper } from "@mui/material";
 
 const Details: React.FC<{ file: any; statusPolicy?: string }> = ({
     file,
-    statusPolicy,
+    statusPolicy
 }) => (
     <Paper className="paragraphe" elevation={1}>
         <Typography variant="h3" gutterBottom>
@@ -42,8 +42,8 @@ Details.propTypes = {
     file: PropTypes.shape({
         name: PropTypes.string.isRequired,
         size: PropTypes.number.isRequired,
-        lastModified: PropTypes.instanceOf(Date).isRequired,
-    }).isRequired,
+        lastModified: PropTypes.instanceOf(Date).isRequired
+    }).isRequired
 };
 
 export default Details;

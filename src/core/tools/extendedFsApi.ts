@@ -28,14 +28,14 @@ export function createExtendedFsApi<File>(props: {
     const { crawl } = crawlFactory({
         "list": async ({ directoryPath }) => {
             const { directories, files } = await baseFsApi.list({
-                "path": directoryPath,
+                "path": directoryPath
             });
 
             return {
                 "fileBasenames": files,
-                "directoryBasenames": directories,
+                "directoryBasenames": directories
             };
-        },
+        }
     });
 
     async function mvFile(params: { srcPath: string; dstPath: string }) {
@@ -46,16 +46,16 @@ export function createExtendedFsApi<File>(props: {
         }
 
         const file = await baseFsApi.downloadFile({
-            "path": srcPath,
+            "path": srcPath
         });
 
         await baseFsApi.deleteFile({
-            "path": srcPath,
+            "path": srcPath
         });
 
         await baseFsApi.uploadFile({
             "path": dstPath,
-            file,
+            file
         });
     }
 
@@ -63,7 +63,7 @@ export function createExtendedFsApi<File>(props: {
         "renameFile": async ({ newBasename, path }) =>
             mvFile({
                 "srcPath": path,
-                "dstPath": pathJoin(pathDirname(path), newBasename),
+                "dstPath": pathJoin(pathDirname(path), newBasename)
             }),
         "renameDirectory": async ({ newBasename, path }) => {
             const { filePaths } = await crawl({ "directoryPath": path });
@@ -72,15 +72,15 @@ export function createExtendedFsApi<File>(props: {
                 filePaths.map(filePath =>
                     mvFile({
                         "srcPath": pathJoin(path, filePath),
-                        "dstPath": pathJoin(pathDirname(path), newBasename, filePath),
-                    }),
-                ),
+                        "dstPath": pathJoin(pathDirname(path), newBasename, filePath)
+                    })
+                )
             );
         },
         "createDirectory": async ({ path }) =>
             baseFsApi.uploadFile({
                 "path": pathJoin(path, keepFileBasename),
-                "file": keepFile,
+                "file": keepFile
             }),
         "deleteDirectory": async ({ path }) => {
             const { filePaths } = await crawl({ "directoryPath": path });
@@ -90,10 +90,10 @@ export function createExtendedFsApi<File>(props: {
                     .map(filePathRelative => pathJoin(path, filePathRelative))
                     .map(filePath =>
                         baseFsApi.deleteFile({
-                            "path": filePath,
-                        }),
-                    ),
+                            "path": filePath
+                        })
+                    )
             );
-        },
+        }
     };
 }

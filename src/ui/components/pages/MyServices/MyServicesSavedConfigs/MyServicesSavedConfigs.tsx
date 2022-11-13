@@ -34,7 +34,7 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
         savedConfigs,
         isShortVariant,
         callback,
-        onRequestToggleIsShortVariant,
+        onRequestToggleIsShortVariant
     } = props;
 
     const { classes, cx } = useStyles();
@@ -42,8 +42,8 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
     const callbackFactory = useCallbackFactory(
         (
             [launchLinkHref]: [string],
-            [action]: [Param0<MyServicesSavedConfigProps["callback"]>],
-        ) => callback({ launchLinkHref, action }),
+            [action]: [Param0<MyServicesSavedConfigProps["callback"]>]
+        ) => callback({ launchLinkHref, action })
     );
 
     const { t } = useTranslation({ MyServicesSavedConfigs });
@@ -65,7 +65,7 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
                     .filter(
                         isShortVariant
                             ? (...[, i]) => i < maxConfigCountInShortVariant
-                            : () => true,
+                            : () => true
                     )
                     .map(({ logoUrl, friendlyName, launchLink, editLink }) => (
                         <MyServicesSavedConfig
@@ -85,23 +85,23 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"saved" | "show all">()({
-    MyServicesSavedConfigs,
+    MyServicesSavedConfigs
 });
 
 const useStyles = makeStyles({ "name": { MyServicesSavedConfigs } })(theme => ({
     "root": {
         "overflow": "hidden",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "header": {
-        ...theme.spacing.topBottom("margin", 2),
+        ...theme.spacing.topBottom("margin", 2)
     },
     "entry": {
-        "marginBottom": theme.spacing(2),
+        "marginBottom": theme.spacing(2)
     },
     "wrapper": {
         "flex": 1,
-        "overflow": "auto",
-    },
+        "overflow": "auto"
+    }
 }));

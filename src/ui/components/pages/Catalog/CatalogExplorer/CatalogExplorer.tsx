@@ -40,14 +40,14 @@ export const CatalogExplorer = memo((props: Props) => {
                                   "onAutoSelectCatalogId": ({ selectedCatalogId }) =>
                                       routes
                                           .catalogExplorer({
-                                              "catalogId": selectedCatalogId,
+                                              "catalogId": selectedCatalogId
                                           })
-                                          .replace(),
+                                          .replace()
                               }
                             : {
                                   "isCatalogIdInUrl": true,
-                                  catalogId,
-                              },
+                                  catalogId
+                              }
                     );
                 }
                 break;
@@ -80,9 +80,9 @@ export const CatalogExplorer = memo((props: Props) => {
         routes
             .catalogLauncher({
                 catalogId,
-                packageName,
+                packageName
             })
-            .push(),
+            .push()
     );
 
     const onSearchChange = useConstCallback<CatalogExplorerCardsProps["onSearchChange"]>(
@@ -90,9 +90,9 @@ export const CatalogExplorer = memo((props: Props) => {
             routes
                 .catalogExplorer({
                     "catalogId": route.params.catalogId!,
-                    "search": search || undefined,
+                    "search": search || undefined
                 })
-                .replace(),
+                .replace()
     );
 
     useEffect(() => {
@@ -100,18 +100,18 @@ export const CatalogExplorer = memo((props: Props) => {
     }, [route.params.search]);
 
     const onRequestRevealPackagesNotShown = useConstCallback(() =>
-        catalogExplorer.revealAllPackages(),
+        catalogExplorer.revealAllPackages()
     );
 
     const { filteredPackages } = useCoreState(selectors.catalogExplorer.filteredPackages);
 
     const { productionCatalogs } = useCoreState(
-        selectors.catalogExplorer.productionCatalogs,
+        selectors.catalogExplorer.productionCatalogs
     );
     const { selectedCatalog } = useCoreState(selectors.catalogExplorer.selectedCatalog);
 
     const onSelectedCatalogIdChange = useConstCallback((catalogId: string) =>
-        routes.catalogExplorer({ catalogId }).push(),
+        routes.catalogExplorer({ catalogId }).push()
     );
 
     if (catalogExplorerState.stateDescription !== "ready") {

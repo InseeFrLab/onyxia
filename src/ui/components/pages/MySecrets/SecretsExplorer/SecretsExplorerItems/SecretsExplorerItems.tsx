@@ -77,11 +77,11 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
         filesBeingRenamed,
         evtAction,
         onSelectedItemKindValueChange,
-        onIsSelectedItemInEditingStateValueChange,
+        onIsSelectedItemInEditingStateValueChange
     } = props;
 
     const { classes, cx } = useStyles({
-        "isEmpty": files.length === 0 && directories.length === 0,
+        "isEmpty": files.length === 0 && directories.length === 0
     });
 
     const { getKeyProp, transfersKeyProp, getValuesCurrentlyMappedToKeyProp } = useConst(
@@ -89,11 +89,11 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
             getKeyPropFactory<{
                 kind: "directory" | "file";
                 basename: string;
-            }>(),
+            }>()
     );
 
     const [selectedItemKeyProp, setSelectedItemKeyProp] = useState<string | undefined>(
-        undefined,
+        undefined
     );
 
     useEffectOnValueChange(
@@ -104,15 +104,15 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                     selectedItemKeyProp === undefined
                         ? ("none" as const)
                         : getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp).kind,
-                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp],
-            ),
-        ],
+                [selectedItemKeyProp, getValuesCurrentlyMappedToKeyProp]
+            )
+        ]
     );
 
     const getEvtItemAction = useConst(() =>
         memoize((_keyProp: string) =>
-            Evt.create<UnpackEvt<SecretsExplorerItemProps["evtAction"]>>(),
-        ),
+            Evt.create<UnpackEvt<SecretsExplorerItemProps["evtAction"]>>()
+        )
     );
 
     useEvt(
@@ -122,7 +122,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItemKeyProp !== undefined);
                         onDeleteItem(
-                            getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp),
+                            getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp)
                         );
                         break;
                     case "START EDITING SELECTED ITEM BASENAME":
@@ -134,7 +134,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                         onCopyPath({
                             "basename":
                                 getValuesCurrentlyMappedToKeyProp(selectedItemKeyProp)
-                                    .basename,
+                                    .basename
                         });
                         break;
                 }
@@ -145,8 +145,8 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
             onCopyPath,
             getEvtItemAction,
             selectedItemKeyProp,
-            getValuesCurrentlyMappedToKeyProp,
-        ],
+            getValuesCurrentlyMappedToKeyProp
+        ]
     );
 
     useEffectOnValueChange(() => {
@@ -174,19 +174,19 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                     setIsSelectedItemInEditingState(false);
                     setSelectedItemKeyProp(undefined);
                 }
-            },
+            }
         );
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": files,
-            "callback": callbackFactory("file"),
+            "callback": callbackFactory("file")
         });
 
         useArrayDiff({
             "watchFor": "deletion",
             "array": directories,
-            "callback": callbackFactory("directory"),
+            "callback": callbackFactory("directory")
         });
     }
 
@@ -218,26 +218,26 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                 const evtItemAction = getEvtItemAction(getKeyProp({ kind, basename }));
 
                 evtItemAction.post("ENTER EDITING STATE");
-            },
+            }
         );
 
         useArrayDiff({
             "watchFor": "addition",
             "array": files,
-            "callback": callbackFactory("file"),
+            "callback": callbackFactory("file")
         });
 
         useArrayDiff({
             "watchFor": "addition",
             "array": directories,
-            "callback": callbackFactory("directory"),
+            "callback": callbackFactory("directory")
         });
     }
 
     const onMouseEventFactory = useCallbackFactory(
         async (
             [kind, basename]: ["file" | "directory", string],
-            [{ type, target }]: [Param0<SecretsExplorerItemProps["onMouseEvent"]>],
+            [{ type, target }]: [Param0<SecretsExplorerItemProps["onMouseEvent"]>]
         ) => {
             if (isNavigating) {
                 return;
@@ -270,7 +270,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                     }
                     break;
             }
-        },
+        }
     );
 
     const [isSelectedItemInEditingState, setIsSelectedItemInEditingState] =
@@ -279,25 +279,25 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
     useEffectOnValueChange(
         () =>
             onIsSelectedItemInEditingStateValueChange({
-                isSelectedItemInEditingState,
+                isSelectedItemInEditingState
             }),
-        [isSelectedItemInEditingState],
+        [isSelectedItemInEditingState]
     );
 
     const onEditBasenameFactory = useCallbackFactory(
         (
             [kind, basename]: ["file" | "directory", string],
             [{ editedBasename }]: [
-                Parameters<SecretsExplorerItemProps["onEditBasename"]>[0],
-            ],
+                Parameters<SecretsExplorerItemProps["onEditBasename"]>[0]
+            ]
         ) => {
             transfersKeyProp({
                 "toValues": { kind, "basename": editedBasename },
-                "fromValues": { kind, basename },
+                "fromValues": { kind, basename }
             });
 
             onEditBasename({ kind, basename, "newBasename": editedBasename });
-        },
+        }
     );
 
     const getIsValidBasenameFactory = useCallbackFactory(
@@ -305,8 +305,8 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
             [kind, basename]: ["file" | "directory", string],
 
             [{ basename: candidateBasename }]: [
-                Parameters<SecretsExplorerItemProps["getIsValidBasename"]>[0],
-            ],
+                Parameters<SecretsExplorerItemProps["getIsValidBasename"]>[0]
+            ]
         ) => {
             if (basename === candidateBasename) {
                 return true;
@@ -326,14 +326,14 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
             }
 
             return !candidateBasename.includes(" ") && !candidateBasename.includes("/");
-        },
+        }
     );
 
     const onIsInEditingStateValueChange = useConstCallback(
         ({
-            isInEditingState,
+            isInEditingState
         }: Parameters<SecretsExplorerItemProps["onIsInEditingStateValueChange"]>[0]) =>
-            setIsSelectedItemInEditingState(isInEditingState),
+            setIsSelectedItemInEditingState(isInEditingState)
     );
 
     const containerRef = useStateRef<HTMLDivElement>(null);
@@ -349,7 +349,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
 
             setIsSelectedItemInEditingState(false);
             setSelectedItemKeyProp(undefined);
-        },
+        }
     );
 
     const { t } = useTranslation({ SecretsExplorerItems });
@@ -389,12 +389,12 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                                             case "directory":
                                                 return [
                                                     ...directoriesBeingCreated,
-                                                    ...directoriesBeingRenamed,
+                                                    ...directoriesBeingRenamed
                                                 ];
                                             case "file":
                                                 return [
                                                     ...filesBeingCreated,
-                                                    ...filesBeingRenamed,
+                                                    ...filesBeingRenamed
                                                 ];
                                         }
                                     })().includes(basename)}
@@ -402,14 +402,14 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
                                     onEditBasename={onEditBasenameFactory(kind, basename)}
                                     getIsValidBasename={getIsValidBasenameFactory(
                                         kind,
-                                        basename,
+                                        basename
                                     )}
                                     onIsInEditingStateValueChange={
                                         onIsInEditingStateValueChange
                                     }
                                 />
                             );
-                        }),
+                        })
                     )}
                 </>
             )}
@@ -418,7 +418,7 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
 });
 
 export const { i18n } = declareComponentKeys<"empty directory">()({
-    SecretsExplorerItems,
+    SecretsExplorerItems
 });
 
 const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { SecretsExplorerItems } })(
@@ -429,11 +429,11 @@ const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { SecretsExplorerIt
                 : {
                       "display": "flex",
                       "flexWrap": "wrap",
-                      "justifyContent": "flex-start",
-                  }),
+                      "justifyContent": "flex-start"
+                  })
         },
         "item": {
-            "margin": theme.spacing(2),
-        },
-    }),
+            "margin": theme.spacing(2)
+        }
+    })
 );

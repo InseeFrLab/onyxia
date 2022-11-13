@@ -18,7 +18,7 @@ const editableFieldKeys = [
     "gitName",
     "gitEmail",
     "githubPersonalAccessToken",
-    "kaggleApiToken",
+    "kaggleApiToken"
 ] as const;
 
 type EditableFieldKey = typeof editableFieldKeys[number];
@@ -33,7 +33,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
     const { t } = useTranslation({ AccountIntegrationsTab });
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
-        copyToClipboard(textToCopy),
+        copyToClipboard(textToCopy)
     );
 
     const { classes } = useStyles();
@@ -44,21 +44,21 @@ export const AccountIntegrationsTab = memo((props: Props) => {
 
     const onRequestEditFactory = useCallbackFactory(
         ([key]: [EditableFieldKey], [value]: [string]) =>
-            userConfigs.changeValue({ key, value }),
+            userConfigs.changeValue({ key, value })
     );
 
     const getEvtFieldAction = useMemo(
         () =>
             memoize((_key: EditableFieldKey) =>
-                Evt.create<UnpackEvt<AccountFieldProps.EditableText["evtAction"]>>(),
+                Evt.create<UnpackEvt<AccountFieldProps.EditableText["evtAction"]>>()
             ),
-        [],
+        []
     );
 
     const onStartEditFactory = useCallbackFactory(([key]: [EditableFieldKey]) =>
         editableFieldKeys
             .filter(id_i => id_i !== key)
-            .map(id => getEvtFieldAction(id).post("SUBMIT EDIT")),
+            .map(id => getEvtFieldAction(id).post("SUBMIT EDIT"))
     );
 
     const { lang } = useLang();
@@ -130,7 +130,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                             <>
                                 <Link href={tokenCreationHref} target="__blank">
                                     {t("link for token creation", {
-                                        serviceName,
+                                        serviceName
                                     })}
                                 </Link>
                                 &nbsp;
@@ -167,9 +167,9 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = makeStyles({ "name": { AccountIntegrationsTab } })(theme => ({
     "divider": {
-        ...theme.spacing.topBottom("margin", 4),
+        ...theme.spacing.topBottom("margin", 4)
     },
     "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
-    },
+        "color": theme.colors.useCases.typography.textFocus
+    }
 }));

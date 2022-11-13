@@ -4,7 +4,7 @@ import { getStoryFactory } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { LoginDivider },
+    "wrappedComponent": { LoginDivider }
 });
 
 export default meta;

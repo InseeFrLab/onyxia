@@ -31,12 +31,12 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         className,
         launchLink,
         editLink,
-        callback,
+        callback
     } = props;
 
     const { classes, cx } = useStyles({
         "hasLogo": logoUrl !== undefined,
-        isShortVariant,
+        isShortVariant
     });
 
     const onLinkClick = useConstCallback(() => callback("copy link"));
@@ -109,48 +109,48 @@ export const MyServicesSavedConfig = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"edit" | "launch">()({
-    MyServicesSavedConfig,
+    MyServicesSavedConfig
 });
 
 const useStyles = makeStyles<{ hasLogo: boolean; isShortVariant: boolean }>({
-    "name": { MyServicesSavedConfig },
+    "name": { MyServicesSavedConfig }
 })((theme, { hasLogo, isShortVariant }) => ({
     "root": {
         "borderRadius": 16,
         "boxShadow": theme.shadows[1],
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "&:hover": {
-            "boxShadow": theme.shadows[6],
+            "boxShadow": theme.shadows[6]
         },
         "display": "flex",
         "alignItems": "center",
         "padding": theme.spacing(2),
-        "paddingRight": theme.spacing(3),
+        "paddingRight": theme.spacing(3)
     },
     "logo": {
         "visibility": hasLogo ? undefined : "hidden",
-        ...theme.spacing.rightLeft("margin", 2),
+        ...theme.spacing.rightLeft("margin", 2)
     },
     "friendlyNameWrapper": {
         "overflow": "hidden",
         "whiteSpace": "nowrap",
-        "flex": 1,
+        "flex": 1
     },
     "friendlyName": {
         "overflow": "hidden",
-        "textOverflow": "ellipsis",
+        "textOverflow": "ellipsis"
     },
     "linkIcon": {
-        "marginRight": theme.spacing(3),
+        "marginRight": theme.spacing(3)
     },
     "editIcon": {
-        "marginRight": theme.spacing(3),
+        "marginRight": theme.spacing(3)
     },
     "linkAndEditButtonWrapper": !isShortVariant
         ? {}
         : {
               "width": 0,
               "height": 0,
-              "overflow": "hidden",
-          },
+              "overflow": "hidden"
+          }
 }));

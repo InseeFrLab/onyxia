@@ -10,7 +10,7 @@ const formFieldsValueDifferentFromDefault = "formFieldsValueDifferentFromDefault
 const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
     "urlEncode": false,
     "stringify": JSON.stringify,
-    "parse": JSON.parse,
+    "parse": JSON.parse
 };
 
 const queryStringSerializer: QueryStringSerializer = {
@@ -18,7 +18,7 @@ const queryStringSerializer: QueryStringSerializer = {
         const allEntries = raw.split("&").map(part => part.split("="));
 
         const [formFieldsEntries, otherEntries] = arrPartition(allEntries, ([key]) =>
-            key.includes("."),
+            key.includes(".")
         );
 
         const formFieldsValue = formFieldsEntries.map(
@@ -32,7 +32,7 @@ const queryStringSerializer: QueryStringSerializer = {
                             prev[prev.length - 1]?.endsWith("\\")
                                 ? ((prev[prev.length - 1] += `.${curr}`), prev)
                                 : [...prev, curr],
-                        [],
+                        []
                     )
                     .map(s => s.replace(/\\\./g, ".")),
                 "value": (() => {
@@ -62,16 +62,16 @@ const queryStringSerializer: QueryStringSerializer = {
                     assert(object instanceof Object);
 
                     return object;
-                })(),
-            }),
+                })()
+            })
         );
 
         return Object.fromEntries([
             ...otherEntries,
             [
                 formFieldsValueDifferentFromDefault,
-                formFieldsValueSerializer.stringify(formFieldsValue),
-            ],
+                formFieldsValueSerializer.stringify(formFieldsValue)
+            ]
         ]);
     },
     "stringify": queryParams =>
@@ -79,7 +79,7 @@ const queryStringSerializer: QueryStringSerializer = {
             .map(name => {
                 if (name === formFieldsValueDifferentFromDefault) {
                     const formFieldsValue = formFieldsValueSerializer.parse(
-                        queryParams[name].value!,
+                        queryParams[name].value!
                     );
 
                     assert(!("__noMatch" in formFieldsValue));
@@ -98,13 +98,13 @@ const queryStringSerializer: QueryStringSerializer = {
                                             return `«${encodeURIComponent(value)}»`;
                                         case "object":
                                             return encodeURIComponent(
-                                                JSON.stringify(value),
+                                                JSON.stringify(value)
                                             );
                                         default:
                                             assert(false);
                                     }
-                                })(),
-                            ].join("="),
+                                })()
+                            ].join("=")
                         )
                         .join("&");
                 }
@@ -112,7 +112,7 @@ const queryStringSerializer: QueryStringSerializer = {
                 return `${name}=${queryParams[name].value}`;
             })
             .filter(part => part !== "")
-            .join("&"),
+            .join("&")
 };
 
 export const routerOpts: RouterOpts = { queryStringSerializer };
@@ -120,5 +120,5 @@ export const routerOpts: RouterOpts = { queryStringSerializer };
 export const formFieldsDefineRouteParam = {
     [formFieldsValueDifferentFromDefault]: param.query.optional
         .ofType(formFieldsValueSerializer)
-        .default([]),
+        .default([])
 };

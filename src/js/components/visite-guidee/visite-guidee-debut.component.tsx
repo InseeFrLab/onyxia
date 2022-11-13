@@ -24,7 +24,7 @@ const ETAPES = [
                 </Typography>
             </>
         ),
-        actions: ({ next }: { next: any }) => <Next next={next} />,
+        actions: ({ next }: { next: any }) => <Next next={next} />
     },
     {
         description: () => {
@@ -53,12 +53,12 @@ const ETAPES = [
                 onClick={startVisite}
                 type="home"
             />
-        ),
-    },
+        )
+    }
 ];
 
 const VisiteConnected: any = connect(undefined, {
-    "startVisite": () => startVisite(),
+    "startVisite": () => startVisite()
 })(props => (
     <LegacyThemeProvider>
         <VisiteGuide visite={true} etapes={ETAPES} {...(props as any)} />

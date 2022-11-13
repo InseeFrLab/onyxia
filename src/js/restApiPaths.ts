@@ -7,7 +7,7 @@ export const restApiPaths = {
     "nouveauGroupe": "/my-lab/group",
     "changerEtatService": "/my-lab/app",
     "myLab": {
-        "app": "/my-lab/app",
+        "app": "/my-lab/app"
     },
     "task": "/my-lab/task",
     "cloudShell": "/cloudshell",
@@ -18,5 +18,5 @@ export const restApiPaths = {
     "getService": "/my-lab/app",
     "deleteService": "/my-lab/app",
     "getLogs": "/my-lab/ui/logs",
-    "configuration": "/public/configuration",
+    "configuration": "/public/configuration"
 } as const;

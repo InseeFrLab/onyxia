@@ -14,7 +14,7 @@ import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { Button, Text } from "ui/theme";
 import {
     generateUniqDefaultName,
-    buildNameFactory,
+    buildNameFactory
 } from "ui/tools/generateUniqDefaultName";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { id } from "tsafe/id";
@@ -45,7 +45,7 @@ export const MySecretsEditor = memo((props: Props) => {
         isBeingUpdated,
         onCopyPath,
         doDisplayUseInServiceDialog,
-        onDoDisplayUseInServiceDialogValueChange,
+        onDoDisplayUseInServiceDialogValueChange
     } = props;
 
     const { secret } = secretWithMetadata;
@@ -54,7 +54,7 @@ export const MySecretsEditor = memo((props: Props) => {
 
     const getEvtAction = useMemo(
         () => memoize((_key: string) => Evt.create<UnpackEvt<RowProps["evtAction"]>>()),
-        [],
+        []
     );
 
     // When an row is created automatically enter editing mode.
@@ -71,7 +71,7 @@ export const MySecretsEditor = memo((props: Props) => {
             const [key] = added;
 
             getEvtAction(key).post("ENTER EDITING STATE");
-        },
+        }
     });
 
     const onEditFactory = useMemo(
@@ -89,7 +89,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                         "action": "renameKeyAndUpdateValue" as const,
                                         key,
                                         "newKey": editedKey,
-                                        "newValue": editedStrValue,
+                                        "newValue": editedStrValue
                                     };
                                 }
 
@@ -97,7 +97,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                     return {
                                         "action": "addOrOverwriteKeyValue" as const,
                                         key,
-                                        "value": editedStrValue,
+                                        "value": editedStrValue
                                     };
                                 }
 
@@ -105,15 +105,15 @@ export const MySecretsEditor = memo((props: Props) => {
                                     return {
                                         "action": "renameKey" as const,
                                         key,
-                                        "newKey": editedKey,
+                                        "newKey": editedKey
                                     };
                                 }
 
                                 assert(false);
-                            })(),
-                        ),
+                            })()
+                        )
             ),
-        [onEdit],
+        [onEdit]
     );
 
     const onDeleteFactory = useMemo(
@@ -122,10 +122,10 @@ export const MySecretsEditor = memo((props: Props) => {
                 (key: string) => () =>
                     onEdit({
                         "action": "removeKeyValue",
-                        key,
-                    }),
+                        key
+                    })
             ),
-        [onEdit],
+        [onEdit]
     );
 
     const getIsValidAndAvailableKeyFactory = useMemo(
@@ -133,17 +133,17 @@ export const MySecretsEditor = memo((props: Props) => {
             memoize(
                 (key: string) =>
                     ({
-                        key: candidateKey,
+                        key: candidateKey
                     }: Parameters<RowProps["getIsValidAndAvailableKey"]>[0]) => {
                         {
                             const getIsValidKeyResult = getIsValidKey({
-                                "key": candidateKey,
+                                "key": candidateKey
                             });
 
                             if (!getIsValidKeyResult.isValidKey) {
                                 return {
                                     "isValidAndAvailableKey": false,
-                                    "message": t(getIsValidKeyResult.message),
+                                    "message": t(getIsValidKeyResult.message)
                                 } as const;
                             }
                         }
@@ -155,14 +155,14 @@ export const MySecretsEditor = memo((props: Props) => {
                         ) {
                             return {
                                 "isValidAndAvailableKey": false,
-                                "message": t("unavailable key"),
+                                "message": t("unavailable key")
                             } as const;
                         }
 
                         return { "isValidAndAvailableKey": true } as const;
-                    },
+                    }
             ),
-        [secret, t],
+        [secret, t]
     );
 
     const getResolvedValueFactory = useMemo(() => {
@@ -183,9 +183,9 @@ export const MySecretsEditor = memo((props: Props) => {
                         }
 
                         return getResolvedValue(keyBis, stringifyValue(secret[keyBis]));
-                    },
+                    }
                 });
-            },
+            }
         );
 
         return memoize((key: string) =>
@@ -195,16 +195,16 @@ export const MySecretsEditor = memo((props: Props) => {
                 return resolvedValue === undefined
                     ? ({
                           "isResolvedSuccessfully": false,
-                          "message": t("invalid value cannot eval"),
+                          "message": t("invalid value cannot eval")
                       } as const)
                     : ({
                           "isResolvedSuccessfully": true,
                           "resolvedValue":
                               resolvedValue === strValue.replace(/ +$/, "")
                                   ? ""
-                                  : resolvedValue,
+                                  : resolvedValue
                       } as const);
-            }),
+            })
         );
     }, [secret, t]);
 
@@ -215,11 +215,11 @@ export const MySecretsEditor = memo((props: Props) => {
                 "names": Object.keys(secret),
                 "buildName": buildNameFactory({
                     "defaultName": t("environnement variable default name"),
-                    "separator": "_",
-                }),
+                    "separator": "_"
+                })
             }),
-            "value": "",
-        }),
+            "value": ""
+        })
     );
 
     const { classes, css } = useStyles(props);
@@ -252,7 +252,7 @@ export const MySecretsEditor = memo((props: Props) => {
     const onEditorRowStartEditFactory = useCallbackFactory(([key]: [string]) =>
         Object.keys(secret)
             .filter(key_i => key_i !== key)
-            .map(key => getEvtAction(key).post("SUBMIT EDIT")),
+            .map(key => getEvtAction(key).post("SUBMIT EDIT"))
     );
 
     return (
@@ -278,7 +278,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                         typo="body 1"
                                         className={css({
                                             //So that the tooltip is well positioned
-                                            "display": "inline-block",
+                                            "display": "inline-block"
                                         })}
                                     >
                                         {t("resolved value column name")}
@@ -298,7 +298,7 @@ export const MySecretsEditor = memo((props: Props) => {
                                 onDelete={onDeleteFactory(key)}
                                 getResolvedValue={getResolvedValueFactory(key)}
                                 getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(
-                                    key,
+                                    key
                                 )}
                                 evtAction={getEvtAction(key)}
                                 isDarker={i % 2 === 1}
@@ -366,28 +366,28 @@ const useStyles = makeStyles<Props>({ "name": { MySecretsEditor } })(theme => ({
         "padding": theme.spacing(3),
         "& .MuiTableCell-root": {
             "padding": 0,
-            "border": "unset",
+            "border": "unset"
         },
         "& .MuiTableHead-root": {
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`
         },
         //So the error on the input of the last row is not cropped.
-        "overflow": "visible",
+        "overflow": "visible"
     },
     "tableHead": {
         "& .MuiTypography-root": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
-        },
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+        }
     },
     "buttonWrapper": {
         "& > *": {
             "marginTop": theme.spacing(4),
-            "marginRight": theme.spacing(2),
-        },
+            "marginRight": theme.spacing(2)
+        }
     },
     "tableContainerRoot": {
-        "overflow": "visible",
-    },
+        "overflow": "visible"
+    }
 }));
 
 function stringifyValue(value: Secret.Value) {
@@ -416,28 +416,28 @@ export function getIsValidKey(params: { key: string }):
     if (key === "") {
         return {
             "isValidKey": false,
-            "message": "invalid key empty string",
+            "message": "invalid key empty string"
         };
     }
 
     if (key === "_") {
         return {
             "isValidKey": false,
-            "message": "invalid key _ not valid",
+            "message": "invalid key _ not valid"
         };
     }
 
     if (/^[0-9]/.test(key)) {
         return {
             "isValidKey": false,
-            "message": "invalid key start with digit",
+            "message": "invalid key start with digit"
         };
     }
 
     if (!/^[a-zA-Z0-9_]+$/.test(key)) {
         return {
             "isValidKey": false,
-            "message": "invalid key invalid character",
+            "message": "invalid key invalid character"
         };
     }
 

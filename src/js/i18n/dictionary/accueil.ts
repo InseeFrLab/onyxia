@@ -1,8 +1,8 @@
 const dictionary = {
     startVisit: {
         fr: "Commencer",
-        en: "Start",
-    },
+        en: "Start"
+    }
 };
 
 export default dictionary;

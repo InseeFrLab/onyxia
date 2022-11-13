@@ -49,10 +49,10 @@ export const MyServicesButtonBar = memo((props: Props) => {
                             default:
                                 return buttonId;
                         }
-                    })(),
-                ),
+                    })()
+                )
             })),
-        [t, isThereNonOwnedServicesShown, isThereDeletableServices],
+        [t, isThereNonOwnedServicesShown, isThereDeletableServices]
     );
 
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
@@ -60,4 +60,6 @@ export const MyServicesButtonBar = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<
     "refresh" | "launch" | "password" | "trash" | "trash my own"
->()({ MyServicesButtonBar });
+>()({
+    MyServicesButtonBar
+});

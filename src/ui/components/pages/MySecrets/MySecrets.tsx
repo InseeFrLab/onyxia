@@ -37,7 +37,7 @@ export function MySecrets(props: Props) {
     const { t } = useTranslation({ MySecrets });
 
     const currentWorkingDirectoryView = useCoreState(
-        selectors.secretExplorer.currentWorkingDirectoryView,
+        selectors.secretExplorer.currentWorkingDirectoryView
     ).currentWorkingDirectoryView;
 
     const secretEditorState = useCoreState(state => state.secretsEditor);
@@ -53,16 +53,15 @@ export function MySecrets(props: Props) {
                 ...(!doRestoreOpenedFile
                     ? {}
                     : {
-                          "openFile":
-                              route.params.openFile ?? secretEditorState?.basename,
-                      }),
-            }).replace(),
+                          "openFile": route.params.openFile ?? secretEditorState?.basename
+                      })
+            }).replace()
         );
 
         useEffect(() => {
             secretExplorer.notifyThatUserIsWatching({
                 "directNavigationDirectoryPath": route.params.path,
-                onNavigate,
+                onNavigate
             });
 
             return () => secretExplorer.notifyThatUserIsNoLongerWatching();
@@ -79,7 +78,7 @@ export function MySecrets(props: Props) {
         } else {
             secretsEditor.openSecret({
                 "directoryPath": route.params.path,
-                "basename": route.params.openFile,
+                "basename": route.params.openFile
             });
         }
     }, [route.params.path, route.params.openFile]);
@@ -90,13 +89,13 @@ export function MySecrets(props: Props) {
         }
 
         secretExplorer.navigate({
-            "directoryPath": route.params.path,
+            "directoryPath": route.params.path
         });
     }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({ "path": directoryPath }).push(),
+            routes[route.name]({ "path": directoryPath }).push()
     );
 
     const onRefresh = useConstCallback(() => secretExplorer.refresh());
@@ -106,9 +105,9 @@ export function MySecrets(props: Props) {
             secretExplorer.rename({
                 "renamingWhat": kind,
                 basename,
-                newBasename,
+                newBasename
             });
-        },
+        }
     );
 
     const onNewItem = useConstCallback(
@@ -117,29 +116,29 @@ export function MySecrets(props: Props) {
                 case "directory":
                     secretExplorer.create({
                         "createWhat": "directory",
-                        "basename": suggestedBasename,
+                        "basename": suggestedBasename
                     });
                     break;
                 case "file":
                     secretExplorer.create({
                         "createWhat": "file",
-                        "basename": suggestedBasename,
+                        "basename": suggestedBasename
                     });
                     break;
             }
-        },
+        }
     );
 
     const onDeleteItem = useConstCallback(
         ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
             secretExplorer.delete({
                 "deleteWhat": kind,
-                basename,
-            }),
+                basename
+            })
     );
 
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/")),
+        copyToClipboard(path.split("/").slice(2).join("/"))
     );
 
     const fsApiLogs = useMemo(() => secretExplorer.getFsApiLogs(), []);
@@ -157,7 +156,7 @@ export function MySecrets(props: Props) {
     }, [currentWorkingDirectoryView === undefined]);
 
     const [evtExplorerAction] = useState(() =>
-        Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>(),
+        Evt.create<UnpackEvt<ExplorerProps["evtAction"]>>()
     );
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -166,18 +165,18 @@ export function MySecrets(props: Props) {
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpContent = useMemo(
@@ -194,7 +193,7 @@ export function MySecrets(props: Props) {
                 </Link>
             </>
         ),
-        [t],
+        [t]
     );
 
     const onOpenFile = useConstCallback<
@@ -210,8 +209,8 @@ export function MySecrets(props: Props) {
             (() => {
                 const { openFile, ...rest } = route.params;
                 return rest;
-            })(),
-        ).replace(),
+            })()
+        ).replace()
     );
 
     const onRefreshOpenFile = useConstCallback<
@@ -226,18 +225,18 @@ export function MySecrets(props: Props) {
     });
 
     const onMySecretEditorCopyPath = useConstCallback(() =>
-        evtExplorerAction.post("TRIGGER COPY PATH"),
+        evtExplorerAction.post("TRIGGER COPY PATH")
     );
 
     const {
-        userConfigs: { doDisplayMySecretsUseInServiceDialog },
+        userConfigs: { doDisplayMySecretsUseInServiceDialog }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
         userConfigs.changeValue({
             "key": "doDisplayMySecretsUseInServiceDialog",
-            value,
-        }),
+            value
+        })
     );
 
     if (currentWorkingDirectoryView === undefined) {
@@ -284,7 +283,7 @@ export function MySecrets(props: Props) {
                     if (secretEditorState === null) {
                         return {
                             "isFileOpen": false as const,
-                            onOpenFile,
+                            onOpenFile
                         };
                     }
 
@@ -297,14 +296,14 @@ export function MySecrets(props: Props) {
                             "openFileBasename": secretEditorState.basename,
                             "onCloseFile": () => {},
                             "onRefreshOpenFile": () => {},
-                            "openFileNode": null,
+                            "openFileNode": null
                         };
                     }
 
                     return {
                         "isFileOpen": true as const,
                         "openFileTime": new Date(
-                            secretWithMetadata.metadata.created_time,
+                            secretWithMetadata.metadata.created_time
                         ).getTime(),
                         "openFileBasename": secretEditorState.basename,
                         onCloseFile,
@@ -322,7 +321,7 @@ export function MySecrets(props: Props) {
                                     onDoDisplayUseInServiceDialogValueChange
                                 }
                             />
-                        ),
+                        )
                     };
                 })()}
             />
@@ -344,11 +343,11 @@ const useStyles = makeStyles({ "name": { MySecrets: MySecrets } })({
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "explorer": {
         "overflow": "hidden",
         "flex": 1,
-        "width": "100%",
-    },
+        "width": "100%"
+    }
 });

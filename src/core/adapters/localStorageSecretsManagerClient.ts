@@ -19,7 +19,7 @@ export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
 
     const sleep = () =>
         new Promise(resolve =>
-            setTimeout(resolve, createLocalStorageSecretManagerClient.artificialDelayMs),
+            setTimeout(resolve, createLocalStorageSecretManagerClient.artificialDelayMs)
         );
 
     return {
@@ -41,7 +41,7 @@ export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
 
             return {
                 "directories": directories.map(path => path.split("/")[0]),
-                files,
+                files
             };
         },
         "get": async params => {
@@ -64,8 +64,8 @@ export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
                     "created_time": new Date().toISOString(),
                     "deletion_time": "",
                     "destroyed": false,
-                    "version": !(path in record) ? 0 : record[path]!.metadata.version + 1,
-                },
+                    "version": !(path in record) ? 0 : record[path]!.metadata.version + 1
+                }
             };
 
             updateLocalStorage();
@@ -85,8 +85,8 @@ export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
             Promise.resolve({
                 "expirationTime": Infinity,
                 "token": "",
-                "acquisitionTime": Date.now(),
-            }),
+                "acquisitionTime": Date.now()
+            })
     };
 }
 

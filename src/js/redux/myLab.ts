@@ -14,8 +14,8 @@ import memoize from "memoizee";
 const getAxiosInstance = memoize(
     () => import("core/adapters/officialOnyxiaApiClient").then(ns => ns.prAxiosInstance),
     {
-        "promise": true,
-    },
+        "promise": true
+    }
 );
 
 //TODO: Rename franglish, all theses states can be deleted, they are never used.
@@ -81,14 +81,14 @@ const asyncThunks = {
                         };
                         dryRun?: boolean;
                     },
-                    { dispatch },
+                    { dispatch }
                 ): Promise<object | undefined> => {
                     const { service, options, dryRun = false } = payload;
 
                     assert(
                         typeof service === "object" &&
                             typeof options === "object" &&
-                            typeof dryRun === "boolean",
+                            typeof dryRun === "boolean"
                     );
 
                     dispatch(appActions.startWaiting());
@@ -105,12 +105,12 @@ const asyncThunks = {
                                 "packageName": service.name,
                                 "packageVersion": service.currentVersion,
                                 dryRun,
-                                options,
-                            },
+                                options
+                            }
                         )
                         .then(
                             ({ data }) => data,
-                            (error: Error) => error,
+                            (error: Error) => error
                         );
 
                     dispatch(appActions.stopWaiting());
@@ -118,8 +118,8 @@ const asyncThunks = {
                     if (services instanceof Error) {
                         PUSHER.push(
                             React.createElement(messages.ServiceEchecMessage, {
-                                "nom": service.name,
-                            }),
+                                "nom": service.name
+                            })
                         );
 
                         return;
@@ -132,13 +132,13 @@ const asyncThunks = {
                     PUSHER.push(
                         React.createElement(messages.ServiceCreeMessage, {
                             "id": service.name,
-                            "message": service.postInstallNotes,
-                        }),
+                            "message": service.postInstallNotes
+                        })
                     );
 
                     return services;
-                },
-            ),
+                }
+            )
         };
     })(),
     ...(() => {
@@ -151,7 +151,7 @@ const asyncThunks = {
                     payload: {
                         service: { id: "cloudshell" };
                     },
-                    { dispatch },
+                    { dispatch }
                 ) => {
                     const { service } = payload;
 
@@ -165,13 +165,13 @@ const asyncThunks = {
 
                     PUSHER.push(
                         React.createElement(messages.ServiceSupprime, {
-                            "id": service.id,
-                        }),
+                            "id": service.id
+                        })
                     );
-                },
-            ),
+                }
+            )
         };
-    })(),
+    })()
 };
 
 const slice = createSlice({
@@ -179,7 +179,7 @@ const slice = createSlice({
     "initialState": id<State>({
         "mesServices": [],
         "serviceSelected": null,
-        "mesServicesWaiting": [],
+        "mesServicesWaiting": []
     }),
     "reducers": {
         /*
@@ -192,7 +192,7 @@ const slice = createSlice({
 		*/
         "setServiceSelected": (
             state,
-            { payload }: PayloadAction<{ service: State["serviceSelected"] }>,
+            { payload }: PayloadAction<{ service: State["serviceSelected"] }>
         ) => {
             const { service } = payload;
             state.serviceSelected = service;
@@ -200,10 +200,10 @@ const slice = createSlice({
         "deleteMonService": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 service: Pick<State["mesServices"][number], "id">;
-            }>,
+            }>
         ) => {
             const { service } = payload;
 
@@ -221,7 +221,7 @@ const slice = createSlice({
         },
         "updateMonService": (
             state,
-            { payload }: PayloadAction<{ service: State["mesServices"][number] }>,
+            { payload }: PayloadAction<{ service: State["mesServices"][number] }>
         ) => {
             const { service } = payload;
 
@@ -239,7 +239,7 @@ const slice = createSlice({
         },
         "cardStartWaiting": (
             state,
-            { payload }: PayloadAction<{ id: State["mesServicesWaiting"][number] }>,
+            { payload }: PayloadAction<{ id: State["mesServicesWaiting"][number] }>
         ) => {
             const { id } = payload;
 
@@ -249,7 +249,7 @@ const slice = createSlice({
         },
         "cardStopWaiting": (
             state,
-            { payload }: PayloadAction<{ id: State["mesServicesWaiting"][number] }>,
+            { payload }: PayloadAction<{ id: State["mesServicesWaiting"][number] }>
         ) => {
             const { id } = payload;
 
@@ -264,17 +264,17 @@ const slice = createSlice({
             }
 
             mesServicesWaiting.splice(index, 1);
-        },
-    },
+        }
+    }
 });
 
 const { actions: syncActions } = slice;
 
 export const actions = {
     ...id<Pick<typeof syncActions, "setServiceSelected" | "updateMonService">>(
-        syncActions,
+        syncActions
     ),
-    ...asyncThunks,
+    ...asyncThunks
 };
 
 export const thunks = {};

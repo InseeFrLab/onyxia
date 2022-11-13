@@ -5,7 +5,7 @@ export function createDummyS3Client(): S3Client {
         "list": () =>
             Promise.resolve({
                 "directories": [],
-                "files": [],
+                "files": []
             }),
         "getToken": () =>
             Promise.resolve({
@@ -13,11 +13,11 @@ export function createDummyS3Client(): S3Client {
                 "accessKeyId": "",
                 "secretAccessKey": "",
                 "sessionToken": "",
-                "acquisitionTime": Date.now(),
+                "acquisitionTime": Date.now()
             }),
         "createBucketIfNotExist": () => Promise.resolve(),
         "uploadFile": () => Promise.resolve(),
         "deleteFile": () => Promise.resolve(),
-        "getFileDownloadUrl": () => Promise.resolve("https://example.com"),
+        "getFileDownloadUrl": () => Promise.resolve("https://example.com")
     };
 }

@@ -19,13 +19,13 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
     const onRequestToggleIsDarkModeEnabled = useConstCallback(() =>
-        setIsDarkModeEnabled(!isDarkModeEnabled),
+        setIsDarkModeEnabled(!isDarkModeEnabled)
     );
 
     const { userConfigs } = useCoreFunctions();
 
     const {
-        userConfigs: { isBetaModeEnabled, isDevModeEnabled },
+        userConfigs: { isBetaModeEnabled, isDevModeEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
@@ -33,13 +33,13 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
         userConfigs.changeValue({
             "key": "isBetaModeEnabled",
-            "value": isBetaModeEnabledNew,
+            "value": isBetaModeEnabledNew
         });
 
         if (!isBetaModeEnabledNew) {
             userConfigs.changeValue({
                 "key": "isDevModeEnabled",
-                "value": false,
+                "value": false
             });
         }
     });
@@ -47,8 +47,8 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     const onRequestToggleIsDevModeEnabled = useConstCallback(() =>
         userConfigs.changeValue({
             "key": "isDevModeEnabled",
-            "value": !isDevModeEnabled,
-        }),
+            "value": !isDevModeEnabled
+        })
     );
 
     return (

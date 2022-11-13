@@ -1,50 +1,50 @@
 const dictionary = {
     btnLogin: {
         fr: "login",
-        en: "login",
+        en: "login"
     },
     btnClose: {
         fr: "fermer",
-        en: "close",
+        en: "close"
     },
     btnDiscover: {
         fr: "Découvrez",
-        en: "Discover",
+        en: "Discover"
     },
     btnSaveAsLabel: {
         fr: "Sauvegarder sous",
-        en: "Save as",
+        en: "Save as"
     },
     btnCopyLabel: {
         fr: "Copier dans le presse papier",
-        en: "Copy to clipboard",
+        en: "Copy to clipboard"
     },
     btnNext: {
         fr: "suivant",
-        en: "next",
+        en: "next"
     },
     btnPrevious: {
         fr: "précédent",
-        en: "previous",
+        en: "previous"
     },
     btnSelfServiceCatalog: {
         fr: "catalogue du libre service",
-        en: "self service catalog",
+        en: "self service catalog"
     },
     btnSelfServiceCreation: {
         fr: "création du service",
-        en: "self service creation",
+        en: "self service creation"
     },
     btnMyLab: {
         fr: "mon labo",
-        en: "my lab",
+        en: "my lab"
     },
     btnDetails: {
         fr: "details",
-        en: "details",
+        en: "details"
     },
     btnValid: { fr: "Valider", en: "Valid" },
-    btnCancel: { fr: "Annuler", en: "Cancel" },
+    btnCancel: { fr: "Annuler", en: "Cancel" }
 };
 
 export default dictionary;

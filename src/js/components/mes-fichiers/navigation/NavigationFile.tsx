@@ -35,7 +35,7 @@ export function NavigationFile(props: {
     const currentDirectories = useCoreState(state => state.myFiles.currentDirectories);
     const [isInitializationCompleted, completeInitialization] = useReducer(
         () => true,
-        false,
+        false
     );
 
     //NOTE: There is a new render when the location is changed
@@ -50,8 +50,8 @@ export function NavigationFile(props: {
             actions.loadBucketContent({
                 bucketName,
                 "prefix": where.replace(`${racine}`, ""),
-                "rec": false,
-            }),
+                "rec": false
+            })
         );
 
         setPathname(where);
@@ -62,8 +62,8 @@ export function NavigationFile(props: {
             actions.loadBucketContent({
                 bucketName,
                 "prefix": pathname.replace(`${racine}`, ""),
-                "rec": false,
-            }),
+                "rec": false
+            })
         );
     }, [bucketName, pathname, racine, dispatch]);
 
@@ -84,7 +84,7 @@ export function NavigationFile(props: {
 
         (async () => {
             const bucket = userBuckets.find(({ id }) => id === bucketName) ?? {
-                "id": bucketName,
+                "id": bucketName
             };
 
             // eslint-disable-next-line

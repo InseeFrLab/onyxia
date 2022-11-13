@@ -55,7 +55,7 @@ export const thunks = {
             const [, , extraArgs] = args;
 
             return getContext(extraArgs).keycloakAccountConfigurationUrl;
-        },
+        }
 };
 
 export const privateThunks = {
@@ -76,10 +76,10 @@ export const privateThunks = {
                               userAuthenticationParams.keycloakParams.url,
                               "realms",
                               userAuthenticationParams.keycloakParams.realm,
-                              "account",
+                              "account"
                           );
-                })(),
-            }),
+                })()
+            })
 };
 
 type SliceContext = {

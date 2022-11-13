@@ -44,11 +44,11 @@ export function MyServices(props: Props) {
         useCoreFunctions();
 
     const { displayableConfigs } = useCoreState(
-        selectors.restorablePackageConfig.displayableConfigs,
+        selectors.restorablePackageConfig.displayableConfigs
     );
 
     const isRunningServicesUpdating = useCoreState(
-        state => state.runningService.isUpdating,
+        state => state.runningService.isUpdating
     );
 
     const { runningServices } = useCoreState(selectors.runningService.runningServices);
@@ -67,7 +67,7 @@ export function MyServices(props: Props) {
 
     const [refreshPasswordTrigger, pullRefreshPasswordTrigger] = useReducer(
         count => count + 1,
-        0,
+        0
     );
 
     useEffect(() => {
@@ -118,9 +118,9 @@ export function MyServices(props: Props) {
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
             .myServices({
-                "isSavedConfigsExtended": !isSavedConfigsExtended ? true : undefined,
+                "isSavedConfigsExtended": !isSavedConfigsExtended ? true : undefined
             })
-            .push(),
+            .push()
     );
 
     const onSavedConfigsCallback = useConstCallback<
@@ -136,9 +136,9 @@ export function MyServices(props: Props) {
                         ({ restorablePackageConfig }) =>
                             routes.catalogLauncher({
                                 ...restorablePackageConfig,
-                                "autoLaunch": true,
-                            }).href === launchLinkHref,
-                    )!.restorablePackageConfig,
+                                "autoLaunch": true
+                            }).href === launchLinkHref
+                    )!.restorablePackageConfig
                 });
                 return;
         }
@@ -151,18 +151,18 @@ export function MyServices(props: Props) {
                     const buildLink = (autoLaunch: boolean) =>
                         routes.catalogLauncher({
                             ...restorablePackageConfig,
-                            autoLaunch,
+                            autoLaunch
                         }).link;
 
                     return {
                         logoUrl,
                         friendlyName,
                         "launchLink": buildLink(true),
-                        "editLink": buildLink(false),
+                        "editLink": buildLink(false)
                     };
-                },
+                }
             ),
-        [displayableConfigs],
+        [displayableConfigs]
     );
 
     const cards = useMemo(
@@ -199,14 +199,14 @@ export function MyServices(props: Props) {
                           "isOwned": rest.isOwned,
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                           vaultTokenExpirationTime,
-                          s3TokenExpirationTime,
-                      }),
+                          s3TokenExpirationTime
+                      })
                   ),
-        [runningServices, isRunningServicesUpdating],
+        [runningServices, isRunningServicesUpdating]
     );
 
     const evtMyServiceCardsAction = useConst(() =>
-        Evt.create<UnpackEvt<MyServicesCardsProps["evtAction"]>>(),
+        Evt.create<UnpackEvt<MyServicesCardsProps["evtAction"]>>()
     );
 
     useEffect(() => {
@@ -228,13 +228,13 @@ export function MyServices(props: Props) {
                 "isSavedConfigsExtended": route.params.isSavedConfigsExtended
                     ? true
                     : undefined,
-                "autoLaunchServiceId": undefined,
+                "autoLaunchServiceId": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "serviceId": card.serviceId,
+            "serviceId": card.serviceId
         });
     }, [route.params.autoLaunchServiceId, cards]);
 
@@ -250,23 +250,23 @@ export function MyServices(props: Props) {
         ({ serviceId }) => {
             setServiceIdRequestedToBeDeleted(serviceId);
             setIsDialogOpen(true);
-        },
+        }
     );
 
     const deletableRunningServices = useMemo(
         () => runningServices.filter(({ isOwned }) => isOwned),
-        [runningServices],
+        [runningServices]
     );
 
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
                 runningService.stopService({
-                    "serviceId": serviceIdRequestedToBeDeleted,
+                    "serviceId": serviceIdRequestedToBeDeleted
                 });
             } else {
                 deletableRunningServices.map(({ id }) =>
-                    runningService.stopService({ "serviceId": id }),
+                    runningService.stopService({ "serviceId": id })
                 );
             }
         }
@@ -276,16 +276,16 @@ export function MyServices(props: Props) {
 
     const isThereNonOwnedServicesShown = useMemo(
         () => !!runningServices.find(({ isOwned }) => !isOwned),
-        [runningServices],
+        [runningServices]
     );
 
     const isThereOwnedSharedServices = useMemo(
         () => !!runningServices.find(({ isOwned, isShared }) => isOwned && isShared),
-        [runningServices],
+        [runningServices]
     );
 
     const getServicePassword = useConstCallback(() =>
-        projectConfigs.getValue({ "key": "servicePassword" }),
+        projectConfigs.getValue({ "key": "servicePassword" })
     );
 
     return (
@@ -365,15 +365,15 @@ const useStyles = makeStyles<{
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "payload": {
         "overflow": "hidden",
         "flex": 1,
         "display": "flex",
         "& > *": {
-            "height": "100%",
-        },
+            "height": "100%"
+        }
     },
     ...(() => {
         const ratio = 0.65;
@@ -381,12 +381,12 @@ const useStyles = makeStyles<{
         return {
             "cards": {
                 "flex": ratio,
-                "marginRight": theme.spacing(5),
+                "marginRight": theme.spacing(5)
             },
             "savedConfigs": {
                 "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                "paddingRight": "2%",
-            },
+                "paddingRight": "2%"
+            }
         };
-    })(),
+    })()
 }));

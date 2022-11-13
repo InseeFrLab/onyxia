@@ -5,15 +5,15 @@ import { kcContextLogin, kcContextRegister } from "./kcContexts";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { KcApp },
+    "wrappedComponent": { KcApp }
 });
 
 export default meta;
 
 export const Login = getStory({
-    "kcContext": kcContextLogin,
+    "kcContext": kcContextLogin
 });
 
 export const Register = getStory({
-    "kcContext": kcContextRegister,
+    "kcContext": kcContextRegister
 });

@@ -52,12 +52,12 @@ export const CatalogExplorerCards = memo((props: Props) => {
         selectedCatalogId,
         onSelectedCatalogIdChange,
         scrollableDivRef,
-        notShownPackageCount,
+        notShownPackageCount
     } = props;
 
     const onRequestLaunchFactory = useCallbackFactory(
         ([packageName, catalogId]: [string, string]) =>
-            onRequestLaunch({ packageName, catalogId }),
+            onRequestLaunch({ packageName, catalogId })
     );
 
     const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
@@ -65,11 +65,11 @@ export const CatalogExplorerCards = memo((props: Props) => {
     const { t } = useTranslation({ CatalogExplorerCards });
 
     const { classes, cx } = useStyles({
-        "filteredCardCount": packages.length,
+        "filteredCardCount": packages.length
     });
 
     const [evtSearchBarAction] = useState(() =>
-        Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>(),
+        Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>()
     );
 
     const onGoBackClick = useConstCallback(() => evtSearchBarAction.post("CLEAR SEARCH"));
@@ -77,7 +77,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
     const { resolveLocalizedString } = useResolveLocalizedString();
 
     const onSelectedCatalogIdChangeFactory = useCallbackFactory(([catalogId]: [string]) =>
-        onSelectedCatalogIdChange(catalogId),
+        onSelectedCatalogIdChange(catalogId)
     );
 
     return (
@@ -109,7 +109,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                 ? "search results"
                                 : notShownPackageCount === 0
                                 ? "all services"
-                                : "main services",
+                                : "main services"
                         )}
                     </Text>
                 )}
@@ -123,7 +123,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                 packageIconUrl,
                                 packageDescription,
                                 packageHomeUrl,
-                                catalogId,
+                                catalogId
                             }) => (
                                 <CatalogExplorerCard
                                     key={catalogId + "/" + packageName}
@@ -132,11 +132,11 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                     packageDescription={packageDescription}
                                     onRequestLaunch={onRequestLaunchFactory(
                                         packageName,
-                                        catalogId,
+                                        catalogId
                                     )}
                                     packageHomeUrl={packageHomeUrl}
                                 />
-                            ),
+                            )
                         )
                     )}
                     {notShownPackageCount !== 0 && (
@@ -174,8 +174,8 @@ const { CardShowMore } = (() => {
         "root": {
             "display": "flex",
             "justifyContent": "center",
-            "alignItems": "center",
-        },
+            "alignItems": "center"
+        }
     }));
 
     const CardShowMore = memo((props: Props) => {
@@ -203,21 +203,21 @@ const useStyles = makeStyles<{
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "catalogSwitcher": {
         "display": "flex",
-        "marginBottom": theme.spacing(2),
+        "marginBottom": theme.spacing(2)
     },
     "searchBar": {
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(4)
     },
     "contextTypo": {
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(4)
     },
     "cardsWrapper": {
         "flex": 1,
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "cards": {
         ...(filteredCardCount === 0
@@ -234,12 +234,12 @@ const useStyles = makeStyles<{
 
                       return 2;
                   })()},1fr)`,
-                  "gap": theme.spacing(4),
-              }),
+                  "gap": theme.spacing(4)
+              })
     },
     "bottomScrollSpace": {
-        "height": theme.spacing(3),
-    },
+        "height": theme.spacing(3)
+    }
 }));
 
 const { NoMatches } = (() => {
@@ -251,27 +251,27 @@ const { NoMatches } = (() => {
     const useStyles = makeStyles()(theme => ({
         "root": {
             "display": "flex",
-            "justifyContent": "center",
+            "justifyContent": "center"
         },
         "innerDiv": {
             "textAlign": "center",
-            "maxWidth": 500,
+            "maxWidth": 500
         },
         "svg": {
             "fill": theme.colors.palette.dark.greyVariant2,
             "width": 100,
-            "margin": 0,
+            "margin": 0
         },
         "h2": {
-            ...theme.spacing.topBottom("margin", 4),
+            ...theme.spacing.topBottom("margin", 4)
         },
         "typo": {
             "marginBottom": theme.spacing(1),
-            "color": theme.colors.palette.light.greyVariant3,
+            "color": theme.colors.palette.light.greyVariant3
         },
         "link": {
-            "cursor": "pointer",
-        },
+            "cursor": "pointer"
+        }
     }));
 
     const NoMatches = memo((props: Props) => {
@@ -323,7 +323,7 @@ const { CustomButton } = (() => {
                     return;
                 }
                 onClick();
-            },
+            }
         );
 
         const { classes, cx } = useStyles();
@@ -349,8 +349,8 @@ const { CustomButton } = (() => {
             "padding": theme.spacing({ "topBottom": 2, "rightLeft": 3 }),
             "display": "flex",
             "alignItems": "center",
-            "cursor": "pointer",
-        },
+            "cursor": "pointer"
+        }
     }));
 
     return { CustomButton };

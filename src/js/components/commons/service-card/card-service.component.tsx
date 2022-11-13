@@ -17,7 +17,7 @@ export const CarteService = ({
     title = null,
     subtitle = null,
     avatar = null,
-    expiration = false,
+    expiration = false
 }: {
     id?: string;
     actions: any;
@@ -40,7 +40,7 @@ export const CarteService = ({
                 onMouseLeave={() => setRaised(false)}
                 raised={raised}
                 classes={{
-                    root: "container",
+                    root: "container"
                 }}
             >
                 {wait ? <Preloader card /> : null}
@@ -65,7 +65,7 @@ export const CarteService = ({
                         root: "en-tete",
                         avatar: "avatar",
                         title: "titre",
-                        subheader: "sous-titre",
+                        subheader: "sous-titre"
                     }}
                 />
                 <CardContent classes={{ root: "contenu" }}>
@@ -98,5 +98,5 @@ CarteService.propTypes = {
     // service: serviceType,
     actions: PropTypes.func.isRequired,
     contenu: PropTypes.func.isRequired,
-    wait: PropTypes.bool,
+    wait: PropTypes.bool
 };
