@@ -1,5 +1,5 @@
 import { createI18nApi } from "i18nifty";
-import type { Language, LocalizedString } from "ui/coreApi";
+import type { Language, LocalizedString } from "core";
 import { assert } from "tsafe/assert";
 import {} from "tsafe";
 import type { Equals } from "tsafe";

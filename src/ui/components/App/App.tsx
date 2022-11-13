@@ -6,7 +6,7 @@ import { Footer } from "./Footer";
 import { useLang } from "ui/i18n";
 import { makeStyles } from "ui/theme";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
-import { useSelector, useThunks } from "ui/coreApi";
+import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
 import { Home } from "ui/components/pages/Home";
@@ -60,7 +60,7 @@ export const App = memo((props: Props) => {
         }, [rootWidth === 0]);
     }
 
-    const isWaiting = useSelector(state => state.app.waiting);
+    const isWaiting = useCoreState(state => state.app.waiting);
 
     {
         const { hideSplashScreen, showSplashScreen } = useSplashScreen();
@@ -84,19 +84,18 @@ export const App = memo((props: Props) => {
 
     const onHeaderLogoClick = useConstCallback(() => routes.home().push());
 
-    const { userAuthenticationThunks, fileExplorerThunks, secretExplorerThunks } =
-        useThunks();
+    const { userAuthentication, fileExplorer, secretExplorer } = useCoreFunctions();
 
-    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
-    const isDevModeEnabled = useSelector(state =>
+    const isDevModeEnabled = useCoreState(state =>
         isUserLoggedIn ? state.userConfigs.isDevModeEnabled.value : false,
     );
 
     const onHeaderAuthClick = useConstCallback(() =>
         isUserLoggedIn
-            ? userAuthenticationThunks.logout({ "redirectTo": "home" })
-            : userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": false }),
+            ? userAuthentication.logout({ "redirectTo": "home" })
+            : userAuthentication.login({ "doesCurrentHrefRequiresAuth": false }),
     );
 
     const projectsSlice = useProjectsSlice();
@@ -135,7 +134,7 @@ export const App = memo((props: Props) => {
                     "link": routes.myServices().link,
                     "hasDividerBelow": true,
                 },
-                ...(!secretExplorerThunks.getIsEnabled()
+                ...(!secretExplorer.getIsEnabled()
                     ? ({} as never)
                     : {
                           "mySecrets": {
@@ -144,7 +143,7 @@ export const App = memo((props: Props) => {
                               "link": routes.mySecrets().link,
                           } as const,
                       }),
-                ...(!fileExplorerThunks.getIsEnabled()
+                ...(!fileExplorer.getIsEnabled()
                     ? ({} as never)
                     : {
                           "myFiles": {
@@ -185,7 +184,7 @@ export const App = memo((props: Props) => {
                             "iconId": "files",
                             "label": t("myFiles") + " Legacy",
                             "link": routes.myBuckets().link,
-                            "availability": fileExplorerThunks.getIsEnabled()
+                            "availability": fileExplorer.getIsEnabled()
                                 ? "available"
                                 : "greyed",
                         },
@@ -314,9 +313,9 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
 const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
     const { route } = props;
 
-    const { userAuthenticationThunks } = useThunks();
+    const { userAuthentication } = useCoreFunctions();
 
-    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const legacyRoute = useMemo(() => {
         const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
@@ -328,7 +327,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
         }
 
         if (Page.getDoRequireUserLoggedIn && !isUserLoggedIn) {
-            userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+            userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
             return null;
         }
 
@@ -370,7 +369,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn(route) && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -383,7 +382,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -396,7 +395,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -409,7 +408,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -422,7 +421,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -435,7 +434,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -448,7 +447,7 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
         if (Page.routeGroup.has(route)) {
             if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": true });
+                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
                 return null;
             }
 
@@ -471,13 +470,13 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
  * user configs.
  */
 function useSyncDarkModeWithValueInProfile() {
-    const { userAuthenticationThunks, userConfigsThunks } = useThunks();
+    const { userAuthentication, userConfigs } = useCoreFunctions();
 
-    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
-    const userConfigsIsDarkModeEnabled = useSelector(state =>
+    const userConfigsIsDarkModeEnabled = useCoreState(state =>
         !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value,
     );
 
@@ -494,7 +493,7 @@ function useSyncDarkModeWithValueInProfile() {
             return;
         }
 
-        userConfigsThunks.changeValue({
+        userConfigs.changeValue({
             "key": "isDarkModeEnabled",
             "value": isDarkModeEnabled,
         });
@@ -502,11 +501,9 @@ function useSyncDarkModeWithValueInProfile() {
 }
 
 function useProjectsSlice() {
-    const { projectSelectionThunks, userAuthenticationThunks } = useThunks();
-    const projectsState = useSelector(state =>
-        !userAuthenticationThunks.getIsUserLoggedIn()
-            ? undefined
-            : state.projectSelection,
+    const { projectSelection, userAuthentication } = useCoreFunctions();
+    const projectsState = useCoreState(state =>
+        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectSelection,
     );
 
     const route = useRoute();
@@ -530,7 +527,7 @@ function useProjectsSlice() {
                 }
             })();
 
-            await projectSelectionThunks.changeProject({
+            await projectSelection.changeProject({
                 projectId,
                 "doPreventDispatch": reload !== undefined,
             });

@@ -4,9 +4,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { Catalog } from "../ports/OnyxiaApiClient";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { ThunksExtraArgument, RootState } from "../setup";
+import type { State } from "../setup";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
-import memoize from "memoizee";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 import { exclude } from "tsafe/exclude";
 
 type CatalogExplorerState = CatalogExplorerState.NotFetched | CatalogExplorerState.Ready;
@@ -166,7 +166,7 @@ export const thunks = {
             const { search } = params;
             const [dispatch, getState, extra] = args;
 
-            const { waitForSearchDebounce } = getSliceContext(extra);
+            const { waitForSearchDebounce } = getContext(extra);
 
             await waitForSearchDebounce();
 
@@ -192,7 +192,7 @@ export const thunks = {
         },
 };
 
-const getSliceContext = memoize((_: ThunksExtraArgument) => {
+const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
     return {
         "waitForSearchDebounce": waitForDebounce,
@@ -215,7 +215,7 @@ export const selectors = (() => {
         return { getPackageWeight };
     }
 
-    const filteredPackages = (rootState: RootState) => {
+    const filteredPackages = (rootState: State) => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
@@ -269,9 +269,7 @@ export const selectors = (() => {
         };
     };
 
-    const selectedCatalog = (
-        rootState: RootState,
-    ): Omit<Catalog, "catalog"> | undefined => {
+    const selectedCatalog = (rootState: State): Omit<Catalog, "catalog"> | undefined => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
@@ -292,7 +290,7 @@ export const selectors = (() => {
     };
 
     const productionCatalogs = (
-        rootState: RootState,
+        rootState: State,
     ): ReturnType<typeof filterProductionCatalogs> | undefined => {
         const state = rootState.catalogExplorer;
 

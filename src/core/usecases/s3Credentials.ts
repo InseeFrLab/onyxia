@@ -3,9 +3,9 @@ import type { ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { RootState } from "../setup";
+import type { State } from "../setup";
 import { createSelector } from "@reduxjs/toolkit";
-import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
+import { getS3UrlAndRegion } from "../adapters/s3Client";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
@@ -171,7 +171,7 @@ export const thunks = {
 };
 
 export const selectors = (() => {
-    const readyState = (rootState: RootState): s3CredentialsState.Ready | undefined => {
+    const readyState = (rootState: State): s3CredentialsState.Ready | undefined => {
         const state = rootState.s3Credentials;
         switch (state.stateDescription) {
             case "ready":

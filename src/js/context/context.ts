@@ -1,7 +1,7 @@
 import { prStore } from "core/setup";
-import type { RootState } from "core/setup";
+import type { State } from "core/setup";
 
-let user: RootState["user"] = {
+let user: State["user"] = {
     "SSH": {
         "SSH_PUBLIC_KEY": "",
         "SSH_KEY_PASSWORD": "",

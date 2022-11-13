@@ -4,7 +4,7 @@ import { createGroup } from "type-route";
 import { routes } from "ui/routes";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
-import { useThunks } from "ui/coreApi";
+import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
 import { ReactComponent as IconCommunitySvg } from "ui/assets/svg/IconCommunity.svg";
 import { ReactComponent as IconServiceSvg } from "ui/assets/svg/IconService.svg";
@@ -39,9 +39,9 @@ export function Home(props: Props) {
 
     const { classes, cx } = useStyles();
 
-    const { userAuthenticationThunks } = useThunks();
+    const { userAuthentication } = useCoreFunctions();
 
-    const isUserLoggedIn = userAuthenticationThunks.getIsUserLoggedIn();
+    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const { t } = useTranslation({ Home });
 
@@ -49,7 +49,7 @@ export function Home(props: Props) {
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
     const onLoginClick = useConstCallback(() =>
-        userAuthenticationThunks.login({ "doesCurrentHrefRequiresAuth": false }),
+        userAuthentication.login({ "doesCurrentHrefRequiresAuth": false }),
     );
 
     return (
@@ -60,8 +60,7 @@ export function Home(props: Props) {
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
-                                  "who":
-                                      userAuthenticationThunks.getUser().firstName ?? "",
+                                  "who": userAuthentication.getUser().firstName ?? "",
                               })
                             : t("title")}
                     </Text>

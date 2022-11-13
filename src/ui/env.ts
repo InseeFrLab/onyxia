@@ -4,9 +4,10 @@ import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
-import type { CreateStoreParams } from "core/setup";
+import type { createCoreProvider } from "core";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
 import type { NonPostableEvt } from "evt";
+import type { Param0 } from "tsafe";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -90,7 +91,7 @@ export const getCreateStoreParams = memoize(
     (params: {
         transformUrlBeforeRedirectToLogin: (url: string) => string;
         evtUserActivity: NonPostableEvt<void>;
-    }): CreateStoreParams => {
+    }): Exclude<Param0<typeof createCoreProvider>, Function> => {
         const { transformUrlBeforeRedirectToLogin, evtUserActivity } = params;
 
         const {

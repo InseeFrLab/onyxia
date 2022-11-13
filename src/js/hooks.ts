@@ -1,18 +1,18 @@
 import type { BuildOnyxiaValue } from "js/utils/form-field";
-import { useSelector, selectors } from "ui/coreApi";
-import { useThunks } from "ui/coreApi";
-import type { Store } from "core/setup";
+import { useCoreState, selectors } from "core";
+import { useCoreFunctions } from "core";
+import type { Core } from "core/setup";
 import * as reactRedux from "react-redux";
 /** useDispatch from "react-redux" but with correct return type for asyncThunkActions */
-export const useDispatch = () => reactRedux.useDispatch<Store["dispatch"]>();
+export const useDispatch = () => reactRedux.useDispatch<Core["dispatch"]>();
 
 export function useGetBuildOnyxiaValue() {
-    const { launcherThunks } = useThunks();
+    const { launcher } = useCoreFunctions();
 
-    const { userConfigs } = useSelector(selectors.userConfigs.userConfigs);
+    const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
 
     async function getBuildOnyxiaValue(): Promise<BuildOnyxiaValue> {
-        const mustacheParams = await launcherThunks.getOnyxiaValues();
+        const mustacheParams = await launcher.getOnyxiaValues();
 
         return {
             "s3": {

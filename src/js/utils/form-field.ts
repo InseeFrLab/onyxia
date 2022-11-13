@@ -1,5 +1,5 @@
 import Mustache from "mustache";
-import type { RootState } from "core/setup";
+import type { State } from "core/setup";
 import { getValidatedEnv } from "js/validatedEnv";
 import type { UserConfigs } from "core/usecases/userConfigs";
 
@@ -20,7 +20,7 @@ export const getFieldSafeAttr = (field: Record<string, Field>) => {
 };
 
 export type BuildOnyxiaValue = {
-    s3: NonNullable<RootState["user"]["s3"]>;
+    s3: NonNullable<State["user"]["s3"]>;
     publicIp: string;
     parsedJwt: Record<"username" | "email" | "familyName" | "firstName", string>;
     secretExplorerUserHomePath: string;

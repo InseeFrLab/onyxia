@@ -2,7 +2,7 @@ import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useSelector, useThunks } from "ui/coreApi";
+import { useCoreState, useCoreFunctions } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -21,21 +21,24 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountInfoTab });
 
-    const { publicIpThunks, projectConfigsThunks, userAuthenticationThunks } =
-        useThunks();
+    const {
+        publicIp: publicIpFunctions,
+        projectConfigs,
+        userAuthentication,
+    } = useCoreFunctions();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy),
     );
 
-    const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
+    const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
 
-    const selectedProjectId = useSelector(
+    const selectedProjectId = useCoreState(
         state => state.projectSelection.selectedProjectId,
     );
 
     useEffect(() => {
-        publicIpThunks.fetch();
+        publicIpFunctions.fetch();
     }, []);
 
     const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
@@ -44,22 +47,22 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 
     const servicePasswordAsync = useAsync(
-        () => projectConfigsThunks.getValue({ "key": "servicePassword" }),
+        () => projectConfigs.getValue({ "key": "servicePassword" }),
         [refreshServicePasswordTrigger, selectedProjectId],
     );
 
     const onRequestServicePasswordRenewal = useConstCallback(async () => {
-        await projectConfigsThunks.renewServicePassword();
+        await projectConfigs.renewServicePassword();
 
         pullRefreshServicePasswordTrigger();
     });
 
-    const user = userAuthenticationThunks.getUser();
+    const user = userAuthentication.getUser();
 
     const fullName = `${user.firstName} ${user.familyName}`;
 
     const keycloakAccountConfigurationUrl =
-        userAuthenticationThunks.getKeycloakAccountConfigurationUrl();
+        userAuthentication.getKeycloakAccountConfigurationUrl();
 
     const { classes } = useStyles();
 

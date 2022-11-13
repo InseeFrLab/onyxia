@@ -1,5 +1,5 @@
 import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
-import { createPropertyThatThrowIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
+import { createPropertyThatThrowIfAccessed } from "redux-clean-architecture/tools/createObjectThatThrowsIfAccessed";
 
 import memoize from "memoizee";
 

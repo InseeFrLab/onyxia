@@ -6,7 +6,7 @@ import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
-import { useSelector, selectors, pure, useThunks } from "ui/coreApi";
+import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import * as clipboard from "clipboard-polyfill/text";
 import { assert } from "tsafe/assert";
@@ -33,22 +33,23 @@ export type Props = {
 export const CatalogLauncher = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
-    const { launcherThunks, restorablePackageConfigThunks } = useThunks();
+    const { launcher, restorablePackageConfig: restorablePackageConfigFunctions } =
+        useCoreFunctions();
 
     useEffect(() => {
         const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
             route.params;
 
-        launcherThunks.initialize({
+        launcher.initialize({
             catalogId,
             packageName,
             formFieldsValueDifferentFromDefault,
         });
 
-        return () => launcherThunks.reset();
+        return () => launcher.reset();
     }, []);
 
-    const { restorablePackageConfig } = useSelector(
+    const { restorablePackageConfig } = useCoreState(
         selectors.launcher.restorablePackageConfig,
     );
 
@@ -70,7 +71,7 @@ export const CatalogLauncher = memo((props: Props) => {
             .replace();
     }, [restorablePackageConfig ?? Object]);
 
-    const restorablePackageConfigs = useSelector(
+    const restorablePackageConfigs = useCoreState(
         state => state.restorablePackageConfig.restorablePackageConfigs,
     );
 
@@ -119,7 +120,7 @@ export const CatalogLauncher = memo((props: Props) => {
         }
 
         const isBookmarkedNew =
-            pure.restorablePackageConfig.isRestorablePackageConfigInStore({
+            restorablePackageConfigFunctions.isRestorablePackageConfigInStore({
                 restorablePackageConfigs,
                 restorablePackageConfig,
             });
@@ -144,7 +145,7 @@ export const CatalogLauncher = memo((props: Props) => {
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
         assert(restorablePackageConfig !== undefined);
 
-        restorablePackageConfigThunks[
+        restorablePackageConfigFunctions[
             isBookmarked ? "saveRestorablePackageConfig" : "deleteRestorablePackageConfig"
         ]({
             restorablePackageConfig,
@@ -161,10 +162,10 @@ export const CatalogLauncher = memo((props: Props) => {
         });
     });
 
-    const { friendlyName } = useSelector(selectors.launcher.friendlyName);
-    const { isShared } = useSelector(selectors.launcher.isShared);
+    const { friendlyName } = useCoreState(selectors.launcher.friendlyName);
+    const { isShared } = useCoreState(selectors.launcher.isShared);
 
-    const state = useSelector(state => state.launcher);
+    const state = useCoreState(state => state.launcher);
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -184,7 +185,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                     sensitiveConfigurations,
                                 });
                             } else {
-                                launcherThunks.launch();
+                                launcher.launch();
                             }
                         }
 
@@ -208,9 +209,9 @@ export const CatalogLauncher = memo((props: Props) => {
             : state.launchState,
     ]);
 
-    const { indexedFormFields } = useSelector(selectors.launcher.indexedFormFields);
-    const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
-    const { formFieldsIsWellFormed } = useSelector(
+    const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
+    const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
+    const { formFieldsIsWellFormed } = useCoreState(
         selectors.launcher.formFieldsIsWellFormed,
     );
 
@@ -226,7 +227,7 @@ export const CatalogLauncher = memo((props: Props) => {
         if (!doProceedToLaunch) {
             return;
         }
-        launcherThunks.launch();
+        launcher.launch();
     });
 
     if (state.stateDescription !== "ready") {
@@ -254,9 +255,9 @@ export const CatalogLauncher = memo((props: Props) => {
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                         friendlyName={friendlyName}
                         isShared={isShared}
-                        onFriendlyNameChange={launcherThunks.changeFriendlyName}
-                        onIsSharedValueChange={launcherThunks.changeIsShared}
-                        onRequestLaunch={launcherThunks.launch}
+                        onFriendlyNameChange={launcher.changeFriendlyName}
+                        onIsSharedValueChange={launcher.changeIsShared}
+                        onRequestLaunch={launcher.launch}
                         onRequestCancel={onRequestCancel}
                         onRequestCopyLaunchUrl={
                             restorablePackageConfig.formFieldsValueDifferentFromDefault
@@ -274,7 +275,7 @@ export const CatalogLauncher = memo((props: Props) => {
                                     dependencyNamePackageNameOrGlobal
                                 }
                                 {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                                onFormValueChange={launcherThunks.changeFormFieldValue}
+                                onFormValueChange={launcher.changeFormFieldValue}
                                 formFieldsIsWellFormed={formFieldsIsWellFormed}
                             />
                         ),

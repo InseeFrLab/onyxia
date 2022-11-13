@@ -7,11 +7,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { ThunkAction } from "../setup";
 import { thunks as userConfigsThunks } from "./userConfigs";
-import {
-    createObjectThatThrowsIfAccessedFactory,
-    isPropertyAccessedByReduxOrStorybook,
-} from "../tools/createObjectThatThrowsIfAccessed";
-import type { RootState } from "../setup";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import type { State } from "../setup";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApiClient";
 
 type RestorablePackageConfigsState = {
@@ -36,10 +33,6 @@ export type RestorablePackageConfig = {
     packageName: string;
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
-    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
-});
 
 export const name = "restorablePackageConfig";
 
@@ -193,7 +186,7 @@ export const thunks = {
             const { restorablePackageConfig, getDoOverwriteConfiguration } = params;
 
             if (
-                pure.isRestorablePackageConfigInStore({
+                isRestorablePackageConfigInStore({
                     "restorablePackageConfigs":
                         getState().restorablePackageConfig.restorablePackageConfigs,
                     restorablePackageConfig,
@@ -265,23 +258,29 @@ export const thunks = {
 
             await dispatch(privateThunks.syncWithUserConfig());
         },
+    /** Pure */
+    "isRestorablePackageConfigInStore":
+        (params: {
+            restorablePackageConfigs: RestorablePackageConfig[];
+            restorablePackageConfig: RestorablePackageConfig;
+        }): ThunkAction<boolean> =>
+        () =>
+            isRestorablePackageConfigInStore(params),
 };
 
-export const pure = {
-    "isRestorablePackageConfigInStore": (params: {
-        restorablePackageConfigs: RestorablePackageConfig[];
-        restorablePackageConfig: RestorablePackageConfig;
-    }) => {
-        const { restorablePackageConfig, restorablePackageConfigs } = params;
+function isRestorablePackageConfigInStore(params: {
+    restorablePackageConfigs: RestorablePackageConfig[];
+    restorablePackageConfig: RestorablePackageConfig;
+}) {
+    const { restorablePackageConfig, restorablePackageConfigs } = params;
 
-        return !!restorablePackageConfigs.find(restorablePackageConfig_i =>
-            areSameRestorablePackageConfig(
-                restorablePackageConfig_i,
-                restorablePackageConfig,
-            ),
-        );
-    },
-};
+    return !!restorablePackageConfigs.find(restorablePackageConfig_i =>
+        areSameRestorablePackageConfig(
+            restorablePackageConfig_i,
+            restorablePackageConfig,
+        ),
+    );
+}
 
 function areSameRestorablePackageConfig(
     restorablePackageConfiguration1: RestorablePackageConfig,
@@ -297,7 +296,7 @@ function areSameRestorablePackageConfig(
 }
 
 export const selectors = (() => {
-    function displayableConfigs(rootState: RootState) {
+    function displayableConfigs(rootState: State) {
         const { restorablePackageConfigs, packageIcons } =
             rootState.restorablePackageConfig;
 

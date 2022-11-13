@@ -5,7 +5,7 @@ import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useSplashScreen } from "onyxia-ui";
-import { useSelector, useThunks, selectors } from "ui/coreApi";
+import { useCoreState, useCoreFunctions, selectors } from "core";
 import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { assert } from "tsafe/assert";
@@ -19,9 +19,9 @@ export type Props = {
 export const CatalogExplorer = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
-    const catalogExplorerState = useSelector(state => state.catalogExplorer);
+    const catalogExplorerState = useCoreState(state => state.catalogExplorer);
 
-    const { catalogExplorerThunks } = useThunks();
+    const { catalogExplorer } = useCoreFunctions();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -33,7 +33,7 @@ export const CatalogExplorer = memo((props: Props) => {
 
                     const { catalogId } = route.params;
 
-                    catalogExplorerThunks.fetchCatalogs(
+                    catalogExplorer.fetchCatalogs(
                         catalogId === undefined
                             ? {
                                   "isCatalogIdInUrl": false,
@@ -71,7 +71,7 @@ export const CatalogExplorer = memo((props: Props) => {
             return;
         }
 
-        catalogExplorerThunks.changeSelectedCatalogId({ catalogId });
+        catalogExplorer.changeSelectedCatalogId({ catalogId });
     }, [route.params.catalogId]);
 
     const onRequestLaunch = useConstCallback<
@@ -96,19 +96,19 @@ export const CatalogExplorer = memo((props: Props) => {
     );
 
     useEffect(() => {
-        catalogExplorerThunks.setSearch({ "search": route.params.search });
+        catalogExplorer.setSearch({ "search": route.params.search });
     }, [route.params.search]);
 
     const onRequestRevealPackagesNotShown = useConstCallback(() =>
-        catalogExplorerThunks.revealAllPackages(),
+        catalogExplorer.revealAllPackages(),
     );
 
-    const { filteredPackages } = useSelector(selectors.catalogExplorer.filteredPackages);
+    const { filteredPackages } = useCoreState(selectors.catalogExplorer.filteredPackages);
 
-    const { productionCatalogs } = useSelector(
+    const { productionCatalogs } = useCoreState(
         selectors.catalogExplorer.productionCatalogs,
     );
-    const { selectedCatalog } = useSelector(selectors.catalogExplorer.selectedCatalog);
+    const { selectedCatalog } = useCoreState(selectors.catalogExplorer.selectedCatalog);
 
     const onSelectedCatalogIdChange = useConstCallback((catalogId: string) =>
         routes.catalogExplorer({ catalogId }).push(),

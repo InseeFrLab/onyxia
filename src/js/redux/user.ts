@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { getS3Url } from "core/adapters/officialOnyxiaApiClient";
 
 export type S3 = {
     AWS_ACCESS_KEY_ID: string;

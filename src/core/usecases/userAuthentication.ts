@@ -1,6 +1,7 @@
 import { assert } from "tsafe/assert";
 import type { User } from "../ports/UserApiClient";
-import type { ThunkAction, ThunksExtraArgument } from "../setup";
+import type { ThunkAction } from "../setup";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 import { urlJoin } from "url-join-ts";
 
 export const name = "userAuthentication";
@@ -13,7 +14,7 @@ export const thunks = {
         (...args) => {
             const [, , extraArg] = args;
 
-            const { user } = getSliceContext(extraArg);
+            const { user } = getContext(extraArg);
 
             assert(user !== undefined, "Can't use getUser when not authenticated");
 
@@ -53,7 +54,7 @@ export const thunks = {
         (...args) => {
             const [, , extraArgs] = args;
 
-            return getSliceContext(extraArgs).keycloakAccountConfigurationUrl;
+            return getContext(extraArgs).keycloakAccountConfigurationUrl;
         },
 };
 
@@ -61,7 +62,7 @@ export const privateThunks = {
     "initialize":
         (): ThunkAction =>
         async (...[, , extraArg]) =>
-            setSliceContext(extraArg, {
+            setContext(extraArg, {
                 "user": !extraArg.oidcClient.isUserLoggedIn
                     ? undefined
                     : await extraArg.userApiClient.getUser(),
@@ -88,23 +89,4 @@ type SliceContext = {
     keycloakAccountConfigurationUrl: string | undefined;
 };
 
-const { getSliceContext, setSliceContext } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
-
-    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
-        const sliceContext = weakMap.get(extraArg);
-
-        assert(sliceContext !== undefined, "Slice context not initialized");
-
-        return sliceContext;
-    }
-
-    function setSliceContext(
-        extraArg: ThunksExtraArgument,
-        sliceContext: SliceContext,
-    ): void {
-        weakMap.set(extraArg, sliceContext);
-    }
-
-    return { getSliceContext, setSliceContext };
-})();
+const { getContext, setContext } = createUsecaseContextApi<SliceContext>();

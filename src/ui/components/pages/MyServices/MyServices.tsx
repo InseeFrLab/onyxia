@@ -9,7 +9,7 @@ import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useThunks, useSelector, selectors } from "ui/coreApi";
+import { useCoreFunctions, useCoreState, selectors } from "core";
 import * as clipboard from "clipboard-polyfill/text";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
@@ -40,18 +40,18 @@ export function MyServices(props: Props) {
 
     const { t } = useTranslation({ MyServices });
 
-    const { runningServiceThunks, restorablePackageConfigThunks, projectConfigsThunks } =
-        useThunks();
+    const { runningService, restorablePackageConfig, projectConfigs } =
+        useCoreFunctions();
 
-    const { displayableConfigs } = useSelector(
+    const { displayableConfigs } = useCoreState(
         selectors.restorablePackageConfig.displayableConfigs,
     );
 
-    const isRunningServicesUpdating = useSelector(
+    const isRunningServicesUpdating = useCoreState(
         state => state.runningService.isUpdating,
     );
 
-    const { runningServices } = useSelector(selectors.runningService.runningServices);
+    const { runningServices } = useCoreState(selectors.runningService.runningServices);
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
@@ -71,15 +71,13 @@ export function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        projectConfigsThunks
-            .getValue({ "key": "servicePassword" })
-            .then(upToDatePassword => {
-                setPassword(upToDatePassword);
+        projectConfigs.getValue({ "key": "servicePassword" }).then(upToDatePassword => {
+            setPassword(upToDatePassword);
 
-                if (password !== undefined && password !== upToDatePassword) {
-                    alert("Outdated password copied. Please click the button again");
-                }
-            });
+            if (password !== undefined && password !== upToDatePassword) {
+                alert("Outdated password copied. Please click the button again");
+            }
+        });
     }, [password, refreshPasswordTrigger]);
 
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
@@ -88,7 +86,7 @@ export function MyServices(props: Props) {
                 routes.catalogExplorer().push();
                 return;
             case "refresh":
-                runningServiceThunks.update();
+                runningService.update();
                 return;
             case "password":
                 assert(password !== undefined);
@@ -105,12 +103,12 @@ export function MyServices(props: Props) {
     });
 
     useEffect(() => {
-        restorablePackageConfigThunks.fetchIconsIfNotAlreadyDone();
+        restorablePackageConfig.fetchIconsIfNotAlreadyDone();
     }, []);
 
     useEffect(() => {
-        runningServiceThunks.setIsUserWatching(true);
-        return () => runningServiceThunks.setIsUserWatching(false);
+        runningService.setIsUserWatching(true);
+        return () => runningService.setIsUserWatching(false);
     }, []);
 
     const { isSavedConfigsExtended } = route.params;
@@ -133,7 +131,7 @@ export function MyServices(props: Props) {
                 clipboard.writeText(`${window.location.origin}${launchLinkHref}`);
                 return;
             case "delete":
-                restorablePackageConfigThunks.deleteRestorablePackageConfig({
+                restorablePackageConfig.deleteRestorablePackageConfig({
                     "restorablePackageConfig": displayableConfigs.find(
                         ({ restorablePackageConfig }) =>
                             routes.catalogLauncher({
@@ -263,12 +261,12 @@ export function MyServices(props: Props) {
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
-                runningServiceThunks.stopService({
+                runningService.stopService({
                     "serviceId": serviceIdRequestedToBeDeleted,
                 });
             } else {
                 deletableRunningServices.map(({ id }) =>
-                    runningServiceThunks.stopService({ "serviceId": id }),
+                    runningService.stopService({ "serviceId": id }),
                 );
             }
         }
@@ -287,7 +285,7 @@ export function MyServices(props: Props) {
     );
 
     const getServicePassword = useConstCallback(() =>
-        projectConfigsThunks.getValue({ "key": "servicePassword" }),
+        projectConfigs.getValue({ "key": "servicePassword" }),
     );
 
     return (
