@@ -348,20 +348,22 @@ export function createOfficialOnyxiaApiClient(params: {
         ),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
-                .get<{
-                    config: JSONSchemaObject;
-                    sources?: string[];
-                    dependencies?: {
-                        name: string;
-                    }[];
-                }>(`/public/catalog/${catalogId}/${packageName}`)
+                .get<
+                    {
+                        config: JSONSchemaObject;
+                        sources?: string[];
+                        dependencies?: {
+                            name: string;
+                        }[];
+                    }[]
+                >(`/public/catalogs/${catalogId}/charts/${packageName}`)
                 .then(({ data }) => ({
-                    "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
-                    "sources": data.sources ?? [],
+                    "dependencies": data[0].dependencies?.map(({ name }) => name) ?? [],
+                    "sources": data[0].sources ?? [],
                     "getValuesSchemaJson": ({ onyxiaValues }) => {
                         //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                         const configCopy = JSON.parse(
-                            JSON.stringify(data.config)
+                            JSON.stringify(data[0].config)
                         ) as JSONSchemaObject;
 
                         function overrideDefaultsRec(
