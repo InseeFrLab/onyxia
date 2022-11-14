@@ -12839,6 +12839,16 @@ powerhooks@^0.20.26:
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.2.1"
 
+powerhooks@^0.20.27:
+  version "0.20.27"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.27.tgz#ac82dba8c525434929ba8af3674a0d0ba1485a4a"
+  integrity sha512-1xHmVKWXCA4WgSCkaQlYsNKfrLmrpn+jpRFpt4QIIEcWAV2+gswAujPu5+MCxXIOdmIsr0t16uJ1gN2Jc8xp2A==
+  dependencies:
+    evt "^2.4.10"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.2.1"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
