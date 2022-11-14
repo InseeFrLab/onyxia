@@ -888,9 +888,8 @@ export const thunks = {
                             apiRequestResult =>
                                 apiRequestResult
                                     .find(({ id }) => id === catalogId)!
-                                    .catalog.packages.find(
-                                        ({ name }) => name === packageName
-                                    )!.icon
+                                    .charts.find(({ name }) => name === packageName)!
+                                    .versions[0].icon
                         ),
                     sources,
                     formFields,

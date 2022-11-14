@@ -236,11 +236,11 @@ export const selectors = (() => {
         const catalog = catalogs
             .filter(({ id }) => id === selectedCatalogId || state.search !== "")
             .map(catalog =>
-                catalog.catalog.packages.map(pack => ({
-                    "packageDescription": pack.description,
-                    "packageHomeUrl": pack.home,
-                    "packageName": pack.name,
-                    "packageIconUrl": pack.icon,
+                catalog.charts.map(chart => ({
+                    "packageDescription": chart.versions[0].description,
+                    "packageHomeUrl": chart.versions[0].home,
+                    "packageName": chart.name,
+                    "packageIconUrl": chart.versions[0].icon,
                     "catalogId": catalog.id
                 }))
             )
@@ -269,7 +269,7 @@ export const selectors = (() => {
         };
     };
 
-    const selectedCatalog = (rootState: State): Omit<Catalog, "catalog"> | undefined => {
+    const selectedCatalog = (rootState: State): Omit<Catalog, "charts"> | undefined => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
@@ -284,7 +284,7 @@ export const selectors = (() => {
 
         assert(catalog !== undefined);
 
-        const { catalog: _, ...rest } = catalog;
+        const { charts: _, ...rest } = catalog;
 
         return rest;
     };
@@ -311,19 +311,19 @@ function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
 }) {
     const { highlightedChartsLength, catalogs, selectedCatalogId } = params;
 
-    const totalPackageCount = catalogs.find(({ id }) => id === selectedCatalogId)!.catalog
-        .packages.length;
+    const totalPackageCount = catalogs.find(({ id }) => id === selectedCatalogId)!.charts
+        .length;
 
     return highlightedChartsLength !== 0 && totalPackageCount > 5;
 }
 
 function filterProductionCatalogs(
     catalogs: Catalog[]
-): (Omit<Catalog, "catalog" | "status"> & { status: "PROD" })[] {
+): (Omit<Catalog, "charts" | "status"> & { status: "PROD" })[] {
     return catalogs
         .map(({ status, ...rest }) =>
             status === "PROD" ? { ...rest, status } : undefined
         )
         .filter(exclude(undefined))
-        .map(({ catalog: _, ...rest }) => rest);
+        .map(({ charts: _, ...rest }) => rest);
 }

@@ -18,12 +18,13 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription
 } from "../ports/OnyxiaApiClient";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
+import { exclude } from "tsafe/exclude";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -308,16 +309,41 @@ export function createOfficialOnyxiaApiClient(params: {
                             description: LocalizedString;
                             status: "PROD" | "TEST";
                             catalog: {
-                                packages: {
-                                    description: string;
-                                    icon?: string;
+                                entries: {
                                     name: string;
-                                    home?: string;
+                                    values: {
+                                        description: string;
+                                        icon?: string;
+                                        home?: string;
+                                        version: string;
+                                    }[];
                                 }[];
                             };
+                            highlightedCharts: string[];
                         }[];
-                    }>("/public/catalog")
-                    .then(({ data }) => data.catalogs),
+                    }>("/public/catalogs")
+                    .then(({ data }) =>
+                        data.catalogs.map(
+                            catalog =>
+                                ({
+                                    id: catalog.id,
+                                    name: catalog.name,
+                                    location: catalog.location,
+                                    description: catalog.description,
+                                    status: catalog.status,
+                                    charts: Object.keys(catalog.catalog.entries)
+                                        .filter(exclude("library-chart"))
+                                        .map(key => ({
+                                            name: key,
+                                            versions:
+                                                catalog.catalog.entries[
+                                                    key as keyof typeof catalog.catalog.entries
+                                                ]
+                                        })),
+                                    highlightedCharts: catalog.highlightedCharts
+                                } as unknown as Catalog)
+                        )
+                    ),
             { "promise": true }
         ),
         "getPackageConfig": ({ catalogId, packageName }) =>
