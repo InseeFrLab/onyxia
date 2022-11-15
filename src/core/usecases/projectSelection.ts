@@ -68,7 +68,8 @@ export const privateThunks = {
                 selectedProjectId === null ||
                 !projects.map(({ id }) => id).includes(selectedProjectId)
             ) {
-                selectedProjectId = projects[0].id;
+                // TODO : handle case where there is no projects with namespace defined
+                selectedProjectId = projects.filter(p => p.namespace)[0].id;
 
                 await dispatch(
                     userConfigsThunks.changeValue({

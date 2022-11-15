@@ -222,6 +222,7 @@ type ProjectSelectProps = {
     projects: {
         id: string;
         name: string;
+        namespace?: string;
     }[];
 };
 
@@ -249,11 +250,13 @@ const ProjectSelect = memo((props: ProjectSelectProps) => {
                 label="Project"
                 onChange={onChange}
             >
-                {projects.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>
-                        {name}
-                    </MenuItem>
-                ))}
+                {projects
+                    .filter(p => p.namespace)
+                    .map(({ id, name }) => (
+                        <MenuItem key={id} value={id}>
+                            {name}
+                        </MenuItem>
+                    ))}
             </Select>
         </FormControl>
     );
