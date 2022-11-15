@@ -201,6 +201,19 @@ export function createOfficialOnyxiaApiClient(params: {
                                 clientId: string;
                             };
                         };
+                        proxyInjection?: {
+                            httpProxyUrl: string;
+                            httpsProxyUrl: string;
+                            noProxy: string;
+                        };
+                        packageRepositoryInjection?: {
+                            cranProxyUrl: string;
+                            condaProxyUrl: string;
+                            pypiProxyUrl: string;
+                        };
+                        certificateAuthorityInjection?: {
+                            crts: unknown[];
+                        };
                     }[];
                 }>("/public/configuration")
                 .then(({ data }) =>
@@ -293,7 +306,11 @@ export function createOfficialOnyxiaApiClient(params: {
                                                         vault.keycloakParams.clientId
                                                 }
                                   };
-                        })()
+                        })(),
+                        "proxyInjection": region.proxyInjection,
+                        "packageRepositoryInjection": region.packageRepositoryInjection,
+                        "certificateAuthorityInjection":
+                            region.certificateAuthorityInjection
                     }))
                 )
         ),
