@@ -9078,12 +9078,12 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.3.28:
-  version "1.3.28"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.28.tgz#f263e7eed7d6c28ab4ec3407662583af663f3ecc"
-  integrity sha512-U2gl+jT1X+oAMP9052iMrAjarPQrhbs51BY/BW+D+SmdSbgGYLVAtom53J6ftk6MnvFvBFYwjJ+SCGz/7/ZTWw==
+i18nifty@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.4.0.tgz#7aec0cec9aeb2edfd1f9a26a5b904cbf8840dab2"
+  integrity sha512-i3BhReNdTGRPleY2CvWEhHcVgMfzTl8ZRuqw9c0FQ2BB1PVY3zvhRZ0KrIYXdZFpkORdpGDF/itHbJyUFDEVQQ==
   dependencies:
-    powerhooks "^0.20.26"
+    powerhooks "^0.20.27"
     tsafe "^1.2.1"
 
 iconv-lite@0.4.24:
@@ -11714,17 +11714,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.47.15:
-  version "0.47.15"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.15.tgz#fe9ad450bd87c1df2b1af6002787cf230707ffac"
-  integrity sha512-RGdxmDCEwIQZpcqMt9Kaz9bnKr/2vUjVGtPfwrpl6A2C1OY3gALrjvEtZsVc8dHU2G3iBBYur+jUIBPzkGTe1w==
+onyxia-ui@^0.47.16:
+  version "0.47.16"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.16.tgz#b7aa541a6c8ba46aad48f190f522331b392eae36"
+  integrity sha512-KiY7n6BisYe1DGkOvz4yzK27vn89T1PwmoJomshfQ5IQDooC5venORHKp+JdgVVW/rOCGFoCiSa3cY4bNahovQ==
   dependencies:
     "@mui/icons-material" "^5.10.3"
     color "3.1.3"
     evt "^2.4.10"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.26"
+    powerhooks "^0.20.27"
     run-exclusive "^2.2.18"
     tsafe "^1.2.1"
     tss-react "^4.4.4"
