@@ -1072,6 +1072,11 @@ export const thunks = {
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
                 },
+                "proxyInjection": selectedDeploymentRegion.proxyInjection,
+                "packageRepositoryInjection":
+                    selectedDeploymentRegion.packageRepositoryInjection,
+                "certificateAuthorityInjection":
+                    selectedDeploymentRegion.certificateAuthorityInjection,
             };
 
             console.log(onyxiaValues);
