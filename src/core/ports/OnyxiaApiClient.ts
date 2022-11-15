@@ -95,6 +95,21 @@ export type DeploymentRegion = {
                   | undefined;
           }
         | undefined;
+    proxyInjection:
+        | {
+              httpProxyUrl: string | undefined;
+              httpsProxyUrl: string | undefined;
+              noProxy: string | undefined;
+          }
+        | undefined;
+    packageRepositoryInjection:
+        | {
+              cranProxyUrl: string | undefined;
+              condaProxyUrl: string | undefined;
+              pypiProxyUrl: string | undefined;
+          }
+        | undefined;
+    certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -207,6 +222,25 @@ export type OnyxiaValues = {
         randomSubdomain: string;
         initScriptUrl: string;
     };
+    proxyInjection:
+        | {
+              httpProxyUrl: string | undefined;
+              httpsProxyUrl: string | undefined;
+              noProxy: string | undefined;
+          }
+        | undefined;
+    packageRepositoryInjection:
+        | {
+              cranProxyUrl: string | undefined;
+              condaProxyUrl: string | undefined;
+              pypiProxyUrl: string | undefined;
+          }
+        | undefined;
+    certificateAuthorityInjection:
+        | {
+              crts: unknown[] | undefined;
+          }
+        | undefined;
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
