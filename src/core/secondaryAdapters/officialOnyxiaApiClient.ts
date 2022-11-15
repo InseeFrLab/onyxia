@@ -308,33 +308,10 @@ export function createOfficialOnyxiaApiClient(params: {
                                                 },
                                   };
                         })(),
-                        "proxyInjection": (() => {
-                            const { proxyInjection } = region ?? {};
-
-                            if (proxyInjection === undefined) {
-                                return undefined;
-                            }
-
-                            return { ...proxyInjection };
-                        })(),
-                        "packageRepositoryInjection": (() => {
-                            const { packageRepositoryInjection } = region ?? {};
-
-                            if (packageRepositoryInjection === undefined) {
-                                return undefined;
-                            }
-
-                            return { ...packageRepositoryInjection };
-                        })(),
-                        "certificateAuthorityInjection": (() => {
-                            const { certificateAuthorityInjection } = region ?? {};
-
-                            if (certificateAuthorityInjection === undefined) {
-                                return undefined;
-                            }
-
-                            return { ...certificateAuthorityInjection };
-                        })(),
+                        "proxyInjection": region.proxyInjection,
+                        "packageRepositoryInjection": region.packageRepositoryInjection,
+                        "certificateAuthorityInjection":
+                            region.certificateAuthorityInjection,
                     })),
                 ),
         ),
