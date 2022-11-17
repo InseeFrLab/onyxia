@@ -275,7 +275,7 @@ fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'https://'+'${credentials.
                         case "Python (boto3)":
                             return `
 import boto3
-s3 = boto3.client("s3",endpoint_url = 'http://'+'${credentials.AWS_S3_ENDPOINT}',
+s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}',
                   aws_access_key_id= '${credentials.AWS_ACCESS_KEY_ID}', 
                   aws_secret_access_key= '${credentials.AWS_SECRET_ACCESS_KEY}', 
                   aws_session_token = '${credentials.AWS_SESSION_TOKEN}')
