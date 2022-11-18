@@ -428,7 +428,10 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
             "fmtResult": () => `# Done`
         },
         "uploadFile": {
-            "buildCmd": ({ path }) => `# We upload a file to ${path}`,
+            "buildCmd": ({ path }) => {
+                const fileName = path.split("/").pop();
+                return `mc cp ${fileName} s3/${path}`;
+            },
             "fmtResult": () => `# File uploaded`
         },
         "deleteFile": {
