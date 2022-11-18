@@ -432,11 +432,11 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
             "fmtResult": () => `# File uploaded`
         },
         "deleteFile": {
-            "buildCmd": ({ path }) => `# We delete a file at ${path}`,
+            "buildCmd": ({ path }) => `mc rm s3/${path}`,
             "fmtResult": () => `# File deleted`
         },
         "getFileDownloadUrl": {
-            "buildCmd": ({ path }) => `# We delete generate a download link for ${path}`,
+            "buildCmd": ({ path }) => `mc cp s3/${path}`,
             "fmtResult": ({ result: downloadUrl }) => downloadUrl
         }
     }
