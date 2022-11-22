@@ -144,6 +144,53 @@ export const CatalogLauncher = memo((props: Props) => {
         clipboard.writeText(window.location.href)
     );
 
+    const onVersionValueChange = useConstCallback((version: string) => {
+        assert(state.stateDescription === "ready");
+
+        if (restorablePackageConfig === undefined) {
+            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+                route.params;
+
+            routes
+                .catalogLauncher({
+                    catalogId,
+                    packageName,
+                    version
+                })
+                .push();
+
+            launcher.reset();
+            launcher.initialize({
+                catalogId,
+                packageName,
+                version,
+                formFieldsValueDifferentFromDefault
+            });
+
+            return;
+        }
+
+        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+            restorablePackageConfig;
+        routes
+            .catalogLauncher({
+                catalogId,
+                packageName,
+                version,
+                formFieldsValueDifferentFromDefault,
+                "autoLaunch": route.params.autoLaunch
+            })
+            .push();
+
+        launcher.reset();
+        launcher.initialize({
+            catalogId,
+            packageName,
+            version,
+            formFieldsValueDifferentFromDefault
+        });
+    });
+
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
         assert(restorablePackageConfig !== undefined);
 
@@ -253,6 +300,9 @@ export const CatalogLauncher = memo((props: Props) => {
                     <CatalogLauncherMainCard
                         packageName={state.packageName}
                         packageIconUrl={state.icon}
+                        availableVersions={state.availableVersions}
+                        version={state.version}
+                        onVersionValueChange={onVersionValueChange}
                         isBookmarked={isBookmarked}
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                         friendlyName={friendlyName}

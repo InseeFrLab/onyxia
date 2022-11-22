@@ -14,11 +14,17 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
 import { declareComponentKeys } from "i18nifty";
+import { InputLabel, MenuItem, Select } from "@mui/material";
 
 export type Props = {
     className?: string;
     packageName: string;
     packageIconUrl?: string;
+    availableVersions: string[];
+
+    version: string;
+    onVersionValueChange: (version: string) => void;
+
     isBookmarked: boolean;
     onIsBookmarkedValueChange: (isBookmarked: boolean) => void;
 
@@ -42,10 +48,13 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         className,
         packageIconUrl,
         packageName,
+        version,
+        availableVersions,
         isBookmarked,
         friendlyName,
         isShared,
         isLaunchable,
+        onVersionValueChange,
         onIsBookmarkedValueChange,
         onFriendlyNameChange,
         onIsSharedValueChange,
@@ -109,6 +118,21 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
+                    <FormControl variant="standard">
+                        <InputLabel id={"chart version"}>{"Placeholder"}</InputLabel>
+                        <Select
+                            labelId={"chart version"}
+                            value={version}
+                            onChange={event => onVersionValueChange(event.target.value)}
+                        >
+                            {availableVersions.map((version: string) => (
+                                <MenuItem key={version} value={version}>
+                                    {version}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText>{"Placeholder"}</FormHelperText>
+                    </FormControl>
                     <FormControl className={classes.isSharedWrapper}>
                         <FormControlLabel
                             control={

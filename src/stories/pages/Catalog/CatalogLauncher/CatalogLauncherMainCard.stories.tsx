@@ -14,11 +14,14 @@ export default meta;
 export const ViewDefault = getStory({
     "packageName": "rstudio",
     "packageIconUrl": rstudioImg,
+    "version": "1.0.0",
+    "availableVersions": ["1.0.0"],
     "isBookmarked": true,
     "friendlyName": "rstudio-1615211422",
     "isLaunchable": true,
     "isShared": false,
     ...logCallbacks([
+        "onVersionValueChange",
         "onFriendlyNameChange",
         "onIsBookmarkedValueChange",
         "onRequestCancel",
