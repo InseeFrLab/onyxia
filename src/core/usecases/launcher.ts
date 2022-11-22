@@ -140,6 +140,7 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
+        version: string;
         sources: string[];
         "~internal": {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
@@ -398,6 +399,7 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 catalogId: string;
                 packageName: string;
+                version: string;
                 icon: string | undefined;
                 sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
@@ -411,6 +413,7 @@ export const { reducer, actions } = createSlice({
             const {
                 catalogId,
                 packageName,
+                version,
                 icon,
                 sources,
                 formFields,
@@ -427,6 +430,7 @@ export const { reducer, actions } = createSlice({
                     "stateDescription": "ready",
                     catalogId,
                     packageName,
+                    version,
                     icon,
                     sources,
                     "~internal": {
@@ -518,11 +522,16 @@ export const thunks = {
         (params: {
             catalogId: string;
             packageName: string;
+            version: string;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }): ThunkAction =>
         async (...args) => {
-            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-                params;
+            const {
+                catalogId,
+                packageName,
+                version,
+                formFieldsValueDifferentFromDefault
+            } = params;
 
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
 
@@ -577,6 +586,7 @@ export const thunks = {
                                 same(restorablePackageConfig, {
                                     packageName,
                                     catalogId,
+                                    version,
                                     formFieldsValueDifferentFromDefault
                                 })
                         ) !== undefined
@@ -888,6 +898,7 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
+                    version,
                     "icon": await onyxiaApiClient
                         .getCatalogs()
                         .then(
@@ -1440,26 +1451,31 @@ export const selectors = (() => {
     );
 
     const catalogId = createSelector(readyLauncher, state => state?.catalogId);
+    const version = createSelector(readyLauncher, state => state?.version);
 
     const restorablePackageConfig = createSelector(
         catalogId,
         packageName,
+        version,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
         (
             catalogId,
             packageName,
+            version,
             formFields,
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault
         ) =>
             !catalogId ||
             !packageName ||
+            !version ||
             !formFields ||
             !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
                 ? undefined
                 : id<RestorablePackageConfig>({
                       catalogId,
                       packageName,
+                      version,
                       "formFieldsValueDifferentFromDefault":
                           pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(
                               ({ path }) => ({

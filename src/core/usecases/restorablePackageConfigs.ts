@@ -31,6 +31,7 @@ type IconsUrl = {
 export type RestorablePackageConfig = {
     catalogId: string;
     packageName: string;
+    version: string;
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 
@@ -284,11 +285,19 @@ function areSameRestorablePackageConfig(
     restorablePackageConfiguration2: RestorablePackageConfig
 ): boolean {
     return [restorablePackageConfiguration1, restorablePackageConfiguration2]
-        .map(({ catalogId, packageName, formFieldsValueDifferentFromDefault }) => [
-            catalogId,
-            packageName,
-            formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-        ])
+        .map(
+            ({
+                catalogId,
+                packageName,
+                version,
+                formFieldsValueDifferentFromDefault
+            }) => [
+                catalogId,
+                packageName,
+                version,
+                formFieldsValueToObject(formFieldsValueDifferentFromDefault)
+            ]
+        )
         .reduce(...allEquals(same));
 }
 

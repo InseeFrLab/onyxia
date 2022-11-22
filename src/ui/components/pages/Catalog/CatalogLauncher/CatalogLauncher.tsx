@@ -37,12 +37,13 @@ export const CatalogLauncher = memo((props: Props) => {
         useCoreFunctions();
 
     useEffect(() => {
-        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+        const { catalogId, packageName, version, formFieldsValueDifferentFromDefault } =
             route.params;
 
         launcher.initialize({
             catalogId,
             packageName,
+            version,
             formFieldsValueDifferentFromDefault
         });
 
