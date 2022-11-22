@@ -901,15 +901,13 @@ export const thunks = {
                     catalogId,
                     packageName,
                     version,
-                    "icon": await onyxiaApiClient
-                        .getCatalogs()
-                        .then(
-                            apiRequestResult =>
-                                apiRequestResult
-                                    .find(({ id }) => id === catalogId)!
-                                    .charts.find(({ name }) => name === packageName)!
-                                    .versions[0].icon
-                        ),
+                    "icon": await onyxiaApiClient.getCatalogs().then(
+                        apiRequestResult =>
+                            apiRequestResult
+                                .find(({ id }) => id === catalogId)!
+                                .charts.find(({ name }) => name === packageName)!
+                                .versions.find(({ icon }) => icon !== undefined)!.icon
+                    ),
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
