@@ -141,6 +141,7 @@ export declare namespace LauncherState {
         catalogId: string;
         packageName: string;
         version: string;
+        availableVersions: string[];
         sources: string[];
         "~internal": {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
@@ -406,6 +407,7 @@ export const { reducer, actions } = createSlice({
                 infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
                 config: LauncherState.Ready["~internal"]["config"];
                 dependencies: string[];
+                availableVersions: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
                 sensitiveConfigurations: FormFieldValue[];
             }>
@@ -420,6 +422,7 @@ export const { reducer, actions } = createSlice({
                 infosAboutWhenFieldsShouldBeHidden,
                 config,
                 dependencies,
+                availableVersions,
                 formFieldsValueDifferentFromDefault,
                 sensitiveConfigurations
             } = payload;
@@ -431,6 +434,7 @@ export const { reducer, actions } = createSlice({
                     catalogId,
                     packageName,
                     version,
+                    availableVersions,
                     icon,
                     sources,
                     "~internal": {
@@ -913,6 +917,7 @@ export const thunks = {
                     infosAboutWhenFieldsShouldBeHidden,
                     config: valuesSchemaJson,
                     dependencies,
+                    availableVersions,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? []
                 })
