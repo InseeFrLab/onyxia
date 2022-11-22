@@ -346,6 +346,19 @@ export function createOfficialOnyxiaApiClient(params: {
                     ),
             { "promise": true }
         ),
+        "getPackageAvailableVersions": memoize(
+            ({ catalogId, packageName }) =>
+                axiosInstance
+                    .get<
+                        {
+                            version: string;
+                        }[]
+                    >(`/public/catalogs/${catalogId}/charts/${packageName}`)
+                    .then(({ data }) => ({
+                        "availableVersions": data.map(({ version }) => version)
+                    })),
+            { "promise": true }
+        ),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
                 .get<

@@ -539,6 +539,12 @@ export const thunks = {
                     packageName
                 });
 
+            const { availableVersions } =
+                await onyxiaApiClient.getPackageAvailableVersions({
+                    catalogId,
+                    packageName
+                });
+
             {
                 const state = getState().launcher;
 

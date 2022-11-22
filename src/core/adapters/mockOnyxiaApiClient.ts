@@ -44,6 +44,7 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
             { "promise": true }
         ),
         ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),
+        ...createPropertyThatThrowIfAccessed("getPackageAvailableVersions", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getRunningServices", "Not mocked"),
