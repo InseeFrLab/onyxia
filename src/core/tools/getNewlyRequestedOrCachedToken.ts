@@ -2,7 +2,7 @@ import * as runExclusive from "run-exclusive";
 import memoize from "memoizee";
 
 function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
-    T extends { expirationTime: number },
+    T extends { expirationTime: number }
 >(params: {
     requestNewToken: () => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
@@ -22,7 +22,7 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
             cache !== undefined &&
             cache.expirationTime - Date.now() >
                 (parseFloat(
-                    returnCachedTokenIfStillValidForXPercentOfItsTTL.split("%")[0],
+                    returnCachedTokenIfStillValidForXPercentOfItsTTL.split("%")[0]
                 ) /
                     100) *
                     cache.ttl
@@ -34,7 +34,7 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
 
         cache = {
             ...token,
-            "ttl": token.expirationTime - Date.now(),
+            "ttl": token.expirationTime - Date.now()
         };
 
         return cache;
@@ -45,7 +45,7 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
 
 export function getNewlyRequestedOrCachedTokenFactory<
     T extends { expirationTime: number },
-    Args extends any[],
+    Args extends any[]
 >(params: {
     requestNewToken: (...args: Args) => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
@@ -56,9 +56,9 @@ export function getNewlyRequestedOrCachedTokenFactory<
         (...args: Args) =>
             getNewlyRequestedOrCachedTokenWithoutParamsFactory({
                 "requestNewToken": () => requestNewToken(...args),
-                returnCachedTokenIfStillValidForXPercentOfItsTTL,
+                returnCachedTokenIfStillValidForXPercentOfItsTTL
             }),
-        { "length": requestNewToken.length },
+        { "length": requestNewToken.length }
     );
 
     function getNewlyRequestedOrCachedToken(...args: Args) {

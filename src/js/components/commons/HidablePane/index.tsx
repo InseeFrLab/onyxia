@@ -16,7 +16,7 @@ export const HidablePane: React.FC<{
     const [isDisplayed, setIsDisplayed] = useState(false);
     const [isHidden, setIsHidden] = useState(true);
     const [requestShow, setRequestShow] = useState<undefined | "panel" | "anchor">(
-        undefined,
+        undefined
     );
 
     const wrapperRef = useStateRef<HTMLDivElement>(null);
@@ -50,10 +50,10 @@ export const HidablePane: React.FC<{
                 setTimeout(() => {
                     setIsDisplayed(false);
                     setRequestShow(undefined);
-                }, 300),
+                }, 300)
             );
         },
-        [requestShow, timer],
+        [requestShow, timer]
     );
 
     const display = useCallback(
@@ -63,14 +63,14 @@ export const HidablePane: React.FC<{
             setIsDisplayed(true);
             setIsHidden(false);
         },
-        [timer],
+        [timer]
     );
 
     useEvt(
         ctx => {
             Evt.from(ctx, window, "scroll", { "passive": true }).attach(checkPosition);
         },
-        [checkPosition],
+        [checkPosition]
     );
 
     useEvt(
@@ -94,7 +94,7 @@ export const HidablePane: React.FC<{
                 });
             }
         },
-        [anchor, display, hide],
+        [anchor, display, hide]
     );
 
     useEffect(() => {
@@ -110,7 +110,7 @@ export const HidablePane: React.FC<{
         <div
             className={classnames("hidable-pane", {
                 "hide": isHidden,
-                [className]: className,
+                [className]: className
             })}
             onMouseEnter={useCallback(
                 (event: any) => {
@@ -120,14 +120,14 @@ export const HidablePane: React.FC<{
                     }
                     display("panel");
                 },
-                [isDisplayed, display],
+                [isDisplayed, display]
             )}
             onMouseLeave={useCallback(
                 (event: any) => {
                     event.stopPropagation();
                     hide("panel");
                 },
-                [hide],
+                [hide]
             )}
             ref={wrapperRef}
         >

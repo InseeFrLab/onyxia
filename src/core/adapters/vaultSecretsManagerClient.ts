@@ -4,7 +4,7 @@ import { partition } from "evt/tools/reducers";
 import type {
     Secret,
     SecretWithMetadata,
-    SecretsManagerClient,
+    SecretsManagerClient
 } from "../ports/SecretsManagerClient";
 import { Deferred } from "evt/tools/Deferred";
 import type { ReturnType } from "tsafe";
@@ -23,7 +23,7 @@ type Params = {
 };
 
 export async function createVaultSecretsManagerClient(
-    params: Params,
+    params: Params
 ): Promise<SecretsManagerClient> {
     const { url, kvEngine, role, oidcClient } = params;
 
@@ -34,21 +34,21 @@ export async function createVaultSecretsManagerClient(
             const now = Date.now();
 
             const {
-                data: { auth },
+                data: { auth }
             } = await createAxiosInstance().post<{
                 auth: { lease_duration: number; client_token: string };
             }>(`/${version}/auth/jwt/login`, {
                 role,
-                "jwt": oidcClient.accessToken,
+                "jwt": oidcClient.accessToken
             });
 
             return id<ReturnType<SecretsManagerClient["getToken"]>>({
                 "token": auth.client_token,
                 "expirationTime": now + auth.lease_duration * 1000,
-                "acquisitionTime": now,
+                "acquisitionTime": now
             });
         },
-        "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+        "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
     });
 
     const { axiosInstance } = (() => {
@@ -57,10 +57,10 @@ export async function createVaultSecretsManagerClient(
         axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
             ...axiosRequestConfig,
             "headers": {
-                "X-Vault-Token": (await getNewlyRequestedOrCachedToken()).token,
+                "X-Vault-Token": (await getNewlyRequestedOrCachedToken()).token
             },
             "Content-Type": "application/json;charset=utf-8",
-            "Accept": "application/json;charset=utf-8",
+            "Accept": "application/json;charset=utf-8"
         }));
 
         return { axiosInstance };
@@ -76,12 +76,12 @@ export async function createVaultSecretsManagerClient(
             }>(ctxPathJoin("metadata", path), { "params": { "list": "true" } });
 
             const [directories, files] = axiosResponse.data.data.keys.reduce(
-                ...partition<string>(key => key.endsWith("/")),
+                ...partition<string>(key => key.endsWith("/"))
             );
 
             return {
                 "directories": directories.map(path => path.split("/")[0]),
-                files,
+                files
             };
         },
         "get": async ({ path }) => {
@@ -93,20 +93,20 @@ export async function createVaultSecretsManagerClient(
             }>(ctxPathJoin("data", path));
 
             const {
-                data: { data: secret, metadata },
+                data: { data: secret, metadata }
             } = axiosResponse.data;
 
             return { secret, metadata };
         },
         "put": async ({ path, secret }) => {
             await axiosInstance.put<{ data: Secret }>(ctxPathJoin("data", path), {
-                "data": secret,
+                "data": secret
             });
         },
         "delete": async ({ path }) => {
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
-        "getToken": getNewlyRequestedOrCachedToken,
+        "getToken": getNewlyRequestedOrCachedToken
     };
 
     dVaultClient.resolve(secretsManagerClient);
@@ -139,9 +139,9 @@ export function getVaultApiLogger(params: {
                                 "----",
                                 ...[
                                     ...directories.map(directory => `${directory}/`),
-                                    ...files,
-                                ],
-                            ].join("\n"),
+                                    ...files
+                                ]
+                            ].join("\n")
                     },
                     "get": {
                         "buildCmd": (...[{ path }]) =>
@@ -150,8 +150,8 @@ export function getVaultApiLogger(params: {
                             const n =
                                 Math.max(
                                     ...Object.keys(secretWithMetadata.secret).map(
-                                        key => key.length,
-                                    ),
+                                        key => key.length
+                                    )
                                 ) + 2;
 
                             return [
@@ -163,10 +163,10 @@ export function getVaultApiLogger(params: {
                                         key.padEnd(n) +
                                         (typeof value === "string"
                                             ? value
-                                            : JSON.stringify(value)),
-                                ),
+                                            : JSON.stringify(value))
+                                )
                             ].join("\n");
-                        },
+                        }
                     },
                     "put": {
                         "buildCmd": (...[{ path, secret }]) =>
@@ -185,15 +185,15 @@ export function getVaultApiLogger(params: {
                                                       `heredoc > ${JSON.stringify(
                                                           value,
                                                           null,
-                                                          2,
+                                                          2
                                                       )}`,
-                                                      "heredoc> EOF",
+                                                      "heredoc> EOF"
                                                   ].join("\n")
-                                        }`,
-                                ),
+                                        }`
+                                )
                             ].join(" \\\n"),
                         "fmtResult": ({ inputs: [{ path }] }) =>
-                            `Success! Data written to: ${pathJoin(engine, path)}`,
+                            `Success! Data written to: ${pathJoin(engine, path)}`
                     },
                     "delete": {
                         "buildCmd": (...[{ path }]) =>
@@ -201,19 +201,19 @@ export function getVaultApiLogger(params: {
                         "fmtResult": ({ inputs: [{ path }] }) =>
                             `Success! Data deleted (if it existed) at: ${pathJoin(
                                 engine,
-                                path,
-                            )}`,
+                                path
+                            )}`
                     },
                     "getToken": {
                         "buildCmd": () =>
                             [
                                 `# We generate a token`,
-                                `# See https://www.vaultproject.io/docs/auth/jwt`,
+                                `# See https://www.vaultproject.io/docs/auth/jwt`
                             ].join("\n"),
                         "fmtResult": ({ result: vaultToken }) =>
-                            `The token we got is ${vaultToken}`,
-                    },
-                },
+                            `The token we got is ${vaultToken}`
+                    }
+                }
             };
     }
 }

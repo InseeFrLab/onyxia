@@ -377,7 +377,7 @@ export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
 export const onyxiaIsSharedFormFieldPath = "onyxia.share";
 
 export const getRandomK8sSubdomain = memoize(
-    () => `${Math.floor(Math.random() * 1000000)}`,
+    () => `${Math.floor(Math.random() * 1000000)}`
 );
 
 export function getServiceId(params: {

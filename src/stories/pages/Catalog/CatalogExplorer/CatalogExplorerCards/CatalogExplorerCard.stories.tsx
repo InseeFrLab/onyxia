@@ -7,7 +7,7 @@ import { css } from "@emotion/css";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCard },
-    "defaultContainerWidth": 450,
+    "defaultContainerWidth": 450
 });
 
 export default meta;
@@ -23,7 +23,7 @@ export const ViewDefault = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLaunch"]),
+    ...logCallbacks(["onRequestLaunch"])
 });
 
 export const ViewNoDesc = getStory({
@@ -31,7 +31,7 @@ export const ViewNoDesc = getStory({
     "packageName": "package_name",
     "packageDescription": "",
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
 export const ViewNoLearnMore = getStory({
@@ -45,7 +45,7 @@ export const ViewNoLearnMore = getStory({
     justo varius`,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "packageHomeUrl": undefined,
+    "packageHomeUrl": undefined
 });
 
 export const ViewScroll = getStory({
@@ -63,5 +63,5 @@ export const ViewScroll = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": undefined,
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });

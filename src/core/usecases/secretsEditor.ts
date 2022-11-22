@@ -55,11 +55,11 @@ export const { reducer, actions } = createSlice({
         "openStarted": (
             _state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directoryPath: string;
                 basename: string;
-            }>,
+            }>
         ) => {
             const { basename, directoryPath } = payload;
 
@@ -68,17 +68,17 @@ export const { reducer, actions } = createSlice({
                 basename,
                 "secretWithMetadata": undefined,
                 "hiddenKeys": [],
-                "isBeingUpdated": true,
+                "isBeingUpdated": true
             });
         },
         "openCompleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 secretWithMetadata: SecretWithMetadata;
                 hiddenKeys: string[];
-            }>,
+            }>
         ) => {
             const { secretWithMetadata, hiddenKeys } = payload;
 
@@ -115,8 +115,7 @@ export const { reducer, actions } = createSlice({
                 });
 
                 Object.keys(secretClone).forEach(
-                    key_i =>
-                        (secret[key_i === key ? newKey : key_i] = secretClone[key_i]),
+                    key_i => (secret[key_i === key ? newKey : key_i] = secretClone[key_i])
                 );
             };
 
@@ -154,7 +153,7 @@ export const { reducer, actions } = createSlice({
                                 break;
                             case "reveal":
                                 state.hiddenKeys = state.hiddenKeys.filter(
-                                    key_i => key_i !== key,
+                                    key_i => key_i !== key
                                 );
                                 break;
                         }
@@ -178,8 +177,8 @@ export const { reducer, actions } = createSlice({
 
             state.isBeingUpdated = false;
         },
-        "closeSecret": () => null,
-    },
+        "closeSecret": () => null
+    }
 });
 
 export const thunks = {
@@ -199,7 +198,7 @@ export const thunks = {
             const path = pathJoin(directoryPath, basename);
 
             const { loggedSecretClient } = dispatch(
-                secretExplorersThunks.getLoggedSecretsApis(),
+                secretExplorersThunks.getLoggedSecretsApis()
             );
 
             const secretWithMetadata = await loggedSecretClient.get({ path });
@@ -213,18 +212,18 @@ export const thunks = {
                     for (const arr of [hiddenKeys, keysOrdering]) {
                         assert(
                             arr instanceof Array &&
-                                arr.every(key => typeof key === "string"),
+                                arr.every(key => typeof key === "string")
                         );
                     }
 
                     return {
                         hiddenKeys,
-                        "keysOrdering": keysOrdering.filter(key => key in secret),
+                        "keysOrdering": keysOrdering.filter(key => key in secret)
                     };
                 } catch {
                     return {
                         "hiddenKeys": id<string[]>([]),
-                        "keysOrdering": Object.keys(secret),
+                        "keysOrdering": Object.keys(secret)
                     };
                 }
             })();
@@ -241,10 +240,10 @@ export const thunks = {
                 actions.openCompleted({
                     "secretWithMetadata": {
                         "metadata": secretWithMetadata.metadata,
-                        "secret": orderedSecret,
+                        "secret": orderedSecret
                     },
-                    hiddenKeys,
-                }),
+                    hiddenKeys
+                })
             );
         },
     "closeSecret": (): ThunkAction<void> => dispatch => dispatch(actions.closeSecret()),
@@ -254,7 +253,7 @@ export const thunks = {
             const [dispatch] = args;
 
             const { loggedSecretClient } = dispatch(
-                secretExplorersThunks.getLoggedSecretsApis(),
+                secretExplorersThunks.getLoggedSecretsApis()
             );
 
             const getSecretCurrentPathAndHiddenKeys = () => {
@@ -271,7 +270,7 @@ export const thunks = {
                 return {
                     "path": pathJoin(state.directoryPath, state.basename),
                     hiddenKeys,
-                    "secret": secretWithMetadata.secret,
+                    "secret": secretWithMetadata.secret
                 };
             };
 
@@ -326,13 +325,13 @@ export const thunks = {
                             ...secret,
                             [extraKey]: id<ExtraValue>({
                                 hiddenKeys,
-                                "keysOrdering": Object.keys(secret),
-                            }),
-                        },
+                                "keysOrdering": Object.keys(secret)
+                            })
+                        }
                     };
-                })(),
+                })()
             );
 
             dispatch(actions.editSecretCompleted());
-        },
+        }
 };

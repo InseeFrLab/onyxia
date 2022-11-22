@@ -6,24 +6,24 @@ import type { ThunkAction, ThunksExtraArgument } from "../setup";
 import {
     join as pathJoin,
     relative as pathRelative,
-    basename as pathBasename,
+    basename as pathBasename
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { S3Client } from "../ports/S3Client";
-import { s3ApiLogger } from "../secondaryAdapters/s3Client";
+import { s3ApiLogger } from "../adapters/s3Client";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { RootState } from "../setup";
+import type { State } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { createObjectThatThrowsIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -62,19 +62,19 @@ export const { reducer, actions } = createSlice({
         "ongoingOperations": [],
         "~internal": {
             "s3FilesBeingUploaded": [],
-            "isUserWatching": false,
-        },
+            "isUserWatching": false
+        }
     }),
     "reducers": {
         "fileUploadStarted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directoryPath: string;
                 basename: string;
                 size: number;
-            }>,
+            }>
         ) => {
             const { directoryPath, basename, size } = payload;
 
@@ -82,18 +82,18 @@ export const { reducer, actions } = createSlice({
                 directoryPath,
                 basename,
                 size,
-                "uploadPercent": 0,
+                "uploadPercent": 0
             });
         },
         "uploadProgressUpdated": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directoryPath: string;
                 basename: string;
                 uploadPercent: number;
-            }>,
+            }>
         ) => {
             const { basename, directoryPath, uploadPercent } = payload;
             const { s3FilesBeingUploaded } = state["~internal"];
@@ -101,7 +101,7 @@ export const { reducer, actions } = createSlice({
             const s3FileBeingUploaded = s3FilesBeingUploaded.find(
                 s3FileBeingUploaded =>
                     s3FileBeingUploaded.directoryPath === directoryPath &&
-                    s3FileBeingUploaded.basename === basename,
+                    s3FileBeingUploaded.basename === basename
             );
             assert(s3FileBeingUploaded !== undefined);
             s3FileBeingUploaded.uploadPercent = uploadPercent;
@@ -120,14 +120,14 @@ export const { reducer, actions } = createSlice({
         "navigationCompleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directoryPath: string;
                 directoryItems: {
                     kind: "file" | "directory";
                     basename: string;
                 }[];
-            }>,
+            }>
         ) => {
             const { directoryPath, directoryItems } = payload;
 
@@ -144,7 +144,7 @@ export const { reducer, actions } = createSlice({
                         case "delete":
                             removeIfPresent(state.directoryItems, {
                                 "kind": o.kind,
-                                "basename": o.basename,
+                                "basename": o.basename
                             });
                             break;
                         case "create":
@@ -158,12 +158,12 @@ export const { reducer, actions } = createSlice({
         "operationStarted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 kind: "file" | "directory";
                 basename: string;
                 operation: "create" | "delete";
-            }>,
+            }>
         ) => {
             const { kind, basename } = payload;
 
@@ -184,21 +184,21 @@ export const { reducer, actions } = createSlice({
                         case "create":
                             return {
                                 "operation": payload.operation,
-                                basename,
+                                basename
                             };
                     }
-                })(),
+                })()
             });
         },
         "operationCompleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 kind: "file" | "directory";
                 basename: string;
                 directoryPath: string;
-            }>,
+            }>
         ) => {
             const { kind, basename, directoryPath } = payload;
 
@@ -210,7 +210,7 @@ export const { reducer, actions } = createSlice({
                 o =>
                     o.kind === kind &&
                     o.basename === basename &&
-                    pathRelative(o.directoryPath, directoryPath) === "",
+                    pathRelative(o.directoryPath, directoryPath) === ""
             );
 
             assert(ongoingOperation !== undefined);
@@ -225,7 +225,7 @@ export const { reducer, actions } = createSlice({
                 case "create":
                     state.directoryItems.push({
                         "basename": ongoingOperation.basename,
-                        kind,
+                        kind
                     });
                     break;
             }
@@ -233,7 +233,7 @@ export const { reducer, actions } = createSlice({
         "isUserWatchingChanged": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<
                 | {
                       isUserWatching: false;
@@ -242,13 +242,13 @@ export const { reducer, actions } = createSlice({
                       isUserWatching: true;
                       directNavigationDirectoryPath: string | undefined;
                   }
-            >,
+            >
         ) => {
             const { isUserWatching } = payload;
 
             state["~internal"].isUserWatching = isUserWatching;
-        },
-    },
+        }
+    }
 });
 
 export type ExplorersCreateParams =
@@ -287,14 +287,14 @@ const privateThunks = {
                             ? [
                                   {
                                       "directNavigationDirectoryPath": undefined,
-                                      "isProjectChanged": true,
-                                  },
+                                      "isProjectChanged": true
+                                  }
                               ]
-                            : null,
+                            : null
                     )
                     .attach(
                         () => getState().fileExplorer.isNavigationOngoing,
-                        () => dispatch(actions.navigationCanceled()),
+                        () => dispatch(actions.navigationCanceled())
                     ),
                 evtAction.pipe(event =>
                     event.sliceName === "fileExplorer" &&
@@ -304,11 +304,11 @@ const privateThunks = {
                               {
                                   "directNavigationDirectoryPath":
                                       event.payload.directNavigationDirectoryPath,
-                                  "isProjectChanged": false,
-                              },
+                                  "isProjectChanged": false
+                              }
                           ]
-                        : null,
-                ),
+                        : null
+                )
             ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
                 getSliceContext(extraArg).onNavigate?.({
                     "doRestoreOpenedFile": !isProjectChanged,
@@ -318,7 +318,7 @@ const privateThunks = {
                         }
 
                         const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath(),
+                            interUsecasesThunks.getProjectHomePath()
                         );
 
                         const currentDirectoryPath =
@@ -332,8 +332,8 @@ const privateThunks = {
                         }
 
                         return defaultDirectoryPath;
-                    })(),
-                }),
+                    })()
+                })
             );
         },
     /**
@@ -371,7 +371,7 @@ const privateThunks = {
                     event.sliceName === "fileExplorer" &&
                     event.actionName === "navigationCanceled",
                 ctx,
-                () => ctx.done(),
+                () => ctx.done()
             );
 
             await dispatch(
@@ -379,13 +379,13 @@ const privateThunks = {
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
-                    ctx,
-                }),
+                    ctx
+                })
             );
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedS3Client.list({ "path": directoryPath }),
+                loggedS3Client.list({ "path": directoryPath })
             ).waitFor();
 
             ctx.done();
@@ -396,13 +396,13 @@ const privateThunks = {
                     "directoryItems": [
                         ...directories.map(basename => ({
                             basename,
-                            "kind": "directory" as const,
+                            "kind": "directory" as const
                         })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const })),
-                    ],
-                }),
+                        ...files.map(basename => ({ basename, "kind": "file" as const }))
+                    ]
+                })
             );
-        },
+        }
 };
 
 export const interUsecasesThunks = {
@@ -424,7 +424,7 @@ export const interUsecasesThunks = {
                 o =>
                     o.kind === kind &&
                     o.basename === basename &&
-                    o.directoryPath === directoryPath,
+                    o.directoryPath === directoryPath
             );
 
             if (ongoingOperation === undefined) {
@@ -438,7 +438,7 @@ export const interUsecasesThunks = {
                     event.payload.kind === kind &&
                     event.payload.basename === basename &&
                     pathRelative(event.payload.directoryPath, directoryPath) === "",
-                ctx,
+                ctx
             );
         },
     "getProjectHomePath":
@@ -447,7 +447,7 @@ export const interUsecasesThunks = {
             const [, getState] = args;
 
             return "/" + projectSelectionSelectors.selectedProject(getState()).bucket;
-        },
+        }
 };
 
 export const thunks = {
@@ -476,8 +476,8 @@ export const thunks = {
             dispatch(
                 actions.isUserWatchingChanged({
                     "isUserWatching": true,
-                    directNavigationDirectoryPath,
-                }),
+                    directNavigationDirectoryPath
+                })
             );
         },
     "notifyThatUserIsNoLongerWatching":
@@ -504,8 +504,8 @@ export const thunks = {
             return dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": false,
-                }),
+                    "forceReload": false
+                })
             );
         },
     //Not used by the UI so far but we want to later
@@ -532,8 +532,8 @@ export const thunks = {
             await dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": true,
-                }),
+                    "forceReload": true
+                })
             );
         },
     "create":
@@ -551,16 +551,16 @@ export const thunks = {
                 interUsecasesThunks.waitForNoOngoingOperation({
                     "kind": params.createWhat,
                     directoryPath,
-                    "basename": params.basename,
-                }),
+                    "basename": params.basename
+                })
             );
 
             dispatch(
                 actions.operationStarted({
                     "kind": params.createWhat,
                     "basename": params.basename,
-                    "operation": "create",
-                }),
+                    "operation": "create"
+                })
             );
 
             const sliceContext = getSliceContext(extraArg);
@@ -575,8 +575,8 @@ export const thunks = {
                         actions.fileUploadStarted({
                             "basename": params.basename,
                             directoryPath,
-                            "size": params.blob.size,
-                        }),
+                            "size": params.blob.size
+                        })
                     );
 
                     sliceContext.loggedS3Client.uploadFile({
@@ -587,9 +587,9 @@ export const thunks = {
                                 actions.uploadProgressUpdated({
                                     "basename": params.basename,
                                     directoryPath,
-                                    uploadPercent,
-                                }),
-                            ),
+                                    uploadPercent
+                                })
+                            )
                     });
                     break;
                 case "directory":
@@ -601,8 +601,8 @@ export const thunks = {
                 actions.operationCompleted({
                     "kind": params.createWhat,
                     "basename": params.basename,
-                    directoryPath,
-                }),
+                    directoryPath
+                })
             );
         },
 
@@ -628,16 +628,16 @@ export const thunks = {
                 interUsecasesThunks.waitForNoOngoingOperation({
                     "kind": deleteWhat,
                     directoryPath,
-                    basename,
-                }),
+                    basename
+                })
             );
 
             dispatch(
                 actions.operationStarted({
                     "kind": params.deleteWhat,
                     "basename": params.basename,
-                    "operation": "delete",
-                }),
+                    "operation": "delete"
+                })
             );
 
             const sliceContext = getSliceContext(extraArg);
@@ -650,7 +650,7 @@ export const thunks = {
                     break;
                 case "file":
                     await sliceContext.loggedS3Client.deleteFile({
-                        path,
+                        path
                     });
                     break;
             }
@@ -659,8 +659,8 @@ export const thunks = {
                 actions.operationCompleted({
                     "kind": deleteWhat,
                     basename,
-                    directoryPath,
-                }),
+                    directoryPath
+                })
             );
         },
     "getS3ClientLogs":
@@ -696,11 +696,11 @@ export const thunks = {
             const path = pathJoin(directoryPath, basename);
 
             const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
-                path,
+                path
             });
 
             return downloadUrl;
-        },
+        }
 };
 
 type SliceContext = {
@@ -711,6 +711,7 @@ type SliceContext = {
     loggedExtendedFsApi: ExtendedFsApi;
 };
 
+//TODO: Make it so the framework can accommodate this usecase
 const { getSliceContext } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
 
@@ -721,38 +722,36 @@ const { getSliceContext } = (() => {
             return sliceContext;
         }
 
-        const isLazilyInitialized = false;
-
         sliceContext = (() => {
             const { apiLogs: s3ClientLogs, loggedApi: loggedS3Client } = logApi({
                 "api": extraArg.s3Client,
-                "apiLogger": s3ApiLogger,
+                "apiLogger": s3ApiLogger
             });
 
             return {
                 loggedS3Client,
                 s3ClientLogs,
-                isLazilyInitialized,
+                "isLazilyInitialized": false,
                 "loggedExtendedFsApi": createExtendedFsApi({
                     "baseFsApi": {
                         "list": loggedS3Client.list,
                         "deleteFile": loggedS3Client.deleteFile,
                         "downloadFile": createObjectThatThrowsIfAccessed({
                             "debugMessage":
-                                "We are not supposed to have do download file here. Moving file is too expensive in S3",
+                                "We are not supposed to have do download file here. Moving file is too expensive in S3"
                         }),
                         "uploadFile": ({ file, path }) =>
                             loggedS3Client.uploadFile({
                                 path,
                                 "blob": file,
-                                "onUploadProgress": () => {},
-                            }),
+                                "onUploadProgress": () => {}
+                            })
                     },
                     "keepFile": new Blob(["This file tells that a directory exists"], {
-                        "type": "text/plain",
+                        "type": "text/plain"
                     }),
-                    "keepFileBasename": ".keep",
-                }),
+                    "keepFileBasename": ".keep"
+                })
             };
         })();
 
@@ -769,10 +768,10 @@ function removeIfPresent(
         kind: "file" | "directory";
         basename: string;
     }>[],
-    item: { kind: "file" | "directory"; basename: string },
+    item: { kind: "file" | "directory"; basename: string }
 ): void {
     const index = directoryItems.findIndex(
-        item_i => item_i.kind === item.kind && item_i.basename === item.basename,
+        item_i => item_i.kind === item.kind && item_i.basename === item.basename
     );
 
     assert(index >= 0);
@@ -791,7 +790,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: RootState,
+        rootState: State
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.fileExplorer;
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
@@ -813,9 +812,9 @@ export const selectors = (() => {
                                     o =>
                                         o.directoryPath === directoryPath &&
                                         o.kind === kind &&
-                                        o.operation === operation,
+                                        o.operation === operation
                                 )
-                                .map(({ basename }) => basename),
+                                .map(({ basename }) => basename)
                     );
 
                     const select = (kind: "directory" | "file") =>
@@ -824,7 +823,7 @@ export const selectors = (() => {
                                 .filter(item => item.kind === kind)
                                 .map(({ basename }) => basename),
                             ...selectOngoing(kind, "create"),
-                            ...selectOngoing(kind, "rename"),
+                            ...selectOngoing(kind, "rename")
                         ].sort((a, b) => a.localeCompare(b));
 
                     return {
@@ -833,9 +832,9 @@ export const selectors = (() => {
                         "directoriesBeingCreated": selectOngoing("directory", "create"),
                         "directoriesBeingRenamed": selectOngoing("directory", "rename"),
                         "filesBeingCreated": selectOngoing("file", "create"),
-                        "filesBeingRenamed": selectOngoing("file", "rename"),
+                        "filesBeingRenamed": selectOngoing("file", "rename")
                     };
-                })(),
+                })()
             };
         })();
     };
@@ -850,11 +849,11 @@ export const selectors = (() => {
         };
     };
 
-    const uploadProgress = (rootState: RootState): UploadProgress => {
+    const uploadProgress = (rootState: State): UploadProgress => {
         const { s3FilesBeingUploaded } = rootState.fileExplorer["~internal"];
 
         const completedFileCount = s3FilesBeingUploaded.map(
-            ({ uploadPercent }) => uploadPercent === 100,
+            ({ uploadPercent }) => uploadPercent === 100
         ).length;
 
         return {
@@ -869,8 +868,8 @@ export const selectors = (() => {
                         .reduce((prev, curr) => prev + curr, 0) /
                     s3FilesBeingUploaded
                         .map(({ size }) => size)
-                        .reduce((prev, curr) => prev + curr, 0),
-            },
+                        .reduce((prev, curr) => prev + curr, 0)
+            }
         };
     };
 

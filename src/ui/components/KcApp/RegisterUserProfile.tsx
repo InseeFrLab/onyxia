@@ -34,10 +34,10 @@ const RegisterUserProfile = memo(
                 ...props_,
                 "kcFormGroupClass": cx(
                     props_.kcFormGroupClass,
-                    css({ "marginBottom": 20 }),
-                ),
+                    css({ "marginBottom": 20 })
+                )
             }),
-            [cx, css],
+            [cx, css]
         );
 
         const { t } = useTranslation({ RegisterUserProfile });
@@ -50,52 +50,52 @@ const RegisterUserProfile = memo(
                     "error-message": t("must be different from username"),
                     "ignore.empty.value": true,
                     "name": "username",
-                    "shouldBe": "different" as const,
+                    "shouldBe": "different" as const
                 },
                 "length": {
                     "min": "12" as const,
-                    "ignore.empty.value": true,
-                },
+                    "ignore.empty.value": true
+                }
             }),
-            [t],
+            [t]
         );
 
         const {
             formValidationState: { fieldStateByAttributeName, isFormSubmittable },
             formValidationReducer,
-            attributesWithPassword: unorderedAttributesWithPassword,
+            attributesWithPassword: unorderedAttributesWithPassword
         } = useFormValidationSlice({
             kcContext,
             passwordValidators,
-            i18n,
+            i18n
         });
 
         const attributesWithPassword = useMemo(
             () =>
                 unorderedAttributesWithPassword.sort(
                     (a, b) =>
-                        getHardCodedFieldWeight(b.name) - getHardCodedFieldWeight(a.name),
+                        getHardCodedFieldWeight(b.name) - getHardCodedFieldWeight(a.name)
                 ),
-            [unorderedAttributesWithPassword],
+            [unorderedAttributesWithPassword]
         );
 
         const onChangeFactory = useCallbackFactory(
             (
                 [name]: [string],
-                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
+                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>]
             ) =>
                 formValidationReducer({
                     "action": "update value",
                     name,
-                    "newValue": value,
-                }),
+                    "newValue": value
+                })
         );
 
         const onBlurFactory = useCallbackFactory(([name]: [string]) =>
             formValidationReducer({
                 "action": "focus lost",
-                name,
-            }),
+                name
+            })
         );
 
         useEffect(() => {
@@ -103,20 +103,20 @@ const RegisterUserProfile = memo(
                 .filter(
                     ({ name }) =>
                         !["username", "email", "password", "password-confirm"].includes(
-                            name,
-                        ),
+                            name
+                        )
                 )
                 .map(({ name }) =>
                     formValidationReducer({
                         "action": "focus lost",
-                        name,
-                    }),
+                        name
+                    })
                 );
         }, []);
 
         const areAllFieldsRequired = useMemo(
             () => attributesWithPassword.every(({ required }) => required),
-            [attributesWithPassword],
+            [attributesWithPassword]
         );
 
         {
@@ -131,7 +131,7 @@ const RegisterUserProfile = memo(
                 formValidationReducer({
                     "action": "update value",
                     "name": "username",
-                    "newValue": generateUsername({ firstName, lastName }),
+                    "newValue": generateUsername({ firstName, lastName })
                 });
             }, [firstName, lastName]);
         }
@@ -162,7 +162,7 @@ const RegisterUserProfile = memo(
                                 const {
                                     group = "",
                                     groupDisplayHeader = "",
-                                    groupDisplayDescription = "",
+                                    groupDisplayDescription = ""
                                 } = attribute;
 
                                 const { value, displayableErrors } =
@@ -171,7 +171,7 @@ const RegisterUserProfile = memo(
                                 const formGroupClassName = cx(
                                     props.kcFormGroupClass,
                                     displayableErrors.length !== 0 &&
-                                        props.kcFormGroupErrorClass,
+                                        props.kcFormGroupErrorClass
                                 );
 
                                 return (
@@ -181,34 +181,34 @@ const RegisterUserProfile = memo(
                                                 <div className={formGroupClassName}>
                                                     <div
                                                         className={cx(
-                                                            props.kcContentWrapperClass,
+                                                            props.kcContentWrapperClass
                                                         )}
                                                     >
                                                         <label
                                                             id={`header-${group}`}
                                                             className={cx(
-                                                                props.kcFormGroupHeader,
+                                                                props.kcFormGroupHeader
                                                             )}
                                                         >
                                                             {advancedMsg(
-                                                                groupDisplayHeader,
+                                                                groupDisplayHeader
                                                             ) || currentGroup}
                                                         </label>
                                                     </div>
                                                     {groupDisplayDescription !== "" && (
                                                         <div
                                                             className={cx(
-                                                                props.kcLabelWrapperClass,
+                                                                props.kcLabelWrapperClass
                                                             )}
                                                         >
                                                             <label
                                                                 id={`description-${group}`}
                                                                 className={`${cx(
-                                                                    props.kcLabelClass,
+                                                                    props.kcLabelClass
                                                                 )}`}
                                                             >
                                                                 {advancedMsg(
-                                                                    groupDisplayDescription,
+                                                                    groupDisplayDescription
                                                                 )}
                                                             </label>
                                                         </div>
@@ -240,7 +240,7 @@ const RegisterUserProfile = memo(
                                                     : getIncrementedTabIndex()
                                             }
                                             onValueBeingTypedChange={onChangeFactory(
-                                                attribute.name,
+                                                attribute.name
                                             )}
                                             inputProps_autoFocus={i === 0}
                                             inputProps_spellCheck={false}
@@ -256,7 +256,7 @@ const RegisterUserProfile = memo(
                                             label={
                                                 <>
                                                     {advancedMsg(
-                                                        attribute.displayName ?? "",
+                                                        attribute.displayName ?? ""
                                                     )}
                                                     &nbsp;
                                                     {!areAllFieldsRequired &&
@@ -274,7 +274,7 @@ const RegisterUserProfile = memo(
                                                                 validatorName ===
                                                                     "pattern" &&
                                                                 attribute.name === "email"
-                                                            ),
+                                                            )
                                                     );
 
                                                 if (displayableErrors.length !== 0) {
@@ -283,7 +283,7 @@ const RegisterUserProfile = memo(
                                                             <span key={i}>
                                                                 {errorMessage}&nbsp;
                                                             </span>
-                                                        ),
+                                                        )
                                                     );
                                                 }
 
@@ -299,7 +299,7 @@ const RegisterUserProfile = memo(
                                                         }
 
                                                         return t("minimum length", {
-                                                            "n": parseInt(min),
+                                                            "n": parseInt(min)
                                                         });
                                                     }
                                                 }
@@ -311,14 +311,14 @@ const RegisterUserProfile = memo(
                                                     if (pattern !== undefined) {
                                                         const {
                                                             "error-message":
-                                                                errorMessageKey,
+                                                                errorMessageKey
                                                         } = pattern;
 
                                                         return errorMessageKey !==
                                                             undefined
                                                             ? advancedMsg(errorMessageKey)
                                                             : t(
-                                                                  "must respect the pattern",
+                                                                  "must respect the pattern"
                                                               );
                                                     }
                                                 }
@@ -388,7 +388,7 @@ const RegisterUserProfile = memo(
                 }
             />
         );
-    },
+    }
 );
 
 export default RegisterUserProfile;
@@ -410,7 +410,7 @@ const { getHardCodedFieldWeight } = (() => {
         "email",
         "username",
         "password",
-        "password-confirm",
+        "password-confirm"
     ].map(fieldName => fieldName.toLowerCase());
 
     function getHardCodedFieldWeight(fieldName: string) {
@@ -438,15 +438,15 @@ const useStyles = makeStyles({ "name": { RegisterUserProfile } })(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",
-            "marginTop": theme.spacing(6),
-        },
+            "marginTop": theme.spacing(6)
+        }
     },
     "buttonsWrapper": {
         "marginTop": theme.spacing(8),
         "display": "flex",
-        "justifyContent": "flex-end",
+        "justifyContent": "flex-end"
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(2),
-    },
+        "marginLeft": theme.spacing(2)
+    }
 }));

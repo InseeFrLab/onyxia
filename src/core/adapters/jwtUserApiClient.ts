@@ -17,9 +17,9 @@ export function createJwtUserApiClient(params: {
                 parseJwtPayload({
                     jwtClaims,
                     "jwtPayload": jwtSimple.decode(getOidcAccessToken(), "", true),
-                    zParsedJwtTokenPayload,
-                }),
-            ),
+                    zParsedJwtTokenPayload
+                })
+            )
     };
 }
 
@@ -28,7 +28,7 @@ const zParsedJwtTokenPayload = z.object({
     "familyName": z.string().optional(),
     "firstName": z.string().optional(),
     "username": z.string(),
-    "groups": z.array(z.string()).optional(),
+    "groups": z.array(z.string()).optional()
 });
 
 assert<Equals<z.infer<typeof zParsedJwtTokenPayload>, User>>();

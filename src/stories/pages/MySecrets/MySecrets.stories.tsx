@@ -11,7 +11,7 @@ type StoryProps = {
 };
 
 function Component(
-    props: Omit<Props, "className" | "route" | "splashScreen"> & StoryProps,
+    props: Omit<Props, "className" | "route" | "splashScreen"> & StoryProps
 ) {
     const { width, height } = props;
 
@@ -20,7 +20,7 @@ function Component(
             route={null as any}
             className={css({
                 width,
-                height,
+                height
             })}
         />
     );
@@ -29,7 +29,7 @@ function Component(
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "doUseLib": true,
-    "wrappedComponent": { [symToStr({ MySecrets: MySecrets })]: Component },
+    "wrappedComponent": { [symToStr({ MySecrets: MySecrets })]: Component }
 });
 
 export default {
@@ -40,20 +40,20 @@ export default {
             "control": {
                 "type": "range",
                 "min": 200,
-                "max": 1920,
-            },
+                "max": 1920
+            }
         },
         "height": {
             "control": {
                 "type": "range",
                 "min": 200,
-                "max": 1080,
-            },
-        },
-    },
+                "max": 1080
+            }
+        }
+    }
 };
 
 export const View1 = getStory({
     "width": 1400,
-    "height": 1100,
+    "height": 1100
 });

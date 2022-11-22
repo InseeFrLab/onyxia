@@ -6,7 +6,7 @@ import { restApiPaths } from 'js/restApiPaths';
 import ChipsSelector from 'js/components/commons/chips-selector';
 import Carte from './carte-service.component';
 import Loader from 'js/components/commons/loader';
-import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { prAxiosInstance } from "core/adapters/officialOnyxiaApiClient";
 
 const Node = ({ location }) => {
 	const [idCatalogue] = useState(() =>

@@ -30,7 +30,7 @@ export const ExplorerUploadProgress = memo((props: Props) => {
 
     const {
         ref: progressBarRef,
-        domRect: { width: progressBarWidth },
+        domRect: { width: progressBarWidth }
     } = useDomRect();
 
     const { classes, cx } = useStyles({ percentUploaded, progressBarWidth });
@@ -100,64 +100,64 @@ export const ExplorerUploadProgress = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"over" | "importing">()({
-    ExplorerUploadProgress,
+    ExplorerUploadProgress
 });
 
 const useStyles = makeStyles<
     Pick<Props, "percentUploaded"> & { progressBarWidth: number }
->({ "name": { ExplorerUploadProgress } })(
-    (theme, { percentUploaded, progressBarWidth }) => ({
-        "root": {
-            "display": "flex",
-            "paddingRight": theme.spacing(4),
-        },
-        "icon": {
-            "width": 50,
-            ...theme.spacing.rightLeft("margin", 4),
-        },
-        "payload": {
-            "flex": 1,
-            "display": "flex",
-            "flexDirection": "column",
-            "justifyContent": "space-between",
-            ...theme.spacing.topBottom("padding", 3),
-        },
-        "progressBar": {
-            "position": "relative",
-            "boxSizing": "border-box",
-            "height": 4,
-            "backgroundColor": theme.colors.useCases.typography.textTertiary,
-            "borderRadius": 5,
-            ...theme.spacing.topBottom("margin", 2),
-        },
-        "progressBarGauge": {
-            "position": "absolute",
-            "width": (percentUploaded / 100) * progressBarWidth,
-            "boxSizing": "border-box",
-            "borderRadius": 5,
-            "height": 4,
-            "backgroundColor": theme.colors.useCases.buttons.actionActive,
-        },
-        "closeIconButton": {
-            "& svg": {
-                "color": theme.colors.useCases.alertSeverity.error.main,
-            },
-        },
-        "metric": {
-            "display": "flex",
-        },
-        "iconButtonWrapper": {
-            "display": "flex",
-        },
-        "checkWrapper": {
-            "display": "flex",
-            "alignItems": "center",
-        },
-        "check": {
-            "color": theme.colors.useCases.alertSeverity.success.main,
-        },
-    }),
-);
+>({
+    "name": { ExplorerUploadProgress }
+})((theme, { percentUploaded, progressBarWidth }) => ({
+    "root": {
+        "display": "flex",
+        "paddingRight": theme.spacing(4)
+    },
+    "icon": {
+        "width": 50,
+        ...theme.spacing.rightLeft("margin", 4)
+    },
+    "payload": {
+        "flex": 1,
+        "display": "flex",
+        "flexDirection": "column",
+        "justifyContent": "space-between",
+        ...theme.spacing.topBottom("padding", 3)
+    },
+    "progressBar": {
+        "position": "relative",
+        "boxSizing": "border-box",
+        "height": 4,
+        "backgroundColor": theme.colors.useCases.typography.textTertiary,
+        "borderRadius": 5,
+        ...theme.spacing.topBottom("margin", 2)
+    },
+    "progressBarGauge": {
+        "position": "absolute",
+        "width": (percentUploaded / 100) * progressBarWidth,
+        "boxSizing": "border-box",
+        "borderRadius": 5,
+        "height": 4,
+        "backgroundColor": theme.colors.useCases.buttons.actionActive
+    },
+    "closeIconButton": {
+        "& svg": {
+            "color": theme.colors.useCases.alertSeverity.error.main
+        }
+    },
+    "metric": {
+        "display": "flex"
+    },
+    "iconButtonWrapper": {
+        "display": "flex"
+    },
+    "checkWrapper": {
+        "display": "flex",
+        "alignItems": "center"
+    },
+    "check": {
+        "color": theme.colors.useCases.alertSeverity.success.main
+    }
+}));
 
 const { AdvancementText } = (() => {
     type Props = {
@@ -174,12 +174,12 @@ const { AdvancementText } = (() => {
 
         const { current, total } = useMemo(() => {
             const total = fileSizePrettyPrint({
-                "bytes": fileSize,
+                "bytes": fileSize
             });
 
             const current = fileSizePrettyPrint({
                 "bytes": fileSize * (percentUploaded / 100),
-                "unit": total.unit,
+                "unit": total.unit
             });
 
             return { total, current };
@@ -211,8 +211,8 @@ const { AdvancementText } = (() => {
 
     const useStyle = makeStyles()({
         "root": {
-            "display": "flex",
-        },
+            "display": "flex"
+        }
     });
 
     return { AdvancementText };

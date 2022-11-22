@@ -22,7 +22,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
         packageName,
         packageDescription,
         packageHomeUrl,
-        onRequestLaunch,
+        onRequestLaunch
     } = props;
 
     const { classes, cx } = useStyles();
@@ -65,11 +65,11 @@ export const CatalogExplorerCard = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"learn more" | "launch">()({
-    CatalogExplorerCard,
+    CatalogExplorerCard
 });
 
 const useStyles = makeStyles<void, "learnMoreButton">({
-    "name": { CatalogExplorerCard },
+    "name": { CatalogExplorerCard }
 })((theme, _params, classes) => ({
     "root": {
         "borderRadius": 8,
@@ -78,21 +78,21 @@ const useStyles = makeStyles<void, "learnMoreButton">({
         "&:hover": {
             "boxShadow": theme.shadows[6],
             [`& .${classes.learnMoreButton}`]: {
-                "visibility": "visible",
-            },
+                "visibility": "visible"
+            }
         },
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "aboveDivider": {
         "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "title": {
-        "marginLeft": theme.spacing(3),
+        "marginLeft": theme.spacing(3)
     },
     "belowDivider": {
         "padding": theme.spacing(4),
@@ -100,24 +100,24 @@ const useStyles = makeStyles<void, "learnMoreButton">({
         "flex": 1,
         "display": "flex",
         "flexDirection": "column",
-        "overflow": "hidden",
+        "overflow": "hidden"
     },
     "body": {
         "margin": 0,
-        "flex": 1,
+        "flex": 1
         //TODO: Commented out for mozilla (longer one always have scroll in a grid)
         //"overflow": "auto"
     },
     "bodyTypo": {
-        "color": theme.colors.useCases.typography.textSecondary,
+        "color": theme.colors.useCases.typography.textSecondary
     },
     "buttonsWrapper": {
         "display": "flex",
         "justifyContent": "flex-end",
-        "marginTop": theme.spacing(4),
+        "marginTop": theme.spacing(4)
     },
     "learnMoreButton": {
         "marginRight": theme.spacing(2),
-        "visibility": "hidden",
-    },
+        "visibility": "hidden"
+    }
 }));

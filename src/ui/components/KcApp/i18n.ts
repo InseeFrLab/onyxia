@@ -8,14 +8,14 @@ export function useI18n(props: Props) {
         kcContext,
         "extraMessages": {
             "en": {
-                "alphanumericalCharsOnly": "Only alphanumerical characters",
+                "alphanumericalCharsOnly": "Only alphanumerical characters"
             },
             "fr": {
                 /* spell-checker: disable */
-                "alphanumericalCharsOnly": "Caractère alphanumérique uniquement",
+                "alphanumericalCharsOnly": "Caractère alphanumérique uniquement"
                 /* spell-checker: enable */
-            },
-        },
+            }
+        }
     });
 }
 

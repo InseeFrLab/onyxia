@@ -6,7 +6,7 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogContentText,
+    DialogContentText
 } from "@mui/material/";
 import dayjs from "dayjs";
 import { CarteService } from "js/components/commons/service-card/card-service.component";
@@ -73,7 +73,7 @@ const getActions = (service: Service) => (launch: any) => () => {
             {getLaunchIcon(service)(launch)}
             <a
                 {...routes.myService({
-                    "serviceId": service.id.replace(/^\//, ""),
+                    "serviceId": service.id.replace(/^\//, "")
                 }).link}
             >
                 <IconButton

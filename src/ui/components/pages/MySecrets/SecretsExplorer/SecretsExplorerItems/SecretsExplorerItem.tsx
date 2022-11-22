@@ -56,7 +56,7 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
         getIsValidBasename,
         onMouseEvent,
         onEditBasename,
-        onIsInEditingStateValueChange,
+        onIsInEditingStateValueChange
     } = props;
 
     const { t } = useTranslation({ SecretsExplorerItem });
@@ -67,17 +67,17 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
 
     useEffectOnValueChange(
         () => onIsInEditingStateValueChange({ isInEditingState }),
-        [isInEditingState],
+        [isInEditingState]
     );
 
     const { getOnMouseProps } = useClick<"icon" | "text">({
         "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target }),
+        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
     });
 
     //TODO: We need a custom hook for this.
     const [evtIsCircularProgressShown] = useState(() =>
-        Evt.create(isCircularProgressShown),
+        Evt.create(isCircularProgressShown)
     );
     useEffect(() => {
         evtIsCircularProgressShown.state = isCircularProgressShown;
@@ -91,20 +91,20 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
                     evtIsCircularProgressShown.attachOnce(
                         isCircularProgressShown => !isCircularProgressShown,
                         ctx,
-                        () => setIsInEditingState(true),
-                    ),
+                        () => setIsInEditingState(true)
+                    )
             ),
-        [evtAction, evtIsCircularProgressShown],
+        [evtAction, evtIsCircularProgressShown]
     );
 
     const getIsValidValue = useConstCallback((value: string) =>
         getIsValidBasename({ "basename": value })
             ? ({ "isValidValue": true } as const)
-            : ({ "isValidValue": false, "message": "" } as const),
+            : ({ "isValidValue": false, "message": "" } as const)
     );
 
     const [evtInputAction] = useState(() =>
-        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
     );
 
     const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(value => {
@@ -126,7 +126,7 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
             smartTrim({
                 "text": basename,
                 "maxLength": 21,
-                "minCharAtTheEnd": 5,
+                "minCharAtTheEnd": 5
             })
                 //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
@@ -140,14 +140,14 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
                                   "_",
                                   <span key={i} className={classes.hiddenSpan}>
                                       {" "}
-                                  </span>,
+                                  </span>
                               ]),
-                        curr,
+                        curr
                     ],
-                    [],
+                    []
                 ),
 
-        [basename, classes.hiddenSpan],
+        [basename, classes.hiddenSpan]
     );
 
     return (
@@ -202,21 +202,21 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
 export const { i18n } = declareComponentKeys<"description">()({ SecretsExplorerItem });
 
 const useStyles = makeStyles<Pick<SecretsExplorerItemProps, "isSelected" | "basename">>({
-    "name": { ExplorerItem: SecretsExplorerItem },
+    "name": { ExplorerItem: SecretsExplorerItem }
 })((theme, { isSelected, basename }) => ({
     "root": {
         "textAlign": "center",
         "cursor": "pointer",
-        "width": theme.spacing(9),
+        "width": theme.spacing(9)
     },
     "frame": {
         "borderRadius": "5px",
         "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
         "display": "inline-block",
-        "padding": theme.muiTheme.spacing(2, 2),
+        "padding": theme.muiTheme.spacing(2, 2)
     },
     "explorerIcon": {
-        "height": 60,
+        "height": 60
     },
     "text": {
         //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
@@ -226,12 +226,12 @@ const useStyles = makeStyles<Pick<SecretsExplorerItemProps, "isSelected" | "base
 
             return color.alpha((color as any).valpha * (isSelected ? 1.2 : 0.8)).string();
         })(),
-        "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all",
+        "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
     },
     "hiddenSpan": {
         "width": 0,
         "overflow": "hidden",
-        "display": "inline-block",
+        "display": "inline-block"
     },
     "input": {
         //NOTE: So that the text does not move when editing start.
@@ -240,7 +240,7 @@ const useStyles = makeStyles<Pick<SecretsExplorerItemProps, "isSelected" | "base
 
         "paddingTop": 0,
         "& .MuiInput-input": {
-            "textAlign": "center",
-        },
-    },
+            "textAlign": "center"
+        }
+    }
 }));

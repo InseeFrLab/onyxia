@@ -12,7 +12,7 @@ export function crawlFactory(params: {
         const { directoryPath, filePaths } = params;
 
         const { directoryBasenames, fileBasenames } = await list({
-            directoryPath,
+            directoryPath
         });
 
         const toPath = (fileOrDirectoryBasename: string) =>
@@ -23,7 +23,7 @@ export function crawlFactory(params: {
         await Promise.all(
             directoryBasenames
                 .map(toPath)
-                .map(directoryPath => crawlRec({ directoryPath, filePaths })),
+                .map(directoryPath => crawlRec({ directoryPath, filePaths }))
         );
     }
 
@@ -37,7 +37,7 @@ export function crawlFactory(params: {
         await crawlRec({ directoryPath, filePaths });
 
         return {
-            "filePaths": filePaths.map(filePath => pathRelative(directoryPath, filePath)),
+            "filePaths": filePaths.map(filePath => pathRelative(directoryPath, filePath))
         };
     }
 

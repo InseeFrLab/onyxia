@@ -58,7 +58,7 @@ export const MyServicesCard = memo((props: Props) => {
         isOwned,
         ownerUsername,
         vaultTokenExpirationTime,
-        s3TokenExpirationTime,
+        s3TokenExpirationTime
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
@@ -79,7 +79,7 @@ export const MyServicesCard = memo((props: Props) => {
 
                     return "valid";
                 })(),
-                expirationTime,
+                expirationTime
             } as const);
 
         return {
@@ -90,7 +90,7 @@ export const MyServicesCard = memo((props: Props) => {
             "vault":
                 vaultTokenExpirationTime === undefined
                     ? undefined
-                    : getTokenStatus(vaultTokenExpirationTime),
+                    : getTokenStatus(vaultTokenExpirationTime)
         };
     }, [vaultTokenExpirationTime, s3TokenExpirationTime]);
 
@@ -117,7 +117,7 @@ export const MyServicesCard = memo((props: Props) => {
 
                       return "success";
                   })(),
-        [startTime, tokensStatus],
+        [startTime, tokensStatus]
     );
 
     const { classes, cx } = useStyles({
@@ -129,7 +129,7 @@ export const MyServicesCard = memo((props: Props) => {
                 default:
                     return severity;
             }
-        })(),
+        })()
     });
 
     const tooltipTitle = useMemo(
@@ -157,8 +157,8 @@ export const MyServicesCard = memo((props: Props) => {
                                                 "which": tokenType,
                                                 "howMuchTime": fromNow({
                                                     "lang": evtLang.state,
-                                                    "dateTime": expirationTime,
-                                                }),
+                                                    "dateTime": expirationTime
+                                                })
                                             })}
                                             <br />
                                         </Fragment>
@@ -167,7 +167,7 @@ export const MyServicesCard = memo((props: Props) => {
                                     return (
                                         <Fragment key={tokenType}>
                                             {t("which token expired", {
-                                                "which": tokenType,
+                                                "which": tokenType
                                             })}
                                             <br />
                                         </Fragment>
@@ -177,11 +177,11 @@ export const MyServicesCard = memo((props: Props) => {
                         .filter(exclude(undefined)),
                     <Fragment key={"reminder"}>
                         {t("reminder to delete services")}
-                    </Fragment>,
+                    </Fragment>
                 ]}
             </>
         ),
-        [tokensStatus, t],
+        [tokensStatus, t]
     );
 
     return (
@@ -227,7 +227,7 @@ export const MyServicesCard = memo((props: Props) => {
                             <MyServicesRunningTime
                                 isRunning={true}
                                 doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                    { startTime },
+                                    { startTime }
                                 )}
                                 startTime={startTime}
                             />
@@ -286,54 +286,54 @@ const useStyles = makeStyles<{
         "boxShadow": theme.shadows[1],
         "backgroundColor": theme.colors.useCases.surfaces.surface1,
         "&:hover": {
-            "boxShadow": theme.shadows[6],
+            "boxShadow": theme.shadows[6]
         },
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "aboveDivider": {
         "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "boxSizing": "border-box",
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "title": {
-        "marginLeft": theme.spacing(3),
+        "marginLeft": theme.spacing(3)
     },
     "errorOutlineIcon":
         severity === undefined
             ? { "display": "none" }
             : {
                   "marginLeft": theme.spacing(3),
-                  "color": theme.colors.useCases.alertSeverity[severity].main,
+                  "color": theme.colors.useCases.alertSeverity[severity].main
               },
     "belowDivider": {
         "padding": theme.spacing(4),
         "paddingTop": theme.spacing(3),
-        "flex": 1,
+        "flex": 1
     },
     "timeContainer": {
-        "marginLeft": theme.spacing(6),
+        "marginLeft": theme.spacing(6)
     },
     "belowDividerTop": {
         "display": "flex",
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(4)
     },
     "captions": {
         "display": "inline-block",
-        "marginBottom": theme.spacing(2),
+        "marginBottom": theme.spacing(2)
     },
     "packageNameWrapper": {
         "& > *": {
-            "display": "inline-block",
-        },
+            "display": "inline-block"
+        }
     },
     "sharedTag": {
-        "marginLeft": theme.spacing(2),
+        "marginLeft": theme.spacing(2)
     },
     "belowDividerBottom": {
         "display": "flex",
-        "alignItems": "center",
-    },
+        "alignItems": "center"
+    }
 }));

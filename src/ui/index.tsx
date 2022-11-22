@@ -1,12 +1,19 @@
 import { createRoot } from "react-dom/client";
 import { RouteProvider } from "./routes";
-import { CoreProvider } from "ui/coreApi/CoreProvider";
 import { ThemeProvider, splashScreen, createGetViewPortConfig } from "./theme";
 import { lazy, Suspense } from "react";
 import { kcContext } from "./components/KcApp/kcContext";
 import { PortraitModeUnsupported } from "ui/components/pages/PortraitModeUnsupported";
+import { createCoreProvider } from "core";
+import { getCreateStoreParams } from "ui/env";
+import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
+import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { StoreProvider } from "js/StoreProvider";
+import { Evt } from "evt";
 import "./envCarriedOverToKc";
 import { Buffer } from "buffer";
+import { evtLang } from "ui/i18n";
 //For jwt-simple
 (window as any).Buffer = Buffer;
 
@@ -14,6 +21,27 @@ const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported 
 
 const App = lazy(() => import("./components/App"));
 const KcApp = lazy(() => import("./components/KcApp"));
+
+const { CoreProvider } = createCoreProvider(() =>
+    getCreateStoreParams({
+        "transformUrlBeforeRedirectToLogin": url =>
+            [url]
+                .map(injectTransferableEnvsInSearchParams)
+                .map(injectGlobalStatesInSearchParams)
+                .map(
+                    url =>
+                        addParamToUrl({
+                            url,
+                            "name": "ui_locales",
+                            "value": evtLang.state
+                        }).newUrl
+                )[0],
+        "evtUserActivity": Evt.merge([
+            Evt.from(document, "mousemove"),
+            Evt.from(document, "keydown")
+        ]).pipe(() => [undefined as void])
+    })
+);
 
 createRoot(document.getElementById("root")!).render(
     <Suspense>
@@ -28,10 +56,12 @@ createRoot(document.getElementById("root")!).render(
                     <KcApp kcContext={kcContext} />
                 ) : (
                     <CoreProvider>
-                        <App />
+                        <StoreProvider>
+                            <App />
+                        </StoreProvider>
                     </CoreProvider>
                 )}
             </ThemeProvider>
         </RouteProvider>
-    </Suspense>,
+    </Suspense>
 );

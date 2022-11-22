@@ -23,7 +23,7 @@ export const thunks = {
             assert(oidcClient.isUserLoggedIn);
 
             return oidcClient.logout({ "redirectTo": "home" });
-        },
+        }
 };
 
 const slice = createSlice({
@@ -33,7 +33,7 @@ const slice = createSlice({
         "waiting": false,
         "displayLogin": false,
         "visite": false,
-        "faviconUrl": "/onyxia.png",
+        "faviconUrl": "/onyxia.png"
     }),
     "reducers": {
         /*
@@ -55,7 +55,7 @@ const slice = createSlice({
         },
         "setRedirectUri": (
             state,
-            { payload }: PayloadAction<{ uri: State["redirectUri"] }>,
+            { payload }: PayloadAction<{ uri: State["redirectUri"] }>
         ) => {
             const { uri } = payload;
 
@@ -65,7 +65,7 @@ const slice = createSlice({
         },
         "displayLogin": (
             state,
-            { payload }: PayloadAction<{ doDisplay: State["displayLogin"] }>,
+            { payload }: PayloadAction<{ doDisplay: State["displayLogin"] }>
         ) => {
             const { doDisplay } = payload;
 
@@ -75,7 +75,7 @@ const slice = createSlice({
         },
         "setFavicon": (
             state,
-            { payload }: PayloadAction<{ url: State["faviconUrl"] }>,
+            { payload }: PayloadAction<{ url: State["faviconUrl"] }>
         ) => {
             const { url } = payload;
 
@@ -85,8 +85,8 @@ const slice = createSlice({
         },
         "startVisite": state => {
             state.visite = true;
-        },
-    },
+        }
+    }
 });
 
 export const { reducer } = slice;

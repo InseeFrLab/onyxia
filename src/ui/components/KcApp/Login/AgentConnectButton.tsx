@@ -47,10 +47,10 @@ const useStyles = makeStyles({ "name": { AgentConnectButton } })(theme => ({
                 : theme.colors.palette.agentConnectBlue.light,
             "borderColor": theme.isDarkModeEnabled
                 ? theme.colors.palette.agentConnectBlue.light
-                : undefined,
-        },
+                : undefined
+        }
     },
     "svg": {
-        "height": 48,
-    },
+        "height": 48
+    }
 }));

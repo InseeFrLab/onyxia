@@ -30,16 +30,18 @@ const useStyles = makeStyles({ "name": { PortraitModeUnsupported } })(theme => (
     "root": {
         "height": "100vh",
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "wrapper": {
-        "textAlign": "center",
+        "textAlign": "center"
     },
     "instructions": {
-        "marginTop": theme.spacing(3),
-    },
+        "marginTop": theme.spacing(3)
+    }
 }));
 
 export const { i18n } = declareComponentKeys<
     "portrait mode not supported" | "instructions"
->()({ PortraitModeUnsupported });
+>()({
+    PortraitModeUnsupported
+});

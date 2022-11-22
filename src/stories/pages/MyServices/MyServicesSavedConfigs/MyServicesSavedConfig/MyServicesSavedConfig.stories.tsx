@@ -6,7 +6,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfig },
+    "wrappedComponent": { MyServicesSavedConfig }
 });
 
 export default meta;
@@ -20,7 +20,7 @@ export const ViewShortVariant = getStory({
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });
 
 export const ViewLongVariant = getStory({
@@ -30,7 +30,7 @@ export const ViewLongVariant = getStory({
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });
 
 export const ViewNoLogo = getStory({
@@ -40,5 +40,5 @@ export const ViewNoLogo = getStory({
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });

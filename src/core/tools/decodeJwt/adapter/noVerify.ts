@@ -7,8 +7,8 @@ export const createDecodeJwtNoVerify: CreateDecodeJwt = ({ jwtClaims }) => {
         Promise.resolve(
             jwtContentToDecodedJwt({
                 jwtClaims,
-                "jwtPayload": jwtSimple.decode(jwtToken, "", true),
-            }),
+                "jwtPayload": jwtSimple.decode(jwtToken, "", true)
+            })
         );
 
     return { decodeJwt };

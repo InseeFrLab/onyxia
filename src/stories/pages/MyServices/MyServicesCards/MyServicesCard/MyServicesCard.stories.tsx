@@ -6,7 +6,7 @@ import rstudioImgUrl from "stories/assets/img/rstudio.png";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MyServicesCard },
-    "defaultContainerWidth": 400,
+    "defaultContainerWidth": 400
 });
 
 export default meta;
@@ -26,8 +26,8 @@ export const ViewRegular = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv",
-    ]),
+        "onRequestShowEnv"
+    ])
 });
 
 export const ViewStarting = getStory({
@@ -45,6 +45,6 @@ export const ViewStarting = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv",
-    ]),
+        "onRequestShowEnv"
+    ])
 });

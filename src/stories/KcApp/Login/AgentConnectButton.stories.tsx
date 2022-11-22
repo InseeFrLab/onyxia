@@ -5,11 +5,11 @@ import { getStoryFactory } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { AgentConnectButton },
+    "wrappedComponent": { AgentConnectButton }
 });
 
 export default meta;
 
 export const Login = getStory({
-    "url": "#",
+    "url": "#"
 });

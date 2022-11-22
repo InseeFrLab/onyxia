@@ -5,7 +5,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerIcon },
+    "wrappedComponent": { ExplorerIcon }
 });
 
 export default meta;
@@ -13,5 +13,5 @@ export default meta;
 export const view = getStory({
     "iconId": "data",
     "hasShadow": true,
-    "className": css({ "height": 200 }),
+    "className": css({ "height": 200 })
 });

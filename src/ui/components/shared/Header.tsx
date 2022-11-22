@@ -67,7 +67,7 @@ export const Header = memo((props: Props) => {
                     <Text
                         typo="section heading"
                         className={cx(css({ ...theme.spacing.rightLeft("margin", 2) }), {
-                            [css({ "marginLeft": 0 })]: !doShowOnyxia,
+                            [css({ "marginLeft": 0 })]: !doShowOnyxia
                         })}
                     >
                         {HEADER_ORGANIZATION}
@@ -135,7 +135,9 @@ export const Header = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<
     "logout" | "login" | "project" | "trainings" | "documentation"
->()({ Header });
+>()({
+    Header
+});
 
 const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header } })(
     (theme, { logoContainerWidth }) => ({
@@ -144,7 +146,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
             "overflow": "auto",
             "display": "flex",
             "alignItems": "center",
-            ...theme.spacing.topBottom("padding", 2),
+            ...theme.spacing.topBottom("padding", 2)
         },
         "logoContainer": {
             "cursor": "pointer",
@@ -152,31 +154,31 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
             "textAlign": "center",
             "display": "flex",
             "alignItems": "center",
-            "justifyContent": "center",
+            "justifyContent": "center"
         },
         "mainTextContainer": {
             "cursor": "pointer",
             "& > *": {
-                "display": "inline",
-            },
+                "display": "inline"
+            }
         },
         "svg": {
             "fill": theme.colors.useCases.typography.textFocus,
-            "width": "70%",
+            "width": "70%"
         },
         "button": {
-            "marginBottom": theme.spacing(1),
+            "marginBottom": theme.spacing(1)
         },
         "rightEndActionsContainer": {
             "flex": 1,
             "display": "flex",
             "justifyContent": "flex-end",
-            "alignItems": "center",
+            "alignItems": "center"
         },
         "projectSelect": {
-            "marginLeft": theme.spacing(2),
-        },
-    }),
+            "marginLeft": theme.spacing(2)
+        }
+    })
 );
 
 /*
@@ -230,7 +232,7 @@ const ProjectSelect = memo((props: ProjectSelectProps) => {
 
     const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
         onSelectedProjectChange({
-            "projectId": event.target.value,
+            "projectId": event.target.value
         });
     });
 

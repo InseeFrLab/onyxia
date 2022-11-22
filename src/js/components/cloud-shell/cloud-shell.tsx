@@ -12,18 +12,18 @@ import { restApiPaths } from "js/restApiPaths";
 import { actions as myLabActions } from "js/redux/myLab";
 import {
     getOptions,
-    getValuesObject,
+    getValuesObject
 } from "js/components/my-lab/catalogue/catalogue-navigation/leaf/deploiement/nouveau-service";
 import { createUseGlobalState } from "powerhooks/useGlobalState";
 import { useStyles } from "ui/theme";
-import { prAxiosInstance } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { prAxiosInstance } from "core/adapters/officialOnyxiaApiClient";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useThunks } from "ui/coreApi";
+import { useCoreFunctions } from "core";
 
 export const { useIsCloudShellVisible } = createUseGlobalState({
     "name": "isCloudShellVisible",
     "initialState": false,
-    "doPersistAcrossReloads": false,
+    "doPersistAcrossReloads": false
 });
 interface CloudShellData {
     status?: "UP" | "DOWN" | undefined;
@@ -33,12 +33,12 @@ interface CloudShellData {
 }
 
 export const CloudShell = memo(() => {
-    const { userAuthenticationThunks } = useThunks();
+    const { userAuthentication } = useCoreFunctions();
 
-    const { username } = userAuthenticationThunks.getUser();
+    const { username } = userAuthentication.getUser();
 
     const [cloudShellStatus, setCloudShellStatus] = useState<"UP" | "DOWN" | undefined>(
-        undefined,
+        undefined
     );
     const [url, setUrl] = useState<string | undefined>(undefined);
     const { isCloudShellVisible, setIsCloudShellVisible } = useIsCloudShellVisible();
@@ -67,13 +67,13 @@ export const CloudShell = memo(() => {
                             myLabActions.creerNouveauService({
                                 "service": {
                                     ...service,
-                                    ...catalogId,
+                                    ...catalogId
                                 },
                                 "options": getValuesObject(
-                                    getOptions(buildOnyxiaValue, service, {}).fV,
+                                    getOptions(buildOnyxiaValue, service, {}).fV
                                 ) as any,
-                                "dryRun": false,
-                            }),
+                                "dryRun": false
+                            })
                         ) as any
                     ).then(() => {
                         axiosAuth
@@ -95,8 +95,8 @@ export const CloudShell = memo(() => {
     const deleteCloudShell = useConstCallback(() => {
         dispatch(
             myLabActions.requestDeleteMonService({
-                "service": { id: "cloudshell" },
-            }),
+                "service": { id: "cloudshell" }
+            })
         );
         setCloudShellStatus(undefined);
         setUrl(undefined);
@@ -121,19 +121,19 @@ export const CloudShell = memo(() => {
                     position: "fixed",
                     bottom: 0,
                     zIndex: 999,
-                    width: "100%",
+                    width: "100%"
                 }}
             >
                 <div
                     style={{
                         width: "fit-content",
                         borderTopRightRadius: "10px",
-                        backgroundColor: "rgba(0, 0, 0, 0.35)",
+                        backgroundColor: "rgba(0, 0, 0, 0.35)"
                     }}
                     className={css({
                         "& .MuiIconButton-root": {
-                            "color": "white",
-                        },
+                            "color": "white"
+                        }
                     })}
                 >
                     <IconButton
@@ -148,7 +148,7 @@ export const CloudShell = memo(() => {
                         aria-label="openinnewicon"
                         onClick={() => {
                             const cloudshell = document.getElementById(
-                                "cloudshell-iframe",
+                                "cloudshell-iframe"
                             ) as HTMLImageElement;
                             window.open(String(cloudshell.src), "_blank");
                             setIsCloudShellVisible(false);
@@ -196,14 +196,14 @@ const { CloudShellWindow } = (() => {
 
         const onResizeStop = useConstCallback(
             (...[, , , d]: Parameters<NonNullable<ResizableProps["onResizeStop"]>>) =>
-                setHeight(height + d.height),
+                setHeight(height + d.height)
         );
 
         return (
             <Resizable
                 size={{
                     height: height,
-                    width: "100%",
+                    width: "100%"
                 }}
                 onResizeStop={onResizeStop}
             >

@@ -32,7 +32,7 @@ export const ExplorerIcon = memo((props: Props) => {
 });
 
 const useStyles = makeStyles<Pick<Props, "hasShadow" | "iconId">>({
-    "name": { ExplorerIcon },
+    "name": { ExplorerIcon }
 })((theme, { hasShadow, iconId }) => ({
     "root": {
         "filter": hasShadow
@@ -49,6 +49,6 @@ const useStyles = makeStyles<Pick<Props, "hasShadow" | "iconId">>({
                     ].main;
             }
         })(),
-        "display": "block",
-    },
+        "display": "block"
+    }
 }));

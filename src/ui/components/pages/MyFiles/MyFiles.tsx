@@ -2,7 +2,7 @@ import { makeStyles, PageHeader } from "ui/theme";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useSelector, useThunks, selectors } from "ui/coreApi";
+import { useCoreState, useCoreFunctions, selectors } from "core";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
@@ -34,18 +34,18 @@ export function MyFiles(props: Props) {
 
     const { t } = useTranslation({ MyFiles });
 
-    const currentWorkingDirectoryView = useSelector(
-        selectors.fileExplorer.currentWorkingDirectoryView,
+    const currentWorkingDirectoryView = useCoreState(
+        selectors.fileExplorer.currentWorkingDirectoryView
     ).currentWorkingDirectoryView;
 
-    const { fileExplorerThunks } = useThunks();
+    const { fileExplorer } = useCoreFunctions();
 
     {
         const onNavigate = useConstCallback<
-            Param0<typeof fileExplorerThunks["notifyThatUserIsWatching"]>["onNavigate"]
+            Param0<typeof fileExplorer["notifyThatUserIsWatching"]>["onNavigate"]
         >(({ directoryPath, doRestoreOpenedFile: _doRestoreOpenedFile }) =>
             routes[route.name]({
-                "path": directoryPath,
+                "path": directoryPath
                 /* TODO: Restore when we have a fileViewer usecase
                  ...(!doRestoreOpenedFile
                      ? {}
@@ -54,16 +54,16 @@ export function MyFiles(props: Props) {
                              route.params.openFile ?? secretEditorState?.basename,
                      }),
                 */
-            }).replace(),
+            }).replace()
         );
 
         useEffect(() => {
-            fileExplorerThunks.notifyThatUserIsWatching({
+            fileExplorer.notifyThatUserIsWatching({
                 "directNavigationDirectoryPath": route.params.path,
-                onNavigate,
+                onNavigate
             });
 
-            return () => fileExplorerThunks.notifyThatUserIsNoLongerWatching();
+            return () => fileExplorer.notifyThatUserIsNoLongerWatching();
         }, [route.name]);
     }
 
@@ -89,39 +89,39 @@ export function MyFiles(props: Props) {
             return;
         }
 
-        fileExplorerThunks.navigate({
-            "directoryPath": route.params.path,
+        fileExplorer.navigate({
+            "directoryPath": route.params.path
         });
     }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({ "path": directoryPath }).push(),
+            routes[route.name]({ "path": directoryPath }).push()
     );
 
-    const onRefresh = useConstCallback(() => fileExplorerThunks.refresh());
+    const onRefresh = useConstCallback(() => fileExplorer.refresh());
 
     const onCreateDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
-            fileExplorerThunks.create({
+            fileExplorer.create({
                 "createWhat": "directory",
-                basename,
-            }),
+                basename
+            })
     );
 
     const onDeleteItem = useConstCallback(
         ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
-            fileExplorerThunks.delete({
+            fileExplorer.delete({
                 "deleteWhat": kind,
-                basename,
-            }),
+                basename
+            })
     );
 
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/")),
+        copyToClipboard(path.split("/").slice(2).join("/"))
     );
 
-    const s3ApiLogs = fileExplorerThunks.getS3ClientLogs();
+    const s3ApiLogs = fileExplorer.getS3ClientLogs();
 
     const { classes, cx } = useStyles();
 
@@ -143,18 +143,18 @@ export function MyFiles(props: Props) {
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
             "behavior": "collapses on scroll",
             "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef,
+            "scrollableElementRef": scrollableDivRef
         }),
-        [],
+        []
     );
 
     const helpContent = useMemo(
@@ -171,27 +171,25 @@ export function MyFiles(props: Props) {
                 </Link>
             </>
         ),
-        [t],
+        [t]
     );
 
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
-    >(({ basename }) =>
-        fileExplorerThunks.getFileDownloadUrl({ basename }).then(window.open),
-    );
+    >(({ basename }) => fileExplorer.getFileDownloadUrl({ basename }).then(window.open));
 
     const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
         ({ files }) =>
             files.map(file =>
-                fileExplorerThunks.create({
+                fileExplorer.create({
                     "createWhat": "file",
                     "basename": file.name,
-                    "blob": file,
-                }),
-            ),
+                    "blob": file
+                })
+            )
     );
 
-    const { uploadProgress } = useSelector(selectors.fileExplorer.uploadProgress);
+    const { uploadProgress } = useCoreState(selectors.fileExplorer.uploadProgress);
 
     if (currentWorkingDirectoryView === undefined) {
         return null;
@@ -232,7 +230,7 @@ export function MyFiles(props: Props) {
                 scrollableDivRef={scrollableDivRef}
                 {...{
                     "isFileOpen": false as const,
-                    onOpenFile,
+                    onOpenFile
                 }}
             />
         </div>
@@ -253,11 +251,11 @@ const useStyles = makeStyles({ "name": { MyFiles } })({
     "root": {
         "height": "100%",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "explorer": {
         "overflow": "hidden",
         "flex": 1,
-        "width": "100%",
-    },
+        "width": "100%"
+    }
 });

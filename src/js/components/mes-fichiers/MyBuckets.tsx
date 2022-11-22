@@ -4,7 +4,7 @@ import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FilDAriane, { fil } from "js/components/commons/fil-d-ariane";
 import "../app.scss";
 import "./myBuckets.scss";
-import { useSelector, selectors } from "ui/coreApi";
+import { useCoreState, selectors } from "core";
 import { asyncThunks as myFilesActions } from "js/redux/myFiles";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { useDispatch } from "js/hooks";
@@ -19,10 +19,10 @@ MyBuckets.getDoRequireUserLoggedIn = true as const;
 export function MyBuckets() {
     const dispatch = useDispatch();
 
-    const buckets = useSelector(state => state.myFiles.userBuckets);
+    const buckets = useCoreState(state => state.myFiles.userBuckets);
 
-    const { selectedDeploymentRegion } = useSelector(
-        selectors.deploymentRegion.selectedDeploymentRegion,
+    const { selectedDeploymentRegion } = useCoreState(
+        selectors.deploymentRegion.selectedDeploymentRegion
     );
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export function MyBuckets() {
 const Bucket = ({
     id,
     description,
-    region,
+    region
 }: {
     id: string;
     description: string;

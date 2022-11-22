@@ -16,16 +16,16 @@ export function jwtContentToDecodedJwt<ClaimName extends string>(params: {
                     assert(
                         typeof value !== undefined,
                         `${propertyName} could not be read from JWT payload, ${propertyNameInJwtPayload} is not defined in ${JSON.stringify(
-                            jwtPayload,
-                        )}`,
+                            jwtPayload
+                        )}`
                     );
 
                     return [
                         propertyName,
-                        typeof value === "string" ? value : JSON.stringify(value),
+                        typeof value === "string" ? value : JSON.stringify(value)
                     ] as const;
-                },
-            ),
-        ),
+                }
+            )
+        )
     ) as any;
 }

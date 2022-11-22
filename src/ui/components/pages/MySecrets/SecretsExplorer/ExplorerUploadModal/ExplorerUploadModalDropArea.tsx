@@ -29,7 +29,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const { t } = useTranslation({ ExplorerUploadModalDropArea });
 
     const evtInputFileAction = useConst(() =>
-        Evt.create<UnpackEvt<InputFileProps["evtAction"]>>(),
+        Evt.create<UnpackEvt<InputFileProps["evtAction"]>>()
     );
 
     const onBrowseFileClick = useConstCallback(() => evtInputFileAction.post("TRIGGER"));
@@ -37,7 +37,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     const callbackFactory = useCallbackFactory(
         (
             [callbackId]: ["drop" | "dragEnter" | "dragLeave" | "dragOver"],
-            [event]: [DragEvent<HTMLDivElement>],
+            [event]: [DragEvent<HTMLDivElement>]
         ) => {
             event.preventDefault();
             event.stopPropagation();
@@ -54,7 +54,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
                         case "drop":
                             return false;
                     }
-                })(),
+                })()
             );
 
             if (callbackId !== "drop") {
@@ -64,7 +64,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
             assert(event.type === "drop");
 
             onFileSelected({ "files": Object.values(event.dataTransfer.files) });
-        },
+        }
     );
 
     return (
@@ -99,11 +99,11 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"drag and drop or" | "browse files">()({
-    ExplorerUploadModalDropArea,
+    ExplorerUploadModalDropArea
 });
 
 const useStyles = makeStyles<{ isDragHover: boolean }>({
-    "name": { ExplorerUploadModalDropArea },
+    "name": { ExplorerUploadModalDropArea }
 })((theme, { isDragHover }) => ({
     "root": {
         "outline": `${isDragHover ? 3 : 1}px ${
@@ -114,18 +114,18 @@ const useStyles = makeStyles<{ isDragHover: boolean }>({
         "justifyContent": "center",
         "alignItems": "center",
         "boxSizing": "border-box",
-        ...theme.spacing.topBottom("padding", 7),
+        ...theme.spacing.topBottom("padding", 7)
     },
     "innerDiv": {
         "display": "flex",
         "flexDirection": "column",
-        "justifyContent": "center",
+        "justifyContent": "center"
     },
     "explorerIcon": {
         "height": 60,
-        "marginBottom": theme.spacing(5),
+        "marginBottom": theme.spacing(5)
     },
     "link": {
-        "cursor": "pointer",
-    },
+        "cursor": "pointer"
+    }
 }));

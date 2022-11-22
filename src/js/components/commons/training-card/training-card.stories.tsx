@@ -4,7 +4,7 @@ import fakeTraining from "js/model/sampledata/basic-training.json";
 export default {
     title: "Training card",
     component: TrainingCard,
-    includeStories: [],
+    includeStories: []
 };
 
 const deployment = "deploy";
@@ -13,13 +13,13 @@ const hasPart = [fakeTraining];
 export const None = () => <TrainingCard training={fakeTraining} />;
 
 None.story = {
-    title: "No links",
+    title: "No links"
 };
 
 export const Training = () => <TrainingCard training={{ ...fakeTraining, hasPart }} />;
 
 Training.story = {
-    title: "Training link",
+    title: "Training link"
 };
 
 export const Deployment = () => (
@@ -27,7 +27,7 @@ export const Deployment = () => (
 );
 
 Deployment.story = {
-    title: "Deployment link",
+    title: "Deployment link"
 };
 
 export const Both = () => (
@@ -35,5 +35,5 @@ export const Both = () => (
 );
 
 Both.story = {
-    title: "Both links",
+    title: "Both links"
 };

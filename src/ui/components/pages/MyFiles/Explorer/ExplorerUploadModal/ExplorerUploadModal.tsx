@@ -34,7 +34,7 @@ export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
             if (filesBeingUploaded.length === 0) {
                 onClose();
             }
-        },
+        }
     });
 
     const evtFilesBeingUploaded = useConst(() => Evt.create(filesBeingUploaded));
@@ -111,7 +111,7 @@ const { ExplorerUploadModalBody } = (() => {
                             fileSize={size}
                             isFailed={false}
                         />
-                    ),
+                    )
                 )}
             </div>
         );
@@ -120,16 +120,16 @@ const { ExplorerUploadModalBody } = (() => {
     const useStyles = makeStyles({ "name": { ExplorerUploadModalBody } })(theme => ({
         "root": {
             "minWidth": 500,
-            ...theme.spacing.topBottom("padding", 3),
+            ...theme.spacing.topBottom("padding", 3)
         },
         "progress": {
-            "marginTop": theme.spacing(4),
-        },
+            "marginTop": theme.spacing(4)
+        }
     }));
 
     return { ExplorerUploadModalBody };
 })();
 
 export const { i18n } = declareComponentKeys<"import files" | "cancel" | "minimize">()({
-    ExplorerUploadModal,
+    ExplorerUploadModal
 });
