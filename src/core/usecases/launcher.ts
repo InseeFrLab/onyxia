@@ -944,7 +944,10 @@ export const thunks = {
     "getOnyxiaValues":
         (): ThunkAction<Promise<OnyxiaValues>> =>
         async (...args) => {
-            const [dispatch, getState, { secretsManagerClient, s3Client }] = args;
+            const [dispatch, getState, { secretsManagerClient, s3Client, oidcClient }] =
+                args;
+
+            assert(oidcClient.isUserLoggedIn);
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
@@ -1004,6 +1007,10 @@ export const thunks = {
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
+                "oidc": {
+                    "accessToken": oidcClient.accessToken,
+                    "refreshToken": oidcClient.refreshToken
+                },
                 "s3": await (async () => {
                     const project = projectSelectionSelectors.selectedProject(getState());
 

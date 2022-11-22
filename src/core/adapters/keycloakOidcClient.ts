@@ -72,6 +72,7 @@ export async function createKeycloakOidcClient(params: {
     const oidcClient = id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
         "accessToken": keycloakInstance.token!,
+        "refreshToken": keycloakInstance.refreshToken!,
         "logout": async ({ redirectTo }) => {
             await keycloakInstance.logout({
                 "redirectUri": (() => {

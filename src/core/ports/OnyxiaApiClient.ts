@@ -192,6 +192,10 @@ export type OnyxiaValues = {
         VAULT_TOP_DIR: string;
     };
     kaggleApiToken: string | undefined;
+    oidc: {
+        accessToken: String | undefined;
+        refreshToken: String | undefined;
+    };
     s3: {
         AWS_ACCESS_KEY_ID: string;
         AWS_SECRET_ACCESS_KEY: string;

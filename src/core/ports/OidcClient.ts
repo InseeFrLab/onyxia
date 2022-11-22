@@ -10,6 +10,7 @@ export declare namespace OidcClient {
         isUserLoggedIn: true;
         //NOTE: It changes when renewed, don't store it.
         accessToken: string;
+        refreshToken: string;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
     };
 }
