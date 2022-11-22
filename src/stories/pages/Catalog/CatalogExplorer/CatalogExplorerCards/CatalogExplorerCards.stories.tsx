@@ -24,6 +24,7 @@ const packages = new Array(20).fill(0).map((...[, i]) =>
     id<Props["packages"][number]>({
         "packageIconUrl": rstudioImg,
         "packageName": `${keywords[i % keywords.length]} ${i}`,
+        "version": "1.0.0",
         /* spell-checker: disable */
         "packageDescription":
             "Service description" +

@@ -21,6 +21,7 @@ export type Props = {
     className?: string;
     packages: {
         packageName: string;
+        version: string;
         packageIconUrl?: string;
         packageDescription: string;
         packageHomeUrl?: string;
@@ -124,6 +125,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
                         packages.map(
                             ({
                                 packageName,
+                                version,
                                 packageIconUrl,
                                 packageDescription,
                                 packageHomeUrl,
@@ -137,7 +139,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                     onRequestLaunch={onRequestLaunchFactory(
                                         packageName,
                                         catalogId,
-                                        "placeholder"
+                                        version
                                     )}
                                     packageHomeUrl={packageHomeUrl}
                                 />

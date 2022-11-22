@@ -251,6 +251,7 @@ export const selectors = (() => {
                     "packageDescription": chart.versions[0].description,
                     "packageHomeUrl": chart.versions[0].home,
                     "packageName": chart.name,
+                    "version": chart.versions[0].version,
                     "packageIconUrl": chart.versions[0].icon,
                     "catalogId": catalog.id
                 }))

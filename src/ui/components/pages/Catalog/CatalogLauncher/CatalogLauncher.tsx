@@ -59,14 +59,14 @@ export const CatalogLauncher = memo((props: Props) => {
             return;
         }
 
-        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+        const { catalogId, packageName, version, formFieldsValueDifferentFromDefault } =
             restorablePackageConfig;
 
         routes
             .catalogLauncher({
                 catalogId,
                 packageName,
-                "version": "placeholder",
+                version,
                 formFieldsValueDifferentFromDefault,
                 "autoLaunch": route.params.autoLaunch
             })
