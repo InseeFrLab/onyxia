@@ -1008,8 +1008,9 @@ export const thunks = {
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
                 "oidc": {
-                    "accessToken": oidcClient.accessToken,
-                    "refreshToken": oidcClient.refreshToken
+                    "enabled": project.group ? false : true,
+                    "accessToken": project.group ? undefined : oidcClient.accessToken,
+                    "refreshToken": project.group ? undefined : oidcClient.refreshToken
                 },
                 "s3": await (async () => {
                     const project = projectSelectionSelectors.selectedProject(getState());

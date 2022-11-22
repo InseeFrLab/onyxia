@@ -12,6 +12,7 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                     {
                         "id": "my-project",
                         "name": "my project",
+                        "group": "my-group", //empty if personamespace
                         "bucket": "my-project",
                         "namespace": "my-namespace",
                         "vaultTopDir": "my-top-dir"

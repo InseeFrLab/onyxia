@@ -90,7 +90,6 @@ export const privateThunks = {
 export const selectors = (() => {
     const selectedProject = (rootState: State): Project => {
         const { projects, selectedProjectId } = rootState.projectSelection;
-
         const selectedProject = projects.find(({ id }) => id === selectedProjectId);
 
         assert(selectedProject !== undefined);

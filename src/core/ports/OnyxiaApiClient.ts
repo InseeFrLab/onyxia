@@ -144,6 +144,7 @@ export namespace DeploymentRegion {
 export type Project = {
     id: string;
     name: string;
+    group: string;
     bucket: string;
     namespace: string;
     vaultTopDir: string;
@@ -193,8 +194,9 @@ export type OnyxiaValues = {
     };
     kaggleApiToken: string | undefined;
     oidc: {
-        accessToken: String | undefined;
-        refreshToken: String | undefined;
+        enabled: boolean;
+        accessToken: string | undefined;
+        refreshToken: string | undefined;
     };
     s3: {
         AWS_ACCESS_KEY_ID: string;

@@ -701,6 +701,7 @@ export function createOfficialOnyxiaApiClient(params: {
                         projects: {
                             id: string;
                             name: string;
+                            group: string;
                             bucket: string;
                             namespace: string;
                             vaultTopDir: string;
