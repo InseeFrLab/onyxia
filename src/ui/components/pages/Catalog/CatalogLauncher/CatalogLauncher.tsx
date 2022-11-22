@@ -65,6 +65,7 @@ export const CatalogLauncher = memo((props: Props) => {
             .catalogLauncher({
                 catalogId,
                 packageName,
+                "version": "placeholder",
                 formFieldsValueDifferentFromDefault,
                 "autoLaunch": route.params.autoLaunch
             })

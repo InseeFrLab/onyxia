@@ -28,7 +28,11 @@ export type Props = {
     }[];
     search: string;
     onSearchChange: (search: string) => void;
-    onRequestLaunch: (params: { packageName: string; catalogId: string }) => void;
+    onRequestLaunch: (params: {
+        packageName: string;
+        catalogId: string;
+        version: string;
+    }) => void;
     onRequestRevealPackagesNotShown: () => void;
     selectedCatalogId: string;
     catalogs: {
@@ -56,8 +60,8 @@ export const CatalogExplorerCards = memo((props: Props) => {
     } = props;
 
     const onRequestLaunchFactory = useCallbackFactory(
-        ([packageName, catalogId]: [string, string]) =>
-            onRequestLaunch({ packageName, catalogId })
+        ([packageName, catalogId, version]: [string, string, string]) =>
+            onRequestLaunch({ packageName, catalogId, version })
     );
 
     const onShowMoreClick = useConstCallback(() => onRequestRevealPackagesNotShown());
@@ -132,7 +136,8 @@ export const CatalogExplorerCards = memo((props: Props) => {
                                     packageDescription={packageDescription}
                                     onRequestLaunch={onRequestLaunchFactory(
                                         packageName,
-                                        catalogId
+                                        catalogId,
+                                        "placeholder"
                                     )}
                                     packageHomeUrl={packageHomeUrl}
                                 />

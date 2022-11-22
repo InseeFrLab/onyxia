@@ -76,11 +76,12 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const onRequestLaunch = useConstCallback<
         CatalogExplorerCardsProps["onRequestLaunch"]
-    >(({ packageName, catalogId }) =>
+    >(({ packageName, catalogId, version }) =>
         routes
             .catalogLauncher({
                 catalogId,
-                packageName
+                packageName,
+                version
             })
             .push()
     );
