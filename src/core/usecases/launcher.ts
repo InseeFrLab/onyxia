@@ -545,7 +545,8 @@ export const thunks = {
             const { dependencies, sources, getValuesSchemaJson } =
                 await onyxiaApiClient.getPackageConfig({
                     catalogId,
-                    packageName
+                    packageName,
+                    version
                 });
 
             const { availableVersions } =

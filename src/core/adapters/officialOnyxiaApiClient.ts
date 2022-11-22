@@ -1,10 +1,13 @@
 import type {
-    OnyxiaApiClient,
     DeploymentRegion,
-    LocalizedString
+    JSONSchemaFormFieldDescription,
+    JSONSchemaObject,
+    LocalizedString,
+    OnyxiaApiClient
 } from "../ports/OnyxiaApiClient";
-import axios from "axios";
+import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import type { AxiosInstance } from "axios";
+import axios from "axios";
 import memoize from "memoizee";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -18,11 +21,6 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import type {
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription
-} from "../ports/OnyxiaApiClient";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
 
@@ -359,24 +357,24 @@ export function createOfficialOnyxiaApiClient(params: {
                     })),
             { "promise": true }
         ),
-        "getPackageConfig": ({ catalogId, packageName }) =>
+        "getPackageConfig": ({ catalogId, packageName, version }) =>
             axiosInstance
-                .get<
-                    {
-                        config: JSONSchemaObject;
-                        sources?: string[];
-                        dependencies?: {
-                            name: string;
-                        }[];
-                    }[]
-                >(`/public/catalogs/${catalogId}/charts/${packageName}`)
+                .get<{
+                    config: JSONSchemaObject;
+                    sources?: string[];
+                    dependencies?: {
+                        name: string;
+                    }[];
+                }>(
+                    `/public/catalogs/${catalogId}/charts/${packageName}/versions/${version}`
+                )
                 .then(({ data }) => ({
-                    "dependencies": data[0].dependencies?.map(({ name }) => name) ?? [],
-                    "sources": data[0].sources ?? [],
+                    "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
+                    "sources": data.sources ?? [],
                     "getValuesSchemaJson": ({ onyxiaValues }) => {
                         //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                         const configCopy = JSON.parse(
-                            JSON.stringify(data[0].config)
+                            JSON.stringify(data.config)
                         ) as JSONSchemaObject;
 
                         function overrideDefaultsRec(
@@ -390,11 +388,10 @@ export function createOfficialOnyxiaApiClient(params: {
                                     "object" &&
                                 "properties" in jsonSchemaObjectOrFormFieldDescription
                             ) {
-                                const jsonSchemaObject =
-                                    jsonSchemaObjectOrFormFieldDescription;
-                                Object.entries(jsonSchemaObject.properties).forEach(
-                                    ([key, value]) =>
-                                        overrideDefaultsRec(value, `${path}.${key}`)
+                                Object.entries(
+                                    jsonSchemaObjectOrFormFieldDescription.properties
+                                ).forEach(([key, value]) =>
+                                    overrideDefaultsRec(value, `${path}.${key}`)
                                 );
                                 return;
                             }

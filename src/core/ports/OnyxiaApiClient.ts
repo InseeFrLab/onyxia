@@ -39,7 +39,11 @@ export type OnyxiaApiClient = {
         availableVersions: string[];
     }>;
 
-    getPackageConfig: (params: { catalogId: string; packageName: string }) => Promise<{
+    getPackageConfig: (params: {
+        catalogId: string;
+        packageName: string;
+        version: string;
+    }) => Promise<{
         getValuesSchemaJson: (params: { onyxiaValues: OnyxiaValues }) => JSONSchemaObject;
         dependencies: string[];
         sources: string[];
