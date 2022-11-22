@@ -24,9 +24,7 @@ Onyxia is a web app that aims at being the glue between multiple open source bac
 provide a state of art working environnement for data scientists.  
 Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)).
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/6702424/136545513-f623d8c7-260d-4d93-a01e-2dc5af6ad473.gif" />
-</p>
+[onyxia.webm](https://user-images.githubusercontent.com/6702424/201488175-27402595-2917-4143-ad0c-dfdd59f9678e.webm)
 
 **Core feature set**:
 
@@ -42,27 +40,6 @@ Onyxia is developed by the French National institute of statistics and economic 
 -   Deep integration with S3 for working with data (S3 as the open standard, not the AWS service) and with [Vault](https://www.vaultproject.io)
     (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png))
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
-
-### Launching a container
-
-https://user-images.githubusercontent.com/6702424/152631131-44050af8-a979-4c25-b09a-1a5521558361.mp4
-
-### S3 File explorer
-
-https://user-images.githubusercontent.com/6702424/161458858-57321269-5a10-42e3-971a-80a505928fb5.mp4
-
-### Vault secret manager
-
-For injecting secret environment variables in the containers.
-
-https://user-images.githubusercontent.com/6702424/154877930-ce5dab0b-e508-43b5-a3d5-51bd6105ac45.mov
-
-## Screenshots
-
-![scree_myservices](https://user-images.githubusercontent.com/6702424/121828699-a8a36600-ccc0-11eb-903c-1cd4b6cbb0ff.png)
-![image](https://user-images.githubusercontent.com/6702424/140529760-37b5a57b-5da6-4993-ba30-c1a4da68edba.png)
-![screen_launcher](https://user-images.githubusercontent.com/6702424/121828696-a80acf80-ccc0-11eb-86fb-c7d0bca55d4f.png)
-![my_secrets](https://user-images.githubusercontent.com/6702424/121828695-a5a87580-ccc0-11eb-9e86-295fdac6c497.png)
 
 ## Media
 

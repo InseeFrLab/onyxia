@@ -1,6 +1,6 @@
 import {
     SecretsExplorerItem,
-    SecretsExplorerItemProps,
+    SecretsExplorerItemProps
 } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
@@ -12,7 +12,7 @@ import { EventEmitter } from "events";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerItem: SecretsExplorerItem },
+    "wrappedComponent": { ExplorerItem: SecretsExplorerItem }
 });
 
 const eventEmitter = new EventEmitter();
@@ -29,12 +29,12 @@ export default {
                     "name": "default",
                     "payload":
                         id<UnpackEvt<SecretsExplorerItemProps["evtAction"]>>(
-                            "ENTER EDITING STATE",
-                        ),
-                },
-            ],
-        }),
-    ],
+                            "ENTER EDITING STATE"
+                        )
+                }
+            ]
+        })
+    ]
 };
 
 export const defaultView = getStory({
@@ -44,5 +44,5 @@ export const defaultView = getStory({
     "isCircularProgressShown": false,
     "getIsValidBasename": () => true,
     "evtAction": Evt.from(eventEmitter, "default"),
-    ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"]),
+    ...logCallbacks(["onMouseEvent", "onEditBasename", "onIsInEditingStateValueChange"])
 });

@@ -1,5 +1,5 @@
 import type { OnyxiaApiClient } from "../ports/OnyxiaApiClient";
-import { createPropertyThatThrowIfAccessed } from "core/tools/createObjectThatThrowsIfAccessed";
+import { createPropertyThatThrowIfAccessed } from "redux-clean-architecture/tools/createObjectThatThrowsIfAccessed";
 
 import memoize from "memoizee";
 
@@ -14,10 +14,10 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "name": "my project",
                         "bucket": "my-project",
                         "namespace": "my-namespace",
-                        "vaultTopDir": "my-top-dir",
-                    },
+                        "vaultTopDir": "my-top-dir"
+                    }
                 ]),
-            { "promise": true },
+            { "promise": true }
         ),
         "getAvailableRegions": memoize(
             () =>
@@ -41,16 +41,16 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "vault": undefined,
                         "proxyInjection": undefined,
                         "packageRepositoryInjection": undefined,
-                        "certificateAuthorityInjection": undefined,
-                    },
+                        "certificateAuthorityInjection": undefined
+                    }
                 ]),
-            { "promise": true },
+            { "promise": true }
         ),
         ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("getRunningServices", "Not mocked"),
         ...createPropertyThatThrowIfAccessed("stopService", "Not mocked"),
-        ...createPropertyThatThrowIfAccessed("createAwsBucket", "Not mocked"),
+        ...createPropertyThatThrowIfAccessed("createAwsBucket", "Not mocked")
     };
 }

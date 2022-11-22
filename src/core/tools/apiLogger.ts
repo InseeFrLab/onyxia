@@ -3,7 +3,7 @@ import { Evt } from "evt";
 import type {
     MethodNames,
     ReturnType as TsafeReturnType,
-    Parameters as TsafeParameters,
+    Parameters as TsafeParameters
 } from "tsafe";
 import { is } from "tsafe/is";
 import { assert } from "tsafe/assert";
@@ -62,7 +62,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
         "loggedApi": (() => {
             const createMethodProxy = memoize(
                 <MethodName extends MethodNames<Api>>(
-                    methodName: MethodName,
+                    methodName: MethodName
                 ): Api[MethodName] => {
                     const methodProxy = async (
                         ...inputs: Parameters<Api[MethodName]>
@@ -76,7 +76,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                         evt.post({
                             cmdId,
                             "type": "cmd",
-                            "cmdOrResp": buildCmd(...inputs),
+                            "cmdOrResp": buildCmd(...inputs)
                         });
 
                         const result = await runMethod();
@@ -84,14 +84,14 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                         evt.post({
                             cmdId,
                             "type": "result",
-                            "cmdOrResp": fmtResult({ inputs, result }),
+                            "cmdOrResp": fmtResult({ inputs, result })
                         });
 
                         return result;
                     };
 
                     return methodProxy as any;
-                },
+                }
             );
 
             return new Proxy(api, {
@@ -105,15 +105,15 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                     assert(is<MethodNames<Api>>(propertyKey));
 
                     return createMethodProxy(propertyKey);
-                },
+                }
             });
         })(),
         "apiLogs": (() => {
             const history: ApiLogs["history"][number][] = [
                 ...apiLogger.initialHistory.map(rest => ({
                     "cmdId": getCounter(),
-                    ...rest,
-                })),
+                    ...rest
+                }))
             ];
 
             evt.attach(
@@ -122,19 +122,19 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                     history.push({
                         cmdId,
                         "cmd": cmdOrResp,
-                        "resp": undefined,
+                        "resp": undefined
                     });
 
                     evt.attachOncePrepend(
                         translation => translation.cmdId === cmdId,
                         ({ cmdOrResp }) =>
                             (history.find(entry => entry.cmdId === cmdId)!.resp =
-                                cmdOrResp),
+                                cmdOrResp)
                     );
-                },
+                }
             );
 
             return { evt, history };
-        })(),
+        })()
     };
 }

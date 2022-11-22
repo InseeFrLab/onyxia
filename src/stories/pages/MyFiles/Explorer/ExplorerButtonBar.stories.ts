@@ -4,12 +4,12 @@ import { getStoryFactory, logCallbacks } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { ExplorerButtonBar },
+    "wrappedComponent": { ExplorerButtonBar }
 });
 
 export default meta;
 
 export const View = getStory({
     "selectedItemKind": "none",
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });

@@ -52,15 +52,15 @@ export const thunks = {
 
             await secretsManagerClient.put({
                 "path": pathJoin(dirPath, params.key),
-                "secret": { "value": params.value },
+                "secret": { "value": params.value }
             });
         },
     "renewServicePassword": (): ThunkAction => dispatch =>
         dispatch(
             thunks.changeValue({
                 "key": "servicePassword",
-                "value": getDefault("servicePassword"),
-            }),
+                "value": getDefault("servicePassword")
+            })
         ),
     "getValue":
         <K extends keyof ProjectConfigs>(params: {
@@ -84,15 +84,15 @@ export const thunks = {
                 await dispatch(
                     thunks.changeValue({
                         key,
-                        value,
-                    }),
+                        value
+                    })
                 );
 
                 return value;
             }
 
             return value;
-        },
+        }
 };
 
 const privateThunks = {
@@ -104,5 +104,5 @@ const privateThunks = {
             const project = projectSelectionSelectors.selectedProject(getState());
 
             return pathJoin("/", project.vaultTopDir, hiddenDirectoryBasename);
-        },
+        }
 };

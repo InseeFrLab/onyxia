@@ -8,7 +8,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "AccountField": AccountField as any },
+    "wrappedComponent": { "AccountField": AccountField as any }
 });
 
 export default meta;
@@ -22,15 +22,15 @@ export const ServicePassword = getStory(
         "servicePassword":
             "xiLdIdjNdiF39djKxiLdIdjNdiF39djKdxiLdIdjNdiF39djKxiLdIdjNdiF39djKd",
         "isLocked": false,
-        ...logCallbacks(["onRequestServicePasswordRenewal", "onRequestCopy"]),
-    }),
+        ...logCallbacks(["onRequestServicePasswordRenewal", "onRequestCopy"])
+    })
 );
 
 export const SwitchLanguage = getStory(
     id<Props.Language>({
         className,
-        "type": "language",
-    }),
+        "type": "language"
+    })
 );
 
 export const Toggle = getStory(
@@ -41,8 +41,8 @@ export const Toggle = getStory(
         "isLocked": false,
         "title": "Enable foo bar",
         "helperText": "Foo bar is very important for baz",
-        ...logCallbacks(["onRequestToggle"]),
-    }),
+        ...logCallbacks(["onRequestToggle"])
+    })
 );
 
 export const Text = getStory(
@@ -52,8 +52,8 @@ export const Text = getStory(
         "text": "This is the actual text",
         "title": "Enable foo bar",
         "helperText": "Foo bar is very important for baz",
-        ...logCallbacks(["onRequestCopy"]),
-    }),
+        ...logCallbacks(["onRequestCopy"])
+    })
 );
 
 export const EditableText = getStory(
@@ -65,6 +65,6 @@ export const EditableText = getStory(
         "helperText": "Foo bar is very important for baz",
         "evtAction": new Evt(),
         "isLocked": false,
-        ...logCallbacks(["onRequestCopy", "onRequestEdit", "onStartEdit"]),
-    }),
+        ...logCallbacks(["onRequestCopy", "onRequestEdit", "onStartEdit"])
+    })
 );

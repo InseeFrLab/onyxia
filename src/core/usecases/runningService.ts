@@ -4,8 +4,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { ThunkAction, RootState, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, State } from "../setup";
 import { exclude } from "tsafe/exclude";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 
 type RunningServicesState = {
     isUserWatching: boolean;
@@ -56,13 +57,13 @@ export const { reducer, actions } = createSlice({
         "isUserWatching": false,
         "isUpdating": false,
         "~internal": {
-            "runningServices": undefined,
-        },
+            "runningServices": undefined
+        }
     }),
     "reducers": {
         "isUserWatchingChanged": (
             state,
-            { payload }: PayloadAction<{ isUserWatching: boolean }>,
+            { payload }: PayloadAction<{ isUserWatching: boolean }>
         ) => {
             const { isUserWatching } = payload;
 
@@ -73,7 +74,7 @@ export const { reducer, actions } = createSlice({
         },
         "updateCompleted": (
             state,
-            { payload }: PayloadAction<{ runningServices: RunningService[] }>,
+            { payload }: PayloadAction<{ runningServices: RunningService[] }>
         ) => {
             const { runningServices } = payload;
 
@@ -81,18 +82,18 @@ export const { reducer, actions } = createSlice({
                 "isUpdating": false,
                 "isUserWatching": state.isUserWatching,
                 "~internal": {
-                    runningServices,
-                },
+                    runningServices
+                }
             });
         },
         "serviceStarted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 serviceId: string;
                 doOverwriteStaredAtToNow: boolean;
-            }>,
+            }>
         ) => {
             const { serviceId, doOverwriteStaredAtToNow } = payload;
             const { runningServices } = state["~internal"];
@@ -120,10 +121,10 @@ export const { reducer, actions } = createSlice({
 
             runningServices.splice(
                 runningServices.findIndex(({ id }) => id === serviceId),
-                1,
+                1
             );
-        },
-    },
+        }
+    }
 });
 
 export const thunks = {
@@ -188,7 +189,7 @@ export const thunks = {
             const { username } = await userApiClient.getUser();
 
             const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
-                privateThunks.getDefaultTokenTTL(),
+                privateThunks.getDefaultTokenTTL()
             );
 
             dispatch(
@@ -213,7 +214,7 @@ export const thunks = {
                                     friendlyName,
                                     "logoUrl": getLogoUrl({ packageName }),
                                     "monitoringUrl": getMonitoringUrl({
-                                        serviceId,
+                                        serviceId
                                     }),
                                     startedAt,
                                     "vaultTokenExpirationTime":
@@ -233,13 +234,13 @@ export const thunks = {
                                                       actions.serviceStarted({
                                                           serviceId,
                                                           "doOverwriteStaredAtToNow":
-                                                              isConfirmedJustStarted,
-                                                      }),
-                                                  ),
+                                                              isConfirmedJustStarted
+                                                      })
+                                                  )
                                           ),
                                           true),
                                     postInstallInstructions,
-                                    env,
+                                    env
                                 };
 
                                 const isOwned = ownerUsername === username;
@@ -253,19 +254,19 @@ export const thunks = {
                                         ...common,
                                         isShared,
                                         isOwned,
-                                        ownerUsername,
+                                        ownerUsername
                                     });
                                 }
 
                                 return id<RunningService.Owned>({
                                     ...common,
                                     isShared,
-                                    isOwned,
+                                    isOwned
                                 });
-                            },
+                            }
                         )
-                        .filter(exclude(undefined)),
-                }),
+                        .filter(exclude(undefined))
+                })
             );
         },
     "stopService":
@@ -278,7 +279,7 @@ export const thunks = {
             dispatch(actions.serviceStopped({ serviceId }));
 
             await onyxiaApiClient.stopService({ serviceId });
-        },
+        }
 };
 
 export const privateThunks = {
@@ -292,7 +293,7 @@ export const privateThunks = {
                     event.sliceName === "runningService" &&
                     event.actionName === "isUserWatchingChanged" &&
                     event.payload.isUserWatching,
-                () => dispatch(thunks.update()),
+                () => dispatch(thunks.update())
             );
 
             evtAction.attach(
@@ -305,12 +306,12 @@ export const privateThunks = {
                         await evtAction.waitFor(
                             event =>
                                 event.sliceName === "runningService" &&
-                                event.actionName === "updateCompleted",
+                                event.actionName === "updateCompleted"
                         );
                     }
 
                     dispatch(thunks.update());
-                },
+                }
             );
         },
     /** We ask tokens just to tel how long is their lifespan */
@@ -319,7 +320,7 @@ export const privateThunks = {
         async (...args) => {
             const [, getState, extraArgs] = args;
 
-            const sliceContext = getSliceContext(extraArgs);
+            const sliceContext = getContext(extraArgs);
 
             if (sliceContext.prDefaultTokenTTL !== undefined) {
                 return sliceContext.prDefaultTokenTTL;
@@ -337,7 +338,7 @@ export const privateThunks = {
                     const { expirationTime, acquisitionTime } = await s3Client.getToken({
                         "restrictToBucketName": isDefaultProject
                             ? undefined
-                            : project.bucket,
+                            : project.bucket
                     });
 
                     return { "s3TokensTTLms": expirationTime - acquisitionTime };
@@ -347,12 +348,12 @@ export const privateThunks = {
                         await secretsManagerClient.getToken();
 
                     return { "vaultTokenTTLms": expirationTime - acquisitionTime };
-                })(),
+                })()
             ]).then(([{ s3TokensTTLms }, { vaultTokenTTLms }]) => ({
                 s3TokensTTLms,
-                vaultTokenTTLms,
+                vaultTokenTTLms
             })));
-        },
+        }
 };
 
 type SliceContext = {
@@ -361,27 +362,12 @@ type SliceContext = {
         | undefined;
 };
 
-const { getSliceContext } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
-
-    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
-        let sliceContext = weakMap.get(extraArg);
-
-        if (sliceContext === undefined) {
-            sliceContext = {
-                "prDefaultTokenTTL": undefined,
-            };
-            weakMap.set(extraArg, sliceContext);
-        }
-
-        return sliceContext;
-    }
-
-    return { getSliceContext };
-})();
+const { getContext } = createUsecaseContextApi<SliceContext>(() => ({
+    "prDefaultTokenTTL": undefined
+}));
 
 export const selectors = (() => {
-    const runningServices = (rootState: RootState): RunningService[] => {
+    const runningServices = (rootState: State): RunningService[] => {
         const { runningServices } = rootState.runningService["~internal"];
 
         return runningServices === undefined

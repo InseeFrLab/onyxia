@@ -19,7 +19,7 @@ function Component(
         "onEditedBasename" | "filesBeingRenamed" | "directoriesBeingRenamed" | "className"
     > & {
         containerWidth: number;
-    },
+    }
 ) {
     const { containerWidth } = props;
 
@@ -59,7 +59,7 @@ function Component(
         })();
 
         setBeingRenamedItems(
-            beingRenamedItems.filter(basename_i => basename_i !== basename),
+            beingRenamedItems.filter(basename_i => basename_i !== basename)
         );
 
         setToRemove(undefined);
@@ -69,7 +69,7 @@ function Component(
         ({
             basename,
             newBasename,
-            kind,
+            kind
         }: Parameters<SecretsExplorerItemsProps["onEditBasename"]>[0]) => {
             const [items, setItems, beingRenamedItems, setBeingRenamedItems] = (() => {
                 switch (kind) {
@@ -78,14 +78,14 @@ function Component(
                             directories,
                             setDirectories,
                             directoriesBeingRenamed,
-                            setDirectoriesBeingRenamed,
+                            setDirectoriesBeingRenamed
                         ] as const;
                     case "file":
                         return [
                             files,
                             setFiles,
                             filesBeingRenamed,
-                            setFilesBeingRenamed,
+                            setFilesBeingRenamed
                         ] as const;
                 }
             })();
@@ -104,7 +104,7 @@ function Component(
                 setToRemove({ kind, "basename": newBasename });
             })();
         },
-        [files, directories, filesBeingRenamed, directoriesBeingRenamed],
+        [files, directories, filesBeingRenamed, directoriesBeingRenamed]
     );
 
     return (
@@ -122,7 +122,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ SecretsExplorerItems })]: Component },
+    "wrappedComponent": { [symToStr({ SecretsExplorerItems })]: Component }
 });
 
 export default {
@@ -133,9 +133,9 @@ export default {
             "control": {
                 "type": "range",
                 "min": 10,
-                "max": 100,
-            },
-        },
+                "max": 100
+            }
+        }
     },
     "decorators": [
         ...(meta.decorators ? meta.decorators : []),
@@ -146,27 +146,27 @@ export default {
                     "title": "Start editing selected item",
                     "name": "default",
                     "payload": id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
-                        "START EDITING SELECTED ITEM BASENAME",
-                    ),
+                        "START EDITING SELECTED ITEM BASENAME"
+                    )
                 },
                 {
                     "title": "Delete selected item",
                     "name": "default",
                     "payload":
                         id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
-                            "DELETE SELECTED ITEM",
-                        ),
+                            "DELETE SELECTED ITEM"
+                        )
                 },
                 {
                     "title": "Copy selected item path",
                     "name": "default",
                     "payload": id<UnpackEvt<SecretsExplorerItemsProps["evtAction"]>>(
-                        "COPY SELECTED ITEM PATH",
-                    ),
-                },
-            ],
-        }),
-    ],
+                        "COPY SELECTED ITEM PATH"
+                    )
+                }
+            ]
+        })
+    ]
 };
 
 export const View1 = getStory({
@@ -175,7 +175,7 @@ export const View1 = getStory({
         ...new Array(30).fill("").map((_, i) => `aaa${i}`),
         "this-is-a-file",
         "aFileWithAveryLongNameThatShouldNotOverlap.txt",
-        "foo.csv",
+        "foo.csv"
     ],
     "directories": [
         "My_directory-1",
@@ -197,7 +197,7 @@ export const View1 = getStory({
         "My_directory-5",
         "dir6",
         "another-directory_4",
-        "another_directory_6",
+        "another_directory_6"
     ],
     "evtAction": Evt.from(eventEmitter, "default"),
     "isNavigating": false,
@@ -210,6 +210,6 @@ export const View1 = getStory({
         "onEditBasename",
         "onSelectedItemKindValueChange",
         "onIsSelectedItemInEditingStateValueChange",
-        "onOpenFile",
-    ]),
+        "onOpenFile"
+    ])
 });

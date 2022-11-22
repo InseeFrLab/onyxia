@@ -7,7 +7,7 @@ import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesCards },
+    "wrappedComponent": { MyServicesCards }
 });
 
 export default meta;
@@ -30,29 +30,29 @@ const props: Props = {
         "env": {
             "foo": "foo value",
             "bar": "bar value",
-            "baz": "baz value",
+            "baz": "baz value"
         },
         ...(i % 2 === 0
             ? {
                   "isOwned": false,
                   "isShared": true,
-                  "ownerUsername": "jdoe",
+                  "ownerUsername": "jdoe"
               }
             : {
                   "isOwned": true,
                   "isShared": true,
-                  "ownerUsername": undefined,
+                  "ownerUsername": undefined
               }),
         "vaultTokenExpirationTime": Infinity,
-        "s3TokenExpirationTime": Infinity,
+        "s3TokenExpirationTime": Infinity
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
     "getServicePassword": () => Promise.resolve("xyz"),
-    ...logCallbacks(["onRequestDelete"]),
+    ...logCallbacks(["onRequestDelete"])
 };
 
 export const ViewDefault = getStory({
     ...props,
-    "className": css({ "width": 950, "height": 300 }),
+    "className": css({ "width": 950, "height": 300 })
 });

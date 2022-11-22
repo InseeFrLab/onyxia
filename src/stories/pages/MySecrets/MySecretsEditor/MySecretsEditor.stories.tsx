@@ -12,7 +12,7 @@ const preloadedSecretWitMetadata: Props["secretWithMetadata"] = {
         "created_time": "2021-01-05T05:18:37.880Z",
         "deletion_time": "",
         "destroyed": false,
-        "version": 1,
+        "version": 1
     },
     "secret": {
         "DOMAIN": "example.com",
@@ -24,8 +24,8 @@ const preloadedSecretWitMetadata: Props["secretWithMetadata"] = {
         "FOO": '__"$URL"__',
         "notAValidEnv": "foo bar",
         "GITHUB_PAT": [...Array(255)].map(() => Math.random().toString(36)[2]).join(""),
-        "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " ',
-    },
+        "A_MALFORMED_ENV": 'I have an uneven number of double quote " " " '
+    }
 };
 
 function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
@@ -55,8 +55,7 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
                 });
 
                 Object.keys(secretClone).forEach(
-                    key_i =>
-                        (secret[key_i === key ? newKey : key_i] = secretClone[key_i]),
+                    key_i => (secret[key_i === key ? newKey : key_i] = secretClone[key_i])
                 );
             };
 
@@ -98,13 +97,13 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
 
             setIsBeingUpdated(false);
         },
-        [secret, metadata],
+        [secret, metadata]
     );
 
     const {
         onCopyPath,
         onDoDisplayUseInServiceDialogValueChange,
-        doDisplayUseInServiceDialog,
+        doDisplayUseInServiceDialog
     } = props;
 
     return (
@@ -115,11 +114,11 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
                     onEdit,
                     onCopyPath,
                     doDisplayUseInServiceDialog,
-                    onDoDisplayUseInServiceDialogValueChange,
+                    onDoDisplayUseInServiceDialogValueChange
                 }}
                 secretWithMetadata={{
                     metadata,
-                    secret,
+                    secret
                 }}
             />
         </div>
@@ -128,7 +127,7 @@ function Component(props: Omit<Props, "onEdit" | "secretWithMetadata">) {
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ MySecretsEditor })]: Component },
+    "wrappedComponent": { [symToStr({ MySecretsEditor })]: Component }
 });
 
 export default meta;
@@ -136,5 +135,5 @@ export default meta;
 export const View1 = getStory({
     "doDisplayUseInServiceDialog": true,
     "isBeingUpdated": false,
-    ...logCallbacks(["onCopyPath", "onDoDisplayUseInServiceDialogValueChange"]),
+    ...logCallbacks(["onCopyPath", "onDoDisplayUseInServiceDialogValueChange"])
 });

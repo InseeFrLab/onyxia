@@ -4,13 +4,10 @@ import type { ThunkAction } from "../setup";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
-import {
-    createObjectThatThrowsIfAccessedFactory,
-    isPropertyAccessedByReduxOrStorybook,
-} from "../tools/createObjectThatThrowsIfAccessed";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import "minimal-polyfills/Object.fromEntries";
-import { thunks as userAuthenticationThunks } from "./userAuthentication";
-import type { RootState } from "../setup";
+import { thunks as userAuthentication } from "./userAuthentication";
+import type { State } from "../setup";
 import { join as pathJoin } from "path";
 
 /*
@@ -18,10 +15,6 @@ import { join as pathJoin } from "path";
  * Those value are persisted in the secret manager
  * (That is currently vault)
  */
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
-    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
-});
 
 export type UserConfigs = Id<
     Record<string, string | boolean | number | null>,
@@ -53,7 +46,7 @@ export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
         "debugMessage":
-            "The userConfigState should have been initialized during the store initialization",
+            "The userConfigState should have been initialized during the store initialization"
     }),
     "reducers": {
         "initializationCompleted": (
@@ -64,8 +57,8 @@ export const { reducer, actions } = createSlice({
             return Object.fromEntries(
                 Object.entries(userConfigs).map(([key, value]) => [
                     key,
-                    { value, "isBeingChanged": false },
-                ]),
+                    { value, "isBeingChanged": false }
+                ])
             ) as any;
         },
         "changeStarted": (state, { payload }: PayloadAction<ChangeValueParams>) => {
@@ -76,11 +69,11 @@ export const { reducer, actions } = createSlice({
         },
         "changeCompleted": (
             state,
-            { payload }: PayloadAction<{ key: keyof UserConfigs }>,
+            { payload }: PayloadAction<{ key: keyof UserConfigs }>
         ) => {
             state[payload.key].isBeingChanged = false;
-        },
-    },
+        }
+    }
 });
 
 export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> = {
@@ -106,7 +99,7 @@ export const thunks = {
 
             await secretsManagerClient.put({
                 "path": pathJoin(dirPath, params.key),
-                "secret": { "value": params.value },
+                "secret": { "value": params.value }
             });
 
             dispatch(actions.changeCompleted(params));
@@ -115,9 +108,9 @@ export const thunks = {
         dispatch(
             thunks.changeValue({
                 "key": "doDisplayMySecretsUseInServiceDialog",
-                "value": true,
-            }),
-        ),
+                "value": true
+            })
+        )
 };
 
 export const privateThunks = {
@@ -131,14 +124,14 @@ export const privateThunks = {
                     secretsManagerClient,
                     oidcClient,
                     createStoreParams: {
-                        getIsDarkModeEnabledValueForProfileInitialization,
-                    },
-                },
+                        getIsDarkModeEnabledValueForProfileInitialization
+                    }
+                }
             ] = args;
 
             assert(oidcClient.isUserLoggedIn);
 
-            const { username, email } = dispatch(userAuthenticationThunks.getUser());
+            const { username, email } = dispatch(userAuthentication.getUser());
 
             //Default values
             const userConfigs: UserConfigs = {
@@ -152,7 +145,7 @@ export const privateThunks = {
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
-                "selectedProjectId": null,
+                "selectedProjectId": null
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());
@@ -170,14 +163,14 @@ export const privateThunks = {
                         //Store default value.
                         await secretsManagerClient.put({
                             path,
-                            "secret": { "value": userConfigs[key] },
+                            "secret": { "value": userConfigs[key] }
                         });
 
                         return;
                     }
 
                     Object.assign(userConfigs, { [key]: value });
-                }),
+                })
             );
 
             dispatch(actions.initializationCompleted({ userConfigs }));
@@ -192,12 +185,12 @@ export const privateThunks = {
             const { vaultTopDir } = (await onyxiaApiClient.getUserProjects())[0];
 
             return pathJoin("/", vaultTopDir, hiddenDirectoryBasename);
-        },
+        }
 };
 
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */
-    const userConfigs = (rootState: RootState): UserConfigs => {
+    const userConfigs = (rootState: State): UserConfigs => {
         const userConfigs: any = {};
 
         const state = rootState.userConfigs;

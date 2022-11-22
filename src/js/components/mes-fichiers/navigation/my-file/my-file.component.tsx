@@ -14,7 +14,7 @@ import { id } from "tsafe/id";
 import type { actions } from "js/redux/legacyActions";
 import type { HandleThunkActionCreator } from "react-redux";
 import { routes } from "ui/routes";
-import { getS3Url } from "core/secondaryAdapters/officialOnyxiaApiClient";
+import { getS3Url } from "core/adapters/officialOnyxiaApiClient";
 
 export const MyFile: React.FC<{
     file: Blob & { name: string };
@@ -31,7 +31,7 @@ export const MyFile: React.FC<{
     const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
     const [expiration, setExpiration] = useState(undefined);
     const [publicSubdirectoriesPath] = useState(() =>
-        getPublicSubdirectoriesPath(bucketName)(fileName),
+        getPublicSubdirectoriesPath(bucketName)(fileName)
     );
     //
     const minioPath = minioTools.getMinioDirectoryName(bucketName)(`/${fileName}`);
@@ -41,7 +41,7 @@ export const MyFile: React.FC<{
     // comportements
     const generatePresignedUrl = useCallback(
         () => checkDownloadUrl({ bucketName, fileName }),
-        [bucketName, fileName],
+        [bucketName, fileName]
     );
     const download = async () => window.open(await generatePresignedUrl());
     const deleteFile = async () => {
@@ -54,7 +54,7 @@ export const MyFile: React.FC<{
         startWaiting();
         try {
             const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(
-                minioPath,
+                minioPath
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
             setIsPublicFile(undefined as unknown as any);
@@ -68,12 +68,12 @@ export const MyFile: React.FC<{
         startWaiting();
         if (isPublicFile) {
             const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(
-                minioPath,
+                minioPath
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
         } else {
             const policy = await minioPolicy.createPolicyWithDirectory(bucketName)(
-                minioPath,
+                minioPath
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
         }
@@ -86,7 +86,7 @@ export const MyFile: React.FC<{
         const fetchStatus = async () => {
             const check = await createCheckFileStatus(publicSubdirectoriesPath)({
                 bucketName,
-                fileName,
+                fileName
             });
             if (!unmount) {
                 if (!check.isInpublicDirectory && !check.isPublicFile) {
@@ -111,7 +111,7 @@ export const MyFile: React.FC<{
         publicSubdirectoriesPath,
         fileName,
         generatePresignedUrl,
-        minioDownloadUrl,
+        minioDownloadUrl
     ]);
     return (
         <>
@@ -149,7 +149,7 @@ const createCheckFileStatus =
     (publicSubdirectoriesPath: string[]) =>
     async ({
         bucketName,
-        fileName,
+        fileName
     }: {
         bucketName: string;
         fileName: string;
@@ -163,13 +163,13 @@ const createCheckFileStatus =
             const policies = JSON.parse(policiesString);
             const [policy] = policies.Statement;
             const minioPath = `${minioTools.getMinioDirectoryName(bucketName)(
-                `/${fileName}`,
+                `/${fileName}`
             )}`;
 
             if (policy) {
                 const isInpublicDirectory = publicSubdirectoriesPath.reduce(
                     (a, c) => policy.Resource.indexOf(c) !== -1 || a,
-                    false,
+                    false
                 );
                 const isPublicFile = policy.Resource.indexOf(minioPath) !== -1;
                 return { isInpublicDirectory, isPublicFile, policy };
@@ -177,7 +177,7 @@ const createCheckFileStatus =
                 return {
                     isPublicFile: false,
                     isInpublicDirectory: false,
-                    policy,
+                    policy
                 };
             }
         } catch ({ code, name }) {
@@ -185,13 +185,13 @@ const createCheckFileStatus =
                 await minioTools.initBucketPolicy(bucketName);
                 return await createCheckFileStatus(publicSubdirectoriesPath)({
                     bucketName,
-                    fileName,
+                    fileName
                 });
             }
             return {
                 isPublicFile: false,
                 isInpublicDirectory: false,
-                policy: undefined,
+                policy: undefined
             };
         }
     };
@@ -199,14 +199,14 @@ const createCheckFileStatus =
 /* */
 const checkDownloadUrl = ({
     bucketName,
-    fileName,
+    fileName
 }: {
     bucketName: string;
     fileName: string;
 }) =>
     minioTools.presignedGetObject({
         bucketName,
-        objectName: fileName,
+        objectName: fileName
     });
 
 /* */
@@ -246,7 +246,7 @@ const getLinkToParentPath = (bucketName: string, fileName: string) => {
 
 MyFile.propTypes = {
     bucketName: PropTypes.string.isRequired,
-    fileName: PropTypes.string.isRequired,
+    fileName: PropTypes.string.isRequired
 };
 
 /* */
@@ -259,5 +259,5 @@ const getFilPaths = (path: string) =>
                 a.length === 0
                     ? [{ label: f, path: `/${f}/` }]
                     : [...a, { label: f, path: `${a[a.length - 1].path}${f}/` }],
-            id<{ label: string; path: string }[]>([]),
+            id<{ label: string; path: string }[]>([])
         );

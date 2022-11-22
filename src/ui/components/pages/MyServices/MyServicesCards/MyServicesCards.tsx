@@ -58,17 +58,17 @@ export const MyServicesCards = memo((props: Props) => {
         cards,
         catalogExplorerLink,
         evtAction,
-        getServicePassword,
+        getServicePassword
     } = props;
 
     const { classes, cx } = useStyles({
-        "isThereServicesRunning": (cards ?? []).length !== 0,
+        "isThereServicesRunning": (cards ?? []).length !== 0
     });
 
     const { t } = useTranslation({ MyServicesCards });
 
     const onRequestDeleteFactory = useCallbackFactory(([serviceId]: [string]) =>
-        onRequestDelete({ serviceId }),
+        onRequestDelete({ serviceId })
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -93,11 +93,11 @@ export const MyServicesCards = memo((props: Props) => {
                     setDialogDesc({
                         "dialogShowingWhat": showWhat,
                         serviceId,
-                        "servicePassword": await getServicePassword(),
+                        "servicePassword": await getServicePassword()
                     });
                     break;
             }
-        },
+        }
     );
 
     useEvt(
@@ -110,10 +110,10 @@ export const MyServicesCards = memo((props: Props) => {
                 ({ serviceId }) =>
                     onRequestShowEnvOrPostInstallInstructionFactory(
                         "postInstallInstructions",
-                        serviceId,
-                    )(),
+                        serviceId
+                    )()
             ),
-        [evtAction],
+        [evtAction]
     );
 
     const { dialogBody, dialogButton: dialogButtons } = useMemo(() => {
@@ -124,7 +124,7 @@ export const MyServicesCards = memo((props: Props) => {
         assert(cards !== undefined);
 
         const { postInstallInstructions, env, openUrl, startTime } = cards.find(
-            card => card.serviceId === dialogDesc.serviceId,
+            card => card.serviceId === dialogDesc.serviceId
         )!;
 
         const dialogBody = (() => {
@@ -142,15 +142,15 @@ export const MyServicesCards = memo((props: Props) => {
                                     `**${key}**: \`${smartTrim({
                                         "text": value,
                                         "minCharAtTheEnd": 4,
-                                        "maxLength": 40,
-                                    })}\`  `,
+                                        "maxLength": 40
+                                    })}\`  `
                             )
                             .join("\n"),
                         "  \n",
                         `**${t("need to copy")}**`,
                         t("everything have been printed to the console"),
                         "*Windows/Linux*: `Shift + CTRL + J`",
-                        "*Mac*: `⌥ + ⌘ + J`",
+                        "*Mac*: `⌥ + ⌘ + J`"
                     ].join("  \n");
             }
         })();
@@ -177,7 +177,7 @@ export const MyServicesCards = memo((props: Props) => {
                                         servicePassword={
                                             postInstallInstructions !== undefined &&
                                             postInstallInstructions.indexOf(
-                                                dialogDesc.servicePassword,
+                                                dialogDesc.servicePassword
                                             ) >= 0
                                                 ? dialogDesc.servicePassword
                                                 : undefined
@@ -218,7 +218,7 @@ export const MyServicesCards = memo((props: Props) => {
                             {...card}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
-                                card.serviceId,
+                                card.serviceId
                             )}
                             onRequestDelete={
                                 card.isOwned
@@ -229,7 +229,7 @@ export const MyServicesCards = memo((props: Props) => {
                                 card.postInstallInstructions !== undefined
                                     ? onRequestShowEnvOrPostInstallInstructionFactory(
                                           "postInstallInstructions",
-                                          card.serviceId,
+                                          card.serviceId
                                       )
                                     : undefined
                             }
@@ -266,39 +266,39 @@ export const { i18n } = declareComponentKeys<
 >()({ MyServicesCards });
 
 const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
-    "name": { MyServicesCards },
+    "name": { MyServicesCards }
 })((theme, { isThereServicesRunning }) => ({
     "root": {
         "overflow": "hidden",
         "display": "flex",
-        "flexDirection": "column",
+        "flexDirection": "column"
     },
     "header": {
-        ...theme.spacing.topBottom("margin", 3),
+        ...theme.spacing.topBottom("margin", 3)
     },
     "wrapper": {
         "overflow": "auto",
         ...(!isThereServicesRunning
             ? {
-                  "flex": 1,
+                  "flex": 1
               }
             : {
                   "paddingRight": theme.spacing(3),
                   "display": "grid",
                   "gridTemplateColumns": "repeat(2,1fr)",
-                  "gap": theme.spacing(4),
-              }),
+                  "gap": theme.spacing(4)
+              })
     },
     "noRunningServices": {
-        "height": "100%",
+        "height": "100%"
     },
     "dialogBody": {
         "maxHeight": 450,
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "circularProgress": {
-        ...theme.spacing.rightLeft("margin", 3),
-    },
+        ...theme.spacing.rightLeft("margin", 3)
+    }
 }));
 
 const { NoRunningService } = (() => {
@@ -334,28 +334,28 @@ const { NoRunningService } = (() => {
     });
 
     const useStyles = makeStyles({
-        "name": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`,
+        "name": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`
     })(theme => ({
         "root": {
             "display": "flex",
             "alignItems": "center",
-            "justifyContent": "center",
+            "justifyContent": "center"
         },
         "innerDiv": {
             "textAlign": "center",
-            "maxWidth": 500,
+            "maxWidth": 500
         },
         "svg": {
             "fill": theme.colors.palette.dark.greyVariant2,
             "width": 100,
-            "margin": 0,
+            "margin": 0
         },
         "h2": {
-            ...theme.spacing.topBottom("margin", 5),
+            ...theme.spacing.topBottom("margin", 5)
         },
         "link": {
-            "cursor": "pointer",
-        },
+            "cursor": "pointer"
+        }
     }));
 
     return { NoRunningService };
@@ -374,7 +374,7 @@ const { CopyOpenButton } = (() => {
 
         const [isReadyToOpen, setReadyToOpen] = useReducer(
             () => true,
-            servicePassword === undefined ? true : false,
+            servicePassword === undefined ? true : false
         );
 
         const copyPasswordToClipBoard = useConstCallback(() => {
@@ -385,11 +385,11 @@ const { CopyOpenButton } = (() => {
         const { ref1, ref2, largerButtonWidth } = (function useClosure() {
             const {
                 ref: ref1,
-                domRect: { width: width1 },
+                domRect: { width: width1 }
             } = useDomRect();
             const {
                 ref: ref2,
-                domRect: { width: width2 },
+                domRect: { width: width2 }
             } = useDomRect();
 
             const refWidth = useRef<number>(0);
@@ -403,7 +403,7 @@ const { CopyOpenButton } = (() => {
             return {
                 ref1,
                 ref2,
-                "largerButtonWidth": refWidth.current,
+                "largerButtonWidth": refWidth.current
             };
         })();
 
@@ -415,9 +415,9 @@ const { CopyOpenButton } = (() => {
                     "variant": "primary",
                     "href": isReadyToOpen ? openUrl : undefined,
                     "doOpenNewTabIfHref": true,
-                    "onClick": isReadyToOpen ? onDialogClose : copyPasswordToClipBoard,
+                    "onClick": isReadyToOpen ? onDialogClose : copyPasswordToClipBoard
                 } as const),
-            [isReadyToOpen],
+            [isReadyToOpen]
         );
 
         const { t } = useTranslation({ MyServicesCards });
@@ -435,7 +435,7 @@ const { CopyOpenButton } = (() => {
                 <Button
                     ref={ref1}
                     className={cx(classes.button, {
-                        [classes.collapsed]: !isReadyToOpen,
+                        [classes.collapsed]: !isReadyToOpen
                     })}
                     {...buttonProps}
                 >
@@ -446,20 +446,20 @@ const { CopyOpenButton } = (() => {
     });
 
     const useStyles = makeStyles<{ largerButtonWidth: number }>({
-        "name": { CopyOpenButton },
+        "name": { CopyOpenButton }
     })((...[, { largerButtonWidth }]) => ({
         "root": {
             "position": "relative",
             "opacity": largerButtonWidth === 0 ? 0 : 1,
-            "transition": `opacity ease-in-out 250ms`,
+            "transition": `opacity ease-in-out 250ms`
         },
         "button": {
-            "minWidth": largerButtonWidth,
+            "minWidth": largerButtonWidth
         },
         "collapsed": {
             "position": "fixed",
-            "top": 3000,
-        },
+            "top": 3000
+        }
     }));
 
     return { CopyOpenButton };

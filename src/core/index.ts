@@ -1,13 +1,24 @@
-import {
-    usecasesToSelectors,
-    usecasesToAutoDispatchThunks,
-    usecasesToPureFunctions,
-} from "redux-clean-architecture";
-import { createStore, usecases } from "./setup";
-export type { Dispatch, RootState } from "./setup";
+/*
+In this file we export utilities for using the core in a React setup.  
+This file is the only place in src/core where it's okay to assume we are 
+using react.  
+If we where to change our UI framework we would only update this file to
+export an API more adapted to our new front. (But we don't plan to leave React)
+*/
 
-export { createStore };
-export const selectors = usecasesToSelectors(usecases);
-export const { getAutoDispatchThunks } = usecasesToAutoDispatchThunks(usecases);
-export const pure = usecasesToPureFunctions(usecases);
+import { createReactApi } from "redux-clean-architecture/react";
+import { createCore } from "./setup";
+import { usecases } from "./usecases";
 export type { Language, LocalizedString } from "./ports/OnyxiaApiClient";
+
+export const {
+    createCoreProvider,
+    selectors,
+    useCoreEvts,
+    useCoreExtras,
+    useCoreFunctions,
+    useCoreState
+} = createReactApi({
+    createCore,
+    usecases
+});

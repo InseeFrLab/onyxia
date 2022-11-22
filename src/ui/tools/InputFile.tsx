@@ -26,9 +26,9 @@ export const InputFile = memo((props: InputFileProps) => {
                     assert(element !== null);
 
                     element.click();
-                },
+                }
             ),
-        [evtAction],
+        [evtAction]
     );
 
     const onChange = useConstCallback<ChangeEventHandler<HTMLInputElement>>(
@@ -36,7 +36,7 @@ export const InputFile = memo((props: InputFileProps) => {
             assert(files !== null);
 
             onFileSelected({ "files": Object.values(files) });
-        },
+        }
     );
 
     return (

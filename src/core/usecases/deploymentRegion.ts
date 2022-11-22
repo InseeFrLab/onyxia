@@ -3,20 +3,13 @@ import type { ThunkAction } from "../setup";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import {
-    createObjectThatThrowsIfAccessedFactory,
-    isPropertyAccessedByReduxOrStorybook,
-} from "../tools/createObjectThatThrowsIfAccessed";
-import type { RootState } from "../setup";
+import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import type { State } from "../setup";
 
 type DeploymentRegionState = {
     availableDeploymentRegions: DeploymentRegion[];
     selectedDeploymentRegionId: string;
 };
-
-const { createObjectThatThrowsIfAccessed } = createObjectThatThrowsIfAccessedFactory({
-    "isPropertyWhitelisted": isPropertyAccessedByReduxOrStorybook,
-});
 
 export const name = "deploymentRegion";
 
@@ -24,8 +17,8 @@ export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload,
-    },
+        "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload
+    }
 });
 
 export const thunks = {
@@ -43,7 +36,7 @@ export const thunks = {
             reload();
 
             assert(false);
-        },
+        }
 };
 
 export const privateThunks = {
@@ -73,19 +66,19 @@ export const privateThunks = {
                     availableDeploymentRegions,
                     "selectedDeploymentRegionId":
                         previouslySelectedRegionIdFromLocalStorage ??
-                        availableDeploymentRegions[0].id,
-                }),
+                        availableDeploymentRegions[0].id
+                })
             );
-        },
+        }
 };
 
 export const selectors = (() => {
-    const selectedDeploymentRegion = (rootState: RootState): DeploymentRegion => {
+    const selectedDeploymentRegion = (rootState: State): DeploymentRegion => {
         const { selectedDeploymentRegionId, availableDeploymentRegions } =
             rootState.deploymentRegion;
 
         const selectedDeploymentRegion = availableDeploymentRegions.find(
-            ({ id }) => id === selectedDeploymentRegionId,
+            ({ id }) => id === selectedDeploymentRegionId
         );
 
         assert(selectedDeploymentRegion !== undefined);

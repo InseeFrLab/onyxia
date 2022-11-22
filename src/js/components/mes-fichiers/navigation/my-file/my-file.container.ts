@@ -6,5 +6,5 @@ const { startWaiting, stopWaiting } = actions;
 
 export const MyFile = connect(undefined, {
     startWaiting,
-    stopWaiting,
+    stopWaiting
 })(MyFileUnconnected);

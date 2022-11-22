@@ -50,8 +50,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "baseURL":
                             amazon !== undefined ? "https://sts.amazonaws.com" : url,
                         "headers": {
-                            "Accept": "*/*",
-                        },
+                            "Accept": "*/*"
+                        }
                     })
                     .post<string>(
                         "/?" +
@@ -74,8 +74,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                                           "Action": ["s3:*"],
                                                           "Resource": [
                                                               `arn:aws:s3:::${restrictToBucketName}`,
-                                                              `arn:aws:s3:::${restrictToBucketName}/*`,
-                                                          ],
+                                                              `arn:aws:s3:::${restrictToBucketName}/*`
+                                                          ]
                                                       },
                                                       {
                                                           "Effect": "Allow",
@@ -84,36 +84,36 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                                           "Condition": {
                                                               "StringLike": {
                                                                   "s3:prefix":
-                                                                      "diffusion/*",
-                                                              },
-                                                          },
+                                                                      "diffusion/*"
+                                                              }
+                                                          }
                                                       },
                                                       {
                                                           "Effect": "Allow",
                                                           "Action": ["s3:GetObject"],
                                                           "Resource": [
-                                                              "arn:aws:s3:::*/diffusion/*",
-                                                          ],
-                                                      },
-                                                  ],
-                                              }),
-                                          ),
+                                                              "arn:aws:s3:::*/diffusion/*"
+                                                          ]
+                                                      }
+                                                  ]
+                                              })
+                                          )
                                       }),
                                 ...(amazon === undefined
                                     ? {}
                                     : {
                                           "RoleSessionName": amazon.roleSessionName,
-                                          "RoleArn": amazon.roleARN,
-                                      }),
+                                          "RoleArn": amazon.roleARN
+                                      })
                             })
                                 .map(([key, value]) => `${key}=${value}`)
-                                .join("&"),
+                                .join("&")
                     );
 
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(data, "text/xml");
                 const root = xmlDoc.getElementsByTagName(
-                    "AssumeRoleWithWebIdentityResponse",
+                    "AssumeRoleWithWebIdentityResponse"
                 )[0];
 
                 const credentials = root.getElementsByTagName("Credentials")[0];
@@ -135,7 +135,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         secretAccessKey !== null &&
                         sessionToken !== null &&
                         expiration !== null,
-                    "Error parsing minio response",
+                    "Error parsing minio response"
                 );
 
                 return id<ReturnType<S3Client["getToken"]>>({
@@ -143,10 +143,10 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                     "expirationTime": new Date(expiration).getTime(),
                     secretAccessKey,
                     sessionToken,
-                    "acquisitionTime": now,
+                    "acquisitionTime": now
                 });
             },
-            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
         });
 
     const { getMinioClient } = (() => {
@@ -176,7 +176,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "accessKey": tokenObj.accessKeyId,
                         "secretKey": tokenObj.secretAccessKey,
                         "sessionToken": tokenObj.sessionToken,
-                        region,
+                        region
                     }),
                     "createAwsBucket": ({ bucketName }) =>
                         createAwsBucket({
@@ -184,8 +184,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                             "secretKey": tokenObj.secretAccessKey,
                             "sessionToken": tokenObj.sessionToken,
                             "awsRegion": region,
-                            bucketName,
-                        }),
+                            bucketName
+                        })
                 };
 
                 minioClientByTokenObj.set(tokenObj, wrap);
@@ -204,7 +204,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
         return {
             bucketName,
-            "objectName": rest.join("/"),
+            "objectName": rest.join("/")
         };
     }
 
@@ -219,7 +219,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
         "createBucketIfNotExist": memoize(
             async bucketName => {
                 const { minioClient, createAwsBucket } = await getMinioClient({
-                    "restrictToBucketName": bucketName,
+                    "restrictToBucketName": bucketName
                 });
 
                 let doExist: boolean;
@@ -232,7 +232,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                 return;
                             }
                             resolve(doExist);
-                        }),
+                        })
                     );
                 } catch (error) {
                     if (amazon === undefined) {
@@ -253,43 +253,43 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 } else {
                     await new Promise<void>((resolve, reject) =>
                         minioClient.makeBucket(bucketName, region, error =>
-                            error !== null ? reject(error) : resolve(),
-                        ),
+                            error !== null ? reject(error) : resolve()
+                        )
                     );
                 }
             },
-            { "promise": true },
+            { "promise": true }
         ),
         "list": async ({ path }) => {
             const { bucketName, prefix } = (() => {
                 const { bucketName, objectName } = bucketNameAndObjectNameFromPath({
-                    path,
+                    path
                 });
 
                 return {
                     bucketName,
-                    "prefix": [objectName].map(s => (s.endsWith("/") ? s : `${s}/`))[0],
+                    "prefix": [objectName].map(s => (s.endsWith("/") ? s : `${s}/`))[0]
                 };
             })();
 
             await s3Client.createBucketIfNotExist(bucketName);
 
             const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName,
+                "restrictToBucketName": bucketName
             });
 
             const stream = minioClient.listObjects(bucketName, prefix, false);
 
             const out: ReturnType<S3Client["list"]> = {
                 "directories": [],
-                "files": [],
+                "files": []
             };
 
             stream.once("end", () => dOut.resolve(out));
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
                     out.directories.push(
-                        bucketItem.prefix.replace(/\/+$/, "").replace(prefix, ""),
+                        bucketItem.prefix.replace(/\/+$/, "").replace(prefix, "")
                     );
                 } else {
                     out.files.push(bucketItem.name.replace(prefix, ""));
@@ -322,7 +322,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
 
             const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName,
+                "restrictToBucketName": bucketName
             });
 
             const dOut = new Deferred<void>();
@@ -344,7 +344,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             await s3Client.createBucketIfNotExist(bucketName);
 
             const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName,
+                "restrictToBucketName": bucketName
             });
 
             await new Promise((resolve, reject) =>
@@ -354,14 +354,14 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         return;
                     }
                     resolve(true);
-                }),
+                })
             );
         },
         "getFileDownloadUrl": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
 
             const { minioClient, tokenObj } = await getMinioClient({
-                "restrictToBucketName": bucketName,
+                "restrictToBucketName": bucketName
             });
 
             const downloadUrlWithoutToken = await new Promise<string>(
@@ -376,19 +376,19 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                                 return;
                             }
                             resolve(url);
-                        },
+                        }
                     );
-                },
+                }
             );
 
             const { newUrl: downloadUrl } = addParamToUrl({
                 "url": downloadUrlWithoutToken,
                 "name": "X-Amz-Security-Token",
-                "value": tokenObj.sessionToken,
+                "value": tokenObj.sessionToken
             });
 
             return downloadUrl;
-        },
+        }
     };
 
     dS3Client.resolve(s3Client);
@@ -411,35 +411,38 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
                 [
                     "Keys",
                     "----",
-                    ...[...directories.map(directory => `${directory}/`), ...files],
-                ].join("\n"),
+                    ...[...directories.map(directory => `${directory}/`), ...files]
+                ].join("\n")
         },
         "getToken": {
             "buildCmd": ({ restrictToBucketName }) =>
                 [
                     `# We generate a token restricted to the bucket ${restrictToBucketName}`,
-                    `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`,
+                    `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`
                 ].join("\n"),
-            "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`,
+            "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`
         },
         "createBucketIfNotExist": {
             "buildCmd": bucketName =>
                 `# We create the token ${bucketName} if it doesn't exist.`,
-            "fmtResult": () => `# Done`,
+            "fmtResult": () => `# Done`
         },
         "uploadFile": {
-            "buildCmd": ({ path }) => `# We upload a file to ${path}`,
-            "fmtResult": () => `# File uploaded`,
+            "buildCmd": ({ path }) => {
+                const fileName = path.split("/").pop();
+                return `mc cp ${fileName} s3/${path}`;
+            },
+            "fmtResult": () => `# File uploaded`
         },
         "deleteFile": {
-            "buildCmd": ({ path }) => `# We delete a file at ${path}`,
-            "fmtResult": () => `# File deleted`,
+            "buildCmd": ({ path }) => `mc rm s3/${path}`,
+            "fmtResult": () => `# File deleted`
         },
         "getFileDownloadUrl": {
-            "buildCmd": ({ path }) => `# We delete generate a download link for ${path}`,
-            "fmtResult": ({ result: downloadUrl }) => downloadUrl,
-        },
-    },
+            "buildCmd": ({ path }) => `mc cp s3/${path}`,
+            "fmtResult": ({ result: downloadUrl }) => downloadUrl
+        }
+    }
 };
 
 export function getCreateS3ClientParams(params: {
@@ -456,7 +459,7 @@ export function getCreateS3ClientParams(params: {
                     url,
                     region,
                     "amazon": undefined,
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600,
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600
                 };
             case "amazon":
                 return {
@@ -464,9 +467,9 @@ export function getCreateS3ClientParams(params: {
                     region,
                     "amazon": {
                         "roleARN": s3Params.roleARN,
-                        "roleSessionName": s3Params.roleSessionName,
+                        "roleSessionName": s3Params.roleSessionName
                     },
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600,
+                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600
                 };
         }
     })();
@@ -478,12 +481,12 @@ export function getS3UrlAndRegion(s3Params: DeploymentRegion.S3) {
             case "minio":
                 return {
                     "url": s3Params.url,
-                    "region": s3Params.region ?? "us-east-1",
+                    "region": s3Params.region ?? "us-east-1"
                 };
             case "amazon":
                 return {
                     "url": "https://s3.amazonaws.com",
-                    "region": s3Params.region,
+                    "region": s3Params.region
                 };
         }
     })();

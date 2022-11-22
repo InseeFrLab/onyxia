@@ -19,7 +19,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const { t } = useTranslation({ ExplorerButtonBar });
 
     const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
-        callback(buttonId),
+        callback(buttonId)
     );
 
     const buttons = useMemo(
@@ -56,9 +56,9 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return selectedItemKind !== "file";
                     }
                 })(),
-                "label": buttonId === "new" ? t("upload file") : t(buttonId),
+                "label": buttonId === "new" ? t("upload file") : t(buttonId)
             })),
-        [selectedItemKind, t],
+        [selectedItemKind, t]
     );
 
     return <ButtonBar buttons={buttons} onClick={onClick} />;

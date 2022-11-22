@@ -13,11 +13,11 @@ export const createDictionary =
                 key =>
                     dict[k][key] &&
                     typeof dict[k][key] === "object" &&
-                    dict[k][key].constructor === Object,
+                    dict[k][key].constructor === Object
             );
             return {
                 ...acc,
-                [k]: !hasChildObject ? dict[k][lang] : createDictionary(lang)(dict[k]),
+                [k]: !hasChildObject ? dict[k][lang] : createDictionary(lang)(dict[k])
             };
         }, {});
 

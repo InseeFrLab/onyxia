@@ -1,8 +1,8 @@
 const dictionary = {
     trainingTitle: {
         fr: "Formations",
-        en: "Trainings",
-    },
+        en: "Trainings"
+    }
 };
 
 export default dictionary;

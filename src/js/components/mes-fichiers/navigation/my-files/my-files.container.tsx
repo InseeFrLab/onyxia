@@ -7,7 +7,7 @@ const {
     uploadFileToBucket,
     removeObjectFromBucket,
     startWaiting,
-    stopWaiting,
+    stopWaiting
 } = actions;
 
 export const MyFiles = connect(undefined, {
@@ -15,5 +15,5 @@ export const MyFiles = connect(undefined, {
     uploadFileToBucket,
     removeObjectFromBucket,
     startWaiting,
-    stopWaiting,
+    stopWaiting
 })(MyFilesUnconnected);

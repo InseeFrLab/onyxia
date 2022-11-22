@@ -7,16 +7,16 @@ import type { SecretsManagerClient, Secret } from "core/ports/SecretsManagerClie
 import {
     join as pathJoin,
     relative as pathRelative,
-    basename as pathBasename,
+    basename as pathBasename
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
-import { getVaultApiLogger } from "../secondaryAdapters/vaultSecretsManagerClient";
+import { getVaultApiLogger } from "../adapters/vaultSecretsManagerClient";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { RootState } from "../setup";
+import type { State } from "../setup";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -62,8 +62,8 @@ export const { reducer, actions } = createSlice({
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "~internal": {
-            "isUserWatching": false,
-        },
+            "isUserWatching": false
+        }
     }),
     "reducers": {
         "navigationStarted": state => {
@@ -72,14 +72,14 @@ export const { reducer, actions } = createSlice({
         "navigationCompleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 directoryPath: string;
                 directoryItems: {
                     kind: "file" | "directory";
                     basename: string;
                 }[];
-            }>,
+            }>
         ) => {
             const { directoryPath, directoryItems } = payload;
 
@@ -96,13 +96,13 @@ export const { reducer, actions } = createSlice({
                         case "rename":
                             removeIfPresent(state.directoryItems, {
                                 "kind": o.kind,
-                                "basename": o.previousBasename,
+                                "basename": o.previousBasename
                             });
                             break;
                         case "delete":
                             removeIfPresent(state.directoryItems, {
                                 "kind": o.kind,
-                                "basename": o.basename,
+                                "basename": o.basename
                             });
                             break;
                         case "create":
@@ -116,7 +116,7 @@ export const { reducer, actions } = createSlice({
         "operationStarted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<
                 {
                     kind: "file" | "directory";
@@ -130,7 +130,7 @@ export const { reducer, actions } = createSlice({
                           newBasename: string;
                       }
                 )
-            >,
+            >
         ) => {
             const { kind, basename } = payload;
 
@@ -152,27 +152,27 @@ export const { reducer, actions } = createSlice({
                             return {
                                 "operation": payload.operation,
                                 "basename": payload.newBasename,
-                                "previousBasename": basename,
+                                "previousBasename": basename
                             };
                         case "delete":
                         case "create":
                             return {
                                 "operation": payload.operation,
-                                basename,
+                                basename
                             };
                     }
-                })(),
+                })()
             });
         },
         "operationCompleted": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 kind: "file" | "directory";
                 basename: string;
                 directoryPath: string;
-            }>,
+            }>
         ) => {
             const { kind, basename, directoryPath } = payload;
 
@@ -184,7 +184,7 @@ export const { reducer, actions } = createSlice({
                 o =>
                     o.kind === kind &&
                     o.basename === basename &&
-                    pathRelative(o.directoryPath, directoryPath) === "",
+                    pathRelative(o.directoryPath, directoryPath) === ""
             );
 
             assert(ongoingOperation !== undefined);
@@ -200,7 +200,7 @@ export const { reducer, actions } = createSlice({
                 case "rename":
                     state.directoryItems.push({
                         "basename": ongoingOperation.basename,
-                        kind,
+                        kind
                     });
                     break;
             }
@@ -208,7 +208,7 @@ export const { reducer, actions } = createSlice({
         "isUserWatchingChanged": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<
                 | {
                       isUserWatching: false;
@@ -217,13 +217,13 @@ export const { reducer, actions } = createSlice({
                       isUserWatching: true;
                       directNavigationDirectoryPath: string | undefined;
                   }
-            >,
+            >
         ) => {
             const { isUserWatching } = payload;
 
             state["~internal"].isUserWatching = isUserWatching;
-        },
-    },
+        }
+    }
 });
 
 export type ExplorersCreateParams =
@@ -261,14 +261,14 @@ const privateThunks = {
                             ? [
                                   {
                                       "directNavigationDirectoryPath": undefined,
-                                      "isProjectChanged": true,
-                                  },
+                                      "isProjectChanged": true
+                                  }
                               ]
-                            : null,
+                            : null
                     )
                     .attach(
                         () => getState().secretExplorer.isNavigationOngoing,
-                        () => dispatch(actions.navigationCanceled()),
+                        () => dispatch(actions.navigationCanceled())
                     ),
                 evtAction.pipe(event =>
                     event.sliceName === "secretExplorer" &&
@@ -278,11 +278,11 @@ const privateThunks = {
                               {
                                   "directNavigationDirectoryPath":
                                       event.payload.directNavigationDirectoryPath,
-                                  "isProjectChanged": false,
-                              },
+                                  "isProjectChanged": false
+                              }
                           ]
-                        : null,
-                ),
+                        : null
+                )
             ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
                 getSliceContexts(args).onNavigate?.({
                     "doRestoreOpenedFile": !isProjectChanged,
@@ -292,7 +292,7 @@ const privateThunks = {
                         }
 
                         const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath(),
+                            interUsecasesThunks.getProjectHomePath()
                         );
 
                         const currentDirectoryPath =
@@ -306,8 +306,8 @@ const privateThunks = {
                         }
 
                         return defaultDirectoryPath;
-                    })(),
-                }),
+                    })()
+                })
             );
         },
     /**
@@ -345,7 +345,7 @@ const privateThunks = {
                     event.sliceName === "secretExplorer" &&
                     event.actionName === "navigationCanceled",
                 ctx,
-                () => ctx.done(),
+                () => ctx.done()
             );
 
             await dispatch(
@@ -353,13 +353,13 @@ const privateThunks = {
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
-                    ctx,
-                }),
+                    ctx
+                })
             );
 
             const { directories, files } = await Evt.from(
                 ctx,
-                loggedSecretClient.list({ "path": directoryPath }),
+                loggedSecretClient.list({ "path": directoryPath })
             ).waitFor();
 
             ctx.done();
@@ -370,13 +370,13 @@ const privateThunks = {
                     "directoryItems": [
                         ...directories.map(basename => ({
                             basename,
-                            "kind": "directory" as const,
+                            "kind": "directory" as const
                         })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const })),
-                    ],
-                }),
+                        ...files.map(basename => ({ basename, "kind": "file" as const }))
+                    ]
+                })
             );
-        },
+        }
 };
 
 export const interUsecasesThunks = {
@@ -407,7 +407,7 @@ export const interUsecasesThunks = {
                 o =>
                     o.kind === kind &&
                     o.basename === basename &&
-                    o.directoryPath === directoryPath,
+                    o.directoryPath === directoryPath
             );
 
             if (ongoingOperation === undefined) {
@@ -424,7 +424,7 @@ export const interUsecasesThunks = {
                             event.payload.basename ===
                                 ongoingOperation.previousBasename)) &&
                     pathRelative(event.payload.directoryPath, directoryPath) === "",
-                ctx,
+                ctx
             );
         },
     "getProjectHomePath":
@@ -435,7 +435,7 @@ export const interUsecasesThunks = {
             return (
                 "/" + projectSelectionSelectors.selectedProject(getState()).vaultTopDir
             );
-        },
+        }
 };
 
 export const thunks = {
@@ -464,8 +464,8 @@ export const thunks = {
             dispatch(
                 actions.isUserWatchingChanged({
                     "isUserWatching": true,
-                    directNavigationDirectoryPath,
-                }),
+                    directNavigationDirectoryPath
+                })
             );
         },
     "notifyThatUserIsNoLongerWatching":
@@ -492,8 +492,8 @@ export const thunks = {
             return dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": false,
-                }),
+                    "forceReload": false
+                })
             );
         },
     //Not used by the UI so far but we want to later
@@ -520,8 +520,8 @@ export const thunks = {
             await dispatch(
                 privateThunks.navigate({
                     directoryPath,
-                    "forceReload": true,
-                }),
+                    "forceReload": true
+                })
             );
         },
     "rename":
@@ -545,8 +545,8 @@ export const thunks = {
                 interUsecasesThunks.waitForNoOngoingOperation({
                     "kind": renamingWhat,
                     directoryPath,
-                    basename,
-                }),
+                    basename
+                })
             );
 
             dispatch(
@@ -554,8 +554,8 @@ export const thunks = {
                     "kind": renamingWhat,
                     basename,
                     "operation": "rename",
-                    newBasename,
-                }),
+                    newBasename
+                })
             );
 
             await getSliceContexts(args).loggedExtendedFsApi[
@@ -569,15 +569,15 @@ export const thunks = {
                 })()
             ]({
                 "path": pathJoin(directoryPath, basename),
-                newBasename,
+                newBasename
             });
 
             dispatch(
                 actions.operationCompleted({
                     "kind": renamingWhat,
                     "basename": newBasename,
-                    directoryPath,
-                }),
+                    directoryPath
+                })
             );
         },
 
@@ -596,16 +596,16 @@ export const thunks = {
                 interUsecasesThunks.waitForNoOngoingOperation({
                     "kind": params.createWhat,
                     directoryPath,
-                    "basename": params.basename,
-                }),
+                    "basename": params.basename
+                })
             );
 
             dispatch(
                 actions.operationStarted({
                     "kind": params.createWhat,
                     "basename": params.basename,
-                    "operation": "create",
-                }),
+                    "operation": "create"
+                })
             );
 
             const sliceContexts = getSliceContexts(args);
@@ -616,7 +616,7 @@ export const thunks = {
                 case "file":
                     await sliceContexts.loggedSecretClient.put({
                         path,
-                        "secret": {},
+                        "secret": {}
                     });
                     break;
                 case "directory":
@@ -628,8 +628,8 @@ export const thunks = {
                 actions.operationCompleted({
                     "kind": params.createWhat,
                     "basename": params.basename,
-                    directoryPath,
-                }),
+                    directoryPath
+                })
             );
         },
 
@@ -655,16 +655,16 @@ export const thunks = {
                 interUsecasesThunks.waitForNoOngoingOperation({
                     "kind": deleteWhat,
                     directoryPath,
-                    basename,
-                }),
+                    basename
+                })
             );
 
             dispatch(
                 actions.operationStarted({
                     "kind": params.deleteWhat,
                     "basename": params.basename,
-                    "operation": "delete",
-                }),
+                    "operation": "delete"
+                })
             );
 
             const sliceContexts = getSliceContexts(args);
@@ -677,7 +677,7 @@ export const thunks = {
                     break;
                 case "file":
                     await sliceContexts.loggedSecretClient.delete({
-                        path,
+                        path
                     });
                     break;
             }
@@ -686,8 +686,8 @@ export const thunks = {
                 actions.operationCompleted({
                     "kind": deleteWhat,
                     basename,
-                    directoryPath,
-                }),
+                    directoryPath
+                })
             );
         },
     "getFsApiLogs":
@@ -703,7 +703,7 @@ export const thunks = {
             const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             return region.vault !== undefined;
-        },
+        }
 };
 
 type SliceContexts = {
@@ -735,8 +735,8 @@ const { getSliceContexts } = (() => {
                     "clientType": "CLI",
                     "engine":
                         deploymentRegionSelectors.selectedDeploymentRegion(getState())
-                            .vault?.kvEngine ?? "onyxia-kv",
-                }),
+                            .vault?.kvEngine ?? "onyxia-kv"
+                })
             });
 
             return {
@@ -750,16 +750,16 @@ const { getSliceContexts } = (() => {
                         "downloadFile": async ({ path }) =>
                             (await loggedSecretClient.get({ path })).secret,
                         "uploadFile": ({ path, file }) =>
-                            loggedSecretClient.put({ path, "secret": file }),
+                            loggedSecretClient.put({ path, "secret": file })
                     },
                     "keepFile": id<Secret>({
                         "info": [
                             "This is a dummy secret so that this directory is kept even if there",
-                            "is no other secrets in it",
-                        ].join(" "),
+                            "is no other secrets in it"
+                        ].join(" ")
                     }),
-                    "keepFileBasename": ".keep",
-                }),
+                    "keepFileBasename": ".keep"
+                })
             };
         })();
 
@@ -776,10 +776,10 @@ function removeIfPresent(
         kind: "file" | "directory";
         basename: string;
     }>[],
-    item: { kind: "file" | "directory"; basename: string },
+    item: { kind: "file" | "directory"; basename: string }
 ): void {
     const index = directoryItems.findIndex(
-        item_i => item_i.kind === item.kind && item_i.basename === item.basename,
+        item_i => item_i.kind === item.kind && item_i.basename === item.basename
     );
 
     assert(index >= 0);
@@ -800,7 +800,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: RootState,
+        rootState: State
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.secretExplorer;
 
@@ -823,9 +823,9 @@ export const selectors = (() => {
                                     o =>
                                         o.directoryPath === directoryPath &&
                                         o.kind === kind &&
-                                        o.operation === operation,
+                                        o.operation === operation
                                 )
-                                .map(({ basename }) => basename),
+                                .map(({ basename }) => basename)
                     );
 
                     const select = (kind: "directory" | "file") =>
@@ -834,7 +834,7 @@ export const selectors = (() => {
                                 .filter(item => item.kind === kind)
                                 .map(({ basename }) => basename),
                             ...selectOngoing(kind, "create"),
-                            ...selectOngoing(kind, "rename"),
+                            ...selectOngoing(kind, "rename")
                         ].sort((a, b) => a.localeCompare(b));
 
                     return {
@@ -843,9 +843,9 @@ export const selectors = (() => {
                         "directoriesBeingCreated": selectOngoing("directory", "create"),
                         "directoriesBeingRenamed": selectOngoing("directory", "rename"),
                         "filesBeingCreated": selectOngoing("file", "create"),
-                        "filesBeingRenamed": selectOngoing("file", "rename"),
+                        "filesBeingRenamed": selectOngoing("file", "rename")
                     };
-                })(),
+                })()
             };
         })();
     };

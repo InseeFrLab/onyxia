@@ -15,7 +15,7 @@ export function fileSizePrettyPrint(params: { bytes: number; unit?: Unit }): {
     if (Math.abs(bytes) < thresh || params.unit === "B") {
         return {
             "value": `${bytes}`,
-            "unit": "B",
+            "unit": "B"
         };
     }
 
@@ -36,7 +36,7 @@ export function fileSizePrettyPrint(params: { bytes: number; unit?: Unit }): {
 
     return {
         "value": bytes.toFixed(dp),
-        unit,
+        unit
     };
 }
 

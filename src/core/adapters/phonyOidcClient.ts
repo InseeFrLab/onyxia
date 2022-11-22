@@ -14,7 +14,7 @@ export function createPhonyOidcClient(params: {
     const isUserLoggedIn = (() => {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
-            "name": urlParamName,
+            "name": urlParamName
         });
 
         return result.wasPresent
@@ -29,13 +29,13 @@ export function createPhonyOidcClient(params: {
                 const { newUrl } = addParamToUrl({
                     "url": window.location.href,
                     "name": urlParamName,
-                    "value": "true",
+                    "value": "true"
                 });
 
                 window.location.href = newUrl;
 
                 return new Promise<never>(() => {});
-            },
+            }
         });
     }
 
@@ -46,9 +46,9 @@ export function createPhonyOidcClient(params: {
 
             const accessToken = jwtSimple.encode(
                 Object.fromEntries(
-                    objectKeys(jwtClaims).map(key => [jwtClaims[key], user[key]]),
+                    objectKeys(jwtClaims).map(key => [jwtClaims[key], user[key]])
                 ),
-                "xxx",
+                "xxx"
             );
 
             return { accessToken };
@@ -57,13 +57,13 @@ export function createPhonyOidcClient(params: {
             const { newUrl } = addParamToUrl({
                 "url": window.location.href,
                 "name": urlParamName,
-                "value": "false",
+                "value": "false"
             });
 
             window.location.href = newUrl;
 
             return new Promise<never>(() => {});
-        },
+        }
     });
 }
 

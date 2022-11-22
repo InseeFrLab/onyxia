@@ -23,6 +23,6 @@ export function parseUrl(url: string) {
             }
 
             return undefined;
-        })(),
+        })()
     };
 }

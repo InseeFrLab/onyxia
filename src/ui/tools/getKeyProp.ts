@@ -60,6 +60,6 @@ export function getKeyPropFactory<T extends Record<string, string>>() {
     return {
         getKeyProp,
         transfersKeyProp,
-        getValuesCurrentlyMappedToKeyProp,
+        getValuesCurrentlyMappedToKeyProp
     };
 }

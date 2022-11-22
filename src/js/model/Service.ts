@@ -29,11 +29,11 @@ export interface Service {
 
 export enum ServiceType {
     Marathon = "MARATHON",
-    Kubernetes = "KUBERNETES",
+    Kubernetes = "KUBERNETES"
 }
 
 export enum ServiceStatus {
     Deploying = "DEPLOYING",
     Running = "RUNNING",
-    Stopped = "STOPPED",
+    Stopped = "STOPPED"
 }

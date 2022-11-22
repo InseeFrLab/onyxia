@@ -6,7 +6,7 @@ import { kcContextLogin } from "./kcContexts";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { Template },
+    "wrappedComponent": { Template }
 });
 
 export default meta;
@@ -21,5 +21,5 @@ export const View1 = getStory({
     "infoNode": <p>Info node</p>,
     //TODO: Fix, find a way to make it work
     "i18n": null as any,
-    ...defaultKcProps,
+    ...defaultKcProps
 });

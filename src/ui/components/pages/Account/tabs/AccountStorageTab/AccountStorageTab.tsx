@@ -10,7 +10,7 @@ import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useFromNow } from "ui/useMoment";
-import { useThunks, useSelector, selectors } from "ui/coreApi";
+import { useCoreFunctions, useCoreState, selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import Select from "@mui/material/Select";
@@ -33,7 +33,7 @@ const technologies = [
     "shell environnement variables",
     "MC client",
     "s3cmd",
-    "rclone",
+    "rclone"
 ] as const;
 
 assert<Equals<typeof technologies[number], Technology>>();
@@ -49,45 +49,45 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountStorageTab });
 
-    const { s3CredentialsThunks } = useThunks();
+    const { s3Credentials } = useCoreFunctions();
 
     useEffect(() => {
-        s3CredentialsThunks.refresh({ "doForceRenewToken": false });
+        s3Credentials.refresh({ "doForceRenewToken": false });
     }, []);
 
-    const { isReady } = useSelector(selectors.s3Credentials.isReady);
-    const { credentials } = useSelector(selectors.s3Credentials.credentials);
-    const { expirationTime } = useSelector(selectors.s3Credentials.expirationTime);
-    const { initScript } = useSelector(selectors.s3Credentials.initScript);
-    const { selectedTechnology } = useSelector(
-        selectors.s3Credentials.selectedTechnology,
+    const { isReady } = useCoreState(selectors.s3Credentials.isReady);
+    const { credentials } = useCoreState(selectors.s3Credentials.credentials);
+    const { expirationTime } = useCoreState(selectors.s3Credentials.expirationTime);
+    const { initScript } = useCoreState(selectors.s3Credentials.initScript);
+    const { selectedTechnology } = useCoreState(
+        selectors.s3Credentials.selectedTechnology
     );
-    const { isRefreshing } = useSelector(selectors.s3Credentials.isRefreshing);
+    const { isRefreshing } = useCoreState(selectors.s3Credentials.isRefreshing);
 
     const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
 
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
-        s3CredentialsThunks.changeTechnology({
-            "technology": e.target.value as Technology,
-        }),
+        s3Credentials.changeTechnology({
+            "technology": e.target.value as Technology
+        })
     );
 
     const onFieldRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
-        copyToClipboard(textToCopy),
+        copyToClipboard(textToCopy)
     );
 
     const onGetAppIconButtonClick = useConstCallback(() => {
         assert(initScript !== undefined);
         saveAs(
             new Blob([initScript.scriptCode], {
-                "type": "text/plain;charset=utf-8",
+                "type": "text/plain;charset=utf-8"
             }),
-            initScript.fileBasename,
+            initScript.fileBasename
         );
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        s3CredentialsThunks.refresh({ "doForceRenewToken": true }),
+        s3Credentials.refresh({ "doForceRenewToken": true })
     );
 
     if (!isReady) {
@@ -126,19 +126,19 @@ export const AccountStorageTab = memo((props: Props) => {
                     "AWS_SECRET_ACCESS_KEY",
                     "AWS_SESSION_TOKEN",
                     "AWS_S3_ENDPOINT",
-                    "AWS_DEFAULT_REGION",
+                    "AWS_DEFAULT_REGION"
                 ] as const
             ).map(key => (
                 <AccountField
                     type="text"
                     key={key}
                     title={capitalize(
-                        key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase(),
+                        key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase()
                     )}
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
-                        "text": credentials[key],
+                        "text": credentials[key]
                     })}
                     helperText={
                         <>
@@ -197,13 +197,13 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = makeStyles({ "name": { AccountStorageTab } })(theme => ({
     "divider": {
-        ...theme.spacing.topBottom("margin", 4),
+        ...theme.spacing.topBottom("margin", 4)
     },
     "envVar": {
-        "color": theme.colors.useCases.typography.textFocus,
+        "color": theme.colors.useCases.typography.textFocus
     },
     "codeBlockHeaderWrapper": {
         "display": "flex",
-        "marginBottom": theme.spacing(3),
-    },
+        "marginBottom": theme.spacing(3)
+    }
 }));

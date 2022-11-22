@@ -63,7 +63,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
         getResolvedValue,
         getIsValidAndAvailableKey,
         onStartEdit,
-        evtAction,
+        evtAction
     } = props;
 
     const [isInEditingState, setIsInEditingState] = useState(false);
@@ -82,28 +82,28 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 .pipe(ctx)
                 .attach(
                     action => action === "ENTER EDITING STATE",
-                    () => setIsInEditingState(true),
+                    () => setIsInEditingState(true)
                 )
                 .attach(
                     action => action === "SUBMIT EDIT" && isInEditingState,
-                    () => onSubmitButtonClick(),
+                    () => onSubmitButtonClick()
                 ),
-        [evtAction, isInEditingState],
+        [evtAction, isInEditingState]
     );
 
     const [evtInputAction] = useState(() =>
-        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+        Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
     );
 
     const [evtEdited] = useState(() =>
-        Evt.create<{ editedKey?: string; editedStrValue?: string }>({}),
+        Evt.create<{ editedKey?: string; editedStrValue?: string }>({})
     );
 
     const onSubmitFactory = useCallbackFactory(
         (
             [inputTarget]: [keyof UnpackEvt<typeof evtEdited>],
-            [value]: [Param0<TextFieldProps["onSubmit"]>],
-        ) => (evtEdited.state = { ...evtEdited.state, [inputTarget]: value }),
+            [value]: [Param0<TextFieldProps["onSubmit"]>]
+        ) => (evtEdited.state = { ...evtEdited.state, [inputTarget]: value })
     );
 
     useEvt(
@@ -130,9 +130,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     }
 
                     onEdit({ editedKey, editedStrValue });
-                },
+                }
             ),
-        [evtEdited, onEdit, key, strValue],
+        [evtEdited, onEdit, key, strValue]
     );
 
     const [isValidKey, setIsValidKey] = useState(false);
@@ -146,7 +146,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
     });
 
     const onEscapeKeyDown = useConstCallback(() =>
-        evtInputAction.post("RESTORE DEFAULT VALUE"),
+        evtInputAction.post("RESTORE DEFAULT VALUE")
     );
 
     const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
@@ -155,27 +155,27 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const onValueBeingTypedChange_key = useConstCallback(
         ({
-            isValidValue,
+            isValidValue
         }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) =>
-            setIsValidKey(isValidValue),
+            setIsValidKey(isValidValue)
     );
 
     const onValueBeingTypedChange_strValue = useConstCallback(
         ({
             isValidValue,
-            value,
+            value
         }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
             setIsValidStrValue(isValidValue);
 
             setStrValueBeingTyped(value);
-        },
+        }
     );
 
     const onEditButtonClick = useConstCallback(() => setIsInEditingState(true));
 
     //NOTE: We don't want to use useMemo here because the resolved values depends on other keys.
     const resolveValueResult = getResolvedValue({
-        "strValue": isInEditingState ? strValueBeingTyped : strValue,
+        "strValue": isInEditingState ? strValueBeingTyped : strValue
     });
 
     const getIsValidValue_key = useConstCallback(
@@ -186,9 +186,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 ? ({ "isValidValue": true } as const)
                 : ({
                       "isValidValue": false,
-                      "message": result.message,
+                      "message": result.message
                   } as const);
-        },
+        }
     );
 
     const getIsValidValue_strValue = useConstCallback(
@@ -199,9 +199,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 ? ({ "isValidValue": true } as const)
                 : ({
                       "isValidValue": false,
-                      "message": resolveValueResult.message,
+                      "message": resolveValueResult.message
                   } as const);
-        },
+        }
     );
 
     const { classes, theme, css, cx } = useStyles({ ...props, isInEditingState });
@@ -218,21 +218,21 @@ export const MySecretsEditorRow = memo((props: Props) => {
                             css({
                                 "textOverflow": "ellipsis",
                                 "overflow": "hidden",
-                                "whiteSpace": "nowrap",
+                                "whiteSpace": "nowrap"
                             }),
-                            className,
+                            className
                         )}
                     >
                         {children}
                     </Text>
                 );
             },
-        [],
+        []
     );
 
     const {
         ref,
-        domRect: { width },
+        domRect: { width }
     } = useDomRect();
 
     return (
@@ -243,8 +243,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     className={cx(
                         classes.dollarSign,
                         css({
-                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
-                        }),
+                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+                        })
                     )}
                 >
                     $
@@ -255,7 +255,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     <Text
                         typo="body 1"
                         className={css({
-                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+                            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
                         })}
                     >
                         {key}
@@ -282,9 +282,9 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     css(
                         [width * 0.36].map(width => ({
                             width,
-                            "maxWidth": width,
-                        }))[0],
-                    ),
+                            "maxWidth": width
+                        }))[0]
+                    )
                 )}
             >
                 {!isInEditingState ? (
@@ -311,8 +311,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         className={cx(
                             classes.valueAndResolvedValue,
                             css({
-                                "color": theme.colors.palette.light.greyVariant3,
-                            }),
+                                "color": theme.colors.palette.light.greyVariant3
+                            })
                         )}
                     >
                         {resolveValueResult.resolvedValue}
@@ -342,34 +342,34 @@ export const MySecretsEditorRow = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"key input desc" | "value input desc">()({
-    MySecretsEditorRow,
+    MySecretsEditorRow
 });
 
 const useStyles = makeStyles<Props & { isInEditingState: boolean }>({
-    "name": { MySecretsEditorRow },
+    "name": { MySecretsEditorRow }
 })((theme, { isInEditingState, isDarker }) => ({
     "root": {
         "backgroundColor": isDarker
             ? theme.colors.useCases.surfaces.background
             : "transparent",
         "& .MuiTextField-root": {
-            "width": "100%",
-        },
+            "width": "100%"
+        }
     },
     "dollarSign": {
         "color": isInEditingState
             ? theme.colors.useCases.typography.textDisabled
-            : theme.colors.useCases.typography.textFocus,
+            : theme.colors.useCases.typography.textFocus
     },
     "valueAndResolvedValue": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 }),
+        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
         //"wordBreak": "break-all"
     },
     "keyAndValueTableCells": {
         "padding": isInEditingState
             ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
-            : undefined,
-    },
+            : undefined
+    }
 }));
 
 function toUpperCase(value: string) {
