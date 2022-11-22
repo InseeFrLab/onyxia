@@ -118,8 +118,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
-                    <FormControl variant="standard">
-                        <InputLabel id={"chart version"}>{"Placeholder"}</InputLabel>
+                    <FormControl className={classes.versionWrapper} variant="standard">
+                        <InputLabel id={"chart version"}>{t("version")}</InputLabel>
                         <Select
                             labelId={"chart version"}
                             value={version}
@@ -131,7 +131,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                                 </MenuItem>
                             ))}
                         </Select>
-                        <FormHelperText>{"Placeholder"}</FormHelperText>
+                        <FormHelperText>{t("chart version")}</FormHelperText>
                     </FormControl>
                     <FormControl className={classes.isSharedWrapper}>
                         <FormControlLabel
@@ -173,6 +173,8 @@ export const { i18n } = declareComponentKeys<
     | "cancel"
     | "launch"
     | "friendly name"
+    | "version"
+    | "chart version"
     | "copy url helper text"
     | "save configuration"
     | "share the service"
@@ -215,6 +217,9 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
     "textFieldAndButtonWrapper": {
         "display": "flex",
         "alignItems": "center"
+    },
+    "versionWrapper": {
+        "marginLeft": theme.spacing(5)
     },
     "isSharedWrapper": {
         "marginLeft": theme.spacing(7)

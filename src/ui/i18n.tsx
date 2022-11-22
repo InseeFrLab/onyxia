@@ -1,7 +1,6 @@
 import { createI18nApi } from "i18nifty";
 import type { Language, LocalizedString } from "core";
 import { assert } from "tsafe/assert";
-import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
@@ -442,6 +441,8 @@ const {
             "CatalogLauncherMainCard": {
                 "card title": "Create your personal services",
                 "friendly name": "Friendly name",
+                "version": "Version",
+                "chart version": "Helm chart Version",
                 "launch": "Launch",
                 "cancel": "Cancel",
                 "copy url helper text": "Copy url to restore this configuration",
@@ -858,6 +859,8 @@ const {
             "CatalogLauncherMainCard": {
                 "card title": "Créer votre propre service",
                 "friendly name": "Nom personnalisé",
+                "version": undefined,
+                "chart version": "Version du chart helm",
                 "launch": "Lancer",
                 "cancel": "Annuler",
                 "copy url helper text":
@@ -1243,6 +1246,8 @@ const {
             "CatalogLauncherMainCard": {
                 "card title": "创建自定义服务",
                 "friendly name": "自定义名称",
+                "version": undefined,
+                "chart version": undefined,
                 "launch": "启动",
                 "cancel": "取消",
                 "copy url helper text": "复制 URL 以恢复此配置",
