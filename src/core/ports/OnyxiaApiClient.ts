@@ -52,6 +52,7 @@ export type OnyxiaApiClient = {
     launchPackage: (params: {
         catalogId: string;
         packageName: string;
+        version: string;
         options: Record<string, unknown>;
         isDryRun: boolean;
     }) => Promise<{ contract: Contract }>;

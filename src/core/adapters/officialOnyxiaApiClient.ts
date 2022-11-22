@@ -528,7 +528,7 @@ export function createOfficialOnyxiaApiClient(params: {
                 axiosInstance.get("/my-lab/app", { params });
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
-                async ({ catalogId, packageName, options, isDryRun }) => {
+                async ({ catalogId, packageName, version, options, isDryRun }) => {
                     const { serviceId } = getServiceId({
                         packageName,
                         "randomK8sSubdomain": getRandomK8sSubdomain()
@@ -539,6 +539,7 @@ export function createOfficialOnyxiaApiClient(params: {
                     >(`/my-lab/app`, {
                         catalogId,
                         packageName,
+                        "packageVersion": version,
                         "name": serviceId,
                         options,
                         "dryRun": isDryRun

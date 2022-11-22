@@ -500,6 +500,7 @@ const privateThunks = {
             const { contract } = await onyxiaApiClient.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
+                "version": state.version,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
                 "isDryRun": isForContractPreview
             });
