@@ -25,7 +25,7 @@ type RestorablePackageConfigsState = {
 };
 
 type IconsUrl = {
-    [catalogId: string]: { [packageName: string]: string };
+    [catalogId: string]: { [packageName: string]: string | undefined };
 };
 
 export type RestorablePackageConfig = {
@@ -168,6 +168,7 @@ export const thunks = {
                         urlByPackageName[chart.name] = icon;
                         return;
                     }
+                    urlByPackageName[chart.name] = undefined;
                 });
 
                 iconsUrl[catalogId] = urlByPackageName;

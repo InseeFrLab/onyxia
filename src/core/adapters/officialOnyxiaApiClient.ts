@@ -24,7 +24,6 @@ import type {
     JSONSchemaFormFieldDescription
 } from "../ports/OnyxiaApiClient";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
-import { exclude } from "tsafe/exclude";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -309,39 +308,35 @@ export function createOfficialOnyxiaApiClient(params: {
                             description: LocalizedString;
                             status: "PROD" | "TEST";
                             catalog: {
-                                entries: {
-                                    name: string;
-                                    values: {
+                                entries: Record<
+                                    string,
+                                    {
                                         description: string;
-                                        icon?: string;
-                                        home?: string;
                                         version: string;
-                                    }[];
-                                }[];
+                                        icon: string | undefined;
+                                        home: string | undefined;
+                                    }[]
+                                >;
                             };
                             highlightedCharts: string[];
                         }[];
                     }>("/public/catalogs")
                     .then(({ data }) =>
-                        data.catalogs.map(
-                            catalog =>
-                                ({
-                                    id: catalog.id,
-                                    name: catalog.name,
-                                    location: catalog.location,
-                                    description: catalog.description,
-                                    status: catalog.status,
-                                    charts: Object.keys(catalog.catalog.entries)
-                                        .filter(exclude("library-chart"))
-                                        .map(key => ({
-                                            name: key,
-                                            versions:
-                                                catalog.catalog.entries[
-                                                    key as keyof typeof catalog.catalog.entries
-                                                ]
-                                        })),
-                                    highlightedCharts: catalog.highlightedCharts
-                                } as unknown as Catalog)
+                        data.catalogs.map(catalog =>
+                            id<Catalog>({
+                                "id": catalog.id,
+                                "name": catalog.name,
+                                "location": catalog.location,
+                                "description": catalog.description,
+                                "status": catalog.status,
+                                "charts": Object.entries(catalog.catalog.entries)
+                                    .filter(([key]) => key !== "library-chart")
+                                    .map(([name, versions]) => ({
+                                        name,
+                                        versions
+                                    })),
+                                "highlightedCharts": catalog.highlightedCharts
+                            })
                         )
                     ),
             { "promise": true }

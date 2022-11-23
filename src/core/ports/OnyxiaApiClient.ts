@@ -134,6 +134,16 @@ export type Project = {
     vaultTopDir: string;
 };
 
+export type Catalog = {
+    id: string;
+    name: LocalizedString;
+    location: string;
+    description: LocalizedString;
+    status: "PROD" | "TEST";
+    charts: Catalog.Chart[];
+    highlightedCharts?: string[];
+};
+
 export namespace Catalog {
     export type Chart = {
         name: string;
@@ -145,16 +155,6 @@ export namespace Catalog {
         }[];
     };
 }
-
-export type Catalog = {
-    id: string;
-    name: LocalizedString;
-    location: string;
-    description: LocalizedString;
-    status: "PROD" | "TEST";
-    charts: Catalog.Chart[];
-    highlightedCharts?: string[];
-};
 
 export type OnyxiaValues = {
     user: {
