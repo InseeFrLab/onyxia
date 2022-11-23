@@ -144,7 +144,13 @@ export const thunks = {
 
             dispatch(actions.catalogsFetching());
 
-            const catalogs = await onyxiaApiClient.getCatalogs();
+            const { catalogs } = await (async () => {
+                let catalogs = await onyxiaApiClient.getCatalogs();
+
+                catalogs = JSON.parse(JSON.stringify(catalogs));
+
+                return { catalogs };
+            })();
 
             catalogs.forEach(catalog =>
                 catalog.charts.forEach(
