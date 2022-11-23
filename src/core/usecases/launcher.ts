@@ -497,7 +497,8 @@ const privateThunks = {
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
-                "isDryRun": isForContractPreview
+                "isDryRun": isForContractPreview,
+                "name": undefined
             });
 
             if (!isForContractPreview) {

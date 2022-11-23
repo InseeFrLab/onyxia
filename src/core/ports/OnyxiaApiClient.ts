@@ -43,6 +43,7 @@ export type OnyxiaApiClient = {
         packageName: string;
         options: Record<string, unknown>;
         isDryRun: boolean;
+        name: string | undefined;
     }) => Promise<{ contract: Contract }>;
 
     getRunningServices: () => Promise<RunningService[]>;
