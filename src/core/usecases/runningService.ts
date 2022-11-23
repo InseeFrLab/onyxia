@@ -159,12 +159,17 @@ export const thunks = {
                 function getLogoUrl(params: { packageName: string }): string | undefined {
                     const { packageName } = params;
 
-                    for (const { catalog } of apiRequestResult) {
-                        for (const { name, icon } of catalog.packages) {
+                    for (const { charts } of apiRequestResult) {
+                        for (const { name, versions } of charts) {
                             if (name !== packageName) {
                                 continue;
                             }
-                            return icon;
+                            for (const { icon } of versions) {
+                                if (icon === undefined) {
+                                    continue;
+                                }
+                                return icon;
+                            }
                         }
                     }
                     return undefined;

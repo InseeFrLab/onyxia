@@ -32,3 +32,6 @@ package-lock.json
 /build_keycloak
 /src/env.ts
 /.yarn_home
+
+# Jetbrains
+.idea/

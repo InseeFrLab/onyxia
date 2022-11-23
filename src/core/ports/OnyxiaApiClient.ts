@@ -167,16 +167,21 @@ export type Catalog = {
     location: string;
     description: LocalizedString;
     status: "PROD" | "TEST";
-    catalog: {
-        packages: {
-            description: string;
-            icon?: string;
-            name: string;
-            home?: string;
-        }[];
-    };
+    charts: Catalog.Chart[];
     highlightedCharts?: string[];
 };
+
+export namespace Catalog {
+    export type Chart = {
+        name: string;
+        versions: {
+            description: string;
+            version: string;
+            icon: string | undefined;
+            home: string | undefined;
+        }[];
+    };
+}
 
 export type OnyxiaValues = {
     user: {

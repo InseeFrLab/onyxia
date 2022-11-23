@@ -882,16 +882,15 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
-                    "icon": await onyxiaApiClient
-                        .getCatalogs()
-                        .then(
-                            apiRequestResult =>
-                                apiRequestResult
-                                    .find(({ id }) => id === catalogId)!
-                                    .catalog.packages.find(
-                                        ({ name }) => name === packageName
-                                    )!.icon
-                        ),
+                    "icon": await onyxiaApiClient.getCatalogs().then(
+                        apiRequestResult =>
+                            //TODO: Sort in the adapter of even better, assumes version sorted
+                            //and validate this assertion with zod
+                            apiRequestResult
+                                .find(({ id }) => id === catalogId)!
+                                .charts.find(({ name }) => name === packageName)!
+                                .versions[0].icon
+                    ),
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
