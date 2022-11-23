@@ -15,7 +15,7 @@ export const ViewDefault = getStory({
     "packageName": "rstudio",
     "packageIconUrl": rstudioImg,
     "version": "1.0.0",
-    "availableVersions": ["1.0.0"],
+    "availableVersions": ["1.0.0", "0.1.1", "0.1.0", "0.0.1"],
     "isBookmarked": true,
     "friendlyName": "rstudio-1615211422",
     "isLaunchable": true,
