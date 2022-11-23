@@ -85,8 +85,10 @@ export const thunks = {
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
-        (): ThunkAction =>
+        (params: { doForceRenewToken: boolean }): ThunkAction =>
         async (...args) => {
+            const { doForceRenewToken } = params;
+
             const [dispatch, getState, extraArg] = args;
 
             const { oidcClient, createStoreParams } = extraArg;
@@ -126,6 +128,10 @@ export const thunks = {
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
+            }
+
+            if (doForceRenewToken) {
+                await kubernetesOidcClient.renewToken();
             }
 
             const { accessToken, expirationTime } = kubernetesOidcClient.getAccessToken();
@@ -243,6 +249,7 @@ export const selectors = (() => {
         kubernetesClusterUrl,
         oidcAccessToken,
         bashScript,
+        expirationTime,
         isRefreshing,
         (
             isReady,
@@ -250,6 +257,7 @@ export const selectors = (() => {
             kubernetesClusterUrl,
             oidcAccessToken,
             bashScript,
+            expirationTime,
             isRefreshing
         ) => {
             if (!isReady) {
@@ -257,12 +265,14 @@ export const selectors = (() => {
             }
             assert(oidcAccessToken !== undefined);
             assert(bashScript !== undefined);
+            assert(expirationTime !== undefined);
 
             return {
                 isRefreshing,
                 kubernetesNamespace,
                 kubernetesClusterUrl,
                 oidcAccessToken,
+                expirationTime,
                 bashScript
             };
         }
