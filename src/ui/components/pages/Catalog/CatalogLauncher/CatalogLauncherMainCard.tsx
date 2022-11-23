@@ -219,6 +219,7 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
         "alignItems": "center"
     },
     "versionWrapper": {
+        "marginTop": 12,
         "marginLeft": theme.spacing(5)
     },
     "isSharedWrapper": {
