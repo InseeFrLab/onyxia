@@ -442,7 +442,7 @@ const {
                 "card title": "Create your personal services",
                 "friendly name": "Friendly name",
                 "version": "Version",
-                "chart version": "Helm chart Version",
+                "chart version": "Helm chart version",
                 "launch": "Launch",
                 "cancel": "Cancel",
                 "copy url helper text": "Copy url to restore this configuration",
