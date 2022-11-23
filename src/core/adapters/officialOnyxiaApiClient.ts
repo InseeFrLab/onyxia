@@ -18,7 +18,7 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription
@@ -325,34 +325,57 @@ export function createOfficialOnyxiaApiClient(params: {
                             description: LocalizedString;
                             status: "PROD" | "TEST";
                             catalog: {
-                                packages: {
-                                    description: string;
-                                    icon?: string;
-                                    name: string;
-                                    home?: string;
-                                }[];
+                                entries: Record<
+                                    string,
+                                    {
+                                        description: string;
+                                        version: string;
+                                        icon: string | undefined;
+                                        home: string | undefined;
+                                    }[]
+                                >;
                             };
+                            highlightedCharts: string[];
                         }[];
-                    }>("/public/catalog")
-                    .then(({ data }) => data.catalogs),
+                    }>("/public/catalogs")
+                    .then(({ data }) =>
+                        data.catalogs.map(catalog =>
+                            id<Catalog>({
+                                "id": catalog.id,
+                                "name": catalog.name,
+                                "location": catalog.location,
+                                "description": catalog.description,
+                                "status": catalog.status,
+                                "charts": Object.entries(catalog.catalog.entries)
+                                    .filter(([key]) => key !== "library-chart")
+                                    .map(([name, versions]) => ({
+                                        name,
+                                        versions
+                                    })),
+                                "highlightedCharts": catalog.highlightedCharts
+                            })
+                        )
+                    ),
             { "promise": true }
         ),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
-                .get<{
-                    config: JSONSchemaObject;
-                    sources?: string[];
-                    dependencies?: {
-                        name: string;
-                    }[];
-                }>(`/public/catalog/${catalogId}/${packageName}`)
+                .get<
+                    {
+                        config: JSONSchemaObject;
+                        sources?: string[];
+                        dependencies?: {
+                            name: string;
+                        }[];
+                    }[]
+                >(`/public/catalogs/${catalogId}/charts/${packageName}`)
                 .then(({ data }) => ({
-                    "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
-                    "sources": data.sources ?? [],
+                    "dependencies": data[0].dependencies?.map(({ name }) => name) ?? [],
+                    "sources": data[0].sources ?? [],
                     "getValuesSchemaJson": ({ onyxiaValues }) => {
                         //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                         const configCopy = JSON.parse(
-                            JSON.stringify(data.config)
+                            JSON.stringify(data[0].config)
                         ) as JSONSchemaObject;
 
                         function overrideDefaultsRec(
