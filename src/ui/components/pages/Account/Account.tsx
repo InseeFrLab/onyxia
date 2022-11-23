@@ -1,7 +1,7 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
-import { KubernetesTab } from "./tabs/KubernetesTab";
+import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
@@ -86,7 +86,7 @@ export function Account(props: Props) {
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
                         case "k8sCredentials":
-                            return <KubernetesTab />;
+                            return <AccountKubernetesTab />;
                     }
                     assert<Equals<typeof route.params.tabId, never>>(false);
                 })()}

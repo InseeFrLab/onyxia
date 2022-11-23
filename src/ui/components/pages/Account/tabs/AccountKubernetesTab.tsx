@@ -14,6 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "ui/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, selectors, useCoreFunctions } from "core";
+import { useFromNow } from "ui/useMoment";
 
 const CodeBlock = lazy(() => import("ui/components/shared/CodeBlock"));
 
@@ -21,7 +22,7 @@ export type Props = {
     className?: string;
 };
 
-export const KubernetesTab = memo((props: Props) => {
+export const AccountKubernetesTab = memo((props: Props) => {
     const { className } = props;
 
     const { classes, theme } = useStyles();
@@ -30,11 +31,13 @@ export const KubernetesTab = memo((props: Props) => {
 
     const { uiState } = useCoreState(selectors.k8sCredentials.uiState);
 
+    const { fromNowText } = useFromNow({ "dateTime": uiState?.expirationTime ?? 0 });
+
     useEffect(() => {
-        k8sCredentials.refresh();
+        k8sCredentials.refresh({ "doForceRenewToken": false });
     }, []);
 
-    const { t } = useTranslation({ KubernetesTab });
+    const { t } = useTranslation({ AccountKubernetesTab });
 
     const onFieldRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
@@ -50,6 +53,10 @@ export const KubernetesTab = memo((props: Props) => {
         );
     });
 
+    const onRefreshIconButtonClick = useConstCallback(() =>
+        k8sCredentials.refresh({ "doForceRenewToken": true })
+    );
+
     if (uiState === undefined) {
         return <CircularProgress />;
     }
@@ -58,7 +65,21 @@ export const KubernetesTab = memo((props: Props) => {
         <div className={className}>
             <AccountSectionHeader
                 title={t("credentials section title")}
-                helperText={t("credentials section helper")}
+                helperText={
+                    <>
+                        {t("credentials section helper")}
+                        &nbsp;
+                        <strong>
+                            {t("expires in", { "howMuchTime": fromNowText })}{" "}
+                        </strong>
+                        <IconButton
+                            size="extra small"
+                            iconId="refresh"
+                            onClick={onRefreshIconButtonClick}
+                            disabled={uiState.isRefreshing}
+                        />
+                    </>
+                }
             />
             {(
                 [
@@ -112,9 +133,10 @@ export const { i18n } = declareComponentKeys<
     | "credentials section helper"
     | "init script section title"
     | "init script section helper"
->()({ KubernetesTab });
+    | { K: "expires in"; P: { howMuchTime: string } }
+>()({ AccountKubernetesTab });
 
-const useStyles = makeStyles({ "name": { KubernetesTab } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountKubernetesTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

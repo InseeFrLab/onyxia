@@ -105,7 +105,7 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountInfoTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountIntegrationsTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
-    | typeof import("ui/components/pages/Account/tabs/KubernetesTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
@@ -184,13 +184,14 @@ const {
                     "Download or copy the init script in the programming language of your choice.",
                 "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
             },
-            "KubernetesTab": {
+            "AccountKubernetesTab": {
                 "credentials section title": "Connect to the Kubernetes cluster",
                 "credentials section helper":
                     "Credentials to manage the Kubernetes cluster",
                 "init script section title":
                     "To connect to the Kubernetes cluster via your local kubectl",
-                "init script section helper": "Download or copy the script"
+                "init script section helper": "Download or copy the script",
+                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -599,13 +600,14 @@ const {
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
                 "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
             },
-            "KubernetesTab": {
+            "AccountKubernetesTab": {
                 "credentials section title": "Connection a Kubernetes",
                 "credentials section helper":
                     "Identifiants pour interagir directement avec le cluster Kubernetes.",
                 "init script section title":
                     "Pour vous connecter au cluster Kubernetes via votre kubectl local",
-                "init script section helper": `Téléchargez ou copiez le script.`
+                "init script section helper": `Téléchargez ou copiez le script.`,
+                "expires in": ({ howMuchTime }) => `Expires dans ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -1021,11 +1023,12 @@ const {
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
                 "expires in": undefined
             },
-            "KubernetesTab": {
+            "AccountKubernetesTab": {
                 "credentials section title": undefined,
                 "credentials section helper": undefined,
                 "init script section title": undefined,
-                "init script section helper": undefined
+                "init script section helper": undefined,
+                "expires in": undefined
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",
