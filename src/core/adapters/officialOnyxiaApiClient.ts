@@ -507,11 +507,13 @@ export function createOfficialOnyxiaApiClient(params: {
                 axiosInstance.get("/my-lab/app", { params });
 
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
-                async ({ catalogId, packageName, options, isDryRun }) => {
-                    const { serviceId } = getServiceId({
-                        packageName,
-                        "randomK8sSubdomain": getRandomK8sSubdomain()
-                    });
+                async ({ catalogId, packageName, options, isDryRun, name }) => {
+                    const serviceId =
+                        name ??
+                        getServiceId({
+                            packageName,
+                            "randomK8sSubdomain": getRandomK8sSubdomain()
+                        }).serviceId;
 
                     const { data: contract } = await axiosInstance.put<
                         Record<string, unknown>[][]
