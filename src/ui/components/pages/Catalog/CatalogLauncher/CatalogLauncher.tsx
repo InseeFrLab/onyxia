@@ -48,7 +48,7 @@ export const CatalogLauncher = memo((props: Props) => {
         });
 
         return () => launcher.reset();
-    }, []);
+    }, [route.params.version]);
 
     const { restorablePackageConfig } = useCoreState(
         selectors.launcher.restorablePackageConfig
@@ -147,48 +147,18 @@ export const CatalogLauncher = memo((props: Props) => {
     const onVersionValueChange = useConstCallback((version: string) => {
         assert(state.stateDescription === "ready");
 
-        if (restorablePackageConfig === undefined) {
-            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-                route.params;
-
-            routes
-                .catalogLauncher({
-                    catalogId,
-                    packageName,
-                    version
-                })
-                .push();
-
-            launcher.reset();
-            launcher.initialize({
-                catalogId,
-                packageName,
-                version,
-                formFieldsValueDifferentFromDefault
-            });
-
-            return;
-        }
-
-        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-            restorablePackageConfig;
         routes
             .catalogLauncher({
-                catalogId,
-                packageName,
+                "catalogId": route.params.catalogId,
+                "packageName": route.params.packageName,
                 version,
-                formFieldsValueDifferentFromDefault,
-                "autoLaunch": route.params.autoLaunch
+                "autoLaunch": route.params.autoLaunch,
+                ...(restorablePackageConfig !== undefined && {
+                    "formFieldsValueDifferentFromDefault":
+                        restorablePackageConfig.formFieldsValueDifferentFromDefault
+                })
             })
             .push();
-
-        launcher.reset();
-        launcher.initialize({
-            catalogId,
-            packageName,
-            version,
-            formFieldsValueDifferentFromDefault
-        });
     });
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {

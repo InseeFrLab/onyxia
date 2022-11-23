@@ -547,18 +547,20 @@ export const thunks = {
 
             dispatch(actions.initializationStarted());
 
-            const { dependencies, sources, getValuesSchemaJson } =
-                await onyxiaApiClient.getPackageConfig({
+            const [
+                { dependencies, sources, getValuesSchemaJson },
+                { availableVersions }
+            ] = await Promise.all([
+                onyxiaApiClient.getPackageConfig({
                     catalogId,
                     packageName,
                     version
-                });
-
-            const { availableVersions } =
-                await onyxiaApiClient.getPackageAvailableVersions({
+                }),
+                onyxiaApiClient.getPackageAvailableVersions({
                     catalogId,
                     packageName
-                });
+                })
+            ]);
 
             {
                 const state = getState().launcher;
