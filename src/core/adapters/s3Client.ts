@@ -57,7 +57,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "/?" +
                             Object.entries({
                                 "Action": "AssumeRoleWithWebIdentity",
-                                "WebIdentityToken": oidcClient.accessToken,
+                                "WebIdentityToken":
+                                    oidcClient.getAccessToken().accessToken,
                                 //Desired TTL of the token, depending of the configuration
                                 //and version of minio we could get less than that but never more.
                                 "DurationSeconds": durationSeconds,

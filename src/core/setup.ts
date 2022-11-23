@@ -114,7 +114,7 @@ export async function createCore(params: CoreParams) {
           })
         : createJwtUserApiClient({
               jwtClaims,
-              "getOidcAccessToken": () => oidcClient.accessToken
+              "getOidcAccessToken": () => oidcClient.getAccessToken().accessToken
           });
 
     let refGetCurrentlySelectedDeployRegionId:
@@ -134,7 +134,7 @@ export async function createCore(params: CoreParams) {
                   "url": params.onyxiaApiUrl ?? "/api",
                   "getOidcAccessToken": !oidcClient.isUserLoggedIn
                       ? undefined
-                      : () => oidcClient.accessToken,
+                      : () => oidcClient.getAccessToken().accessToken,
                   "refGetCurrentlySelectedDeployRegionId":
                       (refGetCurrentlySelectedDeployRegionId = {
                           "current": undefined

@@ -105,6 +105,7 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountInfoTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountIntegrationsTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/KubernetesTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
@@ -132,6 +133,7 @@ const {
                 "infos": "Account infos",
                 "third-party-integration": "external services",
                 "storage": "Connect to storage",
+                "k8sCredentials": "Kubernetes",
                 "user-interface": "Interface preferences",
                 "text1": "My account",
                 "text2": "Access your different account information.",
@@ -181,6 +183,14 @@ const {
                 "init script section helper":
                     "Download or copy the init script in the programming language of your choice.",
                 "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
+            },
+            "KubernetesTab": {
+                "credentials section title": "Connect to the Kubernetes cluster",
+                "credentials section helper":
+                    "Credentials to manage the Kubernetes cluster",
+                "init script section title":
+                    "To connect to the Kubernetes cluster via your local kubectl",
+                "init script section helper": "Download or copy the script"
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -541,6 +551,7 @@ const {
                 "infos": "Information du compte",
                 "third-party-integration": "Services externes",
                 "storage": "Connexion au stockage",
+                "k8sCredentials": "Connexion a Kubernetes",
                 "user-interface": "Modes d'interface",
                 "text1": "Mon compte",
                 "text2": "Accédez à vos différentes informations de compte.",
@@ -587,6 +598,14 @@ const {
                     "Pour accéder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
                 "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
+            },
+            "KubernetesTab": {
+                "credentials section title": "Connection a Kubernetes",
+                "credentials section helper":
+                    "Identifiants pour interagir directement avec le cluster Kubernetes.",
+                "init script section title":
+                    "Pour vous connecter au cluster Kubernetes via votre kubectl local",
+                "init script section helper": `Téléchargez ou copiez le script.`
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -962,6 +981,7 @@ const {
                 "third-party-integration": "外部服务",
                 "storage": "链接到储存器",
                 "user-interface": "变换显示模式",
+                "k8sCredentials": undefined,
                 "text1": "我的账号",
                 "text2": "访问我的账号信息",
                 "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
@@ -1000,6 +1020,12 @@ const {
                 "init script section title": "访问datalab服务之外的存储器",
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
                 "expires in": undefined
+            },
+            "KubernetesTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",
