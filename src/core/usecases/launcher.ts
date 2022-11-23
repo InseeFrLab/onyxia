@@ -904,6 +904,7 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
+                    version,
                     "icon": await onyxiaApiClient.getCatalogs().then(
                         apiRequestResult =>
                             //TODO: Sort in the adapter of even better, assumes version sorted
