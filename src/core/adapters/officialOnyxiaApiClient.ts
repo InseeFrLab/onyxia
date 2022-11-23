@@ -509,7 +509,7 @@ export function createOfficialOnyxiaApiClient(params: {
             const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun, name }) => {
                     const serviceId =
-                        name ??
+                        name ||
                         getServiceId({
                             packageName,
                             "randomK8sSubdomain": getRandomK8sSubdomain()
