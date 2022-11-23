@@ -117,7 +117,6 @@ export const AccountKubernetesTab = memo((props: Props) => {
                 {/* This component depends on a heavy third party library, we don't want to include it in the main bundle */}
                 <CodeBlock
                     initScript={{
-                        "fileBasename": "config",
                         "scriptCode": uiState.bashScript,
                         "programingLanguage": "shell"
                     }}
