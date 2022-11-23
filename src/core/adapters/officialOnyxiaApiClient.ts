@@ -22,6 +22,7 @@ import { symToStr } from "tsafe/symToStr";
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
+import { compareVersions } from "compare-versions";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -348,7 +349,10 @@ export function createOfficialOnyxiaApiClient(params: {
                                     .filter(([key]) => key !== "library-chart")
                                     .map(([name, versions]) => ({
                                         name,
-                                        versions
+                                        "versions": versions.sort((v1, v2) =>
+                                            compareVersions(v2.version, v1.version)
+                                        )
+                                        // Descending Order
                                     })),
                                 "highlightedCharts": catalog.highlightedCharts
                             })
@@ -365,7 +369,10 @@ export function createOfficialOnyxiaApiClient(params: {
                         }[]
                     >(`/public/catalogs/${catalogId}/charts/${packageName}`)
                     .then(({ data }) => ({
-                        "availableVersions": data.map(({ version }) => version)
+                        "availableVersions": data
+                            .map(({ version }) => version)
+                            .sort((v1, v2) => compareVersions(v2, v1))
+                        // Descending Order
                     })),
             { "promise": true }
         ),

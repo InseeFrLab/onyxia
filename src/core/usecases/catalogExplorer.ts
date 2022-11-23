@@ -8,7 +8,6 @@ import type { State } from "../setup";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { exclude } from "tsafe/exclude";
-import { compareVersions } from "compare-versions";
 
 type CatalogExplorerState = CatalogExplorerState.NotFetched | CatalogExplorerState.Ready;
 
@@ -144,23 +143,7 @@ export const thunks = {
 
             dispatch(actions.catalogsFetching());
 
-            const { catalogs } = await (async () => {
-                let catalogs = await onyxiaApiClient.getCatalogs();
-
-                catalogs = JSON.parse(JSON.stringify(catalogs));
-
-                return { catalogs };
-            })();
-
-            catalogs.forEach(catalog =>
-                catalog.charts.forEach(
-                    chart =>
-                        chart.versions.sort((v1, v2) =>
-                            compareVersions(v2.version, v1.version)
-                        )
-                    // Descending Order
-                )
-            );
+            const catalogs = await onyxiaApiClient.getCatalogs();
 
             const selectedCatalogId = params.isCatalogIdInUrl
                 ? params.catalogId

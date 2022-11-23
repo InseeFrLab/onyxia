@@ -907,12 +907,10 @@ export const thunks = {
                     version,
                     "icon": await onyxiaApiClient.getCatalogs().then(
                         apiRequestResult =>
-                            //TODO: Sort in the adapter of even better, assumes version sorted
-                            //and validate this assertion with zod
                             apiRequestResult
                                 .find(({ id }) => id === catalogId)!
                                 .charts.find(({ name }) => name === packageName)!
-                                .versions.find(({ icon }) => icon !== undefined)!.icon
+                                .versions.find(({ icon }) => icon !== undefined)?.icon
                     ),
                     sources,
                     formFields,
