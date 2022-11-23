@@ -38,7 +38,10 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "tolerations": undefined,
                         "nodeSelector": undefined,
                         "startupProbe": undefined,
-                        "vault": undefined
+                        "vault": undefined,
+                        "proxyInjection": undefined,
+                        "packageRepositoryInjection": undefined,
+                        "certificateAuthorityInjection": undefined
                     }
                 ]),
             { "promise": true }

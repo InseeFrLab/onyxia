@@ -1161,6 +1161,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.20.1":
+  version "7.20.1"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.1.tgz#1148bb33ab252b165a06698fde7576092a78b4a9"
+  integrity sha512-mrzLkl6U9YLF8qpqI7TB82PESyEGjm/0Ly91jG575eVxMMlb8fYfOXFZIJ8XfLrJZQbm7dlKry2bJmXBUEkdFg==
+  dependencies:
+    regenerator-runtime "^0.13.10"
+
 "@babel/template@^7.12.7", "@babel/template@^7.18.10", "@babel/template@^7.3.3":
   version "7.18.10"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.18.10.tgz#6f9134835970d1dbf0835c0d100c9f38de0c5e71"
@@ -2012,12 +2019,12 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.10.4.tgz#6b208687f016e8f583ee14582b8a949d89b2f121"
   integrity sha512-VGekVa9dleJ+ii47+gXvKUV5a11T0nsjXN8bk5NqiJRQWRCAhbTHgsfZuctNcMeLW9FSf2gu6U0k2U6rhABKcA==
 
-"@mui/icons-material@^5.0.4", "@mui/icons-material@^5.10.3":
-  version "5.10.3"
-  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.10.3.tgz#33bd1d973c4727ab55d02928fc8973b7f16fff55"
-  integrity sha512-o0kbUlsWCBtCE0wP33cGKbyryCh7kpm2EECYMPDmWrLhbA+HUODXIdhiTFS26szp2xXo9HY1lEx0ufeJ+tddYw==
+"@mui/icons-material@^5.10.15":
+  version "5.10.15"
+  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.10.15.tgz#c93f1ba8d2b55fe0a16f559a568304df172cbbcb"
+  integrity sha512-fXkz7CtYTt4AH4YYT67VFhM/A3YCUqZGGLp/3BlzRPQRNEfFKknw3MgG1S5UYrY5weti8jxMx3mwwfhVP8OMhQ==
   dependencies:
-    "@babel/runtime" "^7.18.9"
+    "@babel/runtime" "^7.20.1"
 
 "@mui/material@^5.2.5":
   version "5.10.4"
@@ -6748,9 +6755,9 @@ deep-is@^0.1.3, deep-is@~0.1.3:
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
 
 deep-object-diff@^1.1.0:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/deep-object-diff/-/deep-object-diff-1.1.7.tgz#348b3246f426427dd633eaa50e1ed1fc2eafc7e4"
-  integrity sha512-QkgBca0mL08P6HiOjoqvmm6xOAl2W6CT2+34Ljhg0OeFan8cwlcdq8jrLKsBBuUFAZLsN5b6y491KdKEoSo9lg==
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/deep-object-diff/-/deep-object-diff-1.1.9.tgz#6df7ef035ad6a0caa44479c536ed7b02570f4595"
+  integrity sha512-Rn+RuwkmkDwCi2/oXOFS9Gsr5lJZu/yTGpK7wAaAIE75CC+LCGEZHpY6VQJa/RoJcrmaA/docWJZvYohlNkWPA==
 
 deepmerge@^4.2.2:
   version "4.2.2"
@@ -9083,12 +9090,12 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.3.28:
-  version "1.3.28"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.3.28.tgz#f263e7eed7d6c28ab4ec3407662583af663f3ecc"
-  integrity sha512-U2gl+jT1X+oAMP9052iMrAjarPQrhbs51BY/BW+D+SmdSbgGYLVAtom53J6ftk6MnvFvBFYwjJ+SCGz/7/ZTWw==
+i18nifty@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.4.0.tgz#7aec0cec9aeb2edfd1f9a26a5b904cbf8840dab2"
+  integrity sha512-i3BhReNdTGRPleY2CvWEhHcVgMfzTl8ZRuqw9c0FQ2BB1PVY3zvhRZ0KrIYXdZFpkORdpGDF/itHbJyUFDEVQQ==
   dependencies:
-    powerhooks "^0.20.26"
+    powerhooks "^0.20.27"
     tsafe "^1.2.1"
 
 iconv-lite@0.4.24:
@@ -10531,10 +10538,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.7:
-  version "6.8.7"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.7.tgz#3cf5ead7f4e7ea2296670584fb15218094695851"
-  integrity sha512-I4gEvE9Rxmq3sA4pyYnqw8GO1Q6JzY2ASdvaHg67yIOUmoNMCbohWJzuekWrGJV94ba+8XF3aeJx/Zh0G2MXpQ==
+keycloakify@^6.8.8:
+  version "6.8.8"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.8.tgz#84ec38a25c6e0dc0f4c85fb69fb9b487e64f2dbf"
+  integrity sha512-009jNoeFAqvFYxag/xFA+G7zB5PfIwz7N/nLcRFpgy2RZ8RPr7McfIjDSQnVlvm0QAeHvAHrPYfQD+IHZQPQWw==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -10544,7 +10551,7 @@ keycloakify@^6.8.7:
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.20.26"
+    powerhooks "^0.20.27"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
     scripting-tools "^0.19.13"
@@ -11719,17 +11726,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.47.15:
-  version "0.47.15"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.15.tgz#fe9ad450bd87c1df2b1af6002787cf230707ffac"
-  integrity sha512-RGdxmDCEwIQZpcqMt9Kaz9bnKr/2vUjVGtPfwrpl6A2C1OY3gALrjvEtZsVc8dHU2G3iBBYur+jUIBPzkGTe1w==
+onyxia-ui@^0.47.17:
+  version "0.47.17"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.17.tgz#3d01f6d169bff71b0378afbf755a675f14704de4"
+  integrity sha512-cXCVpwcn1WpwvaLYAlyiCgwwjRMG0hcoNqgJJOOSTt/eWXlFgCQPjhxe0Bi/dArb+ErNsPibhIJW4UpKqKNkpw==
   dependencies:
-    "@mui/icons-material" "^5.10.3"
+    "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.10"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.26"
+    powerhooks "^0.20.27"
     run-exclusive "^2.2.18"
     tsafe "^1.2.1"
     tss-react "^4.4.4"
@@ -12834,10 +12841,10 @@ postcss@^8.3.5, postcss@^8.4.14, postcss@^8.4.4, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.20.26:
-  version "0.20.26"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.26.tgz#40426c03e35a9199e2c7cebe8f34e17901c9cceb"
-  integrity sha512-l6RhDMa/5vbvPONUXQl4aLlLaAxYC1yPWgK+F4QV03xFoX+q9ibJiE4KhOhuycu1BwQqEe/SLGRC6Z5zvJL2Ag==
+powerhooks@^0.20.27:
+  version "0.20.27"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.27.tgz#ac82dba8c525434929ba8af3674a0d0ba1485a4a"
+  integrity sha512-1xHmVKWXCA4WgSCkaQlYsNKfrLmrpn+jpRFpt4QIIEcWAV2+gswAujPu5+MCxXIOdmIsr0t16uJ1gN2Jc8xp2A==
   dependencies:
     evt "^2.4.10"
     memoizee "^0.4.15"
@@ -13657,6 +13664,11 @@ regenerate@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.2.tgz#b9346d8827e8f5a32f7ba29637d398b69014848a"
   integrity sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==
+
+regenerator-runtime@^0.13.10:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7, regenerator-runtime@^0.13.9:
   version "0.13.9"

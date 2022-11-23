@@ -22,7 +22,6 @@ import { symToStr } from "tsafe/symToStr";
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
-import { exclude } from "tsafe/exclude";
 
 /** @deprecated */
 const dAxiosInstance = new Deferred<AxiosInstance>();
@@ -200,6 +199,19 @@ export function createOfficialOnyxiaApiClient(params: {
                                 clientId: string;
                             };
                         };
+                        proxyInjection?: {
+                            httpProxyUrl: string;
+                            httpsProxyUrl: string;
+                            noProxy: string;
+                        };
+                        packageRepositoryInjection?: {
+                            cranProxyUrl: string;
+                            condaProxyUrl: string;
+                            pypiProxyUrl: string;
+                        };
+                        certificateAuthorityInjection?: {
+                            crts: unknown[];
+                        };
                     }[];
                 }>("/public/configuration")
                 .then(({ data }) =>
@@ -292,7 +304,11 @@ export function createOfficialOnyxiaApiClient(params: {
                                                         vault.keycloakParams.clientId
                                                 }
                                   };
-                        })()
+                        })(),
+                        "proxyInjection": region.proxyInjection,
+                        "packageRepositoryInjection": region.packageRepositoryInjection,
+                        "certificateAuthorityInjection":
+                            region.certificateAuthorityInjection
                     }))
                 )
         ),
@@ -307,39 +323,35 @@ export function createOfficialOnyxiaApiClient(params: {
                             description: LocalizedString;
                             status: "PROD" | "TEST";
                             catalog: {
-                                entries: {
-                                    name: string;
-                                    values: {
+                                entries: Record<
+                                    string,
+                                    {
                                         description: string;
-                                        icon?: string;
-                                        home?: string;
                                         version: string;
-                                    }[];
-                                }[];
+                                        icon: string | undefined;
+                                        home: string | undefined;
+                                    }[]
+                                >;
                             };
                             highlightedCharts: string[];
                         }[];
                     }>("/public/catalogs")
                     .then(({ data }) =>
-                        data.catalogs.map(
-                            catalog =>
-                                ({
-                                    id: catalog.id,
-                                    name: catalog.name,
-                                    location: catalog.location,
-                                    description: catalog.description,
-                                    status: catalog.status,
-                                    charts: Object.keys(catalog.catalog.entries)
-                                        .filter(exclude("library-chart"))
-                                        .map(key => ({
-                                            name: key,
-                                            versions:
-                                                catalog.catalog.entries[
-                                                    key as keyof typeof catalog.catalog.entries
-                                                ]
-                                        })),
-                                    highlightedCharts: catalog.highlightedCharts
-                                } as unknown as Catalog)
+                        data.catalogs.map(catalog =>
+                            id<Catalog>({
+                                "id": catalog.id,
+                                "name": catalog.name,
+                                "location": catalog.location,
+                                "description": catalog.description,
+                                "status": catalog.status,
+                                "charts": Object.entries(catalog.catalog.entries)
+                                    .filter(([key]) => key !== "library-chart")
+                                    .map(([name, versions]) => ({
+                                        name,
+                                        versions
+                                    })),
+                                "highlightedCharts": catalog.highlightedCharts
+                            })
                         )
                     ),
             { "promise": true }

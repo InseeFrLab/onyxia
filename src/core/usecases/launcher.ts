@@ -904,9 +904,10 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
-                    version,
                     "icon": await onyxiaApiClient.getCatalogs().then(
                         apiRequestResult =>
+                            //TODO: Sort in the adapter of even better, assumes version sorted
+                            //and validate this assertion with zod
                             apiRequestResult
                                 .find(({ id }) => id === catalogId)!
                                 .charts.find(({ name }) => name === packageName)!
@@ -1092,7 +1093,12 @@ export const thunks = {
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl
-                }
+                },
+                "proxyInjection": selectedDeploymentRegion.proxyInjection,
+                "packageRepositoryInjection":
+                    selectedDeploymentRegion.packageRepositoryInjection,
+                "certificateAuthorityInjection":
+                    selectedDeploymentRegion.certificateAuthorityInjection
             };
 
             console.log(onyxiaValues);
