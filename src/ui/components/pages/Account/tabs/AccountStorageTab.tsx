@@ -1,7 +1,7 @@
 import { useEffect, memo, lazy, Suspense } from "react";
 import { useTranslation } from "ui/i18n";
-import { AccountSectionHeader } from "../../AccountSectionHeader";
-import { AccountField } from "../../AccountField";
+import { AccountSectionHeader } from "../AccountSectionHeader";
+import { AccountField } from "../AccountField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -23,7 +23,7 @@ import { IconButton } from "ui/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { capitalize } from "tsafe/capitalize";
 
-const CodeBlock = lazy(() => import("./CodeBlock"));
+const CodeBlock = lazy(() => import("ui/components/shared/CodeBlock"));
 
 const technologies = [
     "R (aws.S3)",

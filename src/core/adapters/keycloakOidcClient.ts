@@ -6,6 +6,7 @@ import type { NonPostableEvt } from "evt";
 import * as jwtSimple from "jwt-simple";
 import type { Param0, ReturnType } from "tsafe";
 import { assert } from "tsafe/assert";
+import { Evt } from "evt";
 
 export async function createKeycloakOidcClient(params: {
     url: string;
@@ -69,9 +70,16 @@ export async function createKeycloakOidcClient(params: {
         });
     }
 
+    const { token } = keycloakInstance;
+
+    assert(token !== undefined);
+
     const oidcClient = id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        "accessToken": keycloakInstance.token!,
+        "getAccessToken": () => ({
+            "accessToken": token,
+            "expirationTime": getAccessTokenExpirationTime(token)
+        }),
         "logout": async ({ redirectTo }) => {
             await keycloakInstance.logout({
                 "redirectUri": (() => {
@@ -90,7 +98,8 @@ export async function createKeycloakOidcClient(params: {
 
     (function callee() {
         const msBeforeExpiration =
-            jwtSimple.decode(oidcClient.accessToken, "", true)["exp"] * 1000 - Date.now();
+            getAccessTokenExpirationTime(oidcClient.getAccessToken().accessToken) -
+            Date.now();
 
         setTimeout(async () => {
             log?.(
@@ -112,7 +121,13 @@ export async function createKeycloakOidcClient(params: {
                 await login({ "doesCurrentHrefRequiresAuth": true });
             }
 
-            oidcClient.accessToken = keycloakInstance.token!;
+            const { token } = keycloakInstance;
+            assert(token !== undefined);
+
+            oidcClient.getAccessToken = () => ({
+                "accessToken": token,
+                "expirationTime": getAccessTokenExpirationTime(token)
+            });
 
             callee();
         }, msBeforeExpiration - minValiditySecond * 1000);
@@ -141,7 +156,7 @@ export async function creatOrFallbackOidcClient(params: {
               oidcClient: OidcClient.LoggedIn;
           }
         | undefined;
-    evtUserActivity: NonPostableEvt<void>;
+    evtUserActivity: NonPostableEvt<void> | undefined;
 }): Promise<OidcClient.LoggedIn> {
     const { keycloakParams, fallback, evtUserActivity } = params;
 
@@ -171,7 +186,7 @@ export async function creatOrFallbackOidcClient(params: {
         return {
             "type": "keycloak params",
             "keycloakParams": { url, realm, clientId },
-            evtUserActivity
+            "evtUserActivity": evtUserActivity ?? new Evt()
         } as const;
     })();
 
@@ -193,4 +208,8 @@ export async function creatOrFallbackOidcClient(params: {
             return oidcClient;
         }
     }
+}
+
+function getAccessTokenExpirationTime(accessToken: string): number {
+    return jwtSimple.decode(accessToken, "", true)["exp"] * 1000;
 }

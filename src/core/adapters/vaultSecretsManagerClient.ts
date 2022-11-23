@@ -39,7 +39,7 @@ export async function createVaultSecretsManagerClient(
                 auth: { lease_duration: number; client_token: string };
             }>(`/${version}/auth/jwt/login`, {
                 role,
-                "jwt": oidcClient.accessToken
+                "jwt": oidcClient.getAccessToken().accessToken
             });
 
             return id<ReturnType<SecretsManagerClient["getToken"]>>({
