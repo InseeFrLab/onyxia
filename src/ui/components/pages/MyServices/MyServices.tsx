@@ -97,7 +97,7 @@ export function MyServices(props: Props) {
 
                 return;
             case "trash":
-                setIsDialogOpen(true);
+                setIsDialogDeleteOpen(true);
                 return;
         }
     });
@@ -243,22 +243,31 @@ export function MyServices(props: Props) {
     const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
         string | undefined
     >();
+    const [serviceIdRequestedToBeRenewed, setServiceIdRequestedToBeRenewed] = useState<
+        string | undefined
+    >();
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState(false);
+    const [isDialogRenewOpen, setIsDialogRenewOpen] = useState(false);
 
     const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
         ({ serviceId }) => {
             setServiceIdRequestedToBeDeleted(serviceId);
-            setIsDialogOpen(true);
+            setIsDialogDeleteOpen(true);
         }
     );
-
+    const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
+        ({ serviceId }) => {
+            setServiceIdRequestedToBeRenewed(serviceId);
+            setIsDialogRenewOpen(true);
+        }
+    );
     const deletableRunningServices = useMemo(
         () => runningServices.filter(({ isOwned }) => isOwned),
         [runningServices]
     );
 
-    const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
+    const onDialogDeleteCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
                 runningService.stopService({
@@ -271,7 +280,19 @@ export function MyServices(props: Props) {
             }
         }
 
-        setIsDialogOpen(false);
+        setIsDialogDeleteOpen(false);
+    });
+
+    const onDialogRenewCloseFactory = useCallbackFactory(([doRenew]: [boolean]) => {
+        if (doRenew) {
+            if (serviceIdRequestedToBeRenewed) {
+                // TODO dispatch action
+            } else {
+                // TODO dispatch action
+            }
+        }
+
+        setIsDialogDeleteOpen(false);
     });
 
     const isThereNonOwnedServicesShown = useMemo(
@@ -308,6 +329,7 @@ export function MyServices(props: Props) {
                         className={classes.cards}
                         cards={cards}
                         onRequestDelete={onRequestDelete}
+                        onRequestRenew={onRequestRenew}
                         catalogExplorerLink={catalogExplorerLink}
                         evtAction={evtMyServiceCardsAction}
                         getServicePassword={getServicePassword}
@@ -329,14 +351,41 @@ export function MyServices(props: Props) {
                         ? t("confirm delete body shared services")
                         : ""
                 } ${t("confirm delete body")}`}
-                isOpen={isDialogOpen}
-                onClose={onDialogCloseFactory(false)}
+                isOpen={isDialogDeleteOpen}
+                onClose={onDialogDeleteCloseFactory(false)}
                 buttons={
                     <>
-                        <Button onClick={onDialogCloseFactory(false)} variant="secondary">
+                        <Button
+                            onClick={onDialogDeleteCloseFactory(false)}
+                            variant="secondary"
+                        >
                             {t("cancel")}
                         </Button>
-                        <Button onClick={onDialogCloseFactory(true)}>
+                        <Button onClick={onDialogDeleteCloseFactory(true)}>
+                            {t("confirm")}
+                        </Button>
+                    </>
+                }
+            />
+            <Dialog
+                title={t("confirm delete title")}
+                subtitle={t("confirm delete subtitle")}
+                body={`${
+                    isThereOwnedSharedServices
+                        ? t("confirm delete body shared services")
+                        : ""
+                } ${t("confirm delete body")}`}
+                isOpen={isDialogRenewOpen}
+                onClose={onDialogRenewCloseFactory(false)}
+                buttons={
+                    <>
+                        <Button
+                            onClick={onDialogRenewCloseFactory(false)}
+                            variant="secondary"
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button onClick={onDialogRenewCloseFactory(true)}>
                             {t("confirm")}
                         </Button>
                     </>

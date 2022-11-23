@@ -30,6 +30,7 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     onRequestShowPostInstallInstructions: (() => void) | undefined;
     onRequestShowEnv: () => void;
+    onRequestRenew: () => void;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -51,6 +52,7 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestDelete,
         onRequestShowPostInstallInstructions,
         onRequestShowEnv,
+        onRequestRenew,
         monitoringUrl,
         openUrl,
         startTime,
@@ -191,6 +193,7 @@ export const MyServicesCard = memo((props: Props) => {
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
+                <IconButton iconId="refresh" onClick={onRequestShowEnv} />
                 <div style={{ "flex": 1 }} />
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>

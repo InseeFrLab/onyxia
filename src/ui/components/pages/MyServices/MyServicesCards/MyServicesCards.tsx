@@ -44,6 +44,7 @@ export type Props = {
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
+    onRequestRenew(params: { serviceId: string }): void;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
@@ -55,6 +56,7 @@ export const MyServicesCards = memo((props: Props) => {
     const {
         className,
         onRequestDelete,
+        onRequestRenew,
         cards,
         catalogExplorerLink,
         evtAction,
@@ -69,6 +71,10 @@ export const MyServicesCards = memo((props: Props) => {
 
     const onRequestDeleteFactory = useCallbackFactory(([serviceId]: [string]) =>
         onRequestDelete({ serviceId })
+    );
+
+    const onRequestRenewFactory = useCallbackFactory(([serviceId]: [string]) =>
+        onRequestRenew({ serviceId })
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -216,6 +222,7 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
+                            onRequestRenew={onRequestRenewFactory(card.serviceId)}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
                                 card.serviceId
