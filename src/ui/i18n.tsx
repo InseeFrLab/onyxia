@@ -107,6 +107,7 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountVaultTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
@@ -140,7 +141,8 @@ const {
                 "text3":
                     "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
                 "personal tokens tooltip":
-                    "Password that are generated for you and that have a given validity period"
+                    "Password that are generated for you and that have a given validity period",
+                "vault": "Vault"
             },
             "AccountInfoTab": {
                 "general information": "General information",
@@ -190,6 +192,14 @@ const {
                     "Credentials to manage the Kubernetes cluster",
                 "init script section title":
                     "To connect to the Kubernetes cluster via your local kubectl",
+                "init script section helper": "Download or copy the script",
+                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": "Connect to the Vault engine",
+                "credentials section helper": "Credentials to connect to your Vault",
+                "init script section title":
+                    "To connect to Vault with your local terminal",
                 "init script section helper": "Download or copy the script",
                 "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
             },
@@ -558,7 +568,8 @@ const {
                 "text2": "Accédez à vos différentes informations de compte.",
                 "text3":
                     "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
-                "personal tokens tooltip": 'Ou en anglais "token".'
+                "personal tokens tooltip": 'Ou en anglais "token".',
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "Informations générales",
@@ -608,6 +619,13 @@ const {
                     "Pour vous connecter au cluster Kubernetes via votre kubectl local",
                 "init script section helper": `Téléchargez ou copiez le script.`,
                 "expires in": ({ howMuchTime }) => `Expires dans ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
+                "expires in": undefined
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -987,7 +1005,8 @@ const {
                 "text1": "我的账号",
                 "text2": "访问我的账号信息",
                 "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
-                "personal tokens tooltip": "服务的访问令牌"
+                "personal tokens tooltip": "服务的访问令牌",
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "一般信息",
@@ -1024,6 +1043,13 @@ const {
                 "expires in": undefined
             },
             "AccountKubernetesTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
+                "expires in": undefined
+            },
+            "AccountVaultTab": {
                 "credentials section title": undefined,
                 "credentials section helper": undefined,
                 "init script section title": undefined,

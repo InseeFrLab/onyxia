@@ -2,6 +2,7 @@ import { Tabs } from "onyxia-ui/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
+import { AccountVaultTab } from "./tabs/AccountVaultTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
@@ -35,7 +36,7 @@ export function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3Credentials, k8sCredentials } = useCoreFunctions();
+    const { s3Credentials, k8sCredentials, vaultCredentials } = useCoreFunctions();
 
     const tabs = useMemo(
         () =>
@@ -47,6 +48,9 @@ export function Account(props: Props) {
                     accountTabId !== "k8sCredentials"
                         ? true
                         : k8sCredentials.isAvailable()
+                )
+                .filter(accountTabId =>
+                    accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
                 .map(id => ({ id, "title": t(id) })),
         [t]
@@ -87,6 +91,8 @@ export function Account(props: Props) {
                             return <AccountUserInterfaceTab />;
                         case "k8sCredentials":
                             return <AccountKubernetesTab />;
+                        case "vault":
+                            return <AccountVaultTab />;
                     }
                     assert<Equals<typeof route.params.tabId, never>>(false);
                 })()}
