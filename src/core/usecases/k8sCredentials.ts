@@ -230,7 +230,6 @@ export const selectors = (() => {
             const { host } = parseUrl(kubernetesClusterUrl);
 
             return [
-                `#!/bin/sh`,
                 `kubectl config set-cluster ${host} --server=${kubernetesClusterUrl} --insecure-skip-tls-verify=true`,
                 `kubectl config set-credentials oidc-${username} --token ${oidcAccessToken}`,
                 `kubectl config set-context ${host} --user=oidc-${username} --cluster=${host} --namespace=${kubernetesNamespace}`,
