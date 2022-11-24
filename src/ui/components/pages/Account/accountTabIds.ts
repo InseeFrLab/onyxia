@@ -3,7 +3,8 @@ export const accountTabIds = [
     "third-party-integration",
     "storage",
     "user-interface",
-    "k8sCredentials"
+    "k8sCredentials",
+    "vault"
 ] as const;
 
 export type AccountTabId = typeof accountTabIds[number];

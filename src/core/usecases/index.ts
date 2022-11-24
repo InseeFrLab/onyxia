@@ -13,6 +13,7 @@ import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
 import * as s3Credentials from "./s3Credentials";
 import * as k8sCredentials from "./k8sCredentials";
+import * as vaultCredentials from "./vaultCredentials";
 
 /* ---------- Legacy ---------- */
 import * as myFiles from "js/redux/myFiles";
@@ -39,5 +40,6 @@ export const usecases = {
     userConfigs,
     secretsEditor,
     s3Credentials,
-    k8sCredentials
+    k8sCredentials,
+    vaultCredentials
 };
