@@ -6,7 +6,6 @@ import { useCoreState, useCoreFunctions, selectors } from "core";
 import { SecretsExplorer } from "./SecretsExplorer";
 import { ExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
-import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
@@ -19,6 +18,7 @@ import { assert } from "tsafe/assert";
 import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
+import type { Link } from "type-route";
 
 MySecrets.routeGroup = createGroup([routes.mySecrets]);
 
@@ -179,23 +179,6 @@ export function MySecrets(props: Props) {
         []
     );
 
-    const helpContent = useMemo(
-        () => (
-            <>
-                {t("to learn more - my secrets")}
-                &nbsp;
-                <Link
-                    href="https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement"
-                    target="_blank"
-                    underline="hover"
-                >
-                    {t("read our documentation")}
-                </Link>
-            </>
-        ),
-        [t]
-    );
-
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
@@ -249,7 +232,11 @@ export function MySecrets(props: Props) {
                 mainIcon={"secrets"}
                 title={t("page title - my secrets")}
                 helpTitle={t("what this page is used for - my secrets")}
-                helpContent={helpContent}
+                helpContent={t("help content", {
+                    "docHref":
+                        "https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement",
+                    "accountTabLink": routes.account({ "tabId": "vault" }).link
+                })}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
@@ -335,8 +322,14 @@ export const { i18n } = declareComponentKeys<
     | "what this page is used for - my files"
     | "what this page is used for - my secrets"
     | "learn more - my files"
-    | "to learn more - my secrets"
-    | "read our documentation"
+    | {
+          K: "help content";
+          P: {
+              docHref: string;
+              accountTabLink: Link;
+          };
+          R: JSX.Element;
+      }
 >()({ MySecrets: MySecrets });
 
 const useStyles = makeStyles({ "name": { MySecrets: MySecrets } })({
