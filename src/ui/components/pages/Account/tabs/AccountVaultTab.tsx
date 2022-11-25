@@ -15,6 +15,9 @@ import { IconButton } from "ui/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useFromNow } from "ui/useMoment";
+import type { Link } from "type-route";
+import { routes } from "ui/routes";
+import { capitalize } from "tsafe/capitalize";
 
 const CodeBlock = lazy(() => import("ui/components/shared/CodeBlock"));
 
@@ -67,7 +70,10 @@ export const AccountVaultTab = memo((props: Props) => {
                 title={t("credentials section title")}
                 helperText={
                     <>
-                        {t("credentials section helper")}
+                        {t("credentials section helper", {
+                            "vaultDocHref": "https://developer.hashicorp.com/vault",
+                            "mySecretLink": routes.mySecrets().link
+                        })}
                         &nbsp;
                         <strong>
                             {t("expires in", { "howMuchTime": fromNowText })}{" "}
@@ -85,7 +91,9 @@ export const AccountVaultTab = memo((props: Props) => {
                 <AccountField
                     type="text"
                     key={key}
-                    title={key}
+                    title={capitalize(
+                        key.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()
+                    )}
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
@@ -97,7 +105,10 @@ export const AccountVaultTab = memo((props: Props) => {
             <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("init script section title")}
-                helperText={t("init script section helper")}
+                helperText={t("init script section helper", {
+                    "vaultCliDocLink":
+                        "https://developer.hashicorp.com/vault/docs/commands"
+                })}
             />
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ "flex": 1 }} />
@@ -123,9 +134,13 @@ export const AccountVaultTab = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<
     | "credentials section title"
-    | "credentials section helper"
+    | {
+          K: "credentials section helper";
+          P: { vaultDocHref: string; mySecretLink: Link };
+          R: JSX.Element;
+      }
     | "init script section title"
-    | "init script section helper"
+    | { K: "init script section helper"; P: { vaultCliDocLink: string }; R: JSX.Element }
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountVaultTab });
 

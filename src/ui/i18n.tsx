@@ -5,6 +5,7 @@ import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
+import MuiLink from "@mui/material/Link";
 
 export type { Language, LocalizedString };
 
@@ -193,15 +194,30 @@ const {
                 "init script section title":
                     "To connect to the Kubernetes cluster via your local kubectl",
                 "init script section helper": "Download or copy the script",
-                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
             },
             "AccountVaultTab": {
-                "credentials section title": "Connect to the Vault engine",
-                "credentials section helper": "Credentials to connect to your Vault",
-                "init script section title":
-                    "To connect to Vault with your local terminal",
-                "init script section helper": "Download or copy the script",
-                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
+                "credentials section title": "Vault credentials",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        is the system where &nbsp;
+                        <MuiLink {...mySecretLink}>your secrets</MuiLink> are stored.
+                    </>
+                ),
+                "init script section title": "Use vault from your terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Download or copy the <code>ENV</code> variables that configures
+                        your local{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -242,9 +258,17 @@ const {
                     "Here you can browse your S3 Buckets.",
                 "what this page is used for - my secrets":
                     "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
-                "learn more - my files": "To learn more about file management,",
-                "to learn more - my secrets": "To learn more about secrets management,",
-                "read our documentation": "read our documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>Configure the minio clients</MuiLink>
+                        .
+                    </>
+                )
             },
             "MySecrets": {
                 "page title - my files": "My Files",
@@ -254,8 +278,19 @@ const {
                 "what this page is used for - my secrets":
                     "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
                 "learn more - my files": "To learn more about file management,",
-                "to learn more - my secrets": "To learn more about secrets management,",
-                "read our documentation": "read our documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configure your local Vault CLI
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "SecretsExplorerItem": {
                 "description": "description"
@@ -618,14 +653,31 @@ const {
                 "init script section title":
                     "Pour vous connecter au cluster Kubernetes via votre kubectl local",
                 "init script section helper": `Téléchargez ou copiez le script.`,
-                "expires in": ({ howMuchTime }) => `Expires dans ${howMuchTime}`
+                "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
             },
             "AccountVaultTab": {
-                "credentials section title": undefined,
-                "credentials section helper": undefined,
-                "init script section title": undefined,
-                "init script section helper": undefined,
-                "expires in": undefined
+                "credentials section title": "Identifiants Vault",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        est le système ou &nbsp;
+                        <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                    </>
+                ),
+                "init script section title": "Utiliser Vault depuis votre terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Telecharger ou copier les variables d'<code>ENV</code> pour
+                        configurer votre{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>{" "}
+                        local.
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -668,11 +720,19 @@ const {
                     "Stocker ici vos fichiers de donnée.",
                 "what this page is used for - my secrets":
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
-                "learn more - my files":
-                    "Pour en savoir plus sur l'utilisation du stockage S3,",
-                "to learn more - my secrets":
-                    "Pour en savoir plus sur l'utilisation de secrets,",
-                "read our documentation": "lisez notre documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer les clients minio
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "MySecrets": {
                 "page title - my files": "Mes fichiers",
@@ -683,9 +743,19 @@ const {
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
                 "learn more - my files":
                     "Pour en savoir plus sur l'utilisation du stockage S3,",
-                "to learn more - my secrets":
-                    "Pour en savoir plus sur l'utilisation de secrets,",
-                "read our documentation": "lisez notre documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer votre Vault CLI local
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "ExplorerItem": {
                 "description": "description"
@@ -1091,9 +1161,7 @@ const {
                 "what this page is used for - my files": "在此处存储您的数据.",
                 "what this page is used for - my secrets":
                     "在此处存储可作为服务中的环境变量访问的密钥.",
-                "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
-                "read our documentation": "阅读我们的文档"
+                "help content": undefined
             },
             "MySecrets": {
                 "page title - my files": "我的文件",
@@ -1102,8 +1170,7 @@ const {
                 "what this page is used for - my secrets":
                     "在此处存储可作为服务中的环境变量访问的密钥.",
                 "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
-                "read our documentation": "阅读我们的文档"
+                "help content": undefined
             },
             "ExplorerItem": {
                 "description": "描述"
