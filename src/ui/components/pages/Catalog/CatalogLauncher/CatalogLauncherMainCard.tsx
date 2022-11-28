@@ -14,6 +14,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
@@ -151,6 +152,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         </div>
     );
 });
+
+CatalogLauncherMainCard.displayName = symToStr({ CatalogLauncherMainCard });
 
 export const { i18n } = declareComponentKeys<
     | "card title"

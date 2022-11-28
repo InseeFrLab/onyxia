@@ -23,6 +23,7 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
@@ -339,6 +340,8 @@ export const CatalogLauncher = memo((props: Props) => {
         </>
     );
 });
+
+CatalogLauncher.displayName = symToStr({ CatalogLauncher });
 
 export const { i18n } = declareComponentKeys<
     | "no longer bookmarked dialog title"
