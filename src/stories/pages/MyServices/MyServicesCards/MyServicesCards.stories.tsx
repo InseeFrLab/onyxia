@@ -49,7 +49,7 @@ const props: Props = {
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
     "getServicePassword": () => Promise.resolve("xyz"),
-    ...logCallbacks(["onRequestDelete"])
+    ...logCallbacks(["onRequestDelete", "onRequestRenew"])
 };
 
 export const ViewDefault = getStory({

@@ -26,7 +26,8 @@ export const ViewRegular = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv"
+        "onRequestShowEnv",
+        "onRequestRenew"
     ])
 });
 
@@ -45,6 +46,7 @@ export const ViewStarting = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv"
+        "onRequestShowEnv",
+        "onRequestRenew"
     ])
 });

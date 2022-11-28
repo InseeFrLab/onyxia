@@ -40,7 +40,7 @@ export function MyServices(props: Props) {
 
     const { t } = useTranslation({ MyServices });
 
-    const { runningService, restorablePackageConfig, projectConfigs } =
+    const { runningService, restorablePackageConfig, projectConfigs, launcher } =
         useCoreFunctions();
 
     const { displayableConfigs } = useCoreState(
@@ -243,12 +243,8 @@ export function MyServices(props: Props) {
     const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
         string | undefined
     >();
-    const [serviceIdRequestedToBeRenewed, setServiceIdRequestedToBeRenewed] = useState<
-        string | undefined
-    >();
 
     const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState(false);
-    const [isDialogRenewOpen, setIsDialogRenewOpen] = useState(false);
 
     const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
         ({ serviceId }) => {
@@ -258,8 +254,9 @@ export function MyServices(props: Props) {
     );
     const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
         ({ serviceId }) => {
-            setServiceIdRequestedToBeRenewed(serviceId);
-            setIsDialogRenewOpen(true);
+            console.log(serviceId);
+            // TODO Make launcher init
+            // launcher.launch();
         }
     );
     const deletableRunningServices = useMemo(
@@ -277,18 +274,6 @@ export function MyServices(props: Props) {
                 deletableRunningServices.map(({ id }) =>
                     runningService.stopService({ "serviceId": id })
                 );
-            }
-        }
-
-        setIsDialogDeleteOpen(false);
-    });
-
-    const onDialogRenewCloseFactory = useCallbackFactory(([doRenew]: [boolean]) => {
-        if (doRenew) {
-            if (serviceIdRequestedToBeRenewed) {
-                // TODO dispatch action
-            } else {
-                // TODO dispatch action
             }
         }
 
@@ -362,30 +347,6 @@ export function MyServices(props: Props) {
                             {t("cancel")}
                         </Button>
                         <Button onClick={onDialogDeleteCloseFactory(true)}>
-                            {t("confirm")}
-                        </Button>
-                    </>
-                }
-            />
-            <Dialog
-                title={t("confirm delete title")}
-                subtitle={t("confirm delete subtitle")}
-                body={`${
-                    isThereOwnedSharedServices
-                        ? t("confirm delete body shared services")
-                        : ""
-                } ${t("confirm delete body")}`}
-                isOpen={isDialogRenewOpen}
-                onClose={onDialogRenewCloseFactory(false)}
-                buttons={
-                    <>
-                        <Button
-                            onClick={onDialogRenewCloseFactory(false)}
-                            variant="secondary"
-                        >
-                            {t("cancel")}
-                        </Button>
-                        <Button onClick={onDialogRenewCloseFactory(true)}>
                             {t("confirm")}
                         </Button>
                     </>
