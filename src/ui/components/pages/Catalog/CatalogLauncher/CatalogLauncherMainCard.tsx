@@ -83,11 +83,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
                 {onRequestCopyLaunchUrl !== undefined && (
                     <>
-                        <Button
-                            variant="ternary"
-                            className={classes.learnMoreButton}
-                            onClick={onRequestReset}
-                        >
+                        <Button variant="ternary" onClick={onRequestReset}>
                             Reinitialiser les configurations
                         </Button>
 
@@ -156,6 +152,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     );
 });
 
+CatalogLauncherMainCard.displayName = CatalogLauncherMainCard.name;
+
 export const { i18n } = declareComponentKeys<
     | "card title"
     | "cancel"
@@ -215,8 +213,5 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
     },
     "launchButton": {
         "marginLeft": theme.spacing(2)
-    },
-    "learnMoreButton": {
-        "marginRight": theme.spacing(2)
     }
 }));
