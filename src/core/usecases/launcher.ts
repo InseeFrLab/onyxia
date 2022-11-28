@@ -527,14 +527,14 @@ export const thunks = {
         (params: {
             catalogId: string;
             packageName: string;
-            version: string;
+            version: string | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }): ThunkAction =>
         async (...args) => {
             const {
                 catalogId,
                 packageName,
-                version,
+                "version": specificVersion,
                 formFieldsValueDifferentFromDefault
             } = params;
 
@@ -547,20 +547,20 @@ export const thunks = {
 
             dispatch(actions.initializationStarted());
 
-            const [
-                { dependencies, sources, getValuesSchemaJson },
-                { availableVersions }
-            ] = await Promise.all([
-                onyxiaApiClient.getPackageConfig({
+            const { availableVersions } =
+                await onyxiaApiClient.getPackageAvailableVersions({
+                    catalogId,
+                    packageName
+                });
+            assert(availableVersions !== undefined && availableVersions.length > 0);
+            const version =
+                specificVersion === undefined ? availableVersions[0] : specificVersion;
+            const { dependencies, sources, getValuesSchemaJson } =
+                await onyxiaApiClient.getPackageConfig({
                     catalogId,
                     packageName,
                     version
-                }),
-                onyxiaApiClient.getPackageAvailableVersions({
-                    catalogId,
-                    packageName
-                })
-            ]);
+                });
 
             {
                 const state = getState().launcher;

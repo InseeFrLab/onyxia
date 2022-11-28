@@ -36,7 +36,7 @@ export const { RouteProvider, useRoute, routes } = createRouter(routerOpts, {
         {
             "catalogId": param.path.string,
             "packageName": param.path.string,
-            "version": param.query.string,
+            "version": param.query.optional.string,
             "autoLaunch": param.query.optional.boolean.default(false),
             ...formFieldsDefineRouteParam
         },
